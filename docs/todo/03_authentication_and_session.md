@@ -1,7 +1,7 @@
 # Task 3: Authentication and Session Management
 
 - [ ] Implement logic within the main client class (or `BaseClient`) to handle authentication credentials.
-- [ ] Read API Key and Security Key from environment variables (`IMEDNET_API_KEY`, `IMEDNET_SECURITY_KEY`) or allow passing them during client initialization.
+- [ ] Read API Key and Security Key from environment variables (`IMEDNET_API_KEY`, `IMEDNET_SECURITY_KEY`) AND allow passing them during client initialization.
 - [ ] Ensure the `BaseClient` automatically injects the following headers into every request:
   - `x-api-key`
   - `x-imn-security-key`

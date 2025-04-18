@@ -14,6 +14,7 @@ class ImednetClient:
         security_key: str,
         base_url: Optional[str] = None,
         timeout: Optional[float] = 30.0,  # Default timeout
+        retries: int = 3,
     ):
         """Initializes the ImednetClient.
 
@@ -22,6 +23,7 @@ class ImednetClient:
             security_key: Your iMednet Security key.
             base_url: The base URL for the iMednet API. Defaults to production.
             timeout: Default request timeout in seconds.
+            retries: Number of retry attempts for transient (5xx) errors.
         """
         self.base_url = base_url or self.DEFAULT_BASE_URL
         self._api_key = api_key
@@ -34,11 +36,11 @@ class ImednetClient:
             "x-imn-security-key": self._security_key,
         }
 
+        self._retries = retries
         self._client = httpx.Client(
             base_url=self.base_url,
             headers=self._default_headers,
             timeout=timeout,
-            # Add transport configuration for retries later if needed
         )
 
     def _request(
@@ -64,35 +66,30 @@ class ImednetClient:
         Raises:
             httpx.HTTPStatusError: For 4xx or 5xx responses.
         """
-        # Ensure endpoint starts with a slash if needed, httpx handles joining
+        # Ensure endpoint starts with a slash if needed, httpx will handle joining
         url = endpoint
-
-        try:
-            response = self._client.request(
-                method=method,
-                url=url,
-                params=params,
-                json=json,
-                **kwargs,  # Pass through extra httpx options
-            )
-            response.raise_for_status()  # Raise exception for bad status codes
-            return response
-        except httpx.RequestError as exc:
-            # Handle connection errors, timeouts, etc.
-            # Re-raise or wrap in a custom exception (TBD in error handling task)
-            print(f"An error occurred while requesting {exc.request.url!r}: {exc}")
-            raise
-        except httpx.HTTPStatusError as exc:
-            # Handle 4xx/5xx errors
-            # Re-raise or wrap (TBD in error handling task)
-            print(
-                f"Error response {exc.response.status_code} "
-                f"while requesting {exc.request.url!r}: {exc.response.text}"
-            )
-            # For now, return the response to allow tests to check status code
-            # In real usage, we'd likely raise a custom exception here.
-            # return exc.response
-            raise  # Re-raise for now until proper error handling is defined
+        # Retry loop for transient 5xx errors
+        for attempt in range(self._retries + 1):
+            try:
+                response = self._client.request(
+                    method=method,
+                    url=url,
+                    params=params,
+                    json=json,
+                    **kwargs,
+                )
+                response.raise_for_status()
+                return response
+            except httpx.HTTPStatusError as exc:
+                status = exc.response.status_code
+                # Retry on server errors
+                if status >= 500 and attempt < self._retries:
+                    continue
+                # Non-retryable or last attempt: re-raise
+                raise
+            except httpx.RequestError:
+                # Network errors and timeouts are raised directly
+                raise
 
     def _get(
         self,
