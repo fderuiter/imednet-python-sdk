@@ -65,7 +65,7 @@
   * [x] **Update Memory File (Post-Fix):** Note any significant fixes.
   * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done: `[x] Implement configurable request timeouts.`
-  * [ ] **Commit Changes:** `git commit -m \"feat(client): implement configurable request timeouts\"`
+  * [x] **Commit Changes:** `git commit -m \"feat(client): implement configurable request timeouts\"`
 * [x] **Implement retry logic for transient errors (e.g., 5xx, network errors).**
   * [x] **Identify Task:** Implement retry logic.
   * [x] **Write/Update Tests:** Add tests to `tests/test_client.py` to:
@@ -90,7 +90,7 @@
   * [x] **Update Memory File (Post-Fix):** Note any significant fixes.
   * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done: `[x] Implement retry logic...`
-  * [ ] **Commit Changes:** `git commit -m \"feat(client): implement retry logic for transient errors\"`
+  * [x] **Commit Changes:** `git commit -m \"feat(client): implement retry logic for transient errors\"`
 * [x] **Support context manager protocol (`with` statement) for cleanup.**
   * [x] Implement `__enter__` and `__exit__` (or `__aenter__`/`__aexit__` if async) in `ImednetClient`.
   * [x] Ensure `__exit__` calls the underlying `httpx.Client.close()` method.
