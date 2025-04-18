@@ -11,5 +11,4 @@
 - [ ] Validate that keys are provided before making requests; raise an `AuthenticationError` if missing.
 - [ ] Consider security implications: avoid logging keys, ensure secure storage if configuration files are used.
 - [ ] If using `requests.Session` or `httpx.Client`, ensure session/client instances manage headers correctly across requests.
-- [ ] (Future Consideration) If keys rotate or expire, implement logic for renewal (though the current docs don't mention this).
 - [ ] Ensure session handling is thread-safe if the client will be used in multi-threaded applications.
