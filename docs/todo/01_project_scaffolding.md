@@ -1,7 +1,7 @@
 <!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\01_project_scaffolding.md -->
 # Task 1: Project Scaffolding and Initial Setup
 
-- [ ] Initialize Git repository (`git init`) and configure default branch (e.g., `main`).
+- [x] Initialize Git repository (`git init`) and configure default branch (e.g., `main`).
 - [ ] Create project directory structure:
   - `imednet_sdk/` (main library code)
     - `api/` (resource-specific clients)
