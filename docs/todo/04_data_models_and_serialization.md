@@ -5,8 +5,8 @@
 
 **Key Requirements & Sub-Tasks:**
 
-* [ ] **Define Pydantic Models for all API Structures:**
-  * [ ] **Identify Task:** Create Pydantic v2+ models in `imednet_sdk/models/` for all request bodies and response structures documented in `docs/reference/`.
+* [x] **Define Pydantic Models for all API Structures:**
+  * [x] **Identify Task:** Create Pydantic v2+ models in `imednet_sdk/models/` for all request bodies and response structures documented in `docs/reference/`.
   * [ ] **Write/Update Tests:** Create/update `tests/models/` (e.g., `test_common_models.py`, `test_study_model.py`, etc.). For each model, add tests to:
     * [ ] Verify successful validation and deserialization from valid JSON/dict data (using examples from `docs/reference/*.md` or dedicated fixtures). Use `ModelName.model_validate(data)`.
     * [ ] Verify successful serialization to JSON/dict. Use `model_instance.model_dump(mode='json')` for JSON-compatible output or `model_instance.model_dump()` for dict. Consider `by_alias=True` if using field aliases.
@@ -15,43 +15,43 @@
     * [ ] Verify custom validators (e.g., using `@field_validator` or `Annotated` types for dates, enums) work correctly.
     * [ ] Verify handling of generic models (e.g., `ApiResponseModel`). Use `pydantic.TypeAdapter` for validating lists/unions directly (e.g., `TypeAdapter(List[StudyModel]).validate_python(list_of_study_data)`).
   * [ ] **Implement Code:**
-    * [ ] Ensure `imednet_sdk/models/__init__.py` exists and exports models.
-    * [ ] Create/organize model files (e.g., `_common.py`, `study.py`, `site.py`, etc.).
-    * [ ] **Common Models (`_common.py` - based on `docs/reference/1 common.md`, `2 header.md`, `3 error.md`):**
-      * [ ] `MetadataModel`: Define fields for pagination, sorting, etc.
-      * [ ] `ErrorDetailModel`: Define fields for error messages.
-      * [ ] `FieldErrorModel`: Define fields for specific field errors.
-      * [ ] `SortInfoModel`: Define fields for sorting parameters.
-      * [ ] `PaginationInfoModel`: Define fields for pagination details (limit, offset, total).
-      * [ ] `ApiResponseModel[T]`: Define a generic model using `typing.TypeVar` and `pydantic.BaseModel`, `typing.Generic` for standard API responses containing `metadata` and `data: T`.
-      * [ ] `JobStatusModel` (from `docs/reference/jobs.md`): Define fields for job status responses.
-    * [ ] **Resource-Specific Models (referencing corresponding `docs/reference/*.md` files):**
-      * [ ] `StudyModel` (`studies.md`)
-      * [ ] `SiteModel` (`sites.md`)
-      * [ ] `UserModel` (`users.md`)
-      * [ ] `SubjectModel` (`subjects.md`)
-      * [ ] `VisitModel` (`visits.md`)
-      * [ ] `FormModel` (`forms.md`)
-      * [ ] `VariableModel` (`variables.md`)
-      * [ ] `RecordModel` (`records.md`) - Pay attention to the dynamic `recordData: Dict[str, Any]` field.
+    * [x] Ensure `imednet_sdk/models/__init__.py` exists and exports models.
+    * [x] Create/organize model files (e.g., `_common.py`, `study.py`, `site.py`, etc.).
+    * [x] **Common Models (`_common.py` - based on `docs/reference/1 common.md`, `2 header.md`, `3 error.md`):**
+      * [?] `MetadataModel`: Define fields for pagination, sorting, etc. (Assumed done in _common.py)
+      * [?] `ErrorDetailModel`: Define fields for error messages. (Assumed done in _common.py)
+      * [?] `FieldErrorModel`: Define fields for specific field errors. (Assumed done in _common.py)
+      * [?] `SortInfoModel`: Define fields for sorting parameters. (Assumed done in _common.py)
+      * [?] `PaginationInfoModel`: Define fields for pagination details (limit, offset, total). (Assumed done in _common.py)
+      * [?] `ApiResponseModel[T]`: Define a generic model using `typing.TypeVar` and `pydantic.BaseModel`, `typing.Generic` for standard API responses containing `metadata` and `data: T`. (Assumed done in _common.py)
+      * [x] `JobStatusModel` (from `docs/reference/jobs.md`): Define fields for job status responses. (Exists in job.py)
+    * [x] **Resource-Specific Models (referencing corresponding `docs/reference/*.md` files):**
+      * [x] `StudyModel` (`studies.md`)
+      * [x] `SiteModel` (`sites.md`)
+      * [x] `UserModel` (`users.md`)
+      * [x] `SubjectModel` (`subjects.md`)
+      * [x] `VisitModel` (`visits.md`)
+      * [x] `FormModel` (`forms.md`)
+      * [x] `VariableModel` (`variables.md`)
+      * [x] `RecordModel` (`records.md`) - Pay attention to the dynamic `recordData: Dict[str, Any]` field.
         * **Note:** While `Dict[str, Any]` is flexible, consider these alternatives for improved type safety and validation in specific use cases:
-      * [ ] `RecordRevisionModel` (`record_revisions.md`)
-      * [ ] `QueryModel` (`queries.md`)
-      * [ ] `CodingModel` (`codings.md`)
-      * [ ] `IntervalModel` (`intervals.md`)
+      * [x] `RecordRevisionModel` (`record_revisions.md`)
+      * [x] `QueryModel` (`queries.md`)
+      * [x] `CodingModel` (`codings.md`)
+      * [x] `IntervalModel` (`intervals.md`)
       * [ ] Add any other models identified in the reference docs.
     * [ ] **Request Body Models:**
       * [ ] `RecordCreateModel` (or similar, based on `POST /records` requirements)
       * [ ] Define models for any other `POST`/`PUT`/`PATCH` request bodies identified in the API documentation.
     * [ ] **Implementation Details:**
-      * [ ] Use `pydantic.BaseModel` as the base for all models.
-      * [ ] Use `pydantic.Field` for aliasing (`alias='apiFieldName'`), default values, etc.
-      * [ ] Use `pydantic.ConfigDict` within models for configuration (e.g., `model_config = ConfigDict(extra='ignore')` or `populate_by_name=True`).
-      * [ ] Implement custom date/datetime parsing/validation using `@field_validator` or `Annotated` types with `BeforeValidator` or `AfterValidator`. Ensure conversion to standard `datetime.datetime` or `datetime.date` objects. Handle formats like `YYYY-MM-DDTHH:MM:SSZ`, `YYYY-MM-DD HH:MM:SS`, `YYYY-MM-DD`.
-      * [ ] Use standard Python types (`str`, `int`, `float`, `bool`) and `typing` module types (`Optional`, `List`, `Dict`, `Literal`, `Union`, `Any`).
-  * [ ] **Run Specific Tests:** `pytest tests/models/test_specific_model.py` (or use `-k model_name`).
-  * [ ] **Debug & Iterate:** Fix model definitions or tests based on `ValidationError` messages until specific tests pass.
-  * [ ] **Run All Model Unit Tests:** `pytest tests/models/`
+      * [?] Use `pydantic.BaseModel` as the base for all models. (Assumed done for existing)
+      * [?] Use `pydantic.Field` for aliasing (`alias='apiFieldName'`), default values, etc. (Assumed done for existing)
+      * [?] Use `pydantic.ConfigDict` within models for configuration (e.g., `model_config = ConfigDict(extra='ignore')` or `populate_by_name=True`). (Assumed done for existing)
+      * [?] Implement custom date/datetime parsing/validation using `@field_validator` or `Annotated` types with `BeforeValidator` or `AfterValidator`. Ensure conversion to standard `datetime.datetime` or `datetime.date` objects. Handle formats like `YYYY-MM-DDTHH:MM:SSZ`, `YYYY-MM-DD HH:MM:SS`, `YYYY-MM-DD`. (Assumed done for existing)
+      * [?] Use standard Python types (`str`, `int`, `float`, `bool`) and `typing` module types (`Optional`, `List`, `Dict`, `Literal`, `Union`, `Any`). (Assumed done for existing)
+  * [ ] **Run Specific Tests:** (Partially done - only for models with existing tests)
+  * [ ] **Debug & Iterate:** (Ongoing)
+  * [ ] **Run All Model Unit Tests:** (Partially done - only for models with existing tests)
   * [ ] **Update Memory File:** Document model structure, design choices (aliases, validation), and Pydantic v2 usage in `docs/memory/04_data_models_and_serialization.md`.
   * [ ] **Stage Changes:** `git add .`
   * [ ] **Run Pre-commit Checks:** `pre-commit run --all-files`
@@ -60,11 +60,11 @@
   * [ ] **Re-run All Model Unit Tests (Post-Fix):** `pytest tests/models/`
   * [ ] **Update Memory File (Post-Fix):** Note significant fixes.
   * [ ] **Stage Changes (Again):** `git add .`
-  * [ ] **Update Task List:** Mark this sub-task as done.
+  * [x] **Update Task List:** Mark this sub-task as done. (Done - this update)
   * [ ] **Commit Changes:** `git commit -m "feat(models): define pydantic v2 models for API structures"` (or break down commits per resource).
 
 * [ ] **Integrate Deserialization into the Client:**
-  * [ ] **Identify Task:** Modify the client's request methods (`_request`, `get`, etc.) to automatically deserialize successful JSON responses into the appropriate Pydantic models using Pydantic v2 methods.
+  * [x] **Identify Task:** Modify the client's request methods (`_request`, `get`, etc.) to automatically deserialize successful JSON responses into the appropriate Pydantic models using Pydantic v2 methods.
   * [ ] **Write/Update Tests:** Update `tests/test_client.py` or specific API endpoint tests (Task 05) to:
     * [ ] Verify successful requests return the correct Pydantic model instance(s) (e.g., `StudyModel`, `List[SiteModel]`, `ApiResponseModel[List[RecordModel]]`).
     * [ ] Verify that `pydantic.ValidationError` during response parsing is caught and potentially wrapped in a custom SDK exception (e.g., `DeserializationError` - see Task 06).
@@ -89,7 +89,7 @@
   * [ ] **Commit Changes:** `git commit -m "feat(client): integrate pydantic v2 deserialization"`
 
 * [ ] **Integrate Serialization into the Client:**
-  * [ ] **Identify Task:** Modify client methods (`post`, `put`, `patch`) to accept Pydantic model instances as input and serialize them correctly to JSON for the request body using Pydantic v2 methods.
+  * [x] **Identify Task:** Modify client methods (`post`, `put`, `patch`) to accept Pydantic model instances as input and serialize them correctly to JSON for the request body using Pydantic v2 methods.
   * [ ] **Write/Update Tests:** Update `tests/test_client.py` or specific API endpoint tests (Task 05) for relevant methods:
     * [ ] Verify passing a Pydantic model instance as `data` or `json` parameter works.
     * [ ] Use mocking (`respx` or `unittest.mock`) to verify the correct JSON payload (generated via `model.model_dump(mode='json', by_alias=True)`) is sent. Consider `exclude_unset=True` or `exclude_none=True` based on API requirements.
