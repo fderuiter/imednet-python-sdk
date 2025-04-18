@@ -1,13 +1,44 @@
+<!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\07_testing_and_ci.md -->
 # Task 7: Testing Strategy and Automation
 
-- Define testing pyramid (unit, integration, end-to-end)
-- Setup test framework (pytest) and fixtures
-- Write unit tests for each resource client method:
-  - e.g., test `SitesClient.get_sites` with paging, sorting, filtering using sample JSON from `docs/reference/sites.md`
-  - Validate model serialization/deserialization for each Pydantic model (e.g., SiteModel, ErrorModel)
-- Use `pytest` fixtures to load sample response files under `tests/fixtures/*` matching reference docs
-- Mock external HTTP interactions with `responses` or `requests-mock` to assert headers and query parameters
-- Add tests for error conditions based on `1000`, `9001`, and `9000` error payloads
-- Create integration tests against a sandbox or recorded VCR cassettes for core flows
-- Configure coverage with `pytest-cov` and enforce thresholds (e.g., 90%+)
-- Add GitHub Actions workflow (`.github/workflows/ci.yml`) to run tests on Python 3.8–3.11 and report coverage
+- [ ] Set up `pytest` as the test runner.
+- [ ] Install necessary testing dependencies (`pytest`, `pytest-cov`, `requests-mock` or `httpx_mock`, `respx`). Add them to `requirements-dev.txt`.
+- [ ] Create `tests/` directory structure mirroring `imednet_sdk/` (e.g., `tests/api/`, `tests/models/`).
+- [ ] **Unit Tests:**
+  - [ ] Test Pydantic model serialization and deserialization (`tests/models/`):
+    - Use sample JSON data extracted from `docs/reference/*.md` examples.
+    - Test successful parsing, including nested structures and date handling.
+    - Test handling of optional/null fields.
+    - Test validation errors for incorrect data types or formats.
+  - [ ] Test individual resource client methods (`tests/api/`):
+    - Use `requests-mock` or equivalent to mock HTTP requests/responses.
+    - For each method (e.g., `list_studies`, `create_records`):
+      - Mock successful responses (200 OK) with sample data from reference docs.
+      - Assert that the correct URL, HTTP method, headers (`x-api-key`, etc.), and query parameters (`page`, `size`, `sort`, `filter`, `recordDataFilter`) are used.
+      - Assert that request bodies (for POST) are correctly serialized.
+      - Assert that the response is correctly deserialized into the expected Pydantic models.
+      - Test pagination logic (requesting different pages).
+      - Test filtering and sorting variations.
+  - [ ] Test error handling:
+    - Mock API error responses (400, 401, 403, 404, 429, 500) with JSON bodies matching `docs/reference/3 error.md`.
+    - Assert that the correct custom exceptions (`ValidationError`, `AuthenticationError`, etc.) are raised.
+    - Assert that exception messages contain relevant details from the error payload.
+  - [ ] Test `BaseClient` functionality (header injection, URL building, retry logic if implemented).
+- [ ] **Fixtures:**
+  - [ ] Create `pytest` fixtures (`tests/conftest.py`) to provide initialized clients, mock API keys, and load sample JSON response data from `tests/fixtures/`.
+- [ ] **Integration Tests (Optional but Recommended):**
+  - [ ] If a sandbox environment is available, write tests that make real API calls for critical workflows.
+  - [ ] Alternatively, use `vcrpy` to record and replay interactions.
+- [ ] **Code Coverage:**
+  - [ ] Configure `pytest-cov` to measure test coverage.
+  - [ ] Aim for a high coverage threshold (e.g., >90%) and enforce it in CI.
+- [ ] **Continuous Integration (CI):**
+  - [ ] Create a GitHub Actions workflow (`.github/workflows/ci.yml`).
+  - [ ] Configure the workflow to:
+    - Check out code.
+    - Set up Python (test across multiple versions like 3.8, 3.9, 3.10, 3.11).
+    - Install dependencies (`requirements.txt`, `requirements-dev.txt`).
+    - Run linters/formatters (black, flake8, isort).
+    - Run type checks (`mypy`).
+    - Run tests with coverage (`pytest --cov=imednet_sdk`).
+    - (Optional) Upload coverage reports (e.g., to Codecov).

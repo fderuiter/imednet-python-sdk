@@ -1,26 +1,31 @@
+<!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\04_data_models_and_serialization.md -->
 # Task 4: Data Models and Serialization
 
-- Define Pydantic or dataclass models for all API schemas
-- Implement serialization and deserialization logic
-- Handle nested objects, lists, and optional fields
-- Validate data formats (dates, enums, UUIDs)
-- Auto-generate or maintain models from `docs/reference`
-- Create common models:
-  - MetadataModel (status: str, method: str, path: str, timestamp: datetime, error: Optional[ErrorModel])
-  - ErrorModel (code: str, description: str, field: Optional[FieldErrorModel])
-  - FieldErrorModel (attribute: str, value: Any)
-  - SortModel (property: str, direction: Literal['ASC','DESC'])
-  - PaginationModel (currentPage: int, size: int, totalPages: int, totalElements: int, sort: List[SortModel])
-- Define resource models per reference files:
-  - SiteModel (studyKey: str, siteId: int, siteName: str, siteEnrollmentStatus: str, dateCreated: datetime, dateModified: datetime)
-  - StudyModel (studyKey: str, studyName: str, dateCreated: datetime, ...) // from studies.md
-  - SubjectModel (studyKey: str, subjectKey: str, subjectStatus: str, ...) // from subjects.md
-  - VisitModel (studyKey: str, subjectKey: str, visitNumber: int, visitDate: datetime, ...) // from visits.md
-  - VariableModel (studyKey: str, variableId: str, variableName: str, variableType: str, ...) // from variables.md
-  - RecordModel (studyKey: str, subjectKey: str, recordId: str, status: str, ...) // from records.md
-  - RecordRevisionModel (recordId: str, revisionId: str, timestamp: datetime, changeLog: str)
-  - JobModel (jobId: str, status: str, submitTime: datetime, result: Optional[Any]) // from jobs.md
-  - CodingModel, FormModel, IntervalModel, QueryModel (fields from codings.md, forms.md, intervals.md, queries.md)
-- Handle nested objects and lists automatically via Pydantic
-- Parse date strings using `datetime.fromisoformat` or custom validator
-- Validate enums and field constraints as per reference docs
+- [ ] Define Pydantic models for all API response structures and request bodies in `imednet_sdk/models/`.
+- [ ] Implement robust serialization (Python object -> JSON) and deserialization (JSON -> Pydantic model) logic, leveraging Pydantic's capabilities.
+- [ ] Handle nested objects, lists of objects, and optional fields correctly based on API responses.
+- [ ] Implement custom validators or parsers for specific data formats, especially dates (API returns UTC strings like `YYYY-MM-DDTHH:MM:SSZ` or `YYYY-MM-DD HH:MM:SS`, sometimes just `YYYY-MM-DD` for Visits). Use `datetime` objects in models.
+- [ ] Create common base models:
+  - `MetadataModel`: Represents the `metadata` block (status, method, path, timestamp, error).
+  - `ErrorDetailModel`: Represents the `metadata.error` block (code, description, field).
+  - `FieldErrorModel`: Represents the `metadata.error.field` block (attribute, value).
+  - `SortInfoModel`: Represents a single sort criterion (property, direction: Literal['ASC', 'DESC']).
+  - `PaginationInfoModel`: Represents the `pagination` block (currentPage, size, totalPages, totalElements, sort: List[SortInfoModel]).
+  - `ApiResponseModel[T]`: Generic model wrapping `metadata`, `pagination` (optional), and `data: List[T]`.
+  - `JobStatusModel`: Represents the response from POST Records and GET Jobs (jobId, batchId, state, dates).
+- [ ] Define specific resource models based on `docs/reference/*.md` examples:
+  - `StudyModel` (`studies.md`)
+  - `SiteModel` (`sites.md`)
+  - `FormModel` (`forms.md`)
+  - `IntervalModel` (`intervals.md`)
+  - `RecordModel` (`records.md` - includes nested `keywords` and dynamic `recordData`)
+  - `RecordRevisionModel` (`record_revisions.md`)
+  - `VariableModel` (`variables.md`)
+  - `CodingModel` (`codings.md`)
+  - `SubjectModel` (`subjects.md` - includes nested `keywords`)
+  - `UserModel` (`users.md` - includes nested `roles`)
+  - `VisitModel` (`visits.md`)
+- [ ] Define request body models for POST operations (e.g., `RecordCreateModel` for `POST /records`).
+- [ ] Ensure models handle potential `null` values for optional fields.
+- [ ] Use Pydantic's validation for enums where applicable (e.g., `recordStatus`, `formType`).
+- [ ] (Optional) Use the `scripts/generate_models.py` script to bootstrap model creation, followed by manual review and refinement.

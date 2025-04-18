@@ -1,7 +1,36 @@
+<!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\08_documentation_and_examples.md -->
 # Task 8: Documentation and Usage Examples
 
-- Write comprehensive README with installation and quickstart
-- Generate API reference documentation (Sphinx/ReadTheDocs)
-- Include code snippets and usage patterns in docs
-- Provide detailed examples in `examples/` folder
-- Set up docs building workflow
+- [ ] **README.md:**
+  - [ ] Write a clear project description.
+  - [ ] Provide installation instructions (`pip install imednet-python-sdk`).
+  - [ ] Include a Quickstart section demonstrating basic client initialization and a simple API call (e.g., listing studies).
+  - [ ] Explain authentication (API keys, environment variables).
+  - [ ] Link to the full documentation.
+- [ ] **Sphinx Documentation (`docs/source/`):**
+  - [ ] Configure `conf.py` with project details, theme (e.g., `sphinx_rtd_theme`), and necessary extensions (`autodoc`, `napoleon`, `viewcode`, `intersphinx`).
+  - [ ] Structure documentation using reStructuredText (`.rst` files).
+  - [ ] Create an `api.rst` page using `sphinx.ext.autodoc` to automatically generate API reference documentation from docstrings in the SDK code (`imednet_sdk/`).
+    - Ensure all public classes and methods have clear docstrings (following a standard format like Google or NumPy style, configured via `napoleon`).
+  - [ ] Write usage guides (`usage.rst` or separate pages):
+    - Client initialization and authentication.
+    - Making requests (listing resources, getting specific items).
+    - Handling pagination (manual and using iterators from Task 10).
+    - Filtering and sorting data.
+    - Creating/updating resources (e.g., `POST /records`).
+    - Error handling (catching specific exceptions).
+  - [ ] Include explanations of the core concepts based on the iMednet API (Studies, Sites, Subjects, Records, etc.).
+  - [ ] Add `docs/reference/*.md` content or links if useful, or summarize key points.
+- [ ] **Usage Examples (`examples/`):**
+  - [ ] Create Python scripts demonstrating common use cases:
+    - `examples/list_studies_and_sites.py`
+    - `examples/find_subjects_by_status.py`
+    - `examples/get_all_records_for_subject.py` (using pagination iterator)
+    - `examples/create_new_record.py`
+    - `examples/handle_api_errors.py`
+  - [ ] Ensure examples are clear, well-commented, and runnable (perhaps requiring environment variables for credentials).
+- [ ] **Docstrings:**
+  - [ ] Add comprehensive docstrings to all public modules, classes, methods, and functions in `imednet_sdk/`.
+- [ ] **CI/CD for Docs:**
+  - [ ] (Optional) Set up a GitHub Actions workflow to build the documentation on pushes to the main branch.
+  - [ ] (Optional) Configure hosting on ReadTheDocs or GitHub Pages.

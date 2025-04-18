@@ -1,10 +1,41 @@
+<!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\01_project_scaffolding.md -->
 # Task 1: Project Scaffolding and Initial Setup
 
-- Initialize Git repository and configure default branch
-- Create project directory structure (`imednet_sdk/`, `docs/`, `tests/`, `examples/`)
-- Add essential files: `README.md`, `pyproject.toml`, `setup.py`, `requirements.txt`
-- Define project metadata: name, version, description, author, license
-- Establish documentation folders and initial docs templates
-- Import `docs/reference/` files to source control for model generation
-- Add scaffolding script (`scripts/generate_models.py`) to parse `docs/reference/` and generate Pydantic models
-- Initialize Sphinx docs under `docs/` with `docs/reference` included
+- [ ] Initialize Git repository (`git init`) and configure default branch (e.g., `main`).
+- [ ] Create project directory structure:
+  - `imednet_sdk/` (main library code)
+    - `api/` (resource-specific clients)
+    - `models/` (Pydantic data models)
+  - `docs/` (documentation source)
+    - `reference/` (copy of API markdown docs)
+    - `source/` (Sphinx source files)
+    - `todo/` (task breakdown)
+  - `tests/` (unit and integration tests)
+    - `fixtures/` (sample API responses)
+  - `examples/` (usage examples)
+  - `scripts/` (utility scripts, e.g., model generation)
+- [ ] Add essential project files:
+  - `README.md` (project overview, installation, quickstart)
+  - `pyproject.toml` (build system, project metadata, dependencies)
+  - `setup.cfg` (optional, for setuptools configuration if needed)
+  - `requirements.txt` (runtime dependencies)
+  - `requirements-dev.txt` (development/test dependencies: pytest, requests-mock, black, flake8, mypy, sphinx, etc.)
+  - `.gitignore` (standard Python ignores)
+  - `.editorconfig` (consistent editor settings)
+- [ ] Define project metadata in `pyproject.toml`:
+  - `name = "imednet-python-sdk"`
+  - `version = "0.1.0"`
+  - `description = "Python SDK for the iMednet REST API"`
+  - `authors = ["Your Name <your.email@example.com>"]`
+  - `license = "MIT"` (or choose appropriate license)
+  - Specify Python version compatibility (e.g., `>=3.8`)
+- [ ] Add initial documentation files:
+  - `docs/vision.md`, `docs/architecture.md`, etc. (if needed)
+  - `docs/coding_standards.md`
+- [ ] Copy iMednet API reference markdown files into `docs/reference/`.
+- [ ] Initialize Sphinx documentation in `docs/source/`:
+  - Run `sphinx-quickstart`
+  - Configure `conf.py` (theme, extensions like `sphinx.ext.autodoc`, `sphinx.ext.napoleon`, `sphinx.ext.viewcode`)
+  - Set up `index.rst` and other core pages.
+- [ ] (Optional) Create initial scaffolding script (`scripts/generate_models.py`) to assist with Pydantic model creation from reference docs (may require manual refinement).
+- [ ] Set up `pre-commit` hooks for code quality (black, flake8, isort, mypy).
