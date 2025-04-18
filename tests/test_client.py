@@ -91,15 +91,36 @@ def test_request_with_query_params(client):
     assert response.status_code == 200
 
 
-@pytest.mark.skip(reason="Timeout configuration not yet implemented")
-def test_request_timeout(client):
+def test_request_timeout_custom(client):
     """Test that a custom timeout can be configured and is respected."""
-    # Implementation will require mocking time or specific httpx timeout handling
-    pass
+    custom_timeout = 5.5
+    timeout_client = ImednetClient(
+        base_url=BASE_URL,
+        api_key=API_KEY,
+        security_key=SECURITY_KEY,
+        timeout=custom_timeout,
+    )
+    # The underlying httpx client should have the custom connect and read timeouts set
+    assert timeout_client._client.timeout.connect == custom_timeout
+    assert timeout_client._client.timeout.read == custom_timeout
 
 
-@pytest.mark.skip(reason="Retry logic not yet implemented")
+@respx.mock
 def test_retry_logic_on_failure(client):
     """Test that the client retries on specific error codes (e.g., 503)."""
-    # Implementation will require mocking multiple responses or using tenacity features
-    pass
+    endpoint = "/retry-endpoint"
+    expected_url = f"{BASE_URL}{endpoint}"
+    # First return 503, then 200
+    mock_route = respx.get(expected_url).mock(
+        side_effect=[
+            Response(503, json={"error": "server error"}),
+            Response(200, json={"data": "success"}),
+        ]
+    )
+
+    response = client._get(endpoint)
+
+    # Ensure two calls were made: initial and retry
+    assert mock_route.call_count == 2
+    assert response.status_code == 200
+    assert response.json() == {"data": "success"}

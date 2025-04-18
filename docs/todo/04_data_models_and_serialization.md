@@ -27,4 +27,3 @@
 - [ ] Define request body models for POST operations (e.g., `RecordCreateModel` for `POST /records`).
 - [ ] Ensure models handle potential `null` values for optional fields.
 - [ ] Use Pydantic's validation for enums where applicable (e.g., `recordStatus`, `formType`).
-- [ ] (Optional) Use the `scripts/generate_models.py` script to bootstrap model creation, followed by manual review and refinement. - *Attempted, but script could not find JSON examples. Models will be created manually.*
