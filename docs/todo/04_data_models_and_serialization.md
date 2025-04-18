@@ -5,3 +5,22 @@
 - Handle nested objects, lists, and optional fields
 - Validate data formats (dates, enums, UUIDs)
 - Auto-generate or maintain models from `docs/reference`
+- Create common models:
+  - MetadataModel (status: str, method: str, path: str, timestamp: datetime, error: Optional[ErrorModel])
+  - ErrorModel (code: str, description: str, field: Optional[FieldErrorModel])
+  - FieldErrorModel (attribute: str, value: Any)
+  - SortModel (property: str, direction: Literal['ASC','DESC'])
+  - PaginationModel (currentPage: int, size: int, totalPages: int, totalElements: int, sort: List[SortModel])
+- Define resource models per reference files:
+  - SiteModel (studyKey: str, siteId: int, siteName: str, siteEnrollmentStatus: str, dateCreated: datetime, dateModified: datetime)
+  - StudyModel (studyKey: str, studyName: str, dateCreated: datetime, ...) // from studies.md
+  - SubjectModel (studyKey: str, subjectKey: str, subjectStatus: str, ...) // from subjects.md
+  - VisitModel (studyKey: str, subjectKey: str, visitNumber: int, visitDate: datetime, ...) // from visits.md
+  - VariableModel (studyKey: str, variableId: str, variableName: str, variableType: str, ...) // from variables.md
+  - RecordModel (studyKey: str, subjectKey: str, recordId: str, status: str, ...) // from records.md
+  - RecordRevisionModel (recordId: str, revisionId: str, timestamp: datetime, changeLog: str)
+  - JobModel (jobId: str, status: str, submitTime: datetime, result: Optional[Any]) // from jobs.md
+  - CodingModel, FormModel, IntervalModel, QueryModel (fields from codings.md, forms.md, intervals.md, queries.md)
+- Handle nested objects and lists automatically via Pydantic
+- Parse date strings using `datetime.fromisoformat` or custom validator
+- Validate enums and field constraints as per reference docs
