@@ -1,18 +1,56 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "imednet-python-sdk"
 version = "0.1.0"
-description = "A Python SDK for interacting with the Imednet REST API."
-authors = ["Your Name <your.email@example.com>"]
-license = "MIT"
+description = "Python SDK for the iMednet REST API"
+authors = [
+  { name="Frederick de Ruiter", email="frederick.deruiter@brightresearch.com" }, # Replace with actual details
+]
+license = { text = "MIT" }
 readme = "README.md"
-homepage = "https://github.com/yourusername/imednet-python-sdk"
-repository = "https://github.com/yourusername/imednet-python-sdk"
-keywords = ["imednet", "sdk", "api", "python"]
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha", # Or appropriate status
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = [
+    "requests>=2.20", # Example dependency, adjust as needed
+    "pydantic>=1.8",  # Example dependency, adjust as needed
+]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-requests = "^2.25.1"
+[project.urls]
+Homepage = "https://github.com/FrederickdeRuiter/imednet-python-sdk" # Replace if needed
+Issues = "https://github.com/FrederickdeRuiter/imednet-python-sdk/issues" # Replace if needed
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.setuptools]
+# If you have specific setuptools configurations, add them here.
+# For example, package discovery:
+# packages = find:
+#   where = ["imednet_sdk"] # Adjust if your source layout is different
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true # Start with this, can tighten later

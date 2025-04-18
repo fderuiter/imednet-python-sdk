@@ -19,13 +19,17 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+# Usually these files are written by a python script from a template
+# before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
 
@@ -43,8 +47,10 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
+*.py,cover
 .hypothesis/
 .pytest_cache/
+cover/
 
 # Translations
 *.mo
@@ -53,6 +59,8 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+db.sqlite3
+db.sqlite3-journal
 
 # Flask stuff:
 instance/
@@ -78,14 +86,24 @@ ipython_config.py
 .python-version
 
 # pipenv
-Pipfile.lock
+# According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+# Pipfile.lock
 
-# poetry
-poetry.lock
+# PEP 582; used by PDM, PEP 582 proposal
+__pypackages__/
 
-# Virtual environments
-venv/
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
 env/
+venv/
 ENV/
 env.bak/
 venv.bak/
@@ -103,11 +121,48 @@ venv.bak/
 # mypy
 .mypy_cache/
 .dmypy.json
-.dmypy
+dmypy.json
 
-# IDEs and editors
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# VSCode
 .vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# PyCharm
 .idea/
-*.suo
-*.ntvs*
-*.vcxproj*
+*.iml
+
+# Eclipse
+.project
+.pydevproject
+
+# dotenv
+.env
+
+# virtualenv
+venv/
+ENV/
+
+# Build results
+build/
+dist/
+
+# Cache files
+.pytest_cache/
+.mypy_cache/

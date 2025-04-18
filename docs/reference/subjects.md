@@ -184,14 +184,14 @@ The **filter** parameter allows users to refine results. Filters must follow the
 
 ## Notes
 
-- **Subject and Site Relationship:**  
+- **Subject and Site Relationship:**
   - Each **subject** belongs to a specific **site** and has a unique identifier.
 
-- **Enrollment Status:**  
+- **Enrollment Status:**
   - The `subjectStatus` field tracks the current enrollment status (e.g., Enrolled, Withdrawn).
 
-- **Deleted Records:**  
+- **Deleted Records:**
   - Subjects marked as `deleted: true` can be filtered out or included as needed.
 
-- **Keywords:**  
+- **Keywords:**
   - Subjects can have associated keywords for categorization or flagging specific data points.

@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\01_project_scaffolding.md -->
 # Task 1: Project Scaffolding and Initial Setup
 
 - [x] Initialize Git repository (`git init`) and configure default branch (e.g., `main`).
@@ -14,28 +13,28 @@
     - `fixtures/` (sample API responses)
   - `examples/` (usage examples)
   - `scripts/` (utility scripts, e.g., model generation)
-- [ ] Add essential project files:
+- [x] Add essential project files:
   - `README.md` (project overview, installation, quickstart)
   - `pyproject.toml` (build system, project metadata, dependencies)
-  - `setup.cfg` (optional, for setuptools configuration if needed)
+  - `setup.cfg` (optional, for setuptools configuration if needed) - *Skipped as config is in pyproject.toml*
   - `requirements.txt` (runtime dependencies)
   - `requirements-dev.txt` (development/test dependencies: pytest, requests-mock, black, flake8, mypy, sphinx, etc.)
   - `.gitignore` (standard Python ignores)
   - `.editorconfig` (consistent editor settings)
-- [ ] Define project metadata in `pyproject.toml`:
+- [x] Define project metadata in `pyproject.toml`:
   - `name = "imednet-python-sdk"`
   - `version = "0.1.0"`
   - `description = "Python SDK for the iMednet REST API"`
-  - `authors = ["Your Name <your.email@example.com>"]`
-  - `license = "MIT"` (or choose appropriate license)
-  - Specify Python version compatibility (e.g., `>=3.8`)
-- [ ] Add initial documentation files:
-  - `docs/vision.md`, `docs/architecture.md`, etc. (if needed)
-  - `docs/coding_standards.md`
-- [ ] Copy iMednet API reference markdown files into `docs/reference/`.
-- [ ] Initialize Sphinx documentation in `docs/source/`:
+  - `authors = ["Frederick de Ruiter <frederick.de.ruiter@example.com>"]`
+  - `license = "MIT"`
+  - Specify Python version compatibility (`>=3.8`)
+- [x] Add initial documentation files:
+  - `docs/vision.md`, `docs/architecture.md`, etc. (Existing)
+  - `docs/coding_standards.md` (Existing)
+- [x] Copy iMednet API reference markdown files into `docs/reference/`. - *Assuming this was done manually or previously*
+- [x] Initialize Sphinx documentation in `docs/source/`:
   - Run `sphinx-quickstart`
   - Configure `conf.py` (theme, extensions like `sphinx.ext.autodoc`, `sphinx.ext.napoleon`, `sphinx.ext.viewcode`)
-  - Set up `index.rst` and other core pages.
-- [ ] (Optional) Create initial scaffolding script (`scripts/generate_models.py`) to assist with Pydantic model creation from reference docs (may require manual refinement).
-- [ ] Set up `pre-commit` hooks for code quality (black, flake8, isort, mypy).
+  - Set up `index.rst` and other core pages (placeholders created).
+- [x] (Optional) Create initial scaffolding script (`scripts/generate_models.py`) to assist with Pydantic model creation from reference docs (basic script created).
+- [x] Set up `pre-commit` hooks for code quality (black, flake8, isort). - *Mypy commented out for now*

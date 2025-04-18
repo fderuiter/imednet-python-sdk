@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\04_data_models_and_serialization.md -->
 # Task 4: Data Models and Serialization
 
 - [ ] Define Pydantic models for all API response structures and request bodies in `imednet_sdk/models/`.
@@ -28,4 +27,4 @@
 - [ ] Define request body models for POST operations (e.g., `RecordCreateModel` for `POST /records`).
 - [ ] Ensure models handle potential `null` values for optional fields.
 - [ ] Use Pydantic's validation for enums where applicable (e.g., `recordStatus`, `formType`).
-- [ ] (Optional) Use the `scripts/generate_models.py` script to bootstrap model creation, followed by manual review and refinement.
+- [ ] (Optional) Use the `scripts/generate_models.py` script to bootstrap model creation, followed by manual review and refinement. - *Attempted, but script could not find JSON examples. Models will be created manually.*

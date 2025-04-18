@@ -8,7 +8,7 @@ The **Records Endpoint** allows users to fetch or add records for a given `Study
 
 ## Accessing the Index
 
-- **GET** request — Retrieve existing records.  
+- **GET** request — Retrieve existing records.
 - **POST** request — Add new records to the iMednet database.
 
 ---

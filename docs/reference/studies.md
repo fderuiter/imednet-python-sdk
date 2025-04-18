@@ -164,16 +164,16 @@ The **filter** parameter allows users to refine results. Filters must follow the
 
 ## Notes
 
-- **Authentication:**  
+- **Authentication:**
   - Valid `x-api-key` and `x-imn-security-key` headers are required for authentication.
 
-- **Pagination:**  
+- **Pagination:**
   - Use the `page` and `size` parameters to control pagination and limit the number of studies returned.
 
-- **Sorting and Filtering:**  
+- **Sorting and Filtering:**
   - Studies can be sorted and filtered using multiple parameters to refine search results.
 
-- **Security:**  
+- **Security:**
   - Ensure API keys and security tokens are kept confidential and not exposed publicly.
 
 ---

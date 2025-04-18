@@ -94,13 +94,13 @@ Host: localhost:8080
 
 ## Notes
 
-- **Job Tracking:**  
+- **Job Tracking:**
   - Jobs allow for asynchronous processing of submitted records, enabling users to track the status over time.
-  
-- **Timestamps:**  
+
+- **Timestamps:**
   - All timestamps are in the format `YYYY-MM-DD HH:MM:SS` and represent UTC time unless otherwise noted.
 
-- **Error Handling:**  
+- **Error Handling:**
   - If a job fails, further details can be retrieved using the associated `jobId` in error-specific endpoints (if available).
 
 ---

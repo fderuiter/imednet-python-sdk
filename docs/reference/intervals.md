@@ -199,11 +199,11 @@ The **filter** parameter allows users to refine results. Filters must follow the
 
 ## Notes
 
-- **Interval and Visits:**  
+- **Interval and Visits:**
   - Each **interval** represents a set of forms for a specific phase of a study, while a **visit** is a specific instance of an interval for a subject.
 
-- **Window Calculations:**  
+- **Window Calculations:**
   - Date calculations for due dates and visit windows are based on baseline forms and fields defined in the interval.
 
-- **Soft Deleted Intervals:**  
+- **Soft Deleted Intervals:**
   - Intervals marked as `disabled: true` are soft deleted and can be filtered out using `disabled==false`.

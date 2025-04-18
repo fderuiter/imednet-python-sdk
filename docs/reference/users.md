@@ -206,11 +206,11 @@ The **sort** parameter allows sorting by user login or any other valid field. Us
 
 ## Notes
 
-- **Inactive Users:**  
+- **Inactive Users:**
   - Set `includeInactive=true` to include inactive users in the response.
 
-- **Roles:**  
+- **Roles:**
   - Each user may have multiple roles within the study, each with detailed attributes like role name, description, and community association.
 
-- **Pagination:**  
+- **Pagination:**
   - Use the `page` and `size` parameters to control pagination and limit the number of users returned.

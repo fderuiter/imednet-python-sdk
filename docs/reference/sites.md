@@ -160,13 +160,13 @@ The **filter** parameter allows users to refine results. Filters must follow the
 
 ## Notes
 
-- **Site and Subject Relationship:**  
+- **Site and Subject Relationship:**
   - Each **site** can have one-to-many subjects enrolled in the study.
 
-- **Enrollment Status:**  
+- **Enrollment Status:**
   - The `siteEnrollmentStatus` field indicates whether the site is actively enrolling subjects.
 
-- **Filtering and Sorting:**  
+- **Filtering and Sorting:**
   - Sites can be filtered and sorted using multiple parameters to refine search results.
 
 ---

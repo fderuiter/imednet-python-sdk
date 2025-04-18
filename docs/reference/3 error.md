@@ -136,16 +136,16 @@ The following error codes may be returned by the API:
 
 ## Best Practices for Error Handling
 
-1. **Validate Inputs:**  
+1. **Validate Inputs:**
    Always validate request parameters before sending them to the API to minimize validation errors.
 
-2. **Check for Required Fields:**  
+2. **Check for Required Fields:**
    Ensure all mandatory fields are included in your API requests.
 
-3. **Handle HTTP Status Codes:**  
+3. **Handle HTTP Status Codes:**
    Implement robust error handling in your client to manage different HTTP status codes (`400`, `401`, `500`, etc.).
 
-4. **Use Error Details for Debugging:**  
+4. **Use Error Details for Debugging:**
    Utilize the `error` object in the response to pinpoint and fix issues.
 
 ---

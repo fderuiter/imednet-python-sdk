@@ -4,10 +4,10 @@ The **Mednet EDC (Electronic Data Capture) REST API** offers a unified access po
 
 This API empowers iMednet users to:
 
-- Export data to third-party reporting tools  
-- Display data in custom applications, mobile apps, or websites  
-- Store data in data warehouses  
-- Compile custom audit trails  
+- Export data to third-party reporting tools
+- Display data in custom applications, mobile apps, or websites
+- Store data in data warehouses
+- Compile custom audit trails
 
 All API responses are returned in **JSON** format (`application/json`), offering flexibility and simplicity when manipulating data.
 
@@ -161,8 +161,8 @@ The iMednet REST API supports filtering results using specific criteria. Filter 
 
 The `recordData` attribute is dynamic, based on the form design in iMednet. Use the **recordDataFilter** parameter to filter within `recordData`.
 
-- **AND** connector: `;`  
-- **OR** connector: `,`  
+- **AND** connector: `;`
+- **OR** connector: `,`
 - **Note**: You cannot mix both connectors in a single filter.
 
 ### Supported Operators for `recordDataFilter`

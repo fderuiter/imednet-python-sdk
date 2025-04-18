@@ -178,14 +178,14 @@ The **filter** parameter allows users to refine results. Filters must follow the
 
 ## Notes
 
-- **Visit and Interval Relationship:**  
+- **Visit and Interval Relationship:**
   - Each **visit** is associated with a specific **interval** for a subject.
 
-- **Date Fields:**  
+- **Date Fields:**
   - The `startDate`, `endDate`, `dueDate`, and `visitDate` fields provide scheduling and actual visit information.
 
-- **Deleted Visits:**  
+- **Deleted Visits:**
   - Visits marked as `deleted: true` can be filtered out or included as needed.
 
-- **Pagination:**  
+- **Pagination:**
   - Use the `page` and `size` parameters to control pagination and limit the number of visits returned.

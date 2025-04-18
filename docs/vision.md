@@ -1,6 +1,6 @@
 # Vision Statement for the imednet-python-sdk
 
-The imednet-python-sdk aims to provide a robust and user-friendly interface for interacting with the imednet REST API. Our vision is to simplify the integration of imednet's powerful features into Python applications, enabling developers to easily access and manipulate healthcare data. 
+The imednet-python-sdk aims to provide a robust and user-friendly interface for interacting with the imednet REST API. Our vision is to simplify the integration of imednet's powerful features into Python applications, enabling developers to easily access and manipulate healthcare data.
 
 By offering a well-structured SDK, we strive to enhance developer productivity, reduce the complexity of API interactions, and promote best practices in software development. Our goal is to empower developers to build innovative healthcare solutions that leverage the capabilities of the imednet platform, ultimately improving patient outcomes and streamlining healthcare processes.
 

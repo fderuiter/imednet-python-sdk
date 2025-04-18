@@ -1,0 +1,11 @@
+# Development and Testing Dependencies
+pytest
+pytest-cov
+requests-mock
+black
+flake8
+mypy
+isort
+sphinx
+sphinx-rtd-theme
+pre-commit

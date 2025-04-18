@@ -186,13 +186,13 @@ The **filter** parameter allows users to refine results. Filters must follow the
 
 ## Notes
 
-- **Record Revisions Lifecycle:**  
+- **Record Revisions Lifecycle:**
   - A new revision is created every time a record is modified or progresses to a new status.
 
-- **Reason for Change:**  
+- **Reason for Change:**
   - It's crucial to capture a meaningful `reasonForChange` when editing a record to maintain data integrity.
 
-- **Deleted Records:**  
+- **Deleted Records:**
   - Records marked as `deleted: true` can be filtered out or included as needed.
 
 ---

@@ -190,16 +190,16 @@ The **filter** parameter allows users to refine results. Filters must follow the
 
 ## Notes
 
-- **Query Comments:**  
+- **Query Comments:**
   - Queries can have multiple comments, each with its own status, user, and timestamp.
 
-- **Query Status:**  
+- **Query Status:**
   - Statuses like "Monitor Query Open" help track the lifecycle of a query.
 
-- **Open vs. Closed Queries:**  
+- **Open vs. Closed Queries:**
   - The `closed` boolean in `queryComments` indicates if a query is still open or has been resolved.
 
-- **System-Generated Queries:**  
+- **System-Generated Queries:**
   - Queries can be user-initiated or automatically generated based on study protocols.
 
 ---

@@ -61,14 +61,14 @@ Content-Type: application/json
 
 ## Important Notes
 
-1. **Authentication:**  
+1. **Authentication:**
    - Both `x-api-key` and `x-imn-security-key` are mandatory for authentication.
    - Ensure keys are stored securely and not exposed publicly.
 
-2. **Content Negotiation:**  
+2. **Content Negotiation:**
    - The `Accept` and `Content-Type` headers must be explicitly set to `application/json` for both requests and responses.
 
-3. **Error Handling:**  
+3. **Error Handling:**
    - If headers are missing or invalid, the API will return an appropriate error with status codes like `400 Bad Request` or `401 Unauthorized`.
 
 ---

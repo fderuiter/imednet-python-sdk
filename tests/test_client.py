@@ -1,10 +1,14 @@
 import unittest
+
 from imednet_sdk.client import ImednetClient
+
 
 class TestImednetClient(unittest.TestCase):
 
     def setUp(self):
-        self.client = ImednetClient(base_url="https://api.imednet.com", api_key="test_api_key")
+        self.client = ImednetClient(
+            base_url="https://api.imednet.com", api_key="test_api_key"
+        )
 
     def test_get_request(self):
         response = self.client.get("/endpoint")
@@ -26,6 +30,7 @@ class TestImednetClient(unittest.TestCase):
     def test_delete_request(self):
         response = self.client.delete("/endpoint/1")
         self.assertEqual(response.status_code, 204)
+
 
 if __name__ == "__main__":
     unittest.main()
