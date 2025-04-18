@@ -1,6 +1,6 @@
 # Task 10: Pagination and Iterators
 
-- [ ] Identify all list endpoints that support pagination (Studies, Sites, Forms, Intervals, Records, RecordRevisions, Variables, Codings, Subjects, Users, Visits) based on the `pagination` block in their responses.
+- [ ] Identify all list endpoints that support pagination (Studies, Sites, Forms, Intervals, Records, RecordRevisions, Variables, Codings, Subjects, Users, Visits) based on the `pagination` block in their responses. (See `docs/reference/1 common.md` for pagination parameters).
 - [ ] Design a helper function or method within `BaseClient` or a dedicated utility module to handle pagination logic.
 - [ ] Create generic iterator/generator functions or classes that wrap the list methods (e.g., `list_studies`, `list_sites`).
   - Example signature: `iter_studies(**kwargs) -> Iterator[StudyModel]`
