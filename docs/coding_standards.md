@@ -13,7 +13,7 @@ This document outlines the coding standards and conventions to be followed in th
 
 * Adhere strictly to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
 * Use a linter (like `ruff` or `flake8`) and formatter (`black`) to enforce PEP 8 automatically (configured via `pre-commit`).
-* Maximum line length: 78 characters (enforced by `black`).
+* Maximum line length: 100 characters (enforced by `black`).
 
 ## Naming Conventions
 

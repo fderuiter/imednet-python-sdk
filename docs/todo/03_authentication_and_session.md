@@ -30,7 +30,7 @@
   * [x] **Update Memory File (Post-Fix):** Note any significant fixes.
   * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done.
-  * [ ] **Commit Changes:** `git commit -m \"feat(client): implement credential handling via init and env vars\"`
+  * [x] **Commit Changes:** `git commit -m \"feat(client): implement credential handling via init and env vars\"`
 
 * [x] **Implement automatic header injection.**
   * [x] **Identify Task:** Inject `x-api-key`, `x-imn-security-key`, `Accept`, and `Content-Type` headers.
@@ -55,7 +55,7 @@
   * [x] **Update Memory File (Post-Fix):** Note any significant fixes.
   * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done.
-  * [ ] **Commit Changes:** `git commit -m \"feat(client): implement automatic header injection\"`
+  * [x] **Commit Changes:** `git commit -m \"feat(client): implement automatic header injection\"`
 
 * [x] **Validate key presence before requests.**
   * [x] **Identify Task:** Ensure keys are validated before making API calls.
@@ -75,7 +75,7 @@
   * [x] **Update Memory File (Post-Fix):** Note any significant fixes.
   * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done.
-  * [ ] **Commit Changes:** `git commit -m \"refactor(client): ensure key validation before requests\"`
+  * [x] **Commit Changes:** `git commit -m \"refactor(client): ensure key validation before requests\"`
 
 * [x] **Consider thread-safety (if applicable).**
   * [x] **Identify Task:** Analyze if the current `httpx.Client` usage is thread-safe.
@@ -95,7 +95,7 @@
   * [x] **Update Memory File (Post-Fix):** Note any significant fixes.
   * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done.
-  * [ ] **Commit Changes:** `git commit -m \"chore(client): analyze and ensure thread-safety\"`
+  * [x] **Commit Changes:** `git commit -m \"chore(client): analyze and ensure thread-safety\"`
 
 **Acceptance Criteria:**
 
