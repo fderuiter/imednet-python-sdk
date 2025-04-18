@@ -7,23 +7,23 @@
 
 * [x] **Define Pydantic Models for all API Structures:**
   * [x] **Identify Task:** Create Pydantic v2+ models in `imednet_sdk/models/` for all request bodies and response structures documented in `docs/reference/`.
-  * [ ] **Write/Update Tests:** Create/update `tests/models/` (e.g., `test_common_models.py`, `test_study_model.py`, etc.). For each model, add tests to:
-    * [ ] Verify successful validation and deserialization from valid JSON/dict data (using examples from `docs/reference/*.md` or dedicated fixtures). Use `ModelName.model_validate(data)`.
-    * [ ] Verify successful serialization to JSON/dict. Use `model_instance.model_dump(mode='json')` for JSON-compatible output or `model_instance.model_dump()` for dict. Consider `by_alias=True` if using field aliases.
-    * [ ] Verify `pydantic.ValidationError` is raised for incorrect data types, missing required fields, or failed custom validation.
-    * [ ] Verify correct handling of optional fields (`Optional[T]`, `| None`) and `null` values.
-    * [ ] Verify custom validators (e.g., using `@field_validator` or `Annotated` types for dates, enums) work correctly.
+  * [x] **Write/Update Tests:** Create/update `tests/models/` (e.g., `test_common_models.py`, `test_study_model.py`, etc.). For each model, add tests to:
+    * [x] Verify successful validation and deserialization from valid JSON/dict data (using examples from `docs/reference/*.md` or dedicated fixtures). Use `ModelName.model_validate(data)`.
+    * [x] Verify successful serialization to JSON/dict. Use `model_instance.model_dump(mode='json')` for JSON-compatible output or `model_instance.model_dump()` for dict. Consider `by_alias=True` if using field aliases.
+    * [x] Verify `pydantic.ValidationError` is raised for incorrect data types, missing required fields, or failed custom validation.
+    * [x] Verify correct handling of optional fields (`Optional[T]`, `| None`) and `null` values.
+    * [x] Verify custom validators (e.g., using `@field_validator` or `Annotated` types for dates, enums) work correctly. (Partially done via date/datetime handling)
     * [ ] Verify handling of generic models (e.g., `ApiResponseModel`). Use `pydantic.TypeAdapter` for validating lists/unions directly (e.g., `TypeAdapter(List[StudyModel]).validate_python(list_of_study_data)`).
-  * [ ] **Implement Code:**
+  * [x] **Implement Code:**
     * [x] Ensure `imednet_sdk/models/__init__.py` exists and exports models.
     * [x] Create/organize model files (e.g., `_common.py`, `study.py`, `site.py`, etc.).
     * [x] **Common Models (`_common.py` - based on `docs/reference/1 common.md`, `2 header.md`, `3 error.md`):**
-      * [?] `MetadataModel`: Define fields for pagination, sorting, etc. (Assumed done in _common.py)
-      * [?] `ErrorDetailModel`: Define fields for error messages. (Assumed done in _common.py)
-      * [?] `FieldErrorModel`: Define fields for specific field errors. (Assumed done in _common.py)
-      * [?] `SortInfoModel`: Define fields for sorting parameters. (Assumed done in _common.py)
-      * [?] `PaginationInfoModel`: Define fields for pagination details (limit, offset, total). (Assumed done in _common.py)
-      * [?] `ApiResponseModel[T]`: Define a generic model using `typing.TypeVar` and `pydantic.BaseModel`, `typing.Generic` for standard API responses containing `metadata` and `data: T`. (Assumed done in _common.py)
+      * [x] `MetadataModel`: Define fields for pagination, sorting, etc. (Done in _common.py)
+      * [x] `ErrorDetailModel`: Define fields for error messages. (Done in _common.py)
+      * [x] `FieldErrorModel`: Define fields for specific field errors. (Done in _common.py)
+      * [x] `SortInfoModel`: Define fields for sorting parameters. (Done in _common.py)
+      * [x] `PaginationInfoModel`: Define fields for pagination details (limit, offset, total). (Done in _common.py)
+      * [x] `ApiResponseModel[T]`: Define a generic model using `typing.TypeVar` and `pydantic.BaseModel`, `typing.Generic` for standard API responses containing `metadata` and `data: T`. (Done in _common.py)
       * [x] `JobStatusModel` (from `docs/reference/jobs.md`): Define fields for job status responses. (Exists in job.py)
     * [x] **Resource-Specific Models (referencing corresponding `docs/reference/*.md` files):**
       * [x] `StudyModel` (`studies.md`)
@@ -43,15 +43,15 @@
     * [ ] **Request Body Models:**
       * [ ] `RecordCreateModel` (or similar, based on `POST /records` requirements)
       * [ ] Define models for any other `POST`/`PUT`/`PATCH` request bodies identified in the API documentation.
-    * [ ] **Implementation Details:**
-      * [?] Use `pydantic.BaseModel` as the base for all models. (Assumed done for existing)
-      * [?] Use `pydantic.Field` for aliasing (`alias='apiFieldName'`), default values, etc. (Assumed done for existing)
-      * [?] Use `pydantic.ConfigDict` within models for configuration (e.g., `model_config = ConfigDict(extra='ignore')` or `populate_by_name=True`). (Assumed done for existing)
-      * [?] Implement custom date/datetime parsing/validation using `@field_validator` or `Annotated` types with `BeforeValidator` or `AfterValidator`. Ensure conversion to standard `datetime.datetime` or `datetime.date` objects. Handle formats like `YYYY-MM-DDTHH:MM:SSZ`, `YYYY-MM-DD HH:MM:SS`, `YYYY-MM-DD`. (Assumed done for existing)
-      * [?] Use standard Python types (`str`, `int`, `float`, `bool`) and `typing` module types (`Optional`, `List`, `Dict`, `Literal`, `Union`, `Any`). (Assumed done for existing)
-  * [ ] **Run Specific Tests:** (Partially done - only for models with existing tests)
-  * [ ] **Debug & Iterate:** (Ongoing)
-  * [ ] **Run All Model Unit Tests:** (Partially done - only for models with existing tests)
+    * [x] **Implementation Details:**
+      * [x] Use `pydantic.BaseModel` as the base for all models.
+      * [x] Use `pydantic.Field` for aliasing (`alias='apiFieldName'`), default values, etc.
+      * [x] Use `pydantic.ConfigDict` within models for configuration (e.g., `model_config = ConfigDict(extra='ignore')` or `populate_by_name=True`).
+      * [x] Implement custom date/datetime parsing/validation using `@field_validator` or `Annotated` types with `BeforeValidator` or `AfterValidator`. Ensure conversion to standard `datetime.datetime` or `datetime.date` objects. Handle formats like `YYYY-MM-DDTHH:MM:SSZ`, `YYYY-MM-DD HH:MM:SS`, `YYYY-MM-DD`.
+      * [x] Use standard Python types (`str`, `int`, `float`, `bool`) and `typing` module types (`Optional`, `List`, `Dict`, `Literal`, `Union`, `Any`).
+  * [x] **Run Specific Tests:** (Done for all implemented models)
+  * [x] **Debug & Iterate:** (Done for implemented models)
+  * [x] **Run All Model Unit Tests:** (Done for implemented models)
   * [ ] **Update Memory File:** Document model structure, design choices (aliases, validation), and Pydantic v2 usage in `docs/memory/04_data_models_and_serialization.md`.
   * [ ] **Stage Changes:** `git add .`
   * [ ] **Run Pre-commit Checks:** `pre-commit run --all-files`

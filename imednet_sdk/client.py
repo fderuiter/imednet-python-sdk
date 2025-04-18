@@ -1,9 +1,13 @@
 import os
 import random
 import time
-from typing import Any, Dict, Optional, Set, Union
+from typing import Any, Dict, Optional, Set, Union, Type, TypeVar, List
 
 import httpx
+from pydantic import BaseModel, ValidationError, TypeAdapter
+
+# Define a TypeVar for generic response models
+T = TypeVar("T", bound=BaseModel)
 
 # Type alias for timeout configuration
 TimeoutTypes = Union[float, httpx.Timeout, None]
@@ -108,14 +112,23 @@ class ImednetClient:
         method: str,
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None,
+        json: Optional[Any] = None,  # Allow Pydantic models directly later
+        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
         timeout: TimeoutTypes = None,
         **kwargs: Any,
-    ) -> httpx.Response:
-        """Internal method to make HTTP requests with retry logic."""
+    ) -> Union[T, List[T], httpx.Response]:  # Return type depends on response_model
+        """Internal method to make HTTP requests with retry logic and deserialization."""
         url = endpoint
         request_timeout = timeout if timeout is not None else self._default_timeout
         last_exception: Optional[Exception] = None
+
+        # Handle potential Pydantic model serialization for request body
+        request_json = None
+        if isinstance(json, BaseModel):
+            # Serialize Pydantic model to dict using aliases
+            request_json = json.model_dump(by_alias=True, mode="json")
+        elif json is not None:
+            request_json = json  # Assume it's already a dict/serializable
 
         for attempt in range(self._retries + 1):
             try:
@@ -123,14 +136,34 @@ class ImednetClient:
                     method=method,
                     url=url,
                     params=params,
-                    json=json,
+                    json=request_json,  # Use the potentially serialized JSON
                     timeout=request_timeout,
                     **kwargs,
                 )
                 # Raise HTTPStatusError for non-2xx responses
                 response.raise_for_status()
-                # Success!
-                return response
+
+                # If no response model is specified, return the raw response
+                if response_model is None:
+                    return response
+
+                # Step 1: Try to decode JSON
+                try:
+                    response_data = response.json()
+                except ValueError as json_exc:  # Catches JSONDecodeError
+                    # Handle cases where response is not valid JSON
+                    raise RuntimeError(f"Failed to decode JSON response: {json_exc}") from json_exc
+
+                # Step 2: Try to validate the decoded JSON data
+                try:
+                    adapter = TypeAdapter(response_model)
+                    validated_data = adapter.validate_python(response_data)
+                    return validated_data
+                except ValidationError as validation_exc:
+                    # Handle Pydantic validation errors
+                    raise RuntimeError(
+                        f"Failed to validate response data: {validation_exc}"
+                    ) from validation_exc
 
             except httpx.HTTPStatusError as exc:
                 last_exception = exc
@@ -145,7 +178,7 @@ class ImednetClient:
                     time.sleep(delay)
                     continue  # Retry
                 else:
-                    raise  # Non-retryable status/method or max retries reached
+                    raise
 
             except httpx.RequestError as exc:
                 last_exception = exc
@@ -182,21 +215,27 @@ class ImednetClient:
         self,
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
-        timeout: TimeoutTypes = None,  # Add timeout parameter
+        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
+        timeout: TimeoutTypes = None,
         **kwargs: Any,
-    ) -> httpx.Response:
-        """Sends a GET request."""
-        return self._request("GET", endpoint, params=params, timeout=timeout, **kwargs)
+    ) -> Union[T, List[T], httpx.Response]:
+        """Sends a GET request and deserializes the response if response_model is provided."""
+        return self._request(
+            "GET", endpoint, params=params, response_model=response_model, timeout=timeout, **kwargs
+        )
 
     def _post(
         self,
         endpoint: str,
-        json: Optional[Dict[str, Any]] = None,
-        timeout: TimeoutTypes = None,  # Add timeout parameter
+        json: Optional[Any] = None,
+        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
+        timeout: TimeoutTypes = None,
         **kwargs: Any,
-    ) -> httpx.Response:
-        """Sends a POST request."""
-        return self._request("POST", endpoint, json=json, timeout=timeout, **kwargs)
+    ) -> Union[T, List[T], httpx.Response]:
+        """Sends a POST request and deserializes the response if response_model is provided."""
+        return self._request(
+            "POST", endpoint, json=json, response_model=response_model, timeout=timeout, **kwargs
+        )
 
     def close(self):
         """Closes the underlying HTTP client."""
