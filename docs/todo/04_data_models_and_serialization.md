@@ -33,7 +33,8 @@
       * [ ] `VisitModel` (`visits.md`)
       * [ ] `FormModel` (`forms.md`)
       * [ ] `VariableModel` (`variables.md`)
-      * [ ] `RecordModel` (`records.md`) - Pay attention to the dynamic `recordData: Dict[str, Any]` field. Consider validation if specific keys are known.
+      * [ ] `RecordModel` (`records.md`) - Pay attention to the dynamic `recordData: Dict[str, Any]` field.
+        * **Note:** While `Dict[str, Any]` is flexible, consider these alternatives for improved type safety and validation in specific use cases:
       * [ ] `RecordRevisionModel` (`record_revisions.md`)
       * [ ] `QueryModel` (`queries.md`)
       * [ ] `CodingModel` (`codings.md`)
