@@ -1,6 +1,19 @@
-from typing import Any, Dict, Optional
+import random
+import time
+from typing import Any, Dict, Optional, Set, Union
 
 import httpx
+
+# Type alias for timeout configuration
+TimeoutTypes = Union[float, httpx.Timeout, None]
+
+# Define retryable exceptions and status codes
+DEFAULT_RETRYABLE_STATUS_CODES: Set[int] = {500, 502, 503, 504}
+DEFAULT_RETRYABLE_METHODS: Set[str] = {
+    "GET",
+    "POST",
+}  # Assuming POST is idempotent or safe to retry for this API
+DEFAULT_RETRYABLE_EXCEPTIONS: Set[type] = {httpx.ConnectError, httpx.ReadTimeout, httpx.PoolTimeout}
 
 
 class ImednetClient:
@@ -13,8 +26,12 @@ class ImednetClient:
         api_key: str,
         security_key: str,
         base_url: Optional[str] = None,
-        timeout: Optional[float] = 30.0,  # Default timeout
+        timeout: TimeoutTypes = httpx.Timeout(30.0, connect=5.0),
         retries: int = 3,
+        backoff_factor: float = 0.5,  # Default backoff factor (e.g., 0.5, 1, 1.5, ... seconds)
+        retry_statuses: Optional[Set[int]] = None,
+        retry_methods: Optional[Set[str]] = None,
+        retry_exceptions: Optional[Set[type]] = None,
     ):
         """Initializes the ImednetClient.
 
@@ -22,12 +39,32 @@ class ImednetClient:
             api_key: Your iMednet API key.
             security_key: Your iMednet Security key.
             base_url: The base URL for the iMednet API. Defaults to production.
-            timeout: Default request timeout in seconds.
-            retries: Number of retry attempts for transient (5xx) errors.
+            timeout: Default request timeout configuration.
+            retries: Number of retry attempts for transient errors.
+            backoff_factor: Factor to determine delay between retries
+                            (delay = backoff_factor * (2 ** attempt)).
+            retry_statuses: Set of HTTP status codes to retry on.
+                            Defaults to {500, 502, 503, 504}.
+            retry_methods: Set of HTTP methods to allow retries for.
+                           Defaults to {"GET", "POST"}.
+            retry_exceptions: Set of httpx exception types to retry on.
+                              Defaults to {ConnectError, ReadTimeout, PoolTimeout}.
         """
         self.base_url = base_url or self.DEFAULT_BASE_URL
         self._api_key = api_key
         self._security_key = security_key
+        self._default_timeout = timeout
+        self._retries = retries
+        self._backoff_factor = backoff_factor
+        self._retry_statuses = (
+            retry_statuses if retry_statuses is not None else DEFAULT_RETRYABLE_STATUS_CODES
+        )
+        self._retry_methods = (
+            retry_methods if retry_methods is not None else DEFAULT_RETRYABLE_METHODS
+        )
+        self._retry_exceptions = (
+            retry_exceptions if retry_exceptions is not None else DEFAULT_RETRYABLE_EXCEPTIONS
+        )
 
         self._default_headers = {
             "Accept": "application/json",
@@ -36,11 +73,12 @@ class ImednetClient:
             "x-imn-security-key": self._security_key,
         }
 
-        self._retries = retries
+        # Note: httpx's built-in retries via HTTPTransport are more robust,
+        # but implementing manually for now as per original structure.
         self._client = httpx.Client(
             base_url=self.base_url,
             headers=self._default_headers,
-            timeout=timeout,
+            timeout=self._default_timeout,
         )
 
     def _request(
@@ -49,26 +87,14 @@ class ImednetClient:
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
         json: Optional[Dict[str, Any]] = None,
+        timeout: TimeoutTypes = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Internal method to make HTTP requests.
-
-        Args:
-            method: HTTP method (GET, POST, PUT, DELETE).
-            endpoint: API endpoint path (e.g., '/studies').
-            params: URL query parameters.
-            json: Request body data (for POST/PUT).
-            **kwargs: Additional arguments passed to httpx.request.
-
-        Returns:
-            The httpx Response object.
-
-        Raises:
-            httpx.HTTPStatusError: For 4xx or 5xx responses.
-        """
-        # Ensure endpoint starts with a slash if needed, httpx will handle joining
+        """Internal method to make HTTP requests with retry logic."""
         url = endpoint
-        # Retry loop for transient 5xx errors
+        request_timeout = timeout if timeout is not None else self._default_timeout
+        last_exception: Optional[Exception] = None
+
         for attempt in range(self._retries + 1):
             try:
                 response = self._client.request(
@@ -76,41 +102,79 @@ class ImednetClient:
                     url=url,
                     params=params,
                     json=json,
+                    timeout=request_timeout,
                     **kwargs,
                 )
+                # Raise HTTPStatusError for non-2xx responses
                 response.raise_for_status()
+                # Success!
                 return response
+
             except httpx.HTTPStatusError as exc:
+                last_exception = exc
                 status = exc.response.status_code
-                # Retry on server errors
-                if status >= 500 and attempt < self._retries:
-                    continue
-                # Non-retryable or last attempt: re-raise
-                raise
-            except httpx.RequestError:
-                # Network errors and timeouts are raised directly
-                raise
+                # Check if we should retry based on status code and method
+                if (
+                    attempt < self._retries
+                    and status in self._retry_statuses
+                    and method.upper() in self._retry_methods
+                ):
+                    delay = self._calculate_backoff(attempt)
+                    time.sleep(delay)
+                    continue  # Retry
+                else:
+                    raise  # Non-retryable status/method or max retries reached
+
+            except httpx.RequestError as exc:
+                last_exception = exc
+                # Check if we should retry based on exception type and method
+                if (
+                    attempt < self._retries
+                    and type(exc) in self._retry_exceptions
+                    and method.upper() in self._retry_methods
+                ):
+                    delay = self._calculate_backoff(attempt)
+                    time.sleep(delay)
+                    continue  # Retry
+                else:
+                    raise  # Non-retryable exception/method or max retries reached
+
+        # Should be unreachable if retries >= 0, but satisfy type checker
+        # and handle edge case of retries < 0
+        if last_exception:
+            raise last_exception
+        else:
+            # This case should ideally never happen in normal flow
+            raise RuntimeError("Request failed without capturing an exception after retries.")
+
+    def _calculate_backoff(self, attempt: int) -> float:
+        """Calculates exponential backoff delay with jitter."""
+        if attempt == 0:
+            return 0  # No delay for the first retry
+        base_delay = self._backoff_factor * (2 ** (attempt - 1))
+        # Add jitter: delay +/- 50% of base delay
+        jitter = random.uniform(-0.5, 0.5) * base_delay
+        return max(0, base_delay + jitter)
 
     def _get(
         self,
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
+        timeout: TimeoutTypes = None,  # Add timeout parameter
         **kwargs: Any,
     ) -> httpx.Response:
         """Sends a GET request."""
-        return self._request("GET", endpoint, params=params, **kwargs)
+        return self._request("GET", endpoint, params=params, timeout=timeout, **kwargs)
 
     def _post(
         self,
         endpoint: str,
         json: Optional[Dict[str, Any]] = None,
+        timeout: TimeoutTypes = None,  # Add timeout parameter
         **kwargs: Any,
     ) -> httpx.Response:
         """Sends a POST request."""
-        return self._request("POST", endpoint, json=json, **kwargs)
-
-    # Public methods (can be added later as specific endpoints are implemented)
-    # def get_studies(self, ...): return self._get('/studies', ...)
+        return self._request("POST", endpoint, json=json, timeout=timeout, **kwargs)
 
     def close(self):
         """Closes the underlying HTTP client."""

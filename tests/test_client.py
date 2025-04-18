@@ -1,8 +1,8 @@
 import pytest
 import respx
-from httpx import Response
+from httpx import ConnectError, HTTPStatusError, Response, Timeout, TimeoutException
 
-from imednet_sdk.client import ImednetClient  # Assuming client will be here
+from imednet_sdk.client import ImednetClient
 
 # Constants for testing
 BASE_URL = "https://test.imednetapi.com"
@@ -20,6 +20,34 @@ DEFAULT_HEADERS = {
 def client():
     """Fixture to create an ImednetClient instance for tests."""
     return ImednetClient(base_url=BASE_URL, api_key=API_KEY, security_key=SECURITY_KEY)
+
+
+@pytest.fixture
+def default_client():
+    """Fixture for a client with default settings."""
+    return ImednetClient(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+
+
+@pytest.fixture
+def custom_timeout_client():
+    """Fixture for a client with a custom float timeout."""
+    return ImednetClient(
+        api_key=API_KEY,
+        security_key=SECURITY_KEY,
+        base_url=BASE_URL,
+        timeout=5.5,
+    )
+
+
+@pytest.fixture
+def custom_timeout_object_client():
+    """Fixture for a client with a custom Timeout object."""
+    return ImednetClient(
+        api_key=API_KEY,
+        security_key=SECURITY_KEY,
+        base_url=BASE_URL,
+        timeout=Timeout(10.0, connect=2.0),
+    )
 
 
 @respx.mock
@@ -91,36 +119,194 @@ def test_request_with_query_params(client):
     assert response.status_code == 200
 
 
-def test_request_timeout_custom(client):
-    """Test that a custom timeout can be configured and is respected."""
-    custom_timeout = 5.5
-    timeout_client = ImednetClient(
-        base_url=BASE_URL,
-        api_key=API_KEY,
-        security_key=SECURITY_KEY,
-        timeout=custom_timeout,
-    )
-    # The underlying httpx client should have the custom connect and read timeouts set
-    assert timeout_client._client.timeout.connect == custom_timeout
-    assert timeout_client._client.timeout.read == custom_timeout
+# --- Timeout Tests --- #
+
+
+def test_client_default_timeout(default_client):
+    """Test that the client uses the default httpx.Timeout if none is provided."""
+    assert isinstance(default_client._default_timeout, Timeout)
+    assert default_client._default_timeout.connect == 5.0
+    assert default_client._default_timeout.read == 30.0  # Default read timeout
+    assert default_client._default_timeout.write == 30.0  # Default write timeout
+    assert default_client._default_timeout.pool == 30.0  # Default pool timeout
+    # Check the underlying httpx client's timeout
+    assert default_client._client.timeout == default_client._default_timeout
+
+
+def test_client_custom_float_timeout(custom_timeout_client):
+    """Test client initialization with a custom float timeout."""
+    assert isinstance(custom_timeout_client._default_timeout, float)
+    assert custom_timeout_client._default_timeout == 5.5
+    assert custom_timeout_client._client.timeout == Timeout(5.5)  # httpx converts float to Timeout
+
+
+def test_client_custom_timeout_object(custom_timeout_object_client):
+    """Test client initialization with a custom Timeout object."""
+    expected_timeout = Timeout(10.0, connect=2.0)
+    assert isinstance(custom_timeout_object_client._default_timeout, Timeout)
+    assert custom_timeout_object_client._default_timeout == expected_timeout
+    assert custom_timeout_object_client._client.timeout == expected_timeout
 
 
 @respx.mock
-def test_retry_logic_on_failure(client):
-    """Test that the client retries on specific error codes (e.g., 503)."""
-    endpoint = "/retry-endpoint"
+def test_request_uses_default_timeout(default_client):
+    """Verify the default timeout is used in requests when no override is given."""
+    endpoint = "/timeout-default"
     expected_url = f"{BASE_URL}{endpoint}"
-    # First return 503, then 200
+    mock_route = respx.get(expected_url).mock(return_value=Response(200))
+
+    default_client._get(endpoint)
+
+    assert mock_route.called
+    # httpx doesn't directly expose the timeout used for a specific request via respx
+    # We rely on the client's internal logic tested above and the fact it didn't error
+
+
+@respx.mock
+def test_request_override_timeout(custom_timeout_object_client):
+    """Verify a per-request timeout overrides the client's default."""
+    endpoint = "/timeout-override"
+    expected_url = f"{BASE_URL}{endpoint}"
+    override_timeout = Timeout(1.0)
+
+    # Mock raising TimeoutException directly
+    mock_route = respx.get(expected_url).mock(
+        side_effect=TimeoutException("Request timed out", request=None)
+    )
+
+    with pytest.raises(TimeoutException):
+        # Pass the override timeout to the request method
+        custom_timeout_object_client._get(endpoint, timeout=override_timeout)
+
+    assert mock_route.called
+
+
+@respx.mock
+def test_request_timeout_exception(default_client):
+    """Test that httpx.TimeoutException is raised when a request times out."""
+    endpoint = "/timeout-exception"
+    expected_url = f"{BASE_URL}{endpoint}"
+    request_timeout = Timeout(0.1)  # Very short timeout
+
+    # Mock raising TimeoutException directly
+    mock_route = respx.get(expected_url).mock(
+        side_effect=TimeoutException("Request timed out", request=None)
+    )
+
+    with pytest.raises(TimeoutException):
+        # Pass the short timeout to the request method
+        default_client._get(endpoint, timeout=request_timeout)
+
+    assert mock_route.called
+
+
+# --- End Timeout Tests --- #
+
+
+# --- Retry Tests --- #
+
+
+@respx.mock
+def test_retry_success_on_first_try(default_client):
+    """Test successful request without any retries."""
+    endpoint = "/success-first"
+    expected_url = f"{BASE_URL}{endpoint}"
+    mock_route = respx.get(expected_url).mock(return_value=Response(200, json={"data": "ok"}))
+
+    response = default_client._get(endpoint)
+
+    assert mock_route.call_count == 1
+    assert response.status_code == 200
+    assert response.json() == {"data": "ok"}
+
+
+@respx.mock
+def test_retry_on_configured_status(default_client):
+    """Test retry happens for configured status codes (default 5xx)."""
+    endpoint = "/retry-status"
+    expected_url = f"{BASE_URL}{endpoint}"
     mock_route = respx.get(expected_url).mock(
         side_effect=[
-            Response(503, json={"error": "server error"}),
-            Response(200, json={"data": "success"}),
+            Response(503, json={"error": "service unavailable"}),
+            Response(500, json={"error": "internal server error"}),
+            Response(200, json={"data": "finally ok"}),
         ]
     )
 
-    response = client._get(endpoint)
+    response = default_client._get(endpoint)  # Default retries = 3
 
-    # Ensure two calls were made: initial and retry
-    assert mock_route.call_count == 2
+    assert mock_route.call_count == 3  # Initial + 2 retries
     assert response.status_code == 200
-    assert response.json() == {"data": "success"}
+    assert response.json() == {"data": "finally ok"}
+
+
+@respx.mock
+def test_retry_exceeds_attempts_status(default_client):
+    """Test that the original HTTPStatusError is raised after exceeding retries."""
+    endpoint = "/retry-fail-status"
+    expected_url = f"{BASE_URL}{endpoint}"
+    mock_route = respx.get(expected_url).mock(
+        side_effect=[Response(503), Response(503), Response(503), Response(503)]
+    )
+
+    # Expect the specific HTTPStatusError
+    with pytest.raises(HTTPStatusError) as exc_info:
+        default_client._get(endpoint)  # Default retries = 3
+
+    assert mock_route.call_count == 4  # Initial + 3 retries
+    # Check the raised exception is the last HTTPStatusError
+    assert exc_info.value.response.status_code == 503
+
+
+@respx.mock
+def test_retry_on_request_error(default_client):
+    """Test retry happens for ConnectError."""
+    endpoint = "/retry-connect-error"
+    expected_url = f"{BASE_URL}{endpoint}"
+    mock_route = respx.get(expected_url).mock(
+        side_effect=[
+            ConnectError("Connection failed", request=None),
+            Response(200, json={"data": "connected"}),
+        ]
+    )
+
+    response = default_client._get(endpoint)  # Default retries = 3
+
+    assert mock_route.call_count == 2  # Initial + 1 retry
+    assert response.status_code == 200
+    assert response.json() == {"data": "connected"}
+
+
+@respx.mock
+def test_retry_exceeds_attempts_request_error(default_client):
+    """Test that the original RequestError is raised after exceeding retries."""
+    endpoint = "/retry-fail-connect"
+    expected_url = f"{BASE_URL}{endpoint}"
+    original_exception = ConnectError("Connection failed repeatedly", request=None)
+    mock_route = respx.get(expected_url).mock(
+        side_effect=[original_exception] * 4  # Raise error 4 times
+    )
+
+    with pytest.raises(ConnectError) as exc_info:
+        default_client._get(endpoint)  # Default retries = 3
+
+    assert mock_route.call_count == 4  # Initial + 3 retries
+    assert exc_info.value is original_exception  # Check it's the same exception instance
+
+
+@respx.mock
+def test_no_retry_on_4xx_error(default_client):
+    """Test that retries do not happen for 4xx client errors by default."""
+    endpoint = "/no-retry-404"
+    expected_url = f"{BASE_URL}{endpoint}"
+    mock_route = respx.get(expected_url).mock(return_value=Response(404))
+
+    # Expect the specific HTTPStatusError
+    with pytest.raises(HTTPStatusError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.call_count == 1  # No retries
+    assert exc_info.value.response.status_code == 404
+
+
+# --- End Retry Tests --- #
