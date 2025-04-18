@@ -2,11 +2,13 @@
 
 from datetime import datetime
 from typing import List
-import pytest
-from pydantic import ValidationError, TypeAdapter
 
-from imednet_sdk.models.subject import SubjectModel, KeywordModel
+import pytest
+from pydantic import TypeAdapter, ValidationError
+
 from imednet_sdk.models._common import ApiResponse, Metadata
+from imednet_sdk.models.subject import KeywordModel, SubjectModel
+
 
 def test_keyword_model():
     """Test KeywordModel validation and serialization."""
@@ -14,11 +16,12 @@ def test_keyword_model():
         "keywordName": "Data Entry Error",
         "keywordKey": "DEE",
         "keywordId": 15362,
-        "dateAdded": "2024-11-04 16:03:19"
+        "dateAdded": "2024-11-04 16:03:19",
     }
     keyword = KeywordModel.model_validate(keyword_data)
     assert keyword.keywordName == "Data Entry Error"
     assert keyword.keywordKey == "DEE"
+
 
 def test_subject_model_validation():
     """Test successful validation of SubjectModel."""
@@ -38,15 +41,16 @@ def test_subject_model_validation():
                 "keywordName": "Data Entry Error",
                 "keywordKey": "DEE",
                 "keywordId": 15362,
-                "dateAdded": "2024-11-04 16:03:19"
+                "dateAdded": "2024-11-04 16:03:19",
             }
-        ]
+        ],
     }
     subject = SubjectModel.model_validate(subject_data)
     assert subject.subjectId == 1
     assert subject.subjectStatus == "Enrolled"
     assert len(subject.keywords) == 1
     assert isinstance(subject.keywords[0], KeywordModel)
+
 
 def test_subject_serialization():
     """Test serialization of SubjectModel to JSON/dict."""
@@ -63,23 +67,21 @@ def test_subject_serialization():
         dateModified=datetime.now(),
         keywords=[
             KeywordModel(
-                keywordName="Test Keyword",
-                keywordKey="TK",
-                keywordId=1,
-                dateAdded=datetime.now()
+                keywordName="Test Keyword", keywordKey="TK", keywordId=1, dateAdded=datetime.now()
             )
-        ]
+        ],
     )
     # Test dict serialization
     data_dict = subject.model_dump()
     assert isinstance(data_dict, dict)
     assert data_dict["subjectKey"] == "01-001"
     assert len(data_dict["keywords"]) == 1
-    
+
     # Test JSON serialization
-    json_data = subject.model_dump(mode='json')
+    json_data = subject.model_dump(mode="json")
     assert isinstance(json_data, dict)
     assert json_data["subjectStatus"] == "Enrolled"
+
 
 def test_subject_missing_required():
     """Test ValidationError is raised for missing required fields."""
@@ -88,6 +90,7 @@ def test_subject_missing_required():
     }
     with pytest.raises(ValidationError):
         SubjectModel.model_validate(invalid_data)
+
 
 def test_subject_optional_keywords():
     """Test handling of optional keywords field."""
@@ -101,11 +104,12 @@ def test_subject_optional_keywords():
         "siteName": "Test Site",
         "enrollmentStartDate": "2024-11-04 16:03:19",
         "dateCreated": "2024-11-04 16:03:19",
-        "dateModified": "2024-11-04 16:03:20"
+        "dateModified": "2024-11-04 16:03:20",
         # No keywords field
     }
     subject = SubjectModel.model_validate(subject_data)
     assert subject.keywords is None
+
 
 def test_subject_list_validation():
     """Test validation of a list of subjects using TypeAdapter."""
@@ -120,7 +124,7 @@ def test_subject_list_validation():
             "siteName": "Test Site",
             "enrollmentStartDate": "2024-11-04 16:03:19",
             "dateCreated": "2024-11-04 16:03:19",
-            "dateModified": "2024-11-04 16:03:20"
+            "dateModified": "2024-11-04 16:03:20",
         },
         {
             "studyKey": "PHARMADEMO",
@@ -132,22 +136,20 @@ def test_subject_list_validation():
             "siteName": "Test Site",
             "enrollmentStartDate": "2024-11-04 16:03:19",
             "dateCreated": "2024-11-04 16:03:19",
-            "dateModified": "2024-11-04 16:03:20"
-        }
+            "dateModified": "2024-11-04 16:03:20",
+        },
     ]
-    
+
     type_adapter = TypeAdapter(List[SubjectModel])
     subjects = type_adapter.validate_python(subjects_data)
     assert len(subjects) == 2
     assert all(isinstance(subject, SubjectModel) for subject in subjects)
 
+
 def test_subject_api_response():
     """Test SubjectModel within ApiResponse."""
     response_data = {
-        "metadata": {
-            "status": "OK",
-            "timestamp": "2024-11-04 16:03:19"
-        },
+        "metadata": {"status": "OK", "timestamp": "2024-11-04 16:03:19"},
         "data": {
             "studyKey": "PHARMADEMO",
             "subjectId": 1,
@@ -158,10 +160,10 @@ def test_subject_api_response():
             "siteName": "Test Site",
             "enrollmentStartDate": "2024-11-04 16:03:19",
             "dateCreated": "2024-11-04 16:03:19",
-            "dateModified": "2024-11-04 16:03:20"
-        }
+            "dateModified": "2024-11-04 16:03:20",
+        },
     }
-    
+
     response = ApiResponse[SubjectModel].model_validate(response_data)
     assert isinstance(response.data, SubjectModel)
     assert response.data.subjectKey == "01-001"

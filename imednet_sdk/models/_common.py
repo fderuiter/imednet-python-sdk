@@ -1,9 +1,9 @@
 """Common data models used across the iMednet API."""
 
 from datetime import datetime
-from typing import List, Optional, TypeVar, Generic, Dict, Any
+from typing import Generic, List, Optional, TypeVar
 
-from pydantic import BaseModel, Field, ValidationError, field_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 # Type variable for generic responses
 T = TypeVar("T")
@@ -20,7 +20,9 @@ class ErrorDetail(BaseModel):
     """Model for API error details."""
 
     code: Optional[str] = Field(None, description="Error code representing the specific error type")
-    description: Optional[str] = Field(None, description="Description providing details about the error")
+    description: Optional[str] = Field(
+        None, description="Description providing details about the error"
+    )
     field: Optional[FieldError] = Field(
         None, description="Field-specific error details if applicable"
     )

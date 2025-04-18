@@ -8,20 +8,26 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class UserRole(BaseModel):
     """Model representing a user's role in the study."""
+
     model_config = ConfigDict(populate_by_name=True)
-    dateCreated: List[int] = Field(..., alias="dateCreated", description="Date array when the role was created")
-    dateModified: List[int] = Field(..., alias="dateModified", description="Date array when the role was last modified")
+    dateCreated: List[int] = Field(
+        ..., alias="dateCreated", description="Date array when the role was created"
+    )
+    dateModified: List[int] = Field(
+        ..., alias="dateModified", description="Date array when the role was last modified"
+    )
     roleId: str = Field(..., description="Unique Role ID")
 
     @property
     def dateCreated(self) -> datetime:
         """Convert date array to datetime object."""
-        return self.from_date_array(self._dateCreated)
+        return self.from_date_array(self.dateCreated)
 
     @property
     def dateModified(self) -> datetime:
         """Convert date array to datetime object."""
-        return self.from_date_array(self._dateModified)
+        return self.from_date_array(self.dateModified)
+
     communityId: int = Field(..., description="Community ID associated with the role")
     name: str = Field(..., description="Name of the role")
     description: str = Field(..., description="Description of the role")
