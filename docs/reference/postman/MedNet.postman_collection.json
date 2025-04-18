@@ -1,0 +1,1110 @@
+{
+	"info": {
+		"_postman_id": "418662a6-082b-4a4a-b348-f642811d380c",
+		"name": "MedNet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26313437",
+		"description": {
+			"content": "# Mednet EDC REST API Overview\n\nThe **Mednet EDC (Electronic Data Capture) REST API** offers a unified access point for retrieving data stored within iMednet data services. This API allows Sponsors, CROs, and other validated clients to securely access data using HTTP **GET** and **POST** requests, provided the necessary security credentials are validated.\n\nThis API empowers iMednet users to:\n\n- Export data to third-party reporting tools  \n- Display data in custom applications, mobile apps, or websites  \n- Store data in data warehouses  \n- Compile custom audit trails  \n\n## Base URL\n\n```text\nhttps://edc.prod.imednetapi.com\n```\n\nTo call an endpoint, append the route to the base URL.\n\n## Authentication\n\nAll requests require two security headers:\n\n```json\n{\n  \"x-api-key\": \"your-imednet-supplied-api-key\",\n  \"x-imn-security-key\": \"your-imednet-supplied-security-key\"\n}\n```\n\n**Important Security Notes:**\n- API Keys must remain confidential. Avoid sharing or exposing keys publicly.\n- CORS can inadvertently expose keys and should be avoided.\n\n## Common Request Parameters\n\nMost endpoints support these optional parameters:\n\n| Parameter | Description |\n|-----------|-------------|\n| `page` | Index page to return. Default: `0` |\n| `size` | Number of items per page. Default: `25`. Max: `500` |\n| `sort` | Property to sort by. Format: `property,asc/desc`. For multiple properties, use multiple parameters. |\n| `filter` | Filter criteria using the iMednet filter syntax |\n| `recordDataFilter` | Filter for record data fields (Records endpoint only) |\n\n## Filtering\n\nThe API supports filtering with operators and connectors:\n\n**Operators:** `<`, `<=`, `>`, `>=`, `==`, `!=`, `=~` (contains)\n\n**Connectors:** \n- AND: `;` or `and`\n- OR: `,` or `or`\n\n**Example:** `formId>10;formType==\"SUBJECT\"` (AND) or `formId>10,formType==\"SUBJECT\"` (OR)\n\n## Common Response Format\n\n```json\n{\n  \"metadata\": {\n    \"status\": \"OK\",\n    \"method\": \"GET\",\n    \"path\": \"/api/v1/edc/studies\",\n    \"timestamp\": \"2024-11-04 16:03:19\",\n    \"error\": {}\n  },\n  \"pagination\": {\n    \"currentPage\": 0,\n    \"size\": 25,\n    \"totalPages\": 1,\n    \"totalElements\": 1,\n    \"sort\": [\n      {\n        \"property\": \"studyKey\",\n        \"direction\": \"ASC\"\n      }\n    ]\n  },\n  \"data\": []\n}\n```\n\n## Status Codes\n\n| Code | Description |\n|------|-------------|\n| 200 | OK - Request completed successfully |\n| 400 | Bad Request - Malformed request |\n| 401 | Unauthorized - Authentication issue |\n| 403 | Forbidden - Invalid `studyKey` |\n| 404 | Not Found - Resource not found |\n| 429 | Too Many Requests - Rate limit exceeded |\n| 500 | Internal Server Error - Contact support |",
+			"type": "text/markdown"
+		}
+	},
+	"item": [
+		{
+			"name": "Intervals",
+		"description": {
+			"content": "Retrieves all intervals for a specified study. Only returns intervals that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve intervals |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `intervalId,asc`). For example, `sort=intervalId,desc` |\n| filter    | Filter criteria (e.g., `intervalId==161`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each interval.\n\n| Field                          | Type    | Description |\n|--------------------------------|---------|-------------|\n| studyKey                       | String  | Unique study key |\n| intervalId                     | Number  | Unique system identifier for the interval |\n| intervalName                   | String  | User-defined interval/visit name |\n| intervalDescription            | String  | User-defined interval/visit description |\n| intervalSequence               | Number  | User-defined sequence of the interval |\n| intervalGroupId                | Number  | User-defined interval group ID |\n| intervalGroupName              | String  | User-defined interval group name |\n| timeline                       | String  | Type of Interval Visit Window (`None`, `Due Date`, `Start - End Date`, or `Actual Date`) |\n| definedUsingInterval           | String  | Baseline interval used for date calculations |\n| windowCalculationForm          | String  | Baseline form used for date calculations |\n| windowCalculationDate          | String  | Baseline field used for date calculations |\n| actualDateForm                 | String  | Actual date form for a specific interval |\n| actualDate                     | String  | Actual date field for a specific interval |\n| dueDateWillBeIn                | Number  | Number of days from the baseline date the interval is due |\n| negativeSlack                  | Number  | Allowed number of negative days from the due date |\n| positiveSlack                  | Number  | Allowed number of positive days from the due date |\n| eproGracePeriod                | Number  | Allowed number of positive days for ePRO from the due date |\n| forms                          | Array   | List of forms associated with the interval |\n| forms[].formId                | Number  | Form ID |\n| forms[].formKey               | String  | Form Key |\n| forms[].formName              | String  | Form Name |\n| disabled                       | Boolean | Indicates if the interval is soft-deleted |\n| dateCreated                    | String  | Date when the interval was created |\n| dateModified                   | String  | Date when the interval was last modified |\n\n### Usage Example\n**Requesting Intervals for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/intervals?page=0&size=25&sort=intervalId,ASC&filter=intervalId==161 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `intervalId==161` : Retrieves the interval with `intervalId` equal to 161\n- `intervalGroupName==ePRO` : Retrieves intervals in the `ePRO` group\n- `intervalName==Day 1` : Retrieves intervals named \"Day 1\"\n- `disabled==false` : Retrieves active (non-disabled) intervals\n- `dateCreated>2024-01-01T00:00:00Z` : Retrieves intervals created after January 1, 2024\n\n### Notes\n- **Interval and Visits:** Each interval represents a set of forms for a specific phase of a study, while a visit is a specific instance of an interval for a subject.\n- **Window Calculations:** Date calculations for due dates and visit windows are based on baseline forms and fields defined in the interval.\n- **Soft Deleted Intervals:** Intervals marked as `disabled: true` are soft deleted and can be filtered out using `disabled==false`.",
+			"type": "text/markdown"
+		},
+			"item": [
+				{
+					"name": "Intervals",
+					"description": {
+						"content": "Retrieve intervals for a study. An interval represents a set of forms that must be completed for each subject.\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page | Index page to return (default: 0) |\n| size | Items per page (default: 25, max: 500) |\n| sort | Sort property and direction (default: intervalId,asc) |\n| filter | Filter criteria (e.g., `intervalGroupName==ePRO`) |\n\n### Filterable Attributes\n| Attribute | Description |\n|-----------|-------------|\n| intervalId | Unique interval identifier |\n| intervalName | Interval name |\n| intervalGroupName | Name of the interval group |\n| disabled | Interval soft-delete status |\n| dateCreated | Creation timestamp |\n| dateModified | Last modification timestamp |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| intervalId | Number | Unique system identifier for the interval |\n| intervalName | String | User-defined interval/visit name |\n| intervalDescription | String | User-defined interval/visit description |\n| intervalSequence | Number | User-defined sequence of the interval |\n| intervalGroupId | Number | User-defined interval group ID |\n| intervalGroupName | String | User-defined interval group name |\n| timeline | String | Type of Interval Visit Window |\n| definedUsingInterval | String | Baseline interval used for calculations |\n| windowCalculationForm | String | Baseline form used for calculations |\n| windowCalculationDate | String | Baseline field used for calculations |\n| dueDateWillBeIn | Number | Days from baseline date when interval is due |\n| negativeSlack | Number | Allowed negative days from due date |\n| positiveSlack | Number | Allowed positive days from due date |\n| eproGracePeriod | Number | Allowed positive days for ePRO |\n| forms | Array | List of associated forms |\n| disabled | Boolean | Indicates if the interval is soft-deleted |\n| dateCreated | String | Date when interval was created (UTC) |\n| dateModified | String | Last modification date (UTC) |\n\n### Filter Examples\n```\nintervalGroupName==ePRO  // All intervals in the ePRO group\nintervalName==Day 1  // Intervals named Day 1\ndisabled==false  // Only active (non-disabled) intervals\ndateCreated>2024-01-01T00:00:00Z  // Intervals created after Jan 1, 2024\n```",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"user-agent": true,
+							"host": true,
+							"accept-encoding": true,
+							"connection": true,
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/intervals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+									"intervals"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Jobs",
+			"description": {
+				"content": "Retrieves the status and details of a specific job for a given study, using the batchId returned from the POST Records Endpoint.\n\n### Path Parameters\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve the job |\n| batchId   | The Batch ID linked to the submitted job |\n\n### Usage Example\n```\nGET /api/v1/edc/studies/MOCK-STUDY/jobs/75e63db6-fa41-40bc-b939-cf3bdb246ae8 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Response Fields\n| Field         | Type   | Description |\n|---------------|--------|-------------|\n| jobId         | String | Unique identifier for the job |\n| batchId       | String | Batch ID linked to the submitted job |\n| state         | String | Current state of the job (`created`, `running`, `completed`, `failed`) |\n| dateCreated   | String | Timestamp when the job was created |\n| dateStarted   | String | Timestamp when the job started processing |\n| dateFinished  | String | Timestamp when the job completed processing |\n\n### Possible Job States\n- `created`: Job has been created but not yet started.\n- `running`: Job is currently being processed.\n- `completed`: Job has completed successfully.\n- `failed`: Job encountered an error during processing.",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Jobs",
+					"description": {
+						"content": "Check the status of an asynchronous job.\n\n### Path Parameters\n| Parameter | Description |\n|-----------|-------------|\n| studyKey | Study identifier |\n| batchId | Job batch identifier |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| jobId | String | Unique job identifier |\n| batchId | String | Batch identifier |\n| state | String | Job state (created, running, completed, failed) |",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/jobs/{{batchId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"",
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"jobs",
+								"{{batchId}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Queries",
+			"description": {
+				"content": "Retrieve queries for a study. Queries represent dialogue or questions related to specific eCRF responses.\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| annotationId | Number | Unique query identifier |\n| annotationType | String | Type of query |\n| description | String | Query description |\n| queryComments | Array | List of comments and responses |",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Queries",
+					"description": {
+						"content": "Retrieves all queries for a specified study. Only returns queries that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve queries |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `annotationId,asc`). For example, `sort=annotationId,desc` |\n| filter    | Filter criteria (e.g., `variable==aeterm`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each query.\n\n| Field                          | Type    | Description |\n|--------------------------------|---------|-------------|\n| studyKey                       | String  | Unique study key |\n| subjectId                      | Number  | Mednet Subject ID |\n| subjectOid                     | String  | Client-assigned subject OID |\n| annotationType                 | String  | Identifier for Query Type |\n| annotationId                   | Number  | Unique system identifier for the query |\n| type                           | Null    | System text identifier for query type/location (e.g., `subject`, `record`, `question`) |\n| description                    | String  | Query description |\n| subjectKey                     | String  | Protocol-assigned subject identifier |\n| recordId                       | Number  | Unique system identifier for the record |\n| variable                       | String  | User-defined field identifier |\n| dateCreated                    | String  | Date when the query was created |\n| dateModified                   | String  | Date when the query was modified |\n| queryComments                  | Array   | List of comments associated with the query |\n\n#### Query Comments Fields\n| Field                        | Type    | Description |\n|------------------------------|---------|-------------|\n| sequence                     | Number  | Query comment sequence |\n| annotationStatus             | String  | Query status |\n| user                         | String  | User who made the comment |\n| comment                      | String  | Comment text |\n| closed                       | Boolean | Indicates if the query is closed |\n| date                         | String  | Date of the comment |\n\n### Usage Example\n**Requesting Queries for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/queries?page=0&size=25&sort=annotationId,ASC&filter=variable==aeterm HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `variable==aeterm` : Retrieves queries for the field `aeterm`\n- `annotationType==subject` : Retrieves queries for subject-level data\n- `description==Monitor Query` : Retrieves queries with the description \"Monitor Query\"\n- `queryComments.user==john` : Retrieves queries with comments made by user \"john\"\n- `queryComments.closed==false` : Retrieves queries that are still open\n- `dateCreated>2024-01-01T00:00:00Z` : Retrieves queries created after January 1, 2024\n\nYou can combine sort and filter parameters to refine your search results.",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/queries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"queries"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Record Revisions",
+      	"description": {
+			"content": "Retrieves all record revisions for a specified study. Only returns revisions that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve record revisions |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `recordRevisionId,asc`). For example, `sort=recordRevisionId,desc` |\n| filter    | Filter criteria (e.g., `subjectKey==001-003`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each record revision.\n\n| Field               | Type    | Description |\n|---------------------|---------|-------------|\n| studyKey            | String  | Unique study key for the given study |\n| recordRevisionId    | Number  | Unique system identifier for the record revision |\n| recordId            | Number  | Unique system identifier for the related record |\n| recordOid           | String  | Client-assigned record OID |\n| recordRevision      | Number  | Record revision number |\n| dataRevision        | Number  | Data revision number |\n| recordStatus        | String  | User-defined record status |\n| subjectId           | Number  | Mednet Subject ID |\n| subjectOid          | String  | Client-assigned subject OID |\n| subjectKey          | String  | Protocol-assigned subject identifier |\n| siteId              | Number  | Unique system identifier for the related site |\n| formKey             | String  | Form key |\n| intervalId          | Number  | Unique system identifier for the interval |\n| role                | String  | Role of the user who saved the record revision |\n| user                | String  | Username of the user who saved the record revision |\n| reasonForChange     | String  | Reason for the change made in the record revision |\n| deleted             | Boolean | Indicates whether the record was deleted |\n| dateCreated         | String  | Date when the record revision was created |\n\n### Usage Example\n**Requesting Record Revisions for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/recordRevisions?page=0&size=25&sort=recordRevisionId,ASC&filter=subjectKey==270 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `subjectKey==001-003` : Retrieves revisions for the subject with key '001-003'\n- `recordStatus==Record Complete` : Retrieves revisions where the record status is 'Record Complete'\n- `user==jdoe` : Retrieves revisions made by the user 'jdoe'\n- `reasonForChange==Data entry error` : Retrieves revisions with the reason 'Data entry error'\n- `deleted==true` : Retrieves deleted record revisions\n- `dateCreated>2024-01-01T00:00:00Z` : Retrieves revisions created after January 1, 2024\n\nYou can combine sort and filter parameters to further refine your search results.",
+			"type": "text/markdown"
+		},
+			"item": [
+				{
+					"name": "RecordRevisions",
+					"description": {
+						"content": "Retrieve record revisions for a study. Each revision represents a distinct state in a record's lifecycle.\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| recordRevisionId | Number | Unique revision identifier |\n| recordId | Number | Associated record ID |\n| recordRevision | Number | Revision number |\n| recordStatus | String | Status at this revision |\n| user | String | User who made the change |\n| reasonForChange | String | Reason for the revision |",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/recordRevisions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"recordRevisions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Records",
+      		"description": {
+				"content": "#### GET Requests\nRetrieves records for a specified study. Records include details such as form identifiers, subject information, keywords, and detailed record data.\n\n**Path Parameter**\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve records |\n\n**Request Parameters**\n| Parameter          | Description |\n|--------------------|-------------|\n| page               | Index page to return (default: 0) |\n| size               | Number of items per page (default: 25, max: 500) |\n| sort               | Sort property and direction (default: `recordId,asc`) |\n| filter             | Filter criteria (e.g., `recordId==5510`) |\n| recordDataFilter   | Filter for record data (e.g., `aeterm==Bronchitis`) |\n\n**GET Response Fields**\n*Metadata*\n| Field               | Type    | Description |\n|---------------------|---------|-------------|\n| metadata.status     | String  | HTTP status |\n| metadata.method     | String  | HTTP method used |\n| metadata.path       | String  | Requested URI path |\n| metadata.timestamp  | String  | Timestamp when the response was generated |\n| metadata.error      | Object  | Error details, if any |\n\n*Pagination*\n| Field                   | Type    | Description |\n|-------------------------|---------|-------------|\n| currentPage             | Number  | Current page index |\n| size                    | Number  | Number of items per page |\n| totalPages              | Number  | Total number of pages |\n| totalElements           | Number  | Total number of elements |\n| sort[].property         | String  | Property used for sorting |\n| sort[].direction        | String  | Sorting direction (`ASC` or `DESC`) |\n\n*Data*\nIncludes details such as study key, form and record identifiers, subject and visit information, status flags, timestamps, keywords, and the recordData object with form responses.\n\n---\n\n#### POST Requests\nAdds new records to the iMednet database.\n\n**Request Body Identifiers**\n- **Form Identifiers:** `formKey` (user-defined), `formId` (system-generated)\n- **Site Identifiers:** `siteName` (user-defined), `siteId` (system-generated)\n- **Subject Identifiers:** `subjectKey` (protocol-assigned), `subjectId` (system-generated), `subjectOid` (client-assigned)\n- **Interval Identifiers:** `intervalName` (user-defined), `intervalId` (system-generated)\n- **Record Identifiers:** `recordId` (system-generated), `recordOid` (client-assigned)\n\n**Field Types for POST**\n| Field                 | Type    | Description |\n|-----------------------|---------|-------------|\n| formKey               | String  | Form key |\n| siteName              | String  | Site name |\n| data                  | Object  | Record data containing fields such as textField, dateField, numberField, radioField, dropdownField, memoField, and checkboxField |\n\n**Example Scenarios**\n1. **Register Subject**\n```\n[\n  {\n    \"formKey\": \"REG\",\n    \"siteName\": \"Minneapolis\",\n    \"data\": {\n      \"textField\": \"Text value\"\n    }\n  }\n]\n```\n2. **Update a Scheduled Record**\n```\n[\n  {\n    \"formKey\": \"REG\",\n    \"subjectKey\": \"651-042\",\n    \"intervalName\": \"Registration\",\n    \"data\": {\n      \"textField\": \"Updated text\"\n    }\n  }\n]\n```\n3. **Create a New Record**\n```\n[\n  {\n    \"formKey\": \"REG\",\n    \"subjectKey\": \"123-876\",\n    \"data\": {\n      \"textField\": \"New record data\"\n    }\n  }\n]\n```\n\n**POST Response**\n| Field   | Type   | Description |\n|---------|--------|-------------|\n| jobId   | String | Unique identifier for the job |\n| batchId | String | Batch ID associated with the submitted records |\n| state   | String | Status of the job (e.g., `created`) |",
+				"type": "text/markdown"
+			},
+			 "item": [
+				{
+					"name": "Get Records",
+					"description": {
+						"content": "Retrieve records for a specific study. A record represents a single instance of an eCRF with responses to each question.\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page | Index page to return (default: 0) |\n| size | Items per page (default: 25, max: 500) |\n| sort | Sort property and direction (default: recordId,asc) |\n| filter | Filter criteria for record attributes (e.g., `siteId==123`) |\n| recordDataFilter | Filter for specific form data fields (e.g., `AESER==Serious`) |\n\n### Filterable Attributes\n| Attribute | Description |\n|-----------|-------------|\n| intervalId | Interval identifier |\n| formId | Form identifier |\n| formKey | Form key |\n| siteId | Site identifier |\n| recordId | Record identifier |\n| parentRecordId | Parent record identifier |\n| recordType | Type of record |\n| recordStatus | Status of the record |\n| subjectKey | Subject identifier |\n| dateCreated | Creation timestamp |\n| dateModified | Last modification timestamp |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| recordId | Number | Unique record identifier |\n| formId | Number | Associated form ID |\n| formKey | String | Form key |\n| formName | String | Name of the form |\n| siteId | Number | Site identifier |\n| siteName | String | Name of the site |\n| subjectId | Number | Internal subject ID |\n| subjectKey | String | Protocol-assigned subject identifier |\n| intervalId | Number | Associated interval ID |\n| intervalName | String | Name of the interval |\n| recordStatus | String | Current record status |\n| recordType | String | Type of record |\n| parentRecordId | Number | Parent record ID for embedded logs |\n| recordData | Object | Dynamic form data with field values |\n| dateCreated | String | Creation timestamp (UTC) |\n| dateModified | String | Last modification timestamp (UTC) |\n\n### Filter Examples\n```\nformId==10265  // Records for a specific form\nrecordStatus==Submitted  // All submitted records\nsubjectKey==111-005  // Records for a specific subject\n\n// Using recordDataFilter (for form data fields)\nrecordDataFilter=AESER==Serious  // Serious adverse events\nrecordDataFilter=AESER==Serious;GENDER==Male  // Serious AEs for males\nrecordDataFilter=AESER=~bronch  // Case-insensitive contains search\n```\n\n### Notes\n- `recordDataFilter` specifically targets fields in the `recordData` object\n- Field names in `recordDataFilter` are case-sensitive\n- Cannot mix AND (`;`) and OR (`,`) connectors in the same `recordDataFilter`",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/records",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"records"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Records",
+					"description": {
+						"content": "Add new records to a study. Returns a batchId that can be used to check job status.\n\n### Request Body Fields\n| Field | Type | Description |\n|------|------|-------------|\n| formKey | String | Form identifier (required) |\n| siteName | String | Site name (required) |\n| siteCenterId | String | Site center ID (optional) |\n| subjectKey | String | Protocol-assigned subject identifier (required) |\n| visitDate | String | Date of the subject visit (required for visit forms) |\n| data | Object | Form data fields (required) |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| batchId | String | Unique batch identifier for tracking job status |\n\n### Example Request Body\n```json\n[\n  {\n    \"formKey\": \"AE\",\n    \"siteName\": \"Mayo Clinic\",\n    \"subjectKey\": \"111-005\",\n    \"visitDate\": \"2024-01-15\",\n    \"data\": {\n      \"AETERM\": \"Headache\",\n      \"AESER\": \"Non-serious\",\n      \"AESEV\": \"Mild\"\n    }\n  }\n]\n```\n\n### Notes\n- Request body should be an array of record objects\n- Record insertion is asynchronous - use Jobs endpoint with the returned batchId to check status",
+						"type": "text/markdown"
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"formKey\": \"YOUR_FORM_KEY\",\n    \"siteName\": \"YOUR_SITE_NAME\",\n    \"subjectKey\": \"YOUR_SUBJECT_KEY\",\n    \"visitDate\": \"YYYY-MM-DD\",\n    \"data\": {}\n  }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/records",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"records"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sites",
+			"description":{
+				"content": "Retrieves all sites for a specified study. Only returns sites that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve sites |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `siteId,asc`). For example, `sort=siteId,desc` |\n| filter    | Filter criteria (e.g., `siteId==48`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each site.\n\n| Field                   | Type    | Description |\n|-------------------------|---------|-------------|\n| studyKey                | String  | Unique study key for the given study |\n| siteId                  | Number  | Unique system identifier for the site |\n| siteName                | String  | Name of the site |\n| siteEnrollmentStatus    | String  | Current enrollment status of the site |\n| dateCreated             | String  | Date when the site record was created |\n| dateModified            | String  | Date when the site record was last modified |\n\n### Usage Example\n**Requesting Sites for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/sites?page=0&size=25&sort=siteId,ASC&filter=siteId==48 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `siteId==48` : Retrieves the site with `siteId` equal to 48\n- `siteEnrollmentStatus==Enrollment Open` : Retrieves sites with open enrollment\n- `siteName==Mock Site 1` : Retrieves the site named \"Mock Site 1\"\n- `dateCreated>2024-01-01T00:00:00Z` : Retrieves sites created after January 1, 2024\n\nYou can combine sort and filter parameters to refine your search results.",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Sites",
+					"description": "Retrieves all sites for a specified study. Only returns sites that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve sites |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `siteId,asc`). For example, `sort=siteId,desc` |\n| filter    | Filter criteria (e.g., `siteId==48`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each site.\n\n| Field                   | Type    | Description |\n|-------------------------|---------|-------------|\n| studyKey                | String  | Unique study key for the given study |\n| siteId                  | Number  | Unique system identifier for the site |\n| siteName                | String  | Name of the site |\n| siteEnrollmentStatus    | String  | Current enrollment status of the site |\n| dateCreated             | String  | Date when the site record was created |\n| dateModified            | String  | Date when the site record was last modified |\n\n### Usage Example\n**Requesting Sites for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/sites?page=0&size=25&sort=siteId,ASC&filter=siteId==48 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `siteId==48` : Retrieves the site with `siteId` equal to 48\n- `siteEnrollmentStatus==Enrollment Open` : Retrieves sites with open enrollment\n- `siteName==Mock Site 1` : Retrieves the site named \"Mock Site 1\"\n- `dateCreated>2024-01-01T00:00:00Z` : Retrieves sites created after January 1, 2024\n\nYou can combine sort and filter parameters to refine your search results.",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/sites",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"sites"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Studies",
+			"description": {
+				"content": "Retrieves all studies accessible through the API key. Only returns studies that the API key is authorized to access.\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page | Index page to return (default: 0) |\n| size | Items per page (default: 25, max: 500) |\n| sort | Sort property and direction (default: studyKey,asc) |\n| filter | Filter criteria (e.g., `studyType==ONCOLOGY`) |\n\n### Filterable Attributes\n| Attribute | Description |\n|-----------|-------------|\n| studyKey | Unique study identifier |\n| studyType | Type of study |\n| studyName | Name of the study |\n| dateCreated | Study creation timestamp |\n| dateModified | Last modification timestamp |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| studyKey | String | Unique study identifier |\n| studyType | String | Type of study |\n| studyName | String | Name of the study |\n| dateCreated | String | Creation timestamp (UTC) |\n| dateModified | String | Last modification timestamp (UTC) |\n\n### Filter Examples\n```\nstudyType==ONCOLOGY  // All oncology studies\ndateCreated>2024-01-01T00:00:00Z  // Studies created after Jan 1, 2024\n```",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Studies",
+					"description": {
+						"content": "Retrieves all studies accessible through the API key. Only returns studies that the API key is authorized to access.\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page | Index page to return (default: 0) |\n| size | Items per page (default: 25, max: 500) |\n| sort | Sort property and direction (default: studyKey,asc) |\n| filter | Filter criteria (e.g., `studyType==ONCOLOGY`) |\n\n### Filterable Attributes\n| Attribute | Description |\n|-----------|-------------|\n| studyKey | Unique study identifier |\n| studyType | Type of study |\n| studyName | Name of the study |\n| dateCreated | Study creation timestamp |\n| dateModified | Last modification timestamp |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| studyKey | String | Unique study identifier |\n| studyType | String | Type of study |\n| studyName | String | Name of the study |\n| dateCreated | String | Creation timestamp (UTC) |\n| dateModified | String | Last modification timestamp (UTC) |\n\n### Filter Examples\n```\nstudyType==ONCOLOGY  // All oncology studies\ndateCreated>2024-01-01T00:00:00Z  // Studies created after Jan 1, 2024\n```",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://edc.prod.imednetapi.com/api/v1/edc/studies",
+							"protocol": "https",
+							"host": [
+								"edc",
+								"prod",
+								"imednetapi",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subjects",
+			"description": {
+				"content": "Retrieves all subjects for a specified study. Only returns subjects that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve subjects |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `subjectId,asc`). For example, `sort=subjectId,desc` |\n| filter    | Filter criteria (e.g., `subjectId==370`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each subject.\n\n#### Subject Fields\n| Field               | Type    | Description |\n|---------------------|---------|-------------|\n| studyKey            | String  | Unique study key for the given study |\n| subjectId           | Number  | Mednet Subject ID |\n| subjectOid          | String  | Client-assigned subject OID |\n| subjectKey          | String  | Protocol-assigned subject identifier |\n| subjectStatus       | String  | Current enrollment status (e.g., Enrolled) |\n| siteId              | Number  | Mednet Site ID |\n| siteName            | String  | Name of the site |\n| enrollmentStartDate | String  | Date when subject enrollment started |\n| deleted             | Boolean | Indicates whether the subject was deleted |\n| dateCreated         | String  | Date when the subject record was created |\n| dateModified        | String  | Date when the subject record was last modified |\n\n#### Keyword Fields\n| Field           | Type    | Description |\n|-----------------|---------|-------------|\n| keywordName     | String  | Name of the keyword |\n| keywordKey      | String  | Unique key for the keyword |\n| keywordId       | Number  | Unique ID for the keyword |\n| dateAdded       | String  | Date when the keyword was added |\n\n### Usage Example\n**Requesting Subjects for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/subjects?page=0&size=25&sort=subjectId,ASC&filter=subjectId==370 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `subjectId==370` : Retrieves the subject with `subjectId` equal to 370\n- `subjectStatus==Enrolled` : Retrieves subjects with the status 'Enrolled'\n- `siteName==Chicago Hope Hospital` : Retrieves subjects enrolled at \"Chicago Hope Hospital\"\n- `deleted==false` : Retrieves active (non-deleted) subjects\n- `enrollmentStartDate>2024-01-01T00:00:00Z` : Retrieves subjects enrolled after January 1, 2024\n\nYou can combine sort and filter parameters to refine your search results.",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Subjects",
+					"description": {
+						"content": "Retrieves all subjects for a specified study. Only returns subjects that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve subjects |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `subjectId,asc`). For example, `sort=subjectId,desc` |\n| filter    | Filter criteria (e.g., `subjectId==370`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each subject.\n\n#### Subject Fields\n| Field               | Type    | Description |\n|---------------------|---------|-------------|\n| studyKey            | String  | Unique study key for the given study |\n| subjectId           | Number  | Mednet Subject ID |\n| subjectOid          | String  | Client-assigned subject OID |\n| subjectKey          | String  | Protocol-assigned subject identifier |\n| subjectStatus       | String  | Current enrollment status (e.g., Enrolled) |\n| siteId              | Number  | Mednet Site ID |\n| siteName            | String  | Name of the site |\n| enrollmentStartDate | String  | Date when subject enrollment started |\n| deleted             | Boolean | Indicates whether the subject was deleted |\n| dateCreated         | String  | Date when the subject record was created |\n| dateModified        | String  | Date when the subject record was last modified |\n\n#### Keyword Fields\n| Field           | Type    | Description |\n|-----------------|---------|-------------|\n| keywordName     | String  | Name of the keyword |\n| keywordKey      | String  | Unique key for the keyword |\n| keywordId       | Number  | Unique ID for the keyword |\n| dateAdded       | String  | Date when the keyword was added |\n\n### Usage Example\n**Requesting Subjects for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/subjects?page=0&size=25&sort=subjectId,ASC&filter=subjectId==370 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `subjectId==370` : Retrieves the subject with `subjectId` equal to 370\n- `subjectStatus==Enrolled` : Retrieves subjects with the status 'Enrolled'\n- `siteName==Chicago Hope Hospital` : Retrieves subjects enrolled at \"Chicago Hope Hospital\"\n- `deleted==false` : Retrieves active (non-deleted) subjects\n- `enrollmentStartDate>2024-01-01T00:00:00Z` : Retrieves subjects enrolled after January 1, 2024\n\nYou can combine sort and filter parameters to refine your search results.",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/subjects",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"subjects"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"description": {
+				"content": "Retrieves all users for a specified study. Only returns users that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve users |\n\n### Request Parameters\n| Parameter        | Description                                                               |\n|------------------|---------------------------------------------------------------------------|\n| page             | Index page to return (default: 0)                                         |\n| size             | Number of items per page (default: 25, max: 500)                          |\n| sort             | Sort property and direction (default: `login,asc`)                        |\n| includeInactive  | Whether to include inactive users (default: `false`)                      |\n\n### Response Fields\nBelow are the primary fields returned for each user. The `roles` array contains additional role details.\n\n#### User Fields\n| Field               | Type    | Description                                              |\n|---------------------|---------|----------------------------------------------------------|\n| userId              | String  | Unique user ID                                           |\n| login               | String  | User’s login name                                        |\n| firstName           | String  | User’s first name                                        |\n| lastName            | String  | User’s last name                                         |\n| email               | String  | User’s email address                                     |\n| userActiveInStudy   | Boolean | Indicates if the user is active in this study            |\n\n#### Role Fields\n| Field               | Type    | Description                                                                     |\n|---------------------|---------|---------------------------------------------------------------------------------|\n| dateCreated         | Array   | Date when the role was created ([YYYY, MM, DD, HH, MM, SS, NNNNNNNNN])         |\n| dateModified        | Array   | Date when the role was last modified                                            |\n| roleId              | String  | Unique Role ID                                                                   |\n| communityId         | Number  | Community ID associated with the role                                           |\n| name                | String  | Name of the role                                                                 |\n| description         | String  | Description of the role                                                          |\n| level               | Number  | Role level                                                                       |\n| type                | String  | Type of the role                                                                 |\n| inactive            | Boolean | Indicates if the role is inactive                                                |\n\n### Usage Example\n**Requesting Users for a Specific Study**\n```\nGET /api/v1/edc/studies/MOCK-STUDY/users?page=0&size=25&includeInactive=false&sort=login,ASC HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\nTo include inactive users, set `includeInactive=true`:\n```\nGET /api/v1/edc/studies/MOCK-STUDY/users?page=0&size=25&includeInactive=true&sort=login,ASC HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Users",
+					"description": {
+						"content": "Retrieves all users for a specified study. Only returns users that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve users |\n\n### Request Parameters\n| Parameter        | Description                                                               |\n|------------------|---------------------------------------------------------------------------|\n| page             | Index page to return (default: 0)                                         |\n| size             | Number of items per page (default: 25, max: 500)                          |\n| sort             | Sort property and direction (default: `login,asc`)                        |\n| includeInactive  | Whether to include inactive users (default: `false`)                      |\n\n### Response Fields\nBelow are the primary fields returned for each user. The `roles` array contains additional role details.\n\n#### User Fields\n| Field               | Type    | Description                                              |\n|---------------------|---------|----------------------------------------------------------|\n| userId              | String  | Unique user ID                                           |\n| login               | String  | User’s login name                                        |\n| firstName           | String  | User’s first name                                        |\n| lastName            | String  | User’s last name                                         |\n| email               | String  | User’s email address                                     |\n| userActiveInStudy   | Boolean | Indicates if the user is active in this study            |\n\n#### Role Fields\n| Field               | Type    | Description                                                                     |\n|---------------------|---------|---------------------------------------------------------------------------------|\n| dateCreated         | Array   | Date when the role was created ([YYYY, MM, DD, HH, MM, SS, NNNNNNNNN])         |\n| dateModified        | Array   | Date when the role was last modified                                            |\n| roleId              | String  | Unique Role ID                                                                   |\n| communityId         | Number  | Community ID associated with the role                                           |\n| name                | String  | Name of the role                                                                 |\n| description         | String  | Description of the role                                                          |\n| level               | Number  | Role level                                                                       |\n| type                | String  | Type of the role                                                                 |\n| inactive            | Boolean | Indicates if the role is inactive                                                |\n\n### Usage Example\n**Requesting Users for a Specific Study**\n```\nGET /api/v1/edc/studies/MOCK-STUDY/users?page=0&size=25&includeInactive=false&sort=login,ASC HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\nTo include inactive users, set `includeInactive=true`:\n```\nGET /api/v1/edc/studies/MOCK-STUDY/users?page=0&size=25&includeInactive=true&sort=login,ASC HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/records",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"records"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Variables",
+			"description": {
+				"content": "Retrieves all variables for a specified study. Only returns variables that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description                           |\n|-----------|---------------------------------------|\n| studyKey  | The unique identifier of the study to retrieve variables for |\n\n### Request Parameters\n| Parameter | Description                                                             |\n|-----------|-------------------------------------------------------------------------|\n| page      | Index page to return (default: 0)                                       |\n| size      | Number of items per page (default: 25, max: 500)                        |\n| sort      | Sort property and direction (default: `formId,asc`). For example, `sort=variableId,desc` |\n| filter    | Filter criteria (e.g., `variableId==10299`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each variable.\n\n| Field            | Type     | Description                                                  |\n|------------------|----------|--------------------------------------------------------------|\n| studyKey         | String   | Unique Study Key                                             |\n| variableId       | Number   | Mednet Variable ID                                           |\n| variableType     | String   | Type of the variable (e.g., RADIO, TEXT)                     |\n| variableName     | String   | Name of the variable on the eCRF                             |\n| sequence         | Number   | User-defined sequence of the variable                        |\n| revision         | Number   | Number of modifications to the form metadata                 |\n| disabled         | Boolean  | Indicates if the variable is disabled                        |\n| dateCreated      | String   | Date when the variable was created                           |\n| dateModified     | String   | Date when the variable was last modified                     |\n| formId           | Number   | Mednet Form ID                                               |\n| variableOid      | String   | Client-assigned Variable OID                                 |\n| deleted          | Boolean  | Indicates if the variable is deleted                         |\n| formKey          | String   | Unique key identifying the form                              |\n| formName         | String   | Name of the eCRF                                             |\n| label            | String   | User-defined label for the field                             |\n| blinded          | Boolean  | Indicates if the variable is blinded                         |\n\n### Usage Example\n**Requesting Variables for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/variables?page=0&size=25&sort=variableId,ASC&filter=variableId==10299 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `variableId==10299` : Retrieves only variables where `variableId` is 10299\n- `variableType==RADIO` : Retrieves variables of type `RADIO`\n\nYou can combine sort and filter parameters to refine your search results.",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Variables",
+					"description": {
+						"content": "Retrieves all variables for a specified study. Only returns variables that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description                           |\n|-----------|---------------------------------------|\n| studyKey  | The unique identifier of the study to retrieve variables for |\n\n### Request Parameters\n| Parameter | Description                                                             |\n|-----------|-------------------------------------------------------------------------|\n| page      | Index page to return (default: 0)                                       |\n| size      | Number of items per page (default: 25, max: 500)                        |\n| sort      | Sort property and direction (default: `formId,asc`). For example, `sort=variableId,desc` |\n| filter    | Filter criteria (e.g., `variableId==10299`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each variable.\n\n| Field            | Type     | Description                                                  |\n|------------------|----------|--------------------------------------------------------------|\n| studyKey         | String   | Unique Study Key                                             |\n| variableId       | Number   | Mednet Variable ID                                           |\n| variableType     | String   | Type of the variable (e.g., RADIO, TEXT)                     |\n| variableName     | String   | Name of the variable on the eCRF                             |\n| sequence         | Number   | User-defined sequence of the variable                        |\n| revision         | Number   | Number of modifications to the form metadata                 |\n| disabled         | Boolean  | Indicates if the variable is disabled                        |\n| dateCreated      | String   | Date when the variable was created                           |\n| dateModified     | String   | Date when the variable was last modified                     |\n| formId           | Number   | Mednet Form ID                                               |\n| variableOid      | String   | Client-assigned Variable OID                                 |\n| deleted          | Boolean  | Indicates if the variable is deleted                         |\n| formKey          | String   | Unique key identifying the form                              |\n| formName         | String   | Name of the eCRF                                             |\n| label            | String   | User-defined label for the field                             |\n| blinded          | Boolean  | Indicates if the variable is blinded                         |\n\n### Usage Example\n**Requesting Variables for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/variables?page=0&size=25&sort=variableId,ASC&filter=variableId==10299 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `variableId==10299` : Retrieves only variables where `variableId` is 10299\n- `variableType==RADIO` : Retrieves variables of type `RADIO`\n\nYou can combine sort and filter parameters to refine your search results.",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/variables",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"variables"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Visits",
+			"description": {
+				"content": "Retrieves all visits for a specified study. Only returns visits that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description                                                |\n|-----------|------------------------------------------------------------|\n| studyKey  | The unique identifier of the study for which to retrieve visits |\n\n### Request Parameters\n| Parameter | Description                                                                                 |\n|-----------|---------------------------------------------------------------------------------------------|\n| page      | Index page to return (default: 0)                                                           |\n| size      | Number of items per page (default: 25, max: 500)                                            |\n| sort      | Sort property and direction (default: `visitId,asc`). For example: `sort=visitId,desc`      |\n| filter    | Filter criteria (e.g., `subjectKey==270`). Must follow the correct syntax                   |\n\n### Response Fields\nBelow are the primary fields returned for each visit.\n\n| Field              | Type    | Description                                                      |\n|--------------------|---------|------------------------------------------------------------------|\n| visitId            | Number  | Unique system identifier for the subject visit instance          |\n| studyKey           | String  | Unique study key for the given study                             |\n| intervalId         | Number  | Unique system identifier for the related interval                |\n| intervalName       | String  | User-defined name for the related interval                       |\n| subjectId          | Number  | Mednet Subject ID                                                |\n| subjectKey         | String  | Protocol-assigned subject identifier                             |\n| startDate          | String  | Start date of the visit as defined in the interval visit window   |\n| endDate            | String  | End date of the visit as defined in the interval visit window     |\n| dueDate            | String  | Due date of the visit, if defined in the interval visit window    |\n| visitDate          | String  | Actual date of the visit as defined in the interval visit window  |\n| visitDateForm      | String  | Actual date form as defined in the interval visit window          |\n| visitDateQuestion  | String  | User-defined field identifier                                     |\n| deleted            | Boolean | Indicates if the visit has been marked as deleted                 |\n| dateCreated        | String  | Date when this visit record was created                           |\n| dateModified       | String  | Date when this visit record was last modified                    |\n\n### Usage Example\n**Requesting Visits for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/visits?page=0&size=25&sort=visitId,ASC&filter=subjectKey==270 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `subjectKey==270` : Retrieves visits for the subject with `subjectKey` equal to `270`\n- `intervalName==Day 15` : Retrieves visits for the interval named 'Day 15'\n- `visitDate>=2024-11-01` : Retrieves visits on or after November 1, 2024\n- `deleted==false` : Retrieves only non-deleted visits\n\nYou can combine sort and filter parameters to further refine search results.",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Visits",
+					"description": {
+						"content": "Retrieves all visits for a specified study. Only returns visits that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description                                                |\n|-----------|------------------------------------------------------------|\n| studyKey  | The unique identifier of the study for which to retrieve visits |\n\n### Request Parameters\n| Parameter | Description                                                                                 |\n|-----------|---------------------------------------------------------------------------------------------|\n| page      | Index page to return (default: 0)                                                           |\n| size      | Number of items per page (default: 25, max: 500)                                            |\n| sort      | Sort property and direction (default: `visitId,asc`). For example: `sort=visitId,desc`      |\n| filter    | Filter criteria (e.g., `subjectKey==270`). Must follow the correct syntax                   |\n\n### Response Fields\nBelow are the primary fields returned for each visit.\n\n| Field              | Type    | Description                                                      |\n|--------------------|---------|------------------------------------------------------------------|\n| visitId            | Number  | Unique system identifier for the subject visit instance          |\n| studyKey           | String  | Unique study key for the given study                             |\n| intervalId         | Number  | Unique system identifier for the related interval                |\n| intervalName       | String  | User-defined name for the related interval                       |\n| subjectId          | Number  | Mednet Subject ID                                                |\n| subjectKey         | String  | Protocol-assigned subject identifier                             |\n| startDate          | String  | Start date of the visit as defined in the interval visit window   |\n| endDate            | String  | End date of the visit as defined in the interval visit window     |\n| dueDate            | String  | Due date of the visit, if defined in the interval visit window    |\n| visitDate          | String  | Actual date of the visit as defined in the interval visit window  |\n| visitDateForm      | String  | Actual date form as defined in the interval visit window          |\n| visitDateQuestion  | String  | User-defined field identifier                                     |\n| deleted            | Boolean | Indicates if the visit has been marked as deleted                 |\n| dateCreated        | String  | Date when this visit record was created                           |\n| dateModified       | String  | Date when this visit record was last modified                    |\n\n### Usage Example\n**Requesting Visits for a Specific Study**\n```\nGET /api/v1/edc/studies/PHARMADEMO/visits?page=0&size=25&sort=visitId,ASC&filter=subjectKey==270 HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `subjectKey==270` : Retrieves visits for the subject with `subjectKey` equal to `270`\n- `intervalName==Day 15` : Retrieves visits for the interval named 'Day 15'\n- `visitDate>=2024-11-01` : Retrieves visits on or after November 1, 2024\n- `deleted==false` : Retrieves only non-deleted visits\n\nYou can combine sort and filter parameters to further refine search results.",
+						"type": "text/markdown"
+					},
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/visits",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"visits"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "25",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "recordId,ASC",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "recordDataFilter",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Forms",
+			"description": {
+				"content": "Retrieve forms for a study. A form is a design resource representing an electronic clinical case report form (eCRF).\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page | Index page to return (default: 0) |\n| size | Items per page (default: 25, max: 500) |\n| sort | Sort property and direction (default: formId,asc) |\n| filter | Filter criteria (e.g., `formType==Subject`) |\n\n### Filterable Attributes\n| Attribute | Description |\n|-----------|-------------|\n| formId | Unique form identifier |\n| formKey | Form key |\n| formName | Name of the eCRF |\n| formType | Type of form (e.g., Subject, Site) |\n| disabled | Form soft-delete status |\n| dateCreated | Form creation timestamp |\n| dateModified | Last modification timestamp |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| formId | Number | Unique form identifier |\n| formKey | String | Form key |\n| formName | String | Name of the eCRF |\n| formType | String | Form type (e.g., Subject, Site) |\n| revision | Number | Number of modifications to the form metadata |\n| embeddedLog | Boolean | Embedded Log checkbox value on form attributes |\n| enforceOwnership | Boolean | Enforce Ownership checkbox value on form attributes |\n| userAgreement | Boolean | User Agreement checkbox value on form attributes |\n| subjectRecordReport | Boolean | Subject Record Report checkbox value |\n| unscheduledVisit | Boolean | Include in Unscheduled Visits checkbox value |\n| otherForms | Boolean | Include in Other Forms checkbox value |\n| eproForm | Boolean | Is ePRO checkbox value |\n| allowCopy | Boolean | Allow Copy checkbox value |\n| disabled | Boolean | Form soft-delete status |\n| dateCreated | String | Creation timestamp (UTC) |\n| dateModified | String | Last modification timestamp (UTC) |\n\n### Filter Examples\n```\nformType==Subject  // All subject forms\nformName==Adverse Event  // Form with specific name\ndisabled==false  // Only active (non-disabled) forms\ndateCreated>2024-01-01T00:00:00Z  // Forms created after Jan 1, 2024\n```",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Get Forms",
+					"description": {
+						"content": "Retrieve forms for a study. A form is a design resource representing an electronic clinical case report form (eCRF).\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page | Index page to return (default: 0) |\n| size | Items per page (default: 25, max: 500) |\n| sort | Sort property and direction (default: formId,asc) |\n| filter | Filter criteria (e.g., `formType==Subject`) |\n\n### Filterable Attributes\n| Attribute | Description |\n|-----------|-------------|\n| formId | Unique form identifier |\n| formKey | Form key |\n| formName | Name of the eCRF |\n| formType | Type of form (e.g., Subject, Site) |\n| disabled | Form soft-delete status |\n| dateCreated | Form creation timestamp |\n| dateModified | Last modification timestamp |\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| formId | Number | Unique form identifier |\n| formKey | String | Form key |\n| formName | String | Name of the eCRF |\n| formType | String | Form type (e.g., Subject, Site) |\n| revision | Number | Number of modifications to the form metadata |\n| embeddedLog | Boolean | Embedded Log checkbox value on form attributes |\n| enforceOwnership | Boolean | Enforce Ownership checkbox value on form attributes |\n| userAgreement | Boolean | User Agreement checkbox value on form attributes |\n| subjectRecordReport | Boolean | Subject Record Report checkbox value |\n| unscheduledVisit | Boolean | Include in Unscheduled Visits checkbox value |\n| otherForms | Boolean | Include in Other Forms checkbox value |\n| eproForm | Boolean | Is ePRO checkbox value |\n| allowCopy | Boolean | Allow Copy checkbox value |\n| disabled | Boolean | Form soft-delete status |\n| dateCreated | String | Creation timestamp (UTC) |\n| dateModified | String | Last modification timestamp (UTC) |\n\n### Filter Examples\n```\nformType==Subject  // All subject forms\nformName==Adverse Event  // Form with specific name\ndisabled==false  // Only active (non-disabled) forms\ndateCreated>2024-01-01T00:00:00Z  // Forms created after Jan 1, 2024\n```",
+						"type": "text/markdown"
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/forms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"forms"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Codings",
+			"description": {
+				"content": "Retrieves all coding activity for a specified study. Only returns codings that the API key is authorized to access.\n\n### Path Parameter\n| Parameter | Description |\n|-----------|-------------|\n| studyKey  | The unique identifier of the study for which to retrieve codings |\n\n### Request Parameters\n| Parameter | Description |\n|-----------|-------------|\n| page      | Index page to return (default: 0) |\n| size      | Number of items per page (default: 25, max: 500) |\n| sort      | Sort property and direction (default: `formId,asc`). For example, `sort=recordId,desc` |\n| filter    | Filter criteria (e.g., `dictionaryName==MedDRA`). Must follow the correct syntax |\n\n### Response Fields\nBelow are the primary fields returned for each coding record.\n\n| Field                  | Type    | Description |\n|------------------------|---------|-------------|\n| studyKey               | String  | Unique Study Key |\n| siteName               | String  | Name of the site |\n| siteId                 | Number  | Unique site ID |\n| subjectId              | Number  | Mednet Subject ID |\n| subjectKey             | String  | Protocol-assigned subject identifier |\n| formId                 | Number  | Mednet Form ID |\n| formName               | String  | Name of the eCRF |\n| formKey                | String  | Form key |\n| revision               | Number  | Number of modifications to the coding metadata |\n| recordId               | Number  | Unique system identifier for the record |\n| variable               | String  | Name of the variable on the eCRF |\n| value                  | String  | Value entered |\n| codingId               | Number  | Mednet Coding ID |\n| code                   | String  | Standardized code |\n| codedBy                | String  | User who recorded the code |\n| reason                 | String  | Reason for the coding |\n| dictionaryName         | String  | Name of the coding dictionary (e.g., MedDRA) |\n| dictionaryVersion      | String  | Version of the coding dictionary |\n| dateCoded              | String  | Date when the code was added |\n\n### Usage Example\n**Requesting Codings for a Study Using MedDRA**\n```\nGET /api/v1/edc/studies/PHARMADEMO/codings?page=0&size=25&sort=recordId,ASC&filter=dictionaryName==MedDRA HTTP/1.1\nContent-Type: application/json\nHost: localhost:8080\n```\n\n### Filter Examples\n- `dictionaryName==MedDRA` : Retrieves codings from the MedDRA dictionary\n- `codedBy==John Smith` : Retrieves codings recorded by John Smith\n- `dictionaryVersion>=24.0` : Retrieves codings from dictionary version 24.0 or higher\n- `siteName==Chicago Hope Hospital` : Retrieves codings from a specific site\n- `dateCoded>2024-01-01T00:00:00Z` : Retrieves codings added after January 1, 2024",
+				"type": "text/markdown"
+			},
+			"item": [
+				{
+					"name": "Get Codings",
+					"description": {
+						"content": "Retrieve coding activity for a study. Coding refers to the standardization of data to specific drug or medical terms.\n\n### Response Fields\n| Field | Type | Description |\n|------|------|-------------|\n| codingId | Number | Unique coding identifier |\n| code | String | Standardized code |\n| codedBy | String | User who recorded the code |\n| dictionaryName | String | Coding dictionary name |\n| dictionaryVersion | String | Dictionary version |",
+						"type": "text/markdown"
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "x-imn-security-key",
+								"value": "{{securitykey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/edc/studies/{{study_key}}/codings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"edc",
+								"studies",
+								"{{study_key}}",
+								"codings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://edc.prod.imednetapi.com",
+			"type": "string"
+		},
+		{
+			"key": "apikey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "securitykey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "study_key",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

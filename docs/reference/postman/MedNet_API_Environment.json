@@ -1,0 +1,161 @@
+{
+  "id": "your-environment-id",
+  "name": "MedNet API Environment",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "https://edc.prod.imednetapi.com",
+      "type": "string",
+      "enabled": true,
+      "description": "Base URL for the MedNet API"
+    },
+    {
+      "key": "apikey",
+      "value": "",
+      "type": "string",
+      "enabled": true,
+      "description": "Your iMednet API key - required for authentication (x-api-key header)"
+    },
+    {
+      "key": "securitykey",
+      "value": "",
+      "type": "string",
+      "enabled": true,
+      "description": "Your iMednet security key - required for authentication (x-imn-security-key header)"
+    },
+    {
+      "key": "study_key",
+      "value": "",
+      "type": "string",
+      "enabled": true,
+      "description": "Study identifier automatically set from studies endpoint response"
+    },
+    {
+      "key": "page_size",
+      "value": "25",
+      "type": "string",
+      "enabled": true,
+      "description": "Default number of items per page for paginated responses"
+    },
+    {
+      "key": "max_page_size",
+      "value": "500",
+      "type": "string",
+      "enabled": true,
+      "description": "Maximum allowed page size for paginated responses"
+    },
+    {
+      "key": "sort_direction",
+      "value": "ASC",
+      "type": "string",
+      "enabled": true,
+      "description": "Default sort direction (ASC or DESC)"
+    },
+    {
+      "key": "filter_operators",
+      "value": "==,!=,<,<=,>,>=,=~",
+      "type": "string",
+      "enabled": true,
+      "description": "Available filter operators"
+    },
+    {
+      "key": "filter_connector_and",
+      "value": ";",
+      "type": "string",
+      "enabled": true,
+      "description": "AND connector for filters"
+    },
+    {
+      "key": "filter_connector_or",
+      "value": ",",
+      "type": "string",
+      "enabled": true,
+      "description": "OR connector for filters"
+    },
+    {
+      "key": "date_format",
+      "value": "YYYY-MM-DDTHH:mm:ssZ",
+      "type": "string",
+      "enabled": true,
+      "description": "Standard UTC date format"
+    },
+    {
+      "key": "date_format_cst",
+      "value": "YYYY-MM-DDTHH:mm:ss-06:00",
+      "type": "string",
+      "enabled": true,
+      "description": "CST timezone date format"
+    },
+    {
+      "key": "date_format_simple",
+      "value": "YYYY-MM-DD",
+      "type": "string",
+      "enabled": true,
+      "description": "Simple date format for visits"
+    },
+    {
+      "key": "rate_limit_minute",
+      "value": "100",
+      "type": "string",
+      "enabled": true,
+      "description": "Maximum requests per minute"
+    },
+    {
+      "key": "rate_limit_hour",
+      "value": "1000",
+      "type": "string",
+      "enabled": true,
+      "description": "Maximum requests per hour"
+    },
+    {
+      "key": "batchId",
+      "value": "",
+      "type": "string",
+      "enabled": true,
+      "description": "Batch ID for tracking asynchronous job status"
+    },
+    {
+      "key": "test_form_key",
+      "value": "REG",
+      "type": "string",
+      "enabled": true,
+      "description": "Test form key for record creation"
+    },
+    {
+      "key": "test_site_name",
+      "value": "Minneapolis",
+      "type": "string",
+      "enabled": true,
+      "description": "Test site name for record creation"
+    },
+    {
+      "key": "test_subject_key",
+      "value": "123-456",
+      "type": "string",
+      "enabled": true,
+      "description": "Test subject key for record creation"
+    },
+    {
+      "key": "test_interval_name",
+      "value": "Registration",
+      "type": "string",
+      "enabled": true,
+      "description": "Test interval name for record creation"
+    },
+    {
+      "key": "record_data_operators",
+      "value": "==,!=,<,<=,>,>=,=~",
+      "type": "string",
+      "enabled": true,
+      "description": "Available operators for record data filtering"
+    },
+    {
+      "key": "email",
+      "value": "",
+      "type": "string",
+      "enabled": true,
+      "description": "Email for job notifications"
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
