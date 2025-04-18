@@ -3,13 +3,14 @@
 from datetime import datetime
 from typing import List
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class UserRole(BaseModel):
     """Model representing a user's role in the study."""
 
     model_config = ConfigDict(populate_by_name=True)
+    # Use original names, rely on alias for input mapping
     dateCreated: List[int] = Field(
         ..., alias="dateCreated", description="Date array when the role was created"
     )
@@ -18,15 +19,28 @@ class UserRole(BaseModel):
     )
     roleId: str = Field(..., description="Unique Role ID")
 
-    @property
-    def dateCreated(self) -> datetime:
-        """Convert date array to datetime object."""
-        return self.from_date_array(self.dateCreated)
+    @field_validator("dateCreated", "dateModified", mode='before')
+    @classmethod
+    def check_date_array_format(cls, v):
+        # Validator receives the raw input value due to mode='before'
+        if not isinstance(v, list) or len(v) < 6:
+            raise ValueError("Date array must be a list with at least 6 integer elements (YYYY, MM, DD, HH, MM, SS)")
+        # Optionally, add type check for elements if needed
+        # if not all(isinstance(i, int) for i in v):
+        #     raise ValueError("All elements in date array must be integers")
+        return v
 
     @property
-    def dateModified(self) -> datetime:
+    def created_datetime(self) -> datetime:
         """Convert date array to datetime object."""
-        return self.from_date_array(self.dateModified)
+        # Access the validated list stored in the field
+        return self._from_date_array(self.dateCreated)
+
+    @property
+    def modified_datetime(self) -> datetime:
+        """Convert date array to datetime object."""
+        # Access the validated list stored in the field
+        return self._from_date_array(self.dateModified)
 
     communityId: int = Field(..., description="Community ID associated with the role")
     name: str = Field(..., description="Name of the role")
@@ -36,9 +50,11 @@ class UserRole(BaseModel):
     inactive: bool = Field(False, description="Indicates if the role is inactive")
 
     @classmethod
-    def from_date_array(cls, date_array: List[int]) -> datetime:
-        """Convert a date array [YYYY, MM, DD, HH, MM, SS, NNNNNNNNN] to datetime."""
-        if len(date_array) >= 6:
+    def _from_date_array(cls, date_array: List[int]) -> datetime:
+        """Convert a date array [YYYY, MM, DD, HH, MM, SS, NNNNNNNNN] to datetime.
+           Assumes validation already happened via field_validator.
+        """
+        try:
             return datetime(
                 year=date_array[0],
                 month=date_array[1],
@@ -48,7 +64,9 @@ class UserRole(BaseModel):
                 second=date_array[5],
                 microsecond=date_array[6] // 1000 if len(date_array) > 6 else 0,
             )
-        raise ValueError("Invalid date array format")
+        except (TypeError, IndexError) as e:
+            # This should ideally not happen if validator works correctly
+            raise ValueError(f"Error converting validated date array: {e}") from e
 
 
 class UserModel(BaseModel):

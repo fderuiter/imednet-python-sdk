@@ -7,6 +7,15 @@ from pydantic import TypeAdapter, ValidationError
 
 from imednet_sdk.models import ApiResponse, SiteModel
 
+# Sample valid data based on docs/reference/sites.md
+VALID_SITE_DATA = {
+    "studyKey": "PHARMADEMO",
+    "siteId": 1,
+    "siteName": "Mock Site 1",
+    "siteEnrollmentStatus": "Enrollment Open",
+    "dateCreated": "2024-11-04 16:03:19",
+    "dateModified": "2024-11-04 16:03:20",
+}
 
 def test_site_creation():
     """Test creating a SiteModel with valid data."""
@@ -107,3 +116,67 @@ def test_site_serialization():
 
     site_json = site.model_dump(mode="json")
     assert isinstance(site_json["dateCreated"], str)
+
+
+def test_site_model_validation():
+    """Test successful validation of SiteModel with valid data."""
+    model = SiteModel.model_validate(VALID_SITE_DATA)
+
+    assert model.studyKey == VALID_SITE_DATA["studyKey"]
+    assert model.siteId == VALID_SITE_DATA["siteId"]
+    assert model.siteName == VALID_SITE_DATA["siteName"]
+    assert model.siteEnrollmentStatus == VALID_SITE_DATA["siteEnrollmentStatus"]
+    assert isinstance(model.dateCreated, datetime)
+    assert model.dateCreated == datetime(2024, 11, 4, 16, 3, 19)
+    assert isinstance(model.dateModified, datetime)
+    assert model.dateModified == datetime(2024, 11, 4, 16, 3, 20)
+
+
+def test_site_model_missing_required_field():
+    """Test ValidationError is raised when a required field is missing."""
+    invalid_data = VALID_SITE_DATA.copy()
+    del invalid_data["siteName"]  # Remove a required field
+
+    with pytest.raises(ValidationError) as excinfo:
+        SiteModel.model_validate(invalid_data)
+
+    assert "siteName" in str(excinfo.value)
+    assert "Field required" in str(excinfo.value)
+
+
+def test_site_model_invalid_data_type():
+    """Test ValidationError is raised for incorrect data types."""
+    invalid_data = VALID_SITE_DATA.copy()
+    invalid_data["siteId"] = "not-an-integer"
+
+    with pytest.raises(ValidationError) as excinfo:
+        SiteModel.model_validate(invalid_data)
+
+    assert "siteId" in str(excinfo.value)
+    assert "Input should be a valid integer" in str(excinfo.value)
+
+    invalid_data_datetime = VALID_SITE_DATA.copy()
+    invalid_data_datetime["dateCreated"] = "not-a-datetime"
+    with pytest.raises(ValidationError) as excinfo_datetime:
+        SiteModel.model_validate(invalid_data_datetime)
+
+    assert "dateCreated" in str(excinfo_datetime.value)
+    assert "datetime" in str(excinfo_datetime.value).lower()
+
+
+def test_site_model_serialization():
+    """Test serialization of the SiteModel."""
+    model = SiteModel.model_validate(VALID_SITE_DATA)
+    dump = model.model_dump(by_alias=True)
+
+    expected_data = VALID_SITE_DATA.copy()
+    # Adjust datetime serialization if needed
+
+    # Check basic fields match
+    for key, value in expected_data.items():
+        if key not in ["dateCreated", "dateModified"]:
+            assert dump[key] == value
+
+    # Check datetime serialization
+    assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
+    assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 20)
