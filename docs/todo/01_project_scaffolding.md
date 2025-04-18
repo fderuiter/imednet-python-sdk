@@ -2,7 +2,7 @@
 # Task 1: Project Scaffolding and Initial Setup
 
 - [x] Initialize Git repository (`git init`) and configure default branch (e.g., `main`).
-- [ ] Create project directory structure:
+- [x] Create project directory structure:
   - `imednet_sdk/` (main library code)
     - `api/` (resource-specific clients)
     - `models/` (Pydantic data models)
