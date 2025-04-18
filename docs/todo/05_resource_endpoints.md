@@ -1,48 +1,81 @@
-<!-- filepath: c:\Users\FrederickdeRuiter\Documents\GitHub\imednet-python-sdk\docs\todo\05_resource_endpoints.md -->
-# Task 5: Resource Endpoint Implementations
+# Task 05: Resource Endpoint Implementations
 
-- [ ] Create separate client classes for each resource type in `imednet_sdk/api/`, inheriting from `BaseClient`.
-- [ ] Implement methods corresponding to each documented API endpoint, using the Pydantic models defined in Task 4 for request bodies and response parsing.
+**Objective:** Implement client classes and methods for each API resource endpoint.
 
-- [ ] **StudiesClient (`imednet_sdk/api/studies.py`)**
-  - `list_studies()`: `GET /api/v1/edc/studies` (Supports pagination, sorting by `studyKey`, filtering by `studyKey`, `studyName`, etc.) - Ref: `studies.md`
-  - *Note: POST/PUT/DELETE for studies are not documented in the provided reference.*
+**Definition of Done:**
 
-- [ ] **SitesClient (`imednet_sdk/api/sites.py`)**
-  - `list_sites(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/sites` (Supports pagination, sorting by `siteId`, filtering by `siteId`, `siteName`, etc.) - Ref: `sites.md`
+* Separate client classes exist for each resource type in `imednet_sdk/api/`.
+* Methods corresponding to each documented API endpoint are implemented.
+* Methods correctly handle path parameters, query parameters (pagination, sorting, filtering), and request bodies.
+* Methods accept and return the appropriate Pydantic models (Task 4).
+* Methods raise specific exceptions on API errors (Task 6).
+* Unit tests exist for each method, covering success and error cases, parameter handling, and model parsing.
+* Resource clients are accessible via the main `ImednetClient` instance.
 
-- [ ] **FormsClient (`imednet_sdk/api/forms.py`)**
-  - `list_forms(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/forms` (Supports pagination, sorting by `formId`, filtering by `formId`, `formKey`, `formType`, etc.) - Ref: `forms.md`
+**Workflow Steps (Apply per Resource/Method):**
 
-- [ ] **IntervalsClient (`imednet_sdk/api/intervals.py`)**
-  - `list_intervals(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/intervals` (Supports pagination, sorting by `intervalId`, filtering by `intervalId`, `intervalName`, etc.) - Ref: `intervals.md`
+1. **Identify Task:** Select a resource (e.g., Studies) and a method (e.g., `list_studies`) from the Sub-Tasks list below.
+2. **Write/Update Tests (TDD):**
+   * Navigate to `tests/api/`.
+   * Create/update the test file (e.g., `test_studies.py`).
+   * Mock the HTTP request using `requests-mock` or `respx`.
+   * Define expected URL, method, headers, query parameters (pagination, sorting, filtering), and request body (for POST).
+   * Define mock success response (2xx status, JSON body with `metadata` and `data` matching Pydantic models from Task 4).
+   * Define mock error responses (4xx/5xx status, JSON body matching error structure from Task 6).
+   * Write tests asserting:
+     * Correct request parameters are sent.
+     * Successful response is deserialized into the correct Pydantic model (`ApiResponseModel[ResourceType]`).
+     * Correct custom exceptions (Task 6) are raised for error responses.
+     * Pagination/filtering/sorting parameters are handled correctly.
+3. **Implement Code:**
+   * Navigate to `imednet_sdk/api/`.
+   * Create/update the resource client class (e.g., `studies.py`).
+   * Define the method (e.g., `list_studies`).
+   * Call the base client's request method (`_request`, `get`, `post`).
+   * Pass correct path parameters, query parameters (handling defaults, pagination, sorting, filtering), and data (serializing Pydantic models for POST).
+   * Specify the expected response Pydantic model for deserialization.
+4. **Run Specific Tests:** `pytest tests/api/test_<resource>.py -k <method_name>` (e.g., `pytest tests/api/test_studies.py -k list_studies`)
+5. **Debug & Iterate:** Fix implementation or tests until specific tests pass.
+6. **Run All Module Unit Tests:** `pytest tests/api/`
+7. **Update Memory File:** Document implementation details in `docs/memory/05_resource_endpoints.md` (or resource-specific memory files).
+8. **Stage Changes:** `git add .`
+9. **Run Pre-commit Checks:** `pre-commit run --all-files`
+10. **Fix Pre-commit Issues:** Address any reported issues.
+11. **Re-run Specific Tests (Post-Fix):** `pytest tests/api/test_<resource>.py -k <method_name>`
+12. **Re-run All Module Unit Tests (Post-Fix - Optional):** `pytest tests/api/`
+13. **Update Memory File (Post-Fix):** Note any significant fixes.
+14. **Stage Changes (Again):** `git add .`
+15. **Update Task List:** Mark the specific method/resource sub-task checkbox below as done (`[x]`). Stage the change: `git add docs/todo/05_resource_endpoints.md`
+16. **Commit Changes:** `git commit -m "feat(api): implement <resource> client <method_name> method"` (Adjust scope and message).
 
-- [ ] **RecordsClient (`imednet_sdk/api/records.py`)**
-  - `list_records(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/records` (Supports pagination, sorting by `recordId`, filtering by standard fields, and `recordDataFilter`) - Ref: `records.md`
-  - `create_records(study_key: str, records: List[RecordCreateModel], email_notify: Optional[str] = None)`: `POST /api/v1/edc/studies/{studyKey}/records` (Requires request body, optional `x-email-notify` header) - Ref: `records.md`
+**Sub-Tasks:**
 
-- [ ] **RecordRevisionsClient (`imednet_sdk/api/record_revisions.py`)**
-  - `list_record_revisions(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/recordRevisions` (Supports pagination, sorting by `recordRevisionId`, filtering by `recordId`, `subjectKey`, `user`, etc.) - Ref: `record_revisions.md`
-
-- [ ] **VariablesClient (`imednet_sdk/api/variables.py`)**
-  - `list_variables(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/variables` (Supports pagination, sorting by `variableId`, filtering by `variableId`, `formId`, `formKey`, etc.) - Ref: `variables.md`
-
-- [ ] **CodingsClient (`imednet_sdk/api/codings.py`)**
-  - `list_codings(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/codings` (Supports pagination, sorting by `recordId`, filtering by `dictionaryName`, `codedBy`, etc.) - Ref: `codings.md`
-
-- [ ] **SubjectsClient (`imednet_sdk/api/subjects.py`)**
-  - `list_subjects(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/subjects` (Supports pagination, sorting by `subjectId`, filtering by `subjectId`, `subjectKey`, `siteName`, etc.) - Ref: `subjects.md`
-
-- [ ] **UsersClient (`imednet_sdk/api/users.py`)**
-  - `list_users(study_key: str, include_inactive: bool = False)`: `GET /api/v1/edc/studies/{studyKey}/users` (Supports pagination, sorting by `login`, `includeInactive` param) - Ref: `users.md`
-
-- [ ] **VisitsClient (`imednet_sdk/api/visits.py`)**
-  - `list_visits(study_key: str)`: `GET /api/v1/edc/studies/{studyKey}/visits` (Supports pagination, sorting by `visitId`, filtering by `subjectKey`, `intervalName`, `visitDate`, etc.) - Ref: `visits.md`
-
-- [ ] **JobsClient (`imednet_sdk/api/jobs.py`)**
-  - `get_job_status(study_key: str, batch_id: str)`: `GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}` - Ref: `jobs.md`
-
-- [ ] Ensure all client methods correctly handle path parameters (like `studyKey`, `batchId`).
-- [ ] Ensure query parameters (`page`, `size`, `sort`, `filter`, `recordDataFilter`, `includeInactive`) are passed correctly.
-- [ ] Ensure methods return the deserialized Pydantic models (e.g., `ApiResponseModel[StudyModel]`, `JobStatusModel`).
-- [ ] Integrate error handling (Task 6) to raise specific exceptions on API errors.
+* [ ] **Base Resource Client:**
+  * [ ] Define a base class (e.g., `ResourceClient`) in `imednet_sdk/api/_base.py` that resource clients can inherit from. It should store a reference to the main `ImednetClient` instance.
+* [ ] **StudiesClient (`imednet_sdk/api/studies.py`)**
+  * [ ] `list_studies(**kwargs)`: `GET /api/v1/edc/studies` (Supports pagination, sorting, filtering) - Ref: `studies.md`
+* [ ] **SitesClient (`imednet_sdk/api/sites.py`)**
+  * [ ] `list_sites(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/sites` (Supports pagination, sorting, filtering) - Ref: `sites.md`
+* [ ] **FormsClient (`imednet_sdk/api/forms.py`)**
+  * [ ] `list_forms(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/forms` (Supports pagination, sorting, filtering) - Ref: `forms.md`
+* [ ] **IntervalsClient (`imednet_sdk/api/intervals.py`)**
+  * [ ] `list_intervals(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/intervals` (Supports pagination, sorting, filtering) - Ref: `intervals.md`
+* [ ] **RecordsClient (`imednet_sdk/api/records.py`)**
+  * [ ] `list_records(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/records` (Supports pagination, sorting, filtering, `recordDataFilter`) - Ref: `records.md`
+  * [ ] `create_records(study_key: str, records: List[RecordCreateModel], email_notify: Optional[str] = None, **kwargs)`: `POST /api/v1/edc/studies/{studyKey}/records` (Requires request body, optional `x-email-notify` header) - Ref: `records.md`
+* [ ] **RecordRevisionsClient (`imednet_sdk/api/record_revisions.py`)**
+  * [ ] `list_record_revisions(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/recordRevisions` (Supports pagination, sorting, filtering) - Ref: `record_revisions.md`
+* [ ] **VariablesClient (`imednet_sdk/api/variables.py`)**
+  * [ ] `list_variables(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/variables` (Supports pagination, sorting, filtering) - Ref: `variables.md`
+* [ ] **CodingsClient (`imednet_sdk/api/codings.py`)**
+  * [ ] `list_codings(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/codings` (Supports pagination, sorting, filtering) - Ref: `codings.md`
+* [ ] **SubjectsClient (`imednet_sdk/api/subjects.py`)**
+  * [ ] `list_subjects(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/subjects` (Supports pagination, sorting, filtering) - Ref: `subjects.md`
+* [ ] **UsersClient (`imednet_sdk/api/users.py`)**
+  * [ ] `list_users(study_key: str, include_inactive: bool = False, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/users` (Supports pagination, sorting, `includeInactive` param) - Ref: `users.md`
+* [ ] **VisitsClient (`imednet_sdk/api/visits.py`)**
+  * [ ] `list_visits(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/visits` (Supports pagination, sorting, filtering) - Ref: `visits.md`
+* [ ] **JobsClient (`imednet_sdk/api/jobs.py`)**
+  * [ ] `get_job_status(study_key: str, batch_id: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}` - Ref: `jobs.md`
+* [ ] **Integrate Resource Clients into Main Client:**
+  * [ ] Add properties to `ImednetClient` (e.g., `client.studies`, `client.sites`) that initialize and return instances of the resource clients, passing the main client instance to them.

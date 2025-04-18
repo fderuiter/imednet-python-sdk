@@ -1,19 +1,102 @@
 # Task 02: Core HTTP Client
+<!-- filepath: c:\\Users\\FrederickdeRuiter\\Documents\\GitHub\\imednet-python-sdk\\docs\\todo\\02_core_http_client.md -->
 
-**Status:** Basic Implementation Complete (Further refinement needed for error handling, retries)
+**Status:** Basic Implementation Complete (Further refinement needed for error handling, retries, timeouts)
 
 **Objective:** Implement the core HTTP client responsible for making requests to the iMednet API.
 
-**Key Requirements:**
+**Key Requirements & Sub-Tasks:**
 
-* [x] Use `httpx` for making HTTP requests.
-* [x] Handle base URL configuration (defaulting to production).
-* [x] Include necessary authentication headers (`x-api-key`, `x-imn-security-key`) automatically.
-* [x] Provide methods for common HTTP verbs (GET, POST - PUT/DELETE removed as not supported).
-* [x] Basic error handling for connection issues and non-2xx status codes (currently raises `httpx` exceptions).
-* [ ] Implement configurable request timeouts.
-* [ ] Implement retry logic for transient errors (e.g., 5xx).
-* [x] Support context manager protocol (`with` statement) for cleanup.
+* [x] **Use `httpx` for making HTTP requests.**
+  * [x] Add `httpx` to `requirements.txt` and `pyproject.toml`.
+  * [x] Implement basic client structure using `httpx.Client` or `httpx.AsyncClient`.
+* [x] **Handle base URL configuration.**
+  * [x] Add `base_url` parameter to `ImednetClient.__init__`.
+  * [x] Provide a default production URL.
+  * [x] Write tests (`tests/test_client.py`) for base URL initialization.
+  * [x] Implement the configuration logic in `imednet_sdk/client.py`.
+  * [x] Run tests, debug, and iterate until tests pass.
+  * [x] Update `docs/memory/02_core_http_client.md`.
+  * [x] Stage, run pre-commit, fix issues, re-test, stage again, mark task done, commit.
+* [x] **Include necessary authentication headers automatically.**
+  * [x] Add `api_key` and `imn_security_key` parameters to `ImednetClient.__init__`.
+  * [x] Store credentials in the client instance.
+  * [x] Write tests (`tests/test_client.py`) to verify headers are added to requests.
+  * [x] Modify request methods in `imednet_sdk/client.py` to inject `x-api-key` and `x-imn-security-key` headers.
+  * [x] Run tests, debug, and iterate until tests pass.
+  * [x] Update `docs/memory/02_core_http_client.md`.
+  * [x] Stage, run pre-commit, fix issues, re-test, stage again, mark task done, commit.
+* [x] **Provide methods for common HTTP verbs (GET, POST).** (PUT/DELETE removed as not supported by API).
+  * [x] Define `_request`, `get`, and `post` methods in `ImednetClient`.
+  * [x] Write basic tests (`tests/test_client.py`) for GET and POST requests using `requests-mock` or similar.
+  * [x] Implement the `get` and `post` methods in `imednet_sdk/client.py`, calling the underlying `httpx` client.
+  * [x] Run tests, debug, and iterate until tests pass.
+  * [x] Update `docs/memory/02_core_http_client.md`.
+  * [x] Stage, run pre-commit, fix issues, re-test, stage again, mark task done, commit.
+* [x] **Basic error handling for connection issues and non-2xx status codes.**
+  * [x] Initial implementation relies on `httpx` raising its exceptions (e.g., `httpx.RequestError`, `httpx.HTTPStatusError`). Refinement in Task 06.
+  * [x] Write tests (`tests/test_client.py`) for expected `httpx` exceptions on network errors or bad status codes.
+  * [x] Ensure the client correctly propagates these exceptions.
+  * [x] Run tests, debug, and iterate until tests pass.
+  * [x] Update `docs/memory/02_core_http_client.md`.
+  * [x] Stage, run pre-commit, fix issues, re-test, stage again, mark task done, commit.
+* [ ] **Implement configurable request timeouts.**
+  * [ ] **Identify Task:** Implement configurable timeouts.
+  * [ ] **Write/Update Tests:** Add tests to `tests/test_client.py` to:
+    * [ ] Verify default timeout is used if none is provided.
+    * [ ] Verify a custom timeout passed during client initialization is used.
+    * [ ] Verify a timeout passed directly to a request method (e.g., `get(..., timeout=...)`) overrides the client default.
+    * [ ] Verify `httpx.TimeoutException` is raised when a timeout occurs.
+  * [ ] **Implement Code:**
+    * [ ] Add a `timeout` parameter to `ImednetClient.__init__` with a reasonable default (e.g., `httpx.Timeout(10.0)`).
+    * [ ] Store the timeout configuration in the client instance.
+    * [ ] Pass the configured timeout to the underlying `httpx.Client` upon its initialization or to individual requests.
+    * [ ] Allow overriding the timeout on a per-request basis in `get`/`post` methods.
+  * [ ] **Run Specific Tests:** `pytest tests/test_client.py -k timeout`
+  * [ ] **Debug & Iterate:** Fix implementation or tests until specific tests pass.
+  * [ ] **Run All Module Unit Tests:** `pytest tests/`
+  * [ ] **Update Memory File:** Document timeout implementation details in `docs/memory/02_core_http_client.md`.
+  * [ ] **Stage Changes:** `git add .`
+  * [ ] **Run Pre-commit Checks:** `pre-commit run --all-files`
+  * [ ] **Fix Pre-commit Issues:** Address any reported issues.
+  * [ ] **Re-run Specific Tests (Post-Fix):** `pytest tests/test_client.py -k timeout`
+  * [ ] **Re-run All Module Unit Tests (Post-Fix - Optional):** `pytest tests/`
+  * [ ] **Update Memory File (Post-Fix):** Note any significant fixes.
+  * [ ] **Stage Changes (Again):** `git add .`
+  * [ ] **Update Task List:** Mark this sub-task as done: `[x] Implement configurable request timeouts.`
+  * [ ] **Commit Changes:** `git commit -m \"feat(client): implement configurable request timeouts\"`
+* [ ] **Implement retry logic for transient errors (e.g., 5xx, network errors).**
+  * [ ] **Identify Task:** Implement retry logic.
+  * [ ] **Write/Update Tests:** Add tests to `tests/test_client.py` to:
+    * [ ] Verify successful request occurs without retries on 2xx status.
+    * [ ] Verify retries happen for configured transient errors (e.g., 500, 503, `httpx.RequestError`).
+    * [ ] Verify the correct number of retries are attempted based on configuration.
+    * [ ] Verify backoff delay occurs between retries (if implemented).
+    * [ ] Verify the original error is raised after all retries fail.
+  * [ ] **Implement Code:**
+    * [ ] Consider using `httpx`'s built-in transport/retry capabilities or a library like `tenacity`.
+    * [ ] Add configuration parameters to `ImednetClient.__init__` (e.g., `retries=3`, `retry_statuses=[500, 503]`, `backoff_factor=0.5`).
+    * [ ] Integrate the retry mechanism into the `_request` method or `httpx.Client` setup.
+  * [ ] **Run Specific Tests:** `pytest tests/test_client.py -k retry`
+  * [ ] **Debug & Iterate:** Fix implementation or tests until specific tests pass.
+  * [ ] **Run All Module Unit Tests:** `pytest tests/`
+  * [ ] **Update Memory File:** Document retry implementation details in `docs/memory/02_core_http_client.md`.
+  * [ ] **Stage Changes:** `git add .`
+  * [ ] **Run Pre-commit Checks:** `pre-commit run --all-files`
+  * [ ] **Fix Pre-commit Issues:** Address any reported issues.
+  * [ ] **Re-run Specific Tests (Post-Fix):** `pytest tests/test_client.py -k retry`
+  * [ ] **Re-run All Module Unit Tests (Post-Fix - Optional):** `pytest tests/`
+  * [ ] **Update Memory File (Post-Fix):** Note any significant fixes.
+  * [ ] **Stage Changes (Again):** `git add .`
+  * [ ] **Update Task List:** Mark this sub-task as done: `[x] Implement retry logic...`
+  * [ ] **Commit Changes:** `git commit -m \"feat(client): implement retry logic for transient errors\"`
+* [x] **Support context manager protocol (`with` statement) for cleanup.**
+  * [x] Implement `__enter__` and `__exit__` (or `__aenter__`/`__aexit__` if async) in `ImednetClient`.
+  * [x] Ensure `__exit__` calls the underlying `httpx.Client.close()` method.
+  * [x] Write tests (`tests/test_client.py`) to verify the client can be used in a `with` statement and that `close()` is called.
+  * [x] Run tests, debug, and iterate until tests pass.
+  * [x] Update `docs/memory/02_core_http_client.md`.
+  * [x] Stage, run pre-commit, fix issues, re-test, stage again, mark task done, commit.
 
 **Acceptance Criteria:**
 
@@ -21,10 +104,10 @@
 * [x] GET requests can be made successfully.
 * [x] POST requests with JSON payloads can be made successfully.
 * [x] Basic tests exist for initialization, GET, and POST requests.
-* [ ] Tests exist for timeout configuration.
-* [ ] Tests exist for retry logic.
+* [ ] Tests exist for timeout configuration and functionality.
+* [ ] Tests exist for retry logic functionality.
+* [x] Client works correctly within a `with` statement.
 
 **Notes:**
 
-* Error handling will be further refined in Task 06.
-* Timeout and retry logic implementation deferred.
+* Error handling refinement (custom exceptions) is planned for Task 06.
