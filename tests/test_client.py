@@ -1,3 +1,5 @@
+import os
+
 import pytest
 import respx
 from httpx import ConnectError, HTTPStatusError, Response, Timeout, TimeoutException
@@ -16,6 +18,9 @@ DEFAULT_HEADERS = {
 }
 
 
+# --- Fixtures --- #
+
+
 @pytest.fixture
 def client():
     """Fixture to create an ImednetClient instance for tests."""
@@ -23,9 +28,43 @@ def client():
 
 
 @pytest.fixture
-def default_client():
-    """Fixture for a client with default settings."""
+def client_explicit_keys():
+    """Fixture for a client with explicitly passed keys."""
     return ImednetClient(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+
+
+@pytest.fixture
+def client_no_keys():
+    """Fixture attempting client init with no keys provided or in env."""
+    # Ensure env vars are unset for this test
+    os.environ.pop("IMEDNET_API_KEY", None)
+    os.environ.pop("IMEDNET_SECURITY_KEY", None)
+    return ImednetClient  # Return the class itself to test __init__ raising error
+
+
+@pytest.fixture
+def client_env_keys(monkeypatch):
+    """Fixture for a client reading keys from environment variables."""
+    monkeypatch.setenv("IMEDNET_API_KEY", API_KEY)
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", SECURITY_KEY)
+    # Don't pass keys to init
+    return ImednetClient(base_url=BASE_URL)
+
+
+@pytest.fixture
+def client_override_env_keys(monkeypatch):
+    """Fixture for a client where explicit keys override env vars."""
+    monkeypatch.setenv("IMEDNET_API_KEY", "env_api_key")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_security_key")
+    # Pass different keys explicitly
+    return ImednetClient(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+
+
+# Rename existing client fixture to avoid conflicts if needed, or adjust tests
+@pytest.fixture
+def default_client(client_explicit_keys):
+    """Fixture for a client with default settings (using explicit keys)."""
+    return client_explicit_keys
 
 
 @pytest.fixture
@@ -50,50 +89,104 @@ def custom_timeout_object_client():
     )
 
 
-@respx.mock
-def test_client_initialization(client):
-    """Test that the client initializes with correct attributes."""
-    assert client.base_url == BASE_URL
-    assert client._api_key == API_KEY  # Assuming private attribute
-    assert client._security_key == SECURITY_KEY  # Assuming private attribute
-    assert client._client is not None  # Assuming an internal httpx client exists
+# --- Initialization and Credential Tests --- #
+
+
+def test_client_initialization_explicit_keys(client_explicit_keys):
+    """Test client initializes correctly with explicit keys."""
+    assert client_explicit_keys.base_url == BASE_URL
+    assert client_explicit_keys._api_key == API_KEY
+    assert client_explicit_keys._security_key == SECURITY_KEY
+    assert client_explicit_keys._client is not None
+    assert client_explicit_keys._default_headers["x-api-key"] == API_KEY
+    assert client_explicit_keys._default_headers["x-imn-security-key"] == SECURITY_KEY
+
+
+def test_client_initialization_env_keys(client_env_keys):
+    """Test client initializes correctly reading keys from environment variables."""
+    assert client_env_keys.base_url == BASE_URL
+    assert client_env_keys._api_key == API_KEY
+    assert client_env_keys._security_key == SECURITY_KEY
+    assert client_env_keys._client is not None
+    assert client_env_keys._default_headers["x-api-key"] == API_KEY
+    assert client_env_keys._default_headers["x-imn-security-key"] == SECURITY_KEY
+
+
+def test_client_initialization_override_env_keys(client_override_env_keys):
+    """Test client initialization uses explicit keys, overriding environment variables."""
+    assert client_override_env_keys.base_url == BASE_URL
+    # Should use the explicitly passed keys, not the env var keys
+    assert client_override_env_keys._api_key == API_KEY
+    assert client_override_env_keys._security_key == SECURITY_KEY
+    assert client_override_env_keys._client is not None
+    assert client_override_env_keys._default_headers["x-api-key"] == API_KEY
+    assert client_override_env_keys._default_headers["x-imn-security-key"] == SECURITY_KEY
+
+
+def test_client_initialization_missing_keys_error(client_no_keys):
+    """Test ValueError is raised if keys are missing from args and environment."""
+    with pytest.raises(ValueError, match="API key not provided"):
+        client_no_keys()  # Attempt initialization without keys
+
+
+def test_client_initialization_missing_api_key_error(monkeypatch):
+    """Test ValueError is raised if only API key is missing."""
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", SECURITY_KEY)
+    os.environ.pop("IMEDNET_API_KEY", None)
+    with pytest.raises(ValueError, match="API key not provided"):
+        ImednetClient(security_key=None)  # Pass None explicitly too
+
+
+def test_client_initialization_missing_security_key_error(monkeypatch):
+    """Test ValueError is raised if only Security key is missing."""
+    monkeypatch.setenv("IMEDNET_API_KEY", API_KEY)
+    os.environ.pop("IMEDNET_SECURITY_KEY", None)
+    with pytest.raises(ValueError, match="Security key not provided"):
+        ImednetClient(api_key=None)  # Pass None explicitly too
+
+
+# --- Header Injection Tests (Task 03 / Reuse from Task 02) --- #
 
 
 @respx.mock
-def test_get_request_headers_and_url(client):
-    """Test GET request sends correct headers and constructs URL properly."""
+def test_get_request_headers_and_url(default_client):
+    """Test GET request sends correct headers (x-api-key, x-imn-security-key, Accept)."""
     endpoint = "/studies"
     expected_url = f"{BASE_URL}{endpoint}"
     mock_route = respx.get(expected_url).mock(return_value=Response(200, json={"data": "success"}))
 
-    response = client._get(endpoint)  # Assuming internal _get method
+    response = default_client._get(endpoint)
 
     assert mock_route.called
     request = mock_route.calls.last.request
     assert str(request.url) == expected_url
-    for key, value in DEFAULT_HEADERS.items():
-        assert request.headers[key] == value
+    # Check all required headers
+    assert request.headers["x-api-key"] == API_KEY
+    assert request.headers["x-imn-security-key"] == SECURITY_KEY
+    assert request.headers["accept"] == "application/json"
     assert response.status_code == 200
     assert response.json() == {"data": "success"}
 
 
 @respx.mock
-def test_post_request_headers_url_and_data(client):
-    """Test POST request sends correct headers, URL, and JSON data."""
+def test_post_request_headers_url_and_data(default_client):
+    """Test POST request sends correct headers (incl Content-Type) and data."""
     endpoint = "/studies"
     expected_url = f"{BASE_URL}{endpoint}"
     payload = {"name": "New Study"}
     mock_route = respx.post(expected_url).mock(return_value=Response(201, json={"id": 1}))
 
-    response = client._post(endpoint, json=payload)  # Assuming internal _post method
+    response = default_client._post(endpoint, json=payload)
 
     assert mock_route.called
     request = mock_route.calls.last.request
     assert str(request.url) == expected_url
-    # Corrected assertion: remove space after colon
     assert request.content == b'{"name":"New Study"}'
-    for key, value in DEFAULT_HEADERS.items():
-        assert request.headers[key] == value
+    # Check all required headers
+    assert request.headers["x-api-key"] == API_KEY
+    assert request.headers["x-imn-security-key"] == SECURITY_KEY
+    assert request.headers["accept"] == "application/json"
+    assert request.headers["content-type"] == "application/json"
     assert response.status_code == 201
     assert response.json() == {"id": 1}
 

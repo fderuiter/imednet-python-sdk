@@ -1,3 +1,4 @@
+import os
 import random
 import time
 from typing import Any, Dict, Optional, Set, Union
@@ -23,8 +24,8 @@ class ImednetClient:
 
     def __init__(
         self,
-        api_key: str,
-        security_key: str,
+        api_key: Optional[str] = None,
+        security_key: Optional[str] = None,
         base_url: Optional[str] = None,
         timeout: TimeoutTypes = httpx.Timeout(30.0, connect=5.0),
         retries: int = 3,
@@ -36,8 +37,9 @@ class ImednetClient:
         """Initializes the ImednetClient.
 
         Args:
-            api_key: Your iMednet API key.
-            security_key: Your iMednet Security key.
+            api_key: Your iMednet API key. If None, reads from IMEDNET_API_KEY env var.
+            security_key: Your iMednet Security key. If None, reads from IMEDNET_SECURITY_KEY
+                env var.
             base_url: The base URL for the iMednet API. Defaults to production.
             timeout: Default request timeout configuration.
             retries: Number of retry attempts for transient errors.
@@ -48,11 +50,31 @@ class ImednetClient:
             retry_methods: Set of HTTP methods to allow retries for.
                            Defaults to {"GET", "POST"}.
             retry_exceptions: Set of httpx exception types to retry on.
-                              Defaults to {ConnectError, ReadTimeout, PoolTimeout}.
+                              Defaults to {ConnectError, ReadTimeout,
+                              PoolTimeout}.
+
+        Raises:
+            ValueError: If api_key or security_key is not provided and cannot be found
+                        in environment variables (placeholder for AuthenticationError).
         """
         self.base_url = base_url or self.DEFAULT_BASE_URL
-        self._api_key = api_key
-        self._security_key = security_key
+
+        # Determine API Key: argument > environment variable > error
+        resolved_api_key = api_key or os.getenv("IMEDNET_API_KEY")
+        if not resolved_api_key:
+            raise ValueError(
+                "API key not provided and IMEDNET_API_KEY environment variable not set."
+            )
+        self._api_key = resolved_api_key
+
+        # Determine Security Key: argument > environment variable > error
+        resolved_security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        if not resolved_security_key:
+            raise ValueError(
+                "Security key not provided and IMEDNET_SECURITY_KEY environment variable not set."
+            )
+        self._security_key = resolved_security_key
+
         self._default_timeout = timeout
         self._retries = retries
         self._backoff_factor = backoff_factor
