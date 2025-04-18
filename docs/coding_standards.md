@@ -1,56 +1,111 @@
-# Coding Standards for imednet-python-sdk
+# Coding Standards
 
-## General Guidelines
+This document outlines the coding standards and conventions to be followed in the `imednet-python-sdk` project.
 
-- Follow PEP 8 style guide for Python code.
-- Use meaningful variable, function, and class names that clearly describe their purpose.
-- Keep lines of code to a maximum of 79 characters.
-- Use spaces around operators and after commas, but not directly inside brackets.
+## General Principles
 
-## Documentation
+* **Readability:** Code should be easy to read and understand. Prioritize clarity over brevity.
+* **Consistency:** Follow established patterns and conventions throughout the codebase.
+* **Simplicity:** Prefer simple solutions over complex ones (KISS - Keep It Simple, Stupid).
+* **Maintainability:** Write code that is easy to modify and debug.
 
-- Each module, class, and function should have a docstring that describes its purpose, parameters, and return values.
-- Use reStructuredText format for docstrings to maintain consistency and compatibility with documentation generators.
+## Python Style Guide (PEP 8)
 
-## Comments
+* Adhere strictly to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
+* Use a linter (like `ruff` or `flake8`) and formatter (`black`) to enforce PEP 8 automatically (configured via `pre-commit`).
+* Maximum line length: 78 characters (enforced by `black`).
 
-- Use comments to explain complex logic or decisions in the code.
-- Avoid obvious comments that do not add value to the understanding of the code.
+## Naming Conventions
 
-## Version Control
+* **Modules:** `lowercase_with_underscores.py`
+* **Packages:** `lowercase_with_underscores`
+* **Classes:** `CapWords` (e.g., `ImednetClient`)
+* **Methods/Functions:** `lowercase_with_underscores()`
+* **Variables:** `lowercase_with_underscores`
+* **Constants:** `ALL_CAPS_WITH_UNDERSCORES`
+* **Private Members:** Prefix with a single underscore (`_private_method`, `_internal_variable`). Avoid using double underscores (`__mangled`) unless necessary for name mangling.
 
-- Commit messages should be clear and descriptive, following the format: "Type: Short description".
-- Types include: `Feature`, `Fix`, `Refactor`, `Documentation`, etc.
+## Docstrings (PEP 257)
 
-## Testing
+* Follow [PEP 257](https://www.python.org/dev/peps/pep-0257/) conventions.
+* Use Google-style docstrings (as supported by Sphinx's `napoleon` extension).
+* Every public module, class, method, and function should have a docstring.
+* Docstrings should explain *what* the code does and *why*, not just *how*.
 
-- Write unit tests for all public methods and classes.
-- Use descriptive names for test functions to indicate what they are testing.
-- Ensure that tests are organized and follow a consistent naming convention.
+```python
+def example_function(param1, param2):
+    """Example function demonstrating docstring format.
 
-## Code Reviews
+    Args:
+        param1 (int): The first parameter.
+        param2 (str): The second parameter.
 
-- All code should be reviewed by at least one other team member before being merged into the main branch.
-- Provide constructive feedback during code reviews, focusing on code quality, readability, and adherence to standards.
+    Returns:
+        bool: True if successful, False otherwise.
 
-## Dependencies
+    Raises:
+        ValueError: If param1 is negative.
+    """
+    if param1 < 0:
+        raise ValueError("param1 cannot be negative")
+    # ... function logic ...
+    return True
+```
 
-- Manage dependencies using `requirements.txt` and `pyproject.toml`.
-- Regularly update dependencies to keep the project secure and up-to-date.
+## Type Hinting (PEP 484)
+
+* Use type hints extensively for function signatures and variables where appropriate ([PEP 484](https://www.python.org/dev/peps/pep-0484/)).
+* Use tools like `mypy` for static type checking (configured via `pre-commit`).
+* Use forward references (strings) or `from __future__ import annotations` if needed for complex types or circular dependencies.
+
+```python
+from typing import List, Optional
+
+def process_data(data: List[str], threshold: Optional[int] = None) -> bool:
+    # ... function logic ...
+    pass
+```
+
+## Imports
+
+* Import standard library modules first, then third-party libraries, then local application modules.
+* Separate import groups with a blank line.
+* Use absolute imports where possible.
+* Use `isort` (via `ruff` or standalone) to automatically sort imports (configured via `pre-commit`).
 
 ## Error Handling
 
-- Use exceptions to handle errors gracefully.
-- Provide meaningful error messages that can help in debugging.
+* Define custom exception classes inheriting from standard exceptions where appropriate (e.g., `ImednetError(Exception)`).
+* Be specific about the exceptions caught.
+* Avoid catching generic `Exception` unless absolutely necessary and re-raising or logging appropriately.
 
-## Performance
+## Testing
 
-- Write efficient code, considering time and space complexity.
-- Profile and optimize code as necessary, especially in performance-critical sections.
+* Use `pytest` as the testing framework.
+* Write unit tests for individual components (classes, functions).
+* Write integration tests where necessary to test interactions between components.
+* Aim for high test coverage.
+* Use mocking libraries (`pytest-mock`, `respx`) effectively.
+* Tests should be placed in the `tests/` directory, mirroring the structure of the `imednet_sdk/` directory.
 
-## Security
+## Commit Messages
 
-- Be mindful of security best practices, especially when handling sensitive data.
-- Validate and sanitize all inputs to prevent injection attacks.
+* Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+* Example: `feat: add user authentication endpoint`
+* Example: `fix: correct calculation in data processing`
+* Example: `docs: update README with setup instructions`
+* Example: `refactor: simplify client request logic`
+* Example: `test: add tests for edge cases in parser`
 
-By adhering to these coding standards, we can ensure that the imednet-python-sdk remains maintainable, readable, and efficient.
+## Documentation
+
+* Maintain documentation in the `docs/` directory.
+* Use reStructuredText (`.rst`) for Sphinx documentation.
+* Use Markdown (`.md`) for other documentation files (like this one).
+* Keep documentation up-to-date with code changes.
+
+## Dependencies
+
+* List runtime dependencies in `pyproject.toml` (or `requirements.txt` / `setup.py` if not using `pyproject.toml` fully yet).
+* List development dependencies in `requirements-dev.txt` or a `[tool.poetry.group.dev.dependencies]` section in `pyproject.toml`.
+* Pin dependency versions to ensure reproducible builds, but allow for compatible updates (e.g., `httpx>=0.25,<0.28`).
