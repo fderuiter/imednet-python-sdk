@@ -13,7 +13,7 @@
     * [x] Verify `pydantic.ValidationError` is raised for incorrect data types, missing required fields, or failed custom validation.
     * [x] Verify correct handling of optional fields (`Optional[T]`, `| None`) and `null` values.
     * [x] Verify custom validators (e.g., using `@field_validator` or `Annotated` types for dates, enums) work correctly. (Partially done via date/datetime handling)
-    * [ ] Verify handling of generic models (e.g., `ApiResponseModel`). Use `pydantic.TypeAdapter` for validating lists/unions directly (e.g., `TypeAdapter(List[StudyModel]).validate_python(list_of_study_data)`).
+    * [x] Verify handling of generic models (e.g., `ApiResponseModel`). Use `pydantic.TypeAdapter` for validating lists/unions directly (e.g., `TypeAdapter(List[StudyModel]).validate_python(list_of_study_data)`).
   * [x] **Implement Code:**
     * [x] Ensure `imednet_sdk/models/__init__.py` exists and exports models.
     * [x] Create/organize model files (e.g., `_common.py`, `study.py`, `site.py`, etc.).
@@ -39,10 +39,10 @@
       * [x] `QueryModel` (`queries.md`)
       * [x] `CodingModel` (`codings.md`)
       * [x] `IntervalModel` (`intervals.md`)
-      * [ ] Add any other models identified in the reference docs.
-    * [ ] **Request Body Models:**
-      * [ ] `RecordCreateModel` (or similar, based on `POST /records` requirements)
-      * [ ] Define models for any other `POST` request bodies identified in the API documentation.
+      * [x] Add any other models identified in the reference docs. (Reviewed, none found beyond RecordPostItem)
+    * [x] **Request Body Models:**
+      * [x] `RecordPostItem` (or similar, based on `POST /records` requirements) - Done
+      * [x] Define models for any other `POST`/`PUT`/`PATCH` request bodies identified in the API documentation. (Reviewed, none found)
     * [x] **Implementation Details:**
       * [x] Use `pydantic.BaseModel` as the base for all models.
       * [x] Use `pydantic.Field` for aliasing (`alias='apiFieldName'`), default values, etc.
@@ -52,16 +52,16 @@
   * [x] **Run Specific Tests:** (Done for all implemented models)
   * [x] **Debug & Iterate:** (Done for implemented models)
   * [x] **Run All Model Unit Tests:** (Done for implemented models)
-  * [ ] **Update Memory File:** Document model structure, design choices (aliases, validation), and Pydantic v2 usage in `docs/memory/04_data_models_and_serialization.md`.
-  * [ ] **Stage Changes:** `git add .`
-  * [ ] **Run Pre-commit Checks:** `pre-commit run --all-files`
-  * [ ] **Fix Pre-commit Issues:** Address linting, typing, formatting.
-  * [ ] **Re-run Specific Tests (Post-Fix):** `pytest tests/models/test_specific_model.py`
-  * [ ] **Re-run All Model Unit Tests (Post-Fix):** `pytest tests/models/`
-  * [ ] **Update Memory File (Post-Fix):** Note significant fixes.
-  * [ ] **Stage Changes (Again):** `git add .`
+  * [x] **Update Memory File:** Document model structure, design choices (aliases, validation), and Pydantic v2 usage in `docs/memory/04_data_models_and_serialization.md`.
+  * [x] **Stage Changes:** `git add .`
+  * [x] **Run Pre-commit Checks:** `pre-commit run --all-files`
+  * [x] **Fix Pre-commit Issues:** Address linting, typing, formatting.
+  * [x] **Re-run Specific Tests (Post-Fix):** `pytest tests/models/test_specific_model.py`
+  * [x] **Re-run All Model Unit Tests (Post-Fix):** `pytest tests/models/`
+  * [x] **Update Memory File (Post-Fix):** Note significant fixes.
+  * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done. (Done - this update)
-  * [ ] **Commit Changes:** `git commit -m "feat(models): define pydantic v2 models for API structures"` (or break down commits per resource).
+  * [x] **Commit Changes:** `git commit -m "feat(models): define pydantic v2 models for API structures"` (or break down commits per resource).
 
 * [x] **Integrate Deserialization into the Client:**
   * [x] **Identify Task:** Modify the client's request methods (`_request`, `get`, etc.) to automatically deserialize successful JSON responses into the appropriate Pydantic models using Pydantic v2 methods.
@@ -77,16 +77,16 @@
   * [x] **Run Specific Tests:** `pytest tests/test_client.py` (or relevant endpoint tests).
   * [x] **Debug & Iterate:** Fix client code, model definitions, or tests.
   * [x] **Run All Module Unit Tests:** `pytest tests/` (Assumed passing based on specific tests)
-  * [ ] **Update Memory File:** Document client deserialization logic using Pydantic v2 in `docs/memory/04_data_models_and_serialization.md`.
-  * [ ] **Stage Changes:** `git add .`
-  * [ ] **Run Pre-commit Checks:** `pre-commit run --all-files`
-  * [ ] **Fix Pre-commit Issues:** Address reported issues.
-  * [ ] **Re-run Specific Tests (Post-Fix):** `pytest tests/test_client.py`
-  * [ ] **Re-run All Module Unit Tests (Post-Fix):** `pytest tests/`
-  * [ ] **Update Memory File (Post-Fix):** Note significant fixes.
-  * [ ] **Stage Changes (Again):** `git add .`
+  * [x] **Update Memory File:** Document client deserialization logic using Pydantic v2 in `docs/memory/04_data_models_and_serialization.md`.
+  * [x] **Stage Changes:** `git add .`
+  * [x] **Run Pre-commit Checks:** `pre-commit run --all-files`
+  * [x] **Fix Pre-commit Issues:** Address reported issues.
+  * [x] **Re-run Specific Tests (Post-Fix):** `pytest tests/test_client.py`
+  * [x] **Re-run All Module Unit Tests (Post-Fix):** `pytest tests/`
+  * [x] **Update Memory File (Post-Fix):** Note significant fixes.
+  * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done.
-  * [ ] **Commit Changes:** `git commit -m "feat(client): integrate pydantic v2 deserialization"`
+  * [x] **Commit Changes:** `git commit -m "feat(client): integrate pydantic v2 deserialization"`
 
 * [x] **Integrate Serialization into the Client:**
   * [x] **Identify Task:** Modify client methods (`post`, `put`, `patch`) to accept Pydantic model instances as input and serialize them correctly to JSON for the request body using Pydantic v2 methods.
@@ -101,25 +101,25 @@
   * [x] **Run Specific Tests:** `pytest tests/test_client.py` (or relevant endpoint tests).
   * [x] **Debug & Iterate:** Fix client code or tests.
   * [x] **Run All Module Unit Tests:** `pytest tests/` (Assumed passing based on specific tests)
-  * [ ] **Update Memory File:** Document client serialization logic using Pydantic v2 in `docs/memory/04_data_models_and_serialization.md`.
-  * [ ] **Stage Changes:** `git add .`
-  * [ ] **Run Pre-commit Checks:** `pre-commit run --all-files`
-  * [ ] **Fix Pre-commit Issues:** Address reported issues.
-  * [ ] **Re-run Specific Tests (Post-Fix):** `pytest tests/test_client.py`
-  * [ ] **Re-run All Module Unit Tests (Post-Fix):** `pytest tests/`
-  * [ ] **Update Memory File (Post-Fix):** Note significant fixes.
-  * [ ] **Stage Changes (Again):** `git add .`
+  * [x] **Update Memory File:** Document client serialization logic using Pydantic v2 in `docs/memory/04_data_models_and_serialization.md`.
+  * [x] **Stage Changes:** `git add .`
+  * [x] **Run Pre-commit Checks:** `pre-commit run --all-files`
+  * [x] **Fix Pre-commit Issues:** Address reported issues.
+  * [x] **Re-run Specific Tests (Post-Fix):** `pytest tests/test_client.py`
+  * [x] **Re-run All Module Unit Tests (Post-Fix):** `pytest tests/`
+  * [x] **Update Memory File (Post-Fix):** Note significant fixes.
+  * [x] **Stage Changes (Again):** `git add .`
   * [x] **Update Task List:** Mark this sub-task as done.
-  * [ ] **Commit Changes:** `git commit -m "feat(client): integrate pydantic v2 serialization"`
+  * [x] **Commit Changes:** `git commit -m "feat(client): integrate pydantic v2 serialization"`
 
 **Acceptance Criteria:**
 
-* [ ] Pydantic v2+ models exist for all documented API resources, requests, and common structures, referencing `docs/reference/*.md`.
-* [ ] Models correctly handle data types, nesting, optionality, aliases, and date formats using Pydantic v2 features (`field_validator`, `model_config`, `Annotated`, etc.).
-* [ ] Comprehensive unit tests exist for model validation (`model_validate`), serialization (`model_dump`), and handling of edge cases.
-* [ ] Client methods automatically deserialize successful JSON responses into the correct Pydantic models using `model_validate` or `TypeAdapter`.
-* [ ] Client methods accept Pydantic models as input for request bodies (where applicable) and serialize them correctly using `model_dump`.
-* [ ] `pydantic.ValidationError` during deserialization is handled appropriately (e.g., wrapped in a custom SDK exception).
+* [x] Pydantic v2+ models exist for all documented API resources, requests, and common structures, referencing `docs/reference/*.md`.
+* [x] Models correctly handle data types, nesting, optionality, aliases, and date formats using Pydantic v2 features (`field_validator`, `model_config`, `Annotated`, etc.).
+* [x] Comprehensive unit tests exist for model validation (`model_validate`), serialization (`model_dump`), and handling of edge cases.
+* [x] Client methods automatically deserialize successful JSON responses into the correct Pydantic models using `model_validate` or `TypeAdapter`.
+* [x] Client methods accept Pydantic models as input for request bodies (where applicable) and serialize them correctly using `model_dump`.
+* [ ] `pydantic.ValidationError` during deserialization is handled appropriately (e.g., wrapped in a custom SDK exception). (Deferred to Task 06)
 
 **Notes:**
 
