@@ -1,10 +1,10 @@
 # filepath: /Users/fred/Documents/GitHub/imednet-python-sdk/tests/models/test_query_model.py
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
-from typing import List, Optional
 
-from imednet_sdk.models.query import QueryModel, QueryCommentModel
+from imednet_sdk.models.query import QueryCommentModel, QueryModel
 
 # Sample valid data based on docs/reference/queries.md
 VALID_QUERY_COMMENT_DATA = {
@@ -13,7 +13,7 @@ VALID_QUERY_COMMENT_DATA = {
     "user": "john",
     "comment": "Added comment to study",
     "closed": False,
-    "date": "2024-11-04 16:03:19"
+    "date": "2024-11-04 16:03:19",
 }
 
 VALID_QUERY_DATA = {
@@ -22,17 +22,18 @@ VALID_QUERY_DATA = {
     "subjectOid": "OID-1",
     "annotationType": "subject",
     "annotationId": 1,
-    "type": None, # Optional field
+    "type": None,  # Optional field
     "description": "Monitor Query",
-    "recordId": 123, # Optional field
-    "variable": "aeterm", # Optional field
+    "recordId": 123,  # Optional field
+    "variable": "aeterm",  # Optional field
     "subjectKey": "123-005",
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
-    "queryComments": [VALID_QUERY_COMMENT_DATA]
+    "queryComments": [VALID_QUERY_COMMENT_DATA],
 }
 
 # --- QueryCommentModel Tests ---
+
 
 def test_query_comment_model_validation():
     """Test successful validation of QueryCommentModel."""
@@ -45,12 +46,14 @@ def test_query_comment_model_validation():
     assert isinstance(model.date, datetime)
     assert model.date == datetime(2024, 11, 4, 16, 3, 19)
 
+
 def test_query_comment_model_missing_required():
     """Test ValidationError for missing required field in QueryCommentModel."""
     invalid_data = VALID_QUERY_COMMENT_DATA.copy()
     del invalid_data["user"]
     with pytest.raises(ValidationError):
         QueryCommentModel.model_validate(invalid_data)
+
 
 def test_query_comment_model_invalid_type():
     """Test ValidationError for invalid type in QueryCommentModel."""
@@ -59,7 +62,9 @@ def test_query_comment_model_invalid_type():
     with pytest.raises(ValidationError):
         QueryCommentModel.model_validate(invalid_data)
 
+
 # --- QueryModel Tests ---
+
 
 def test_query_model_validation():
     """Test successful validation of QueryModel with valid data."""
@@ -85,6 +90,7 @@ def test_query_model_validation():
     assert isinstance(model.queryComments[0], QueryCommentModel)
     assert model.queryComments[0].sequence == VALID_QUERY_COMMENT_DATA["sequence"]
 
+
 def test_query_model_optional_fields_missing():
     """Test validation when optional fields are missing."""
     data_missing_optionals = VALID_QUERY_DATA.copy()
@@ -97,16 +103,18 @@ def test_query_model_optional_fields_missing():
     assert model.recordId is None
     assert model.variable is None
 
+
 def test_query_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_QUERY_DATA.copy()
-    del invalid_data["description"] # Remove a required field
+    del invalid_data["description"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         QueryModel.model_validate(invalid_data)
 
     assert "description" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_query_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -127,10 +135,11 @@ def test_query_model_invalid_data_type():
     assert "Input should be a valid list" in str(excinfo_list.value)
 
     invalid_data_list_item = VALID_QUERY_DATA.copy()
-    invalid_data_list_item["queryComments"] = [{"sequence": "wrong_type"}] # Invalid item
+    invalid_data_list_item["queryComments"] = [{"sequence": "wrong_type"}]  # Invalid item
     with pytest.raises(ValidationError) as excinfo_item:
         QueryModel.model_validate(invalid_data_list_item)
     assert "queryComments.0.sequence" in str(excinfo_item.value)
+
 
 def test_query_model_serialization():
     """Test serialization of the QueryModel."""
@@ -156,5 +165,6 @@ def test_query_model_serialization():
     nested_model = QueryCommentModel.model_validate(VALID_QUERY_COMMENT_DATA)
     expected_nested_dump = nested_model.model_dump(by_alias=True)
     assert dump["queryComments"][0] == expected_nested_dump
+
 
 # Add more tests for edge cases, different annotation types, etc.

@@ -1,12 +1,12 @@
 """Tests for study-related models."""
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from imednet_sdk.models._common import ApiResponse, Metadata
+from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.study import StudyModel
 
 # Sample valid data based on docs/reference/studies.md
@@ -15,7 +15,8 @@ VALID_STUDY_DATA = {
     "studyKey": "PHARMADEMO",
     "studyId": 100,
     "studyName": "iMednet Pharma Demonstration Study",
-    "studyDescription": "iMednet Demonstration Study v2 Created 05April2018 After A5 Release",  # Optional
+    "studyDescription": "iMednet Demonstration Study v2 Created 05April2018 After A5 Release",
+    # ^ Optional field
     "studyType": "STUDY",
     "dateCreated": "2024-11-04 16:03:18",
     "dateModified": "2024-11-04 16:03:19",

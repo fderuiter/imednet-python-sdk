@@ -1,7 +1,8 @@
 # filepath: /Users/fred/Documents/GitHub/imednet-python-sdk/tests/models/test_coding_model.py
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
 
 from imednet_sdk.models.coding import CodingModel
 
@@ -25,8 +26,9 @@ VALID_CODING_DATA = {
     "reason": "Typo fix",
     "dictionaryName": "MedDRA",
     "dictionaryVersion": "24.0",
-    "dateCoded": "2024-11-04 16:03:19" # Example format, adjust if model expects specific format/timezone
+    "dateCoded": "2024-11-04 16:03:19",  # Example format
 }
+
 
 def test_coding_model_validation():
     """Test successful validation of CodingModel with valid data."""
@@ -54,10 +56,11 @@ def test_coding_model_validation():
     assert isinstance(model.dateCoded, datetime)
     assert model.dateCoded == datetime(2024, 11, 4, 16, 3, 19)
 
+
 def test_coding_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_CODING_DATA.copy()
-    del invalid_data["studyKey"] # Remove a required field
+    del invalid_data["studyKey"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         CodingModel.model_validate(invalid_data)
@@ -70,7 +73,7 @@ def test_coding_model_missing_required_field():
 def test_coding_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
     invalid_data = VALID_CODING_DATA.copy()
-    invalid_data["siteId"] = "not-an-integer" # Incorrect type
+    invalid_data["siteId"] = "not-an-integer"  # Incorrect type
 
     with pytest.raises(ValidationError) as excinfo:
         CodingModel.model_validate(invalid_data)
@@ -82,10 +85,12 @@ def test_coding_model_invalid_data_type():
 def test_coding_model_serialization():
     """Test serialization of the CodingModel."""
     model = CodingModel.model_validate(VALID_CODING_DATA)
-    # Use by_alias=True if field names differ from API keys (which they do, camelCase vs snake_case if we used aliases)
-    # However, since we are using camelCase directly in the model, by_alias=True is not strictly needed
+    # Use by_alias=True if field names differ from API keys
+    # (which they do, camelCase vs snake_case if we used aliases)
+    # However, since we are using camelCase directly in the model,
+    # by_alias=True is not strictly needed
     # unless we explicitly defined aliases. Let's keep it for consistency if needed later.
-    dump = model.model_dump(by_alias=True) # Pydantic v2 uses model_dump
+    dump = model.model_dump(by_alias=True)  # Pydantic v2 uses model_dump
 
     # Convert datetime back to string format expected in the original data for comparison
     expected_data = VALID_CODING_DATA.copy()
@@ -94,11 +99,12 @@ def test_coding_model_serialization():
 
     # Check basic fields match
     for key, value in expected_data.items():
-        if key != "dateCoded": # Handle datetime separately if format differs
-             assert dump[key] == value
+        if key != "dateCoded":  # Handle datetime separately if format differs
+            assert dump[key] == value
 
     # Check datetime serialization (adjust format as needed based on actual output)
     # This assumes default Pydantic v2 serialization for datetime
     assert dump["dateCoded"] == datetime(2024, 11, 4, 16, 3, 19)
+
 
 # Add more tests for edge cases, optional fields (if any), specific validations etc.

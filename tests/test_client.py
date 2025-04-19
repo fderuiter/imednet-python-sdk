@@ -1,11 +1,11 @@
-import os
 import json as py_json  # Alias to avoid conflict with json parameter
+import os
+from typing import List, Optional
 
 import pytest
 import respx
 from httpx import ConnectError, HTTPStatusError, Response, Timeout, TimeoutException
 from pydantic import BaseModel, Field, ValidationError
-from typing import List, Optional
 
 from imednet_sdk.client import ImednetClient
 
@@ -22,13 +22,16 @@ DEFAULT_HEADERS = {
 
 # --- Simple Pydantic Model for Testing --- #
 
+
 class SimpleTestModel(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
     is_active: bool = Field(..., alias="isActive")
 
+
 # --- Fixtures --- #
+
 
 @pytest.fixture
 def client():
@@ -97,7 +100,9 @@ def custom_timeout_object_client():
         timeout=Timeout(10.0, connect=2.0),
     )
 
+
 # --- Initialization and Credential Tests --- #
+
 
 def test_client_initialization_explicit_keys(client_explicit_keys):
     """Test client initializes correctly with explicit keys."""
@@ -151,7 +156,9 @@ def test_client_initialization_missing_security_key_error(monkeypatch):
     with pytest.raises(ValueError, match="Security key not provided"):
         ImednetClient(api_key=None)  # Pass None explicitly too
 
+
 # --- Header Injection Tests --- #
+
 
 @respx.mock
 def test_get_request_headers_and_url(default_client):
@@ -216,7 +223,9 @@ def test_request_with_query_params(client):
     assert str(request.url) == expected_url
     assert response.status_code == 200
 
+
 # --- Timeout Tests --- #
+
 
 def test_client_default_timeout(default_client):
     """Test that the client uses the default httpx.Timeout if none is provided."""
@@ -295,9 +304,11 @@ def test_request_timeout_exception(default_client):
 
     assert mock_route.called
 
+
 # --- End Timeout Tests --- #
 
 # --- Retry Tests --- #
+
 
 @respx.mock
 def test_retry_success_on_first_try(default_client):
@@ -401,9 +412,11 @@ def test_no_retry_on_4xx_error(default_client):
     assert mock_route.call_count == 1  # No retries
     assert exc_info.value.response.status_code == 404
 
+
 # --- End Retry Tests --- #
 
 # --- Serialization/Deserialization Tests --- #
+
 
 @respx.mock
 def test_get_deserialization_single_object(default_client):
@@ -422,6 +435,7 @@ def test_get_deserialization_single_object(default_client):
     assert result.name == mock_data["name"]
     assert result.is_active == mock_data["isActive"]
     assert result.description is None
+
 
 @respx.mock
 def test_get_deserialization_list_object(default_client):
@@ -449,6 +463,7 @@ def test_get_deserialization_list_object(default_client):
     assert result[1].description == "Second"
     assert result[1].is_active is False
 
+
 @respx.mock
 def test_get_deserialization_invalid_json(default_client):
     """Test error handling when GET response is not valid JSON."""
@@ -460,6 +475,7 @@ def test_get_deserialization_invalid_json(default_client):
         default_client._get(endpoint, response_model=SimpleTestModel)
 
     assert mock_route.called
+
 
 @respx.mock
 def test_get_deserialization_validation_error(default_client):
@@ -477,6 +493,7 @@ def test_get_deserialization_validation_error(default_client):
     # Check that the underlying cause was a ValidationError
     assert isinstance(exc_info.value.__cause__, ValidationError)
 
+
 @respx.mock
 def test_post_serialization(default_client):
     """Test successful POST request serialization of a Pydantic model."""
@@ -487,7 +504,9 @@ def test_post_serialization(default_client):
     # Expected JSON string based on model_dump(by_alias=True, mode='json')
     expected_json_payload = {"id": 3, "name": "New Item", "description": None, "isActive": True}
 
-    mock_route = respx.post(expected_url).mock(return_value=Response(201, json=payload_model.model_dump(by_alias=True)))
+    mock_route = respx.post(expected_url).mock(
+        return_value=Response(201, json=payload_model.model_dump(by_alias=True))
+    )
 
     # Pass the model instance directly to the json parameter
     response = default_client._post(endpoint, json=payload_model)
@@ -497,6 +516,7 @@ def test_post_serialization(default_client):
     # Verify the request content matches the serialized model
     assert py_json.loads(request.content) == expected_json_payload
     assert response.status_code == 201
+
 
 @respx.mock
 def test_post_serialization_and_deserialization(default_client):
@@ -514,7 +534,7 @@ def test_post_serialization_and_deserialization(default_client):
     assert mock_route.called
     request = mock_route.calls.last.request
     # Check request serialization
-    assert py_json.loads(request.content) == request_model.model_dump(by_alias=True, mode='json')
+    assert py_json.loads(request.content) == request_model.model_dump(by_alias=True, mode="json")
 
     # Check response deserialization
     assert isinstance(result, SimpleTestModel)
@@ -522,5 +542,6 @@ def test_post_serialization_and_deserialization(default_client):
     assert result.name == response_mock_data["name"]
     assert result.is_active == response_mock_data["isActive"]
     assert result.description == response_mock_data["description"]
+
 
 # --- End Serialization/Deserialization Tests --- #

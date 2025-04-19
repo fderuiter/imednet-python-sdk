@@ -1,16 +1,12 @@
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
-from typing import List, Optional
 
-from imednet_sdk.models.interval import IntervalModel, IntervalFormModel
+from imednet_sdk.models.interval import IntervalFormModel, IntervalModel
 
 # Sample valid data based on docs/reference/intervals.md
-VALID_INTERVAL_FORM_DATA = {
-    "formId": 123,
-    "formKey": "MY-FORM-KEY",
-    "formName": "myFormName"
-}
+VALID_INTERVAL_FORM_DATA = {"formId": 123, "formKey": "MY-FORM-KEY", "formName": "myFormName"}
 
 VALID_INTERVAL_DATA = {
     "studyKey": "PHARMADEMO",
@@ -20,7 +16,7 @@ VALID_INTERVAL_DATA = {
     "intervalSequence": 110,
     "intervalGroupId": 10,
     "intervalGroupName": "ePRO",
-    "disabled": True, # Example has true, model default is false
+    "disabled": True,  # Example has true, model default is false
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "timeline": "Start Date End Date",
@@ -33,10 +29,11 @@ VALID_INTERVAL_DATA = {
     "negativeSlack": 7,
     "positiveSlack": 7,
     "eproGracePeriod": 2,
-    "forms": [VALID_INTERVAL_FORM_DATA]
+    "forms": [VALID_INTERVAL_FORM_DATA],
 }
 
 # --- IntervalFormModel Tests ---
+
 
 def test_interval_form_model_validation():
     """Test successful validation of IntervalFormModel."""
@@ -45,12 +42,14 @@ def test_interval_form_model_validation():
     assert model.formKey == VALID_INTERVAL_FORM_DATA["formKey"]
     assert model.formName == VALID_INTERVAL_FORM_DATA["formName"]
 
+
 def test_interval_form_model_missing_required():
     """Test ValidationError for missing required field in IntervalFormModel."""
     invalid_data = VALID_INTERVAL_FORM_DATA.copy()
     del invalid_data["formId"]
     with pytest.raises(ValidationError):
         IntervalFormModel.model_validate(invalid_data)
+
 
 def test_interval_form_model_invalid_type():
     """Test ValidationError for invalid type in IntervalFormModel."""
@@ -59,7 +58,9 @@ def test_interval_form_model_invalid_type():
     with pytest.raises(ValidationError):
         IntervalFormModel.model_validate(invalid_data)
 
+
 # --- IntervalModel Tests ---
+
 
 def test_interval_model_validation():
     """Test successful validation of IntervalModel with valid data."""
@@ -92,6 +93,7 @@ def test_interval_model_validation():
     assert len(model.forms) == 1
     assert isinstance(model.forms[0], IntervalFormModel)
     assert model.forms[0].formId == VALID_INTERVAL_FORM_DATA["formId"]
+
 
 def test_interval_model_optional_fields_none():
     """Test validation when optional fields are explicitly None or missing."""
@@ -132,7 +134,7 @@ def test_interval_model_optional_fields_none():
     del data_missing_optionals["eproGracePeriod"]
 
     model_missing = IntervalModel.model_validate(data_missing_optionals)
-    assert model_missing.intervalDescription is None # Should default to None
+    assert model_missing.intervalDescription is None  # Should default to None
     assert model_missing.definedUsingInterval is None
     assert model_missing.windowCalculationForm is None
     assert model_missing.windowCalculationDate is None
@@ -143,16 +145,18 @@ def test_interval_model_optional_fields_none():
     assert model_missing.positiveSlack is None
     assert model_missing.eproGracePeriod is None
 
+
 def test_interval_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_INTERVAL_DATA.copy()
-    del invalid_data["intervalName"] # Remove a required field
+    del invalid_data["intervalName"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         IntervalModel.model_validate(invalid_data)
 
     assert "intervalName" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_interval_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -173,10 +177,11 @@ def test_interval_model_invalid_data_type():
     assert "Input should be a valid list" in str(excinfo_list.value)
 
     invalid_data_list_item = VALID_INTERVAL_DATA.copy()
-    invalid_data_list_item["forms"] = [{"formId": "wrong_type"}] # Invalid item in list
+    invalid_data_list_item["forms"] = [{"formId": "wrong_type"}]  # Invalid item in list
     with pytest.raises(ValidationError) as excinfo_item:
         IntervalModel.model_validate(invalid_data_list_item)
-    assert "forms.0.formId" in str(excinfo_item.value) # Check nested error
+    assert "forms.0.formId" in str(excinfo_item.value)  # Check nested error
+
 
 def test_interval_model_serialization():
     """Test serialization of the IntervalModel."""
@@ -204,5 +209,6 @@ def test_interval_model_serialization():
     nested_model = IntervalFormModel.model_validate(VALID_INTERVAL_FORM_DATA)
     expected_nested_dump = nested_model.model_dump(by_alias=True)
     assert dump["forms"][0] == expected_nested_dump
+
 
 # Add more tests for edge cases, specific timeline values, etc.

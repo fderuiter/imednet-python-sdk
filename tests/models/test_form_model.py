@@ -1,6 +1,7 @@
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
 
 from imednet_sdk.models.form import FormModel
 
@@ -22,8 +23,9 @@ VALID_FORM_DATA = {
     "allowCopy": True,
     "disabled": False,
     "dateCreated": "2024-11-04 16:03:19",
-    "dateModified": "2024-11-04 16:03:20"
+    "dateModified": "2024-11-04 16:03:20",
 }
+
 
 def test_form_model_validation():
     """Test successful validation of FormModel with valid data."""
@@ -49,10 +51,11 @@ def test_form_model_validation():
     assert isinstance(model.dateModified, datetime)
     assert model.dateModified == datetime(2024, 11, 4, 16, 3, 20)
 
+
 def test_form_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_FORM_DATA.copy()
-    del invalid_data["formName"] # Remove a required field
+    del invalid_data["formName"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         FormModel.model_validate(invalid_data)
@@ -60,10 +63,11 @@ def test_form_model_missing_required_field():
     assert "formName" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
 
+
 def test_form_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
     invalid_data = VALID_FORM_DATA.copy()
-    invalid_data["formId"] = "not-an-integer" # Incorrect type
+    invalid_data["formId"] = "not-an-integer"  # Incorrect type
 
     with pytest.raises(ValidationError) as excinfo:
         FormModel.model_validate(invalid_data)
@@ -78,6 +82,7 @@ def test_form_model_invalid_data_type():
 
     assert "disabled" in str(excinfo_bool.value)
     assert "Input should be a valid boolean" in str(excinfo_bool.value)
+
 
 def test_form_model_serialization():
     """Test serialization of the FormModel."""
@@ -97,5 +102,6 @@ def test_form_model_serialization():
     # Check datetime serialization
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
     assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 20)
+
 
 # Add more tests for edge cases, default values, etc.

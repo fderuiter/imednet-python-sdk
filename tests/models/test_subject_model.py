@@ -6,7 +6,7 @@ from typing import List
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from imednet_sdk.models._common import ApiResponse, Metadata
+from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.subject import KeywordModel, SubjectModel
 
 # Sample valid data based on docs/reference/subjects.md
@@ -14,7 +14,7 @@ VALID_KEYWORD_DATA = {
     "keywordName": "Data Entry Error",
     "keywordKey": "DEE",
     "keywordId": 15362,
-    "dateAdded": "2024-11-04 16:03:19"
+    "dateAdded": "2024-11-04 16:03:19",
 }
 
 VALID_SUBJECT_DATA = {
@@ -25,14 +25,15 @@ VALID_SUBJECT_DATA = {
     "subjectStatus": "Enrolled",
     "siteId": 128,
     "siteName": "Chicago Hope Hospital",
-    "deleted": False, # Explicitly setting default
+    "deleted": False,  # Explicitly setting default
     "enrollmentStartDate": "2024-11-04 16:03:19",
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
-    "keywords": [VALID_KEYWORD_DATA] # Optional list of KeywordModel
+    "keywords": [VALID_KEYWORD_DATA],  # Optional list of KeywordModel
 }
 
 # --- KeywordModel Tests ---
+
 
 def test_keyword_model_validation():
     """Test successful validation of KeywordModel."""
@@ -43,6 +44,7 @@ def test_keyword_model_validation():
     assert isinstance(model.dateAdded, datetime)
     assert model.dateAdded == datetime(2024, 11, 4, 16, 3, 19)
 
+
 def test_keyword_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_KEYWORD_DATA.copy()
@@ -50,6 +52,7 @@ def test_keyword_model_missing_required_field():
     with pytest.raises(ValidationError) as excinfo:
         KeywordModel.model_validate(invalid_data)
     assert "keywordKey" in str(excinfo.value)
+
 
 def test_keyword_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -59,7 +62,9 @@ def test_keyword_model_invalid_data_type():
         KeywordModel.model_validate(invalid_data)
     assert "keywordId" in str(excinfo.value)
 
+
 # --- SubjectModel Tests ---
+
 
 def test_subject_model_validation():
     """Test successful validation of SubjectModel with valid data."""
@@ -85,6 +90,7 @@ def test_subject_model_validation():
     assert isinstance(model.keywords[0], KeywordModel)
     assert model.keywords[0].keywordId == VALID_KEYWORD_DATA["keywordId"]
 
+
 def test_subject_model_optional_fields_none_or_missing():
     """Test validation when optional fields are None or missing."""
     data_with_none = VALID_SUBJECT_DATA.copy()
@@ -97,28 +103,31 @@ def test_subject_model_optional_fields_none_or_missing():
     del data_missing_optionals["keywords"]
 
     model_missing = SubjectModel.model_validate(data_missing_optionals)
-    assert model_missing.keywords is None # Should default to None
+    assert model_missing.keywords is None  # Should default to None
+
 
 def test_subject_model_defaults():
     """Test default values for boolean fields when not provided."""
     minimal_data = VALID_SUBJECT_DATA.copy()
     del minimal_data["deleted"]
-    del minimal_data["keywords"] # Remove optional field for minimal test
+    del minimal_data["keywords"]  # Remove optional field for minimal test
 
     model = SubjectModel.model_validate(minimal_data)
     assert model.deleted is False
     assert model.keywords is None
 
+
 def test_subject_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_SUBJECT_DATA.copy()
-    del invalid_data["subjectKey"] # Remove a required field
+    del invalid_data["subjectKey"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         SubjectModel.model_validate(invalid_data)
 
     assert "subjectKey" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_subject_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -139,10 +148,11 @@ def test_subject_model_invalid_data_type():
     assert "list" in str(excinfo_list.value).lower()
 
     invalid_data_list_item = VALID_SUBJECT_DATA.copy()
-    invalid_data_list_item["keywords"] = [{"keywordId": "wrong_type"}] # Invalid item
+    invalid_data_list_item["keywords"] = [{"keywordId": "wrong_type"}]  # Invalid item
     with pytest.raises(ValidationError) as excinfo_item:
         SubjectModel.model_validate(invalid_data_list_item)
     assert "keywords.0.keywordId" in str(excinfo_item.value)
+
 
 def test_subject_model_serialization():
     """Test serialization of the SubjectModel."""
@@ -169,7 +179,9 @@ def test_subject_model_serialization():
     assert len(dump["keywords"]) == 1
     assert dump["keywords"][0] == expected_keyword_dump
 
+
 # Add more tests for edge cases, different subject statuses, etc.
+
 
 def test_subject_list_validation():
     """Test validation of a list of subjects using TypeAdapter."""

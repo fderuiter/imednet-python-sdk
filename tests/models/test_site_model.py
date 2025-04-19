@@ -17,6 +17,7 @@ VALID_SITE_DATA = {
     "dateModified": "2024-11-04 16:03:20",
 }
 
+
 def test_site_creation():
     """Test creating a SiteModel with valid data."""
     site_data = {

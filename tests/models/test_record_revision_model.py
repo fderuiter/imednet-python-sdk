@@ -1,7 +1,7 @@
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
-from typing import Optional
 
 from imednet_sdk.models.record_revision import RecordRevisionModel
 
@@ -22,10 +22,11 @@ VALID_RECORD_REVISION_DATA = {
     "intervalId": 15,
     "role": "Research Coordinator",
     "user": "jdoe",
-    "reasonForChange": "Data entry error", # Optional
-    "deleted": True, # Example has true, model default is false
-    "dateCreated": "2024-11-04 16:03:19"
+    "reasonForChange": "Data entry error",  # Optional
+    "deleted": True,  # Example has true, model default is false
+    "dateCreated": "2024-11-04 16:03:19",
 }
+
 
 def test_record_revision_model_validation():
     """Test successful validation of RecordRevisionModel with valid data."""
@@ -51,6 +52,7 @@ def test_record_revision_model_validation():
     assert isinstance(model.dateCreated, datetime)
     assert model.dateCreated == datetime(2024, 11, 4, 16, 3, 19)
 
+
 def test_record_revision_model_optional_fields_none():
     """Test validation when optional fields are explicitly None or missing."""
     data_with_none = VALID_RECORD_REVISION_DATA.copy()
@@ -62,18 +64,20 @@ def test_record_revision_model_optional_fields_none():
     data_missing_optionals = VALID_RECORD_REVISION_DATA.copy()
     del data_missing_optionals["reasonForChange"]
     model_missing = RecordRevisionModel.model_validate(data_missing_optionals)
-    assert model_missing.reasonForChange is None # Should default to None
+    assert model_missing.reasonForChange is None  # Should default to None
+
 
 def test_record_revision_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_RECORD_REVISION_DATA.copy()
-    del invalid_data["recordId"] # Remove a required field
+    del invalid_data["recordId"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         RecordRevisionModel.model_validate(invalid_data)
 
     assert "recordId" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_record_revision_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -94,6 +98,7 @@ def test_record_revision_model_invalid_data_type():
     assert "deleted" in str(excinfo_bool.value)
     assert "Input should be a valid boolean" in str(excinfo_bool.value)
 
+
 def test_record_revision_model_serialization():
     """Test serialization of the RecordRevisionModel."""
     model = RecordRevisionModel.model_validate(VALID_RECORD_REVISION_DATA)
@@ -109,5 +114,6 @@ def test_record_revision_model_serialization():
 
     # Check datetime serialization
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
+
 
 # Add more tests for edge cases, default values, etc.

@@ -3,10 +3,9 @@
 from datetime import datetime
 
 import pytest
-from pydantic import TypeAdapter, ValidationError
+from pydantic import ValidationError
 
-from imednet_sdk.models import ApiResponse, UserModel, UserRole
-from imednet_sdk.models._common import Metadata, PaginationInfo, SortInfo
+from imednet_sdk.models import UserModel, UserRole
 
 # Sample valid data based on docs/reference/users.md
 VALID_USER_ROLE_DATA = {
@@ -33,6 +32,7 @@ VALID_USER_DATA = {
 
 # --- UserRole Tests ---
 
+
 def test_user_role_validation():
     """Test successful validation of UserRole."""
     model = UserRole.model_validate(VALID_USER_ROLE_DATA)
@@ -56,12 +56,14 @@ def test_user_role_validation():
     assert model.type == VALID_USER_ROLE_DATA["type"]
     assert model.inactive == VALID_USER_ROLE_DATA["inactive"]
 
+
 def test_user_role_defaults():
     """Test default values for boolean fields when not provided."""
     minimal_data = VALID_USER_ROLE_DATA.copy()
     del minimal_data["inactive"]
     model = UserRole.model_validate(minimal_data)
     assert model.inactive is False
+
 
 def test_user_role_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
@@ -70,6 +72,7 @@ def test_user_role_missing_required_field():
     with pytest.raises(ValidationError) as excinfo:
         UserRole.model_validate(invalid_data)
     assert "roleId" in str(excinfo.value)
+
 
 def test_user_role_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -89,6 +92,7 @@ def test_user_role_invalid_data_type():
     assert "dateCreated" in str(excinfo_date.value)
     assert "Date array must be a list with at least 6 integer elements" in str(excinfo_date.value)
 
+
 def test_user_role_serialization():
     """Test serialization of the UserRole model."""
     model = UserRole.model_validate(VALID_USER_ROLE_DATA)
@@ -100,7 +104,9 @@ def test_user_role_serialization():
     expected_data = VALID_USER_ROLE_DATA.copy()
     assert dump == expected_data
 
+
 # --- UserModel Tests ---
+
 
 def test_user_model_validation():
     """Test successful validation of UserModel with valid data."""
@@ -118,6 +124,7 @@ def test_user_model_validation():
     assert isinstance(model.roles[0], UserRole)
     assert model.roles[0].roleId == VALID_USER_ROLE_DATA["roleId"]
 
+
 def test_user_model_empty_roles():
     """Test validation with an empty roles list."""
     data_empty_roles = VALID_USER_DATA.copy()
@@ -125,12 +132,14 @@ def test_user_model_empty_roles():
     model = UserModel.model_validate(data_empty_roles)
     assert model.roles == []
 
+
 def test_user_model_missing_roles():
     """Test validation when the optional roles field is missing."""
     data_missing_roles = VALID_USER_DATA.copy()
     del data_missing_roles["roles"]
     model = UserModel.model_validate(data_missing_roles)
     assert model.roles == []  # Should default to empty list
+
 
 def test_user_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
@@ -142,6 +151,7 @@ def test_user_model_missing_required_field():
 
     assert "login" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_user_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -169,6 +179,7 @@ def test_user_model_invalid_data_type():
     assert "roles.0" in error_str
     assert "roles.0.roleId" in error_str or "roles.0.dateCreated" in error_str
 
+
 def test_user_model_serialization():
     """Test serialization of the UserModel."""
     model = UserModel.model_validate(VALID_USER_DATA)
@@ -189,5 +200,6 @@ def test_user_model_serialization():
     assert len(dump["roles"]) == 1
     # The dump of the nested role should match the expected dump based on aliases
     assert dump["roles"][0] == expected_role_dump
+
 
 # Add more tests for edge cases, multiple roles, etc.

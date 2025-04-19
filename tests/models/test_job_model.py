@@ -1,8 +1,8 @@
 # filepath: /Users/fred/Documents/GitHub/imednet-python-sdk/tests/models/test_job_model.py
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
-from typing import Optional
 
 from imednet_sdk.models.job import JobStatusModel
 
@@ -13,7 +13,7 @@ VALID_JOB_DATA = {
     "state": "completed",
     "dateCreated": "2020-12-01 21:47:36",
     "dateStarted": "2020-12-01 21:47:42",
-    "dateFinished": "2020-12-01 21:47:45"
+    "dateFinished": "2020-12-01 21:47:45",
 }
 
 VALID_JOB_DATA_MINIMAL = {
@@ -23,6 +23,7 @@ VALID_JOB_DATA_MINIMAL = {
     "dateCreated": "2020-12-01 21:47:36",
     # dateStarted and dateFinished are optional (None)
 }
+
 
 def test_job_status_model_validation_full():
     """Test successful validation of JobStatusModel with all fields."""
@@ -38,6 +39,7 @@ def test_job_status_model_validation_full():
     assert isinstance(model.dateFinished, datetime)
     assert model.dateFinished == datetime(2020, 12, 1, 21, 47, 45)
 
+
 def test_job_status_model_validation_minimal():
     """Test successful validation of JobStatusModel with only required fields."""
     model = JobStatusModel.model_validate(VALID_JOB_DATA_MINIMAL)
@@ -50,16 +52,18 @@ def test_job_status_model_validation_minimal():
     assert model.dateStarted is None
     assert model.dateFinished is None
 
+
 def test_job_status_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_JOB_DATA.copy()
-    del invalid_data["jobId"] # Remove a required field
+    del invalid_data["jobId"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         JobStatusModel.model_validate(invalid_data)
 
     assert "jobId" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_job_status_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -72,6 +76,7 @@ def test_job_status_model_invalid_data_type():
     assert "dateCreated" in str(excinfo.value)
     # Error message might vary slightly depending on Pydantic version/internals
     assert "datetime" in str(excinfo.value).lower()
+
 
 def test_job_status_model_serialization_full():
     """Test serialization of the JobStatusModel with all fields."""
@@ -90,6 +95,7 @@ def test_job_status_model_serialization_full():
     assert dump["dateCreated"] == datetime(2020, 12, 1, 21, 47, 36)
     assert dump["dateStarted"] == datetime(2020, 12, 1, 21, 47, 42)
     assert dump["dateFinished"] == datetime(2020, 12, 1, 21, 47, 45)
+
 
 def test_job_status_model_serialization_minimal():
     """Test serialization of the JobStatusModel with optional fields as None."""
@@ -111,5 +117,6 @@ def test_job_status_model_serialization_minimal():
     assert dump["dateCreated"] == datetime(2020, 12, 1, 21, 47, 36)
     assert dump["dateStarted"] is None
     assert dump["dateFinished"] is None
+
 
 # Add tests for different 'state' values if needed

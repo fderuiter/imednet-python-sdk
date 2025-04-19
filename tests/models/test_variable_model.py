@@ -1,6 +1,7 @@
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
 
 from imednet_sdk.models.variable import VariableModel
 
@@ -12,17 +13,18 @@ VALID_VARIABLE_DATA = {
     "variableName": "Pain Level",
     "sequence": 1,
     "revision": 1,
-    "disabled": False, # Explicitly setting default
+    "disabled": False,  # Explicitly setting default
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "formId": 108727,
     "variableOid": "OID-1",
-    "deleted": False, # Explicitly setting default
+    "deleted": False,  # Explicitly setting default
     "formKey": "FORM_1",
     "formName": "Pre-procedure screening",
     "label": "Select patient pain level between 1 and 10",
-    "blinded": False # Explicitly setting default
+    "blinded": False,  # Explicitly setting default
 }
+
 
 def test_variable_model_validation():
     """Test successful validation of VariableModel with valid data."""
@@ -47,6 +49,7 @@ def test_variable_model_validation():
     assert model.label == VALID_VARIABLE_DATA["label"]
     assert model.blinded == VALID_VARIABLE_DATA["blinded"]
 
+
 def test_variable_model_defaults():
     """Test default values for boolean fields when not provided."""
     minimal_data = VALID_VARIABLE_DATA.copy()
@@ -59,16 +62,18 @@ def test_variable_model_defaults():
     assert model.deleted is False
     assert model.blinded is False
 
+
 def test_variable_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_VARIABLE_DATA.copy()
-    del invalid_data["variableName"] # Remove a required field
+    del invalid_data["variableName"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         VariableModel.model_validate(invalid_data)
 
     assert "variableName" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_variable_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -89,6 +94,7 @@ def test_variable_model_invalid_data_type():
     assert "disabled" in str(excinfo_bool.value)
     assert "Input should be a valid boolean" in str(excinfo_bool.value)
 
+
 def test_variable_model_serialization():
     """Test serialization of the VariableModel."""
     model = VariableModel.model_validate(VALID_VARIABLE_DATA)
@@ -105,5 +111,6 @@ def test_variable_model_serialization():
     # Check datetime serialization
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
     assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 20)
+
 
 # Add more tests for edge cases, different variable types, etc.

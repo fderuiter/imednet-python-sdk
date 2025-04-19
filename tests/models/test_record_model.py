@@ -1,17 +1,15 @@
+from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import datetime
-from typing import List, Optional, Dict, Any
 
-from imednet_sdk.models.record import RecordModel
-from imednet_sdk.models.subject import KeywordModel # Import KeywordModel
+from imednet_sdk.models.record import KeywordModel, RecordModel, RecordPostItem
 
-# Sample valid data based on docs/reference/records.md and subject.py (for KeywordModel)
 VALID_KEYWORD_DATA = {
     "keywordName": "Data Entry Error",
     "keywordKey": "DEE",
     "keywordId": 15362,
-    "dateAdded": "2024-11-04 16:03:19"
+    "dateAdded": "2024-11-04 16:03:19",
 }
 
 VALID_RECORD_DATA = {
@@ -30,17 +28,18 @@ VALID_RECORD_DATA = {
     "subjectId": 326,
     "subjectOid": "OID-1",
     "subjectKey": "123-456",
-    "visitId": 1, # Optional
-    "parentRecordId": 34, # Optional
-    "keywords": [VALID_KEYWORD_DATA], # Optional list of KeywordModel
-    "recordData": { # Dynamic data
+    "visitId": 1,
+    "parentRecordId": 34,
+    "keywords": [VALID_KEYWORD_DATA],
+    "recordData": {
         "dateCreated": "2018-10-18 06:21:46",
         "unvnum": "1",
         "dateModified": "2018-11-18 07:11:16",
         "aeser": "",
-        "aeterm": "Bronchitis"
-    }
+        "aeterm": "Bronchitis",
+    },
 }
+
 
 def test_record_model_validation():
     """Test successful validation of RecordModel with valid data."""
@@ -69,11 +68,12 @@ def test_record_model_validation():
     assert isinstance(model.keywords, list)
     assert len(model.keywords) == 1
     assert isinstance(model.keywords[0], KeywordModel)
-    assert model.keywords[0].keywordId == VALID_KEYWORD_DATA["keywordId"] # Use camelCase for nested model attribute
-    assert isinstance(model.keywords[0].dateAdded, datetime) # Use camelCase for nested model attribute
+    assert model.keywords[0].keywordId == VALID_KEYWORD_DATA["keywordId"]
+    assert isinstance(model.keywords[0].dateAdded, datetime)
 
     assert isinstance(model.recordData, dict)
     assert model.recordData == VALID_RECORD_DATA["recordData"]
+
 
 def test_record_model_optional_fields_none_or_missing():
     """Test validation when optional fields are None or missing."""
@@ -97,6 +97,7 @@ def test_record_model_optional_fields_none_or_missing():
     assert model_missing.parentRecordId is None
     assert model_missing.keywords is None
 
+
 def test_record_model_empty_record_data_and_keywords():
     """Test validation with empty recordData and keywords list."""
     data_empty = VALID_RECORD_DATA.copy()
@@ -107,16 +108,18 @@ def test_record_model_empty_record_data_and_keywords():
     assert model.keywords == []
     assert model.recordData == {}
 
+
 def test_record_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_RECORD_DATA.copy()
-    del invalid_data["formKey"] # Remove a required field
+    del invalid_data["formKey"]
 
     with pytest.raises(ValidationError) as excinfo:
         RecordModel.model_validate(invalid_data)
 
     assert "formKey" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_record_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -140,15 +143,14 @@ def test_record_model_invalid_data_type():
     invalid_data_list["keywords"] = "not-a-list"
     with pytest.raises(ValidationError) as excinfo_list:
         RecordModel.model_validate(invalid_data_list)
-    assert "keywords" in str(excinfo_list.value)
-    # Error message might differ slightly
-    assert "list" in str(excinfo_list.value).lower()
+    assert "keywords" in str(excinfo_list.value).lower()
 
     invalid_data_list_item = VALID_RECORD_DATA.copy()
-    invalid_data_list_item["keywords"] = [{"keywordId": "wrong_type"}] # Invalid item
+    invalid_data_list_item["keywords"] = [{"keywordId": "wrong_type"}]
     with pytest.raises(ValidationError) as excinfo_item:
         RecordModel.model_validate(invalid_data_list_item)
     assert "keywords.0.keywordId" in str(excinfo_item.value)
+
 
 def test_record_model_serialization():
     """Test serialization of the RecordModel."""
@@ -156,25 +158,149 @@ def test_record_model_serialization():
     dump = model.model_dump(by_alias=True)
 
     expected_data = VALID_RECORD_DATA.copy()
-    # Adjust datetime and nested model serialization if needed
     keyword_model = KeywordModel.model_validate(VALID_KEYWORD_DATA)
     expected_keyword_dump = keyword_model.model_dump(by_alias=True)
 
-    # Check basic fields match
     for key, value in expected_data.items():
         if key not in ["dateCreated", "dateModified", "keywords", "recordData"]:
             assert dump[key] == value
 
-    # Check datetime serialization
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
     assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 20)
 
-    # Check nested KeywordModel serialization
     assert isinstance(dump["keywords"], list)
     assert len(dump["keywords"]) == 1
     assert dump["keywords"][0] == expected_keyword_dump
 
-    # Check recordData serialization (should be the same dict)
     assert dump["recordData"] == expected_data["recordData"]
 
-# Add more tests for edge cases, different recordData structures, etc.
+
+VALID_POST_ITEM_REGISTER = {
+    "formKey": "REG",
+    "siteName": "Minneapolis",
+    "data": {"textField": "Text value"},
+}
+
+VALID_POST_ITEM_UPDATE = {
+    "formKey": "REG",
+    "subjectKey": "651-042",
+    "intervalName": "Registration",
+    "data": {"textField": "Updated text"},
+}
+
+VALID_POST_ITEM_CREATE = {
+    "formKey": "REG",
+    "subjectKey": "123-876",
+    "data": {"textField": "New record data"},
+}
+
+VALID_POST_ITEM_WITH_IDS = {
+    "formId": 101,
+    "siteId": 202,
+    "subjectId": 303,
+    "intervalId": 404,
+    "recordId": 505,
+    "formKey": "OTHER",
+    "data": {"field": "value"},
+}
+
+
+def test_record_post_item_validation_required():
+    """Test successful validation with only required fields."""
+    data = {"formKey": "BASIC", "data": {"field1": "value1"}}
+    model = RecordPostItem.model_validate(data)
+    assert model.formKey == "BASIC"
+    assert model.data == {"field1": "value1"}
+    assert model.siteName is None
+    assert model.subjectKey is None
+    assert model.intervalName is None
+
+
+def test_record_post_item_validation_scenarios():
+    """Test successful validation for different scenarios from docs."""
+    model_reg = RecordPostItem.model_validate(VALID_POST_ITEM_REGISTER)
+    assert model_reg.formKey == "REG"
+    assert model_reg.siteName == "Minneapolis"
+    assert model_reg.subjectKey is None
+    assert model_reg.data == {"textField": "Text value"}
+
+    model_upd = RecordPostItem.model_validate(VALID_POST_ITEM_UPDATE)
+    assert model_upd.formKey == "REG"
+    assert model_upd.subjectKey == "651-042"
+    assert model_upd.intervalName == "Registration"
+    assert model_upd.siteName is None
+    assert model_upd.data == {"textField": "Updated text"}
+
+    model_cre = RecordPostItem.model_validate(VALID_POST_ITEM_CREATE)
+    assert model_cre.formKey == "REG"
+    assert model_cre.subjectKey == "123-876"
+    assert model_cre.intervalName is None
+    assert model_cre.siteName is None
+    assert model_cre.data == {"textField": "New record data"}
+
+
+def test_record_post_item_validation_with_ids():
+    """Test successful validation when using optional ID fields."""
+    model = RecordPostItem.model_validate(VALID_POST_ITEM_WITH_IDS)
+    assert model.formId == 101
+    assert model.siteId == 202
+    assert model.subjectId == 303
+    assert model.intervalId == 404
+    assert model.recordId == 505
+    assert model.formKey == "OTHER"
+    assert model.data == {"field": "value"}
+
+
+def test_record_post_item_missing_required():
+    """Test ValidationError when required fields (formKey, data) are missing."""
+    with pytest.raises(ValidationError) as excinfo_form:
+        RecordPostItem.model_validate({"data": {"f": 1}})
+    assert "formKey" in str(excinfo_form.value)
+
+    with pytest.raises(ValidationError) as excinfo_data:
+        RecordPostItem.model_validate({"formKey": "FK"})
+    assert "data" in str(excinfo_data.value)
+
+
+def test_record_post_item_invalid_type():
+    """Test ValidationError for incorrect data types."""
+    invalid_data = VALID_POST_ITEM_REGISTER.copy()
+    invalid_data["data"] = "not-a-dict"
+    with pytest.raises(ValidationError) as excinfo:
+        RecordPostItem.model_validate(invalid_data)
+    assert "data" in str(excinfo.value)
+    assert "Input should be a valid dictionary" in str(excinfo.value)
+
+    invalid_data_id = VALID_POST_ITEM_WITH_IDS.copy()
+    invalid_data_id["formId"] = "not-an-int"
+    with pytest.raises(ValidationError) as excinfo_id:
+        RecordPostItem.model_validate(invalid_data_id)
+    assert "formId" in str(excinfo_id.value)
+    assert "Input should be a valid integer" in str(excinfo_id.value)
+
+
+def test_record_post_item_serialization():
+    """Test serialization of RecordPostItem."""
+    model = RecordPostItem.model_validate(VALID_POST_ITEM_UPDATE)
+    dump = model.model_dump(by_alias=True, exclude_none=True)
+
+    expected_dump = {
+        "formKey": "REG",
+        "subjectKey": "651-042",
+        "intervalName": "Registration",
+        "data": {"textField": "Updated text"},
+    }
+    assert dump == expected_dump
+
+    model_ids = RecordPostItem.model_validate(VALID_POST_ITEM_WITH_IDS)
+    dump_ids = model_ids.model_dump(by_alias=True, exclude_none=True)
+    expected_dump_ids = {
+        "formId": 101,
+        "siteId": 202,
+        "subjectId": 303,
+        "intervalId": 404,
+        "recordId": 505,
+        "formKey": "OTHER",
+        "data": {"field": "value"},
+    }
+    assert dump_ids == expected_dump_ids

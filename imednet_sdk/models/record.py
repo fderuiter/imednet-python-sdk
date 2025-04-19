@@ -43,3 +43,24 @@ class RecordCreateRequest(BaseModel):
     formKey: str = Field(..., description="User-defined form key")
     formId: Optional[int] = Field(None, description="System-generated form ID")
     # Add other required fields for record creation
+
+
+class RecordPostItem(BaseModel):
+    """Model representing a single item in the POST request body for creating/updating records."""
+
+    formKey: str = Field(..., description="User-defined form key")
+    data: Dict[str, Any] = Field(
+        ..., description="Data for the specific record (field keys and values)"
+    )
+
+    siteName: Optional[str] = Field(None, description="User-defined site name")
+    subjectKey: Optional[str] = Field(None, description="Protocol-assigned subject identifier")
+    intervalName: Optional[str] = Field(None, description="User-defined interval name")
+
+    formId: Optional[int] = Field(None, description="System-generated form ID")
+    siteId: Optional[int] = Field(None, description="System-generated site ID")
+    subjectId: Optional[int] = Field(None, description="System-generated subject ID")
+    subjectOid: Optional[str] = Field(None, description="Client-assigned subject OID")
+    intervalId: Optional[int] = Field(None, description="System-generated interval ID")
+    recordId: Optional[int] = Field(None, description="System-generated record ID")
+    recordOid: Optional[str] = Field(None, description="Client-assigned record OID")

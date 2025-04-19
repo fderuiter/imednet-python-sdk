@@ -1,8 +1,8 @@
 # filepath: /Users/fred/Documents/GitHub/imednet-python-sdk/tests/models/test_visit_model.py
+from datetime import date, datetime
+
 import pytest
 from pydantic import ValidationError
-from datetime import date, datetime
-from typing import Optional
 
 from imednet_sdk.models.visit import VisitModel
 
@@ -14,16 +14,17 @@ VALID_VISIT_DATA = {
     "intervalName": "Day 15",
     "subjectId": 247,
     "subjectKey": "111-005",
-    "startDate": "2024-11-04", # Optional date
-    "endDate": "2024-11-11",   # Optional date
-    "dueDate": None,           # Optional date (example has null)
-    "visitDate": "2024-11-06", # Optional date
-    "visitDateForm": "Follow Up", # Optional
-    "deleted": False,          # Explicitly setting default
-    "visitDateQuestion": "AESEV", # Optional
+    "startDate": "2024-11-04",  # Optional date
+    "endDate": "2024-11-11",  # Optional date
+    "dueDate": None,  # Optional date (example has null)
+    "visitDate": "2024-11-06",  # Optional date
+    "visitDateForm": "Follow Up",  # Optional
+    "deleted": False,  # Explicitly setting default
+    "visitDateQuestion": "AESEV",  # Optional
     "dateCreated": "2024-11-04 16:03:19",
-    "dateModified": "2024-11-04 16:03:19"
+    "dateModified": "2024-11-04 16:03:19",
 }
+
 
 def test_visit_model_validation():
     """Test successful validation of VisitModel with valid data."""
@@ -49,6 +50,7 @@ def test_visit_model_validation():
     assert model.dateCreated == datetime(2024, 11, 4, 16, 3, 19)
     assert isinstance(model.dateModified, datetime)
     assert model.dateModified == datetime(2024, 11, 4, 16, 3, 19)
+
 
 def test_visit_model_optional_fields_none_or_missing():
     """Test validation when optional fields are None or missing."""
@@ -84,6 +86,7 @@ def test_visit_model_optional_fields_none_or_missing():
     assert model_missing.visitDateForm is None
     assert model_missing.visitDateQuestion is None
 
+
 def test_visit_model_defaults():
     """Test default values for boolean fields when not provided."""
     minimal_data = VALID_VISIT_DATA.copy()
@@ -99,16 +102,18 @@ def test_visit_model_defaults():
     model = VisitModel.model_validate(minimal_data)
     assert model.deleted is False
 
+
 def test_visit_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_VISIT_DATA.copy()
-    del invalid_data["intervalName"] # Remove a required field
+    del invalid_data["intervalName"]  # Remove a required field
 
     with pytest.raises(ValidationError) as excinfo:
         VisitModel.model_validate(invalid_data)
 
     assert "intervalName" in str(excinfo.value)
     assert "Field required" in str(excinfo.value)
+
 
 def test_visit_model_invalid_data_type():
     """Test ValidationError is raised for incorrect data types."""
@@ -137,6 +142,7 @@ def test_visit_model_invalid_data_type():
     assert "dateCreated" in str(excinfo_datetime.value)
     assert "datetime" in str(excinfo_datetime.value).lower()
 
+
 def test_visit_model_serialization():
     """Test serialization of the VisitModel."""
     model = VisitModel.model_validate(VALID_VISIT_DATA)
@@ -152,7 +158,14 @@ def test_visit_model_serialization():
 
     # Check basic fields match
     for key, value in expected_data.items():
-        if key not in ["startDate", "endDate", "dueDate", "visitDate", "dateCreated", "dateModified"]:
+        if key not in [
+            "startDate",
+            "endDate",
+            "dueDate",
+            "visitDate",
+            "dateCreated",
+            "dateModified",
+        ]:
             assert dump[key] == value
 
     # Check date/datetime serialization (assuming Pydantic v2 defaults)
@@ -162,5 +175,6 @@ def test_visit_model_serialization():
     assert dump["visitDate"] == date(2024, 11, 6)
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
     assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 19)
+
 
 # Add more tests for edge cases, different date formats if custom validators are added, etc.

@@ -19,12 +19,15 @@ class UserRole(BaseModel):
     )
     roleId: str = Field(..., description="Unique Role ID")
 
-    @field_validator("dateCreated", "dateModified", mode='before')
+    @field_validator("dateCreated", "dateModified", mode="before")
     @classmethod
     def check_date_array_format(cls, v):
         # Validator receives the raw input value due to mode='before'
         if not isinstance(v, list) or len(v) < 6:
-            raise ValueError("Date array must be a list with at least 6 integer elements (YYYY, MM, DD, HH, MM, SS)")
+            raise ValueError(
+                "Date array must be a list with at least 6 integer elements "
+                "(YYYY, MM, DD, HH, MM, SS)"
+            )
         # Optionally, add type check for elements if needed
         # if not all(isinstance(i, int) for i in v):
         #     raise ValueError("All elements in date array must be integers")
@@ -52,7 +55,7 @@ class UserRole(BaseModel):
     @classmethod
     def _from_date_array(cls, date_array: List[int]) -> datetime:
         """Convert a date array [YYYY, MM, DD, HH, MM, SS, NNNNNNNNN] to datetime.
-           Assumes validation already happened via field_validator.
+        Assumes validation already happened via field_validator.
         """
         try:
             return datetime(

@@ -1,10 +1,10 @@
 import os
 import random
 import time
-from typing import Any, Dict, Optional, Set, Union, Type, TypeVar, List
+from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 
 import httpx
-from pydantic import BaseModel, ValidationError, TypeAdapter
+from pydantic import BaseModel, TypeAdapter, ValidationError
 
 # Define a TypeVar for generic response models
 T = TypeVar("T", bound=BaseModel)
