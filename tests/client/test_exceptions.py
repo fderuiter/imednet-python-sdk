@@ -235,6 +235,5 @@ def test_handle_error_non_json_response(default_client):
     exc = exc_info.value
     assert exc.status_code == 500
     assert exc.api_error_code is None
-    # The message might vary slightly depending on httpx version, check contains
-    assert "Server error response [status_code=500" in exc.message
-    assert "Internal Server Error Text" in exc.message
+    # Check the updated error message format - it no longer includes the raw text
+    assert "HTTP error 500 occurred" in exc.message
