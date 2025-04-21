@@ -1,4 +1,4 @@
-"""Tests for the Subjects API client."""
+"""Tests for the Sites API client."""
 
 from datetime import datetime
 
@@ -6,18 +6,15 @@ import pytest
 import respx
 from httpx import Response
 
-from imednet_sdk.api.subjects import SubjectsClient
+from imednet_sdk.api.sites import SitesClient
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
 from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
-# KeywordModel is defined in record.py now
-from imednet_sdk.models.record import KeywordModel
-from imednet_sdk.models.subject import SubjectModel
+from imednet_sdk.models.site import SiteModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
 MOCK_STUDY_KEY = "PHARMADEMO" # Use example from docs
-SUBJECTS_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/subjects"
+SITES_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/sites"
 
 
 # --- Fixtures ---
@@ -30,43 +27,28 @@ def client():
 
 
 @pytest.fixture
-def subjects_client(client):
-    """Fixture for SubjectsClient."""
-    return SubjectsClient(client)
+def sites_client(client):
+    """Fixture for SitesClient."""
+    return SitesClient(client)
 
 
 # --- Mock Data ---
-# Corrected Keyword based on docs example
-MOCK_KEYWORD_1 = {
-    "keywordName": "Data Entry Error",
-    "keywordKey": "DEE",
-    "keywordId": 15362,
-    "dateAdded": "2024-11-04 16:03:19"
-}
-# MOCK_KEYWORD_2 can be removed or updated if needed
-
-# Corrected mock data based on docs/reference/subjects.md example
-MOCK_SUBJECT_1_DICT = {
+# Corrected mock data based on docs/reference/sites.md example
+MOCK_SITE_1_DICT = {
     "studyKey": MOCK_STUDY_KEY,
-    "subjectId": 1,
-    "subjectOid": "OID-1",
-    "subjectKey": "01-001",
-    "subjectStatus": "Enrolled",
-    "siteId": 128,
-    "siteName": "Chicago Hope Hospital",
-    "deleted": False,
-    "enrollmentStartDate": "2024-11-04 16:03:19", # Use format from docs
-    "dateCreated": "2024-11-04 16:03:19",
-    "dateModified": "2024-11-04 16:03:20",
-    "keywords": [MOCK_KEYWORD_1],
+    "siteId": 1,
+    "siteName": "Mock Site 1",
+    "siteEnrollmentStatus": "Enrollment Open",
+    "dateCreated": "2024-11-04 16:03:19", # Use format from docs
+    "dateModified": "2024-11-04 16:03:20"
 }
-# MOCK_SUBJECT_2_DICT can be removed or updated if needed
+# MOCK_SITE_2_DICT can be added if needed for multi-item tests
 
-# Corrected Metadata based on docs
+# Corrected Metadata based on docs (no nested pagination)
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
     "method": "GET", # Added method
-    "path": SUBJECTS_ENDPOINT,
+    "path": SITES_ENDPOINT,
     "timestamp": "2024-11-04 16:03:19", # Use fixed timestamp
     "error": {}
 }
@@ -79,7 +61,7 @@ MOCK_PAGINATION_DICT = {
     "totalElements": 1,
     "sort": [
         {
-            "property": "subjectId", # Use 'property'
+            "property": "siteId", # Use 'property'
             "direction": "ASC"
         }
     ]
@@ -89,19 +71,19 @@ MOCK_PAGINATION_DICT = {
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_SUBJECT_1_DICT], # Use single item based on pagination
+    "data": [MOCK_SITE_1_DICT], # Use single item based on pagination
 }
 
 
 # --- Test Cases ---
 @respx.mock
-def test_list_subjects_success(subjects_client):
-    """Test successful retrieval of subjects list."""
-    list_route = respx.get(f"{MOCK_BASE_URL}{SUBJECTS_ENDPOINT}").mock(
+def test_list_sites_success(sites_client):
+    """Test successful retrieval of sites list."""
+    list_route = respx.get(f"{MOCK_BASE_URL}{SITES_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
     )
 
-    response = subjects_client.list_subjects(study_key=MOCK_STUDY_KEY)
+    response = sites_client.list_sites(study_key=MOCK_STUDY_KEY)
 
     assert list_route.called
     assert response is not None
@@ -110,7 +92,7 @@ def test_list_subjects_success(subjects_client):
     # Assert pagination is present and correct type
     assert isinstance(response.pagination, Pagination)
     assert response.metadata.status == "OK"
-    assert response.metadata.path == SUBJECTS_ENDPOINT
+    assert response.metadata.path == SITES_ENDPOINT
     # Assert pagination fields based on documentation
     assert response.pagination.currentPage == 0
     assert response.pagination.size == 1
@@ -119,65 +101,56 @@ def test_list_subjects_success(subjects_client):
     assert isinstance(response.pagination.sort, list)
     assert len(response.pagination.sort) == 1
     assert isinstance(response.pagination.sort[0], SortInfo)
-    assert response.pagination.sort[0].property == "subjectId"
+    assert response.pagination.sort[0].property == "siteId"
     assert response.pagination.sort[0].direction == "ASC"
 
     assert isinstance(response.data, list)
     assert len(response.data) == 1
-    assert isinstance(response.data[0], SubjectModel)
+    assert isinstance(response.data[0], SiteModel)
     # Assertions based on corrected mock data
-    assert response.data[0].subjectId == 1
-    assert response.data[0].subjectKey == "01-001"
-    assert response.data[0].siteName == "Chicago Hope Hospital"
-    assert response.data[0].subjectStatus == "Enrolled"
-    assert response.data[0].deleted is False
-    assert response.data[0].enrollmentStartDate == datetime.fromisoformat("2024-11-04 16:03:19")
+    assert response.data[0].siteId == 1
+    assert response.data[0].siteName == "Mock Site 1"
+    assert response.data[0].siteEnrollmentStatus == "Enrollment Open"
     assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:19")
     assert response.data[0].dateModified == datetime.fromisoformat("2024-11-04 16:03:20")
 
-    assert isinstance(response.data[0].keywords, list)
-    assert len(response.data[0].keywords) == 1
-    assert isinstance(response.data[0].keywords[0], KeywordModel)
-    assert response.data[0].keywords[0].keywordName == "Data Entry Error"
-    assert response.data[0].keywords[0].dateAdded == datetime.fromisoformat("2024-11-04 16:03:19")
-
 
 @respx.mock
-def test_list_subjects_with_params(subjects_client):
-    """Test list_subjects with query parameters."""
+def test_list_sites_with_params(sites_client):
+    """Test list_sites with query parameters."""
     # Use filter syntax from docs example (==)
     expected_params = {
         "page": "0",
         "size": "25",
-        "sort": "subjectId,ASC",
-        "filter": 'subjectId==370', # Use == as per docs example
+        "sort": "siteId,ASC",
+        "filter": 'siteId==48', # Use == as per docs example
     }
     # Mock response for this specific request (can be empty or tailored)
-    mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{SUBJECTS_ENDPOINT}"}
+    mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{SITES_ENDPOINT}"}
     mock_pagination = {
         "currentPage": 0, "size": 25, "totalPages": 0, "totalElements": 0,
-        "sort": [{"property": "subjectId", "direction": "ASC"}]
+        "sort": [{"property": "siteId", "direction": "ASC"}]
     }
     mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []} # Example empty data
 
-    list_route = respx.get(f"{MOCK_BASE_URL}{SUBJECTS_ENDPOINT}", params=expected_params).mock(
+    list_route = respx.get(f"{MOCK_BASE_URL}{SITES_ENDPOINT}", params=expected_params).mock(
         return_value=Response(200, json=mock_response)
     )
 
-    response = subjects_client.list_subjects(
+    response = sites_client.list_sites(
         study_key=MOCK_STUDY_KEY,
         page=0,
         size=25,
-        sort="subjectId,ASC",
-        filter='subjectId==370',
+        sort="siteId,ASC",
+        filter='siteId==48',
     )
 
     assert list_route.called
     request = list_route.calls.last.request
     assert request.url.params["page"] == "0"
     assert request.url.params["size"] == "25"
-    assert request.url.params["sort"] == "subjectId,ASC"
-    assert request.url.params["filter"] == 'subjectId==370'
+    assert request.url.params["sort"] == "siteId,ASC"
+    assert request.url.params["filter"] == 'siteId==48'
 
     # Assert response structure
     assert isinstance(response, ApiResponse)
@@ -185,15 +158,16 @@ def test_list_subjects_with_params(subjects_client):
     assert isinstance(response.pagination, Pagination)
     assert response.pagination.currentPage == 0
     assert response.pagination.size == 25
-    assert response.pagination.sort[0].property == "subjectId"
+    assert response.pagination.sort[0].property == "siteId"
     assert response.pagination.sort[0].direction == "ASC"
     assert isinstance(response.data, list)
     assert len(response.data) == 0 # Based on mock response
 
 
-def test_list_subjects_no_study_key(subjects_client):
-    """Test list_subjects raises ValueError if study_key is missing."""
+def test_list_sites_no_study_key(sites_client):
+    """Test list_sites raises ValueError if study_key is missing."""
     with pytest.raises(ValueError, match="study_key cannot be empty"):
-        subjects_client.list_subjects(study_key="")
+        sites_client.list_sites(study_key="")
     with pytest.raises(ValueError, match="study_key cannot be empty"):
-        subjects_client.list_subjects(study_key=None)  # type: ignore
+        sites_client.list_sites(study_key=None) # type: ignore
+

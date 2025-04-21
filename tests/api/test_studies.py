@@ -6,19 +6,20 @@ import pytest
 import respx
 from httpx import Response
 
-# Import the client we are testing
 from imednet_sdk.api.studies import StudiesClient
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo
+# Use Pagination and SortInfo based on documentation structure
+from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
 from imednet_sdk.models.study import StudyModel
 
+# --- Constants ---
+MOCK_BASE_URL = "https://testinstance.imednet.com"
+STUDIES_ENDPOINT = "/api/v1/edc/studies"
 
+# --- Fixtures ---
 @pytest.fixture
 def client():
     """Fixture for ImednetClient."""
-    # Provide dummy credentials for testing purposes
-    # as the client initialization requires them.
-    # Use the MOCK_BASE_URL for testing
     return ImednetClient(
         api_key="test_api_key", security_key="test_security_key", base_url=MOCK_BASE_URL
     )
@@ -26,125 +27,149 @@ def client():
 
 @pytest.fixture
 def studies_client(client):
-    """Fixture for StudiesClient, directly instantiated for now."""
-    # Directly instantiate StudiesClient for isolated testing
-    # Later, this might use client.studies once integrated
+    """Fixture for StudiesClient."""
     return StudiesClient(client)
 
 
 # --- Mock Data ---
-MOCK_BASE_URL = "https://testinstance.imednet.com"
-STUDIES_ENDPOINT = "/api/v1/edc/studies"
-
+# Corrected mock data based on docs/reference/studies.md example
 MOCK_STUDY_1_DICT = {
-    "sponsorKey": "SPONSOR1",  # Added
-    "studyKey": "DEMO",
-    "studyId": 101,  # Added
-    "studyName": "Demonstration Study",
-    "studyStatus": "Active",
-    "studyType": "Observational",  # Added
-    "dateCreated": "2023-01-15T10:00:00Z",
-    "dateUpdated": "2023-01-16T11:30:00Z",
-    "dateModified": "2023-01-16T11:30:00Z",  # Added
+    "sponsorKey": "100",
+    "studyKey": "PHARMADEMO",
+    "studyId": 100,
+    "studyName": "iMednet Pharma Demonstration Study",
+    "studyDescription": "iMednet Demonstration Study v2 Created 05April2018 After A5 Release", # Added from docs
+    "studyType": "STUDY",
+    "dateCreated": "2024-11-04 16:03:18", # Use format from docs
+    "dateModified": "2024-11-04 16:03:19"
 }
-MOCK_STUDY_2_DICT = {
-    "sponsorKey": "SPONSOR2",  # Added
-    "studyKey": "PROD",
-    "studyId": 102,  # Added
-    "studyName": "Production Study",
-    "studyStatus": "Active",
-    "studyType": "Interventional",  # Added
-    "dateCreated": "2022-11-01T09:00:00Z",
-    "dateUpdated": "2023-02-20T15:45:00Z",
-    "dateModified": "2023-02-20T15:45:00Z",  # Added
-}
+# MOCK_STUDY_2_DICT can be added if needed for multi-item tests
 
+# Corrected Metadata based on docs
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
+    "method": "GET", # Added method
     "path": STUDIES_ENDPOINT,
-    "timestamp": datetime.now().isoformat(),  # Dynamic timestamp
-    "pagination": {"page": 0, "size": 2, "total": 2},
+    "timestamp": "2024-11-04 16:03:18", # Use fixed timestamp
+    "error": {}
 }
 
+# Corrected Pagination based on docs
+MOCK_PAGINATION_DICT = {
+    "currentPage": 0,
+    "size": 1, # Adjusted to match single data item
+    "totalPages": 1,
+    "totalElements": 1,
+    "sort": [
+        {
+            "property": "studyKey", # Use 'property'
+            "direction": "ASC"
+        }
+    ]
+}
+
+# Corrected top-level response structure
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
-    "data": [MOCK_STUDY_1_DICT, MOCK_STUDY_2_DICT],
+    "pagination": MOCK_PAGINATION_DICT,
+    "data": [MOCK_STUDY_1_DICT], # Use single item based on pagination
 }
 
 
 # --- Test Cases ---
-
-
 @respx.mock
 def test_list_studies_success(studies_client):
     """Test successful retrieval of studies list."""
-    # Mock the API call
     list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
     )
 
-    # Call the method
     response = studies_client.list_studies()
 
-    # Assertions
     assert list_route.called
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.metadata.pagination, PaginationInfo)
+    # Assert pagination is present and correct type
+    assert isinstance(response.pagination, Pagination)
     assert response.metadata.status == "OK"
-    # We don't assert exact pagination numbers from mock if they can vary
-    # assert response.metadata.pagination.page == 0
-    # assert response.metadata.pagination.size == 2
-    # assert response.metadata.pagination.total == 2
+    assert response.metadata.path == STUDIES_ENDPOINT
+    # Assert pagination fields based on documentation
+    assert response.pagination.currentPage == 0
+    assert response.pagination.size == 1
+    assert response.pagination.totalPages == 1
+    assert response.pagination.totalElements == 1
+    assert isinstance(response.pagination.sort, list)
+    assert len(response.pagination.sort) == 1
+    assert isinstance(response.pagination.sort[0], SortInfo)
+    assert response.pagination.sort[0].property == "studyKey"
+    assert response.pagination.sort[0].direction == "ASC"
+
     assert isinstance(response.data, list)
-    assert len(response.data) == 2
-    assert all(isinstance(s, StudyModel) for s in response.data)
-    assert response.data[0].studyKey == "DEMO"  # Changed from study_key
-    assert response.data[1].studyKey == "PROD"  # Changed from study_key
-    assert response.data[0].studyName == "Demonstration Study"  # Changed from study_name
-    # Check date parsing
-    assert isinstance(response.data[0].dateCreated, datetime)  # Changed from date_created
-    assert response.data[0].dateCreated.year == 2023  # Changed from date_created
+    assert len(response.data) == 1
+    assert isinstance(response.data[0], StudyModel)
+    # Assertions based on corrected mock data
+    assert response.data[0].studyKey == "PHARMADEMO"
+    assert response.data[0].studyName == "iMednet Pharma Demonstration Study"
+    assert response.data[0].studyDescription == "iMednet Demonstration Study v2 Created 05April2018 After A5 Release"
+    assert response.data[0].studyType == "STUDY"
+    assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:18")
+    assert response.data[0].dateModified == datetime.fromisoformat("2024-11-04 16:03:19")
 
 
 @respx.mock
 def test_list_studies_with_params(studies_client):
     """Test retrieving studies list with pagination, sort, and filter."""
-    params = {"page": 1, "size": 10, "sort": "studyKey,desc", "filter": 'studyStatus=="Active"'}
-    # httpx automatically URL-encodes parameters
-    # Break long URL string for readability and line length
-    base_part = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
-    query_params = "?page=1&size=10&sort=studyKey%2Cdesc&filter=studyStatus%3D%3D%22Active%22"
-    expected_url = base_part + query_params
+    # Use filter syntax from docs example (==)
+    params = {"page": 1, "size": 10, "sort": "studyKey,desc", "filter": 'studyKey==PHARMADEMO'}
 
-    # Mock the API call with specific query params
-    # Use url__eq to ensure exact URL match including params
-    list_route = respx.get(url=expected_url).mock(
-        return_value=Response(
-            200, json=MOCK_SUCCESS_RESPONSE_DICT
-        )  # Using same mock data for simplicity
+    # Mock response for this specific request (can be empty or tailored)
+    mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{STUDIES_ENDPOINT}"}
+    mock_pagination = {
+        "currentPage": 1, "size": 10, "totalPages": 1, "totalElements": 0,
+        "sort": [{"property": "studyKey", "direction": "DESC"}]
+    }
+    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []} # Example empty data
+
+    # Let respx match based on params dictionary
+    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}", params=params).mock(
+        return_value=Response(200, json=mock_response)
     )
 
-    # Call the method with parameters
     response = studies_client.list_studies(**params)
 
-    # Assertions
     assert list_route.called
-    assert response is not None  # Basic check that response is received
-    assert len(response.data) == 2  # Check data is parsed
+    request = list_route.calls.last.request
+    # Verify parameters were sent correctly
+    assert request.url.params["page"] == "1"
+    assert request.url.params["size"] == "10"
+    assert request.url.params["sort"] == "studyKey,desc"
+    assert request.url.params["filter"] == 'studyKey==PHARMADEMO'
+
+    # Assert response structure
+    assert isinstance(response, ApiResponse)
+    assert isinstance(response.metadata, Metadata)
+    assert isinstance(response.pagination, Pagination)
+    assert response.pagination.currentPage == 1
+    assert response.pagination.size == 10
+    assert response.pagination.sort[0].property == "studyKey"
+    assert response.pagination.sort[0].direction == "DESC"
+    assert isinstance(response.data, list)
+    assert len(response.data) == 0 # Based on mock response
 
 
 @respx.mock
 def test_list_studies_empty_response(studies_client):
     """Test retrieving an empty list of studies."""
+    # Correct pagination model
+    mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{STUDIES_ENDPOINT}"}
+    mock_pagination = {
+        "currentPage": 0, "size": 25, "totalPages": 0, "totalElements": 0,
+        "sort": [{"property": "studyKey", "direction": "ASC"}]
+    }
     empty_response_dict = {
-        "metadata": {
-            "status": "OK",
-            "path": STUDIES_ENDPOINT,
-            "timestamp": datetime.now().isoformat(),
-            "pagination": {"page": 0, "size": 25, "total": 0},
-        },
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
         "data": [],
     }
     list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
@@ -157,7 +182,10 @@ def test_list_studies_empty_response(studies_client):
     assert response is not None
     assert isinstance(response.data, list)
     assert len(response.data) == 0
-    assert response.metadata.pagination.total == 0
+    # Assert pagination details
+    assert isinstance(response.pagination, Pagination)
+    assert response.pagination.totalElements == 0
+    assert response.pagination.totalPages == 0
 
 
 # Note: Tests for error handling (e.g., 4xx/5xx responses)
