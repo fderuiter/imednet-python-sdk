@@ -11,6 +11,7 @@ from .record_revisions import RecordRevisionsClient
 from .records import RecordsClient
 from .sites import SitesClient
 from .studies import StudiesClient
+from .subjects import SubjectsClient
 from .variables import VariablesClient
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "RecordRevisionsClient",
     "VariablesClient",
     "CodingsClient",
+    "SubjectsClient",
 ]
