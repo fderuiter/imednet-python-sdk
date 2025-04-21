@@ -56,8 +56,8 @@
   * [x] `list_studies(**kwargs)`: `GET /api/v1/edc/studies`
     * Params: `page`, `size`, `sort`, `filter`
     * Headers: `x-api-key`, `x-imn-security-key`
-* [ ] **SitesClient (`imednet_sdk/api/sites.py`)**
-  * [ ] `list_sites(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/sites`
+* [x] **SitesClient (`imednet_sdk/api/sites.py`)**
+  * [x] `list_sites(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/sites`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **FormsClient (`imednet_sdk/api/forms.py`)**
