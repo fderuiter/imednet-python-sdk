@@ -16,7 +16,7 @@ from imednet_sdk.models.record import KeywordModel, RecordModel, RecordPostItem
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
-MOCK_STUDY_KEY = "PHARMADEMO" # Use example from docs
+MOCK_STUDY_KEY = "PHARMADEMO"  # Use example from docs
 RECORDS_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/records"
 
 
@@ -41,13 +41,13 @@ MOCK_KEYWORD_1 = {
     "keywordName": "Data Entry Error",
     "keywordKey": "DEE",
     "keywordId": 15362,
-    "dateAdded": "2024-11-04 16:03:19"
+    "dateAdded": "2024-11-04 16:03:19",
 }
 # MOCK_KEYWORD_2 can be removed or updated if needed
 
 MOCK_RECORD_1_DICT = {
     "studyKey": MOCK_STUDY_KEY,
-    "intervalId": 99, # Use example from docs
+    "intervalId": 99,  # Use example from docs
     "formId": 10202,
     "formKey": "AE",
     "siteId": 128,
@@ -56,7 +56,7 @@ MOCK_RECORD_1_DICT = {
     "recordType": "SUBJECT",
     "recordStatus": "Record Incomplete",
     "deleted": False,
-    "dateCreated": "2024-11-04 16:03:19", # Use format from docs
+    "dateCreated": "2024-11-04 16:03:19",  # Use format from docs
     "dateModified": "2024-11-04 16:03:20",
     "subjectId": 326,
     "subjectOid": "OID-1",
@@ -69,63 +69,54 @@ MOCK_RECORD_1_DICT = {
         "unvnum": "1",
         "dateModified": "2018-11-18 07:11:16",
         "aeser": "",
-        "aeterm": "Bronchitis"
-    }
+        "aeterm": "Bronchitis",
+    },
 }
 # MOCK_RECORD_2_DICT can be removed or updated if needed
 
 # Corrected Metadata based on docs (no nested pagination)
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
-    "method": "GET", # Added method
+    "method": "GET",  # Added method
     "path": RECORDS_ENDPOINT,
-    "timestamp": "2024-11-04 16:03:19", # Use fixed timestamp
-    "error": {}
+    "timestamp": "2024-11-04 16:03:19",  # Use fixed timestamp
+    "error": {},
 }
 
 # Corrected Pagination based on docs
 MOCK_PAGINATION_DICT = {
     "currentPage": 0,
-    "size": 1, # Adjusted to match single data item
+    "size": 1,  # Adjusted to match single data item
     "totalPages": 1,
     "totalElements": 1,
-    "sort": [
-        {
-            "property": "recordId", # Use 'property'
-            "direction": "ASC"
-        }
-    ]
+    "sort": [{"property": "recordId", "direction": "ASC"}],  # Use 'property'
 }
 
 # Corrected top-level GET response structure
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_RECORD_1_DICT], # Use single item based on pagination
+    "data": [MOCK_RECORD_1_DICT],  # Use single item based on pagination
 }
 
 # Mock data for POST request based on docs examples
 MOCK_RECORD_POST_ITEM_1 = {
     "formKey": "REG",
     "siteName": "Minneapolis",
-    "data": {
-      "textField": "Text value"
-    }
+    "data": {"textField": "Text value"},
 }
 MOCK_RECORD_POST_ITEM_2 = {
     "formKey": "REG",
     "subjectKey": "651-042",
     "intervalName": "Registration",
-    "data": {
-      "textField": "Updated text"
-    }
+    "data": {"textField": "Updated text"},
 }
 
 # Corrected POST response based on docs
 MOCK_JOB_STATUS_DICT = {
     "jobId": "9663fe34-eec7-460a-a820-097f1eb2875e",
     "batchId": "c3q191e4-f894-72cd-a753-b37283eh0866",
-    "state": "created" # Lowercase as per docs
+    "state": "created",  # Lowercase as per docs
 }
 
 # POST response doesn't have metadata/pagination wrapper
@@ -184,16 +175,23 @@ def test_list_records_with_params(records_client):
         "page": "1",
         "size": "10",
         "sort": "dateCreated,desc",
-        "filter": 'recordId==5510', # Use == as per docs
-        "recordDataFilter": "aeterm==Bronchitis", # Use == as per docs
+        "filter": "recordId==5510",  # Use == as per docs
+        "recordDataFilter": "aeterm==Bronchitis",  # Use == as per docs
     }
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{RECORDS_ENDPOINT}"}
     mock_pagination = {
-        "currentPage": 1, "size": 10, "totalPages": 1, "totalElements": 0,
-        "sort": [{"property": "dateCreated", "direction": "DESC"}]
+        "currentPage": 1,
+        "size": 10,
+        "totalPages": 1,
+        "totalElements": 0,
+        "sort": [{"property": "dateCreated", "direction": "DESC"}],
     }
-    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []} # Example empty data
+    mock_response = {
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
+        "data": [],
+    }  # Example empty data
 
     list_route = respx.get(f"{MOCK_BASE_URL}{RECORDS_ENDPOINT}", params=expected_params).mock(
         return_value=Response(200, json=mock_response)
@@ -204,7 +202,7 @@ def test_list_records_with_params(records_client):
         page=1,
         size=10,
         sort="dateCreated,desc",
-        filter='recordId==5510',
+        filter="recordId==5510",
         record_data_filter="aeterm==Bronchitis",
     )
 
@@ -213,7 +211,7 @@ def test_list_records_with_params(records_client):
     assert request.url.params["page"] == "1"
     assert request.url.params["size"] == "10"
     assert request.url.params["sort"] == "dateCreated,desc"
-    assert request.url.params["filter"] == 'recordId==5510'
+    assert request.url.params["filter"] == "recordId==5510"
     assert request.url.params["recordDataFilter"] == "aeterm==Bronchitis"
 
     # Assert response structure
@@ -225,7 +223,7 @@ def test_list_records_with_params(records_client):
     assert response.pagination.sort[0].property == "dateCreated"
     assert response.pagination.sort[0].direction == "DESC"
     assert isinstance(response.data, list)
-    assert len(response.data) == 0 # Based on mock response
+    assert len(response.data) == 0  # Based on mock response
 
 
 def test_list_records_no_study_key(records_client):
@@ -241,7 +239,9 @@ def test_create_records_success(records_client):
     """Test successful creation of records."""
     # POST endpoint returns JobStatusModel directly
     post_route = respx.post(f"{MOCK_BASE_URL}{RECORDS_ENDPOINT}").mock(
-        return_value=Response(200, json=MOCK_CREATE_SUCCESS_RESPONSE_DICT) # Assuming 200 OK based on JobStatus return
+        return_value=Response(
+            200, json=MOCK_CREATE_SUCCESS_RESPONSE_DICT
+        )  # Assuming 200 OK based on JobStatus return
     )
 
     records_to_create = [
@@ -284,7 +284,7 @@ def test_create_records_success(records_client):
 @respx.mock
 def test_create_records_with_email_notify(records_client):
     """Test create_records sends the email notification header."""
-    email = "user@domain.com" # Use example from docs
+    email = "user@domain.com"  # Use example from docs
     post_route = respx.post(f"{MOCK_BASE_URL}{RECORDS_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_CREATE_SUCCESS_RESPONSE_DICT)
     )

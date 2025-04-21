@@ -13,7 +13,7 @@ from imednet_sdk.models.site import SiteModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
-MOCK_STUDY_KEY = "PHARMADEMO" # Use example from docs
+MOCK_STUDY_KEY = "PHARMADEMO"  # Use example from docs
 SITES_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/sites"
 
 
@@ -39,39 +39,34 @@ MOCK_SITE_1_DICT = {
     "siteId": 1,
     "siteName": "Mock Site 1",
     "siteEnrollmentStatus": "Enrollment Open",
-    "dateCreated": "2024-11-04 16:03:19", # Use format from docs
-    "dateModified": "2024-11-04 16:03:20"
+    "dateCreated": "2024-11-04 16:03:19",  # Use format from docs
+    "dateModified": "2024-11-04 16:03:20",
 }
 # MOCK_SITE_2_DICT can be added if needed for multi-item tests
 
 # Corrected Metadata based on docs (no nested pagination)
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
-    "method": "GET", # Added method
+    "method": "GET",  # Added method
     "path": SITES_ENDPOINT,
-    "timestamp": "2024-11-04 16:03:19", # Use fixed timestamp
-    "error": {}
+    "timestamp": "2024-11-04 16:03:19",  # Use fixed timestamp
+    "error": {},
 }
 
 # Corrected Pagination based on docs
 MOCK_PAGINATION_DICT = {
     "currentPage": 0,
-    "size": 1, # Adjusted to match single data item
+    "size": 1,  # Adjusted to match single data item
     "totalPages": 1,
     "totalElements": 1,
-    "sort": [
-        {
-            "property": "siteId", # Use 'property'
-            "direction": "ASC"
-        }
-    ]
+    "sort": [{"property": "siteId", "direction": "ASC"}],  # Use 'property'
 }
 
 # Corrected top-level response structure
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_SITE_1_DICT], # Use single item based on pagination
+    "data": [MOCK_SITE_1_DICT],  # Use single item based on pagination
 }
 
 
@@ -123,15 +118,22 @@ def test_list_sites_with_params(sites_client):
         "page": "0",
         "size": "25",
         "sort": "siteId,ASC",
-        "filter": 'siteId==48', # Use == as per docs example
+        "filter": "siteId==48",  # Use == as per docs example
     }
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{SITES_ENDPOINT}"}
     mock_pagination = {
-        "currentPage": 0, "size": 25, "totalPages": 0, "totalElements": 0,
-        "sort": [{"property": "siteId", "direction": "ASC"}]
+        "currentPage": 0,
+        "size": 25,
+        "totalPages": 0,
+        "totalElements": 0,
+        "sort": [{"property": "siteId", "direction": "ASC"}],
     }
-    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []} # Example empty data
+    mock_response = {
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
+        "data": [],
+    }  # Example empty data
 
     list_route = respx.get(f"{MOCK_BASE_URL}{SITES_ENDPOINT}", params=expected_params).mock(
         return_value=Response(200, json=mock_response)
@@ -142,7 +144,7 @@ def test_list_sites_with_params(sites_client):
         page=0,
         size=25,
         sort="siteId,ASC",
-        filter='siteId==48',
+        filter="siteId==48",
     )
 
     assert list_route.called
@@ -150,7 +152,7 @@ def test_list_sites_with_params(sites_client):
     assert request.url.params["page"] == "0"
     assert request.url.params["size"] == "25"
     assert request.url.params["sort"] == "siteId,ASC"
-    assert request.url.params["filter"] == 'siteId==48'
+    assert request.url.params["filter"] == "siteId==48"
 
     # Assert response structure
     assert isinstance(response, ApiResponse)
@@ -161,7 +163,7 @@ def test_list_sites_with_params(sites_client):
     assert response.pagination.sort[0].property == "siteId"
     assert response.pagination.sort[0].direction == "ASC"
     assert isinstance(response.data, list)
-    assert len(response.data) == 0 # Based on mock response
+    assert len(response.data) == 0  # Based on mock response
 
 
 def test_list_sites_no_study_key(sites_client):
@@ -169,5 +171,4 @@ def test_list_sites_no_study_key(sites_client):
     with pytest.raises(ValueError, match="study_key cannot be empty"):
         sites_client.list_sites(study_key="")
     with pytest.raises(ValueError, match="study_key cannot be empty"):
-        sites_client.list_sites(study_key=None) # type: ignore
-
+        sites_client.list_sites(study_key=None)  # type: ignore

@@ -1,12 +1,12 @@
 # Tests for the Users API client.
 
-from datetime import datetime # Import datetime
+from datetime import datetime  # Import datetime
 
 import pytest
 import respx
 from httpx import Response
 
-from imednet_sdk.api.users import UsersClient # Import specific client
+from imednet_sdk.api.users import UsersClient  # Import specific client
 from imednet_sdk.client import ImednetClient
 # Use Pagination and SortInfo based on documentation structure
 from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
@@ -14,7 +14,7 @@ from imednet_sdk.models.user import RoleModel, UserModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
-MOCK_STUDY_KEY = "MOCK-STUDY" # Use example from docs
+MOCK_STUDY_KEY = "MOCK-STUDY"  # Use example from docs
 USERS_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/users"
 
 
@@ -44,18 +44,18 @@ MOCK_ROLE_1_DICT = {
     "description": "Role description 1",
     "level": 1,
     "type": "Role type 1",
-    "inactive": False
+    "inactive": False,
 }
 MOCK_ROLE_2_DICT = {
     "dateCreated": [2024, 11, 4, 16, 3, 18, 487000000],
     "dateModified": [2024, 11, 4, 16, 3, 18, 487000000],
-    "roleId": "cc6cbf0e-5869-41b4-ae29-6d28f6200c86", # Different ID
+    "roleId": "cc6cbf0e-5869-41b4-ae29-6d28f6200c86",  # Different ID
     "communityId": 2,
     "name": "Role name 2",
     "description": "Role description 2",
     "level": 2,
     "type": "Role type 2",
-    "inactive": False
+    "inactive": False,
 }
 
 MOCK_USER_1_DICT = {
@@ -65,7 +65,7 @@ MOCK_USER_1_DICT = {
     "lastName": "Smith",
     "email": "wsmith@mednet.com",
     "userActiveInStudy": True,
-    "roles": [MOCK_ROLE_1_DICT, MOCK_ROLE_2_DICT]
+    "roles": [MOCK_ROLE_1_DICT, MOCK_ROLE_2_DICT],
 }
 # MOCK_USER_2_DICT for inactive user if needed
 MOCK_USER_2_INACTIVE_DICT = {
@@ -75,56 +75,46 @@ MOCK_USER_2_INACTIVE_DICT = {
     "lastName": "Jones",
     "email": "ajones@mednet.com",
     "userActiveInStudy": False,
-    "roles": [MOCK_ROLE_1_DICT] # Example: inactive user might still have roles listed
+    "roles": [MOCK_ROLE_1_DICT],  # Example: inactive user might still have roles listed
 }
 
 # Corrected Metadata based on docs
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
-    "method": "GET", # Added method
+    "method": "GET",  # Added method
     "path": USERS_ENDPOINT,
-    "timestamp": "2024-11-04 16:03:18", # Use fixed timestamp
-    "error": {}
+    "timestamp": "2024-11-04 16:03:18",  # Use fixed timestamp
+    "error": {},
 }
 
 # Corrected Pagination based on docs
 MOCK_PAGINATION_DICT = {
     "currentPage": 0,
-    "size": 1, # Adjusted to match single data item
+    "size": 1,  # Adjusted to match single data item
     "totalPages": 1,
     "totalElements": 1,
-    "sort": [
-        {
-            "property": "login", # Use 'property'
-            "direction": "ASC"
-        }
-    ]
+    "sort": [{"property": "login", "direction": "ASC"}],  # Use 'property'
 }
 
 # Corrected top-level response structure for single active user
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_USER_1_DICT], # Use single item based on pagination
+    "data": [MOCK_USER_1_DICT],  # Use single item based on pagination
 }
 
 # Mock response for including inactive users
 MOCK_PAGINATION_INACTIVE_DICT = {
     "currentPage": 0,
-    "size": 2, # Adjusted for two users
+    "size": 2,  # Adjusted for two users
     "totalPages": 1,
     "totalElements": 2,
-    "sort": [
-        {
-            "property": "login",
-            "direction": "ASC"
-        }
-    ]
+    "sort": [{"property": "login", "direction": "ASC"}],
 }
 MOCK_INACTIVE_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_INACTIVE_DICT,
-    "data": [MOCK_USER_2_INACTIVE_DICT, MOCK_USER_1_DICT], # Example order
+    "data": [MOCK_USER_2_INACTIVE_DICT, MOCK_USER_1_DICT],  # Example order
 }
 
 
@@ -133,9 +123,9 @@ MOCK_INACTIVE_RESPONSE_DICT = {
 def test_list_users_success(users_client):
     """Test successful listing of active users."""
     # Default is includeInactive=false
-    list_route = respx.get(f"{MOCK_BASE_URL}{USERS_ENDPOINT}", params={"includeInactive": "false"}).mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
-    )
+    list_route = respx.get(
+        f"{MOCK_BASE_URL}{USERS_ENDPOINT}", params={"includeInactive": "false"}
+    ).mock(return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT))
 
     response = users_client.list_users(study_key=MOCK_STUDY_KEY)
 
@@ -191,9 +181,9 @@ def test_list_users_success(users_client):
 @respx.mock
 def test_list_users_include_inactive(users_client):
     """Test listing users including inactive ones."""
-    list_route = respx.get(f"{MOCK_BASE_URL}{USERS_ENDPOINT}", params={"includeInactive": "true"}).mock(
-        return_value=Response(200, json=MOCK_INACTIVE_RESPONSE_DICT)
-    )
+    list_route = respx.get(
+        f"{MOCK_BASE_URL}{USERS_ENDPOINT}", params={"includeInactive": "true"}
+    ).mock(return_value=Response(200, json=MOCK_INACTIVE_RESPONSE_DICT))
 
     response = users_client.list_users(study_key=MOCK_STUDY_KEY, include_inactive=True)
 
@@ -217,10 +207,17 @@ def test_list_users_with_params(users_client):
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{USERS_ENDPOINT}"}
     mock_pagination = {
-        "currentPage": 2, "size": 5, "totalPages": 3, "totalElements": 12,
-        "sort": [{"property": "login", "direction": "ASC"}]
+        "currentPage": 2,
+        "size": 5,
+        "totalPages": 3,
+        "totalElements": 12,
+        "sort": [{"property": "login", "direction": "ASC"}],
     }
-    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []} # Example empty data
+    mock_response = {
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
+        "data": [],
+    }  # Example empty data
 
     list_route = respx.get(f"{MOCK_BASE_URL}{USERS_ENDPOINT}", params=params).mock(
         return_value=Response(200, json=mock_response)
@@ -246,7 +243,7 @@ def test_list_users_with_params(users_client):
     assert response.pagination.sort[0].property == "login"
     assert response.pagination.sort[0].direction == "ASC"
     assert isinstance(response.data, list)
-    assert len(response.data) == 0 # Based on mock response
+    assert len(response.data) == 0  # Based on mock response
 
 
 def test_list_users_missing_study_key(users_client):

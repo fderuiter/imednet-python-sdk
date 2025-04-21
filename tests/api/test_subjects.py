@@ -16,7 +16,7 @@ from imednet_sdk.models.subject import SubjectModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
-MOCK_STUDY_KEY = "PHARMADEMO" # Use example from docs
+MOCK_STUDY_KEY = "PHARMADEMO"  # Use example from docs
 SUBJECTS_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/subjects"
 
 
@@ -41,7 +41,7 @@ MOCK_KEYWORD_1 = {
     "keywordName": "Data Entry Error",
     "keywordKey": "DEE",
     "keywordId": 15362,
-    "dateAdded": "2024-11-04 16:03:19"
+    "dateAdded": "2024-11-04 16:03:19",
 }
 # MOCK_KEYWORD_2 can be removed or updated if needed
 
@@ -55,7 +55,7 @@ MOCK_SUBJECT_1_DICT = {
     "siteId": 128,
     "siteName": "Chicago Hope Hospital",
     "deleted": False,
-    "enrollmentStartDate": "2024-11-04 16:03:19", # Use format from docs
+    "enrollmentStartDate": "2024-11-04 16:03:19",  # Use format from docs
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "keywords": [MOCK_KEYWORD_1],
@@ -65,31 +65,26 @@ MOCK_SUBJECT_1_DICT = {
 # Corrected Metadata based on docs
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
-    "method": "GET", # Added method
+    "method": "GET",  # Added method
     "path": SUBJECTS_ENDPOINT,
-    "timestamp": "2024-11-04 16:03:19", # Use fixed timestamp
-    "error": {}
+    "timestamp": "2024-11-04 16:03:19",  # Use fixed timestamp
+    "error": {},
 }
 
 # Corrected Pagination based on docs
 MOCK_PAGINATION_DICT = {
     "currentPage": 0,
-    "size": 1, # Adjusted to match single data item
+    "size": 1,  # Adjusted to match single data item
     "totalPages": 1,
     "totalElements": 1,
-    "sort": [
-        {
-            "property": "subjectId", # Use 'property'
-            "direction": "ASC"
-        }
-    ]
+    "sort": [{"property": "subjectId", "direction": "ASC"}],  # Use 'property'
 }
 
 # Corrected top-level response structure
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_SUBJECT_1_DICT], # Use single item based on pagination
+    "data": [MOCK_SUBJECT_1_DICT],  # Use single item based on pagination
 }
 
 
@@ -150,15 +145,22 @@ def test_list_subjects_with_params(subjects_client):
         "page": "0",
         "size": "25",
         "sort": "subjectId,ASC",
-        "filter": 'subjectId==370', # Use == as per docs example
+        "filter": "subjectId==370",  # Use == as per docs example
     }
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{SUBJECTS_ENDPOINT}"}
     mock_pagination = {
-        "currentPage": 0, "size": 25, "totalPages": 0, "totalElements": 0,
-        "sort": [{"property": "subjectId", "direction": "ASC"}]
+        "currentPage": 0,
+        "size": 25,
+        "totalPages": 0,
+        "totalElements": 0,
+        "sort": [{"property": "subjectId", "direction": "ASC"}],
     }
-    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []} # Example empty data
+    mock_response = {
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
+        "data": [],
+    }  # Example empty data
 
     list_route = respx.get(f"{MOCK_BASE_URL}{SUBJECTS_ENDPOINT}", params=expected_params).mock(
         return_value=Response(200, json=mock_response)
@@ -169,7 +171,7 @@ def test_list_subjects_with_params(subjects_client):
         page=0,
         size=25,
         sort="subjectId,ASC",
-        filter='subjectId==370',
+        filter="subjectId==370",
     )
 
     assert list_route.called
@@ -177,7 +179,7 @@ def test_list_subjects_with_params(subjects_client):
     assert request.url.params["page"] == "0"
     assert request.url.params["size"] == "25"
     assert request.url.params["sort"] == "subjectId,ASC"
-    assert request.url.params["filter"] == 'subjectId==370'
+    assert request.url.params["filter"] == "subjectId==370"
 
     # Assert response structure
     assert isinstance(response, ApiResponse)
@@ -188,7 +190,7 @@ def test_list_subjects_with_params(subjects_client):
     assert response.pagination.sort[0].property == "subjectId"
     assert response.pagination.sort[0].direction == "ASC"
     assert isinstance(response.data, list)
-    assert len(response.data) == 0 # Based on mock response
+    assert len(response.data) == 0  # Based on mock response
 
 
 def test_list_subjects_no_study_key(subjects_client):

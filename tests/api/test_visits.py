@@ -1,12 +1,12 @@
 # Tests for the Visits API client.
 
-from datetime import date, datetime # Import date and datetime
+from datetime import date, datetime  # Import date and datetime
 
 import pytest
 import respx
 from httpx import Response
 
-from imednet_sdk.api.visits import VisitsClient # Import specific client
+from imednet_sdk.api.visits import VisitsClient  # Import specific client
 from imednet_sdk.client import ImednetClient
 # Use Pagination and SortInfo based on documentation structure
 from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
@@ -14,7 +14,7 @@ from imednet_sdk.models.visit import VisitModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
-MOCK_STUDY_KEY = "PHARMADEMO" # Use example from docs
+MOCK_STUDY_KEY = "PHARMADEMO"  # Use example from docs
 VISITS_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/visits"
 
 
@@ -42,46 +42,41 @@ MOCK_VISIT_1_DICT = {
     "intervalName": "Day 15",
     "subjectId": 247,
     "subjectKey": "111-005",
-    "startDate": "2024-11-04", # Date string
-    "endDate": "2024-11-11",   # Date string
+    "startDate": "2024-11-04",  # Date string
+    "endDate": "2024-11-11",  # Date string
     "dueDate": None,
-    "visitDate": "2024-11-06",   # Date string
+    "visitDate": "2024-11-06",  # Date string
     "visitDateForm": "Follow Up",
     "deleted": False,
     "visitDateQuestion": "AESEV",
-    "dateCreated": "2024-11-04 16:03:19", # Datetime string
-    "dateModified": "2024-11-04 16:03:19" # Datetime string
+    "dateCreated": "2024-11-04 16:03:19",  # Datetime string
+    "dateModified": "2024-11-04 16:03:19",  # Datetime string
 }
 # MOCK_VISIT_2_DICT can be added if needed
 
 # Corrected Metadata based on docs
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
-    "method": "GET", # Added method
+    "method": "GET",  # Added method
     "path": VISITS_ENDPOINT,
-    "timestamp": "2024-11-04 16:03:19", # Use fixed timestamp
-    "error": {}
+    "timestamp": "2024-11-04 16:03:19",  # Use fixed timestamp
+    "error": {},
 }
 
 # Corrected Pagination based on docs
 MOCK_PAGINATION_DICT = {
     "currentPage": 0,
-    "size": 1, # Adjusted to match single data item
+    "size": 1,  # Adjusted to match single data item
     "totalPages": 1,
     "totalElements": 1,
-    "sort": [
-        {
-            "property": "visitId", # Use 'property'
-            "direction": "ASC"
-        }
-    ]
+    "sort": [{"property": "visitId", "direction": "ASC"}],  # Use 'property'
 }
 
 # Corrected top-level response structure
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_VISIT_1_DICT], # Use single item based on pagination
+    "data": [MOCK_VISIT_1_DICT],  # Use single item based on pagination
 }
 
 
@@ -145,10 +140,17 @@ def test_list_visits_with_params(visits_client):
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{VISITS_ENDPOINT}"}
     mock_pagination = {
-        "currentPage": 2, "size": 5, "totalPages": 3, "totalElements": 11,
-        "sort": [{"property": "visitId", "direction": "ASC"}]
+        "currentPage": 2,
+        "size": 5,
+        "totalPages": 3,
+        "totalElements": 11,
+        "sort": [{"property": "visitId", "direction": "ASC"}],
     }
-    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []} # Example empty data
+    mock_response = {
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
+        "data": [],
+    }  # Example empty data
 
     list_route = respx.get(f"{MOCK_BASE_URL}{VISITS_ENDPOINT}", params=params).mock(
         return_value=Response(200, json=mock_response)
@@ -174,7 +176,7 @@ def test_list_visits_with_params(visits_client):
     assert response.pagination.sort[0].property == "visitId"
     assert response.pagination.sort[0].direction == "ASC"
     assert isinstance(response.data, list)
-    assert len(response.data) == 0 # Based on mock response
+    assert len(response.data) == 0  # Based on mock response
 
 
 def test_list_visits_missing_study_key(visits_client):
