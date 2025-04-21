@@ -93,15 +93,15 @@
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **UsersClient (`imednet_sdk/api/users.py`)**
-  * [ ] `list_users(study_key: str, include_inactive: bool = False, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/users`
+  * [x] `list_users(study_key: str, include_inactive: bool = False, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/users`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `includeInactive`
 * [ ] **VisitsClient (`imednet_sdk/api/visits.py`)**
-  * [ ] `list_visits(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/visits`
+  * [x] `list_visits(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/visits`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **JobsClient (`imednet_sdk/api/jobs.py`)**
-  * [ ] `get_job_status(study_key: str, batch_id: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}`
+  * [x] `get_job_status(study_key: str, batch_id: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}`
     * Path Params: `studyKey`, `batchId`
-* [ ] **Integrate Resource Clients into Main Client:**
-  * [ ] Add properties to `ImednetClient` (e.g., `client.studies`, `client.sites`) that initialize and return instances of the resource clients, passing the main client instance to them.
+* [x] **Integrate Resource Clients into Main Client:**
+  * [x] Add properties to `ImednetClient` (e.g., `client.studies`, `client.sites`) that initialize and return instances of the resource clients, passing the main client instance to them.

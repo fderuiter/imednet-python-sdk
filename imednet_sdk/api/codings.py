@@ -1,61 +1,34 @@
-"""Client for interacting with the Codings endpoint."""
+"""API client for interacting with iMednet Codings endpoints."""
 
-from typing import Any, Dict, List, Optional
+from typing import List
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.coding import CodingModel
-
+from ..models._common import ApiResponse
+from ..models.coding import CodingModel
 from ._base import ResourceClient
 
 
 class CodingsClient(ResourceClient):
-    """Client for the Codings API resource."""
+    """Client for managing codings within a study."""
 
-    def list_codings(
-        self,
-        study_key: str,
-        page: Optional[int] = None,
-        size: Optional[int] = None,
-        sort: Optional[str] = None,
-        filter: Optional[str] = None,
-        **kwargs: Any,
-    ) -> ApiResponse[List[CodingModel]]:
-        """
-        Retrieve a list of codings for a specific study.
-
-        Corresponds to `GET /api/v1/edc/studies/{studyKey}/codings`.
+    def list_codings(self, study_key: str, **kwargs) -> ApiResponse[List[CodingModel]]:
+        """Lists codings for a specific study.
 
         Args:
-            study_key: The key of the study for which to list codings.
-            page: Index page to return. Default is 0.
-            size: Number of items per page. Default is 25. Max 500.
-            sort: Property to sort by (e.g., 'dateCoded,desc').
-            filter: Filter criteria (e.g., 'dictionaryName=="MedDRA"').
-            **kwargs: Additional keyword arguments to pass to the request.
+            study_key (str): The key identifying the study.
+            **kwargs: Optional keyword arguments for pagination, sorting, filtering, etc.
+                      (e.g., page, size, sort, filter).
 
         Returns:
-            An ApiResponse containing a list of CodingModel objects.
+            ApiResponse[List[CodingModel]]: An API response object containing a list
+                                            of codings and metadata.
 
         Raises:
-            ValueError: If study_key is empty or None.
+            ValueError: If study_key is not provided.
         """
         if not study_key:
-            raise ValueError("study_key cannot be empty")
+            raise ValueError("study_key is required.")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/codings"
-        params: Dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
-        if size is not None:
-            params["size"] = size
-        if sort is not None:
-            params["sort"] = sort
-        if filter is not None:
-            params["filter"] = filter
-
-        # Pass any additional kwargs directly to the underlying request method
-        params.update(kwargs)
-
         return self._client._get(
-            endpoint, params=params, response_model=ApiResponse[List[CodingModel]]
+            endpoint, params=kwargs, response_model=ApiResponse[List[CodingModel]]
         )

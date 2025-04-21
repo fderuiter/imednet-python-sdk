@@ -7,12 +7,15 @@ from ._base import ResourceClient
 from .codings import CodingsClient
 from .forms import FormsClient
 from .intervals import IntervalsClient
+from .jobs import JobsClient
 from .record_revisions import RecordRevisionsClient
 from .records import RecordsClient
 from .sites import SitesClient
 from .studies import StudiesClient
 from .subjects import SubjectsClient
+from .users import UsersClient
 from .variables import VariablesClient
+from .visits import VisitsClient
 
 __all__ = [
     "ResourceClient",
@@ -25,4 +28,7 @@ __all__ = [
     "VariablesClient",
     "CodingsClient",
     "SubjectsClient",
+    "UsersClient",
+    "VisitsClient",
+    "JobsClient",
 ]

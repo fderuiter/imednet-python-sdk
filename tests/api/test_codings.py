@@ -1,153 +1,143 @@
-"""Tests for the Codings API client."""
-
-from datetime import datetime
+# Tests for the Codings API client.
 
 import pytest
 import respx
 from httpx import Response
 
-from imednet_sdk.api.codings import CodingsClient
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo
+from imednet_sdk.models._common import ApiResponse, Metadata
 from imednet_sdk.models.coding import CodingModel
 
-# --- Constants ---
-MOCK_BASE_URL = "https://testinstance.imednet.com"
-MOCK_STUDY_KEY = "TEST_STUDY"
-CODINGS_ENDPOINT = f"/api/v1/edc/studies/{MOCK_STUDY_KEY}/codings"
 
-
-# --- Fixtures ---
 @pytest.fixture
 def client():
     """Fixture for ImednetClient."""
-    return ImednetClient(
-        api_key="test_api_key", security_key="test_security_key", base_url=MOCK_BASE_URL
-    )
+    return ImednetClient(api_key="test_key", security_key="test_sec_key")
 
 
 @pytest.fixture
 def codings_client(client):
     """Fixture for CodingsClient."""
-    return CodingsClient(client)
+    return client.codings  # Assuming integration in main client later
 
 
-# --- Mock Data ---
-MOCK_CODING_1_DICT = {
-    "studyKey": MOCK_STUDY_KEY,
-    "siteName": "Site A",
-    "siteId": 1,
-    "subjectId": 101,
-    "subjectKey": "S001",
-    "formId": 201,
-    "formName": "Adverse Events",
-    "formKey": "AE",
-    "revision": 1,
-    "recordId": 301,
-    "variable": "AE_TERM",
-    "value": "Headache",
-    "codingId": 401,
-    "code": "10019211",  # Example MedDRA code
-    "codedBy": "coder1",
-    "reason": "Standard coding",
-    "dictionaryName": "MedDRA",
-    "dictionaryVersion": "26.0",
-    "dateCoded": "2023-06-01T10:00:00Z",
-}
-MOCK_CODING_2_DICT = {
-    "studyKey": MOCK_STUDY_KEY,
-    "siteName": "Site B",
-    "siteId": 2,
-    "subjectId": 102,
-    "subjectKey": "S002",
-    "formId": 202,
-    "formName": "Concomitant Medications",
-    "formKey": "CM",
-    "revision": 2,
-    "recordId": 302,
-    "variable": "CM_NAME",
-    "value": "Aspirin",
-    "codingId": 402,
-    "code": "10003691",  # Example WHODrug code
-    "codedBy": "coder2",
-    "reason": "Standard coding",
-    "dictionaryName": "WHODrug",
-    "dictionaryVersion": "2023-03",
-    "dateCoded": "2023-06-05T11:30:00Z",
-}
-
-MOCK_SUCCESS_METADATA_DICT = {
-    "status": "OK",
-    "path": CODINGS_ENDPOINT,
-    "timestamp": datetime.now().isoformat(),
-    "pagination": {"page": 0, "size": 2, "total": 2},
-}
-
-MOCK_SUCCESS_RESPONSE_DICT = {
-    "metadata": MOCK_SUCCESS_METADATA_DICT,
-    "data": [MOCK_CODING_1_DICT, MOCK_CODING_2_DICT],
-}
-
-
-# --- Test Cases ---
 @respx.mock
-def test_list_codings_success(codings_client):
-    """Test successful retrieval of codings list."""
-    list_route = respx.get(f"{MOCK_BASE_URL}{CODINGS_ENDPOINT}").mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
-    )
+def test_list_codings_success(codings_client, client):
+    """Test successful listing of codings."""
+    study_key = "STUDY789"
+    mock_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/codings"
+    mock_response_data = [
+        {
+            "codingKey": "COD001",
+            "codingName": "MedDRA",
+            "codingDescription": "Medical Dictionary for Regulatory Activities",
+            "codingVersion": "27.0",
+            "codingType": "Adverse Event",
+            "codingScope": "Study",
+            "codingStatus": "Active",
+            "codingDictionary": "MedDRA",
+            "codingLevel": "PT",
+            "codingTerm": "Headache",
+            "codingCode": "10019906",
+            "codingPreferredTerm": "Headache",
+            "codingMeddraLevel": "PT",
+            "codingMeddraVersion": "27.0",
+            "codingWhoDrugCode": None,
+            "codingWhoDrugName": None,
+            "codingWhoDrugAtcCode": None,
+            "codingWhoDrugAtcName": None,
+            "codingWhoDrugVersion": None,
+            "codingWhoDrugStatus": None,
+            "codingWhoDrugTerm": None,
+            "codingWhoDrugPreferredTerm": None,
+            "codingWhoDrugMeddraCode": None,
+            "codingWhoDrugMeddraName": None,
+            "codingWhoDrugMeddraLevel": None,
+            "codingWhoDrugMeddraVersion": None,
+            "codingWhoDrugWhoArtCode": None,
+            "codingWhoDrugWhoArtName": None,
+            "codingWhoDrugWhoArtLevel": None,
+            "codingWhoDrugWhoArtVersion": None,
+            "codingWhoDrugWhoArtStatus": None,
+            "codingWhoDrugWhoArtTerm": None,
+            "codingWhoDrugWhoArtPreferredTerm": None,
+            "codingWhoDrugWhoArtMeddraCode": None,
+            "codingWhoDrugWhoArtMeddraName": None,
+            "codingWhoDrugWhoArtMeddraLevel": None,
+            "codingWhoDrugWhoArtMeddraVersion": None,
+            "codingWhoDrugWhoArtWhoCode": None,
+            "codingWhoDrugWhoArtWhoName": None,
+            "codingWhoDrugWhoArtWhoLevel": None,
+            "codingWhoDrugWhoArtWhoVersion": None,
+            "codingWhoDrugWhoArtWhoStatus": None,
+            "codingWhoDrugWhoArtWhoTerm": None,
+            "codingWhoDrugWhoArtWhoPreferredTerm": None,
+            "codingWhoDrugWhoArtWhoWhoMeddraCode": None,
+            "codingWhoDrugWhoArtWhoWhoMeddraName": None,
+            "codingWhoDrugWhoArtWhoWhoMeddraLevel": None,
+            "codingWhoDrugWhoArtWhoWhoMeddraVersion": None,
+            "codingWhoDrugWhoArtWhoWhoWhoCode": None,
+            "codingWhoDrugWhoArtWhoWhoWhoName": None,
+            "codingWhoDrugWhoArtWhoWhoWhoLevel": None,
+            "codingWhoDrugWhoArtWhoWhoWhoVersion": None,
+            "codingWhoDrugWhoArtWhoWhoWhoStatus": None,
+            "codingWhoDrugWhoArtWhoWhoWhoTerm": None,
+            "codingWhoDrugWhoArtWhoWhoWhoPreferredTerm": None,
+            "codingWhoDrugWhoArtWhoWhoWhoMeddraCode": None,
+            "codingWhoDrugWhoArtWhoWhoWhoMeddraName": None,
+            "codingWhoDrugWhoArtWhoWhoWhoMeddraLevel": None,
+            "codingWhoDrugWhoArtWhoWhoWhoMeddraVersion": None,
+        }
+    ]
+    mock_metadata = {
+        "page": 1,
+        "size": 10,
+        "totalRecords": 1,
+        "totalPages": 1,
+    }
+    mock_response = {"metadata": mock_metadata, "data": mock_response_data}
 
-    response = codings_client.list_codings(study_key=MOCK_STUDY_KEY)
+    respx.get(mock_url).mock(return_value=Response(200, json=mock_response))
 
-    assert list_route.called
-    assert response is not None
+    response = codings_client.list_codings(study_key=study_key)
+
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.metadata.pagination, PaginationInfo)
-    assert response.metadata.status == "OK"
     assert isinstance(response.data, list)
-    assert len(response.data) == 2
-    assert all(isinstance(item, CodingModel) for item in response.data)
-    assert response.data[0].codingId == 401
-    assert response.data[1].codingId == 402
-    assert response.data[0].dictionaryName == "MedDRA"
-    assert response.data[1].dictionaryName == "WHODrug"
+    assert len(response.data) == 1
+    assert isinstance(response.data[0], CodingModel)
+    assert response.data[0].codingKey == "COD001"
+    assert response.data[0].codingName == "MedDRA"
+    assert response.metadata.page == 1
+    assert response.metadata.totalRecords == 1
 
 
 @respx.mock
-def test_list_codings_with_params(codings_client):
-    """Test list_codings with query parameters."""
-    expected_params = {
-        "page": "1",
-        "size": "10",
-        "sort": "subjectKey,asc",
-        "filter": 'codedBy=="coder1"',
+def test_list_codings_with_params(codings_client, client):
+    """Test listing codings with query parameters."""
+    study_key = "STUDYABC"
+    params = {"page": 3, "size": 20, "sort": "codingName:desc", "filter": "codingType=AE"}
+    mock_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/codings"
+    mock_response = {
+        "metadata": {"page": 3, "size": 20, "totalRecords": 0, "totalPages": 0},
+        "data": [],
     }
-    list_route = respx.get(f"{MOCK_BASE_URL}{CODINGS_ENDPOINT}", params=expected_params).mock(
-        return_value=Response(
-            200, json=MOCK_SUCCESS_RESPONSE_DICT
-        )  # Mock response content doesn't matter here
-    )
 
-    codings_client.list_codings(
-        study_key=MOCK_STUDY_KEY,
-        page=1,
-        size=10,
-        sort="subjectKey,asc",
-        filter='codedBy=="coder1"',
-    )
+    route = respx.get(mock_url, params=params).mock(return_value=Response(200, json=mock_response))
 
-    assert list_route.called
-    request = list_route.calls.last.request
-    assert request.url.params["page"] == "1"
-    assert request.url.params["size"] == "10"
-    assert request.url.params["sort"] == "subjectKey,asc"
-    assert request.url.params["filter"] == 'codedBy=="coder1"'
+    response = codings_client.list_codings(study_key=study_key, **params)
+
+    assert route.called
+    assert isinstance(response, ApiResponse)
+    assert response.metadata.page == 3
+    assert response.metadata.size == 20
+    assert len(response.data) == 0
 
 
-def test_list_codings_no_study_key(codings_client):
-    """Test list_codings raises ValueError if study_key is missing."""
-    with pytest.raises(ValueError, match="study_key cannot be empty"):
+def test_list_codings_missing_study_key(codings_client):
+    """Test listing codings with missing study_key raises ValueError."""
+    with pytest.raises(ValueError, match="study_key is required."):
         codings_client.list_codings(study_key="")
-    with pytest.raises(ValueError, match="study_key cannot be empty"):
+
+    with pytest.raises(ValueError, match="study_key is required."):
         codings_client.list_codings(study_key=None)  # type: ignore

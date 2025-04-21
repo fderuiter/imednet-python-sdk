@@ -43,22 +43,20 @@
 * **`RecordRevisionsClient`** (`imednet_sdk/api/record_revisions.py`)
   * `list_record_revisions` (`GET /api/v1/edc/studies/{studyKey}/recordRevisions`)
   * Tests: `tests/api/test_record_revisions.py`
+* **`UsersClient`** (`imednet_sdk/api/users.py`)
+  * `list_users` (`GET /api/v1/edc/studies/{studyKey}/users`) - Handles `includeInactive`.
+  * Tests: `tests/api/test_users.py`
+* **`VisitsClient`** (`imednet_sdk/api/visits.py`)
+  * `list_visits` (`GET /api/v1/edc/studies/{studyKey}/visits`)
+  * Tests: `tests/api/test_visits.py`
+* **`JobsClient`** (`imednet_sdk/api/jobs.py`)
+  * `get_job_status` (`GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}`)
+  * Tests: `tests/api/test_jobs.py`
+* **Integration into Main Client:** Added properties (e.g., `client.studies`, `client.sites`, `client.jobs`) to `ImednetClient` for lazy initialization and access to all resource clients.
 
 **Remaining Implementations (Based on `docs/todo/05_resource_endpoints.md`):**
 
-* **`VariablesClient`** (`imednet_sdk/api/variables.py`)
-  * `list_variables` (`GET /api/v1/edc/studies/{studyKey}/variables`)
-* **`CodingsClient`** (`imednet_sdk/api/codings.py`)
-  * `list_codings` (`GET /api/v1/edc/studies/{studyKey}/codings`)
-* **`SubjectsClient`** (`imednet_sdk/api/subjects.py`)
-  * `list_subjects` (`GET /api/v1/edc/studies/{studyKey}/subjects`)
-* **`UsersClient`** (`imednet_sdk/api/users.py`)
-  * `list_users` (`GET /api/v1/edc/studies/{studyKey}/users`) - Handles `includeInactive`.
-* **`VisitsClient`** (`imednet_sdk/api/visits.py`)
-  * `list_visits` (`GET /api/v1/edc/studies/{studyKey}/visits`)
-* **`JobsClient`** (`imednet_sdk/api/jobs.py`)
-  * `get_job_status` (`GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}`)
-* **Integrate Resource Clients into Main Client:** Add properties to `ImednetClient` (e.g., `client.studies`) for easy access to resource clients.
+* None for this task.
 
 **Notes/Decisions:**
 
@@ -66,4 +64,5 @@
 * Leveraged Pydantic models for response deserialization (`response_model` argument).
 * Used `respx` for mocking HTTP interactions in tests.
 * Basic input validation (e.g., checking for empty `study_key`) implemented, raising `ValueError`. More specific API error handling is deferred to Task 06.
-* Camel case parameter names (e.g., `recordDataFilter`) used where required by the API.
+* Camel case parameter names (e.g., `recordDataFilter`, `includeInactive`) used where required by the API.
+* Resource clients are now accessed via properties on the main `ImednetClient` instance, ensuring lazy loading and caching.

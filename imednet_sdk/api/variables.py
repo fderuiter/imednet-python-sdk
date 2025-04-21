@@ -1,61 +1,34 @@
-"""Client for interacting with the Variables endpoint."""
+# API client for interacting with iMednet Variables endpoints.
 
-from typing import Any, Dict, List, Optional
+from typing import List
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.variable import VariableModel
-
+from ..models._common import ApiResponse
+from ..models.variable import VariableModel
 from ._base import ResourceClient
 
 
 class VariablesClient(ResourceClient):
-    """Client for the Variables API resource."""
+    """Client for managing variables within a study."""
 
-    def list_variables(
-        self,
-        study_key: str,
-        page: Optional[int] = None,
-        size: Optional[int] = None,
-        sort: Optional[str] = None,
-        filter: Optional[str] = None,
-        **kwargs: Any,
-    ) -> ApiResponse[List[VariableModel]]:
-        """
-        Retrieve a list of variables for a specific study.
-
-        Corresponds to `GET /api/v1/edc/studies/{studyKey}/variables`.
+    def list_variables(self, study_key: str, **kwargs) -> ApiResponse[List[VariableModel]]:
+        """Lists variables for a specific study.
 
         Args:
-            study_key: The key of the study for which to list variables.
-            page: Index page to return. Default is 0.
-            size: Number of items per page. Default is 25. Max 500.
-            sort: Property to sort by (e.g., 'variableName,asc').
-            filter: Filter criteria (e.g., 'formKey=="DEMO_FORM"').
-            **kwargs: Additional keyword arguments to pass to the request.
+            study_key (str): The key identifying the study.
+            **kwargs: Optional keyword arguments for pagination, sorting, filtering, etc.
+                      (e.g., page, size, sort, filter).
 
         Returns:
-            An ApiResponse containing a list of VariableModel objects.
+            ApiResponse[List[VariableModel]]: An API response object containing a list
+                                              of variables and metadata.
 
         Raises:
-            ValueError: If study_key is empty or None.
+            ValueError: If study_key is not provided.
         """
         if not study_key:
-            raise ValueError("study_key cannot be empty")
+            raise ValueError("study_key is required.")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/variables"
-        params: Dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
-        if size is not None:
-            params["size"] = size
-        if sort is not None:
-            params["sort"] = sort
-        if filter is not None:
-            params["filter"] = filter
-
-        # Pass any additional kwargs directly to the underlying request method
-        params.update(kwargs)
-
         return self._client._get(
-            endpoint, params=params, response_model=ApiResponse[List[VariableModel]]
+            endpoint, params=kwargs, response_model=ApiResponse[List[VariableModel]]
         )

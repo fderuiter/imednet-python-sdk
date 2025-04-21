@@ -6,6 +6,11 @@ from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 import httpx
 from pydantic import BaseModel, TypeAdapter, ValidationError
 
+# Import resource clients
+from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient, RecordRevisionsClient,
+                  RecordsClient, SitesClient, StudiesClient, SubjectsClient, UsersClient,
+                  VariablesClient, VisitsClient)
+
 # Define a TypeVar for generic response models
 T = TypeVar("T", bound=BaseModel)
 
@@ -25,6 +30,20 @@ class ImednetClient:
     """Core HTTP client for interacting with the iMednet API."""
 
     DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
+
+    # Add private attributes for caching resource clients
+    _studies: Optional[StudiesClient] = None
+    _sites: Optional[SitesClient] = None
+    _forms: Optional[FormsClient] = None
+    _intervals: Optional[IntervalsClient] = None
+    _records: Optional[RecordsClient] = None
+    _record_revisions: Optional[RecordRevisionsClient] = None
+    _variables: Optional[VariablesClient] = None
+    _codings: Optional[CodingsClient] = None
+    _subjects: Optional[SubjectsClient] = None
+    _users: Optional[UsersClient] = None
+    _visits: Optional[VisitsClient] = None
+    _jobs: Optional[JobsClient] = None
 
     def __init__(
         self,
@@ -106,6 +125,8 @@ class ImednetClient:
             headers=self._default_headers,
             timeout=self._default_timeout,
         )
+
+        # Resource client initialization moved to properties
 
     def _request(
         self,
@@ -236,6 +257,94 @@ class ImednetClient:
         return self._request(
             "POST", endpoint, json=json, response_model=response_model, timeout=timeout, **kwargs
         )
+
+    # --- Resource Client Properties ---
+
+    @property
+    def studies(self) -> StudiesClient:
+        """Access the Studies API client."""
+        if self._studies is None:
+            self._studies = StudiesClient(self)
+        return self._studies
+
+    @property
+    def sites(self) -> SitesClient:
+        """Access the Sites API client."""
+        if self._sites is None:
+            self._sites = SitesClient(self)
+        return self._sites
+
+    @property
+    def forms(self) -> FormsClient:
+        """Access the Forms API client."""
+        if self._forms is None:
+            self._forms = FormsClient(self)
+        return self._forms
+
+    @property
+    def intervals(self) -> IntervalsClient:
+        """Access the Intervals API client."""
+        if self._intervals is None:
+            self._intervals = IntervalsClient(self)
+        return self._intervals
+
+    @property
+    def records(self) -> RecordsClient:
+        """Access the Records API client."""
+        if self._records is None:
+            self._records = RecordsClient(self)
+        return self._records
+
+    @property
+    def record_revisions(self) -> RecordRevisionsClient:
+        """Access the Record Revisions API client."""
+        if self._record_revisions is None:
+            self._record_revisions = RecordRevisionsClient(self)
+        return self._record_revisions
+
+    @property
+    def variables(self) -> VariablesClient:
+        """Access the Variables API client."""
+        if self._variables is None:
+            self._variables = VariablesClient(self)
+        return self._variables
+
+    @property
+    def codings(self) -> CodingsClient:
+        """Access the Codings API client."""
+        if self._codings is None:
+            self._codings = CodingsClient(self)
+        return self._codings
+
+    @property
+    def subjects(self) -> SubjectsClient:
+        """Access the Subjects API client."""
+        if self._subjects is None:
+            self._subjects = SubjectsClient(self)
+        return self._subjects
+
+    @property
+    def users(self) -> UsersClient:
+        """Access the Users API client."""
+        if self._users is None:
+            self._users = UsersClient(self)
+        return self._users
+
+    @property
+    def visits(self) -> VisitsClient:
+        """Access the Visits API client."""
+        if self._visits is None:
+            self._visits = VisitsClient(self)
+        return self._visits
+
+    @property
+    def jobs(self) -> JobsClient:
+        """Access the Jobs API client."""
+        if self._jobs is None:
+            self._jobs = JobsClient(self)
+        return self._jobs
+
+    # --- End Resource Client Properties ---
 
     def close(self):
         """Closes the underlying HTTP client."""
