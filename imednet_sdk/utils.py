@@ -1,16 +1,168 @@
-def validate_data(data):
-    # Implement data validation logic here
-    pass
+import logging
+from datetime import date, datetime
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
+
+# Import BaseModel directly from pydantic
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
+
+from .exceptions import ApiError, ImednetSdkException
+# Remove BaseModel from this import
+from .models import RecordModel, VariableModel
+
+if TYPE_CHECKING:
+    from .api._base import ResourceClient
+
+logger = logging.getLogger(__name__)
+
+# 1. map iMednet types → (Python type, Pydantic Field args if any)
+# Needs refinement based on actual API date formats and validation needs
+# Using Optional[...] for all fields initially, assuming data might be missing.
+TYPE_MAP: Dict[str, Tuple[Type, Dict[str, Any]]] = {
+    "textField": (Optional[str], {}),
+    "numberField": (Optional[float], {}),
+    "integerField": (Optional[int], {}),
+    "dateField": (Optional[date], {}),  # TODO: Add validator if format isn't ISO
+    "dateTimeField": (Optional[datetime], {}),  # TODO: Add validator if format isn't ISO
+    "checkboxField": (Optional[bool], {}),  # Assuming API returns true/false or 0/1
+    "radioField": (Optional[str], {}),  # Could potentially be Enum if choices are known
+    "dropdownField": (Optional[str], {}),  # Could potentially be Enum if choices are known
+    "textAreaField": (Optional[str], {}),
+    # Add other known types from docs/reference/variables.md if necessary
+    # Default to Optional[Any] for unknown types for flexibility
+    "unknown": (Optional[Any], {}),
+}
 
 
-def format_response(response):
-    # Implement response formatting logic here
-    pass
+def build_model_from_variables(vars_meta: List[Dict[str, Any]], model_name: str) -> Type[BaseModel]:
+    """Dynamically creates a Pydantic model from variable metadata.
+
+    Args:
+        vars_meta: A list of dictionaries, where each dictionary represents
+                   variable metadata (must contain 'variableName' and 'variableType').
+        model_name: The desired name for the dynamically created Pydantic model.
+
+    Returns:
+        A new Pydantic BaseModel class dynamically created based on the metadata.
+
+    Raises:
+        ValueError: If a variable in vars_meta lacks 'variableName'.
+    """
+    fields: Dict[str, Tuple[Type, Any]] = {}
+    for var in vars_meta:
+        # Use variableType from the model, default to 'unknown' if missing
+        field_type_str = var.get("variableType", "unknown")
+        py_type, field_args = TYPE_MAP.get(field_type_str, TYPE_MAP["unknown"])
+
+        # Use variableName as the Python field name
+        field_name = var.get("variableName")
+        if not field_name:
+            # Log or raise? Raising is safer to indicate bad metadata.
+            raise ValueError(f"Variable metadata missing 'variableName': {var}")
+
+        # Pydantic needs (Type, default_value) or (Type, Field(...))
+        # We use Field() to set default=None for Optional types and allow future extension
+        # Use alias if the variableName is not a valid Python identifier, though unlikely
+        # For simplicity, directly using variableName as field name.
+        fields[field_name] = (py_type, Field(default=None, **field_args))
+
+    # Create the model with extra='ignore' to handle potential extra fields in recordData
+    DynamicRecordModel = create_model(
+        model_name, __config__=ConfigDict(extra="ignore"), **fields
+    )  # type: ignore[call-overload]
+    return DynamicRecordModel
 
 
-def log_message(message):
-    # Implement logging logic here
-    pass
+def _fetch_and_parse_typed_records(
+    variables_client: "ResourceClient",  # Use forward reference
+    records_client: "ResourceClient",  # Use forward reference
+    study_key: str,
+    form_key: str,
+    **kwargs,
+) -> List[BaseModel]:
+    """
+    Internal helper to fetch variables, build model, fetch records, and parse.
 
+    Args:
+        variables_client: An instance of VariablesClient.
+        records_client: An instance of RecordsClient.
+        study_key: The study key.
+        form_key: The form key.
+        **kwargs: Additional parameters for list_records.
 
-# Additional utility functions can be added as needed.
+    Returns:
+        A list of dynamically created Pydantic model instances.
+
+    Raises:
+        ImednetSdkException: If API calls fail or unexpected errors occur.
+        ValueError: If building the dynamic model fails.
+    """
+    # 1) Fetch variable metadata
+    try:
+        variables_response = variables_client.list_variables(
+            study_key, filter=f"formKey=={form_key}"
+        )
+        vars_meta: List[VariableModel] = variables_response.data
+        if not vars_meta:
+            logger.warning(
+                f"No variables found for study '{study_key}', form '{form_key}'. "
+                f"Cannot create typed model. Returning empty list."
+            )
+            return []
+    except ImednetSdkException as e:
+        logger.error(f"Failed to fetch variables for study '{study_key}', form '{form_key}': {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error fetching variables for form '{form_key}': {e}")
+        raise ImednetSdkException(f"Unexpected error fetching variables: {e}") from e
+
+    vars_meta_dict = [v.model_dump(by_alias=False) for v in vars_meta]
+
+    # 2) Build dynamic Record model
+    model_name = f"{form_key.replace(' ', '_').capitalize()}RecordData"
+    try:
+        DynamicRecordDataModel = build_model_from_variables(vars_meta_dict, model_name=model_name)
+    except ValueError as e:
+        logger.error(f"Failed to build dynamic model '{model_name}' for form '{form_key}': {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error building dynamic model for form '{form_key}': {e}")
+        raise ImednetSdkException(f"Unexpected error building dynamic model: {e}") from e
+
+    # 3) Fetch raw records
+    typed_records: List[BaseModel] = []
+    try:
+        existing_filter = kwargs.pop("filter", None)
+        combined_filter = f"formKey=={form_key}"
+        if existing_filter:
+            combined_filter = f"({existing_filter}) and {combined_filter}"
+
+        records_response = records_client.list_records(study_key, filter=combined_filter, **kwargs)
+        raw_records: List[RecordModel] = records_response.data
+
+        # 4) Parse each recordData
+        for record in raw_records:
+            record_data_dict = record.recordData or {}
+            try:
+                typed_data_instance = DynamicRecordDataModel.model_validate(record_data_dict)
+                typed_records.append(typed_data_instance)
+            except ValidationError as e:
+                logger.warning(
+                    f"Skipping record {record.recordId} (Subject: {record.subjectKey}) in form "
+                    f"'{form_key}' due to validation error: {e}"
+                )
+            except Exception as e:
+                logger.warning(
+                    f"Skipping record {record.recordId} (Subject: {record.subjectKey}) in form "
+                    f"'{form_key}' due to unexpected parsing error: {e}"
+                )
+
+    except ImednetSdkException as e:
+        logger.error(
+            f"Failed to fetch or parse records for study '{study_key}', form '{form_key}': {e}"
+        )
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error fetching/parsing records for form '{form_key}': {e}")
+        raise ImednetSdkException(f"Unexpected error fetching/parsing records: {e}") from e
+
+    return typed_records

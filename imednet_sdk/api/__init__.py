@@ -8,6 +8,7 @@ from .codings import CodingsClient
 from .forms import FormsClient
 from .intervals import IntervalsClient
 from .jobs import JobsClient
+from .queries import QueriesClient
 from .record_revisions import RecordRevisionsClient
 from .records import RecordsClient
 from .sites import SitesClient
@@ -31,4 +32,5 @@ __all__ = [
     "UsersClient",
     "VisitsClient",
     "JobsClient",
+    "QueriesClient",
 ]

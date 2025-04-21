@@ -178,6 +178,44 @@ def test_list_variables_with_params(variables_client, client):
     assert len(response.data) == 0  # Based on mock response
 
 
+@respx.mock
+def test_list_variables_with_form_key_filter(variables_client, client):
+    """Test listing variables filtering by formKey."""
+    form_key_to_filter = "FORM_1"
+    params = {"filter": f"formKey=={form_key_to_filter}"}
+    # Mock response containing only variables matching the formKey
+    mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{VARIABLES_ENDPOINT}"}
+    mock_pagination = {
+        "currentPage": 0,
+        "size": 1,
+        "totalPages": 1,
+        "totalElements": 1,
+        "sort": [{"property": "variableId", "direction": "ASC"}],
+    }
+    mock_response = {
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
+        "data": [MOCK_VARIABLE_1_DICT],  # Assuming MOCK_VARIABLE_1 belongs to FORM_1
+    }
+
+    list_route = respx.get(f"{MOCK_BASE_URL}{VARIABLES_ENDPOINT}", params=params).mock(
+        return_value=Response(200, json=mock_response)
+    )
+
+    response = variables_client.list_variables(
+        study_key=MOCK_STUDY_KEY,
+        filter=f"formKey=={form_key_to_filter}",
+    )
+
+    assert list_route.called
+    request = list_route.calls.last.request
+    assert request.url.params["filter"] == f"formKey=={form_key_to_filter}"
+
+    assert isinstance(response, ApiResponse)
+    assert len(response.data) == 1
+    assert response.data[0].formKey == form_key_to_filter
+
+
 def test_list_variables_missing_study_key(variables_client):
     """Test listing variables with missing study_key raises ValueError."""
     # Match error message from client implementation

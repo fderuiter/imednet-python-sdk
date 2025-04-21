@@ -1,5 +1,7 @@
 import datetime  # Added for timestamp
+import logging
 import os
+# Add necessary imports for type hints
 from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 
 import httpx
@@ -9,13 +11,17 @@ from tenacity import (RetryError, retry, retry_if_exception, retry_if_exception_
                       stop_after_attempt, wait_exponential)
 
 # Import resource clients
-from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient, RecordRevisionsClient,
-                  RecordsClient, SitesClient, StudiesClient, SubjectsClient, UsersClient,
-                  VariablesClient, VisitsClient)
+from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient,  # Group API imports
+                  QueriesClient, RecordRevisionsClient, RecordsClient, SitesClient, StudiesClient,
+                  SubjectsClient, UsersClient, VariablesClient, VisitsClient)
 # Import custom exceptions
 from .exceptions import (ApiError, AuthenticationError, AuthorizationError, BadRequestError,
                          ImednetSdkException, NotFoundError, RateLimitError)
 from .exceptions import ValidationError as SdkValidationError  # Alias to avoid name clash
+# Import the new helper function
+from .utils import _fetch_and_parse_typed_records
+
+logger = logging.getLogger(__name__)
 
 # Define a TypeVar for generic response models
 T = TypeVar("T", bound=BaseModel)
@@ -256,76 +262,6 @@ class ImednetClient:
                 **kwargs,
             )
 
-        # --- Old Manual Retry Logic (Removed) ---
-        # for attempt in range(self._retries + 1):
-        #     request_path = str(
-        #         self._client.build_request(method, url, params=params, json=request_json).url
-        #     )
-        #     try:
-        #         response = self._client.request(
-        #             method=method,
-        #             url=url,
-        #             params=params,
-        #             json=request_json,
-        #             timeout=request_timeout,
-        #             **kwargs,
-        #         )
-        #         if not response.is_success:
-        #             # Check if status code is retryable AND method allows retry
-        #             if (
-        #                 attempt < self._retries
-        #                 and response.status_code in self._retry_statuses
-        #                 and method.upper() in self._retry_methods
-        #             ):
-        #                 last_exception = ImednetSdkException(f"HTTP error {response.status_code} on attempt {attempt+1}", status_code=response.status_code, request_path=request_path) # Store temp exception
-        #                 delay = self._calculate_backoff(attempt + 1) # Use attempt+1 for backoff calc
-        #                 time.sleep(delay)
-        #                 continue # Retry
-
-        #             # If not retryable, handle the API error (which raises)
-        #             self._handle_api_error(response, request_path)
-
-        #         # --- Success Path ---
-        #         if response_model is None:
-        #             return response
-        #         try:
-        #             response_data = response.json()
-        #         except ValueError as json_exc:
-        #             raise RuntimeError(f"Failed to decode JSON response: {json_exc}") from json_exc
-        #         try:
-        #             adapter = TypeAdapter(response_model)
-        #             validated_data = adapter.validate_python(response_data)
-        #             return validated_data
-        #         except ValidationError as validation_exc:
-        #             raise RuntimeError(
-        #                 f"Failed to validate response data: {validation_exc}"
-        #             ) from validation_exc
-
-        #     except httpx.RequestError as exc:
-        #         last_exception = exc
-        #         if (
-        #             attempt < self._retries
-        #             and type(exc) in self._retry_exceptions
-        #             and method.upper() in self._retry_methods
-        #         ):
-        #             delay = self._calculate_backoff(attempt + 1) # Use attempt+1 for backoff calc
-        #             time.sleep(delay)
-        #             continue # Retry
-        #         else:
-        #             raise # Non-retryable or max retries reached
-
-        # # Raise the last recorded exception if all retries failed
-        # if last_exception:
-        #     # If the last exception was our temporary one for retryable status codes,
-        #     # call _handle_api_error again to get the *correct* custom exception type.
-        #     # This requires storing the last response, which adds complexity.
-        #     # For now, just raise the last exception captured.
-        #     # A better approach is needed here if we want the specific custom exception after status retries fail.
-        #     # *** Tenacity handles this better by re-raising the actual exception ***
-        #     raise last_exception
-        # else:
-        #     raise RuntimeError("Request failed without capturing an exception after retries.")
-
     def _handle_api_error(self, response: httpx.Response, request_path: str) -> None:
         """Parses API error responses and raises the appropriate custom exception."""
         # Ensure this method raises the correct exception based on status/code
@@ -428,6 +364,38 @@ class ImednetClient:
         """Sends a POST request and deserializes the response if response_model is provided."""
         return self._request(
             "POST", endpoint, json=json, response_model=response_model, timeout=timeout, **kwargs
+        )
+
+    def get_typed_records(
+        self, study_key: str, form_key: str, **kwargs
+    ) -> List[BaseModel]:  # Type hint requires List and BaseModel
+        """
+        Fetches records for a specific form and parses their recordData into
+        dynamically typed Pydantic objects based on the form's variable definitions.
+
+        Args:
+            study_key: The key identifying the study.
+            form_key: The key identifying the form.
+            **kwargs: Additional parameters passed to the underlying `list_records` call
+                      (e.g., filter, sort, size, record_data_filter).
+
+        Returns:
+            A list of dynamically created Pydantic model instances, each representing
+            the validated `recordData` of a fetched record for the specified form.
+            Returns an empty list if no variables are found for the form or if
+            no records are found.
+
+        Raises:
+            ImednetSdkException: If fetching variables or records fails.
+            ValueError: If building the dynamic model fails (e.g., missing variableName).
+        """
+        # Delegate the implementation to the helper function in utils.py
+        return _fetch_and_parse_typed_records(
+            variables_client=self.variables,
+            records_client=self.records,
+            study_key=study_key,
+            form_key=form_key,
+            **kwargs,
         )
 
     # --- Resource Client Properties ---
