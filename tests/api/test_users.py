@@ -2,6 +2,7 @@
 
 from datetime import datetime  # Import datetime
 
+from pydantic import RootModel
 import pytest
 import respx
 from httpx import Response
@@ -10,7 +11,8 @@ from imednet_sdk.api.users import UsersClient  # Import specific client
 from imednet_sdk.client import ImednetClient
 # Use PaginationInfo based on _common.py
 from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
-from imednet_sdk.models.user import RoleModel, UserModel  # Add RoleModel
+from imednet_sdk.models.user import UserModel, UserRole # Import UserRole
+
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
@@ -148,20 +150,20 @@ def test_list_users_success(users_client, client):
     # Assert roles
     assert isinstance(response.data[0].roles, list)
     assert len(response.data[0].roles) == 2
-    assert isinstance(response.data[0].roles[0], RoleModel)
+    assert isinstance(response.data[0].roles[0], UserRole) # Check for UserRole type
     assert response.data[0].roles[0].roleId == "bb5bae9d-5869-41b4-ae29-6d28f6200c85"
     assert response.data[0].roles[0].name == "Role name 1"
     # Check date parsing for array format (assuming model handles this)
     # This might require a custom validator or pre-processing in the model
     # For now, check if it parses without error
-    assert isinstance(response.data[0].roles[0].dateCreated, datetime)
-    assert response.data[0].roles[0].dateCreated.year == 2024
-    assert response.data[0].roles[0].dateCreated.month == 11
-    assert response.data[0].roles[0].dateCreated.day == 4
-    assert response.data[0].roles[0].dateCreated.hour == 16
-    assert response.data[0].roles[0].dateCreated.minute == 3
-    assert response.data[0].roles[0].dateCreated.second == 18
-    assert response.data[0].roles[0].dateCreated.microsecond == 487000
+    assert isinstance(response.data[0].roles[0].created_datetime, datetime) # Use created_datetime property
+    assert response.data[0].roles[0].created_datetime.year == 2024
+    assert response.data[0].roles[0].created_datetime.month == 11
+    assert response.data[0].roles[0].created_datetime.day == 4
+    assert response.data[0].roles[0].created_datetime.hour == 16
+    assert response.data[0].roles[0].created_datetime.minute == 3
+    assert response.data[0].roles[0].created_datetime.second == 18
+    assert response.data[0].roles[0].created_datetime.microsecond == 487000
 
 
 @respx.mock
