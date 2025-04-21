@@ -1,12 +1,17 @@
 # Tests for the Jobs API client.
 
+from datetime import datetime  # Import datetime
+
 import pytest
 import respx
 from httpx import Response
 
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.models._common import ApiResponse
+# The client method should return JobStatusModel directly based on docs
 from imednet_sdk.models.job import JobStatusModel
+
+# ApiResponse might not be needed if the client returns the model directly
+# from imednet_sdk.models._common import ApiResponse
 
 
 @pytest.fixture
@@ -26,72 +31,61 @@ def jobs_client(client):
 @respx.mock
 def test_get_job_status_success(jobs_client, client):
     """Test successful retrieval of job status."""
-
-    study_key = "STUDYBATCH"
-    batch_id = "BATCH12345"
+    study_key = "MOCK-STUDY"  # Use example from docs
+    batch_id = "75e63db6-fa41-40bc-b939-cf3bdb246ae8"  # Use example from docs
     mock_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
+    # Corrected mock response based on docs/reference/jobs.md
     mock_response_data = {
-        "jobId": "JOB987",
+        "jobId": "afa2d61e-07ed-4efe-99c5-6f358f5e7d38",  # Use example from docs
         "batchId": batch_id,
-        "state": "Completed",
-        "message": "Record creation completed successfully.",
-        "submitted": "2023-11-01T10:00:00Z",
-        "started": "2023-11-01T10:00:05Z",
-        "completed": "2023-11-01T10:05:00Z",
-        "totalRecords": 100,
-        "processedRecords": 100,
-        "failedRecords": 0,
-        "errorDetails": [],
+        "state": "completed",  # Lowercase as per docs
+        "dateCreated": "2020-12-01 21:47:36",  # Use example format
+        "dateStarted": "2020-12-01 21:47:42",
+        "dateFinished": "2020-12-01 21:47:45",
     }
-    # Note: Job status endpoint might not return metadata, adjust if needed based on API spec
-    mock_metadata = {"page": 1, "size": 1, "totalRecords": 1, "totalPages": 1}  # Placeholder
-    mock_response = {"metadata": mock_metadata, "data": mock_response_data}
+    # The endpoint returns the job status object directly
+    respx.get(mock_url).mock(return_value=Response(200, json=mock_response_data))
 
-    respx.get(mock_url).mock(return_value=Response(200, json=mock_response))
-
+    # Assuming jobs_client.get_job_status is updated to return JobStatusModel directly
     response = jobs_client.get_job_status(study_key=study_key, batch_id=batch_id)
 
-    assert isinstance(response, ApiResponse)
-    # assert isinstance(response.metadata, Metadata) # Adjust based on actual API response
-    assert isinstance(response.data, JobStatusModel)
-    assert response.data.batchId == batch_id
-    assert response.data.state == "Completed"
-    assert response.data.totalRecords == 100
+    # Assert the response is the JobStatusModel directly
+    assert isinstance(response, JobStatusModel)
+    # Assertions based on corrected mock data and documented fields
+    assert response.jobId == "afa2d61e-07ed-4efe-99c5-6f358f5e7d38"
+    assert response.batchId == batch_id
+    assert response.state == "completed"
+    # Compare datetime objects after parsing
+    datetime_format = "%Y-%m-%d %H:%M:%S"
+    assert response.dateCreated == datetime.strptime("2020-12-01 21:47:36", datetime_format)
+    assert response.dateStarted == datetime.strptime("2020-12-01 21:47:42", datetime_format)
+    assert response.dateFinished == datetime.strptime("2020-12-01 21:47:45", datetime_format)
 
 
 @respx.mock
-def test_get_job_status_pending(jobs_client, client):
-    """Test retrieval of job status when pending."""
-
+def test_get_job_status_running(jobs_client, client):  # Renamed for clarity
+    """Test retrieval of job status when running."""
     study_key = "STUDYBATCH"
-    batch_id = "BATCHPENDING"
+    batch_id = "BATCHRUNNING"
     mock_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
+    # Mock response for a 'running' state based on docs structure
     mock_response_data = {
-        "jobId": "JOB654",
+        "jobId": "JOBRUN1",
         "batchId": batch_id,
-        "state": "Pending",
-        "message": "Job is waiting to be processed.",
-        "submitted": "2023-11-01T11:00:00Z",
-        "started": None,
-        "completed": None,
-        "totalRecords": 50,
-        "processedRecords": 0,
-        "failedRecords": 0,
-        "errorDetails": [],
+        "state": "running",  # Lowercase as per docs
+        "dateCreated": "2023-11-01 11:00:00",
+        "dateStarted": "2023-11-01 11:00:05",
+        "dateFinished": None,  # Should be None if running
     }
-    mock_metadata = {"page": 1, "size": 1, "totalRecords": 1, "totalPages": 1}  # Placeholder
-    mock_response = {"metadata": mock_metadata, "data": mock_response_data}
-
-    respx.get(mock_url).mock(return_value=Response(200, json=mock_response))
+    respx.get(mock_url).mock(return_value=Response(200, json=mock_response_data))
 
     response = jobs_client.get_job_status(study_key=study_key, batch_id=batch_id)
 
-    assert isinstance(response, ApiResponse)
-    assert isinstance(response.data, JobStatusModel)
-    assert response.data.batchId == batch_id
-    assert response.data.state == "Pending"
-    assert response.data.started is None
-    assert response.data.completed is None
+    assert isinstance(response, JobStatusModel)
+    assert response.batchId == batch_id
+    assert response.state == "running"
+    assert response.dateStarted is not None
+    assert response.dateFinished is None  # Check that finished date is None
 
 
 def test_get_job_status_missing_study_key(jobs_client):
