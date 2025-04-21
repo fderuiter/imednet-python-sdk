@@ -101,15 +101,18 @@ MOCK_RECORD_POST_ITEM_2 = {
     "data": {"textField": "Updated text"},
 }
 
-# Corrected POST response based on docs
-MOCK_JOB_STATUS_DICT = {
+# Mock response for successful record creation (POST)
+MOCK_CREATE_SUCCESS_RESPONSE_DICT = {
     "jobId": "9663fe34-eec7-460a-a820-097f1eb2875e",
     "batchId": "c3q191e4-f894-72cd-a753-b37283eh0866",
-    "state": "created",  # Lowercase as per docs
+    "state": "created",
+    "dateCreated": "2024-11-04 16:05:00",  # Add dateCreated
+    # Add other optional fields from JobStatusModel if needed for specific tests
+    "dateModified": None,
+    "progress": None,
+    "resultUrl": None,
+    "error": None,
 }
-
-# POST response doesn't have metadata/pagination wrapper
-MOCK_CREATE_SUCCESS_RESPONSE_DICT = MOCK_JOB_STATUS_DICT
 
 
 # --- Test Cases ---
@@ -201,7 +204,7 @@ def test_list_records_with_params(records_client, client):
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
     assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
-    assert response.pagination.currentPage == 0
+    assert response.pagination.currentPage == 1  # Correct assertion to match requested page
     assert response.pagination.size == 10
     assert response.pagination.sort[0].property == "dateCreated"
     assert response.pagination.sort[0].direction == "DESC"

@@ -72,7 +72,7 @@ class RecordsClient(ResourceClient):
         records: List[RecordPostItem],
         email_notify: Optional[str] = None,
         **kwargs: Any,
-    ) -> ApiResponse[JobStatusModel]:
+    ) -> JobStatusModel:
         """
         Create one or more records within a specific study.
 
@@ -104,14 +104,12 @@ class RecordsClient(ResourceClient):
 
         # Prepare data - Pydantic handles serialization of the list of models
         # The base client's _request method will handle json serialization
+        records_payload = [record.model_dump(exclude_none=True) for record in records]
 
-        # Use _post method from the base client
+        # Use the internal _post method, expecting JobStatusModel directly
         return self._client._post(
             endpoint,
-            json=[
-                record.model_dump(exclude_none=True) for record in records
-            ],  # Serialize list of models
+            json=records_payload,
             headers=headers,
-            response_model=ApiResponse[JobStatusModel],
-            **kwargs,
+            response_model=JobStatusModel,  # Expect JobStatusModel directly
         )
