@@ -8,7 +8,8 @@ from httpx import Response
 
 from imednet_sdk.api.intervals import IntervalsClient
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo
+# Use Pagination and SortInfo based on documentation structure
+from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
 from imednet_sdk.models.interval import IntervalFormModel, IntervalModel
 
 # --- Constants ---
@@ -34,73 +35,60 @@ def intervals_client(client):
 
 # --- Mock Data ---
 MOCK_INTERVAL_FORM_1 = {
-    "formId": 101,
-    "formKey": "VISIT_FORM_1",
-    "formName": "Visit Form 1",
+    "formId": 123,  # Use example from docs
+    "formKey": "MY-FORM-KEY",
+    "formName": "myFormName",
 }
-MOCK_INTERVAL_FORM_2 = {
-    "formId": 102,
-    "formKey": "VISIT_FORM_2",
-    "formName": "Visit Form 2",
-}
+# MOCK_INTERVAL_FORM_2 can be removed or updated if needed for other tests
 
 MOCK_INTERVAL_1_DICT = {
     "studyKey": MOCK_STUDY_KEY,
     "intervalId": 1,
-    "intervalName": "Screening",
-    "intervalDescription": "Initial screening visit",
-    "intervalSequence": 1,
+    "intervalName": "Day 1",  # Use example from docs
+    "intervalDescription": "Day 1",
+    "intervalSequence": 110,
     "intervalGroupId": 10,
-    "intervalGroupName": "Group A",
-    "timeline": "Baseline",
-    "definedUsingInterval": None,
-    "windowCalculationForm": None,
-    "windowCalculationDate": None,
-    "actualDateForm": "DEMOGRAPHICS",
-    "actualDate": "VISIT_DATE",
-    "dueDateWillBeIn": None,
-    "negativeSlack": None,
-    "positiveSlack": None,
-    "eproGracePeriod": None,
+    "intervalGroupName": "ePRO",
+    "timeline": "Start Date End Date",
+    "definedUsingInterval": "Baseline",
+    "windowCalculationForm": "Procedure",
+    "windowCalculationDate": "PROCDT",
+    "actualDateForm": "Follow Up",
+    "actualDate": "FUDT",
+    "dueDateWillBeIn": 30,
+    "negativeSlack": 7,
+    "positiveSlack": 7,
+    "eproGracePeriod": 2,
     "forms": [MOCK_INTERVAL_FORM_1],
-    "disabled": False,
-    "dateCreated": "2023-03-01T10:00:00Z",
-    "dateModified": "2023-03-02T11:00:00Z",
+    "disabled": True,  # Match example
+    "dateCreated": "2024-11-04 16:03:19",  # Use format from docs
+    "dateModified": "2024-11-04 16:03:20",
 }
-MOCK_INTERVAL_2_DICT = {
-    "studyKey": MOCK_STUDY_KEY,
-    "intervalId": 2,
-    "intervalName": "Visit 1",
-    "intervalDescription": "First follow-up visit",
-    "intervalSequence": 2,
-    "intervalGroupId": 10,
-    "intervalGroupName": "Group A",
-    "timeline": "Calculated",
-    "definedUsingInterval": "Screening",
-    "windowCalculationForm": "DEMOGRAPHICS",
-    "windowCalculationDate": "VISIT_DATE",
-    "actualDateForm": "VISIT_1_FORM",
-    "actualDate": "VISIT_1_DATE",
-    "dueDateWillBeIn": 7,
-    "negativeSlack": 2,
-    "positiveSlack": 2,
-    "eproGracePeriod": 3,
-    "forms": [MOCK_INTERVAL_FORM_2],
-    "disabled": False,
-    "dateCreated": "2023-03-05T09:00:00Z",
-    "dateModified": "2023-03-06T14:30:00Z",
-}
+# MOCK_INTERVAL_2_DICT can be removed or updated if needed for other tests
 
+# Corrected Metadata based on docs (no nested pagination)
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
+    "method": "GET",  # Added method
     "path": INTERVALS_ENDPOINT,
-    "timestamp": datetime.now().isoformat(),
-    "pagination": {"page": 0, "size": 2, "total": 2},
+    "timestamp": "2024-11-04 16:03:19",  # Use fixed timestamp
+    "error": {},
 }
 
+# Corrected Pagination based on docs
+MOCK_PAGINATION_DICT = {
+    "currentPage": 0,
+    "size": 1,  # Adjusted to match single data item
+    "totalPages": 1,
+    "totalElements": 1,
+    "sort": [{"property": "intervalId", "direction": "ASC"}],  # Use 'property'
+}
+
+# Corrected top-level response structure
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
-    "data": [MOCK_INTERVAL_1_DICT, MOCK_INTERVAL_2_DICT],
+    "pagination": MOCK_PAGINATION_DICT,
+    "data": [MOCK_INTERVAL_1_DICT],  # Use single item based on pagination
 }
 
 
@@ -118,40 +106,72 @@ def test_list_intervals_success(intervals_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.metadata.pagination, PaginationInfo)
+    # Assert pagination is present and correct type
+    assert isinstance(response.pagination, Pagination)
     assert response.metadata.status == "OK"
+    assert response.metadata.path == INTERVALS_ENDPOINT
+    # Assert pagination fields based on documentation
+    assert response.pagination.currentPage == 0
+    assert response.pagination.size == 1
+    assert response.pagination.totalPages == 1
+    assert response.pagination.totalElements == 1
+    assert isinstance(response.pagination.sort, list)
+    assert len(response.pagination.sort) == 1
+    assert isinstance(response.pagination.sort[0], SortInfo)
+    assert response.pagination.sort[0].property == "intervalId"
+    assert response.pagination.sort[0].direction == "ASC"
+
     assert isinstance(response.data, list)
-    assert len(response.data) == 2
-    assert all(isinstance(item, IntervalModel) for item in response.data)
-    assert response.data[0].intervalName == "Screening"
-    assert response.data[1].intervalName == "Visit 1"
+    assert len(response.data) == 1
+    assert isinstance(response.data[0], IntervalModel)
+    assert response.data[0].intervalName == "Day 1"
+    assert response.data[0].disabled is True
     assert isinstance(response.data[0].forms, list)
     assert len(response.data[0].forms) == 1
     assert isinstance(response.data[0].forms[0], IntervalFormModel)
-    assert response.data[0].forms[0].formKey == "VISIT_FORM_1"
+    assert response.data[0].forms[0].formKey == "MY-FORM-KEY"
+    assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:19")
 
 
 @respx.mock
 def test_list_intervals_with_params(intervals_client):
     """Test list_intervals with query parameters."""
+    # Use filter syntax from docs example (==)
+    params = {
+        "page": 2,
+        "size": 5,
+        "sort": "intervalSequence,desc",
+        "filter": "intervalGroupName==ePRO",  # Use == as per docs
+    }
+    # Mock response for this specific request (can be empty or tailored)
+    mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{INTERVALS_ENDPOINT}"}
+    mock_pagination = {
+        "currentPage": 2,
+        "size": 5,
+        "totalPages": 3,
+        "totalElements": 12,
+        "sort": [{"property": "intervalSequence", "direction": "DESC"}],
+    }
+    # Example: return empty data for this specific filter/page
+    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": []}
+
+    # Ensure respx matches the exact params
     expected_params = {
         "page": "2",
         "size": "5",
         "sort": "intervalSequence,desc",
-        "filter": 'intervalGroupName=="Group B"',
+        "filter": "intervalGroupName==ePRO",
     }
     list_route = respx.get(f"{MOCK_BASE_URL}{INTERVALS_ENDPOINT}", params=expected_params).mock(
-        return_value=Response(
-            200, json=MOCK_SUCCESS_RESPONSE_DICT
-        )  # Mock response content doesn't matter here
+        return_value=Response(200, json=mock_response)
     )
 
-    intervals_client.list_intervals(
+    response = intervals_client.list_intervals(
         study_key=MOCK_STUDY_KEY,
         page=2,
         size=5,
         sort="intervalSequence,desc",
-        filter='intervalGroupName=="Group B"',
+        filter="intervalGroupName==ePRO",
     )
 
     assert list_route.called
@@ -159,7 +179,18 @@ def test_list_intervals_with_params(intervals_client):
     assert request.url.params["page"] == "2"
     assert request.url.params["size"] == "5"
     assert request.url.params["sort"] == "intervalSequence,desc"
-    assert request.url.params["filter"] == 'intervalGroupName=="Group B"'
+    assert request.url.params["filter"] == "intervalGroupName==ePRO"
+
+    # Assert response structure
+    assert isinstance(response, ApiResponse)
+    assert isinstance(response.metadata, Metadata)
+    assert isinstance(response.pagination, Pagination)
+    assert response.pagination.currentPage == 2
+    assert response.pagination.size == 5
+    assert response.pagination.sort[0].property == "intervalSequence"
+    assert response.pagination.sort[0].direction == "DESC"
+    assert isinstance(response.data, list)
+    assert len(response.data) == 0  # Based on mock response
 
 
 def test_list_intervals_no_study_key(intervals_client):
