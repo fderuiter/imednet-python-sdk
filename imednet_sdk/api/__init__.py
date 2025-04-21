@@ -6,6 +6,7 @@ This file initializes the api subpackage, which may contain specific API endpoin
 from ._base import ResourceClient
 from .forms import FormsClient
 from .intervals import IntervalsClient
+from .record_revisions import RecordRevisionsClient
 from .records import RecordsClient
 from .sites import SitesClient
 from .studies import StudiesClient
@@ -17,4 +18,5 @@ __all__ = [
     "FormsClient",
     "IntervalsClient",
     "RecordsClient",
+    "RecordRevisionsClient",
 ]

@@ -3,7 +3,8 @@
 from typing import Any, Dict, List, Optional
 
 from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.record import RecordModel
+from imednet_sdk.models.job import JobStatusModel
+from imednet_sdk.models.record import RecordModel, RecordPostItem
 
 from ._base import ResourceClient
 
@@ -63,4 +64,54 @@ class RecordsClient(ResourceClient):
 
         return self._client._get(
             endpoint, params=params, response_model=ApiResponse[List[RecordModel]]
+        )
+
+    def create_records(
+        self,
+        study_key: str,
+        records: List[RecordPostItem],
+        email_notify: Optional[str] = None,
+        **kwargs: Any,
+    ) -> ApiResponse[JobStatusModel]:
+        """
+        Create one or more records within a specific study.
+
+        Corresponds to `POST /api/v1/edc/studies/{studyKey}/records`.
+
+        Args:
+            study_key: The key of the study where records will be created.
+            records: A list of RecordPostItem objects representing the records to create.
+            email_notify: Optional email address to notify upon job completion.
+            **kwargs: Additional keyword arguments to pass to the request.
+
+        Returns:
+            An ApiResponse containing the JobStatusModel for the background job.
+
+        Raises:
+            ValueError: If study_key is empty or None, or if records list is empty.
+        """
+        if not study_key:
+            raise ValueError("study_key cannot be empty")
+        if not records:
+            raise ValueError("records list cannot be empty")
+
+        endpoint = f"/api/v1/edc/studies/{study_key}/records"
+
+        # Prepare headers
+        headers = {}
+        if email_notify:
+            headers["x-email-notify"] = email_notify
+
+        # Prepare data - Pydantic handles serialization of the list of models
+        # The base client's _request method will handle json serialization
+
+        # Use _post method from the base client
+        return self._client._post(
+            endpoint,
+            json=[
+                record.model_dump(exclude_none=True) for record in records
+            ],  # Serialize list of models
+            headers=headers,
+            response_model=ApiResponse[JobStatusModel],
+            **kwargs,
         )

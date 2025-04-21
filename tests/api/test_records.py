@@ -9,7 +9,8 @@ from httpx import Response
 from imednet_sdk.api.records import RecordsClient
 from imednet_sdk.client import ImednetClient
 from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo
-from imednet_sdk.models.record import RecordModel
+from imednet_sdk.models.job import JobStatusModel
+from imednet_sdk.models.record import RecordModel, RecordPostItem
 from imednet_sdk.models.subject import KeywordModel  # Assuming KeywordModel is needed
 
 # --- Constants ---
@@ -92,6 +93,44 @@ MOCK_SUCCESS_RESPONSE_DICT = {
     "data": [MOCK_RECORD_1_DICT, MOCK_RECORD_2_DICT],
 }
 
+MOCK_RECORD_POST_ITEM_1 = {
+    "formKey": "DEMOGRAPHICS",
+    "data": {"AGE": 42, "SEX": "Male"},
+    "subjectKey": "S002",
+    "siteName": "Site A",
+    "intervalName": "Screening",
+}
+MOCK_RECORD_POST_ITEM_2 = {
+    "formKey": "VITALS",
+    "data": {"HR": 72, "BP_SYS": 120, "BP_DIA": 80},
+    "subjectKey": "S002",
+    "siteName": "Site A",
+    "intervalName": "Screening",
+}
+
+MOCK_JOB_STATUS_DICT = {
+    "jobId": "job-12345",
+    "batchId": "batch-67890",
+    "state": "PENDING",
+    "dateCreated": "2023-04-21T10:00:00Z",
+    "dateStarted": None,
+    "dateFinished": None,
+}
+
+MOCK_CREATE_SUCCESS_METADATA_DICT = {
+    "status": "ACCEPTED",  # Usually 202 Accepted for async jobs
+    "path": RECORDS_ENDPOINT,
+    "timestamp": datetime.now().isoformat(),
+    "error": None,
+    "pagination": None,
+    "sort": None,
+}
+
+MOCK_CREATE_SUCCESS_RESPONSE_DICT = {
+    "metadata": MOCK_CREATE_SUCCESS_METADATA_DICT,
+    "data": MOCK_JOB_STATUS_DICT,
+}
+
 
 # --- Test Cases ---
 @respx.mock
@@ -162,3 +201,78 @@ def test_list_records_no_study_key(records_client):
         records_client.list_records(study_key="")
     with pytest.raises(ValueError, match="study_key cannot be empty"):
         records_client.list_records(study_key=None)  # type: ignore
+
+
+@respx.mock
+def test_create_records_success(records_client):
+    """Test successful creation of records."""
+    post_route = respx.post(f"{MOCK_BASE_URL}{RECORDS_ENDPOINT}").mock(
+        return_value=Response(202, json=MOCK_CREATE_SUCCESS_RESPONSE_DICT)
+    )
+
+    records_to_create = [
+        RecordPostItem(**MOCK_RECORD_POST_ITEM_1),
+        RecordPostItem(**MOCK_RECORD_POST_ITEM_2),
+    ]
+
+    response = records_client.create_records(study_key=MOCK_STUDY_KEY, records=records_to_create)
+
+    assert post_route.called
+    assert response is not None
+    assert isinstance(response, ApiResponse)
+    assert isinstance(response.metadata, Metadata)
+    assert response.metadata.status == "ACCEPTED"
+    assert isinstance(response.data, JobStatusModel)
+    assert response.data.jobId == "job-12345"
+    assert response.data.batchId == "batch-67890"
+    assert response.data.state == "PENDING"
+
+    # Check request body
+    request = post_route.calls.last.request
+    request_body = request.content
+    import json
+
+    sent_data = json.loads(request_body)
+    assert isinstance(sent_data, list)
+    assert len(sent_data) == 2
+    assert sent_data[0]["formKey"] == "DEMOGRAPHICS"
+    assert sent_data[0]["data"]["AGE"] == 42
+    assert sent_data[1]["formKey"] == "VITALS"
+    assert sent_data[1]["data"]["HR"] == 72
+    # Ensure optional fields with None value were excluded
+    assert "formId" not in sent_data[0]
+
+
+@respx.mock
+def test_create_records_with_email_notify(records_client):
+    """Test create_records sends the email notification header."""
+    email = "notify@example.com"
+    post_route = respx.post(f"{MOCK_BASE_URL}{RECORDS_ENDPOINT}").mock(
+        return_value=Response(202, json=MOCK_CREATE_SUCCESS_RESPONSE_DICT)
+    )
+
+    records_to_create = [RecordPostItem(**MOCK_RECORD_POST_ITEM_1)]
+
+    records_client.create_records(
+        study_key=MOCK_STUDY_KEY, records=records_to_create, email_notify=email
+    )
+
+    assert post_route.called
+    request = post_route.calls.last.request
+    assert "x-email-notify" in request.headers
+    assert request.headers["x-email-notify"] == email
+
+
+def test_create_records_no_study_key(records_client):
+    """Test create_records raises ValueError if study_key is missing."""
+    records_to_create = [RecordPostItem(**MOCK_RECORD_POST_ITEM_1)]
+    with pytest.raises(ValueError, match="study_key cannot be empty"):
+        records_client.create_records(study_key="", records=records_to_create)
+    with pytest.raises(ValueError, match="study_key cannot be empty"):
+        records_client.create_records(study_key=None, records=records_to_create)  # type: ignore
+
+
+def test_create_records_empty_list(records_client):
+    """Test create_records raises ValueError if records list is empty."""
+    with pytest.raises(ValueError, match="records list cannot be empty"):
+        records_client.create_records(study_key=MOCK_STUDY_KEY, records=[])
