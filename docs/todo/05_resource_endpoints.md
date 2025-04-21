@@ -85,7 +85,7 @@
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **CodingsClient (`imednet_sdk/api/codings.py`)**
-  * [ ] `list_codings(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/codings`
+  * [x] `list_codings(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/codings`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **SubjectsClient (`imednet_sdk/api/subjects.py`)**

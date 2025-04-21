@@ -4,6 +4,7 @@
 This file initializes the api subpackage, which may contain specific API endpoint classes or functions.
 """
 from ._base import ResourceClient
+from .codings import CodingsClient
 from .forms import FormsClient
 from .intervals import IntervalsClient
 from .record_revisions import RecordRevisionsClient
@@ -21,4 +22,5 @@ __all__ = [
     "RecordsClient",
     "RecordRevisionsClient",
     "VariablesClient",
+    "CodingsClient",
 ]
