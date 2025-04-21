@@ -5,7 +5,14 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from .subject import KeywordModel
+
+class KeywordModel(BaseModel):
+    """Model representing a keyword associated with a record."""
+
+    keywordName: str = Field(..., description="Name of the keyword")
+    keywordKey: str = Field(..., description="Key of the keyword")
+    keywordId: int = Field(..., description="Unique ID of the keyword")
+    dateAdded: datetime = Field(..., description="Date the keyword was added")
 
 
 class RecordModel(BaseModel):
