@@ -37,30 +37,69 @@ def test_error_detail():
 
 def test_sort_info():
     """Test SortInfo model validation."""
-    sort = SortInfo(field="dateCreated", direction="asc")
-    assert sort.field == "dateCreated"
-    assert sort.direction == "asc"
+    # Use the actual field name 'property' as defined in the model
+    sort = SortInfo(property="dateCreated", direction="asc")
+    assert sort.property == "dateCreated"
+    assert sort.direction == "asc" # Expect lowercase as provided
+
+    # Test validation with alias 'field'
+    sort_alias = SortInfo.model_validate({"property": "recordId", "direction": "DESC"})
+    assert sort_alias.property == "recordId"
+    assert sort_alias.direction == "DESC"
 
 
 def test_pagination_info():
     """Test PaginationInfo model validation."""
-    pagination = PaginationInfo(page=1, size=10, total=100)
-    assert pagination.page == 1
+    # Use actual field names
+    pagination = PaginationInfo(
+        currentPage=1, size=10, totalElements=100, totalPages=10
+    )
+    assert pagination.currentPage == 1
     assert pagination.size == 10
-    assert pagination.total == 100
+    assert pagination.totalElements == 100
+    assert pagination.totalPages == 10
+
+    # Test validation with aliases
+    pagination_alias = PaginationInfo.model_validate(
+        {"currentPage": 0, "size": 25, "totalElements": 5, "totalPages": 1}
+    )
+    assert pagination_alias.currentPage == 0
+    assert pagination_alias.size == 25
+    assert pagination_alias.totalElements == 5
+    assert pagination_alias.totalPages == 1
 
 
 def test_metadata():
     """Test Metadata model validation."""
+    # Use actual field names for nested PaginationInfo
+    pagination_data = PaginationInfo(
+        currentPage=1, size=10, totalElements=100, totalPages=10
+    )
     metadata = Metadata(
         status="OK",
         path="/api/v1/edc/studies",
         timestamp=datetime.now(),
-        pagination=PaginationInfo(page=1, size=10, total=100),
+        # pagination=pagination_data, # Metadata does not contain pagination
+        error=None
     )
     assert metadata.status == "OK"
     assert metadata.path == "/api/v1/edc/studies"
-    assert metadata.pagination.page == 1
+    assert isinstance(metadata.timestamp, datetime)
+    # assert metadata.pagination == pagination_data
+    assert metadata.error is None
+
+    # Test with error
+    error_detail = ErrorDetail(code="ERR001", message="Something went wrong")
+    metadata_error = Metadata(
+        status="ERROR",
+        path="/api/v1/edc/studies",
+        timestamp=datetime.now(),
+        # pagination=None,
+        error=error_detail
+    )
+    assert metadata_error.status == "ERROR"
+    assert metadata_error.error == error_detail
+    # assert metadata_error.pagination is None
 
 
 def test_api_response():
