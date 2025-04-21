@@ -1,6 +1,6 @@
 # Tests for the Visits API client.
 
-from datetime import date, datetime  # Import date and datetime
+from datetime import date, datetime  # Import date
 
 import pytest
 import respx
@@ -42,15 +42,15 @@ MOCK_VISIT_1_DICT = {
     "intervalName": "Day 15",
     "subjectId": 247,
     "subjectKey": "111-005",
-    "startDate": "2024-11-04",  # Date string
-    "endDate": "2024-11-11",  # Date string
+    "startDate": "2024-11-04",  # Date only
+    "endDate": "2024-11-11",  # Date only
     "dueDate": None,
-    "visitDate": "2024-11-06",  # Date string
+    "visitDate": "2024-11-06",  # Date only
     "visitDateForm": "Follow Up",
     "deleted": False,
     "visitDateQuestion": "AESEV",
-    "dateCreated": "2024-11-04 16:03:19",  # Datetime string
-    "dateModified": "2024-11-04 16:03:19",  # Datetime string
+    "dateCreated": "2024-11-04 16:03:19",  # Datetime
+    "dateModified": "2024-11-04 16:03:19",  # Datetime
 }
 # MOCK_VISIT_2_DICT can be added if needed
 
@@ -114,21 +114,18 @@ def test_list_visits_success(visits_client):
     assert isinstance(response.data[0], VisitModel)
     # Assertions based on corrected mock data
     assert response.data[0].visitId == 1
+    assert response.data[0].intervalId == 13
     assert response.data[0].intervalName == "Day 15"
     assert response.data[0].subjectKey == "111-005"
     assert response.data[0].visitDateForm == "Follow Up"
+    assert response.data[0].visitDateQuestion == "AESEV"
     assert response.data[0].deleted is False
     # Check date/datetime parsing
-    assert isinstance(response.data[0].startDate, date)
-    assert response.data[0].startDate == date(2024, 11, 4)
-    assert isinstance(response.data[0].endDate, date)
-    assert response.data[0].endDate == date(2024, 11, 11)
+    assert response.data[0].startDate == date.fromisoformat("2024-11-04")
+    assert response.data[0].endDate == date.fromisoformat("2024-11-11")
+    assert response.data[0].visitDate == date.fromisoformat("2024-11-06")
     assert response.data[0].dueDate is None
-    assert isinstance(response.data[0].visitDate, date)
-    assert response.data[0].visitDate == date(2024, 11, 6)
-    assert isinstance(response.data[0].dateCreated, datetime)
     assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:19")
-    assert isinstance(response.data[0].dateModified, datetime)
     assert response.data[0].dateModified == datetime.fromisoformat("2024-11-04 16:03:19")
 
 
@@ -143,7 +140,7 @@ def test_list_visits_with_params(visits_client):
         "currentPage": 2,
         "size": 5,
         "totalPages": 3,
-        "totalElements": 11,
+        "totalElements": 14,
         "sort": [{"property": "visitId", "direction": "ASC"}],
     }
     mock_response = {
