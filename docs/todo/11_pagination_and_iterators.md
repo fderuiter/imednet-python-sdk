@@ -1,4 +1,4 @@
-# Task 10: Pagination and Iterators
+# Task 11: Pagination and Iterators
 
 **Objective:** Implement convenient iterator methods for all list endpoints that support pagination, allowing users to easily retrieve all items without manual page handling.
 

@@ -1,4 +1,4 @@
-# Task 11: Packaging and Distribution
+# Task 12: Packaging and Distribution
 
 **Objective:** Prepare the SDK for distribution by configuring the build system, creating package artifacts (sdist, wheel), and setting up the process for publishing to PyPI.
 

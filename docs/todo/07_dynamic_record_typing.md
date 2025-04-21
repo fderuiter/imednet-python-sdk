@@ -1,4 +1,4 @@
-# Task 12: Dynamic Record Typing (`get_typed_records`)
+# Task 07: Dynamic Record Typing (`get_typed_records`)
 
 **Objective:** Implement a method that fetches records and dynamically parses their `recordData` into typed Pydantic models based on variable metadata fetched from the API for a specific form.
 

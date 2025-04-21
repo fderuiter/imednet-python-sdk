@@ -1,4 +1,4 @@
-# Task 09: Code Quality and Style Enforcement
+# Task 10: Code Quality and Style Enforcement
 
 **Objective:** Configure and enforce consistent code style, formatting, linting, and type checking using automated tools and pre-commit hooks.
 

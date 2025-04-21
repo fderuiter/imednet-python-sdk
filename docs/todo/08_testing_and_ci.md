@@ -1,4 +1,4 @@
-# Task 07: Testing Strategy and Automation
+# Task 08: Testing Strategy and Automation
 
 **Objective:** Establish a comprehensive testing strategy using `pytest`, implement unit tests with mocking, configure code coverage reporting, and set up a Continuous Integration (CI) pipeline using GitHub Actions.
 
