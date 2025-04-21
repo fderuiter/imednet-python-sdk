@@ -49,12 +49,12 @@
 
 **Sub-Tasks:**
 
-* [ ] **README.md:**
-  * [ ] Write clear project description.
-  * [ ] Add installation instructions.
-  * [ ] Add Quickstart section (initialization, simple call).
-  * [ ] Explain authentication.
-  * [ ] Link to full documentation.
+* [x] **README.md:**
+  * [x] Write clear project description.
+  * [x] Add installation instructions.
+  * [x] Add Quickstart section (initialization, simple call).
+  * [x] Explain authentication.
+  * [x] Link to full documentation.
 * [ ] **Sphinx Documentation Setup (`docs/source/`):**
   * [ ] Install Sphinx, theme (e.g., `sphinx_rtd_theme`), extensions (`autodoc`, `napoleon`, `viewcode`, `intersphinx`). Add to `requirements-dev.txt`.
   * [ ] Configure `conf.py` (project details, theme, extensions).

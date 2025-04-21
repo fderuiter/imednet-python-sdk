@@ -35,23 +35,66 @@ Development is actively progressing. The core client functionality is implemente
 
 ## Installation
 
-To install the imednet-python-sdk, you can use pip:
+**(Note: The package is not yet published on PyPI.)**
+
+Once published, you can install the imednet-python-sdk using pip:
 
 ```bash
-# Ensure you install from the correct source once published
-# For now, install locally:
-pip install .
+pip install imednet-python-sdk 
 ```
 
-Alternatively, you can clone the repository and install it in editable mode for development:
+Currently, you can install it directly from the source code:
 
 ```bash
-git clone https://github.com/yourusername/imednet-python-sdk.git
-cd imednet-python-sdk
+# Install from the local clone
+pip install .
+
+# Or install in editable mode for development (requires cloning the repo first)
+# git clone https://github.com/yourusername/imednet-python-sdk.git
+# cd imednet-python-sdk
 pip install -e .[dev] 
 ```
 
 *(Note: Assumes `[dev]` extra is defined in `pyproject.toml`)*
+
+## Authentication
+
+The SDK requires your iMednet API Key and Security Key for authentication. You can provide these credentials in two ways:
+
+1. **Directly during client initialization:**
+
+   ```python
+   from imednet_sdk import ImednetClient
+
+   client = ImednetClient(
+       api_key='YOUR_API_KEY',
+       security_key='YOUR_SECURITY_KEY'
+   )
+   ```
+
+2. **Via environment variables:**
+
+   Set the following environment variables:
+
+   * `IMEDNET_API_KEY`
+   * `IMEDNET_SECURITY_KEY`
+
+   The client will automatically pick them up if not provided during initialization:
+
+   ```python
+   # Example for bash/zsh
+   # export IMEDNET_API_KEY='your_api_key'
+   # export IMEDNET_SECURITY_KEY='your_security_key'
+
+   # Example for PowerShell
+   # $env:IMEDNET_API_KEY='your_api_key'
+   # $env:IMEDNET_SECURITY_KEY='your_security_key'
+   
+   from imednet_sdk import ImednetClient
+   
+   # Client automatically uses environment variables
+   client = ImednetClient() 
+   ```
 
 ## Usage
 
@@ -115,15 +158,18 @@ finally:
 
 ## Documentation
 
-For detailed documentation, please refer to the following files in the `docs` directory:
+Comprehensive documentation, including API reference and usage guides, is generated using Sphinx.
 
-* [Vision Statement](docs/vision.md)
-* [Detailed Design](docs/design.md)
-* [High-Level Architecture](docs/architecture.md)
-* [System Context Diagram](docs/context_diagram.md)
+* **View the Documentation:** [Link to hosted documentation or local build path] (e.g., `docs/build/html/index.html` after building)
+  * To build the documentation locally, navigate to the `docs/source` directory and run `make html` (or `sphinx-build -b html . ../build/html` on Windows without Make). You need to have Sphinx and the required extensions installed (`pip install -r requirements-dev.txt`).
+
+For project-related documents, see:
+
+* [Vision Statement](docs/project/vision.md)
+* [Detailed Design](docs/project/design.md)
+* [High-Level Architecture](docs/project/architecture.md)
+* [System Context Diagram](docs/project/context_diagram.md)
 * [Coding Standards](docs/coding_standards.md)
-* **API Reference:** See markdown files in `docs/reference/`
-* **Generated Docs:** Build Sphinx docs via `make html` in `docs/source/` (requires setup)
 
 ## Contributing
 

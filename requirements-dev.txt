@@ -8,6 +8,8 @@ mypy
 isort
 sphinx
 sphinx-rtd-theme
+sphinx-autodoc-typehints
+sphinx-copybutton
 pre-commit
 respx
 tenacity
