@@ -26,7 +26,7 @@ class VisitsClient(ResourceClient):
             ValueError: If study_key is not provided.
         """
         if not study_key:
-            raise ValueError("study_key is required.")
+            raise ValueError("study_key cannot be empty")  # Match test expectation
 
         endpoint = f"/api/v1/edc/studies/{study_key}/visits"
         return self._client._get(
