@@ -1,9 +1,10 @@
-from imednet_sdk.models._common import ErrorDetail
-from imednet_sdk.models.job import JobStatusModel
+from datetime import datetime
 
 import pytest
-from datetime import datetime
 from pydantic import ValidationError
+
+from imednet_sdk.models._common import ErrorDetail
+from imednet_sdk.models.job import JobStatusModel
 
 # Mock data based on docs/reference/jobs.md examples
 VALID_JOB_DATA = {
@@ -11,7 +12,7 @@ VALID_JOB_DATA = {
     "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8",
     "state": "completed",
     "dateCreated": "2020-12-01 21:47:36",
-    "dateModified": "2020-12-01 21:47:42", # Use dateModified
+    "dateModified": "2020-12-01 21:47:42",  # Use dateModified
     "progress": 100,
     "resultUrl": "/api/v1/edc/jobs/afa2d61e-07ed-4efe-99c5-6f358f5e7d38/results",
     "error": None,
@@ -19,7 +20,7 @@ VALID_JOB_DATA = {
 
 VALID_JOB_DATA_MINIMAL = {
     "jobId": "afa2d61e-07ed-4efe-99c5-6f358f5e7d38",
-    "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8", # batchId is optional in model, but often present
+    "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8",  # batchId is optional in model, but often present
     "state": "created",
     "dateCreated": "2020-12-01 21:47:36",
     # Optional fields omitted
@@ -35,7 +36,7 @@ INVALID_JOB_DATA_WRONG_TYPE = {
     "jobId": "afa2d61e-07ed-4efe-99c5-6f358f5e7d38",
     "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8",
     "state": "created",
-    "dateCreated": "not-a-date", # Invalid date format
+    "dateCreated": "not-a-date",  # Invalid date format
 }
 
 
@@ -48,8 +49,8 @@ def test_job_status_model_validation_full():
     assert model.state == VALID_JOB_DATA["state"]
     assert isinstance(model.dateCreated, datetime)
     assert model.dateCreated == datetime(2020, 12, 1, 21, 47, 36)
-    assert isinstance(model.dateModified, datetime) # Check dateModified
-    assert model.dateModified == datetime(2020, 12, 1, 21, 47, 42) # Check dateModified value
+    assert isinstance(model.dateModified, datetime)  # Check dateModified
+    assert model.dateModified == datetime(2020, 12, 1, 21, 47, 42)  # Check dateModified value
     assert model.progress == 100
     assert model.resultUrl == VALID_JOB_DATA["resultUrl"]
     assert model.error is None
@@ -64,7 +65,7 @@ def test_job_status_model_validation_minimal():
     assert model.state == VALID_JOB_DATA_MINIMAL["state"]
     assert isinstance(model.dateCreated, datetime)
     assert model.dateCreated == datetime(2020, 12, 1, 21, 47, 36)
-    assert model.dateModified is None # Check optional fields are None
+    assert model.dateModified is None  # Check optional fields are None
     assert model.progress is None
     assert model.resultUrl is None
     assert model.error is None
@@ -91,7 +92,7 @@ def test_job_status_model_validation_wrong_type():
 def test_job_status_model_serialization_full():
     """Test serialization of the JobStatusModel with all fields."""
     model = JobStatusModel.model_validate(VALID_JOB_DATA)
-    dump = model.model_dump(mode="json") # Use mode='json' for datetime serialization
+    dump = model.model_dump(mode="json")  # Use mode='json' for datetime serialization
 
     expected_data = VALID_JOB_DATA.copy()
     # Pydantic v2 serializes datetimes to ISO format strings by default with mode='json'
@@ -106,7 +107,7 @@ def test_job_status_model_serialization_full():
     assert dump["dateModified"] == expected_data["dateModified"]
     assert dump["progress"] == expected_data["progress"]
     assert dump["resultUrl"] == expected_data["resultUrl"]
-    assert dump["error"] == expected_data["error"] # Should be None
+    assert dump["error"] == expected_data["error"]  # Should be None
 
 
 def test_job_status_model_serialization_minimal():
@@ -119,7 +120,7 @@ def test_job_status_model_serialization_minimal():
         "jobId": VALID_JOB_DATA_MINIMAL["jobId"],
         "batchId": VALID_JOB_DATA_MINIMAL["batchId"],
         "state": VALID_JOB_DATA_MINIMAL["state"],
-        "dateCreated": "2020-12-01T21:47:36", # Serialized datetime
+        "dateCreated": "2020-12-01T21:47:36",  # Serialized datetime
     }
 
     # Check that only non-None fields are present and match
@@ -132,13 +133,13 @@ def test_job_status_model_with_error():
         "jobId": "job123",
         "state": "failed",
         "dateCreated": "2023-01-01 10:00:00",
-        "error": {"code": "E001", "message": "Processing failed"}
+        "error": {"code": "E001", "description": "Processing failed"},  # Use description key
     }
     model = JobStatusModel.model_validate(error_data)
     assert isinstance(model.error, ErrorDetail)
     assert model.error.code == "E001"
-    assert model.error.description == "Processing failed" # Use description field
+    assert model.error.description == "Processing failed"  # Use description field
 
     dump = model.model_dump(mode="json", exclude_none=True)
     assert dump["error"]["code"] == "E001"
-    assert dump["error"]["description"] == "Processing failed" # Use description field
+    assert dump["error"]["description"] == "Processing failed"  # Use description field
