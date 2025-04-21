@@ -49,8 +49,9 @@ class QueriesClient(ResourceClient):
         # Remove None values to avoid sending empty query parameters
         params = {k: v for k, v in params.items() if v is not None}
 
-        response_json = self._client.get(endpoint, params=params)
-
-        # Assuming the response structure matches ApiResponse[List[QueryModel]]
-        # Pydantic will handle the parsing and validation
-        return ApiResponse[List[QueryModel]].model_validate(response_json)
+        # Corrected to use the internal _get method and specify response model
+        return self._client._get(
+            endpoint,
+            params=params,
+            response_model=ApiResponse[List[QueryModel]]
+        )
