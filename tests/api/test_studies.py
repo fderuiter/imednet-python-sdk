@@ -1,4 +1,3 @@
-# filepath: /Users/fred/Documents/GitHub/imednet-python-sdk/tests/api/test_studies.py
 """Tests for the Studies API client."""
 
 from datetime import datetime
@@ -17,9 +16,11 @@ from imednet_sdk.models.study import StudyModel
 @pytest.fixture
 def client():
     """Fixture for ImednetClient."""
-    # We don't need real credentials for mocked tests
+    # Provide dummy credentials for testing purposes
+    # as the client initialization requires them.
+    # Use the MOCK_BASE_URL for testing
     return ImednetClient(
-        username="testuser", password="testpassword", instance_subdomain="testinstance"
+        api_key="test_api_key", security_key="test_security_key", base_url=MOCK_BASE_URL
     )
 
 
@@ -36,22 +37,26 @@ MOCK_BASE_URL = "https://testinstance.imednet.com"
 STUDIES_ENDPOINT = "/api/v1/edc/studies"
 
 MOCK_STUDY_1_DICT = {
+    "sponsorKey": "SPONSOR1",  # Added
     "studyKey": "DEMO",
+    "studyId": 101,  # Added
     "studyName": "Demonstration Study",
     "studyStatus": "Active",
+    "studyType": "Observational",  # Added
     "dateCreated": "2023-01-15T10:00:00Z",
     "dateUpdated": "2023-01-16T11:30:00Z",
-    "userCreated": "creator",
-    "userUpdated": "updater",
+    "dateModified": "2023-01-16T11:30:00Z",  # Added
 }
 MOCK_STUDY_2_DICT = {
+    "sponsorKey": "SPONSOR2",  # Added
     "studyKey": "PROD",
+    "studyId": 102,  # Added
     "studyName": "Production Study",
     "studyStatus": "Active",
+    "studyType": "Interventional",  # Added
     "dateCreated": "2022-11-01T09:00:00Z",
     "dateUpdated": "2023-02-20T15:45:00Z",
-    "userCreated": "admin",
-    "userUpdated": "admin",
+    "dateModified": "2023-02-20T15:45:00Z",  # Added
 }
 
 MOCK_SUCCESS_METADATA_DICT = {
@@ -95,12 +100,12 @@ def test_list_studies_success(studies_client):
     assert isinstance(response.data, list)
     assert len(response.data) == 2
     assert all(isinstance(s, StudyModel) for s in response.data)
-    assert response.data[0].study_key == "DEMO"
-    assert response.data[1].study_key == "PROD"
-    assert response.data[0].study_name == "Demonstration Study"
+    assert response.data[0].studyKey == "DEMO"  # Changed from study_key
+    assert response.data[1].studyKey == "PROD"  # Changed from study_key
+    assert response.data[0].studyName == "Demonstration Study"  # Changed from study_name
     # Check date parsing
-    assert isinstance(response.data[0].date_created, datetime)
-    assert response.data[0].date_created.year == 2023
+    assert isinstance(response.data[0].dateCreated, datetime)  # Changed from date_created
+    assert response.data[0].dateCreated.year == 2023  # Changed from date_created
 
 
 @respx.mock
@@ -108,7 +113,10 @@ def test_list_studies_with_params(studies_client):
     """Test retrieving studies list with pagination, sort, and filter."""
     params = {"page": 1, "size": 10, "sort": "studyKey,desc", "filter": 'studyStatus=="Active"'}
     # httpx automatically URL-encodes parameters
-    expected_url = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?page=1&size=10&sort=studyKey%2Cdesc&filter=studyStatus%3D%3D%22Active%22"
+    # Break long URL string for readability and line length
+    base_part = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+    query_params = "?page=1&size=10&sort=studyKey%2Cdesc&filter=studyStatus%3D%3D%22Active%22"
+    expected_url = base_part + query_params
 
     # Mock the API call with specific query params
     # Use url__eq to ensure exact URL match including params
