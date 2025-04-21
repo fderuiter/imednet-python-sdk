@@ -63,7 +63,7 @@
   * [ ] Use `sphinx.ext.autodoc` (`automodule`, `autoclass`, etc.) to generate reference from docstrings.
   * [ ] Ensure `imednet_sdk` is in the Python path for Sphinx.
 * [ ] **Usage Guides (`docs/source/usage.rst`, etc.):**
-  * [ ] Write guide: Client initialization and authentication.
+  * [x] Write guide: Client initialization and authentication.
   * [ ] Write guide: Making requests (listing, getting).
   * [ ] Write guide: Handling pagination (manual, iterators).
   * [ ] Write guide: Filtering and sorting.
