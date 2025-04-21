@@ -1,3 +1,4 @@
+import datetime  # Added for timestamp
 import os
 import random
 import time
@@ -10,6 +11,10 @@ from pydantic import BaseModel, TypeAdapter, ValidationError
 from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient, RecordRevisionsClient,
                   RecordsClient, SitesClient, StudiesClient, SubjectsClient, UsersClient,
                   VariablesClient, VisitsClient)
+# Import custom exceptions
+from .exceptions import (ApiError, AuthenticationError, AuthorizationError, BadRequestError,
+                         ImednetSdkException, NotFoundError, RateLimitError)
+from .exceptions import ValidationError as SdkValidationError  # Alias to avoid name clash
 
 # Define a TypeVar for generic response models
 T = TypeVar("T", bound=BaseModel)
@@ -17,7 +22,7 @@ T = TypeVar("T", bound=BaseModel)
 # Type alias for timeout configuration
 TimeoutTypes = Union[float, httpx.Timeout, None]
 
-# Define retryable exceptions and status codes
+# Define retryable exceptions and status codes - Will be revisited for tenacity integration
 DEFAULT_RETRYABLE_STATUS_CODES: Set[int] = {500, 502, 503, 504}
 DEFAULT_RETRYABLE_METHODS: Set[str] = {
     "GET",
@@ -133,12 +138,12 @@ class ImednetClient:
         method: str,
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
-        json: Optional[Any] = None,  # Allow Pydantic models directly later
+        json: Optional[Any] = None,
         response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
         timeout: TimeoutTypes = None,
         **kwargs: Any,
-    ) -> Union[T, List[T], httpx.Response]:  # Return type depends on response_model
-        """Internal method to make HTTP requests with retry logic and deserialization."""
+    ) -> Union[T, List[T], httpx.Response]:
+        """Internal method to make HTTP requests with error handling, retry logic, and deserialization."""
         url = endpoint
         request_timeout = timeout if timeout is not None else self._default_timeout
         last_exception: Optional[Exception] = None
@@ -152,17 +157,24 @@ class ImednetClient:
             request_json = json  # Assume it's already a dict/serializable
 
         for attempt in range(self._retries + 1):
+            request_path = str(
+                self._client.build_request(method, url, params=params, json=request_json).url
+            )
             try:
                 response = self._client.request(
                     method=method,
                     url=url,
                     params=params,
-                    json=request_json,  # Use the potentially serialized JSON
+                    json=request_json,
                     timeout=request_timeout,
                     **kwargs,
                 )
-                # Raise HTTPStatusError for non-2xx responses
-                response.raise_for_status()
+                # Check for non-2xx responses BEFORE raise_for_status to handle custom exceptions
+                if not response.is_success:
+                    self._handle_api_error(response, request_path)  # Raise custom exception here
+
+                # Raise HTTPStatusError for non-2xx responses if not handled above (shouldn't happen now)
+                # response.raise_for_status() # Removed, handled by _handle_api_error
 
                 # If no response model is specified, return the raw response
                 if response_model is None:
@@ -186,22 +198,11 @@ class ImednetClient:
                         f"Failed to validate response data: {validation_exc}"
                     ) from validation_exc
 
-            except httpx.HTTPStatusError as exc:
-                last_exception = exc
-                status = exc.response.status_code
-                # Check if we should retry based on status code and method
-                if (
-                    attempt < self._retries
-                    and status in self._retry_statuses
-                    and method.upper() in self._retry_methods
-                ):
-                    delay = self._calculate_backoff(attempt)
-                    time.sleep(delay)
-                    continue  # Retry
-                else:
-                    raise
+            # except httpx.HTTPStatusError as exc: # Replaced by direct status check and _handle_api_error
+            #     # This block is now handled by the check `if not response.is_success:` and `_handle_api_error`
+            #     pass
 
-            except httpx.RequestError as exc:
+            except httpx.RequestError as exc:  # Keep retry for connection errors etc.
                 last_exception = exc
                 # Check if we should retry based on exception type and method
                 if (
@@ -213,6 +214,8 @@ class ImednetClient:
                     time.sleep(delay)
                     continue  # Retry
                 else:
+                    # Wrap non-HTTP errors in our base exception for consistency? Or re-raise? Re-raise for now.
+                    # raise ImednetSdkException(f"Request failed due to network/transport error: {exc}", request_path=request_path) from exc
                     raise  # Non-retryable exception/method or max retries reached
 
         # Should be unreachable if retries >= 0, but satisfy type checker
@@ -222,6 +225,84 @@ class ImednetClient:
         else:
             # This case should ideally never happen in normal flow
             raise RuntimeError("Request failed without capturing an exception after retries.")
+
+    def _handle_api_error(self, response: httpx.Response, request_path: str) -> None:
+        """Parses API error responses and raises the appropriate custom exception."""
+        status_code = response.status_code
+        timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        error_details: Dict[str, Any] = {}
+        api_error_code: Optional[str] = None
+        description: str = f"HTTP error {status_code} occurred."
+        attribute: Optional[str] = None
+        value: Optional[Any] = None
+
+        try:
+            error_data = response.json()
+            # Safely access nested dictionary keys
+            metadata = error_data.get("metadata", {})
+            error_info = metadata.get("error", {})
+
+            api_error_code = error_info.get("code")
+            description = error_info.get(
+                "description", description
+            )  # Use parsed description if available
+            attribute = error_info.get("attribute")
+            value = error_info.get("value")
+            error_details = error_data  # Store the full parsed body
+
+        except ValueError:  # Includes JSONDecodeError
+            description = (
+                f"HTTP error {status_code} occurred, and the response body was not valid JSON."
+            )
+            error_details = {"raw_response": response.text}  # Store raw text if not JSON
+
+        # Exception Mapping Logic
+        exception_args = {
+            "message": description,
+            "status_code": status_code,
+            "api_error_code": api_error_code,
+            "request_path": request_path,
+            "response_body": error_details,
+            "timestamp": timestamp,
+        }
+
+        if status_code == 400:
+            if api_error_code == "1000":  # Validation Error
+                raise SdkValidationError(**exception_args, attribute=attribute, value=value)
+            else:  # General Bad Request
+                raise BadRequestError(**exception_args)
+        elif status_code == 401:
+            # API docs mention code 9001 specifically for invalid keys
+            # message = "Authentication failed: Invalid API key or Security key." if api_error_code == "9001" else description
+            # exception_args["message"] = message # Update message for specific code
+            raise AuthenticationError(**exception_args)
+        elif status_code == 403:
+            raise AuthorizationError(**exception_args)
+        elif status_code == 404:
+            raise NotFoundError(**exception_args)
+        elif status_code == 429:
+            raise RateLimitError(**exception_args)
+        elif status_code == 500:
+            # API docs mention code 9000 specifically for unknown server error
+            # message = "An unknown internal server error occurred." if api_error_code == "9000" else description
+            # exception_args["message"] = message # Update message for specific code
+            raise ApiError(**exception_args)
+        elif status_code >= 500:  # Other 5xx errors
+            raise ApiError(**exception_args)
+        elif status_code >= 400:  # Other 4xx errors
+            # Default to BadRequest for other 4xx? Or a more generic ClientError? Use ApiError for now.
+            raise ApiError(
+                **exception_args
+            )  # Or maybe BadRequestError? Let's use ApiError as a catch-all for unexpected client/server errors.
+        else:
+            # This should not be reached if called correctly, but handle defensively
+            raise ImednetSdkException(
+                f"Unhandled HTTP status code {status_code}.",
+                status_code=status_code,
+                request_path=request_path,
+                response_body=error_details,
+                timestamp=timestamp,
+            )
 
     def _calculate_backoff(self, attempt: int) -> float:
         """Calculates exponential backoff delay with jitter."""

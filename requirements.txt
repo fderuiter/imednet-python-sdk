@@ -3,3 +3,4 @@ pytest
 httpx
 pydantic
 python-dotenv
+tenacity

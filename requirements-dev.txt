@@ -10,3 +10,4 @@ sphinx
 sphinx-rtd-theme
 pre-commit
 respx
+tenacity

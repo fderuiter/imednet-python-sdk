@@ -21,8 +21,9 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP",
 ]
 dependencies = [
-    "requests>=2.20", # Example dependency, adjust as needed
-    "pydantic>=1.8",  # Example dependency, adjust as needed
+    "requests>=2.20",
+    "pydantic>=1.8",
+    "tenacity>=8.0",
 ]
 
 [project.urls]
