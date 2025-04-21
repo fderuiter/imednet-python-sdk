@@ -61,11 +61,11 @@
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **FormsClient (`imednet_sdk/api/forms.py`)**
-  * [ ] `list_forms(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/forms`
+  * [x] `list_forms(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/forms`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **IntervalsClient (`imednet_sdk/api/intervals.py`)**
-  * [ ] `list_intervals(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/intervals`
+  * [x] `list_intervals(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/intervals`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **RecordsClient (`imednet_sdk/api/records.py`)**
