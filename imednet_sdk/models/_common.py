@@ -31,16 +31,17 @@ class ErrorDetail(BaseModel):
 class SortInfo(BaseModel):
     """Model for sorting parameters."""
 
-    field: str = Field(..., description="The field to sort by")
+    property: str = Field(..., alias="property", description="The field to sort by") # Use alias 'property'
     direction: str = Field(..., description="The sort direction (asc or desc)")
 
 
 class PaginationInfo(BaseModel):
     """Model for pagination details."""
 
-    page: int = Field(..., ge=0, description="Current page number (0-indexed)")
+    currentPage: int = Field(..., alias="currentPage", ge=0, description="Current page number (0-indexed)") # Use alias
     size: int = Field(..., ge=0, description="Number of items per page")
-    total: int = Field(..., ge=0, description="Total number of elements across all pages")
+    totalElements: int = Field(..., alias="totalElements", ge=0, description="Total number of elements across all pages") # Use alias
+    totalPages: int = Field(..., alias="totalPages", ge=0, description="Total number of pages") # Add totalPages based on mock data
     sort: Optional[List[SortInfo]] = Field(None, description="Sorting information applied")
 
 
@@ -51,10 +52,6 @@ class Metadata(BaseModel):
     path: Optional[str] = Field(None, description="The API endpoint path")
     timestamp: datetime = Field(..., description="Timestamp of the response")
     error: Optional[ErrorDetail] = Field(None, description="Error details if applicable")
-    pagination: Optional[PaginationInfo] = Field(
-        None, description="Pagination information if applicable"
-    )
-    sort: Optional[List[SortInfo]] = Field(None, description="Sorting information if applicable")
 
 
 class ApiResponse(BaseModel, Generic[T]):
@@ -65,4 +62,5 @@ class ApiResponse(BaseModel, Generic[T]):
     )
 
     metadata: Metadata = Field(..., description="Response metadata")
+    pagination: Optional[PaginationInfo] = Field(None, description="Pagination information if applicable") # Add top-level pagination
     data: Optional[T] = Field(None, description="Response data of generic type T")
