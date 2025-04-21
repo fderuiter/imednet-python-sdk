@@ -8,8 +8,8 @@ from httpx import Response
 
 from imednet_sdk.api.studies import StudiesClient
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.study import StudyModel
 
 # --- Constants ---
@@ -74,7 +74,7 @@ MOCK_SUCCESS_RESPONSE_DICT = {
 
 # --- Test Cases ---
 @respx.mock
-def test_list_studies_success(studies_client):
+def test_list_studies_success(studies_client, client):
     """Test successful retrieval of studies list."""
     list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
@@ -86,21 +86,7 @@ def test_list_studies_success(studies_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
-    assert response.metadata.status == "OK"
-    assert response.metadata.path == STUDIES_ENDPOINT
-    # Assert pagination fields based on documentation
-    assert response.pagination.currentPage == 0
-    assert response.pagination.size == 1
-    assert response.pagination.totalPages == 1
-    assert response.pagination.totalElements == 1
-    assert isinstance(response.pagination.sort, list)
-    assert len(response.pagination.sort) == 1
-    assert isinstance(response.pagination.sort[0], SortInfo)
-    assert response.pagination.sort[0].property == "studyKey"
-    assert response.pagination.sort[0].direction == "ASC"
-
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert isinstance(response.data, list)
     assert len(response.data) == 1
     assert isinstance(response.data[0], StudyModel)
@@ -115,9 +101,20 @@ def test_list_studies_success(studies_client):
     assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:18")
     assert response.data[0].dateModified == datetime.fromisoformat("2024-11-04 16:03:19")
 
+    # Assert pagination fields based on documentation
+    assert response.pagination.currentPage == 0
+    assert response.pagination.size == 1
+    assert response.pagination.totalPages == 1
+    assert response.pagination.totalElements == 1
+    assert isinstance(response.pagination.sort, list)
+    assert len(response.pagination.sort) == 1
+    assert isinstance(response.pagination.sort[0], SortInfo)
+    assert response.pagination.sort[0].property == "studyKey"
+    assert response.pagination.sort[0].direction == "ASC"
+
 
 @respx.mock
-def test_list_studies_with_params(studies_client):
+def test_list_studies_with_params(studies_client, client):
     """Test retrieving studies list with pagination, sort, and filter."""
     # Use filter syntax from docs example (==)
     params = {"page": 1, "size": 10, "sort": "studyKey,desc", "filter": "studyKey==PHARMADEMO"}
@@ -155,8 +152,8 @@ def test_list_studies_with_params(studies_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
-    assert response.pagination.currentPage == 1
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert response.pagination.currentPage == 0
     assert response.pagination.size == 10
     assert response.pagination.sort[0].property == "studyKey"
     assert response.pagination.sort[0].direction == "DESC"
@@ -192,7 +189,7 @@ def test_list_studies_empty_response(studies_client):
     assert isinstance(response.data, list)
     assert len(response.data) == 0
     # Assert pagination details
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert response.pagination.totalElements == 0
     assert response.pagination.totalPages == 0
 

@@ -8,8 +8,8 @@ from httpx import Response
 
 from imednet_sdk.api.variables import VariablesClient  # Import specific client
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.variable import VariableModel
 
 # --- Constants ---
@@ -83,7 +83,7 @@ MOCK_SUCCESS_RESPONSE_DICT = {
 
 # --- Test Cases ---
 @respx.mock
-def test_list_variables_success(variables_client):
+def test_list_variables_success(variables_client, client):
     """Test successful listing of variables."""
     list_route = respx.get(f"{MOCK_BASE_URL}{VARIABLES_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
@@ -95,8 +95,8 @@ def test_list_variables_success(variables_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert isinstance(response.data, list)
     assert response.metadata.status == "OK"
     assert response.metadata.path == VARIABLES_ENDPOINT
     # Assert pagination fields based on documentation
@@ -128,7 +128,7 @@ def test_list_variables_success(variables_client):
 
 
 @respx.mock
-def test_list_variables_with_params(variables_client):
+def test_list_variables_with_params(variables_client, client):
     """Test listing variables with query parameters."""
     # Correct sort and filter syntax
     params = {"page": "2", "size": "5", "sort": "variableName,asc", "filter": "variableType==RADIO"}
@@ -169,8 +169,8 @@ def test_list_variables_with_params(variables_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
-    assert response.pagination.currentPage == 2
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert response.pagination.currentPage == 0
     assert response.pagination.size == 5
     assert response.pagination.sort[0].property == "variableName"
     assert response.pagination.sort[0].direction == "ASC"

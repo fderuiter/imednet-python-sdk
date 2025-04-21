@@ -5,7 +5,8 @@ import respx
 from httpx import Response
 
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.coding import CodingModel
 
 
@@ -76,7 +77,7 @@ def test_list_codings_success(codings_client, client):
 
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)  # Check for Pagination type
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert isinstance(response.data, list)
     assert len(response.data) == 1
     assert isinstance(response.data[0], CodingModel)
@@ -137,7 +138,7 @@ def test_list_codings_with_params(codings_client, client):
     assert route.called
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert response.pagination.currentPage == 0
     assert response.pagination.size == 20
     assert response.pagination.totalElements == 0

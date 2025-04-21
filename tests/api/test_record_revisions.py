@@ -8,8 +8,8 @@ from httpx import Response
 
 from imednet_sdk.api.record_revisions import RecordRevisionsClient
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.record_revision import RecordRevisionModel
 
 # --- Constants ---
@@ -97,8 +97,9 @@ def test_list_record_revisions_success(revisions_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert isinstance(response.data, list)
     # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
     assert response.metadata.status == "OK"
     assert response.metadata.path == REVISIONS_ENDPOINT
     # Assert pagination fields based on documentation
@@ -172,7 +173,7 @@ def test_list_record_revisions_with_params(revisions_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert response.pagination.currentPage == 0
     assert response.pagination.size == 50
     assert response.pagination.sort[0].property == "recordId"

@@ -8,8 +8,8 @@ from httpx import Response
 
 from imednet_sdk.api.visits import VisitsClient  # Import specific client
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+# Use PaginationInfo based on documentation structure
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.visit import VisitModel
 
 # --- Constants ---
@@ -95,7 +95,7 @@ def test_list_visits_success(visits_client):
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
     # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert response.metadata.status == "OK"
     assert response.metadata.path == VISITS_ENDPOINT
     # Assert pagination fields based on documentation
@@ -167,7 +167,7 @@ def test_list_visits_with_params(visits_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert response.pagination.currentPage == 2
     assert response.pagination.size == 5
     assert response.pagination.sort[0].property == "visitId"

@@ -8,7 +8,7 @@ from httpx import Response
 
 from imednet_sdk.api.sites import SitesClient
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.site import SiteModel
 
 # --- Constants ---
@@ -72,7 +72,7 @@ MOCK_SUCCESS_RESPONSE_DICT = {
 
 # --- Test Cases ---
 @respx.mock
-def test_list_sites_success(sites_client):
+def test_list_sites_success(sites_client, client):
     """Test successful retrieval of sites list."""
     list_route = respx.get(f"{MOCK_BASE_URL}{SITES_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
@@ -84,8 +84,9 @@ def test_list_sites_success(sites_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert isinstance(response.data, list)
     # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
     assert response.metadata.status == "OK"
     assert response.metadata.path == SITES_ENDPOINT
     # Assert pagination fields based on documentation
@@ -111,7 +112,7 @@ def test_list_sites_success(sites_client):
 
 
 @respx.mock
-def test_list_sites_with_params(sites_client):
+def test_list_sites_with_params(sites_client, client):
     """Test list_sites with query parameters."""
     # Use filter syntax from docs example (==)
     expected_params = {
@@ -157,7 +158,7 @@ def test_list_sites_with_params(sites_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert response.pagination.currentPage == 0
     assert response.pagination.size == 25
     assert response.pagination.sort[0].property == "siteId"

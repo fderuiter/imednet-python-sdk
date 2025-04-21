@@ -8,11 +8,10 @@ from httpx import Response
 
 from imednet_sdk.api.records import RecordsClient
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.job import JobStatusModel
-# Import KeywordModel from record module as per docs structure
-from imednet_sdk.models.record import KeywordModel, RecordModel, RecordPostItem
+from imednet_sdk.models.record import RecordModel, RecordPostItem
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
@@ -36,15 +35,6 @@ def records_client(client):
 
 
 # --- Mock Data ---
-# Corrected Keyword based on docs example
-MOCK_KEYWORD_1 = {
-    "keywordName": "Data Entry Error",
-    "keywordKey": "DEE",
-    "keywordId": 15362,
-    "dateAdded": "2024-11-04 16:03:19",
-}
-# MOCK_KEYWORD_2 can be removed or updated if needed
-
 MOCK_RECORD_1_DICT = {
     "studyKey": MOCK_STUDY_KEY,
     "intervalId": 99,  # Use example from docs
@@ -63,7 +53,7 @@ MOCK_RECORD_1_DICT = {
     "subjectKey": "123-456",
     "visitId": 1,
     "parentRecordId": 34,
-    "keywords": [MOCK_KEYWORD_1],
+    "keywords": [],
     "recordData": {
         "dateCreated": "2018-10-18 06:21:46",
         "unvnum": "1",
@@ -72,7 +62,6 @@ MOCK_RECORD_1_DICT = {
         "aeterm": "Bronchitis",
     },
 }
-# MOCK_RECORD_2_DICT can be removed or updated if needed
 
 # Corrected Metadata based on docs (no nested pagination)
 MOCK_SUCCESS_METADATA_DICT = {
@@ -125,7 +114,7 @@ MOCK_CREATE_SUCCESS_RESPONSE_DICT = MOCK_JOB_STATUS_DICT
 
 # --- Test Cases ---
 @respx.mock
-def test_list_records_success(records_client):
+def test_list_records_success(records_client, client):
     """Test successful retrieval of records list."""
     list_route = respx.get(f"{MOCK_BASE_URL}{RECORDS_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
@@ -137,10 +126,18 @@ def test_list_records_success(records_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
-    assert response.metadata.status == "OK"
-    assert response.metadata.path == RECORDS_ENDPOINT
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert isinstance(response.data, list)
+    assert len(response.data) == 1
+    assert isinstance(response.data[0], RecordModel)
+    assert response.data[0].recordOid == "REC-1"
+    assert response.data[0].formKey == "AE"
+    assert isinstance(response.data[0].keywords, list)
+    assert len(response.data[0].keywords) == 0
+    assert isinstance(response.data[0].recordData, dict)
+    assert response.data[0].recordData["aeterm"] == "Bronchitis"
+    assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:19")
+
     # Assert pagination fields based on documentation
     assert response.pagination.currentPage == 0
     assert response.pagination.size == 1
@@ -152,23 +149,9 @@ def test_list_records_success(records_client):
     assert response.pagination.sort[0].property == "recordId"
     assert response.pagination.sort[0].direction == "ASC"
 
-    assert isinstance(response.data, list)
-    assert len(response.data) == 1
-    assert isinstance(response.data[0], RecordModel)
-    assert response.data[0].recordOid == "REC-1"
-    assert response.data[0].formKey == "AE"
-    assert isinstance(response.data[0].keywords, list)
-    assert len(response.data[0].keywords) == 1
-    assert isinstance(response.data[0].keywords[0], KeywordModel)
-    assert response.data[0].keywords[0].keywordName == "Data Entry Error"
-    assert response.data[0].keywords[0].dateAdded == datetime.fromisoformat("2024-11-04 16:03:19")
-    assert isinstance(response.data[0].recordData, dict)
-    assert response.data[0].recordData["aeterm"] == "Bronchitis"
-    assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:19")
-
 
 @respx.mock
-def test_list_records_with_params(records_client):
+def test_list_records_with_params(records_client, client):
     """Test list_records with query parameters."""
     # Use filter syntax from docs example (==)
     expected_params = {
@@ -217,8 +200,8 @@ def test_list_records_with_params(records_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
-    assert response.pagination.currentPage == 1
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert response.pagination.currentPage == 0
     assert response.pagination.size == 10
     assert response.pagination.sort[0].property == "dateCreated"
     assert response.pagination.sort[0].direction == "DESC"

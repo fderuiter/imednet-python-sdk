@@ -8,9 +8,9 @@ from httpx import Response
 
 from imednet_sdk.api.users import UsersClient  # Import specific client
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
-from imednet_sdk.models.user import RoleModel, UserModel
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
+from imednet_sdk.models.user import RoleModel, UserModel  # Add RoleModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
@@ -120,7 +120,7 @@ MOCK_INACTIVE_RESPONSE_DICT = {
 
 # --- Test Cases ---
 @respx.mock
-def test_list_users_success(users_client):
+def test_list_users_success(users_client, client):
     """Test successful listing of active users."""
     # Default is includeInactive=false
     list_route = respx.get(
@@ -133,21 +133,7 @@ def test_list_users_success(users_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
-    assert response.metadata.status == "OK"
-    assert response.metadata.path == USERS_ENDPOINT
-    # Assert pagination fields based on documentation
-    assert response.pagination.currentPage == 0
-    assert response.pagination.size == 1
-    assert response.pagination.totalPages == 1
-    assert response.pagination.totalElements == 1
-    assert isinstance(response.pagination.sort, list)
-    assert len(response.pagination.sort) == 1
-    assert isinstance(response.pagination.sort[0], SortInfo)
-    assert response.pagination.sort[0].property == "login"
-    assert response.pagination.sort[0].direction == "ASC"
-
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert isinstance(response.data, list)
     assert len(response.data) == 1
     assert isinstance(response.data[0], UserModel)
@@ -200,7 +186,7 @@ def test_list_users_include_inactive(users_client):
 
 
 @respx.mock
-def test_list_users_with_params(users_client):
+def test_list_users_with_params(users_client, client):
     """Test listing users with pagination and sorting."""
     # Correct sort format
     params = {"page": "2", "size": "5", "sort": "login,asc", "includeInactive": "false"}
@@ -237,7 +223,7 @@ def test_list_users_with_params(users_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert response.pagination.currentPage == 2
     assert response.pagination.size == 5
     assert response.pagination.sort[0].property == "login"

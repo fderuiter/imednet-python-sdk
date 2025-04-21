@@ -5,10 +5,10 @@ from typing import List, Optional
 from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.query import QueryModel
 
-from ._base import BaseApiClient
+from ._base import ResourceClient
 
 
-class QueriesClient(BaseApiClient):
+class QueriesClient(ResourceClient):
     """Client for the Queries endpoint."""
 
     def list_queries(

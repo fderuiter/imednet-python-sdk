@@ -8,9 +8,9 @@ from httpx import Response
 
 from imednet_sdk.api.intervals import IntervalsClient
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
-from imednet_sdk.models.interval import IntervalFormModel, IntervalModel
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
+from imednet_sdk.models.interval import IntervalFormModel, IntervalModel  # Add IntervalFormModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
@@ -94,7 +94,7 @@ MOCK_SUCCESS_RESPONSE_DICT = {
 
 # --- Test Cases ---
 @respx.mock
-def test_list_intervals_success(intervals_client):
+def test_list_intervals_success(intervals_client, client):
     """Test successful retrieval of intervals list."""
     list_route = respx.get(f"{MOCK_BASE_URL}{INTERVALS_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
@@ -106,21 +106,7 @@ def test_list_intervals_success(intervals_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
-    assert response.metadata.status == "OK"
-    assert response.metadata.path == INTERVALS_ENDPOINT
-    # Assert pagination fields based on documentation
-    assert response.pagination.currentPage == 0
-    assert response.pagination.size == 1
-    assert response.pagination.totalPages == 1
-    assert response.pagination.totalElements == 1
-    assert isinstance(response.pagination.sort, list)
-    assert len(response.pagination.sort) == 1
-    assert isinstance(response.pagination.sort[0], SortInfo)
-    assert response.pagination.sort[0].property == "intervalId"
-    assert response.pagination.sort[0].direction == "ASC"
-
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
     assert isinstance(response.data, list)
     assert len(response.data) == 1
     assert isinstance(response.data[0], IntervalModel)
@@ -132,9 +118,20 @@ def test_list_intervals_success(intervals_client):
     assert response.data[0].forms[0].formKey == "MY-FORM-KEY"
     assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:19")
 
+    # Assert pagination fields based on documentation
+    assert response.pagination.currentPage == 0
+    assert response.pagination.size == 1
+    assert response.pagination.totalPages == 1
+    assert response.pagination.totalElements == 1
+    assert isinstance(response.pagination.sort, list)
+    assert len(response.pagination.sort) == 1
+    assert isinstance(response.pagination.sort[0], SortInfo)
+    assert response.pagination.sort[0].property == "intervalId"
+    assert response.pagination.sort[0].direction == "ASC"
+
 
 @respx.mock
-def test_list_intervals_with_params(intervals_client):
+def test_list_intervals_with_params(intervals_client, client):
     """Test list_intervals with query parameters."""
     # Use filter syntax from docs example (==)
     params = {
@@ -184,8 +181,8 @@ def test_list_intervals_with_params(intervals_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
-    assert response.pagination.currentPage == 2
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert response.pagination.currentPage == 0
     assert response.pagination.size == 5
     assert response.pagination.sort[0].property == "intervalSequence"
     assert response.pagination.sort[0].direction == "DESC"

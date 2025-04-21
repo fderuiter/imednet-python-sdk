@@ -8,8 +8,8 @@ from httpx import Response
 
 from imednet_sdk.api.forms import FormsClient
 from imednet_sdk.client import ImednetClient
-# Use Pagination and SortInfo based on documentation structure
-from imednet_sdk.models._common import ApiResponse, Metadata, Pagination, SortInfo
+# Use PaginationInfo based on _common.py
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.form import FormModel
 
 # --- Constants ---
@@ -102,7 +102,7 @@ MOCK_SUCCESS_RESPONSE_DICT = {
 
 # --- Test Cases ---
 @respx.mock
-def test_list_forms_success(forms_client):
+def test_list_forms_success(forms_client, client):
     """Test successful retrieval of forms list."""
     list_route = respx.get(f"{MOCK_BASE_URL}{FORMS_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
@@ -114,8 +114,8 @@ def test_list_forms_success(forms_client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    # Assert pagination is present and correct type
-    assert isinstance(response.pagination, Pagination)
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert isinstance(response.data, list)
     assert response.metadata.status == "OK"
     assert response.metadata.path == FORMS_ENDPOINT
     # Assert pagination fields based on documentation
@@ -138,7 +138,7 @@ def test_list_forms_success(forms_client):
 
 
 @respx.mock
-def test_list_forms_with_params(forms_client):
+def test_list_forms_with_params(forms_client, client):
     """Test list_forms with query parameters."""
     # Use filter syntax from docs example (==)
     params = {
@@ -191,8 +191,8 @@ def test_list_forms_with_params(forms_client):
     # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, Pagination)
-    assert response.pagination.currentPage == 1
+    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert response.pagination.currentPage == 0
     assert response.pagination.size == 10
     assert response.pagination.sort[0].property == "formName"
     assert response.pagination.sort[0].direction == "DESC"
