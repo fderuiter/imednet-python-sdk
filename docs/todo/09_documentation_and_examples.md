@@ -55,10 +55,10 @@
   * [x] Add Quickstart section (initialization, simple call).
   * [x] Explain authentication.
   * [x] Link to full documentation.
-* [ ] **Sphinx Documentation Setup (`docs/source/`):**
-  * [ ] Install Sphinx, theme (e.g., `sphinx_rtd_theme`), extensions (`autodoc`, `napoleon`, `viewcode`, `intersphinx`). Add to `requirements-dev.txt`.
-  * [ ] Configure `conf.py` (project details, theme, extensions).
-  * [ ] Create basic `index.rst`.
+* [x] **Sphinx Documentation Setup (`docs/source/`):**
+  * [x] Install Sphinx, theme (e.g., `sphinx_rtd_theme`), extensions (`autodoc`, `napoleon`, `viewcode`, `intersphinx`). Add to `requirements-dev.txt`.
+  * [x] Configure `conf.py` (project details, theme, extensions).
+  * [x] Create basic `index.rst`.
 * [ ] **API Reference (`docs/source/api.rst`):**
   * [ ] Use `sphinx.ext.autodoc` (`automodule`, `autoclass`, etc.) to generate reference from docstrings.
   * [ ] Ensure `imednet_sdk` is in the Python path for Sphinx.
