@@ -40,7 +40,7 @@ def test_sort_info():
     # Use the actual field name 'property' as defined in the model
     sort = SortInfo(property="dateCreated", direction="asc")
     assert sort.property == "dateCreated"
-    assert sort.direction == "asc" # Expect lowercase as provided
+    assert sort.direction == "asc"  # Expect lowercase as provided
 
     # Test validation with alias 'field'
     sort_alias = SortInfo.model_validate({"property": "recordId", "direction": "DESC"})
@@ -51,9 +51,7 @@ def test_sort_info():
 def test_pagination_info():
     """Test PaginationInfo model validation."""
     # Use actual field names
-    pagination = PaginationInfo(
-        currentPage=1, size=10, totalElements=100, totalPages=10
-    )
+    pagination = PaginationInfo(currentPage=1, size=10, totalElements=100, totalPages=10)
     assert pagination.currentPage == 1
     assert pagination.size == 10
     assert pagination.totalElements == 100
@@ -72,15 +70,13 @@ def test_pagination_info():
 def test_metadata():
     """Test Metadata model validation."""
     # Use actual field names for nested PaginationInfo
-    pagination_data = PaginationInfo(
-        currentPage=1, size=10, totalElements=100, totalPages=10
-    )
+    pagination_data = PaginationInfo(currentPage=1, size=10, totalElements=100, totalPages=10)
     metadata = Metadata(
         status="OK",
         path="/api/v1/edc/studies",
         timestamp=datetime.now(),
         # pagination=pagination_data, # Metadata does not contain pagination
-        error=None
+        error=None,
     )
     assert metadata.status == "OK"
     assert metadata.path == "/api/v1/edc/studies"
@@ -95,7 +91,7 @@ def test_metadata():
         path="/api/v1/edc/studies",
         timestamp=datetime.now(),
         # pagination=None,
-        error=error_detail
+        error=error_detail,
     )
     assert metadata_error.status == "ERROR"
     assert metadata_error.error == error_detail

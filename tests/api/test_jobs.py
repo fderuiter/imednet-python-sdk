@@ -39,9 +39,11 @@ def test_get_job_status_success(jobs_client, client):
         "jobId": "afa2d61e-07ed-4efe-99c5-6f358f5e7d38",  # Use example from docs
         "batchId": batch_id,
         "state": "completed",  # Lowercase as per docs
-        "dateCreated": "2020-12-01 21:47:36",  # Use example format
-        "dateStarted": "2020-12-01 21:47:42",
-        "dateFinished": "2020-12-01 21:47:45",
+        "dateCreated": "2020-12-01 21:47:36",  # Use dateCreated
+        "dateModified": "2020-12-01 21:47:42",  # Use dateModified
+        "progress": 100,  # Add progress if applicable
+        "resultUrl": f"/api/v1/edc/jobs/afa2d61e-07ed-4efe-99c5-6f358f5e7d38/results",  # Add resultUrl if applicable
+        "error": None,  # Add error if applicable
     }
     # The endpoint returns the job status object directly
     respx.get(mock_url).mock(return_value=Response(200, json=mock_response_data))
@@ -58,8 +60,9 @@ def test_get_job_status_success(jobs_client, client):
     # Compare datetime objects after parsing
     datetime_format = "%Y-%m-%d %H:%M:%S"
     assert response.dateCreated == datetime.strptime("2020-12-01 21:47:36", datetime_format)
-    assert response.dateStarted == datetime.strptime("2020-12-01 21:47:42", datetime_format)
-    assert response.dateFinished == datetime.strptime("2020-12-01 21:47:45", datetime_format)
+    assert response.dateModified == datetime.strptime(
+        "2020-12-01 21:47:42", datetime_format
+    )  # Check dateModified
 
 
 @respx.mock
@@ -73,9 +76,11 @@ def test_get_job_status_running(jobs_client, client):  # Renamed for clarity
         "jobId": "JOBRUN1",
         "batchId": batch_id,
         "state": "running",  # Lowercase as per docs
-        "dateCreated": "2023-11-01 11:00:00",
-        "dateStarted": "2023-11-01 11:00:05",
-        "dateFinished": None,  # Should be None if running
+        "dateCreated": "2023-11-01 11:00:00",  # Use dateCreated
+        "dateModified": "2023-11-01 11:00:05",  # Use dateModified
+        "progress": 50,  # Example progress
+        "resultUrl": None,
+        "error": None,
     }
     respx.get(mock_url).mock(return_value=Response(200, json=mock_response_data))
 
@@ -84,8 +89,11 @@ def test_get_job_status_running(jobs_client, client):  # Renamed for clarity
     assert isinstance(response, JobStatusModel)
     assert response.batchId == batch_id
     assert response.state == "running"
-    assert response.dateStarted is not None
-    assert response.dateFinished is None  # Check that finished date is None
+    assert response.dateCreated is not None  # Check dateCreated
+    assert response.dateModified is not None  # Check dateModified
+    assert response.progress == 50  # Check progress
+    assert response.resultUrl is None  # Check resultUrl
+    assert response.error is None  # Check error
 
 
 def test_get_job_status_missing_study_key(jobs_client):
