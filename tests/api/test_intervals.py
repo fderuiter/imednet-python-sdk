@@ -182,7 +182,7 @@ def test_list_intervals_with_params(intervals_client, client):
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
     assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
-    assert response.pagination.currentPage == 2 # Correct assertion to match requested page
+    assert response.pagination.currentPage == 2  # Correct assertion to match requested page
     assert response.pagination.size == 5
     assert response.pagination.sort[0].property == "intervalSequence"
     assert response.pagination.sort[0].direction == "DESC"

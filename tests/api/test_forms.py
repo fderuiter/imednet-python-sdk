@@ -192,7 +192,7 @@ def test_list_forms_with_params(forms_client, client):
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
     assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
-    assert response.pagination.currentPage == 1 # Correct assertion to match requested page
+    assert response.pagination.currentPage == 1  # Correct assertion to match requested page
     assert response.pagination.size == 10
     assert response.pagination.sort[0].property == "formName"
     assert response.pagination.sort[0].direction == "DESC"

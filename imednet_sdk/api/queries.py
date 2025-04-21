@@ -51,7 +51,5 @@ class QueriesClient(ResourceClient):
 
         # Corrected to use the internal _get method and specify response model
         return self._client._get(
-            endpoint,
-            params=params,
-            response_model=ApiResponse[List[QueryModel]]
+            endpoint, params=params, response_model=ApiResponse[List[QueryModel]]
         )

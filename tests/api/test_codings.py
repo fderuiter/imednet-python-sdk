@@ -92,7 +92,7 @@ def test_list_codings_success(codings_client, client):
     assert response.pagination.totalElements == 1
     assert isinstance(response.pagination.sort, list)
     assert isinstance(response.pagination.sort[0], SortInfo)
-    assert response.pagination.sort[0].property == "recordId" # Corrected field name
+    assert response.pagination.sort[0].property == "recordId"  # Corrected field name
     assert response.pagination.sort[0].direction == "ASC"
 
 
