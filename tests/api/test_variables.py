@@ -170,7 +170,7 @@ def test_list_variables_with_params(variables_client, client):
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
     assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
-    assert response.pagination.currentPage == 0
+    assert response.pagination.currentPage == 2  # Correct assertion to match requested page
     assert response.pagination.size == 5
     assert response.pagination.sort[0].property == "variableName"
     assert response.pagination.sort[0].direction == "ASC"
