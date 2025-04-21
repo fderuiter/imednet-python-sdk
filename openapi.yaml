@@ -1,0 +1,2391 @@
+openapi: 3.0.0
+info:
+  title: iMednet EDC REST API
+  version: '1.3.6'
+  description: |-
+    REST API for accessing data stored within iMednet data services.
+    Allows Sponsors, CROs, and other validated clients to securely access data.
+    All API responses are returned in JSON format (`application/json`).
+servers:
+  - url: https://edc.prod.imednetapi.com
+    description: Production iMednet EDC API server
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: iMednet-supplied API key.
+    imnSecurityKey:
+      type: apiKey
+      in: header
+      name: x-imn-security-key
+      description: iMednet-supplied security key.
+
+  schemas:
+    ErrorMetadata:
+      type: object
+      properties:
+        status:
+          type: string
+          description: HTTP status indicating the type of error (e.g., BAD_REQUEST, UNAUTHORIZED).
+        path:
+          type: string
+          description: The API endpoint path that triggered the error.
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp indicating when the error occurred.
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code representing the specific error type (e.g., 1000, 9000, 9001).
+            description:
+              type: string
+              description: Description providing details about the error.
+            field:
+              type: object
+              properties:
+                attribute:
+                  type: string
+                  description: The request attribute that caused the error.
+                value:
+                  type: string
+                  description: The invalid value provided for the problematic attribute.
+          required:
+            - code
+            - description
+
+    ErrorResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ErrorMetadata'
+      required:
+        - metadata
+
+    PaginationSort:
+      type: object
+      properties:
+        property:
+          type: string
+          description: Property used for sorting.
+        direction:
+          type: string
+          enum: [ASC, DESC]
+          description: Sorting direction.
+      required:
+        - property
+        - direction
+
+    PaginationInfo:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+          description: Current page index.
+        size:
+          type: integer
+          format: int32
+          description: Number of items per page.
+        totalPages:
+          type: integer
+          format: int32
+          description: Total number of pages.
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of elements across all pages.
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaginationSort'
+      required:
+        - currentPage
+        - size
+        - totalPages
+        - totalElements
+        - sort
+
+    ResponseMetadata:
+      type: object
+      properties:
+        status:
+          type: string
+          description: HTTP status (e.g., OK).
+        method:
+          type: string
+          description: HTTP method used (e.g., GET).
+        path:
+          type: string
+          description: Requested URI path.
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the response was generated.
+        error:
+          type: object
+          description: Empty object for successful responses, or error details on failure.
+      required:
+        - status
+        - method
+        - path
+        - timestamp
+        - error
+
+    Study:
+      type: object
+      properties:
+        sponsorKey:
+          type: string
+          description: Sponsor key that this study belongs to.
+        studyKey:
+          type: string
+          description: Unique study key.
+        studyId:
+          type: integer
+          format: int64
+          description: Mednet study ID.
+        studyName:
+          type: string
+          description: Study name.
+        studyDescription:
+          type: string
+          description: Detailed description of the study.
+        studyType:
+          type: string
+          description: Type of the study.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when the study record was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Last modification date of the study record (UTC).
+      required:
+        - sponsorKey
+        - studyKey
+        - studyId
+        - studyName
+        - studyDescription
+        - studyType
+        - dateCreated
+        - dateModified
+
+    StudiesResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Study'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    Site:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique study key for the given study.
+        siteId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the site.
+        siteName:
+          type: string
+          description: Name of the site.
+        siteEnrollmentStatus:
+          type: string
+          description: Current enrollment status of the site.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when the site record was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Last modification date of the site record (UTC).
+      required:
+        - studyKey
+        - siteId
+        - siteName
+        - siteEnrollmentStatus
+        - dateCreated
+        - dateModified
+
+    SitesResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Site'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    Form:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique study key.
+        formId:
+          type: integer
+          format: int64
+          description: Mednet Form ID.
+        formKey:
+          type: string
+          description: Form key.
+        formName:
+          type: string
+          description: Name of the eCRF.
+        formType:
+          type: string
+          description: eCRF Type (e.g., Subject, Site).
+        revision:
+          type: integer
+          format: int32
+          description: Number of modifications to the form metadata.
+        embeddedLog:
+          type: boolean
+          description: Embedded Log checkbox value on the form attributes.
+        enforceOwnership:
+          type: boolean
+          description: Enforce Ownership checkbox value on the form attributes.
+        userAgreement:
+          type: boolean
+          description: User Agreement checkbox value on the form attributes.
+        subjectRecordReport:
+          type: boolean
+          description: Subject Record Report checkbox value on the form attributes.
+        unscheduledVisit:
+          type: boolean
+          description: Include in Unscheduled Visits checkbox value on the form attributes.
+        otherForms:
+          type: boolean
+          description: Include in Other Forms checkbox value on the form attributes.
+        eproForm:
+          type: boolean
+          description: Is ePRO checkbox value on the form attributes.
+        allowCopy:
+          type: boolean
+          description: Allow Copy checkbox value on the form attributes.
+        disabled:
+          type: boolean
+          description: Form is soft delete status.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when the form was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Last modification date of the form (UTC).
+      required:
+        - studyKey
+        - formId
+        - formKey
+        - formName
+        - formType
+        - revision
+        - embeddedLog
+        - enforceOwnership
+        - userAgreement
+        - subjectRecordReport
+        - unscheduledVisit
+        - otherForms
+        - eproForm
+        - allowCopy
+        - disabled
+        - dateCreated
+        - dateModified
+
+    FormsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Form'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    IntervalForm:
+      type: object
+      properties:
+        formId:
+          type: integer
+          format: int64
+          description: Form ID.
+        formKey:
+          type: string
+          description: Form Key.
+        formName:
+          type: string
+          description: Form Name.
+      required:
+        - formId
+        - formKey
+        - formName
+
+    Interval:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique study key.
+        intervalId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the interval.
+        intervalName:
+          type: string
+          description: User-defined interval/visit name.
+        intervalDescription:
+          type: string
+          description: User-defined interval/visit description.
+        intervalSequence:
+          type: integer
+          format: int32
+          description: User-defined sequence of the interval.
+        intervalGroupId:
+          type: integer
+          format: int64
+          description: User-defined interval group ID.
+        intervalGroupName:
+          type: string
+          description: User-defined interval group name.
+        timeline:
+          type: string
+          description: Type of Interval Visit Window (`None`, `Due Date`, `Start - End Date`, or `Actual Date`).
+        definedUsingInterval:
+          type: string
+          description: Baseline interval used for date calculations.
+        windowCalculationForm:
+          type: string
+          description: Baseline form used for date calculations.
+        windowCalculationDate:
+          type: string
+          description: Baseline field used for date calculations.
+        actualDateForm:
+          type: string
+          description: Actual date form for a specific interval.
+        actualDate:
+          type: string
+          description: Actual date field for a specific interval.
+        dueDateWillBeIn:
+          type: integer
+          format: int32
+          description: Number of days from the baseline date the interval is due.
+        negativeSlack:
+          type: integer
+          format: int32
+          description: Allowed number of negative days from the due date.
+        positiveSlack:
+          type: integer
+          format: int32
+          description: Allowed number of positive days from the due date.
+        eproGracePeriod:
+          type: integer
+          format: int32
+          description: Allowed number of positive days for ePRO from the due date.
+        forms:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntervalForm'
+          description: List of forms associated with this interval.
+        disabled:
+          type: boolean
+          description: Indicates if the interval is soft-deleted.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when the interval was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Last modification date of the interval (UTC).
+      required:
+        - studyKey
+        - intervalId
+        - intervalName
+        - intervalDescription
+        - intervalSequence
+        - intervalGroupId
+        - intervalGroupName
+        - timeline
+        - forms
+        - disabled
+        - dateCreated
+        - dateModified
+
+    IntervalsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interval'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    SubjectKeyword:
+      type: object
+      properties:
+        keywordName:
+          type: string
+          description: Name of the keyword.
+        keywordKey:
+          type: string
+          description: Unique key for the keyword.
+        keywordId:
+          type: integer
+          format: int64
+          description: Unique ID for the keyword.
+        dateAdded:
+          type: string
+          format: date-time
+          description: Date when the keyword was added (UTC).
+      required:
+        - keywordName
+        - keywordKey
+        - keywordId
+        - dateAdded
+
+    Subject:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique study key for the given study.
+        subjectId:
+          type: integer
+          format: int64
+          description: Mednet Subject ID.
+        subjectOid:
+          type: string
+          description: Client-assigned subject OID.
+        subjectKey:
+          type: string
+          description: Protocol-assigned subject identifier.
+        subjectStatus:
+          type: string
+          description: Current status of the subject (e.g., Enrolled).
+        siteId:
+          type: integer
+          format: int64
+          description: Mednet Site ID.
+        siteName:
+          type: string
+          description: Name of the site.
+        enrollmentStartDate:
+          type: string
+          format: date-time
+          description: Date when the subject enrollment started (UTC).
+        deleted:
+          type: boolean
+          description: Indicates whether the subject was deleted.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when the subject record was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Last modification date of the subject record (UTC).
+        keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectKeyword'
+          description: List of keywords associated with the subject.
+      required:
+        - studyKey
+        - subjectId
+        - subjectKey
+        - subjectStatus
+        - siteId
+        - siteName
+        - deleted
+        - dateCreated
+        - dateModified
+        - keywords
+
+    SubjectsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    Visit:
+      type: object
+      properties:
+        visitId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the subject visit instance.
+        studyKey:
+          type: string
+          description: Unique study key for the given study.
+        intervalId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the related interval.
+        intervalName:
+          type: string
+          description: User-defined identifier for the related interval.
+        subjectId:
+          type: integer
+          format: int64
+          description: Mednet Subject ID.
+        subjectKey:
+          type: string
+          description: Protocol-assigned subject identifier.
+        startDate:
+          type: string
+          format: date
+          description: Subject visit Start Date defined in interval visit window.
+        endDate:
+          type: string
+          format: date
+          description: Subject visit End Date defined in interval visit window.
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+          description: Subject visit Due Date defined in interval visit window.
+        visitDate:
+          type: string
+          format: date
+          description: Subject visit Actual Date defined in interval visit window.
+        visitDateForm:
+          type: string
+          description: Actual Date Form defined in interval visit window.
+        visitDateQuestion:
+          type: string
+          description: User-defined field identifier for the actual visit date.
+        deleted:
+          type: boolean
+          description: Subject visit deleted flag.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when this visit was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Date when this visit was last modified (UTC).
+      required:
+        - visitId
+        - studyKey
+        - intervalId
+        - intervalName
+        - subjectId
+        - subjectKey
+        - startDate
+        - endDate
+        - visitDate
+        - visitDateForm
+        - visitDateQuestion
+        - deleted
+        - dateCreated
+        - dateModified
+
+    VisitsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Visit'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    RecordKeyword:
+      type: object
+      properties:
+        keywordName:
+          type: string
+          description: Name of the keyword.
+        keywordKey:
+          type: string
+          description: Unique key for the keyword.
+        keywordId:
+          type: integer
+          format: int64
+          description: Unique ID for the keyword.
+        dateAdded:
+          type: string
+          format: date-time
+          description: Date when the keyword was added (UTC).
+      required:
+        - keywordName
+        - keywordKey
+        - keywordId
+        - dateAdded
+
+    Record:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique study key.
+        intervalId:
+          type: integer
+          format: int64
+          description: Unique ID for the interval.
+        formId:
+          type: integer
+          format: int64
+          description: Form ID.
+        formKey:
+          type: string
+          description: Form key.
+        siteId:
+          type: integer
+          format: int64
+          description: Unique site ID.
+        recordId:
+          type: integer
+          format: int64
+          description: Unique system ID for the record.
+        recordOid:
+          type: string
+          description: Client-assigned record OID.
+        recordType:
+          type: string
+          description: Type of record (e.g., SUBJECT).
+        recordStatus:
+          type: string
+          description: User-defined record status.
+        subjectId:
+          type: integer
+          format: int64
+          description: Mednet Subject ID.
+        subjectOid:
+          type: string
+          description: Client-assigned subject OID.
+        subjectKey:
+          type: string
+          description: Protocol-assigned subject identifier.
+        visitId:
+          type: integer
+          format: int64
+          description: Unique ID for the subject visit.
+        parentRecordId:
+          type: integer
+          format: int64
+          description: Parent record ID (for related records).
+        deleted:
+          type: boolean
+          description: Record deleted flag.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Record creation date (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Last modification date (UTC).
+        keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecordKeyword'
+          description: List of keywords associated with the record.
+        recordData:
+          type: object
+          additionalProperties: true
+          description: Detailed record data as key-value pairs based on the form's variables.
+      required:
+        - studyKey
+        - intervalId
+        - formId
+        - formKey
+        - siteId
+        - recordId
+        - recordType
+        - recordStatus
+        - subjectId
+        - subjectKey
+        - visitId
+        - deleted
+        - dateCreated
+        - dateModified
+        - keywords
+        - recordData
+
+    RecordsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Record'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    RecordRevision:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique study key for the given study.
+        recordRevisionId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the record revision.
+        recordId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the related record.
+        recordOid:
+          type: string
+          description: Client-assigned record OID.
+        recordRevision:
+          type: integer
+          format: int32
+          description: Record revision number.
+        dataRevision:
+          type: integer
+          format: int32
+          description: Data revision number.
+        recordStatus:
+          type: string
+          description: User-defined record status at the time of this revision.
+        subjectId:
+          type: integer
+          format: int64
+          description: Mednet Subject ID.
+        subjectOid:
+          type: string
+          description: Client-assigned subject OID.
+        subjectKey:
+          type: string
+          description: Protocol-assigned subject identifier.
+        siteId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the related site.
+        formKey:
+          type: string
+          description: Form key.
+        intervalId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the interval.
+        role:
+          type: string
+          description: Role of the user who saved the record revision.
+        user:
+          type: string
+          description: Username of the user who saved the record revision.
+        reasonForChange:
+          type: string
+          description: Reason for the change made in the record revision.
+        deleted:
+          type: boolean
+          description: Indicates whether the record was deleted at the time of this revision.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when the record revision was created (UTC).
+      required:
+        - studyKey
+        - recordRevisionId
+        - recordId
+        - recordRevision
+        - dataRevision
+        - recordStatus
+        - subjectId
+        - subjectKey
+        - siteId
+        - formKey
+        - intervalId
+        - role
+        - user
+        - deleted
+        - dateCreated
+
+    RecordRevisionsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecordRevision'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    Variable:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique Study Key.
+        variableId:
+          type: integer
+          format: int64
+          description: Mednet Variable ID.
+        variableType:
+          type: string
+          description: Type of the variable (e.g., RADIO, TEXT).
+        variableName:
+          type: string
+          description: Name of the variable on the eCRF.
+        sequence:
+          type: integer
+          format: int32
+          description: User-defined sequence of the variable.
+        revision:
+          type: integer
+          format: int32
+          description: Number of modifications to the form metadata containing this variable.
+        disabled:
+          type: boolean
+          description: Flag indicating if the variable is disabled.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Creation date of the variable (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Last modification date of the variable (UTC).
+        formId:
+          type: integer
+          format: int64
+          description: Mednet Form ID containing this variable.
+        variableOid:
+          type: string
+          description: Client-assigned Variable OID.
+        deleted:
+          type: boolean
+          description: Flag indicating if the variable is deleted.
+        formKey:
+          type: string
+          description: Form key of the form containing this variable.
+        formName:
+          type: string
+          description: Name of the eCRF containing this variable.
+        label:
+          type: string
+          description: User-defined field label.
+        blinded:
+          type: boolean
+          description: Flag indicating if the variable is blinded.
+      required:
+        - studyKey
+        - variableId
+        - variableType
+        - variableName
+        - sequence
+        - revision
+        - disabled
+        - dateCreated
+        - dateModified
+        - formId
+        - deleted
+        - formKey
+        - formName
+        - label
+        - blinded
+
+    VariablesResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variable'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    Coding:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique Study Key.
+        siteName:
+          type: string
+          description: Name of the site.
+        siteId:
+          type: integer
+          format: int64
+          description: Unique site ID.
+        subjectId:
+          type: integer
+          format: int64
+          description: Mednet Subject ID.
+        subjectKey:
+          type: string
+          description: Protocol-assigned subject identifier.
+        formId:
+          type: integer
+          format: int64
+          description: Mednet Form ID.
+        formName:
+          type: string
+          description: Name of the eCRF.
+        formKey:
+          type: string
+          description: Form key.
+        revision:
+          type: integer
+          format: int32
+          description: Number of modifications to the coding metadata.
+        recordId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the record.
+        variable:
+          type: string
+          description: Name of the variable on the eCRF that was coded.
+        value:
+          type: string
+          description: Original value entered for the variable.
+        codingId:
+          type: integer
+          format: int64
+          description: Mednet Coding ID.
+        code:
+          type: string
+          description: Standardized code assigned.
+        codedBy:
+          type: string
+          description: User who recorded the code.
+        reason:
+          type: string
+          description: Reason for the coding.
+        dictionaryName:
+          type: string
+          description: Name of the coding dictionary (e.g., MedDRA).
+        dictionaryVersion:
+          type: string
+          description: Version of the coding dictionary.
+        dateCoded:
+          type: string
+          format: date-time
+          description: Date when the code was added (UTC).
+      required:
+        - studyKey
+        - siteName
+        - siteId
+        - subjectId
+        - subjectKey
+        - formId
+        - formName
+        - formKey
+        - revision
+        - recordId
+        - variable
+        - value
+        - codingId
+        - code
+        - codedBy
+        - dictionaryName
+        - dictionaryVersion
+        - dateCoded
+
+    CodingsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    QueryComment:
+      type: object
+      properties:
+        sequence:
+          type: integer
+          format: int32
+          description: Query comment sequence number.
+        annotationStatus:
+          type: string
+          description: User-defined query status (e.g., Monitor Query Open).
+        user:
+          type: string
+          description: User performing the query action.
+        comment:
+          type: string
+          description: User comment applied during query action.
+        closed:
+          type: boolean
+          description: Indicates if the query was closed by this comment action.
+        date:
+          type: string
+          format: date-time
+          description: Date of the query comment (UTC).
+      required:
+        - sequence
+        - annotationStatus
+        - user
+        - comment
+        - closed
+        - date
+
+    Query:
+      type: object
+      properties:
+        studyKey:
+          type: string
+          description: Unique study key.
+        subjectId:
+          type: integer
+          format: int64
+          description: Mednet Subject ID.
+        subjectOid:
+          type: string
+          description: Client-assigned subject OID.
+        annotationType:
+          type: string
+          description: User-defined identifier for Query Type (e.g., subject).
+        annotationId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the Query Instance.
+        type:
+          type: string
+          nullable: true
+          description: System text identifier for query type/location (`subject`, `record`, `question`).
+        description:
+          type: string
+          description: Query description.
+        recordId:
+          type: integer
+          format: int64
+          description: Unique system identifier for the related Record (if applicable).
+        variable:
+          type: string
+          description: User-defined field identifier related to the query (if applicable).
+        subjectKey:
+          type: string
+          description: Protocol-assigned subject identifier.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date when the query was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Date when the query was last modified (UTC).
+        queryComments:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryComment'
+          description: List of comments associated with the query.
+      required:
+        - studyKey
+        - subjectId
+        - annotationType
+        - annotationId
+        - description
+        - subjectKey
+        - dateCreated
+        - dateModified
+        - queryComments
+
+    QueriesResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Query'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    UserRole:
+      type: object
+      properties:
+        dateCreated:
+          # Using string for simplicity, original was array [YYYY, MM, DD, HH, MM, SS, NNNNNNNNN]
+          type: string
+          format: date-time
+          description: Date when the role was created (UTC).
+        dateModified:
+          type: string
+          format: date-time
+          description: Date when the role was last modified (UTC).
+        roleId:
+          type: string
+          format: uuid
+          description: Unique Role ID.
+        communityId:
+          type: integer
+          format: int64
+          description: Community ID associated with the role.
+        name:
+          type: string
+          description: Name of the role.
+        description:
+          type: string
+          description: Description of the role.
+        level:
+          type: integer
+          format: int32
+          description: Role level.
+        type:
+          type: string
+          description: Type of role.
+        inactive:
+          type: boolean
+          description: Indicates if the role is inactive.
+      required:
+        - dateCreated
+        - dateModified
+        - roleId
+        - communityId
+        - name
+        - description
+        - level
+        - type
+        - inactive
+
+    User:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: Unique User ID.
+        login:
+          type: string
+          description: User login name.
+        firstName:
+          type: string
+          description: User's first name.
+        lastName:
+          type: string
+          description: User's last name.
+        email:
+          type: string
+          format: email
+          description: User's email address.
+        userActiveInStudy:
+          type: boolean
+          description: Indicates if the user is active in the study.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          description: List of roles assigned to the user within the study.
+      required:
+        - userId
+        - login
+        - firstName
+        - lastName
+        - email
+        - userActiveInStudy
+        - roles
+
+    UsersResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+      required:
+        - metadata
+        - pagination
+        - data
+
+    Job:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+          description: Unique identifier for the job.
+        batchId:
+          type: string
+          format: uuid
+          description: Batch ID linked to the submitted job.
+        state:
+          type: string
+          enum: [created, running, completed, failed]
+          description: Current state of the job.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Timestamp when the job was created (UTC).
+        dateStarted:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the job started processing (UTC).
+        dateFinished:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the job completed processing (UTC).
+      required:
+        - jobId
+        - batchId
+        - state
+        - dateCreated
+
+    PostRecordRequestItem:
+      type: object
+      properties:
+        formKey:
+          type: string
+          description: User-defined form key. Required if formId is not provided.
+        formId:
+          type: integer
+          format: int64
+          description: System-generated form ID. Required if formKey is not provided.
+        siteName:
+          type: string
+          description: User-defined site name. Required if siteId is not provided and creating a new subject/site record.
+        siteId:
+          type: integer
+          format: int64
+          description: System-generated site ID. Required if siteName is not provided and creating a new subject/site record.
+        subjectKey:
+          type: string
+          description: Protocol-assigned subject identifier. Required for updating existing subject records or creating new non-registration records for an existing subject.
+        subjectId:
+          type: integer
+          format: int64
+          description: System-generated subject ID. Alternative to subjectKey.
+        subjectOid:
+          type: string
+          description: Client-assigned subject OID. Alternative to subjectKey/subjectId.
+        intervalName:
+          type: string
+          description: User-defined interval name. Required for scheduled records if intervalId is not provided.
+        intervalId:
+          type: integer
+          format: int64
+          description: System-generated interval ID. Required for scheduled records if intervalName is not provided.
+        recordId:
+          type: integer
+          format: int64
+          description: System-generated record ID. Used for updating an existing record.
+        recordOid:
+          type: string
+          description: Client-assigned record OID. Used for updating an existing record.
+        data:
+          type: object
+          additionalProperties: true
+          description: Key-value pairs representing the data to be saved for the record's variables. Keys are variable names.
+      required:
+        - data
+      # Note: Complex conditional requirements (e.g., formKey OR formId) are not fully expressible in standard OpenAPI schema. Documentation should clarify these.
+
+    PostRecordsRequest:
+      type: array
+      items:
+        $ref: '#/components/schemas/PostRecordRequestItem'
+
+    PostRecordsResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+          description: Unique identifier for the asynchronous job created to process the request.
+        batchId:
+          type: string
+          format: uuid
+          description: Batch ID associated with the submitted records. Use this ID to check job status.
+        state:
+          type: string
+          enum: [created]
+          description: Initial status of the job (always 'created' on successful submission).
+      required:
+        - jobId
+        - batchId
+        - state
+
+  # Added reusable parameters and responses here
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Index page to return.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 0
+    SizeParam:
+      name: size
+      in: query
+      description: Number of items per page. Max 500.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 25
+        maximum: 500
+    SortParamStudy:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `studyKey,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'studyKey,asc'
+      example: 'studyName,desc'
+    FilterParamStudy:
+      name: filter
+      in: query
+      description: Filter criteria. Example `studyKey==PHARMADEMO;studyType==STUDY`.
+      required: false
+      schema:
+        type: string
+    SortParamSite:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `siteId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'siteId,asc'
+      example: 'siteName,desc'
+    FilterParamSite:
+      name: filter
+      in: query
+      description: Filter criteria. Example `siteId==48;siteEnrollmentStatus==Enrollment Open`.
+      required: false
+      schema:
+        type: string
+    SortParamForm:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `formId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'formId,asc'
+      example: 'formName,desc'
+    FilterParamForm:
+      name: filter
+      in: query
+      description: Filter criteria. Example `formId==10265;formType==Subject`.
+      required: false
+      schema:
+        type: string
+    SortParamInterval:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `intervalId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'intervalId,asc'
+      example: 'intervalName,desc'
+    FilterParamInterval:
+      name: filter
+      in: query
+      description: Filter criteria. Example `intervalId==161;intervalGroupName==ePRO`.
+      required: false
+      schema:
+        type: string
+    SortParamSubject:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `subjectId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'subjectId,asc'
+      example: 'subjectKey,desc'
+    FilterParamSubject:
+      name: filter
+      in: query
+      description: Filter criteria. Example `subjectId==370;subjectStatus==Enrolled`.
+      required: false
+      schema:
+        type: string
+    SortParamVisit:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `visitId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'visitId,asc'
+      example: 'subjectKey,desc'
+    FilterParamVisit:
+      name: filter
+      in: query
+      description: Filter criteria. Example `subjectKey==270;intervalName==Day 15`.
+      required: false
+      schema:
+        type: string
+    SortParamRecord:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `recordId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'recordId,asc'
+      example: 'subjectKey,desc'
+    FilterParamRecord:
+      name: filter
+      in: query
+      description: Filter criteria for record metadata. Example `recordId==5510;subjectKey==123-456`.
+      required: false
+      schema:
+        type: string
+    RecordDataFilterParam:
+      name: recordDataFilter
+      in: query
+      description: Filter criteria for data within the recordData object. Example `aeterm==Bronchitis;GENDER==Male`.
+      required: false
+      schema:
+        type: string
+    SortParamRecordRevision:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `recordRevisionId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'recordRevisionId,asc'
+      example: 'dateCreated,desc'
+    FilterParamRecordRevision:
+      name: filter
+      in: query
+      description: Filter criteria. Example `subjectKey==270;user==jdoe`.
+      required: false
+      schema:
+        type: string
+    SortParamVariable:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `variableId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'variableId,asc' # Doc says formId,asc but variableId seems more logical
+      example: 'variableName,desc'
+    FilterParamVariable:
+      name: filter
+      in: query
+      description: Filter criteria. Example `variableId==10299;formKey==FORM_1`.
+      required: false
+      schema:
+        type: string
+    SortParamCoding:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `recordId,asc`. # Doc says formId,asc but recordId seems more logical from example
+      required: false
+      schema:
+        type: string
+        default: 'recordId,asc'
+      example: 'dateCoded,desc'
+    FilterParamCoding:
+      name: filter
+      in: query
+      description: Filter criteria. Example `dictionaryName==MedDRA;codedBy==John Smith`.
+      required: false
+      schema:
+        type: string
+    SortParamQuery:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `annotationId,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'annotationId,asc'
+      example: 'dateCreated,desc'
+    FilterParamQuery:
+      name: filter
+      in: query
+      description: Filter criteria. Example `variable==aeterm;queryComments.closed==false`.
+      required: false
+      schema:
+        type: string
+    SortParamUser:
+      name: sort
+      in: query
+      description: Property to sort by. Format `property,asc|desc`. Default `login,asc`.
+      required: false
+      schema:
+        type: string
+        default: 'login,asc'
+      example: 'lastName,desc'
+
+  responses:
+    BadRequest:
+      description: Bad Request - Malformed request (e.g., invalid filter syntax, invalid parameter value).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            metadata:
+              status: BAD_REQUEST
+              path: "/api/v1/edc/studies"
+              timestamp: "2018-10-18T05:46:29Z"
+              error:
+                code: "1000"
+                description: Field raised validation errors
+                field:
+                  attribute: page
+                  value: XX
+    Unauthorized:
+      description: Unauthorized - Security issue with authentication headers.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            metadata:
+              status: UNAUTHORIZED
+              path: "/api/v1/edc/studies"
+              timestamp: "2024-11-04T16:03:19Z"
+              error:
+                code: "9001"
+                description: Unauthorized error. Insufficient permission to retrieve data.
+    Forbidden:
+      description: Forbidden - Access denied (e.g., API key lacks permission for the requested study or resource).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not Found - Resource could not be found (e.g., invalid studyKey, siteId, recordId, batchId).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Too Many Requests - Rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal Server Error - Unknown server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            metadata:
+              status: INTERNAL_SERVER_ERROR
+              path: "/api/v1/edc/studies"
+              timestamp: "2024-11-04T16:03:19Z"
+              error:
+                code: "9000"
+                description: Unknown error. Please contact Mednet support for assistance.
+
+security:
+  - apiKey: []
+  - imnSecurityKey: []
+
+paths:
+  /api/v1/edc/studies:
+    get:
+      summary: Retrieve accessible studies
+      description: Fetches the set of studies accessible through the provided API Key.
+      operationId: getStudies
+      tags:
+        - Studies
+      parameters:
+        - name: page
+          in: query
+          description: Index page to return.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page. Max 500.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+            maximum: 500
+        - name: sort
+          in: query
+          description: |-
+            Property to sort the result set. Format `property,asc` or `property,desc`.
+            Use multiple `sort` params for multi-property sorting.
+          required: false
+          schema:
+            type: string
+            default: 'studyKey,asc'
+          example: 'studyName,desc'
+        - name: filter
+          in: query
+          description: |-
+            Optional filter criteria using specific operators and connectors.
+            Refer to API documentation for syntax.
+          required: false
+          schema:
+            type: string
+          example: 'studyKey==PHARMADEMO;studyType==STUDY'
+      responses:
+        '200':
+          description: Successfully retrieved studies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudiesResponse'
+              example:
+                metadata:
+                  status: OK
+                  method: GET
+                  path: "/api/v1/edc/studies"
+                  timestamp: "2024-11-04T16:03:18Z"
+                  error: {}
+                pagination:
+                  currentPage: 0
+                  size: 25
+                  totalPages: 1
+                  totalElements: 1
+                  sort:
+                    - property: studyKey
+                      direction: ASC
+                data:
+                  - sponsorKey: "100"
+                    studyKey: PHARMADEMO
+                    studyId: 100
+                    studyName: iMednet Pharma Demonstration Study
+                    studyDescription: iMednet Demonstration Study v2 Created 05April2018 After A5 Release
+                    studyType: STUDY
+                    dateCreated: "2024-11-04T16:03:18Z"
+                    dateModified: "2024-11-04T16:03:19Z"
+        '400':
+          description: Bad Request - Malformed request (e.g., invalid filter syntax, invalid parameter value).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                metadata:
+                  status: BAD_REQUEST
+                  path: "/api/v1/edc/studies"
+                  timestamp: "2018-10-18T05:46:29Z"
+                  error:
+                    code: "1000"
+                    description: Field raised validation errors
+                    field:
+                      attribute: page
+                      value: XX
+        '401':
+          description: Unauthorized - Security issue with authentication headers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                metadata:
+                  status: UNAUTHORIZED
+                  path: "/api/v1/edc/studies"
+                  timestamp: "2024-11-04T16:03:19Z"
+                  error:
+                    code: "9001"
+                    description: Unauthorized error. Insufficient permission to retrieve data.
+        '403':
+          description: Forbidden - Access denied (e.g., invalid studyKey if applicable, though less likely for the base /studies endpoint).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Resource could not be found (less likely for the base /studies endpoint).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too Many Requests - Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error - Unknown server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                metadata:
+                  status: INTERNAL_SERVER_ERROR
+                  path: "/api/v1/edc/studies"
+                  timestamp: "2024-11-04T16:03:19Z"
+                  error:
+                    code: "9000"
+                    description: Unknown error. Please contact Mednet support for assistance.
+
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/sites:
+    get:
+      summary: Retrieve sites for a study
+      description: Fetches the set of sites for a given StudyKey.
+      operationId: getSites
+      tags:
+        - Sites
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve sites for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamSite'
+        - $ref: '#/components/parameters/FilterParamSite'
+      responses:
+        '200':
+          description: Successfully retrieved sites.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SitesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/forms:
+    get:
+      summary: Retrieve forms for a study
+      description: Fetches the set of forms (eCRFs) for a given StudyKey.
+      operationId: getForms
+      tags:
+        - Forms
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve forms for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamForm'
+        - $ref: '#/components/parameters/FilterParamForm'
+      responses:
+        '200':
+          description: Successfully retrieved forms.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/intervals:
+    get:
+      summary: Retrieve intervals for a study
+      description: Fetches the set of intervals (visit/form groupings) for a given StudyKey.
+      operationId: getIntervals
+      tags:
+        - Intervals
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve intervals for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamInterval'
+        - $ref: '#/components/parameters/FilterParamInterval'
+      responses:
+        '200':
+          description: Successfully retrieved intervals.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntervalsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/subjects:
+    get:
+      summary: Retrieve subjects for a study
+      description: Fetches the set of subjects for a given StudyKey.
+      operationId: getSubjects
+      tags:
+        - Subjects
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve subjects for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamSubject'
+        - $ref: '#/components/parameters/FilterParamSubject'
+      responses:
+        '200':
+          description: Successfully retrieved subjects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/visits:
+    get:
+      summary: Retrieve visits for a study
+      description: Fetches the set of visits (subject interval instances) for a given StudyKey.
+      operationId: getVisits
+      tags:
+        - Visits
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve visits for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamVisit'
+        - $ref: '#/components/parameters/FilterParamVisit'
+      responses:
+        '200':
+          description: Successfully retrieved visits.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/records:
+    get:
+      summary: Retrieve records for a study
+      description: Fetches the set of records (eCRF instances) for a given StudyKey.
+      operationId: getRecords
+      tags:
+        - Records
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve records for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamRecord'
+        - $ref: '#/components/parameters/FilterParamRecord'
+        - $ref: '#/components/parameters/RecordDataFilterParam'
+      responses:
+        '200':
+          description: Successfully retrieved records.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+    post:
+      summary: Add or update records for a study
+      description: |
+        Submits a batch of records to be created or updated asynchronously.
+        Requires specific identifiers depending on whether creating/updating subjects, scheduled/unscheduled records.
+        See documentation for detailed identifier requirements.
+      operationId: postRecords
+      tags:
+        - Records
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to add/update records for.
+          schema:
+            type: string
+        - name: x-email-notify
+          in: header
+          required: false
+          description: Email address to notify upon job completion/failure.
+          schema:
+            type: string
+            format: email
+      requestBody:
+        description: An array of record objects to be created or updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRecordsRequest'
+            examples:
+              registerSubject:
+                summary: Register a new subject
+                value:
+                  - formKey: REG
+                    siteName: Minneapolis
+                    data:
+                      subjectKey: "NEW-001" # Assuming subjectKey is captured on REG form
+                      dob: "1980-01-15"
+              updateScheduledRecord:
+                summary: Update an existing scheduled record
+                value:
+                  - formKey: AE # Adverse Event form
+                    subjectKey: "EXISTING-002"
+                    intervalName: "Week 4" # Scheduled interval
+                    data:
+                      aeterm: "Headache"
+                      aesev: "Mild"
+              createNewUnscheduledRecord:
+                summary: Create a new unscheduled record for an existing subject
+                value:
+                  - formKey: UNSCHED_VISIT
+                    subjectKey: "EXISTING-003"
+                    data:
+                      visit_reason: "Follow-up required"
+                      visit_date: "2025-04-21"
+      responses:
+        '202': # Accepted for processing
+          description: Successfully submitted the batch of records for processing. The response contains the jobId and batchId to track status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostRecordsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest' # Invalid request body format or missing required identifiers
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/recordRevisions:
+    get:
+      summary: Retrieve record revisions for a study
+      description: Fetches the audit trail of record revisions for a given StudyKey.
+      operationId: getRecordRevisions
+      tags:
+        - Record Revisions
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve record revisions for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamRecordRevision'
+        - $ref: '#/components/parameters/FilterParamRecordRevision'
+      responses:
+        '200':
+          description: Successfully retrieved record revisions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordRevisionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/variables:
+    get:
+      summary: Retrieve variables for a study
+      description: Fetches the set of variables (eCRF fields) for a given StudyKey.
+      operationId: getVariables
+      tags:
+        - Variables
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve variables for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamVariable'
+        - $ref: '#/components/parameters/FilterParamVariable'
+      responses:
+        '200':
+          description: Successfully retrieved variables.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariablesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/codings:
+    get:
+      summary: Retrieve coding activity for a study
+      description: Fetches the coding activity (standardization of terms) for a given StudyKey.
+      operationId: getCodings
+      tags:
+        - Codings
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve codings for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamCoding'
+        - $ref: '#/components/parameters/FilterParamCoding'
+      responses:
+        '200':
+          description: Successfully retrieved codings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodingsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/queries:
+    get:
+      summary: Retrieve queries for a study
+      description: Fetches the set of queries (user or system generated questions/dialogue) for a given StudyKey.
+      operationId: getQueries
+      tags:
+        - Queries
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve queries for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamQuery'
+        - $ref: '#/components/parameters/FilterParamQuery'
+      responses:
+        '200':
+          description: Successfully retrieved queries.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueriesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/users:
+    get:
+      summary: Retrieve users for a study
+      description: Fetches the set of users and their roles for a given StudyKey.
+      operationId: getUsers
+      tags:
+        - Users
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey to retrieve users for.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParamUser'
+        - name: includeInactive
+          in: query
+          description: Whether to include inactive users in the response.
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successfully retrieved users.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Could occur if studyKey is invalid
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
+
+  /api/v1/edc/studies/{studyKey}/jobs/{batchId}:
+    get:
+      summary: Retrieve job status
+      description: Fetches the status and details of a specific asynchronous job initiated by a POST request (e.g., POST /records).
+      operationId: getJobStatus
+      tags:
+        - Jobs
+      parameters:
+        - name: studyKey
+          in: path
+          required: true
+          description: The StudyKey associated with the job.
+          schema:
+            type: string
+        - name: batchId
+          in: path
+          required: true
+          description: The Batch ID returned from the initial POST request.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully retrieved job status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/BadRequest' # Invalid batchId format
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound' # Job or studyKey not found
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - apiKey: []
+        - imnSecurityKey: []
