@@ -1,11 +1,12 @@
 import datetime  # Added for timestamp
 import os
-import random
-import time
 from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 
 import httpx
 from pydantic import BaseModel, TypeAdapter, ValidationError
+# Import tenacity for retry logic
+from tenacity import (RetryError, retry, retry_if_exception, retry_if_exception_type,
+                      stop_after_attempt, wait_exponential)
 
 # Import resource clients
 from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient, RecordRevisionsClient,
@@ -22,13 +23,18 @@ T = TypeVar("T", bound=BaseModel)
 # Type alias for timeout configuration
 TimeoutTypes = Union[float, httpx.Timeout, None]
 
-# Define retryable exceptions and status codes - Will be revisited for tenacity integration
-DEFAULT_RETRYABLE_STATUS_CODES: Set[int] = {500, 502, 503, 504}
-DEFAULT_RETRYABLE_METHODS: Set[str] = {
-    "GET",
-    "POST",
-}  # Assuming POST is idempotent or safe to retry for this API
-DEFAULT_RETRYABLE_EXCEPTIONS: Set[type] = {httpx.ConnectError, httpx.ReadTimeout, httpx.PoolTimeout}
+# Define retryable exceptions and status codes - Updated for tenacity
+# Default exceptions to retry on (network errors + specific API errors)
+DEFAULT_RETRY_EXCEPTIONS: Set[type] = {
+    httpx.ConnectError,
+    httpx.ReadTimeout,
+    httpx.PoolTimeout,
+    httpx.ConnectTimeout,
+    RateLimitError,  # Retry on 429
+    ApiError,  # Retry on 5xx by default (ApiError is raised for 5xx)
+}
+# Default methods considered idempotent and safe to retry
+DEFAULT_RETRY_METHODS: Set[str] = {"GET"}  # Only retry GET by default
 
 
 class ImednetClient:
@@ -57,8 +63,8 @@ class ImednetClient:
         base_url: Optional[str] = None,
         timeout: TimeoutTypes = httpx.Timeout(30.0, connect=5.0),
         retries: int = 3,
-        backoff_factor: float = 0.5,  # Default backoff factor (e.g., 0.5, 1, 1.5, ... seconds)
-        retry_statuses: Optional[Set[int]] = None,
+        backoff_factor: float = 1,  # Tenacity uses 'multiplier' in wait_exponential
+        # retry_statuses: Optional[Set[int]] = None, # Replaced by retry_exceptions
         retry_methods: Optional[Set[str]] = None,
         retry_exceptions: Optional[Set[type]] = None,
     ):
@@ -105,16 +111,16 @@ class ImednetClient:
 
         self._default_timeout = timeout
         self._retries = retries
-        self._backoff_factor = backoff_factor
-        self._retry_statuses = (
-            retry_statuses if retry_statuses is not None else DEFAULT_RETRYABLE_STATUS_CODES
-        )
-        self._retry_methods = (
-            retry_methods if retry_methods is not None else DEFAULT_RETRYABLE_METHODS
-        )
-        self._retry_exceptions = (
-            retry_exceptions if retry_exceptions is not None else DEFAULT_RETRYABLE_EXCEPTIONS
-        )
+        self._backoff_factor = backoff_factor  # Store for tenacity wait config
+        # self._retry_statuses = ( # No longer needed
+        #     retry_statuses if retry_statuses is not None else DEFAULT_RETRYABLE_STATUS_CODES
+        # )
+        self._retry_methods = retry_methods if retry_methods is not None else DEFAULT_RETRY_METHODS
+        # Combine default and user-provided retry exceptions
+        base_retry_exceptions = DEFAULT_RETRY_EXCEPTIONS.copy()
+        if retry_exceptions:
+            base_retry_exceptions.update(retry_exceptions)
+        self._retry_exceptions_tuple = tuple(base_retry_exceptions)  # Tenacity needs a tuple
 
         self._default_headers = {
             "Accept": "application/json",
@@ -133,6 +139,60 @@ class ImednetClient:
 
         # Resource client initialization moved to properties
 
+    def _make_request_attempt(
+        self,
+        method: str,
+        url: str,  # Pass url directly now
+        params: Optional[Dict[str, Any]],
+        request_json: Optional[Any],  # Pass pre-processed json
+        request_timeout: TimeoutTypes,  # Pass calculated timeout
+        response_model: Optional[Union[Type[T], Type[List[T]]]],
+        **kwargs: Any,
+    ) -> Union[T, List[T], httpx.Response]:
+        """Makes a single HTTP request attempt and handles response/errors."""
+        request_path = str(
+            self._client.build_request(method, url, params=params, json=request_json).url
+        )
+        try:
+            response = self._client.request(
+                method=method,
+                url=url,
+                params=params,
+                json=request_json,
+                timeout=request_timeout,
+                **kwargs,
+            )
+
+            # Check for non-2xx responses and raise custom exceptions
+            if not response.is_success:
+                self._handle_api_error(
+                    response, request_path
+                )  # This will raise appropriate exception
+
+            # If successful and no response model, return raw response
+            if response_model is None:
+                return response
+
+            # Decode and validate JSON if response_model is provided
+            try:
+                response_data = response.json()
+            except ValueError as json_exc:
+                raise RuntimeError(f"Failed to decode JSON response: {json_exc}") from json_exc
+
+            try:
+                adapter = TypeAdapter(response_model)
+                validated_data = adapter.validate_python(response_data)
+                return validated_data
+            except ValidationError as validation_exc:
+                raise RuntimeError(
+                    f"Failed to validate response data: {validation_exc}"
+                ) from validation_exc
+
+        except httpx.RequestError as exc:
+            # Re-raise network errors to be potentially caught by tenacity
+            raise exc
+        # Custom exceptions raised by _handle_api_error will also propagate up
+
     def _request(
         self,
         method: str,
@@ -143,10 +203,10 @@ class ImednetClient:
         timeout: TimeoutTypes = None,
         **kwargs: Any,
     ) -> Union[T, List[T], httpx.Response]:
-        """Internal method to make HTTP requests with error handling, retry logic, and deserialization."""
+        """Internal method to make HTTP requests with error handling, tenacity retry logic, and deserialization."""
         url = endpoint
         request_timeout = timeout if timeout is not None else self._default_timeout
-        last_exception: Optional[Exception] = None
+        # last_exception: Optional[Exception] = None # Handled by tenacity
 
         # Handle potential Pydantic model serialization for request body
         request_json = None
@@ -156,78 +216,121 @@ class ImednetClient:
         elif json is not None:
             request_json = json  # Assume it's already a dict/serializable
 
-        for attempt in range(self._retries + 1):
-            request_path = str(
-                self._client.build_request(method, url, params=params, json=request_json).url
+        # --- Tenacity Retry Logic ---
+        # Check if the method is configured for retries
+        if method.upper() in self._retry_methods:
+            # Define the retry decorator dynamically
+            retry_decorator = retry(
+                stop=stop_after_attempt(self._retries + 1),  # Total attempts = initial + retries
+                wait=wait_exponential(
+                    multiplier=self._backoff_factor, min=0.5, max=10
+                ),  # Exponential backoff with jitter
+                retry=retry_if_exception_type(
+                    self._retry_exceptions_tuple
+                ),  # Retry only on specific exceptions
+                reraise=True,  # Reraise the last exception after exhausting attempts
             )
+            # Apply the decorator to the request attempt function
             try:
-                response = self._client.request(
+                return retry_decorator(self._make_request_attempt)(
                     method=method,
                     url=url,
                     params=params,
-                    json=request_json,
-                    timeout=request_timeout,
+                    request_json=request_json,
+                    request_timeout=request_timeout,
+                    response_model=response_model,
                     **kwargs,
                 )
-                # Check for non-2xx responses BEFORE raise_for_status to handle custom exceptions
-                if not response.is_success:
-                    self._handle_api_error(response, request_path)  # Raise custom exception here
-
-                # Raise HTTPStatusError for non-2xx responses if not handled above (shouldn't happen now)
-                # response.raise_for_status() # Removed, handled by _handle_api_error
-
-                # If no response model is specified, return the raw response
-                if response_model is None:
-                    return response
-
-                # Step 1: Try to decode JSON
-                try:
-                    response_data = response.json()
-                except ValueError as json_exc:  # Catches JSONDecodeError
-                    # Handle cases where response is not valid JSON
-                    raise RuntimeError(f"Failed to decode JSON response: {json_exc}") from json_exc
-
-                # Step 2: Try to validate the decoded JSON data
-                try:
-                    adapter = TypeAdapter(response_model)
-                    validated_data = adapter.validate_python(response_data)
-                    return validated_data
-                except ValidationError as validation_exc:
-                    # Handle Pydantic validation errors
-                    raise RuntimeError(
-                        f"Failed to validate response data: {validation_exc}"
-                    ) from validation_exc
-
-            # except httpx.HTTPStatusError as exc: # Replaced by direct status check and _handle_api_error
-            #     # This block is now handled by the check `if not response.is_success:` and `_handle_api_error`
-            #     pass
-
-            except httpx.RequestError as exc:  # Keep retry for connection errors etc.
-                last_exception = exc
-                # Check if we should retry based on exception type and method
-                if (
-                    attempt < self._retries
-                    and type(exc) in self._retry_exceptions
-                    and method.upper() in self._retry_methods
-                ):
-                    delay = self._calculate_backoff(attempt)
-                    time.sleep(delay)
-                    continue  # Retry
-                else:
-                    # Wrap non-HTTP errors in our base exception for consistency? Or re-raise? Re-raise for now.
-                    # raise ImednetSdkException(f"Request failed due to network/transport error: {exc}", request_path=request_path) from exc
-                    raise  # Non-retryable exception/method or max retries reached
-
-        # Should be unreachable if retries >= 0, but satisfy type checker
-        # and handle edge case of retries < 0
-        if last_exception:
-            raise last_exception
+            except RetryError as e:
+                # If tenacity fails, reraise the underlying cause
+                raise e.cause from e
         else:
-            # This case should ideally never happen in normal flow
-            raise RuntimeError("Request failed without capturing an exception after retries.")
+            # If method is not retryable, make a single attempt directly
+            return self._make_request_attempt(
+                method=method,
+                url=url,
+                params=params,
+                request_json=request_json,
+                request_timeout=request_timeout,
+                response_model=response_model,
+                **kwargs,
+            )
+
+        # --- Old Manual Retry Logic (Removed) ---
+        # for attempt in range(self._retries + 1):
+        #     request_path = str(
+        #         self._client.build_request(method, url, params=params, json=request_json).url
+        #     )
+        #     try:
+        #         response = self._client.request(
+        #             method=method,
+        #             url=url,
+        #             params=params,
+        #             json=request_json,
+        #             timeout=request_timeout,
+        #             **kwargs,
+        #         )
+        #         if not response.is_success:
+        #             # Check if status code is retryable AND method allows retry
+        #             if (
+        #                 attempt < self._retries
+        #                 and response.status_code in self._retry_statuses
+        #                 and method.upper() in self._retry_methods
+        #             ):
+        #                 last_exception = ImednetSdkException(f"HTTP error {response.status_code} on attempt {attempt+1}", status_code=response.status_code, request_path=request_path) # Store temp exception
+        #                 delay = self._calculate_backoff(attempt + 1) # Use attempt+1 for backoff calc
+        #                 time.sleep(delay)
+        #                 continue # Retry
+
+        #             # If not retryable, handle the API error (which raises)
+        #             self._handle_api_error(response, request_path)
+
+        #         # --- Success Path ---
+        #         if response_model is None:
+        #             return response
+        #         try:
+        #             response_data = response.json()
+        #         except ValueError as json_exc:
+        #             raise RuntimeError(f"Failed to decode JSON response: {json_exc}") from json_exc
+        #         try:
+        #             adapter = TypeAdapter(response_model)
+        #             validated_data = adapter.validate_python(response_data)
+        #             return validated_data
+        #         except ValidationError as validation_exc:
+        #             raise RuntimeError(
+        #                 f"Failed to validate response data: {validation_exc}"
+        #             ) from validation_exc
+
+        #     except httpx.RequestError as exc:
+        #         last_exception = exc
+        #         if (
+        #             attempt < self._retries
+        #             and type(exc) in self._retry_exceptions
+        #             and method.upper() in self._retry_methods
+        #         ):
+        #             delay = self._calculate_backoff(attempt + 1) # Use attempt+1 for backoff calc
+        #             time.sleep(delay)
+        #             continue # Retry
+        #         else:
+        #             raise # Non-retryable or max retries reached
+
+        # # Raise the last recorded exception if all retries failed
+        # if last_exception:
+        #     # If the last exception was our temporary one for retryable status codes,
+        #     # call _handle_api_error again to get the *correct* custom exception type.
+        #     # This requires storing the last response, which adds complexity.
+        #     # For now, just raise the last exception captured.
+        #     # A better approach is needed here if we want the specific custom exception after status retries fail.
+        #     # *** Tenacity handles this better by re-raising the actual exception ***
+        #     raise last_exception
+        # else:
+        #     raise RuntimeError("Request failed without capturing an exception after retries.")
 
     def _handle_api_error(self, response: httpx.Response, request_path: str) -> None:
         """Parses API error responses and raises the appropriate custom exception."""
+        # Ensure this method raises the correct exception based on status/code
+        # The exceptions raised here (RateLimitError, ApiError) will be caught
+        # by tenacity if they are in self._retry_exceptions_tuple
         status_code = response.status_code
         timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
         error_details: Dict[str, Any] = {}
@@ -281,16 +384,13 @@ class ImednetClient:
         elif status_code == 404:
             raise NotFoundError(**exception_args)
         elif status_code == 429:
+            # This exception might trigger a retry if method is GET and RateLimitError is in retry_exceptions
             raise RateLimitError(**exception_args)
-        elif status_code == 500:
-            # API docs mention code 9000 specifically for unknown server error
-            # message = "An unknown internal server error occurred." if api_error_code == "9000" else description
-            # exception_args["message"] = message # Update message for specific code
+        elif status_code >= 500:  # Catches 500, 503 etc.
+            # This exception might trigger a retry if method is GET and ApiError is in retry_exceptions
             raise ApiError(**exception_args)
-        elif status_code >= 500:  # Other 5xx errors
-            raise ApiError(**exception_args)
-        elif status_code >= 400:  # Other 4xx errors
-            # Default to BadRequest for other 4xx? Or a more generic ClientError? Use ApiError for now.
+        elif status_code >= 400:  # Other 4xx errors (e.g., 405)
+            # Typically not retried, raise ApiError or BadRequestError? Using ApiError for now.
             raise ApiError(
                 **exception_args
             )  # Or maybe BadRequestError? Let's use ApiError as a catch-all for unexpected client/server errors.
@@ -303,15 +403,6 @@ class ImednetClient:
                 response_body=error_details,
                 timestamp=timestamp,
             )
-
-    def _calculate_backoff(self, attempt: int) -> float:
-        """Calculates exponential backoff delay with jitter."""
-        if attempt == 0:
-            return 0  # No delay for the first retry
-        base_delay = self._backoff_factor * (2 ** (attempt - 1))
-        # Add jitter: delay +/- 50% of base delay
-        jitter = random.uniform(-0.5, 0.5) * base_delay
-        return max(0, base_delay + jitter)
 
     def _get(
         self,
