@@ -53,29 +53,55 @@
 * [x] **Base Resource Client:**
   * [x] Define a base class (e.g., `ResourceClient`) in `imednet_sdk/api/_base.py` that resource clients can inherit from. It should store a reference to the main `ImednetClient` instance.
 * [ ] **StudiesClient (`imednet_sdk/api/studies.py`)**
-  * [ ] `list_studies(**kwargs)`: `GET /api/v1/edc/studies` (Supports pagination, sorting, filtering) - Ref: `studies.md`
+  * [ ] `list_studies(**kwargs)`: `GET /api/v1/edc/studies`
+    * Params: `page`, `size`, `sort`, `filter`
+    * Headers: `x-api-key`, `x-imn-security-key`
 * [ ] **SitesClient (`imednet_sdk/api/sites.py`)**
-  * [ ] `list_sites(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/sites` (Supports pagination, sorting, filtering) - Ref: `sites.md`
+  * [ ] `list_sites(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/sites`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **FormsClient (`imednet_sdk/api/forms.py`)**
-  * [ ] `list_forms(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/forms` (Supports pagination, sorting, filtering) - Ref: `forms.md`
+  * [ ] `list_forms(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/forms`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **IntervalsClient (`imednet_sdk/api/intervals.py`)**
-  * [ ] `list_intervals(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/intervals` (Supports pagination, sorting, filtering) - Ref: `intervals.md`
+  * [ ] `list_intervals(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/intervals`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **RecordsClient (`imednet_sdk/api/records.py`)**
-  * [ ] `list_records(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/records` (Supports pagination, sorting, filtering, `recordDataFilter`) - Ref: `records.md`
-  * [ ] `create_records(study_key: str, records: List[RecordCreateModel], email_notify: Optional[str] = None, **kwargs)`: `POST /api/v1/edc/studies/{studyKey}/records` (Requires request body, optional `x-email-notify` header) - Ref: `records.md`
+  * [ ] `list_records(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/records`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`, `recordDataFilter`
+  * [ ] `create_records(study_key: str, records: List[RecordCreateModel], email_notify: Optional[str] = None, **kwargs)`: `POST /api/v1/edc/studies/{studyKey}/records`
+    * Path Params: `studyKey`
+    * Headers: Optional `x-email-notify`
+    * Body: Array of record objects. Returns job status (`jobId`, `batchId`, `state`).
 * [ ] **RecordRevisionsClient (`imednet_sdk/api/record_revisions.py`)**
-  * [ ] `list_record_revisions(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/recordRevisions` (Supports pagination, sorting, filtering) - Ref: `record_revisions.md`
+  * [ ] `list_record_revisions(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/recordRevisions`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **VariablesClient (`imednet_sdk/api/variables.py`)**
-  * [ ] `list_variables(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/variables` (Supports pagination, sorting, filtering) - Ref: `variables.md`
+  * [ ] `list_variables(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/variables`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **CodingsClient (`imednet_sdk/api/codings.py`)**
-  * [ ] `list_codings(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/codings` (Supports pagination, sorting, filtering) - Ref: `codings.md`
+  * [ ] `list_codings(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/codings`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **SubjectsClient (`imednet_sdk/api/subjects.py`)**
-  * [ ] `list_subjects(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/subjects` (Supports pagination, sorting, filtering) - Ref: `subjects.md`
+  * [ ] `list_subjects(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/subjects`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **UsersClient (`imednet_sdk/api/users.py`)**
-  * [ ] `list_users(study_key: str, include_inactive: bool = False, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/users` (Supports pagination, sorting, `includeInactive` param) - Ref: `users.md`
+  * [ ] `list_users(study_key: str, include_inactive: bool = False, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/users`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `includeInactive`
 * [ ] **VisitsClient (`imednet_sdk/api/visits.py`)**
-  * [ ] `list_visits(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/visits` (Supports pagination, sorting, filtering) - Ref: `visits.md`
+  * [ ] `list_visits(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/visits`
+    * Path Params: `studyKey`
+    * Params: `page`, `size`, `sort`, `filter`
 * [ ] **JobsClient (`imednet_sdk/api/jobs.py`)**
-  * [ ] `get_job_status(study_key: str, batch_id: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}` - Ref: `jobs.md`
+  * [ ] `get_job_status(study_key: str, batch_id: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/jobs/{batchId}`
+    * Path Params: `studyKey`, `batchId`
 * [ ] **Integrate Resource Clients into Main Client:**
   * [ ] Add properties to `ImednetClient` (e.g., `client.studies`, `client.sites`) that initialize and return instances of the resource clients, passing the main client instance to them.
