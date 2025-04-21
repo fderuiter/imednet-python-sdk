@@ -43,6 +43,9 @@
      * Verified that the correct exception (`RateLimitError`, `ApiError`) is raised after exhausting retry attempts on GET requests.
      * Verified that retries are *not* attempted by default for non-idempotent methods (e.g., POST) even on retryable exceptions (`RateLimitError`).
      * Verified that retries are *not* attempted for non-retryable exceptions (`AuthenticationError`, `NotFoundError`) even on GET requests.
+   * **Test Fixes (2025-04-21):**
+     * Corrected an `ImportError` by changing `SdkValidationError` to the correct `ValidationError` in the test file imports.
+     * Fixed an `AssertionError` in `test_get_deserialization_validation_error` by ensuring the test checks for `pydantic.ValidationError` (aliased as `PydanticValidationError`) as the underlying cause when testing Pydantic model validation failures, rather than the custom SDK `ValidationError`.
 
 ## Next Steps (Based on Task 06)
 
