@@ -4,10 +4,21 @@ from typing import List, Optional
 
 import pytest
 import respx
-from httpx import ConnectError, HTTPStatusError, Response, Timeout, TimeoutException
+from httpx import ConnectError, HTTPStatusError, Response, Timeout, TimeoutException, RequestError
 from pydantic import BaseModel, Field, ValidationError
 
 from imednet_sdk.client import ImednetClient
+# Import custom exceptions for testing
+from imednet_sdk.exceptions import (
+    ApiError,
+    AuthenticationError,
+    AuthorizationError,
+    BadRequestError,
+    ImednetSdkException,
+    NotFoundError,
+    RateLimitError,
+    ValidationError as SdkValidationError,
+)
 
 # Constants for testing
 BASE_URL = "https://test.imednetapi.com"
@@ -48,7 +59,7 @@ def client_explicit_keys():
 @pytest.fixture
 def client_no_keys():
     """Fixture attempting client init with no keys provided or in env."""
-    # Ensure env vars are unset for this test
+    # Ensure env vars areunset for this test
     os.environ.pop("IMEDNET_API_KEY", None)
     os.environ.pop("IMEDNET_SECURITY_KEY", None)
     return ImednetClient  # Return the class itself to test __init__ raising error
@@ -545,3 +556,278 @@ def test_post_serialization_and_deserialization(default_client):
 
 
 # --- End Serialization/Deserialization Tests --- #
+
+# --- Custom Exception Mapping Tests --- #
+
+
+@respx.mock
+def test_raises_validation_error_400_code_1000(default_client):
+    """Test raises SdkValidationError for 400 Bad Request with code 1000."""
+    endpoint = "/validation-error"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {
+        "metadata": {
+            "error": {
+                "code": "1000",
+                "description": "Invalid field value",
+                "attribute": "fieldName",
+                "value": "invalid",
+            }
+        }
+    }
+    mock_route = respx.post(expected_url).mock(return_value=Response(400, json=error_payload))
+
+    with pytest.raises(SdkValidationError) as exc_info:
+        default_client._post(endpoint, json={})
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 400
+    assert exc.api_error_code == "1000"
+    assert exc.message == "Invalid field value"
+    assert exc.attribute == "fieldName"
+    assert exc.value == "invalid"
+    assert exc.request_path == expected_url
+    assert exc.response_body == error_payload
+    assert exc.timestamp is not None
+
+
+@respx.mock
+def test_raises_bad_request_error_400_other_code(default_client):
+    """Test raises BadRequestError for 400 Bad Request with a non-1000 code."""
+    endpoint = "/bad-request-other"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {
+        "metadata": {"error": {"code": "1001", "description": "General bad request"}}
+    }
+    mock_route = respx.post(expected_url).mock(return_value=Response(400, json=error_payload))
+
+    with pytest.raises(BadRequestError) as exc_info:
+        default_client._post(endpoint, json={})
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert not isinstance(exc, SdkValidationError) # Ensure it's not the subclass
+    assert exc.status_code == 400
+    assert exc.api_error_code == "1001"
+    assert exc.message == "General bad request"
+    assert exc.request_path == expected_url
+    assert exc.response_body == error_payload
+
+
+@respx.mock
+def test_raises_bad_request_error_400_no_code(default_client):
+    """Test raises BadRequestError for 400 Bad Request with no specific code."""
+    endpoint = "/bad-request-no-code"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Missing parameter"}}}
+    mock_route = respx.post(expected_url).mock(return_value=Response(400, json=error_payload))
+
+    with pytest.raises(BadRequestError) as exc_info:
+        default_client._post(endpoint, json={})
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 400
+    assert exc.api_error_code is None
+    assert exc.message == "Missing parameter"
+
+
+@respx.mock
+def test_raises_authentication_error_401_code_9001(default_client):
+    """Test raises AuthenticationError for 401 Unauthorized with code 9001."""
+    endpoint = "/auth-error-keys"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {
+        "metadata": {"error": {"code": "9001", "description": "Invalid API/Security Key"}}
+    }
+    mock_route = respx.get(expected_url).mock(return_value=Response(401, json=error_payload))
+
+    with pytest.raises(AuthenticationError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 401
+    assert exc.api_error_code == "9001"
+    assert exc.message == "Invalid API/Security Key"
+
+
+@respx.mock
+def test_raises_authentication_error_401_other(default_client):
+    """Test raises AuthenticationError for 401 Unauthorized with other/no code."""
+    endpoint = "/auth-error-other"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Credentials missing"}}}
+    mock_route = respx.get(expected_url).mock(return_value=Response(401, json=error_payload))
+
+    with pytest.raises(AuthenticationError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 401
+    assert exc.api_error_code is None
+    assert exc.message == "Credentials missing"
+
+
+@respx.mock
+def test_raises_authorization_error_403(default_client):
+    """Test raises AuthorizationError for 403 Forbidden."""
+    endpoint = "/forbidden"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Insufficient permissions"}}}
+    mock_route = respx.get(expected_url).mock(return_value=Response(403, json=error_payload))
+
+    with pytest.raises(AuthorizationError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 403
+    assert exc.message == "Insufficient permissions"
+
+
+@respx.mock
+def test_raises_not_found_error_404(default_client):
+    """Test raises NotFoundError for 404 Not Found."""
+    endpoint = "/not-found"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Resource not found"}}}
+    mock_route = respx.get(expected_url).mock(return_value=Response(404, json=error_payload))
+
+    with pytest.raises(NotFoundError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 404
+    assert exc.message == "Resource not found"
+
+
+@respx.mock
+def test_raises_rate_limit_error_429(default_client):
+    """Test raises RateLimitError for 429 Too Many Requests."""
+    endpoint = "/rate-limit"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Rate limit exceeded"}}}
+    mock_route = respx.get(expected_url).mock(return_value=Response(429, json=error_payload))
+
+    # Note: This test doesn't check retry logic, just the initial exception mapping
+    with pytest.raises(RateLimitError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 429
+    assert exc.message == "Rate limit exceeded"
+
+
+@respx.mock
+def test_raises_api_error_500_code_9000(default_client):
+    """Test raises ApiError for 500 Internal Server Error with code 9000."""
+    endpoint = "/server-error-unknown"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {
+        "metadata": {"error": {"code": "9000", "description": "Unknown server error"}}
+    }
+    mock_route = respx.get(expected_url).mock(return_value=Response(500, json=error_payload))
+
+    # Note: This test doesn't check retry logic, just the initial exception mapping
+    with pytest.raises(ApiError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 500
+    assert exc.api_error_code == "9000"
+    assert exc.message == "Unknown server error"
+
+
+@respx.mock
+def test_raises_api_error_500_other(default_client):
+    """Test raises ApiError for 500 Internal Server Error with other/no code."""
+    endpoint = "/server-error-other"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Something went wrong"}}}
+    mock_route = respx.get(expected_url).mock(return_value=Response(500, json=error_payload))
+
+    # Note: This test doesn't check retry logic, just the initial exception mapping
+    with pytest.raises(ApiError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 500
+    assert exc.message == "Something went wrong"
+
+
+@respx.mock
+def test_raises_api_error_503(default_client):
+    """Test raises ApiError for 503 Service Unavailable."""
+    endpoint = "/service-unavailable"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Service temporarily down"}}}
+    mock_route = respx.get(expected_url).mock(return_value=Response(503, json=error_payload))
+
+    # Note: This test doesn't check retry logic, just the initial exception mapping
+    with pytest.raises(ApiError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 503
+    assert exc.message == "Service temporarily down"
+
+
+@respx.mock
+def test_raises_api_error_other_4xx(default_client):
+    """Test raises ApiError for unmapped 4xx errors (e.g., 405)."""
+    endpoint = "/method-not-allowed"
+    expected_url = f"{BASE_URL}{endpoint}"
+    error_payload = {"metadata": {"error": {"description": "Method POST not allowed"}}}
+    # Using GET request, but mocking a 405 response
+    mock_route = respx.get(expected_url).mock(return_value=Response(405, json=error_payload))
+
+    with pytest.raises(ApiError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 405
+    assert exc.message == "Method POST not allowed"
+
+
+@respx.mock
+def test_handle_error_non_json_response(default_client):
+    """Test error handling when the error response body is not JSON."""
+    endpoint = "/error-not-json"
+    expected_url = f"{BASE_URL}{endpoint}"
+    raw_body = "<html><body>Gateway Timeout</body></html>"
+    mock_route = respx.get(expected_url).mock(return_value=Response(504, text=raw_body))
+
+    # Note: This test doesn't check retry logic, just the initial exception mapping
+    with pytest.raises(ApiError) as exc_info:
+        default_client._get(endpoint)
+
+    assert mock_route.called
+    exc = exc_info.value
+    assert exc.status_code == 504
+    assert exc.api_error_code is None
+    assert "not valid JSON" in exc.message
+    assert exc.response_body == {"raw_response": raw_body}
+
+
+# --- End Custom Exception Mapping Tests --- #
+
+# --- Tenacity Retry Logic Tests --- #
+
+# TODO: Add tests specifically for the tenacity retry logic
+# - Retry on RateLimitError (429) for GET, eventually succeeding.
+# - Retry on ApiError (5xx) for GET, eventually succeeding.
+# - Retry on httpx.ReadTimeout for GET, eventually succeeding.
+# - Retry failure (exhaust attempts) for RateLimitError on GET, raising RateLimitError.
+# - No retry for POST on RateLimitError, raising RateLimitError immediately.
+# - No retry for AuthenticationError (401) on GET, raising AuthenticationError immediately.
+
+# --- End Tenacity Retry Logic Tests --- #
