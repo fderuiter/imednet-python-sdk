@@ -69,7 +69,7 @@
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **RecordsClient (`imednet_sdk/api/records.py`)**
-  * [ ] `list_records(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/records`
+  * [x] `list_records(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/records`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`, `recordDataFilter`
   * [ ] `create_records(study_key: str, records: List[RecordCreateModel], email_notify: Optional[str] = None, **kwargs)`: `POST /api/v1/edc/studies/{studyKey}/records`
