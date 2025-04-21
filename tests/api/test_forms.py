@@ -77,10 +77,10 @@ MOCK_FORM_2_DICT = {
 # Corrected Metadata based on docs (no nested pagination)
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
-    "method": "GET", # Added method as per docs
+    "method": "GET",  # Added method as per docs
     "path": FORMS_ENDPOINT,
-    "timestamp": "2024-11-04 16:03:19", # Use fixed timestamp for consistency
-    "error": {}
+    "timestamp": "2024-11-04 16:03:19",  # Use fixed timestamp for consistency
+    "error": {},
 }
 
 # Corrected Pagination based on docs
@@ -89,12 +89,7 @@ MOCK_PAGINATION_DICT = {
     "size": 2,
     "totalPages": 1,
     "totalElements": 2,
-    "sort": [
-        {
-            "property": "formId", # Use 'property' as per docs
-            "direction": "ASC"
-        }
-    ]
+    "sort": [{"property": "formId", "direction": "ASC"}],  # Use 'property' as per docs
 }
 
 # Corrected top-level response structure
@@ -150,22 +145,29 @@ def test_list_forms_with_params(forms_client):
         "page": 1,
         "size": 10,
         "sort": "formName,desc",
-        "filter": 'formType==Subject',
+        "filter": "formType==Subject",
     }
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{FORMS_ENDPOINT}"}
     mock_pagination = {
-        "currentPage": 1, "size": 10, "totalPages": 1, "totalElements": 1,
-        "sort": [{"property": "formName", "direction": "DESC"}]
+        "currentPage": 1,
+        "size": 10,
+        "totalPages": 1,
+        "totalElements": 1,
+        "sort": [{"property": "formName", "direction": "DESC"}],
     }
-    mock_response = {"metadata": mock_metadata, "pagination": mock_pagination, "data": [MOCK_FORM_1_DICT]} # Example data
+    mock_response = {
+        "metadata": mock_metadata,
+        "pagination": mock_pagination,
+        "data": [MOCK_FORM_1_DICT],
+    }  # Example data
 
     # Ensure respx matches the exact params
     expected_params = {
         "page": "1",
         "size": "10",
         "sort": "formName,desc",
-        "filter": 'formType==Subject',
+        "filter": "formType==Subject",
     }
     list_route = respx.get(f"{MOCK_BASE_URL}{FORMS_ENDPOINT}", params=expected_params).mock(
         return_value=Response(200, json=mock_response)
@@ -176,7 +178,7 @@ def test_list_forms_with_params(forms_client):
         page=1,
         size=10,
         sort="formName,desc",
-        filter='formType==Subject',
+        filter="formType==Subject",
     )
 
     assert list_route.called
@@ -184,7 +186,7 @@ def test_list_forms_with_params(forms_client):
     assert request.url.params["page"] == "1"
     assert request.url.params["size"] == "10"
     assert request.url.params["sort"] == "formName,desc"
-    assert request.url.params["filter"] == 'formType==Subject'
+    assert request.url.params["filter"] == "formType==Subject"
 
     # Assert response structure
     assert isinstance(response, ApiResponse)
