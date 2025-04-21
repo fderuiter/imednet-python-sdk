@@ -81,7 +81,7 @@
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **VariablesClient (`imednet_sdk/api/variables.py`)**
-  * [ ] `list_variables(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/variables`
+  * [x] `list_variables(study_key: str, **kwargs)`: `GET /api/v1/edc/studies/{studyKey}/variables`
     * Path Params: `studyKey`
     * Params: `page`, `size`, `sort`, `filter`
 * [ ] **CodingsClient (`imednet_sdk/api/codings.py`)**

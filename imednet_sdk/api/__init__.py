@@ -10,6 +10,7 @@ from .record_revisions import RecordRevisionsClient
 from .records import RecordsClient
 from .sites import SitesClient
 from .studies import StudiesClient
+from .variables import VariablesClient
 
 __all__ = [
     "ResourceClient",
@@ -19,4 +20,5 @@ __all__ = [
     "IntervalsClient",
     "RecordsClient",
     "RecordRevisionsClient",
+    "VariablesClient",
 ]
