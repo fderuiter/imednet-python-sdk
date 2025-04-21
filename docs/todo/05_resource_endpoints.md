@@ -52,8 +52,8 @@
 
 * [x] **Base Resource Client:**
   * [x] Define a base class (e.g., `ResourceClient`) in `imednet_sdk/api/_base.py` that resource clients can inherit from. It should store a reference to the main `ImednetClient` instance.
-* [ ] **StudiesClient (`imednet_sdk/api/studies.py`)**
-  * [ ] `list_studies(**kwargs)`: `GET /api/v1/edc/studies`
+* [x] **StudiesClient (`imednet_sdk/api/studies.py`)**
+  * [x] `list_studies(**kwargs)`: `GET /api/v1/edc/studies`
     * Params: `page`, `size`, `sort`, `filter`
     * Headers: `x-api-key`, `x-imn-security-key`
 * [ ] **SitesClient (`imednet_sdk/api/sites.py`)**

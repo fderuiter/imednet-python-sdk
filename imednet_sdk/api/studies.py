@@ -48,6 +48,6 @@ class StudiesClient(ResourceClient):
         # Pass any additional kwargs directly to the underlying request method
         params.update(kwargs)
 
-        return self._client._get(
-            endpoint, params=params, response_model=ApiResponse[List[StudyModel]]
+        return self._client._get( # Correctly calls the base client's _get method
+            endpoint, params=params, response_model=ApiResponse[List[StudyModel]] # Specifies the correct response model
         )
