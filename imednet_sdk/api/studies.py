@@ -1,4 +1,8 @@
-"""Client for interacting with the Studies endpoint."""
+"""API client for interacting with the iMednet Studies endpoints.
+
+This module provides the `StudiesClient` class for accessing study-level
+information via the iMednet API.
+"""
 
 from typing import Any, Dict, List, Optional
 
@@ -9,10 +13,10 @@ from ._base import ResourceClient
 
 
 class StudiesClient(ResourceClient):
-    """Client for the Studies API resource.
+    """Provides methods for accessing iMednet study data.
 
-    Provides methods for interacting with study-related endpoints,
-    such as listing studies.
+    This client interacts with endpoints under `/api/v1/edc/studies`.
+    It is accessed via the `imednet_sdk.client.ImednetClient.studies` property.
     """
 
     def list_studies(
@@ -23,30 +27,28 @@ class StudiesClient(ResourceClient):
         filter: Optional[str] = None,
         **kwargs: Any,
     ) -> ApiResponse[List[StudyModel]]:
-        """
-        Retrieve a list of studies based on specified criteria.
+        """Retrieves a list of studies accessible to the authenticated user.
 
-        Corresponds to `GET /api/v1/edc/studies`.
+        Corresponds to the `GET /api/v1/edc/studies` endpoint.
+        Supports standard pagination, filtering, and sorting parameters.
 
         Args:
-            page: Index page to return. Default is 0.
-            size: Number of items per page. Default is 25. Max 500.
-            sort: Property to sort by (e.g., 'studyKey,asc').
-            filter: Filter criteria (e.g., 'studyKey=="DEMO"').
-            **kwargs: Additional keyword arguments to pass to the request.
+            page: The index of the page to return (0-based). Defaults to 0.
+            size: The number of items per page. Defaults to 25, maximum 500.
+            sort: The property to sort by, optionally including direction
+                  (e.g., 'studyKey,asc', 'studyName,desc').
+            filter: The filter criteria to apply (e.g., 'studyKey=="DEMO"',
+                    'studyStatus=="Active"'). Refer to iMednet API docs for syntax.
+            **kwargs: Additional keyword arguments passed directly as query parameters
+                      to the API request.
 
         Returns:
-            An ApiResponse containing a list of StudyModel objects.
+            An `ApiResponse` object containing a list of `StudyModel` instances
+            representing the studies, along with pagination/metadata details.
 
         Raises:
-            ImednetSdkException: If the API request fails.
-            ApiError: For specific API-related errors (4xx, 5xx).
-            AuthenticationError: If authentication fails (401).
-            AuthorizationError: If authorization fails (403).
-            NotFoundError: If the resource is not found (404).
-            RateLimitError: If rate limits are exceeded (429).
-            ValidationError: If request validation fails (400 with code 1000).
-            BadRequestError: For general bad requests (400).
+            ImednetSdkException: If the API request fails (e.g., network error,
+                               authentication issue, invalid permissions).
         """
         endpoint = "/api/v1/edc/studies"
         params: Dict[str, Any] = {}

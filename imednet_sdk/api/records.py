@@ -1,4 +1,8 @@
-"""Client for interacting with the Records endpoint."""
+"""API client for interacting with the iMednet Records endpoints.
+
+This module provides the `RecordsClient` class for accessing and creating
+record data within a specific study via the iMednet API.
+"""
 
 from typing import Any, Dict, List, Optional
 
@@ -10,7 +14,11 @@ from ._base import ResourceClient
 
 
 class RecordsClient(ResourceClient):
-    """Client for the Records API resource."""
+    """Provides methods for accessing and creating iMednet record data.
+
+    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/records`.
+    It is accessed via the `imednet_sdk.client.ImednetClient.records` property.
+    """
 
     def list_records(
         self,
@@ -22,26 +30,35 @@ class RecordsClient(ResourceClient):
         record_data_filter: Optional[str] = None,
         **kwargs: Any,
     ) -> ApiResponse[List[RecordModel]]:
-        """
-        Retrieve a list of records for a specific study.
+        """Retrieves a list of records for a specific study.
 
-        Corresponds to `GET /api/v1/edc/studies/{studyKey}/records`.
+        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/records` endpoint.
+        Supports standard pagination, filtering (on record metadata and data),
+        and sorting parameters.
 
         Args:
-            study_key: The key of the study for which to list records.
-            page: Index page to return. Default is 0.
-            size: Number of items per page. Default is 25. Max 500.
-            sort: Property to sort by (e.g., 'recordId,asc').
-            filter: Filter criteria for standard record properties (e.g., 'siteId==123').
-            record_data_filter: Filter criteria for data within the recordData field
-                                (e.g., 'fieldName=="value"').
-            **kwargs: Additional keyword arguments to pass to the request.
+            study_key: The unique identifier for the study.
+            page: The index of the page to return (0-based). Defaults to 0.
+            size: The number of items per page. Defaults to 25, maximum 500.
+            sort: The property to sort by, optionally including direction
+                  (e.g., 'recordId,asc', 'subjectId,desc').
+            filter: The filter criteria to apply to standard record properties
+                    (e.g., 'siteId==123', 'formKey=="AE"'). Refer to iMednet API
+                    docs for syntax.
+            record_data_filter: The filter criteria to apply to fields within the
+                                `recordData` object (e.g., 'AETERM=="Headache"',
+                                'AESEV=="Mild"'). Refer to iMednet API docs for syntax.
+            **kwargs: Additional keyword arguments passed directly as query parameters
+                      to the API request.
 
         Returns:
-            An ApiResponse containing a list of RecordModel objects.
+            An `ApiResponse` object containing a list of `RecordModel` instances
+            representing the records, along with pagination/metadata details.
 
         Raises:
-            ValueError: If study_key is empty or None.
+            ValueError: If `study_key` is empty or not provided.
+            ImednetSdkException: If the API request fails (e.g., network error,
+                               authentication issue, invalid permissions).
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
@@ -73,22 +90,36 @@ class RecordsClient(ResourceClient):
         email_notify: Optional[str] = None,
         **kwargs: Any,
     ) -> JobStatusModel:
-        """
-        Create one or more records within a specific study.
+        """Creates one or more records within a specific study asynchronously.
 
-        Corresponds to `POST /api/v1/edc/studies/{studyKey}/records`.
+        Corresponds to the `POST /api/v1/edc/studies/{studyKey}/records` endpoint.
+        This operation initiates a background job in iMednet.
 
         Args:
-            study_key: The key of the study where records will be created.
-            records: A list of RecordPostItem objects representing the records to create.
-            email_notify: Optional email address to notify upon job completion.
-            **kwargs: Additional keyword arguments to pass to the request.
+            study_key: The unique identifier for the study where the records
+                       will be created.
+            records: A list of `RecordPostItem` objects, each defining a record
+                     to be created. Each item must include required fields like
+                     `formKey`, `subjectId`, `siteId`, `intervalName`, `visitName`,
+                     and the `recordData` dictionary.
+            email_notify: An optional email address to which iMednet will send a
+                          notification upon completion of the background job.
+            **kwargs: Additional keyword arguments passed directly to the underlying
+                      request method (e.g., custom headers, timeout).
 
         Returns:
-            An ApiResponse containing the JobStatusModel for the background job.
+            A `JobStatusModel` instance containing the `batchId` and initial status
+            of the background job created to process the record creation request.
+            Use the `JobsClient.get_job_status` method with the `batchId` to track
+            the job's progress.
 
         Raises:
-            ValueError: If study_key is empty or None, or if records list is empty.
+            ValueError: If `study_key` is empty or not provided, or if the `records`
+                        list is empty.
+            ImednetSdkException: If the API request fails to initiate the job (e.g.,
+                               network error, authentication issue, invalid input format).
+                               Note that errors during the background job processing itself
+                               will be reflected in the job status, not raised here.
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")

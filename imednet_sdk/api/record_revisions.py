@@ -1,4 +1,8 @@
-"""Client for interacting with the RecordRevisions endpoint."""
+"""API client for interacting with the iMednet Record Revisions endpoints.
+
+This module provides the `RecordRevisionsClient` class for accessing the audit trail
+(revision history) of records within a specific study via the iMednet API.
+"""
 
 from typing import Any, Dict, List, Optional
 
@@ -9,7 +13,11 @@ from ._base import ResourceClient
 
 
 class RecordRevisionsClient(ResourceClient):
-    """Client for the RecordRevisions API resource."""
+    """Provides methods for accessing iMednet record revision history.
+
+    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/recordRevisions`.
+    It is accessed via the `imednet_sdk.client.ImednetClient.record_revisions` property.
+    """
 
     def list_record_revisions(
         self,
@@ -20,24 +28,30 @@ class RecordRevisionsClient(ResourceClient):
         filter: Optional[str] = None,
         **kwargs: Any,
     ) -> ApiResponse[List[RecordRevisionModel]]:
-        """
-        Retrieve a list of record revisions for a specific study.
+        """Retrieves a list of record revisions (audit trail) for a specific study.
 
-        Corresponds to `GET /api/v1/edc/studies/{studyKey}/recordRevisions`.
+        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/recordRevisions` endpoint.
+        Supports standard pagination, filtering, and sorting parameters.
 
         Args:
-            study_key: The key of the study for which to list record revisions.
-            page: Index page to return. Default is 0.
-            size: Number of items per page. Default is 25. Max 500.
-            sort: Property to sort by (e.g., 'dateCreated,desc').
-            filter: Filter criteria (e.g., 'recordId==1001').
-            **kwargs: Additional keyword arguments to pass to the request.
+            study_key: The unique identifier for the study.
+            page: The index of the page to return (0-based). Defaults to 0.
+            size: The number of items per page. Defaults to 25, maximum 500.
+            sort: The property to sort by, optionally including direction
+                  (e.g., 'dateCreated,desc', 'recordId,asc').
+            filter: The filter criteria to apply (e.g., 'recordId==1001',
+                    'userName=="jsmith"'). Refer to iMednet API docs for syntax.
+            **kwargs: Additional keyword arguments passed directly as query parameters
+                      to the API request.
 
         Returns:
-            An ApiResponse containing a list of RecordRevisionModel objects.
+            An `ApiResponse` object containing a list of `RecordRevisionModel` instances
+            representing the record changes, along with pagination/metadata details.
 
         Raises:
-            ValueError: If study_key is empty or None.
+            ValueError: If `study_key` is empty or not provided.
+            ImednetSdkException: If the API request fails (e.g., network error,
+                               authentication issue, invalid permissions).
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")

@@ -1,13 +1,47 @@
 # examples/get_all_records_for_subject.py
 """
+Example: Retrieving All Records for a Subject via iMednet API.
+
+This script demonstrates how to use the `imednet-python-sdk` to retrieve all
+records associated with a specific subject within a study. It handles potential
+pagination by repeatedly calling the `list_records` endpoint until all pages
+have been fetched.
+
+**Prerequisites:**
+
+1.  **Install SDK:** `pip install imednet-sdk python-dotenv`
+2.  **Environment Variables:** Create a `.env` file in the same directory
+    with your iMednet API key, security key, and base URL:
+    ```
+    IMEDNET_API_KEY="your_api_key_here"
+    IMEDNET_SECURITY_KEY="your_security_key_here"
+    IMEDNET_BASE_URL="https://your_imednet_instance.imednetapi.com"
+    ```
+3.  **Configuration:** Update the `TARGET_STUDY_KEY` and `TARGET_SUBJECT_KEY`
+    constants below with valid values from your iMednet study.
+
+**Usage:**
+
+```bash
+python examples/get_all_records_for_subject.py
+```
+
+The script will query the API for all records matching the specified subject in
+the target study, handling pagination, and print a summary of the retrieved records.
+"""
+
+# examples/get_all_records_for_subject.py
+"""
 Example script demonstrating how to retrieve all records for a specific subject,
 automatically handling pagination using the iMednet Python SDK's iterator feature.
 """
 import os
 import logging
+from typing import List # Add this import
 from dotenv import load_dotenv
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetException
+from imednet_sdk.exceptions import ImednetSdkException # Corrected import
+from imednet_sdk.models import RecordModel # Import for type hinting
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -16,74 +50,106 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 load_dotenv()
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
+SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY") # Added security key
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 
 # --- Configuration ---
-# Specify the Study OID and Subject Key for which to retrieve records
-TARGET_STUDY_OID = "STUDY_OID_HERE"  # Replace with a valid Study OID
-TARGET_SUBJECT_KEY = "SUBJECT_KEY_HERE" # Replace with a valid Subject Key
+# Specify the Study Key and Subject Key for which to retrieve records
+TARGET_STUDY_KEY = "DEMO"  # Replace with a valid Study Key
+TARGET_SUBJECT_KEY = "SUBJ-001" # Replace with a valid Subject Key
+PAGE_SIZE = 100 # Number of records to fetch per API call (max 500)
 # ---------------------
 
 def main():
-    """Main function to get all records for a subject using pagination."""
-    if not API_KEY or not BASE_URL:
-        logging.error("API Key or Base URL not configured. Set IMEDNET_API_KEY and IMEDNET_BASE_URL environment variables.")
+    """Initializes the client and fetches all records for a subject, handling pagination."""
+    if not API_KEY or not SECURITY_KEY or not BASE_URL:
+        logging.error("API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables.")
         return
 
-    if TARGET_STUDY_OID == "STUDY_OID_HERE" or TARGET_SUBJECT_KEY == "SUBJECT_KEY_HERE":
-        logging.warning("Please replace 'STUDY_OID_HERE' and 'SUBJECT_KEY_HERE' with actual values in the script.")
-        return
+    if TARGET_STUDY_KEY == "DEMO" or TARGET_SUBJECT_KEY == "SUBJ-001":
+        logging.warning("Using default 'DEMO' study key or 'SUBJ-001' subject key. Please replace with your actual values if needed.")
+
+    all_records: List[RecordModel] = []
+    current_page = 0
+    total_pages = 1 # Assume at least one page initially
 
     try:
         # Initialize the client
-        client = ImednetClient(base_url=BASE_URL, api_key=API_KEY)
+        client = ImednetClient(base_url=BASE_URL)
         logging.info("iMednet client initialized successfully.")
 
-        # --- Get All Records for Subject (with Pagination) ---
-        logging.info(f"Fetching all records for subject '{TARGET_SUBJECT_KEY}' in study '{TARGET_STUDY_OID}'...")
+        # --- Get All Records for Subject (with Manual Pagination) ---
+        logging.info(f"Fetching all records for subject '{TARGET_SUBJECT_KEY}' in study '{TARGET_STUDY_KEY}'...")
 
-        all_records = []
-        record_count = 0
+        # Construct the filter string
+        record_filter = f'subjectKey=="{TARGET_SUBJECT_KEY}"'
 
-        # Assumes client.records.list_all() returns an iterator that handles pagination.
-        # It should accept study_oid and subject_key as filters.
-        # If list_all doesn't exist, you might need manual pagination:
-        # page = 1
-        # while True:
-        #     records_page = client.records.list(study_oid=..., subject_key=..., page=page, limit=100) # Adjust params
-        #     if not records_page:
-        #         break
-        #     all_records.extend(records_page)
-        #     page += 1
+        while current_page < total_pages:
+            logging.info(f"Fetching page {current_page + 1} of {total_pages}...")
+            try:
+                response = client.records.list_records(
+                    study_key=TARGET_STUDY_KEY,
+                    filter=record_filter,
+                    page=current_page,
+                    size=PAGE_SIZE,
+                    sort='recordId,asc' # Optional: Sort for consistent ordering
+                )
 
-        try:
-            # Use the SDK's pagination helper if available (preferred)
-            record_iterator = client.records.list_all(study_oid=TARGET_STUDY_OID, subject_key=TARGET_SUBJECT_KEY)
+                if response and response.data:
+                    all_records.extend(response.data)
+                    logging.debug(f"  Fetched {len(response.data)} records on this page.")
 
-            for record in record_iterator:
-                record_count += 1
-                all_records.append(record)
-                # Process each record as needed
-                form_oid = record.get('formOid', 'N/A')
-                record_id = record.get('id', 'N/A')
-                logging.debug(f"  Retrieved record ID: {record_id}, Form OID: {form_oid}") # Use DEBUG level for potentially many records
+                    # Update total_pages based on the first response's pagination info
+                    if response.pagination:
+                        total_pages = response.pagination.totalPages
+                        # Basic check for safety
+                        if total_pages == 0 and len(all_records) > 0:
+                             logging.warning("API reported 0 total pages but records were found. Stopping pagination.")
+                             break
+                        elif total_pages == 0:
+                             logging.info("API reported 0 total pages. No records found.")
+                             break # Exit loop if no pages reported
+                    else:
+                        # If pagination info is missing, assume only one page
+                        logging.warning("Pagination info missing from API response. Assuming only one page.")
+                        break
 
-            if not all_records:
-                logging.warning(f"No records found for subject '{TARGET_SUBJECT_KEY}' in study '{TARGET_STUDY_OID}'.")
-            else:
-                logging.info(f"Successfully retrieved {record_count} records in total for subject '{TARGET_SUBJECT_KEY}'.")
-                # You can now work with the `all_records` list
-                # logging.info(f"First record details: {all_records[0]}")
+                elif current_page == 0:
+                    # No data found on the first page
+                    logging.info(f"No records found for subject '{TARGET_SUBJECT_KEY}' in study '{TARGET_STUDY_KEY}'.")
+                    break # Exit loop
+                else:
+                    # No data on subsequent pages, should not happen if totalPages is correct
+                    logging.warning(f"No more data found on page {current_page + 1}, but expected {total_pages} total pages. Stopping pagination.")
+                    break
 
-        except AttributeError:
-            logging.error("SDK Error: client.records does not seem to have a 'list_all' method for automatic pagination, or the filtering parameters are incorrect. Manual pagination might be required.")
-        except ImednetException as e:
-            logging.error(f"An API error occurred during record fetching: {e}")
+                current_page += 1
 
-    except ImednetException as e:
-        logging.error(f"An API error occurred during client initialization: {e}")
+            except ImednetSdkException as e:
+                logging.error(f"An API error occurred while fetching page {current_page + 1}: {e}")
+                logging.error(f"Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+                break # Stop pagination on error
+            except Exception as e:
+                 logging.error(f"An unexpected error occurred during pagination: {e}", exc_info=True)
+                 break # Stop pagination on unexpected error
+
+        # --- Process Results ---
+        if all_records:
+            logging.info(f"Successfully retrieved {len(all_records)} records in total for subject '{TARGET_SUBJECT_KEY}'.")
+            # Example: Print summary of first few records
+            for i, record in enumerate(all_records[:5]):
+                logging.info(f"  Record {i+1}: ID={record.recordId}, FormKey={record.formKey}, Created={record.dateCreated.strftime('%Y-%m-%d')}")
+            if len(all_records) > 5:
+                logging.info("  ...")
+        # else: # Message already logged if no records found on first page
+        #    logging.info(f"No records found for subject '{TARGET_SUBJECT_KEY}'.")
+
+    except ImednetSdkException as e:
+        # Error during client initialization or initial setup
+        logging.error(f"An SDK/API error occurred: {e}")
+        logging.error(f"Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
     except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+        logging.error(f"An unexpected error occurred: {e}", exc_info=True)
 
 if __name__ == "__main__":
     main()

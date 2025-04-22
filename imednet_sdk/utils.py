@@ -1,4 +1,13 @@
-"""Utility functions for the iMednet SDK, including dynamic model creation."""
+"""Utility functions for the iMednet SDK.
+
+This module provides helper functions used across the SDK, primarily for
+handling dynamic data structures based on API metadata. Key functions include:
+
+- `build_model_from_variables`: Dynamically creates Pydantic models from
+  iMednet variable definitions.
+- `_fetch_and_parse_typed_records`: Fetches form variables and records, then
+  parses record data into dynamically typed models (used by `ImednetClient.get_typed_records`).
+"""
 
 import logging
 from datetime import date, datetime
@@ -42,18 +51,25 @@ TYPE_MAP: Dict[str, Tuple[Type, Dict[str, Any]]] = {
 
 
 def build_model_from_variables(vars_meta: List[Dict[str, Any]], model_name: str) -> Type[BaseModel]:
-    """Dynamically creates a Pydantic model from variable metadata.
+    """Dynamically creates a Pydantic model from iMednet variable metadata.
+
+    Constructs a Pydantic `BaseModel` subclass where fields correspond to the
+    `variableName` from the metadata, and types are mapped from `variableType`
+    using the `TYPE_MAP`.
 
     Args:
         vars_meta: A list of dictionaries, where each dictionary represents
-                   variable metadata (must contain 'variableName' and 'variableType').
-        model_name: The desired name for the dynamically created Pydantic model.
+                   variable metadata obtained from the iMednet API (e.g., via
+                   the `/variables` endpoint). Each dictionary must contain
+                   at least 'variableName' and 'variableType' keys.
+        model_name: The desired class name for the dynamically created Pydantic model.
+                   This name should be unique and descriptive (e.g., "MyFormRecordData").
 
     Returns:
-        A new Pydantic BaseModel class dynamically created based on the metadata.
+        A new Pydantic `BaseModel` class definition.
 
     Raises:
-        ValueError: If a variable in vars_meta lacks 'variableName'.
+        ValueError: If any dictionary in `vars_meta` lacks the 'variableName' key.
     """
     fields: Dict[str, Tuple[Type, Any]] = {}
     for var in vars_meta:
@@ -87,22 +103,39 @@ def _fetch_and_parse_typed_records(
     form_key: str,
     **kwargs,
 ) -> List[BaseModel]:
-    """
-    Internal helper to fetch variables, build model, fetch records, and parse.
+    """Fetches variables, builds a model, fetches records, and parses recordData.
+
+    This internal helper function orchestrates the process of getting dynamically
+    typed record data for a specific form.
+
+    Steps:
+    1. Fetches all variables for the given `study_key` and `form_key` using
+       `variables_client.list()`.
+    2. Builds a dynamic Pydantic model using `build_model_from_variables` based
+       on the fetched variable metadata.
+    3. Fetches all records for the `study_key` and `form_key` using
+       `records_client.list()`, passing through any additional `kwargs`.
+    4. Parses the `recordData` dictionary from each fetched record using the
+       dynamically created model.
+    5. Logs warnings for records where `recordData` fails validation against the model.
 
     Args:
-        variables_client: An instance of VariablesClient.
-        records_client: An instance of RecordsClient.
-        study_key: The study key.
-        form_key: The form key.
-        **kwargs: Additional parameters for list_records.
+        variables_client: An initialized `VariablesClient` instance.
+        records_client: An initialized `RecordsClient` instance.
+        study_key: The key identifying the study.
+        form_key: The key identifying the form.
+        **kwargs: Additional keyword arguments to pass directly to the
+                  `records_client.list()` method (e.g., `filter`, `sort`, `size`).
 
     Returns:
-        A list of dynamically created Pydantic model instances.
+        A list of Pydantic model instances, where each instance represents the
+        validated `recordData` of a fetched record. Records with invalid data
+        are excluded, and warnings are logged.
 
     Raises:
-        ImednetSdkException: If API calls fail or unexpected errors occur.
-        ValueError: If building the dynamic model fails.
+        ImednetSdkException: If fetching variables or records from the API fails.
+        ValueError: If building the dynamic model fails (e.g., missing 'variableName'
+                    in variable metadata).
     """
     # 1) Fetch variable metadata
     try:

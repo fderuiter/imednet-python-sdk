@@ -1,4 +1,10 @@
-"""Custom exceptions for the iMednet SDK."""
+"""Custom exceptions for the iMednet SDK.
+
+This module defines a hierarchy of custom exception classes used throughout
+the SDK to represent various errors that can occur during API interactions,
+including network issues, authentication problems, API-specific errors,
+and data validation failures.
+"""
 
 from typing import Any, Dict, Optional
 
@@ -132,6 +138,6 @@ class NotFoundError(ImednetSdkException):
 
 
 class RateLimitError(ImednetSdkException):
-    """Raised when API rate limits are exceeded (e.g., 429 Too Many Requests)."""
+    """Raised when the API rate limit has been exceeded (e.g., 429 Too Many Requests)."""
 
     pass

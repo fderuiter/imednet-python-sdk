@@ -1,4 +1,8 @@
-"""Client for interacting with the Intervals endpoint."""
+"""API client for interacting with the iMednet Intervals endpoints.
+
+This module provides the `IntervalsClient` class for accessing interval definitions
+within a specific study via the iMednet API.
+"""
 
 from typing import Any, Dict, List, Optional
 
@@ -9,7 +13,11 @@ from ._base import ResourceClient
 
 
 class IntervalsClient(ResourceClient):
-    """Client for the Intervals API resource."""
+    """Provides methods for accessing iMednet interval definitions.
+
+    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/intervals`.
+    It is accessed via the `imednet_sdk.client.ImednetClient.intervals` property.
+    """
 
     def list_intervals(
         self,
@@ -20,24 +28,30 @@ class IntervalsClient(ResourceClient):
         filter: Optional[str] = None,
         **kwargs: Any,
     ) -> ApiResponse[List[IntervalModel]]:
-        """
-        Retrieve a list of intervals for a specific study.
+        """Retrieves a list of interval definitions for a specific study.
 
-        Corresponds to `GET /api/v1/edc/studies/{studyKey}/intervals`.
+        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/intervals` endpoint.
+        Supports standard pagination, filtering, and sorting parameters.
 
         Args:
-            study_key: The key of the study for which to list intervals.
-            page: Index page to return. Default is 0.
-            size: Number of items per page. Default is 25. Max 500.
-            sort: Property to sort by (e.g., 'intervalName,asc').
-            filter: Filter criteria (e.g., 'intervalSequence>5').
-            **kwargs: Additional keyword arguments to pass to the request.
+            study_key: The unique identifier for the study.
+            page: The index of the page to return (0-based). Defaults to 0.
+            size: The number of items per page. Defaults to 25, maximum 500.
+            sort: The property to sort by, optionally including direction
+                  (e.g., 'intervalName,asc', 'intervalSequence,desc').
+            filter: The filter criteria to apply (e.g., 'intervalSequence>5',
+                    'intervalName=="Screening"'). Refer to iMednet API docs for syntax.
+            **kwargs: Additional keyword arguments passed directly as query parameters
+                      to the API request.
 
         Returns:
-            An ApiResponse containing a list of IntervalModel objects.
+            An `ApiResponse` object containing a list of `IntervalModel` instances
+            representing the interval definitions, along with pagination/metadata details.
 
         Raises:
-            ValueError: If study_key is empty or None.
+            ValueError: If `study_key` is empty or not provided.
+            ImednetSdkException: If the API request fails (e.g., network error,
+                               authentication issue, invalid permissions).
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")

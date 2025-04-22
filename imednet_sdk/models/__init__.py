@@ -1,4 +1,17 @@
-"""Data models for the iMednet SDK."""
+"""imednet_sdk.models: Pydantic Data Models
+
+This subpackage contains Pydantic models representing the data structures
+used by the iMednet API.
+
+These models are used for:
+- Deserializing JSON responses from the API into typed Python objects.
+- Serializing Python objects into JSON payloads for API requests (e.g., creating records).
+- Providing type hints and validation for API data.
+
+Common models like `ApiResponse` and error details are defined in `_common.py`,
+while resource-specific models (e.g., `StudyModel`, `RecordModel`) are in their
+respective files.
+"""
 
 from ._common import ApiResponse, ErrorDetail, FieldError, Metadata, PaginationInfo, SortInfo
 from .coding import CodingModel

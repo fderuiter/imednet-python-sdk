@@ -1,4 +1,9 @@
-"""Coding-related data models."""
+"""Pydantic models related to iMednet Codings.
+
+This module defines the Pydantic model `CodingModel` which represents the
+structure of coding data retrieved from the iMednet API, typically via the
+`/codings` endpoint.
+"""
 
 from datetime import datetime
 
@@ -6,7 +11,33 @@ from pydantic import BaseModel, Field
 
 
 class CodingModel(BaseModel):
-    """Model representing a standardized coding of data in iMednet."""
+    """Represents a standardized coding applied to a data point in iMednet.
+
+    This model captures information about a specific coding instance, linking it
+    to the study, site, subject, form, record, and variable it applies to,
+    as well as details about the code itself and the dictionary used.
+
+    Attributes:
+        studyKey: Unique identifier for the study.
+        siteName: Name of the site where the data was collected.
+        siteId: Unique numeric identifier for the site.
+        subjectId: Unique numeric identifier assigned by iMednet to the subject.
+        subjectKey: Protocol-assigned subject identifier (often the screen/randomization ID).
+        formId: Unique numeric identifier for the form definition.
+        formName: Name of the electronic Case Report Form (eCRF).
+        formKey: Unique string identifier for the form definition.
+        revision: The revision number of the coding metadata itself.
+        recordId: Unique numeric identifier for the specific record containing the coded data.
+        variable: The name of the variable (field) on the eCRF that was coded.
+        value: The original value entered for the variable that was coded.
+        codingId: Unique numeric identifier for this specific coding instance.
+        code: The standardized code assigned (e.g., a MedDRA term code).
+        codedBy: The username of the user who recorded the code.
+        reason: The reason provided for applying this specific code.
+        dictionaryName: The name of the coding dictionary used (e.g., "MedDRA", "WHODrug").
+        dictionaryVersion: The version of the coding dictionary used.
+        dateCoded: The date and time when the code was added.
+    """
 
     studyKey: str = Field(..., description="Unique Study Key")
     siteName: str = Field(..., description="Name of the site")

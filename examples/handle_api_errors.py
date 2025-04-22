@@ -1,13 +1,54 @@
 # examples/handle_api_errors.py
 """
-Example script demonstrating how to handle potential API errors and exceptions
-when using the iMednet Python SDK.
+Example: Handling API Errors with iMednet Python SDK.
+
+This script demonstrates how to gracefully handle various exceptions that might
+be raised by the `imednet-python-sdk` when interacting with the iMednet API.
+It covers common scenarios like authentication failures, resource not found errors,
+validation errors, and general API exceptions.
+
+**Prerequisites:**
+
+1.  **Install SDK:** `pip install imednet-sdk python-dotenv`
+2.  **Environment Variables:** Create a `.env` file in the same directory
+    with your iMednet API key, security key, and base URL:
+    ```
+    IMEDNET_API_KEY="your_api_key_here"
+    IMEDNET_SECURITY_KEY="your_security_key_here"
+    IMEDNET_BASE_URL="https://your_imednet_instance.imednetapi.com"
+    ```
+3.  **Configuration:** Review the `INVALID_API_KEY`, `INVALID_SECURITY_KEY`,
+    `NON_EXISTENT_STUDY_KEY`, and `VALID_STUDY_KEY` constants below. You might
+    need to replace `VALID_STUDY_KEY` with an actual key from your instance
+    for the general error test.
+
+**Usage:**
+
+```bash
+python examples/handle_api_errors.py
+```
+
+The script will run through several test cases designed to trigger specific
+API errors and log how they are caught and handled.
 """
+
+# Import standard libraries
 import os
 import logging
+# Import third-party libraries
 from dotenv import load_dotenv
+# Import iMednet SDK
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetException, AuthenticationError, NotFoundError, RateLimitError
+# Import specific and base exceptions from the SDK
+from imednet_sdk.exceptions import (
+    ImednetSdkException,
+    AuthenticationError,
+    AuthorizationError,
+    NotFoundError,
+    RateLimitError,
+    BadRequestError,
+    ValidationError,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -16,98 +57,140 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 load_dotenv()
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
+SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY") # Added security key
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 
 # --- Configuration for Test Cases ---
 # Use deliberately incorrect values to trigger specific errors
 INVALID_API_KEY = "invalid-api-key-123"
-NON_EXISTENT_STUDY_OID = "STUDY_DOES_NOT_EXIST_OID"
-VALID_STUDY_OID = "STUDY_OID_HERE" # Replace with a VALID Study OID if needed for other tests
+INVALID_SECURITY_KEY = "invalid-security-key-abc"
+NON_EXISTENT_STUDY_KEY = "STUDY_DOES_NOT_EXIST_KEY"
+VALID_STUDY_KEY = "DEMO" # Replace with a VALID Study Key if needed for other tests
 # -----------------------------------
 
 def main():
-    """Main function to demonstrate error handling."""
+    """Runs different test cases to demonstrate SDK error handling."""
     if not BASE_URL:
         logging.error("Base URL not configured. Set IMEDNET_BASE_URL environment variable.")
         return
 
-    # --- Test Case 1: Authentication Error ---
-    logging.info("--- Test Case 1: Authentication Error ---")
+    # --- Test Case 1: Authentication Error (Invalid API Key) ---
+    logging.info("--- Test Case 1: Authentication Error (Invalid API Key) ---")
     try:
         logging.info(f"Initializing client with INVALID API Key: {INVALID_API_KEY}")
-        invalid_client = ImednetClient(base_url=BASE_URL, api_key=INVALID_API_KEY)
-        # Attempt an API call that requires authentication
-        logging.info("Attempting to list studies (expected to fail)...")
-        invalid_client.studies.list() # This call should trigger the error
-        logging.warning("Authentication error was expected but not caught. Check SDK behavior.")
+        # Use a valid security key for this test to isolate the API key issue
+        invalid_client = ImednetClient(base_url=BASE_URL, api_key=INVALID_API_KEY, security_key=SECURITY_KEY)
+        logging.info("Attempting to list studies (expected to fail with 401)...")
+        # Any authenticated call should fail
+        invalid_client.studies.list_studies(size=1)
+        logging.warning("Authentication error was expected but not caught. Check SDK behavior or test setup.")
     except AuthenticationError as e:
         logging.error(f"Caught expected AuthenticationError: {e}")
-        # Specific handling for authentication issues (e.g., prompt user to check credentials)
-    except ImednetException as e:
-        logging.error(f"Caught a general ImednetException (unexpected for auth): {e}")
+        logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+    except ImednetSdkException as e:
+        logging.error(f"Caught a general ImednetSdkException (unexpected for auth test 1): {e}")
     except Exception as e:
-        logging.error(f"Caught an unexpected non-SDK error: {e}")
+        logging.error(f"Caught an unexpected non-SDK error: {e}", exc_info=True)
+
+    # --- Test Case 1b: Authentication Error (Invalid Security Key) ---
+    logging.info("\n--- Test Case 1b: Authentication Error (Invalid Security Key) ---")
+    if not API_KEY:
+        logging.warning("Skipping Auth Test 1b: Valid API Key (IMEDNET_API_KEY) not set.")
+    else:
+        try:
+            logging.info(f"Initializing client with INVALID Security Key: {INVALID_SECURITY_KEY}")
+            invalid_client = ImednetClient(base_url=BASE_URL, api_key=API_KEY, security_key=INVALID_SECURITY_KEY)
+            logging.info("Attempting to list studies (expected to fail with 401)...")
+            invalid_client.studies.list_studies(size=1)
+            logging.warning("Authentication error was expected but not caught. Check SDK behavior or test setup.")
+        except AuthenticationError as e:
+            logging.error(f"Caught expected AuthenticationError: {e}")
+            logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        except ImednetSdkException as e:
+            logging.error(f"Caught a general ImednetSdkException (unexpected for auth test 1b): {e}")
+        except Exception as e:
+            logging.error(f"Caught an unexpected non-SDK error: {e}", exc_info=True)
 
     # --- Test Case 2: Not Found Error ---
     logging.info("\n--- Test Case 2: Not Found Error ---")
-    if not API_KEY:
-        logging.warning("Skipping Not Found test: Valid API Key (IMEDNET_API_KEY) not set.")
+    if not API_KEY or not SECURITY_KEY:
+        logging.warning("Skipping Not Found test: Valid API Key or Security Key not set.")
     else:
         try:
-            client = ImednetClient(base_url=BASE_URL, api_key=API_KEY)
-            logging.info("Client initialized with valid API Key.")
-            logging.info(f"Attempting to get details for non-existent study: {NON_EXISTENT_STUDY_OID}")
-            # Assumes client.studies.get() exists and takes study_oid
-            client.studies.get(study_oid=NON_EXISTENT_STUDY_OID) # This call should trigger the error
-            logging.warning("Not Found error was expected but not caught. Check SDK behavior or OID.")
+            client = ImednetClient(base_url=BASE_URL) # Uses env vars
+            logging.info("Client initialized with valid credentials.")
+            logging.info(f"Attempting to list sites for non-existent study: {NON_EXISTENT_STUDY_KEY}")
+            # Use a valid method but with a key that likely doesn't exist
+            client.sites.list_sites(study_key=NON_EXISTENT_STUDY_KEY, size=1)
+            logging.warning("Not Found error was expected but not caught. Check SDK behavior or Key.")
         except NotFoundError as e:
             logging.error(f"Caught expected NotFoundError: {e}")
-            # Specific handling for resource not found (e.g., inform user the OID is invalid)
-        except AuthenticationError as e: # Catch auth error here too, in case the valid key is actually invalid
+            logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        except AuthenticationError as e: # Catch auth error here too, in case credentials are bad
              logging.error(f"Caught AuthenticationError unexpectedly during Not Found test: {e}")
-        except ImednetException as e:
-            logging.error(f"Caught a general ImednetException (unexpected for not found): {e}")
-        except AttributeError as e:
-             logging.error(f"SDK structure error: client.studies.get might not exist or takes different parameters. {e}")
+        except ImednetSdkException as e:
+            logging.error(f"Caught a general ImednetSdkException (unexpected for not found): {e}")
         except Exception as e:
-            logging.error(f"Caught an unexpected non-SDK error: {e}")
+            logging.error(f"Caught an unexpected non-SDK error: {e}", exc_info=True)
 
-    # --- Test Case 3: General API Error Handling (Example: Listing Sites) ---
-    logging.info("\n--- Test Case 3: General Error Handling ---")
-    if not API_KEY:
-        logging.warning("Skipping General Error test: Valid API Key (IMEDNET_API_KEY) not set.")
-    elif VALID_STUDY_OID == "STUDY_OID_HERE":
-         logging.warning("Skipping General Error test: Replace 'STUDY_OID_HERE' with a valid Study OID.")
+    # --- Test Case 3: Bad Request / Validation Error (Example: Invalid Page Number) ---
+    logging.info("\n--- Test Case 3: Bad Request / Validation Error (Invalid Page Number) ---")
+    if not API_KEY or not SECURITY_KEY:
+        logging.warning("Skipping Bad Request test: Valid API Key or Security Key not set.")
+    elif VALID_STUDY_KEY == "DEMO" and not os.getenv("RUN_DEMO_TESTS"): # Avoid running potentially failing tests on DEMO by default
+         logging.warning("Skipping Bad Request test on DEMO study. Set RUN_DEMO_TESTS env var to run.")
     else:
         try:
-            client = ImednetClient(base_url=BASE_URL, api_key=API_KEY)
-            logging.info("Client initialized with valid API Key.")
-            logging.info(f"Attempting to list sites for study: {VALID_STUDY_OID}")
-            sites = client.sites.list(study_oid=VALID_STUDY_OID)
-            logging.info(f"Successfully listed {len(sites)} sites for study {VALID_STUDY_OID}.")
-            # Add more complex operations here that might fail
+            client = ImednetClient(base_url=BASE_URL)
+            logging.info("Client initialized with valid credentials.")
+            invalid_page = -1 # Page number must be non-negative
+            logging.info(f"Attempting to list sites for study '{VALID_STUDY_KEY}' with invalid page number: {invalid_page}")
+            client.sites.list_sites(study_key=VALID_STUDY_KEY, page=invalid_page, size=1)
+            logging.warning("Bad Request or Validation error was expected but not caught. Check SDK or parameter validation.")
 
-        # Catch more specific errors first if they exist in the SDK
-        except RateLimitError as e:
-             logging.error(f"Caught RateLimitError: {e}. Please wait before making more requests.")
-        except NotFoundError as e: # e.g., if the VALID_STUDY_OID was actually invalid
-             logging.error(f"Caught NotFoundError unexpectedly: {e}")
+        # Catch specific validation error if distinguished by the SDK (e.g., based on API code 1000)
+        except ValidationError as e:
+             logging.error(f"Caught expected ValidationError: {e}")
+             logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        # Catch general bad request error
+        except BadRequestError as e:
+             logging.error(f"Caught expected BadRequestError: {e}")
+             logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        except NotFoundError as e: # If the VALID_STUDY_KEY was actually invalid
+             logging.error(f"Caught NotFoundError unexpectedly during Bad Request test: {e}")
         except AuthenticationError as e:
-             logging.error(f"Caught AuthenticationError unexpectedly: {e}")
-
-        # Catch the base SDK exception for other API-related errors
-        except ImednetException as e:
-            logging.error(f"Caught a general ImednetException: {e}")
-            # Inspect error details if available (e.g., e.status_code, e.response_text)
-            # Example: if hasattr(e, 'status_code'): logging.error(f"  Status Code: {e.status_code}")
-
-        # Catch potential SDK usage errors (e.g., wrong method name)
-        except AttributeError as e:
-             logging.error(f"SDK structure error: A method or attribute might be incorrect. {e}")
-
-        # Catch any other unexpected errors
+             logging.error(f"Caught AuthenticationError unexpectedly during Bad Request test: {e}")
+        except ImednetSdkException as e:
+            logging.error(f"Caught a general ImednetSdkException: {e}")
         except Exception as e:
-            logging.error(f"Caught an unexpected non-SDK error: {e}")
+            logging.error(f"Caught an unexpected non-SDK error: {e}", exc_info=True)
+
+    # --- Test Case 4: General Successful Call (Example: Listing Studies) ---
+    logging.info("\n--- Test Case 4: General Successful Call Handling ---")
+    if not API_KEY or not SECURITY_KEY:
+        logging.warning("Skipping Successful Call test: Valid API Key or Security Key not set.")
+    else:
+        try:
+            client = ImednetClient(base_url=BASE_URL)
+            logging.info("Client initialized with valid credentials.")
+            logging.info("Attempting to list studies...")
+            response = client.studies.list_studies(size=5)
+            if response and response.data:
+                logging.info(f"Successfully listed {len(response.data)} studies (up to 5). First study key: {response.data[0].studyKey}")
+            else:
+                logging.info("Successfully called list_studies, but no studies were returned.")
+
+        # Catch specific errors first
+        except RateLimitError as e:
+             logging.error(f"Caught RateLimitError during successful call test: {e}. Please wait.")
+        except AuthenticationError as e:
+             logging.error(f"Caught AuthenticationError unexpectedly during successful call test: {e}")
+        # Catch the base SDK exception
+        except ImednetSdkException as e:
+            logging.error(f"Caught an unexpected ImednetSdkException during successful call test: {e}")
+            logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        except Exception as e:
+            logging.error(f"Caught an unexpected non-SDK error during successful call test: {e}", exc_info=True)
 
 if __name__ == "__main__":
     main()
