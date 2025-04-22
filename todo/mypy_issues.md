@@ -91,5 +91,3 @@
 ## examples/handle_api_errors.py (1)
 
 - [ ] Line 41: Module `imednet_sdk.exceptions` has no attribute `ValidationError`; maybe `SdkValidationError`?
-
----
