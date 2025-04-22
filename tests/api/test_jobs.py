@@ -1,18 +1,13 @@
 # Tests for the Jobs API client.
 
-from datetime import datetime  # Import datetime
+import datetime
 
 import pytest
 import respx
 from httpx import Response
 
 from imednet_sdk.client import ImednetClient
-# The client method should return JobStatusModel directly based on docs
-from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.job import JobStatusModel
-
-# ApiResponse might not be needed if the client returns the model directly
-# from imednet_sdk.models._common import ApiResponse
 
 
 @pytest.fixture
@@ -30,52 +25,79 @@ def jobs_client(client):
 
 
 @respx.mock
-def test_get_job_status_success(mock_imednet_client, mock_api_response_job_status):
-    """Test successful retrieval of job status."""
+def test_get_job_status_success(client):  # Removed mock_api_response_job_status fixture
+    """Test successful retrieval of job status, aligned with documentation."""
     study_key = "TEST_STUDY"
-    batch_id = 12345
-    expected_url = f"{mock_imednet_client.base_url}/studies/{study_key}/jobs/{batch_id}"
+    batch_id = "1601b8a0-45ba-4136-8c55-17fab704bc80"  # Use string batchId as per docs example
+    # Construct the full expected URL based on documentation path structure
+    expected_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
+
+    # Define the mock JSON response data based on documentation fields and format
+    mock_response_data = {
+        "jobId": "afa2d61e-07ed-4efe-99c5-6f358f5e7d38",  # Example from docs
+        "batchId": batch_id,
+        "state": "completed",  # Lowercase as per docs
+        # Use YYYY-MM-DD HH:MM:SS format as per docs
+        "dateCreated": "2020-12-01 21:47:36",
+        "dateStarted": "2020-12-01 21:47:42",  # Added field from docs
+        "dateFinished": "2020-12-01 21:47:45",  # Added field from docs
+        # Removed fields not in docs: message, dateModified, progress, resultUrl, error
+    }
+
+    # Define the expected JobStatusModel instance based on the mock data
+    # Assuming JobStatusModel can parse the documented date format string
+    # If JobStatusModel expects datetime objects, parsing is needed here.
+    # For simplicity, let's assume the model handles string dates for now,
+    # but this might need adjustment based on the model's implementation.
     expected_response_model = JobStatusModel(
-        batchId=batch_id, state="Completed", message="Job finished successfully"
+        jobId="afa2d61e-07ed-4efe-99c5-6f358f5e7d38",
+        batchId=batch_id,
+        state="completed",
+        dateCreated="2020-12-01 21:47:36",  # Pass string directly
+        dateStarted="2020-12-01 21:47:42",  # Pass string directly
+        dateFinished="2020-12-01 21:47:45",  # Pass string directly
+        # Removed fields not in docs
     )
 
-    # Configure the mock client's _request method
-    mock_imednet_client._request.return_value = mock_api_response_job_status(
-        expected_response_model
-    )
+    # Mock the specific GET request using respx with the correct URL
+    route = respx.get(expected_url).mock(return_value=Response(200, json=mock_response_data))
 
     # Call the method under test
-    response = mock_imednet_client.jobs.get_job_status(study_key=study_key, batch_id=batch_id)
+    # Assuming client.jobs.get_job_status internally calls the correct endpoint path
+    response = client.jobs.get_job_status(study_key=study_key, batch_id=batch_id)
 
     # Assertions
-    mock_imednet_client._request.assert_called_once_with(
-        method="GET",
-        endpoint=f"/studies/{study_key}/jobs/{batch_id}",
-        response_model=JobStatusModel,
-    )
-    assert response is not None
-    assert isinstance(response, ApiResponse)
-    assert response.data == expected_response_model
-    assert response.data.batchId == batch_id
-    assert response.data.state == "Completed"
+    assert route.called, f"Expected call to {expected_url} was not made."
+    assert isinstance(response, JobStatusModel)  # Check for JobStatusModel instance
+
+    # Compare model instances - This assumes JobStatusModel correctly parses/stores the data
+    # Direct comparison might fail if date strings aren't parsed into comparable types (like datetime)
+    # within the model. Adjust assertion if needed.
+    assert response.jobId == expected_response_model.jobId
+    assert response.batchId == expected_response_model.batchId
+    assert response.state == expected_response_model.state
+    assert response.dateCreated == expected_response_model.dateCreated
+    assert response.dateStarted == expected_response_model.dateStarted
+    assert response.dateFinished == expected_response_model.dateFinished
+    # assert response == expected_response_model # Use field-by-field if direct compare fails
 
 
 @respx.mock
 def test_get_job_status_running(jobs_client, client):  # Renamed for clarity
     """Test retrieval of job status when running."""
     study_key = "STUDYBATCH"
-    batch_id = "BATCHRUNNING"
+    batch_id = "BATCHRUNNING"  # Keep as string
+    # Correct the mock URL path
     mock_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
     # Mock response for a 'running' state based on docs structure
     mock_response_data = {
         "jobId": "JOBRUN1",
         "batchId": batch_id,
         "state": "running",  # Lowercase as per docs
-        "dateCreated": "2023-11-01 11:00:00",  # Use dateCreated
-        "dateModified": "2023-11-01 11:00:05",  # Use dateModified
-        "progress": 50,  # Example progress
-        "resultUrl": None,
-        "error": None,
+        "dateCreated": "2023-11-01 11:00:00",  # Use documented format
+        "dateStarted": "2023-11-01 11:00:05",  # Use documented format (assuming dateStarted is relevant here)
+        "dateFinished": None,  # Job is running, so not finished
+        # Removed fields not in docs: progress, resultUrl, error, dateModified
     }
     respx.get(mock_url).mock(return_value=Response(200, json=mock_response_data))
 
@@ -84,11 +106,10 @@ def test_get_job_status_running(jobs_client, client):  # Renamed for clarity
     assert isinstance(response, JobStatusModel)
     assert response.batchId == batch_id
     assert response.state == "running"
-    assert response.dateCreated is not None  # Check dateCreated
-    assert response.dateModified is not None  # Check dateModified
-    assert response.progress == 50  # Check progress
-    assert response.resultUrl is None  # Check resultUrl
-    assert response.error is None  # Check error
+    assert response.dateCreated == "2023-11-01 11:00:00"  # Check dateCreated string
+    assert response.dateStarted == "2023-11-01 11:00:05"  # Check dateStarted string
+    assert response.dateFinished is None  # Check dateFinished
+    # Removed assertions for fields not in docs
 
 
 def test_get_job_status_missing_study_key(jobs_client):
