@@ -94,4 +94,4 @@ Once the client is initialized, you can access different API resource clients (e
    #    # ... make calls ...
    # client.close() # Or call close() explicitly if not using 'with'
 
-This example demonstrates the basic workflow. Refer to the :doc:`api` reference and the more detailed `docs/usage_guide.md` for available methods, models, and advanced usage patterns.
+This example demonstrates the basic workflow. Refer to the :doc:`api/index` reference and the more detailed `docs/usage_guide.md` for available methods, models, and advanced usage patterns.

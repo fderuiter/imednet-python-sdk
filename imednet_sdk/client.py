@@ -3,6 +3,7 @@ Core HTTP client for interacting with the iMednet API.
 
 This module defines the `ImednetClient`, the primary entry point for using the SDK.
 It handles:
+
 - Authentication using API and Security keys (read from arguments or environment variables).
 - Configuration of base URL, timeouts, and retry logic.
 - Making HTTP requests (GET, POST, PUT, DELETE) to the iMednet API.
@@ -14,21 +15,21 @@ It handles:
 
 Typical usage involves initializing the client and then accessing resource clients:
 
-```python
-from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetSdkException
+.. code-block:: python
 
-# Client uses environment variables IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, IMEDNET_BASE_URL by default
-client = ImednetClient()
+    from imednet_sdk import ImednetClient
+    from imednet_sdk.exceptions import ImednetSdkException
 
-try:
-    response = client.studies.list_studies(size=10)
-    if response and response.data:
-        for study in response.data:
-            print(f"Study: {study.studyName} (Key: {study.studyKey})")
-except ImednetSdkException as e:
-    print(f"API Error: {e}")
-```
+    # Client uses environment variables IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, IMEDNET_BASE_URL by default
+    client = ImednetClient()
+
+    try:
+        response = client.studies.list_studies(size=10)
+        if response and response.data:
+            for study in response.data:
+                print(f"Study: {study.studyName} (Key: {study.studyKey})")
+    except ImednetSdkException as e:
+        print(f"API Error: {e}")
 
 This module is part of the iMednet SDK, designed for seamless interaction with the iMednet
 API, enabling efficient data management and retrieval for clinical studies.
@@ -85,25 +86,14 @@ class ImednetClient:
 
     Manages HTTP connections, authentication headers, request execution with retries,
     response parsing, and error handling. Provides access to specific API resource
-    clients (e.g., `studies`, `sites`, `records`) through properties.
+    clients (e.g., ``studies``, ``sites``, ``records``) through properties.
 
-    Authentication keys (`api_key`, `security_key`) and `base_url` are typically
-    read from environment variables (`IMEDNET_API_KEY`, `IMEDNET_SECURITY_KEY`,
-    `IMEDNET_BASE_URL`) but can be provided explicitly during initialization.
+    Authentication keys (``api_key``, ``security_key``) and ``base_url`` are typically
+    read from environment variables (``IMEDNET_API_KEY``, ``IMEDNET_SECURITY_KEY``,
+    ``IMEDNET_BASE_URL``) but can be provided explicitly during initialization.
 
-    Attributes:
-        studies: Client for accessing study-related endpoints.
-        sites: Client for accessing site-related endpoints.
-        forms: Client for accessing form definition endpoints.
-        intervals: Client for accessing interval/visit definition endpoints.
-        records: Client for accessing record data endpoints.
-        record_revisions: Client for accessing record audit trail endpoints.
-        variables: Client for accessing variable definition endpoints.
-        codings: Client for accessing coding data endpoints.
-        subjects: Client for accessing subject data endpoints.
-        users: Client for accessing user data endpoints.
-        visits: Client for accessing subject visit instance endpoints.
-        jobs: Client for accessing asynchronous job status endpoints.
+    *Note: Resource clients like ``studies``, ``sites``, etc., are accessed via properties
+    and documented individually.*
     """
 
     DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
@@ -135,34 +125,34 @@ class ImednetClient:
     ):
         """Initializes the ImednetClient.
 
-        Sets up the underlying HTTP client (`httpx.Client`), authentication headers,
+        Sets up the underlying HTTP client (``httpx.Client``), authentication headers,
         and retry logic based on provided parameters or environment variables.
 
         Args:
             api_key: Your iMednet API key. If None, reads from the
-                `IMEDNET_API_KEY` environment variable.
+                ``IMEDNET_API_KEY`` environment variable.
             security_key: Your iMednet Security key. If None, reads from the
-                `IMEDNET_SECURITY_KEY` environment variable.
+                ``IMEDNET_SECURITY_KEY`` environment variable.
             base_url: The base URL for the iMednet API instance (e.g.,
-                "https://your_instance.imednetapi.com"). If None, reads from
-                `IMEDNET_BASE_URL` or defaults to the production URL.
+                ``https://your_instance.imednetapi.com``). If None, reads from
+                ``IMEDNET_BASE_URL`` or defaults to the production URL.
             timeout: Default request timeout configuration. Can be a float (total
-                timeout in seconds) or an `httpx.Timeout` object allowing separate
+                timeout in seconds) or an ``httpx.Timeout`` object allowing separate
                 connect, read, write, pool timeouts. Defaults to 30s total, 5s connect.
             retries: Maximum number of retry attempts for failed requests eligible for retry.
                 Set to 0 to disable retries. Defaults to 3.
             backoff_factor: Multiplier for exponential backoff between retries. The delay
-                is calculated as `backoff_factor * (2 ** (attempt - 1))` seconds.
-                Used by `tenacity.wait_exponential`. Defaults to 1.
-            retry_methods: Set of uppercase HTTP methods (e.g., {"GET", "PUT"}) to allow
-                           retries for. Defaults to `{"GET"}`.
+                is calculated as ``backoff_factor * (2 ** (attempt - 1))`` seconds.
+                Used by ``tenacity.wait_exponential``. Defaults to 1.
+            retry_methods: Set of uppercase HTTP methods (e.g., ``{"GET", "PUT"}``) to allow
+                           retries for. Defaults to ``{"GET"}``.
             retry_exceptions: Set of exception types that trigger a retry attempt.
-                              Defaults include various `httpx` network errors,
-                              `RateLimitError` (429), and `ApiError` (5xx). User-provided
+                              Defaults include various ``httpx`` network errors,
+                              ``RateLimitError`` (429), and ``ApiError`` (5xx). User-provided
                               exceptions are added to this default set.
 
         Raises:
-            ValueError: If `api_key` or `security_key` is not provided directly
+            ValueError: If ``api_key`` or ``security_key`` is not provided directly
                         and cannot be found in the corresponding environment variables.
         """
         self.base_url = base_url or self.DEFAULT_BASE_URL
@@ -186,9 +176,6 @@ class ImednetClient:
         self._default_timeout = timeout
         self._retries = retries
         self._backoff_factor = backoff_factor  # Store for tenacity wait config
-        # self._retry_statuses = ( # No longer needed
-        #     retry_statuses if retry_statuses is not None else DEFAULT_RETRYABLE_STATUS_CODES
-        # )
         self._retry_methods = retry_methods if retry_methods is not None else DEFAULT_RETRY_METHODS
         # Combine default and user-provided retry exceptions
         base_retry_exceptions = DEFAULT_RETRY_EXCEPTIONS.copy()
@@ -203,15 +190,11 @@ class ImednetClient:
             "x-imn-security-key": self._security_key,
         }
 
-        # Note: httpx's built-in retries via HTTPTransport are more robust,
-        # but implementing manually for now as per original structure.
         self._client = httpx.Client(
             base_url=self.base_url,
             headers=self._default_headers,
             timeout=self._default_timeout,
         )
-
-        # Resource client initialization moved to properties
 
     def _make_request_attempt(
         self,
@@ -225,32 +208,32 @@ class ImednetClient:
     ) -> Union[T, List[T], httpx.Response]:
         """Executes a single HTTP request attempt and handles the response.
 
-        Sends the request using the internal `httpx.Client`. If the response
+        Sends the request using the internal ``httpx.Client``. If the response
         indicates an API error (non-2xx status), it raises the appropriate
-        `ImednetSdkException` subclass via `_handle_api_error`. If successful
-        and a `response_model` is provided, it attempts to parse the JSON
-        response into the model, raising `SdkValidationError` on failure.
+        ``ImednetSdkException`` subclass via ``_handle_api_error``. If successful
+        and a ``response_model`` is provided, it attempts to parse the JSON
+        response into the model, raising ``SdkValidationError`` on failure.
 
-        Network-related errors (subclasses of `httpx.RequestError`) are allowed
+        Network-related errors (subclasses of ``httpx.RequestError``) are allowed
         to propagate up to be handled by the retry decorator.
 
         Args:
             method: The HTTP method (e.g., 'GET', 'POST').
-            url: The target URL path for the request (relative to `base_url`).
+            url: The target URL path for the request (relative to ``base_url``).
             params: Optional dictionary of query parameters.
             request_json: Optional JSON payload for the request body (typically a dict
                           or list, will be serialized by httpx).
             request_timeout: The timeout configuration for this specific attempt.
-            response_model: Optional Pydantic model (or `List[ModelType]`) to parse
+            response_model: Optional Pydantic model (or ``List[ModelType]``) to parse
                             the successful JSON response into.
-            **kwargs: Additional keyword arguments passed directly to `httpx.Client.request`
-                      (e.g., `headers`).
+            **kwargs: Additional keyword arguments passed directly to ``httpx.Client.request``
+                      (e.g., ``headers``).
 
         Returns:
-            If `response_model` is provided and the request/parsing is successful:
-                An instance of the `response_model` (or a list of instances).
-            If `response_model` is None and the request is successful:
-                The raw `httpx.Response` object.
+            If ``response_model`` is provided and the request/parsing is successful:
+                An instance of the ``response_model`` (or a list of instances).
+            If ``response_model`` is None and the request is successful:
+                The raw ``httpx.Response`` object.
 
         Raises:
             AuthenticationError: For 401 Unauthorized errors.
@@ -261,7 +244,7 @@ class ImednetClient:
                              validation issues (e.g., API code 1000).
             BadRequestError: For other 400 Bad Request errors.
             ApiError: For other 4xx or 5xx errors.
-            SdkValidationError: If `response_model` is provided but the response JSON
+            SdkValidationError: If ``response_model`` is provided but the response JSON
                                 cannot be parsed into the model.
             httpx.RequestError: For network-level issues (connection, timeout, etc.).
                                 These are typically caught by the retry logic.
@@ -324,16 +307,16 @@ class ImednetClient:
         This is the core method used by `_get`, `_post`, etc., and by the resource
         clients. It orchestrates the request lifecycle:
 
-        1.  **Prepares Request:** Determines the full URL and timeout.
-        2.  **Serializes Payload:** Converts Pydantic models in the `json` argument
-            to dictionaries suitable for `httpx`.
-        3.  **Applies Retries:** Uses the `tenacity` library to wrap the actual
-            request attempt (`_make_request_attempt`). Retries are performed based
-            on the configured `retries`, `backoff_factor`, `retry_methods`, and
-            `retry_exceptions`.
-        4.  **Returns Result:** Returns the processed response (deserialized model
-            or raw `httpx.Response`) from the final successful attempt, or re-raises
-            the exception if retries are exhausted.
+        1. **Prepares Request:** Determines the full URL and timeout.
+        2. **Serializes Payload:** Converts Pydantic models in the `json` argument
+           to dictionaries suitable for `httpx`.
+        3. **Applies Retries:** Uses the `tenacity` library to wrap the actual
+           request attempt (`_make_request_attempt`). Retries are performed based
+           on the configured `retries`, `backoff_factor`, `retry_methods`, and
+           `retry_exceptions`.
+        4. **Returns Result:** Returns the processed response (deserialized model
+           or raw `httpx.Response`) from the final successful attempt, or re-raises
+           the exception if retries are exhausted.
 
         Args:
             method: The HTTP method (e.g., 'GET', 'POST').
@@ -363,7 +346,6 @@ class ImednetClient:
         """
         url = endpoint
         request_timeout = timeout if timeout is not None else self._default_timeout
-        # last_exception: Optional[Exception] = None # Handled by tenacity
 
         # Handle potential Pydantic model serialization for request body
         request_json = None
@@ -439,9 +421,6 @@ class ImednetClient:
             ImednetSdkException: As a fallback for unhandled status codes or if parsing fails
                                  unexpectedly.
         """
-        # Ensure this method raises the correct exception based on status/code
-        # The exceptions raised here (RateLimitError, ApiError) will be caught
-        # by tenacity if they are in self._retry_exceptions_tuple
         status_code = response.status_code
         timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
         error_details: Dict[str, Any] = {}
@@ -452,25 +431,23 @@ class ImednetClient:
 
         try:
             error_data = response.json()
-            # Safely access nested dictionary keys
             metadata = error_data.get("metadata", {})
             error_info = metadata.get("error", {})
 
             api_error_code = error_info.get("code")
             description = error_info.get(
                 "description", description
-            )  # Use parsed description if available
+            )
             attribute = error_info.get("attribute")
             value = error_info.get("value")
-            error_details = error_data  # Store the full parsed body
+            error_details = error_data
 
-        except ValueError:  # Includes JSONDecodeError
+        except ValueError:
             description = (
                 f"HTTP error {status_code} occurred, and the response body was not valid JSON."
             )
-            error_details = {"raw_response": response.text}  # Store raw text if not JSON
+            error_details = {"raw_response": response.text}
 
-        # Exception Mapping Logic
         exception_args = {
             "message": description,
             "status_code": status_code,
@@ -481,32 +458,23 @@ class ImednetClient:
         }
 
         if status_code == 400:
-            if api_error_code == "1000":  # Validation Error
+            if api_error_code == "1000":
                 raise SdkValidationError(**exception_args, attribute=attribute, value=value)
-            else:  # General Bad Request
+            else:
                 raise BadRequestError(**exception_args)
         elif status_code == 401:
-            # API docs mention code 9001 specifically for invalid keys
-            # message = "Authentication failed: Invalid API key or Security key." if api_error_code == "9001" else description
-            # exception_args["message"] = message # Update message for specific code
             raise AuthenticationError(**exception_args)
         elif status_code == 403:
             raise AuthorizationError(**exception_args)
         elif status_code == 404:
             raise NotFoundError(**exception_args)
         elif status_code == 429:
-            # This exception might trigger a retry if method is GET and RateLimitError is in retry_exceptions
             raise RateLimitError(**exception_args)
-        elif status_code >= 500:  # Catches 500, 503 etc.
-            # This exception might trigger a retry if method is GET and ApiError is in retry_exceptions
+        elif status_code >= 500:
             raise ApiError(**exception_args)
-        elif status_code >= 400:  # Other 4xx errors (e.g., 405)
-            # Typically not retried, raise ApiError or BadRequestError? Using ApiError for now.
-            raise ApiError(
-                **exception_args
-            )  # Or maybe BadRequestError? Let's use ApiError as a catch-all for unexpected client/server errors.
+        elif status_code >= 400:
+            raise ApiError(**exception_args)
         else:
-            # This should not be reached if called correctly, but handle defensively
             raise ImednetSdkException(
                 f"Unhandled HTTP status code {status_code}.",
                 status_code=status_code,
@@ -587,16 +555,23 @@ class ImednetClient:
         with the specified `form_key`.
 
         It performs the following steps:
+
         1. Fetches variable definitions for the `form_key` using `self.variables.list_variables`.
+
         2. Dynamically builds a Pydantic model based on these variable definitions.
+
         3. Fetches records for the `form_key` using `self.records.list_records` (handling pagination).
+
         4. For each fetched record, validates and parses its `recordData` using the dynamically
            created Pydantic model.
+
         5. Returns a list of these dynamic Pydantic model instances.
 
         Args:
             study_key: The key identifying the study.
+
             form_key: The key identifying the form whose records and variables are needed.
+
             **kwargs: Additional keyword arguments passed to the underlying
                       `self.records.list_records` call (e.g., `filter`, `sort`, `size`,
                       `page`, `record_data_filter`). Pagination arguments (`page`, `size`)
@@ -610,10 +585,11 @@ class ImednetClient:
 
         Raises:
             ImednetSdkException: If fetching variables or records fails due to API errors.
+
             ValueError: If building the dynamic model fails (e.g., missing `variableName`).
+
             RuntimeError: If JSON decoding or Pydantic validation fails during processing.
         """
-        # Delegate the implementation to the helper function in utils.py
         return _fetch_and_parse_typed_records(
             variables_client=self.variables,
             records_client=self.records,

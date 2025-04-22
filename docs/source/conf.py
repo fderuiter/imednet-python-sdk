@@ -60,10 +60,6 @@ napoleon_attr_annotations = True
 # Intersphinx mapping
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "httpx": (
-        "https://www.python-httpx.org/",
-        None,
-    ),  # Try the base URL again, maybe it was temporary
     "pydantic": ("https://docs.pydantic.dev/latest/", None),
 }
 

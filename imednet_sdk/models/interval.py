@@ -31,32 +31,52 @@ class IntervalModel(BaseModel):
     """Represents the definition of an Interval (often synonymous with Visit) in iMednet.
 
     This model captures metadata about an interval, including its identifiers, name,
-description, sequence, scheduling rules, and associated forms.
+    description, sequence, scheduling rules, and associated forms.
 
     Attributes:
         studyKey: Unique identifier for the study this interval belongs to.
+
         intervalId: Unique numeric identifier assigned by iMednet to the interval definition.
+
         intervalName: User-defined name for the interval/visit.
+
         intervalDescription: Optional user-defined description for the interval/visit.
+
         intervalSequence: User-defined sequence number for ordering intervals.
+
         intervalGroupId: User-defined numeric identifier for the interval group.
+
         intervalGroupName: User-defined name for the interval group.
+
         timeline: The type of visit window calculation (e.g., "Static", "Dynamic").
+
         definedUsingInterval: Optional name of the baseline interval used for date calculations
                               if `timeline` is dynamic.
+
         windowCalculationForm: Optional key of the baseline form used for date calculations
                                if `timeline` is dynamic.
+
         windowCalculationDate: Optional name of the baseline date field used for calculations
                                if `timeline` is dynamic.
+
         actualDateForm: Optional key of the form containing the actual date field for this interval.
+
         actualDate: Optional name of the field containing the actual date for this interval.
+
         dueDateWillBeIn: Optional number of days from the baseline date when this interval is due.
+
         negativeSlack: Optional allowed number of days *before* the due date the interval can occur.
+
         positiveSlack: Optional allowed number of days *after* the due date the interval can occur.
+
         eproGracePeriod: Optional allowed number of additional days for ePRO completion after the due date.
+
         forms: A list of `IntervalFormModel` objects representing the forms associated with this interval.
+
         disabled: Boolean flag indicating if the interval is currently disabled (soft delete).
+
         dateCreated: The date and time when the interval definition was initially created.
+
         dateModified: The date and time when the interval definition was last modified.
     """
 

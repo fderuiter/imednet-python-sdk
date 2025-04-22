@@ -14,29 +14,45 @@ class FormModel(BaseModel):
     """Represents the definition of an electronic Case Report Form (eCRF) in iMednet.
 
     This model captures metadata about a form, including its identifiers, name,
-type, revision history, and various configuration settings.
+    type, revision history, and various configuration settings.
 
     Attributes:
         studyKey: Unique identifier for the study this form belongs to.
+
         formId: Unique numeric identifier assigned by iMednet to the form definition.
+
         formKey: Unique string identifier for the form definition.
+
         formName: The display name of the eCRF.
+
         formType: The type of the eCRF (e.g., "Subject", "Site", "Common").
+
         revision: The revision number of the form definition metadata.
+
         embeddedLog: Boolean flag indicating if the form uses an embedded log.
+
         enforceOwnership: Boolean flag indicating if ownership is enforced for records
                           created from this form.
+
         userAgreement: Boolean flag indicating if a user agreement is associated with
                        this form.
+
         subjectRecordReport: Boolean flag related to subject record reporting.
+
         unscheduledVisit: Boolean flag indicating if this form can be used in
                           unscheduled visits.
+
         otherForms: Boolean flag indicating if this form is included in "Other Forms".
+
         eproForm: Boolean flag indicating if this is an ePRO (electronic Patient
                   Reported Outcome) form.
+
         allowCopy: Boolean flag indicating if records created from this form can be copied.
+
         disabled: Boolean flag indicating if the form is currently disabled (soft delete).
+
         dateCreated: The date and time when the form definition was initially created.
+
         dateModified: The date and time when the form definition was last modified.
     """
 
