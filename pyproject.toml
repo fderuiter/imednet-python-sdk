@@ -7,7 +7,7 @@ name = "imednet-python-sdk"
 version = "0.1.0"
 description = "Python SDK for the iMednet REST API"
 authors = [
-  { name="Frederick de Ruiter", email="frederick.deruiter@brightresearch.com" }, # Replace with actual details
+  { name="Frederick de Ruiter", email="frederick.deruiter@brightresearch.com" },
 ]
 license = "MIT"
 readme = "README.md"
@@ -27,8 +27,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/FrederickdeRuiter/imednet-python-sdk" # Replace if needed
-Issues = "https://github.com/FrederickdeRuiter/imednet-python-sdk/issues" # Replace if needed
+Homepage = "https://github.com/fderuiter/imednet-python-sdk"
+Issues = "https://github.com/fderuiter/imednet-python-sdk/issues"
 
 [tool.setuptools]
 packages = ["imednet_sdk"]
