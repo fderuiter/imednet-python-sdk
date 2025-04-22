@@ -6,8 +6,7 @@ delegates actual HTTP requests to the main `ImednetClient`.
 """
 
 # Add necessary imports for type hints
-from typing import (TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar,
-                    Union)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union
 
 # Import httpx for Response type hint if needed, or rely on client's type hints
 import httpx

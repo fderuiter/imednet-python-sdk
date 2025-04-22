@@ -8,11 +8,10 @@ from httpx import Response
 
 from imednet_sdk.api.intervals import IntervalsClient
 from imednet_sdk.client import ImednetClient
+
 # Use PaginationInfo based on _common.py
-from imednet_sdk.models._common import (ApiResponse, Metadata, PaginationInfo,
-                                        SortInfo)
-from imednet_sdk.models.interval import (  # Add IntervalFormModel
-    IntervalFormModel, IntervalModel)
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
+from imednet_sdk.models.interval import IntervalFormModel, IntervalModel  # Add IntervalFormModel
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"

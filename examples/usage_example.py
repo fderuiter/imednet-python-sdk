@@ -100,7 +100,9 @@ def main():
         # Add more examples as needed, e.g., fetching records, creating records
         # logging.info("\n--- Example: Fetching Records (Add details) ---")
         # try:
-        #     records_response = client.records.list_records(study_key="YOUR_STUDY_KEY", filter='subjectKey=="YOUR_SUBJECT_KEY"', size=10)
+        #     records_response = client.records.list_records(
+        #         study_key="YOUR_STUDY_KEY", filter='subjectKey=="YOUR_SUBJECT_KEY"', size=10
+        #     )
         #     if records_response and records_response.data:
         #         logging.info(f"Found {len(records_response.data)} records.")
         #     else:
