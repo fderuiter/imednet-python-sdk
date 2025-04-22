@@ -99,6 +99,7 @@ MOCK_RAW_RECORDS_TYPED = [
         subjectKey="Subject 001",
         dateCreated=datetime.now(),
         dateModified=datetime.now(),
+        visitId=1,  # Added missing required field
         recordData={
             "patient_name": "Alice",
             "patient_age": 42,
@@ -121,6 +122,7 @@ MOCK_RAW_RECORDS_TYPED = [
         subjectKey="Subject 002",
         dateCreated=datetime.now(),
         dateModified=datetime.now(),
+        visitId=1,  # Added missing required field
         recordData={
             "patient_name": "Bob",
             "patient_age": "thirty-five",  # Invalid age type
@@ -142,7 +144,8 @@ MOCK_RAW_RECORDS_TYPED = [
         subjectKey="Subject 003",
         dateCreated=datetime.now(),
         dateModified=datetime.now(),
-        recordData={},  # Empty data
+        visitId=1,  # Added missing required field
+        recordData={},
     ),
     RecordModel(
         studyKey=MOCK_STUDY_KEY_TYPED,
@@ -159,6 +162,7 @@ MOCK_RAW_RECORDS_TYPED = [
         subjectKey="Subject 004",
         dateCreated=datetime.now(),
         dateModified=datetime.now(),
+        visitId=1,  # Added missing required field
         recordData={
             "patient_name": "Charlie",
             # Missing age and date
