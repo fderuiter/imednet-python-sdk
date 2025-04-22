@@ -28,111 +28,74 @@ class IntervalFormModel(BaseModel):
 
 
 class IntervalModel(BaseModel):
-    """Represents the definition of an Interval (often synonymous with Visit) in iMednet.
+    """Represents the definition of an Interval (often synonymous with Visit) in iMednet."""
 
-    This model captures metadata about an interval, including its identifiers, name,
-    description, sequence, scheduling rules, and associated forms.
-
-    Attributes:
-        studyKey: Unique identifier for the study this interval belongs to.
-
-        intervalId: Unique numeric identifier assigned by iMednet to the interval definition.
-
-        intervalName: User-defined name for the interval/visit.
-
-        intervalDescription: Optional user-defined description for the interval/visit.
-
-        intervalSequence: User-defined sequence number for ordering intervals.
-
-        intervalGroupId: User-defined numeric identifier for the interval group.
-
-        intervalGroupName: User-defined name for the interval group.
-
-        timeline: The type of visit window calculation (e.g., "Static", "Dynamic").
-
-        definedUsingInterval: Optional name of the baseline interval used for date calculations
-                              if `timeline` is dynamic.
-
-        windowCalculationForm: Optional key of the baseline form used for date calculations
-                               if `timeline` is dynamic.
-
-        windowCalculationDate: Optional name of the baseline date field used for calculations
-                               if `timeline` is dynamic.
-
-        actualDateForm: Optional key of the form containing the actual date field for this interval.
-
-        actualDate: Optional name of the field containing the actual date for this interval.
-
-        dueDateWillBeIn: Optional number of days from the baseline date when this interval is due.
-
-        negativeSlack: Optional allowed number of days *before* the due date the interval can occur.
-
-        positiveSlack: Optional allowed number of days *after* the due date the interval can occur.
-
-        eproGracePeriod: Optional allowed number of additional days for ePRO completion after the due date.
-
-        forms: A list of `IntervalFormModel` objects representing the forms associated with this interval.
-
-        disabled: Boolean flag indicating if the interval is currently disabled (soft delete).
-
-        dateCreated: The date and time when the interval definition was initially created.
-
-        dateModified: The date and time when the interval definition was last modified.
-    """
-
+    # --- Core Required Fields (Based on typical API usage & potential test failures) ---
+    # Assuming these are generally required for a valid interval definition
     studyKey: str = Field(..., description="Unique study key")
-    intervalId: int = Field(..., description="Unique system identifier for the interval")
+    intervalId: int = Field(..., description="Unique system identifier for the interval definition")
+    # Ensure intervalName is required as per test failure
     intervalName: str = Field(..., description="User-defined interval/visit name")
-    intervalDescription: Optional[str] = Field(
-        None, description="User-defined interval/visit description"
-    )
     intervalSequence: int = Field(..., description="User-defined sequence of the interval")
     intervalGroupId: int = Field(..., description="User-defined interval group ID")
     intervalGroupName: str = Field(..., description="User-defined interval group name")
-    timeline: str = Field(..., description="Type of Interval Visit Window")
-    definedUsingInterval: Optional[str] = Field(
-        None, description="Baseline interval used for date calculations"
-    )
-    windowCalculationForm: Optional[str] = Field(
-        None, description="Baseline form used for date calculations"
-    )
-    windowCalculationDate: Optional[str] = Field(
-        None, description="Baseline field used for date calculations"
-    )
-    actualDateForm: Optional[str] = Field(
-        None, description="Actual date form for a specific interval"
-    )
-    actualDate: Optional[str] = Field(None, description="Actual date field for a specific interval")
-    dueDateWillBeIn: Optional[int] = Field(
-        None, description="Number of days from the baseline date the interval is due"
-    )
-    negativeSlack: Optional[int] = Field(
-        None, description="Allowed number of negative days from the due date"
-    )
-    positiveSlack: Optional[int] = Field(
-        None, description="Allowed number of positive days from the due date"
-    )
-    eproGracePeriod: Optional[int] = Field(
-        None, description="Allowed number of positive days for ePRO from the due date"
+    timeline: str = Field(
+        ..., description="Type of Interval Visit Window (e.g., 'Static', 'Dynamic')"
     )
     forms: List[IntervalFormModel] = Field(
         default_factory=list, description="List of forms associated with the interval"
     )
-    disabled: bool = Field(False, description="Indicates if the interval is soft-deleted")
-    dateCreated: datetime = Field(..., description="Date when the interval was created")
-    dateModified: datetime = Field(..., description="Last modification date of the interval")
+    disabled: bool = Field(
+        False, description="Indicates if the interval definition is disabled (soft delete)"
+    )
+    dateCreated: datetime = Field(..., description="Date when the interval definition was created")
+    dateModified: datetime = Field(
+        ..., description="Last modification date of the interval definition"
+    )
 
-    # Optional fields (might be null or missing)
-    intervalId: Optional[int] = Field(
-        None, description="The unique numeric identifier for the interval."
+    # --- Optional Fields (Based on API docs/structure) ---
+    intervalDescription: Optional[str] = Field(
+        None, description="User-defined interval/visit description"
     )
-    intervalName: Optional[str] = Field(
-        None, description="The name or label of the interval (e.g., 'Screening', 'Week 4')."
+    # Optional scheduling fields
+    definedUsingInterval: Optional[str] = Field(
+        None, description="Baseline interval name used for date calculations"
     )
+    windowCalculationForm: Optional[str] = Field(
+        None, description="Baseline form key used for date calculations"
+    )
+    windowCalculationDate: Optional[str] = Field(
+        None, description="Baseline variable name used for date calculations"
+    )
+    actualDateForm: Optional[str] = Field(
+        None, description="Form key containing the actual date field for this interval"
+    )
+    actualDate: Optional[str] = Field(
+        None, description="Variable name of the actual date field for this interval"
+    )
+    dueDateWillBeIn: Optional[int] = Field(
+        None, description="Number of days from the baseline date the interval is due"
+    )
+    negativeSlack: Optional[int] = Field(
+        None, description="Allowed number of days before the due date the interval can occur"
+    )
+    positiveSlack: Optional[int] = Field(
+        None, description="Allowed number of days after the due date the interval can occur"
+    )
+    eproGracePeriod: Optional[int] = Field(
+        None, description="Allowed number of additional days for ePRO completion after the due date"
+    )
+
+    # --- Removed Redundant/Conflicting Optional Definitions ---
+    # Removed the block of Optional[...] fields that duplicated required ones like intervalId, intervalName etc.
+    # Keep only truly optional fields or fields whose presence might vary.
+
+    # --- Additional Optional Fields (From original model, verify necessity) ---
+    # These might be useful but were potentially part of the duplication. Keep if needed.
     intervalKey: Optional[str] = Field(
         None, description="A unique key identifying the interval, often user-defined."
     )
-    intervalOrder: Optional[int] = Field(
+    intervalOrder: Optional[int] = Field(  # Potentially redundant with intervalSequence
         None, description="The sequential order of the interval within the study schedule."
     )
     intervalIsRepeating: Optional[bool] = Field(
@@ -141,14 +104,18 @@ class IntervalModel(BaseModel):
     intervalIsUnscheduled: Optional[bool] = Field(
         None, description="Indicates if this interval is not part of the regular schedule."
     )
+    # intervalIsArchived might be redundant with 'disabled' flag, clarify API meaning
     intervalIsArchived: Optional[bool] = Field(
         None, description="Indicates if the interval definition is archived."
     )
+    # Timestamps might be redundant with dateCreated/dateModified, clarify API meaning
     intervalDateCreated: Optional[datetime] = Field(
-        None, description="The date and time when the interval definition was created."
+        None,
+        description="The date and time when the interval definition was created (potentially redundant).",
     )
     intervalDateUpdated: Optional[datetime] = Field(
-        None, description="The date and time when the interval definition was last updated."
+        None,
+        description="The date and time when the interval definition was last updated (potentially redundant).",
     )
     intervalUpdatedByUserName: Optional[str] = Field(
         None, description="The username of the user who last updated the interval definition."
@@ -158,9 +125,12 @@ class IntervalModel(BaseModel):
     )
 
     # Allow extra fields if the API might add more properties
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", populate_by_name=True)  # Added populate_by_name
 
-    @field_validator("intervalDateCreated", "intervalDateUpdated", mode="before")
+    # Keep validator if date formats need parsing
+    @field_validator(
+        "dateCreated", "dateModified", "intervalDateCreated", "intervalDateUpdated", mode="before"
+    )
     @classmethod
     def parse_datetime_optional(cls, value):
         """Parse datetime strings into datetime objects, handling None."""
@@ -168,4 +138,11 @@ class IntervalModel(BaseModel):
             return None
         if isinstance(value, datetime):
             return value
-        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        # Basic ISO format parsing, adjust if API uses different formats
+        try:
+            # Handle potential 'Z' for UTC
+            if "Z" in str(value):
+                value = str(value).replace("Z", "+00:00")
+            return datetime.fromisoformat(str(value))
+        except Exception as e:
+            raise ValueError(f"Invalid datetime format for value: {value}") from e

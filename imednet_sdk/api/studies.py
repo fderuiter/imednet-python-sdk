@@ -4,6 +4,7 @@ This module provides the `StudiesClient` class for accessing study-level
 information via the iMednet API.
 """
 
+import urllib.parse  # Add import
 from typing import Any, Dict, List, Optional
 
 from imednet_sdk.models._common import ApiResponse
@@ -17,15 +18,27 @@ from ._base import ResourceClient
 class StudiesClient(ResourceClient):
     """Client for interacting with iMednet Study endpoints."""
 
-    def list_studies(self, **kwargs) -> ApiResponse[list[StudyModel]]:
+    def list_studies(
+        self,
+        page: Optional[int] = None,
+        size: Optional[int] = None,
+        sort: Optional[str] = None,
+        filter: Optional[str] = None,
+        **kwargs: Any,
+    ) -> ApiResponse[List[StudyModel]]:
         """
         Retrieves a list of studies based on specified criteria.
 
         Corresponds to `GET /studies`.
 
         Args:
-            **kwargs: Additional parameters for filtering, pagination, sorting etc.
-                      (e.g., filter, page, size, sort).
+            page: Optional page number (0-indexed) for pagination.
+            size: Optional number of items per page for pagination.
+            sort: Optional sorting criteria (e.g., "studyKey,asc").
+            filter: Optional filter string (e.g., 'studyType=="STUDY"').
+                    String values within the filter usually need to be enclosed
+                    in double quotes (e.g., 'studyKey=="DEMO"').
+            **kwargs: Additional parameters passed directly as query parameters.
 
         Returns:
             ApiResponse[list[StudyModel]]: An ApiResponse object containing a list
@@ -34,8 +47,27 @@ class StudiesClient(ResourceClient):
         Raises:
             ImednetSdkException: If the API request fails.
         """
-        # Use _get instead of _request
-        return self._get(endpoint="/studies", response_model=list[StudyModel], params=kwargs)
+        params = kwargs  # Start with any extra kwargs
+        if page is not None:
+            params["page"] = page
+        if size is not None:
+            params["size"] = size
+        if sort is not None:
+            params["sort"] = sort
+        if filter is not None:
+            # Filters are often passed as is, let httpx handle encoding.
+            # No special quoting applied here unless API docs specify otherwise.
+            params["filter"] = filter
+
+        # Use _get with constructed params
+        # The response_model should be ApiResponse[List[StudyModel]]
+        # Need to handle the generic ApiResponse structure correctly
+        # The TypeAdapter in _request should handle ApiResponse[List[StudyModel]]
+        return self._get(
+            endpoint="/studies",
+            response_model=ApiResponse[List[StudyModel]],  # Correct generic response model
+            params=params,
+        )
 
     def get_study_details(self, study_key: str) -> ApiResponse[StudyModel]:
         """
@@ -86,7 +118,7 @@ class StudiesClient(ResourceClient):
 
         Args:
             study_key (str): The unique key identifying the study.
-            **kwargs: Additional parameters for filtering, pagination, sorting etc.
+            **kwargs: Additional parameters for filtering, pagination, sorting etc
 
         Returns:
             ApiResponse[list[dict]]: An ApiResponse object containing a list of user

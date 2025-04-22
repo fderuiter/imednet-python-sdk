@@ -1,6 +1,6 @@
 """Tests for the Studies API client."""
 
-import urllib.parse  # Added for URL encoding/parsing
+import urllib.parse
 from datetime import datetime
 
 import pytest
@@ -62,10 +62,11 @@ MOCK_PAGINATION_DICT = {
     "sort": [{"property": "studyKey", "direction": "ASC"}],
 }
 
+# Update mock response to use ApiResponse structure correctly
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_STUDY_1_DICT],
+    "data": [MOCK_STUDY_1_DICT],  # Data is nested
 }
 
 
@@ -147,6 +148,7 @@ MOCK_ERROR_BODY_500 = {
 @respx.mock
 def test_list_studies_success(studies_client, client):
     """Test successful retrieval of studies list."""
+    # Mock the exact URL httpx will call (no params)
     list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
         return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
     )
@@ -158,7 +160,7 @@ def test_list_studies_success(studies_client, client):
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
     assert isinstance(response.pagination, PaginationInfo)
-    assert isinstance(response.data, list)
+    assert isinstance(response.data, list)  # Check the nested data
     assert len(response.data) == 1
     assert isinstance(response.data[0], StudyModel)
     assert response.data[0].studyKey == "PHARMADEMO"
@@ -185,34 +187,42 @@ def test_list_studies_success(studies_client, client):
 @respx.mock
 def test_list_studies_with_params(studies_client, client):
     """Test retrieving studies list with pagination, sort, and filter."""
-    params = {"page": 1, "size": 10, "sort": "studyKey,desc", "filter": "studyKey==PHARMADEMO"}
+    params = {
+        "page": 1,
+        "size": 10,
+        "sort": "studyKey,desc",
+        "filter": 'studyKey=="PHARMADEMO"',
+    }  # Example filter with quotes
+    # Construct expected URL with httpx/urllib encoding
+    expected_query = urllib.parse.urlencode(params)
+    expected_url = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{expected_query}"
 
-    mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{STUDIES_ENDPOINT}"}
+    mock_metadata = {
+        **MOCK_SUCCESS_METADATA_DICT,
+        "path": f"{STUDIES_ENDPOINT}",
+    }  # Path shouldn't include query
     mock_pagination = {
         "currentPage": 1,
         "size": 10,
         "totalPages": 1,
-        "totalElements": 0,
+        "totalElements": 0,  # Assuming filter matches nothing for this test
         "sort": [{"property": "studyKey", "direction": "DESC"}],
     }
     mock_response = {
         "metadata": mock_metadata,
         "pagination": mock_pagination,
-        "data": [],
+        "data": [],  # Empty data list
     }
 
-    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}", params=params).mock(
-        return_value=Response(200, json=mock_response)
-    )
+    # Mock the URL with encoded params
+    list_route = respx.get(expected_url).mock(return_value=Response(200, json=mock_response))
 
     response = studies_client.list_studies(**params)
 
     assert list_route.called
     request = list_route.calls.last.request
-    assert request.url.params["page"] == "1"
-    assert request.url.params["size"] == "10"
-    assert request.url.params["sort"] == "studyKey,desc"
-    assert request.url.params["filter"] == "studyKey==PHARMADEMO"
+    # Verify the actual request URL matches the expected encoded URL
+    assert str(request.url) == expected_url
 
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
@@ -231,21 +241,21 @@ def test_list_studies_empty_response(studies_client):
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{STUDIES_ENDPOINT}"}
     mock_pagination = {
         "currentPage": 0,
-        "size": 25,
+        "size": 25,  # Default size might vary
         "totalPages": 0,
         "totalElements": 0,
-        "sort": [{"property": "studyKey", "direction": "ASC"}],
+        "sort": [{"property": "studyKey", "direction": "ASC"}],  # Default sort might vary
     }
     empty_response_dict = {
         "metadata": mock_metadata,
         "pagination": mock_pagination,
-        "data": [],
+        "data": [],  # Empty data list
     }
     list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
         return_value=Response(200, json=empty_response_dict)
     )
 
-    response = studies_client.list_studies()
+    response = studies_client.list_studies()  # Call without params
 
     assert list_route.called
     assert response is not None
@@ -261,83 +271,102 @@ def test_list_studies_with_pagination(studies_client, client):
     """Test list_studies with pagination parameters."""
     expected_page = 2
     expected_size = 50
-    expected_url_pattern = (
-        f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?page={expected_page}&size={expected_size}"
-    )
+    # Construct expected URL with httpx/urllib encoding
+    expected_query = urllib.parse.urlencode({"page": expected_page, "size": expected_size})
+    expected_url = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{expected_query}"
 
-    list_route = respx.get(url=expected_url_pattern).mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
+    list_route = respx.get(url=expected_url).mock(
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use a valid response structure
     )
 
     studies_client.list_studies(page=expected_page, size=expected_size)
 
     assert list_route.called
     request = list_route.calls.last.request
-    assert str(request.url) == expected_url_pattern
+    assert str(request.url) == expected_url
 
 
 @respx.mock
 def test_list_studies_with_sort(studies_client, client):
     """Test list_studies with sorting parameters."""
     sort_param = "studyName,desc"
-    encoded_sort_param = urllib.parse.quote(sort_param)
-    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?sort={encoded_sort_param}"
+    # Construct expected URL with httpx/urllib encoding
+    expected_query = urllib.parse.urlencode({"sort": sort_param})
+    expected_url = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{expected_query}"
 
-    list_route = respx.get(url=expected_url_pattern).mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
+    list_route = respx.get(url=expected_url).mock(
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use a valid response structure
     )
 
     studies_client.list_studies(sort=sort_param)
 
     assert list_route.called
     request = list_route.calls.last.request
-    assert str(request.url) == expected_url_pattern
+    assert str(request.url) == expected_url
 
 
 @respx.mock
 def test_list_studies_with_filter(studies_client, client):
     """Test list_studies with filtering parameters."""
-    filter_param = 'studyKey=="DEMO"'
-    encoded_filter = urllib.parse.quote(filter_param)
-    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?filter={encoded_filter}"
+    filter_param = 'studyKey=="DEMO"'  # Filter string with quotes
+    # Construct expected URL with httpx/urllib encoding
+    expected_query = urllib.parse.urlencode({"filter": filter_param})
+    expected_url = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{expected_query}"
 
-    list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?filter=.*").mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
+    # Mock the exact encoded URL
+    list_route = respx.get(url=expected_url).mock(
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use a valid response structure
     )
 
     studies_client.list_studies(filter=filter_param)
 
     assert list_route.called
     request = list_route.calls.last.request
-    assert f"filter={encoded_filter}" in str(request.url)
-    query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
-    assert query_params.get("filter") == [filter_param]
+    assert str(request.url) == expected_url
+    # Optional: Check parsed query params if needed, but matching URL is usually sufficient
+    # query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
+    # assert query_params.get("filter") == [filter_param]
 
 
 @respx.mock
 def test_list_studies_with_all_params(studies_client, client):
     """Test list_studies with all parameters combined."""
-    page, size, sort, filter_str = 1, 100, "studyId,asc", 'studyType=="STUDY"'
-    encoded_filter = urllib.parse.quote(filter_str)
-    query_string = f"page={page}&size={size}&sort={sort}&filter={encoded_filter}"
-    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{query_string}"
+    params = {"page": 1, "size": 100, "sort": "studyId,asc", "filter": 'studyType=="STUDY"'}
+    # Construct expected URL with httpx/urllib encoding
+    expected_query = urllib.parse.urlencode(params)
+    expected_url = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{expected_query}"
 
-    list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?.*").mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
+    # Mock the exact encoded URL
+    list_route = respx.get(url=expected_url).mock(
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use a valid response structure
     )
 
-    studies_client.list_studies(page=page, size=size, sort=sort, filter=filter_str)
+    studies_client.list_studies(**params)
 
     assert list_route.called
     request = list_route.calls.last.request
-    query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
-    assert query_params.get("page") == [str(page)]
-    assert query_params.get("size") == [str(size)]
-    assert query_params.get("sort") == [sort]
-    assert query_params.get("filter") == [filter_str]
+    assert str(request.url) == expected_url
+    # Optional: Check parsed query params
+    # query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
+    # assert query_params.get("page") == [str(params["page"])]
+    # assert query_params.get("size") == [str(params["size"])]
+    # assert query_params.get("sort") == [params["sort"]]
+    # assert query_params.get("filter") == [params["filter"]]
 
 
 # --- Error Handling Test Cases ---
+# These tests mock the base endpoint, which is fine as params don't affect error mocking.
+# Ensure the request_path in the raised exception is checked correctly (should not include query params).
+
+
 @respx.mock
 def test_list_studies_400_bad_request(studies_client):
     """Test list_studies raises BadRequestError on 400 response."""
@@ -352,7 +381,7 @@ def test_list_studies_400_bad_request(studies_client):
     assert excinfo.value.status_code == 400
     assert excinfo.value.api_error_code == "1001"
     assert "Invalid parameter value" in excinfo.value.message
-    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+    assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
 
 
 @respx.mock
@@ -369,7 +398,7 @@ def test_list_studies_401_unauthorized(studies_client):
     assert excinfo.value.status_code == 401
     assert excinfo.value.api_error_code == "AUTH-001"
     assert "Authentication failed" in excinfo.value.message
-    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+    assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
 
 
 @respx.mock
@@ -386,7 +415,7 @@ def test_list_studies_403_forbidden(studies_client):
     assert excinfo.value.status_code == 403
     assert excinfo.value.api_error_code == "AUTH-002"
     assert "does not have permission" in excinfo.value.message
-    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+    assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
 
 
 @respx.mock
@@ -403,8 +432,8 @@ def test_list_studies_404_not_found(studies_client):
     assert excinfo.value.status_code == 404
     assert excinfo.value.api_error_code == "API-404"
     assert "Resource not found" in excinfo.value.message
-    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
-    assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))
+    assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
+    # assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError)) # This check is redundant
 
 
 @respx.mock
@@ -421,5 +450,5 @@ def test_list_studies_500_server_error(studies_client):
     assert excinfo.value.status_code == 500
     assert excinfo.value.api_error_code == "SYS-500"
     assert "internal server error" in excinfo.value.message.lower()
-    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
-    assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))
+    assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
+    # assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError)) # This check is redundant

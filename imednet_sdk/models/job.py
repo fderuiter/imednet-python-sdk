@@ -15,44 +15,30 @@ from ._common import ErrorDetail
 
 
 class JobStatusModel(BaseModel):
-    """Represents the status and details of an asynchronous background job in iMednet.
-
-    This model is returned when initiating an asynchronous operation (like creating
-    records) and when querying the status of an existing job via the `/jobs` endpoint.
-
-    Attributes:
-        jobId: Unique identifier assigned by iMednet to this specific job instance.
-               (Note: API docs often use `batchId` interchangeably or primarily).
-        batchId: The batch identifier associated with the submitted request, often
-                 used to query the job status. May be the primary ID returned.
-        state: A string indicating the current state of the job (e.g., "created",
-               "processing", "completed", "failed").
-        dateCreated: The date and time when the job was initially created.
-        dateModified: The date and time when the job status was last updated.
-        progress: An optional integer (0-100) indicating the percentage completion
-                  of the job.
-        resultUrl: An optional URL where detailed results or logs for the job
-                   can be retrieved, if applicable.
-        error: An optional `ErrorDetail` object containing information if the job
-               encountered an error during processing.
-    """
+    """Represents the status and details of an asynchronous background job in iMednet."""
 
     model_config = ConfigDict(populate_by_name=True)
 
     jobId: str = Field(..., description="Unique identifier for the job")
-    batchId: Optional[str] = Field(
-        None, description="Batch ID associated with the submitted records"
-    )
+    # batchId is often the primary key used in requests/responses per docs
+    # Making it string as per test failure, assuming it's always present in responses
+    batchId: str = Field(..., description="Batch ID associated with the submitted records")
     state: str = Field(
         ..., description="Current status of the job (e.g., created, processing, completed, failed)"
     )
-    dateCreated: datetime = Field(
-        ..., description="Timestamp when the job was created"
-    )  # Add dateCreated
+    # Make dateCreated required (remove Optional and default=None if they existed)
+    dateCreated: datetime = Field(..., description="Timestamp when the job was created")
+    # Add optional dateStarted and dateFinished based on test failure and docs
+    dateStarted: Optional[datetime] = Field(
+        None, description="Timestamp when the job started processing"
+    )
+    dateFinished: Optional[datetime] = Field(
+        None, description="Timestamp when the job finished processing"
+    )
+    # dateModified is not explicitly in the docs example, keep Optional for now
     dateModified: Optional[datetime] = Field(
         None, description="Timestamp when the job was last modified"
     )
-    # Add other fields based on docs/reference/jobs.md if needed, e.g., progress, resultUrl
     progress: Optional[int] = Field(None, ge=0, le=100, description="Job progress percentage")
     resultUrl: Optional[str] = Field(None, description="URL to retrieve job results if applicable")
     error: Optional[ErrorDetail] = Field(None, description="Error details if the job failed")

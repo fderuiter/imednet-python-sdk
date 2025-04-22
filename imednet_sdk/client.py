@@ -36,6 +36,7 @@ API, enabling efficient data management and retrieval for clinical studies.
 """
 
 import datetime  # Added for timestamp
+import json  # Import the standard json library
 import logging
 import os
 # Add necessary imports for type hints
@@ -57,7 +58,8 @@ from .exceptions import (ApiError, AuthenticationError, AuthorizationError, BadR
                          ImednetSdkException, NotFoundError, RateLimitError)
 from .exceptions import ValidationError as SdkValidationError  # Alias to avoid name clash
 # Import the new helper function
-from .utils import _fetch_and_parse_typed_records
+from .utils import (_fetch_and_parse_typed_records,  # Import build_model_from_variables
+                    build_model_from_variables)
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +76,7 @@ DEFAULT_RETRY_EXCEPTIONS: Set[type] = {
     httpx.ReadTimeout,
     httpx.PoolTimeout,
     httpx.ConnectTimeout,
-    RateLimitError,  # Retry on 429
+    # RateLimitError, # REMOVED: Do not retry 429 by default
     ApiError,  # Retry on 5xx by default (ApiError is raised for 5xx)
 }
 # Default methods considered idempotent and safe to retry
@@ -122,6 +124,7 @@ class ImednetClient:
         backoff_factor: float = 1,
         retry_methods: Optional[Set[str]] = None,
         retry_exceptions: Optional[Set[type]] = None,
+        retry_on_status_codes: Optional[Set[int]] = None,  # Added for more control if needed later
     ):
         """Initializes the ImednetClient.
 
@@ -181,7 +184,21 @@ class ImednetClient:
         base_retry_exceptions = DEFAULT_RETRY_EXCEPTIONS.copy()
         if retry_exceptions:
             base_retry_exceptions.update(retry_exceptions)
-        self._retry_exceptions_tuple = tuple(base_retry_exceptions)  # Tenacity needs a tuple
+        # Ensure 4xx errors are NOT retried by default unless explicitly added
+        self._retry_exceptions_tuple = tuple(
+            exc
+            for exc in base_retry_exceptions
+            if not issubclass(
+                exc,
+                (
+                    BadRequestError,  # Includes SdkValidationError
+                    AuthenticationError,
+                    AuthorizationError,
+                    NotFoundError,
+                    RateLimitError,
+                ),
+            )
+        )
 
         self._default_headers = {
             "Accept": "application/json",
@@ -207,12 +224,19 @@ class ImednetClient:
     ) -> httpx.Response:
         """Makes a single HTTP request attempt. Called by the retry logic."""
         logger.debug(f"Making request: {method} {endpoint} Params: {params} Body: {json_data}")
+
+        # Handle Pydantic model serialization before sending
+        if isinstance(json_data, BaseModel):
+            processed_json_data = json_data.model_dump(by_alias=True, mode="json")
+        else:
+            processed_json_data = json_data
+
         try:
             response = self._client.request(
                 method,
                 endpoint,
                 params=params,
-                json=json_data,  # Use the renamed variable
+                json=processed_json_data,  # Use processed data
                 timeout=timeout,  # Pass the specific timeout
                 **kwargs,
             )
@@ -240,9 +264,9 @@ class ImednetClient:
         method: str,
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
-        json: Optional[Any] = None,
+        json: Optional[Any] = None,  # Keep original name 'json' for public-facing methods
         response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
-        timeout: Optional[TimeoutTypes] = None,  # Add timeout parameter
+        timeout: Optional[TimeoutTypes] = None,
         **kwargs: Any,
     ) -> Union[T, List[T], httpx.Response]:
         """Core request method with retry logic, response parsing, and error handling.
@@ -269,6 +293,7 @@ class ImednetClient:
             ImednetSdkException: For API errors (4xx/5xx) or validation issues.
             httpx.RequestError: For underlying connection/network issues if retries fail.
             RetryError: If retries are exhausted.
+            RuntimeError: If JSON decoding or Pydantic validation fails.
         """
         # Determine the timeout for this specific request
         request_timeout = timeout if timeout is not None else self._default_timeout
@@ -277,6 +302,11 @@ class ImednetClient:
         retryer = Retrying(
             stop=stop_after_attempt(self._retries + 1),  # +1 because first attempt is not a retry
             wait=wait_exponential(multiplier=self._backoff_factor, min=1, max=10),
+            retry=(
+                lambda retry_state: isinstance(
+                    retry_state.outcome.exception(), self._retry_exceptions_tuple
+                )
+            ),  # Retry only on specific exceptions
             reraise=True,  # Reraise the exception if retries fail
         )
 
@@ -287,7 +317,7 @@ class ImednetClient:
                 method=method,
                 endpoint=endpoint,
                 params=params,
-                json_data=json,  # Pass renamed json_data
+                json_data=json,  # Pass original json data (make_request_attempt handles serialization)
                 timeout=request_timeout,
                 **kwargs,
             )
@@ -299,15 +329,56 @@ class ImednetClient:
         # Process the final response (either successful or non-retried error)
         if response_model:
             try:
-                adapter = TypeAdapter(response_model)
-                return adapter.validate_python(response.json())
+                response_json = response.json()
+            except json.JSONDecodeError as decode_exc:
+                logger.error(
+                    f"Failed to decode JSON response from {method} {endpoint}: {decode_exc}"
+                )
+                raise RuntimeError(
+                    f"Failed to decode JSON response from {method} {endpoint}. Response text: {response.text[:500]}..."
+                ) from decode_exc
+
+            try:
+                # Use model_validate for Pydantic v2
+                if hasattr(response_model, "model_validate"):
+                    adapter = TypeAdapter(response_model)
+                    return adapter.validate_python(response_json)
+                else:  # Fallback for older Pydantic or different structure
+                    # This part might need adjustment based on exact Pydantic version/usage
+                    if (
+                        isinstance(response_json, list)
+                        and hasattr(response_model, "__args__")
+                        and response_model.__args__
+                    ):
+                        item_model = response_model.__args__[0]
+                        return [item_model.parse_obj(item) for item in response_json]
+                    elif isinstance(response_model, type) and issubclass(response_model, BaseModel):
+                        return response_model.parse_obj(response_json)
+                    else:
+                        # If response_model is not a standard Pydantic type/list, return raw JSON
+                        logger.warning(
+                            f"Unsupported response_model type: {type(response_model)}. Returning raw JSON."
+                        )
+                        return response_json  # Or raise error?
+
             except ValidationError as validation_exc:
+                logger.error(
+                    f"Failed to validate response data for {method} {endpoint}: {validation_exc}"
+                )
                 raise RuntimeError(
                     f"Failed to validate response data: {validation_exc}"
                 ) from validation_exc
-        return response
+            except Exception as e:  # Catch other potential validation/parsing errors
+                logger.error(
+                    f"Unexpected error during response parsing for {method} {endpoint}: {e}"
+                )
+                raise RuntimeError(f"Unexpected error during response parsing: {e}") from e
 
-    def _handle_api_error(self, response: httpx.Response, request_path: str) -> None:
+        return response  # Return raw response if no model specified
+
+    def _handle_api_error(
+        self, response: httpx.Response, request_path: str
+    ) -> ImednetSdkException:  # Return type hint added
         """Parses API error responses and raises appropriate `ImednetSdkException` subclasses.
 
         Analyzes the HTTP status code and, if possible, the JSON error payload
@@ -337,165 +408,84 @@ class ImednetClient:
         timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
         error_details: Dict[str, Any] = {}
         api_error_code: Optional[str] = None
-        description: str = f"HTTP error {status_code} occurred."
+        description: str = (
+            f"HTTP error {status_code} occurred for request path '{request_path}'."  # Include path
+        )
         attribute: Optional[str] = None
         value: Optional[Any] = None
 
         try:
+            # Use standard json library for parsing error response
             error_data = response.json()
+            # Standard iMednet error structure check (adjust if needed based on actual errors)
             metadata = error_data.get("metadata", {})
             error_info = metadata.get("error", {})
 
             api_error_code = error_info.get("code")
             # Prioritize 'message', fallback to 'description', then default
             description = error_info.get("message", error_info.get("description", description))
-            attribute = error_info.get("attribute")
-            value = error_info.get("value")
-            error_details = error_data
+            # Check for field-specific errors if they exist in the structure
+            field_error = error_info.get("field")  # Assuming 'field' key holds attribute/value
+            if isinstance(field_error, dict):
+                attribute = field_error.get("attribute")
+                value = field_error.get("value")
+            else:  # Fallback if structure is different
+                attribute = error_info.get("attribute")  # Check top-level error info
+                value = error_info.get("value")
 
-        except ValueError:
+            error_details = error_data  # Store the full parsed body
+
+        except json.JSONDecodeError:  # Catch standard JSONDecodeError
             description = (
-                f"HTTP error {status_code} occurred, and the response body was not valid JSON."
+                f"HTTP error {status_code} occurred for request path '{request_path}', "
+                f"and the response body was not valid JSON."
             )
-            error_details = {"raw_response": response.text}
+            try:
+                error_details = {"raw_response": response.text}
+            except Exception:  # Handle cases where even .text fails
+                error_details = {"raw_response": "[Could not decode response text]"}
+
+        # Ensure request_path is relative for consistency in exceptions
+        relative_request_path = request_path.replace(self.base_url, "")
 
         exception_args = {
             "message": description,
             "status_code": status_code,
             "api_error_code": api_error_code,
-            "request_path": request_path,
+            "request_path": relative_request_path,  # Use relative path
             "response_body": error_details,
             "timestamp": timestamp,
         }
 
+        # Exception mapping (seems mostly correct, ensure SdkValidationError uses attribute/value)
         if status_code == 400:
-            if api_error_code == "1000":
-                raise SdkValidationError(**exception_args, attribute=attribute, value=value)
+            if api_error_code == "1000":  # Specific validation error code
+                return SdkValidationError(**exception_args, attribute=attribute, value=value)
             else:
-                raise BadRequestError(**exception_args)
+                return BadRequestError(**exception_args)
         elif status_code == 401:
-            raise AuthenticationError(**exception_args)
+            return AuthenticationError(**exception_args)
         elif status_code == 403:
-            raise AuthorizationError(**exception_args)
+            return AuthorizationError(**exception_args)
         elif status_code == 404:
-            raise NotFoundError(**exception_args)
+            return NotFoundError(**exception_args)
         elif status_code == 429:
-            raise RateLimitError(**exception_args)
+            return RateLimitError(**exception_args)
         elif status_code >= 500:
-            raise ApiError(**exception_args)
-        elif status_code >= 400:
-            raise ApiError(**exception_args)
+            return ApiError(**exception_args)  # General server error
+        elif status_code >= 400:  # Catch-all for other 4xx errors
+            logger.warning(f"Unhandled 4xx status code {status_code} mapped to generic ApiError.")
+            return ApiError(**exception_args)
         else:
-            raise ImednetSdkException(
+            # This case should ideally not be reached if raise_for_status() is used correctly
+            logger.error(f"Unexpected non-error status code {status_code} in error handler.")
+            return ImednetSdkException(  # Fallback exception
                 f"Unhandled HTTP status code {status_code}.",
                 status_code=status_code,
-                request_path=request_path,
+                request_path=relative_request_path,
                 response_body=error_details,
                 timestamp=timestamp,
             )
-
-    def _get(
-        self,
-        endpoint: str,
-        params: Optional[Dict[str, Any]] = None,
-        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
-        timeout: TimeoutTypes = None,
-        **kwargs: Any,
-    ) -> Union[T, List[T], httpx.Response]:
-        """Sends a GET request using the internal `_request` method.
-
-        A convenience wrapper around `_request` for GET operations.
-
-        Args:
-            endpoint: The API endpoint path (relative to `base_url`).
-            params: Optional dictionary of query parameters.
-            response_model: Optional Pydantic model class (or `List[ModelClass]`)
-                            to parse the successful JSON response into.
-            timeout: Optional timeout configuration override for this request.
-            **kwargs: Additional arguments passed directly to `_request`.
-
-        Returns:
-            The deserialized Pydantic model(s) or the raw `httpx.Response`,
-            as returned by `_request`.
-
-        Raises:
-            Propagates exceptions raised by `_request`.
-        """
-        return self._request(
-            "GET", endpoint, params=params, response_model=response_model, timeout=timeout, **kwargs
-        )
-
-    def _post(
-        self,
-        endpoint: str,
-        json: Optional[Any] = None,
-        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
-        timeout: TimeoutTypes = None,
-        **kwargs: Any,
-    ) -> Union[T, List[T], httpx.Response]:
-        """Sends a POST request using the internal `_request` method.
-
-        A convenience wrapper around `_request` for POST operations.
-
-        Args:
-            endpoint: The API endpoint path (relative to `base_url`).
-            json: Optional request body payload (dict, list, or Pydantic model).
-            response_model: Optional Pydantic model class (or `List[ModelClass]`)
-                            to parse the successful JSON response into.
-            timeout: Optional timeout configuration override for this request.
-            **kwargs: Additional arguments passed directly to `_request`.
-
-        Returns:
-            The deserialized Pydantic model(s) or the raw `httpx.Response`,
-            as returned by `_request`.
-
-        Raises:
-            Propagates exceptions raised by `_request`.
-        """
-        return self._request(
-            "POST", endpoint, json=json, response_model=response_model, timeout=timeout, **kwargs
-        )
-
-    def get_typed_records_for_subject(
-        self,
-        study_key: str,
-        subject_key: str,
-        form_key: str,
-        record_model_name: Optional[str] = None,
-        **kwargs: Any,
-    ) -> List[BaseModel]:
-        """Fetches records for a subject and dynamically parses them into a Pydantic model.
-
-        Retrieves variable definitions for the specified form, generates a dynamic
-        Pydantic model based on those variables, fetches the records for the subject,
-        and parses the record data into instances of the generated model.
-
-        Args:
-            study_key: The key of the study.
-            subject_key: The key of the subject.
-            form_key: The key of the form containing the desired variables.
-            record_model_name: Optional name for the dynamically created Pydantic model.
-                               Defaults to f"{form_key.capitalize()}Record".
-            **kwargs: Additional keyword arguments passed to the underlying
-                      `records.list_records` call (e.g., `filter`, `page`, `size`).
-
-        Returns:
-            A list of Pydantic model instances, where each instance represents a record
-            parsed according to the dynamically generated model based on the form's variables.
-
-        Raises:
-            ImednetSdkException: If fetching variables or records fails.
-            RuntimeError: If the dynamic model cannot be created or data cannot be parsed.
-        """
-        # Use the imported utility function
-        return _fetch_and_parse_typed_records(
-            client=self,
-            study_key=study_key,
-            subject_key=subject_key,
-            form_key=form_key,
-            record_model_name=record_model_name,
-            **kwargs,  # Pass kwargs correctly
-        )
 
     # --- Resource Client Properties ---
     @property
@@ -665,6 +655,51 @@ class ImednetClient:
         if self._jobs is None:
             self._jobs = JobsClient(self)
         return self._jobs
+
+    # --- New Method: get_typed_records ---
+    def get_typed_records(
+        self,
+        study_key: str,
+        form_key: str,
+        record_model_name: Optional[str] = None,
+        **kwargs: Any,
+    ) -> List[BaseModel]:
+        """Fetches records for a form and dynamically parses them into a Pydantic model.
+
+        Retrieves variable definitions for the specified form, generates a dynamic
+        Pydantic model based on those variables, fetches the records for the form,
+        and parses the record data into instances of the generated model.
+
+        Args:
+            study_key: The key of the study.
+            form_key: The key of the form containing the desired variables.
+            record_model_name: Optional name for the dynamically created Pydantic model.
+                               Defaults to f"{form_key.capitalize()}RecordData".
+            **kwargs: Additional keyword arguments passed to the underlying
+                      `records.list_records` call (e.g., `filter`, `page`, `size`,
+                      `sort`, `record_data_filter`).
+
+        Returns:
+            A list of Pydantic model instances, where each instance represents a record's
+            `recordData` parsed according to the dynamically generated model based on
+            the form's variables. Records with data that fails validation against the
+            generated model are skipped (with a warning logged).
+
+        Raises:
+            ImednetSdkException: If fetching variables or records fails.
+            ValueError: If building the dynamic model fails (e.g., missing 'variableName').
+            RuntimeError: If the dynamic model cannot be created or data cannot be parsed
+                          due to unexpected errors.
+        """
+        # Use the imported utility function, passing the necessary resource clients
+        return _fetch_and_parse_typed_records(
+            variables_client=self.variables,  # Pass the variables client instance
+            records_client=self.records,  # Pass the records client instance
+            study_key=study_key,
+            form_key=form_key,
+            record_model_name=record_model_name,
+            **kwargs,  # Pass through other kwargs like filter, size, sort etc.
+        )
 
     # --- Context Manager Methods ---
     def __enter__(self) -> "ImednetClient":

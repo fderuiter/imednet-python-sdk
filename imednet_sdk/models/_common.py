@@ -135,8 +135,10 @@ class ApiResponse(BaseModel, Generic[T]):
         populate_by_name=True, json_encoders={datetime: lambda dt: dt.isoformat()}
     )
 
-    metadata: Metadata = Field(..., description="Response metadata")
+    metadata: Metadata = Field(
+        ..., description="Response metadata"
+    )  # Already required, no change needed.
     pagination: Optional[PaginationInfo] = Field(
         None, description="Pagination information if applicable"
-    )  # Add top-level pagination
+    )
     data: Optional[T] = Field(None, description="Response data of generic type T")
