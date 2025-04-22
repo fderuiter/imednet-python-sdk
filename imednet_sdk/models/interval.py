@@ -6,7 +6,7 @@ the iMednet API, typically via the `/intervals` endpoint.
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -93,19 +93,15 @@ model_config = ConfigDict(extra="allow", populate_by_name=True)  # Added populat
 
 
 # Keep validator if date formats need parsing
-@field_validator(
-    "dateCreated", "dateModified", mode="before"  # Removed non-existent fields from validator
-)
 @classmethod
-def parse_datetime_optional(cls, value):
+@field_validator("dateCreated", "dateModified", mode="before")
+def parse_datetime_optional(cls, value: Any) -> Optional[datetime]:
     """Parse datetime strings into datetime objects, handling None."""
     if value is None:
         return None
     if isinstance(value, datetime):
         return value
-    # Basic ISO format parsing, adjust if API uses different formats
     try:
-        # Handle potential 'Z' for UTC
         if "Z" in str(value):
             value = str(value).replace("Z", "+00:00")
         return datetime.fromisoformat(str(value))
