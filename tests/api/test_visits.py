@@ -9,8 +9,7 @@ from httpx import Response
 from imednet_sdk.api.visits import VisitsClient  # Import specific client
 from imednet_sdk.client import ImednetClient
 # Use PaginationInfo based on documentation structure
-from imednet_sdk.models._common import (ApiResponse, Metadata, PaginationInfo,
-                                        SortInfo)
+from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.visit import VisitModel
 
 # --- Constants ---

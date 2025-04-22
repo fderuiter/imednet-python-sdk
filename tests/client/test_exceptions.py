@@ -8,10 +8,8 @@ import pytest
 import respx
 from httpx import Response
 
-from imednet_sdk.exceptions import (ApiError, AuthenticationError,
-                                    AuthorizationError, BadRequestError,
-                                    NotFoundError, RateLimitError,
-                                    ValidationError)
+from imednet_sdk.exceptions import (ApiError, AuthenticationError, AuthorizationError,
+                                    BadRequestError, NotFoundError, RateLimitError, ValidationError)
 
 from .conftest import BASE_URL
 

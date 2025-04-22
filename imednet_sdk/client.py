@@ -49,19 +49,15 @@ from tenacity import RetryError, Retrying, stop_after_attempt, wait_exponential
 from imednet_sdk.models._common import ApiResponse
 
 # Import resource clients
-from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient,
-                  RecordRevisionsClient, RecordsClient, SitesClient,
-                  StudiesClient, SubjectsClient, UsersClient, VariablesClient,
-                  VisitsClient)
+from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient, RecordRevisionsClient,
+                  RecordsClient, SitesClient, StudiesClient, SubjectsClient, UsersClient,
+                  VariablesClient, VisitsClient)
 # Import custom exceptions
-from .exceptions import (ApiError, AuthenticationError, AuthorizationError,
-                         BadRequestError, ImednetSdkException, NotFoundError,
-                         RateLimitError)
-from .exceptions import \
-    ValidationError as SdkValidationError  # Alias to avoid name clash
+from .exceptions import (ApiError, AuthenticationError, AuthorizationError, BadRequestError,
+                         ImednetSdkException, NotFoundError, RateLimitError)
+from .exceptions import ValidationError as SdkValidationError  # Alias to avoid name clash
 # Import the new helper function
-from .utils import \
-    _fetch_and_parse_typed_records  # Import build_model_from_variables
+from .utils import _fetch_and_parse_typed_records  # Import build_model_from_variables
 from .utils import build_model_from_variables
 
 logger = logging.getLogger(__name__)

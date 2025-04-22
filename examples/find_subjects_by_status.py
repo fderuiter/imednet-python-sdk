@@ -76,8 +76,9 @@ def main():
         logging.info("iMednet client initialized successfully.")
 
         # --- Find Subjects by Status ---
-        logging.info(
-            f"Fetching subjects with status '{TARGET_SUBJECT_STATUS}' in study '{TARGET_STUDY_KEY}'..."
+        print(
+            f"Fetching subjects with status '{TARGET_SUBJECT_STATUS}' "
+            f"in study '{TARGET_STUDY_KEY}'..."
         )
 
         # Use the list_subjects method with the filter parameter

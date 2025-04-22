@@ -92,7 +92,9 @@ def main():
         ]
     ):
         logging.warning(
-            "Please replace placeholder Keys/Names (e.g., DEMO, SUBJ-001) with actual values in the script."
+            "Note: This script uses placeholder values for demonstration. "
+            "Please replace placeholder Keys/Names (e.g., DEMO, SUBJ-001) "
+            "with actual values in the script."
         )
         return
 
