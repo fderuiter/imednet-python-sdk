@@ -43,6 +43,7 @@ class CodingsClient(ResourceClient):
             raise ValueError("study_key is required.")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/codings"
-        return self._client._get(
+        # Use self._get instead of self._client._get
+        return self._get(
             endpoint, params=kwargs, response_model=ApiResponse[List[CodingModel]]
         )

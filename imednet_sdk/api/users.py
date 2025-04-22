@@ -49,10 +49,8 @@ class UsersClient(ResourceClient):
 
         endpoint = f"/api/v1/edc/studies/{study_key}/users"
         params = kwargs.copy()
-        params["includeInactive"] = str(
-            include_inactive
-        ).lower()  # API expects string 'true'/'false'
+        params["includeInactive"] = include_inactive
 
-        return self._client._get(
+        return self._get(
             endpoint, params=params, response_model=ApiResponse[List[UserModel]]
         )

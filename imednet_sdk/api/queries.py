@@ -64,7 +64,7 @@ class QueriesClient(ResourceClient):
         # Remove None values to avoid sending empty query parameters
         params = {k: v for k, v in params.items() if v is not None}
 
-        # Corrected to use the internal _get method and specify response model
-        return self._client._get(
+        # Use self._get instead of self._client._get
+        return self._get(
             endpoint, params=params, response_model=ApiResponse[List[QueryModel]]
         )

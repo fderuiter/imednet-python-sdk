@@ -6,7 +6,7 @@ It handles:
 
 - Authentication using API and Security keys (read from arguments or environment variables).
 - Configuration of base URL, timeouts, and retry logic.
-- Making HTTP requests (GET, POST, PUT, DELETE) to the iMednet API.
+- Making HTTP requests (GET, POST) to the iMednet API.
 - Automatic retry of failed requests based on configurable conditions (status codes,
   exceptions, methods) using the `tenacity` library.
 - Parsing successful JSON responses into Pydantic models.
@@ -199,165 +199,111 @@ class ImednetClient:
     def _make_request_attempt(
         self,
         method: str,
-        url: str,
+        endpoint: str,
         params: Optional[Dict[str, Any]],
-        request_json: Optional[Any],
-        request_timeout: TimeoutTypes,
-        response_model: Optional[Union[Type[T], Type[List[T]]]],
+        json_data: Optional[Any],  # Renamed from json to avoid conflict
+        timeout: TimeoutTypes,  # Use the determined timeout
         **kwargs: Any,
-    ) -> Union[T, List[T], httpx.Response]:
-        """Executes a single HTTP request attempt and handles the response.
-
-        Sends the request using the internal ``httpx.Client``. If the response
-        indicates an API error (non-2xx status), it raises the appropriate
-        ``ImednetSdkException`` subclass via ``_handle_api_error``. If successful
-        and a ``response_model`` is provided, it attempts to parse the JSON
-        response into the model, raising ``SdkValidationError`` on failure.
-
-        Network-related errors (subclasses of ``httpx.RequestError``) are allowed
-        to propagate up to be handled by the retry decorator.
-
-        Args:
-            method: The HTTP method (e.g., 'GET', 'POST').
-            url: The target URL path for the request (relative to ``base_url``).
-            params: Optional dictionary of query parameters.
-            request_json: Optional JSON payload for the request body (typically a dict
-                          or list, will be serialized by httpx).
-            request_timeout: The timeout configuration for this specific attempt.
-            response_model: Optional Pydantic model (or ``List[ModelType]``) to parse
-                            the successful JSON response into.
-            **kwargs: Additional keyword arguments passed directly to ``httpx.Client.request``
-                      (e.g., ``headers``).
-
-        Returns:
-            If ``response_model`` is provided and the request/parsing is successful:
-                An instance of the ``response_model`` (or a list of instances).
-            If ``response_model`` is None and the request is successful:
-                The raw ``httpx.Response`` object.
-
-        Raises:
-            AuthenticationError: For 401 Unauthorized errors.
-            AuthorizationError: For 403 Forbidden errors.
-            NotFoundError: For 404 Not Found errors.
-            RateLimitError: For 429 Too Many Requests errors.
-            ValidationError: For 400 Bad Request errors specifically identified as
-                             validation issues (e.g., API code 1000).
-            BadRequestError: For other 400 Bad Request errors.
-            ApiError: For other 4xx or 5xx errors.
-            SdkValidationError: If ``response_model`` is provided but the response JSON
-                                cannot be parsed into the model.
-            httpx.RequestError: For network-level issues (connection, timeout, etc.).
-                                These are typically caught by the retry logic.
-        """
-        request_path = str(
-            self._client.build_request(method, url, params=params, json=request_json).url
-        )
+    ) -> httpx.Response:
+        """Makes a single HTTP request attempt. Called by the retry logic."""
+        logger.debug(f"Making request: {method} {endpoint} Params: {params} Body: {json_data}")
         try:
             response = self._client.request(
-                method=method,
-                url=url,
+                method,
+                endpoint,
                 params=params,
-                json=request_json,
-                timeout=request_timeout,
+                json=json_data,  # Use the renamed variable
+                timeout=timeout,  # Pass the specific timeout
                 **kwargs,
             )
-
-            # Check for non-2xx responses and raise custom exceptions
-            if not response.is_success:
-                self._handle_api_error(
-                    response, request_path
-                )  # This will raise appropriate exception
-
-            # If successful and no response model, return raw response
-            if response_model is None:
-                return response
-
-            # Decode and validate JSON if response_model is provided
-            try:
-                response_data = response.json()
-            except ValueError as json_exc:
-                raise RuntimeError(f"Failed to decode JSON response: {json_exc}") from json_exc
-
-            try:
-                adapter = TypeAdapter(response_model)
-                validated_data = adapter.validate_python(response_data)
-                return validated_data
-            except ValidationError as validation_exc:
-                raise RuntimeError(
-                    f"Failed to validate response data: {validation_exc}"
-                ) from validation_exc
-
-        except httpx.RequestError as exc:
-            # Re-raise network errors to be potentially caught by tenacity
-            raise exc
-        # Custom exceptions raised by _handle_api_error will also propagate up
+            # Raise HTTPStatusError for 4xx/5xx responses immediately after the request
+            # This allows the retry logic (_should_retry) to catch specific SDK exceptions
+            response.raise_for_status()
+            return response
+        except httpx.HTTPStatusError as e:
+            # Convert httpx error to our custom SDK exception before retry check
+            sdk_exception = self._handle_api_error(e.response, endpoint)
+            logger.warning(
+                f"Request attempt failed with status {e.response.status_code}. "
+                f"Error: {sdk_exception}. Retrying if applicable..."
+            )
+            raise sdk_exception from e
+        except httpx.RequestError as e:
+            # Handle network/connection errors
+            logger.warning(f"Request attempt failed with network error: {e}. Retrying if applicable...")
+            raise  # Reraise httpx.RequestError for tenacity to catch
 
     def _request(
         self,
         method: str,
         endpoint: str,
-        response_model: Optional[Type[T]] = None,
-        params: Optional[dict] = None,
+        params: Optional[Dict[str, Any]] = None,
         json: Optional[Any] = None,
-        data: Optional[dict] = None,
-        files: Optional[dict] = None,
-        headers: Optional[dict] = None,
-        raise_for_status: bool = True,
-    ) -> Union[ApiResponse[T], httpx.Response]:
-        """Internal method to make HTTP requests with error handling and retries."""
-        url = endpoint
-        request_timeout = self._default_timeout
+        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
+        timeout: Optional[TimeoutTypes] = None,  # Add timeout parameter
+        **kwargs: Any,
+    ) -> Union[T, List[T], httpx.Response]:
+        """Core request method with retry logic, response parsing, and error handling.
 
-        # Handle potential Pydantic model serialization for request body
-        request_json = None
-        if isinstance(json, BaseModel):
-            # Serialize Pydantic model to dict using aliases
-            request_json = json.model_dump(by_alias=True, mode="json")
-        elif json is not None:
-            request_json = json  # Assume it's already a dict/serializable
+        Handles making the actual HTTP request using the configured httpx client,
+        applying retry logic via tenacity, parsing successful responses into
+        Pydantic models (if specified), and raising appropriate SDK exceptions
+        for API errors.
 
-        # --- Tenacity Retry Logic ---
-        # Check if the method is configured for retries
-        if method.upper() in self._retry_methods:
-            # Define the retry decorator dynamically
-            retry_decorator = Retrying(
-                stop=stop_after_attempt(self._retries + 1),  # Total attempts = initial + retries
-                wait=wait_exponential(
-                    multiplier=self._backoff_factor, min=0.5, max=10
-                ),  # Exponential backoff with jitter
-                reraise=True,  # Reraise the last exception after exhausting attempts
-            )
-            # Apply the decorator to the request attempt function
-            try:
-                return retry_decorator(
-                    self._make_request_attempt(
-                        method=method,
-                        url=url,
-                        params=params,
-                        request_json=request_json,
-                        request_timeout=request_timeout,
-                        response_model=response_model,
-                        headers=headers,
-                        data=data,
-                        files=files,
-                    )
-                )
-            except RetryError as e:
-                # If tenacity fails, reraise the underlying cause
-                raise e.cause from e
-        else:
-            # If method is not retryable, make a single attempt directly
-            return self._make_request_attempt(
+        Args:
+            method: HTTP method (e.g., "GET", "POST").
+            endpoint: API endpoint path (relative to base URL).
+            params: Optional dictionary of query parameters.
+            json: Optional request body payload (dict, list, or Pydantic model).
+            response_model: Optional Pydantic model class or List[ModelClass] for parsing.
+            timeout: Optional timeout override for this specific request.  # Add timeout to docstring
+            **kwargs: Additional keyword arguments passed to httpx's request method.
+
+        Returns:
+            The deserialized Pydantic model(s) if response_model is provided and
+            the request is successful (2xx status), otherwise the raw httpx.Response.
+
+        Raises:
+            ImednetSdkException: For API errors (4xx/5xx) or validation issues.
+            httpx.RequestError: For underlying connection/network issues if retries fail.
+            RetryError: If retries are exhausted.
+        """
+        # Determine the timeout for this specific request
+        request_timeout = timeout if timeout is not None else self._default_timeout
+
+        # Prepare retry configuration using tenacity
+        retryer = Retrying(
+            stop=stop_after_attempt(self._retries + 1),  # +1 because first attempt is not a retry
+            wait=wait_exponential(multiplier=self._backoff_factor, min=1, max=10),
+            reraise=True,  # Reraise the exception if retries fail
+        )
+
+        try:
+            # Use tenacity's retry mechanism
+            response = retryer(
+                self._make_request_attempt,
                 method=method,
-                url=url,
+                endpoint=endpoint,
                 params=params,
-                request_json=request_json,
-                request_timeout=request_timeout,
-                response_model=response_model,
-                headers=headers,
-                data=data,
-                files=files,
+                json_data=json,  # Pass renamed json_data
+                timeout=request_timeout,
+                **kwargs,
             )
+        except RetryError as e:
+            logger.error(f"Request failed after {self._retries} retries: {e}")
+            # Reraise the last exception encountered during retries
+            raise e.last_attempt.exception  # type: ignore
+
+        # Process the final response (either successful or non-retried error)
+        if response_model:
+            try:
+                adapter = TypeAdapter(response_model)
+                return adapter.validate_python(response.json())
+            except ValidationError as validation_exc:
+                raise RuntimeError(
+                    f"Failed to validate response data: {validation_exc}"
+                ) from validation_exc
+        return response
 
     def _handle_api_error(self, response: httpx.Response, request_path: str) -> None:
         """Parses API error responses and raises appropriate `ImednetSdkException` subclasses.
@@ -508,33 +454,48 @@ class ImednetClient:
             "POST", endpoint, json=json, response_model=response_model, timeout=timeout, **kwargs
         )
 
-    def get_typed_records(
-        self, study_key: str, subject_key: str, form_key: Optional[str] = None, **kwargs
+    def get_typed_records_for_subject(
+        self,
+        study_key: str,
+        subject_key: str,
+        form_key: str,
+        record_model_name: Optional[str] = None,
+        **kwargs: Any,
     ) -> List[BaseModel]:
-        """
-        Retrieves records for a subject and dynamically creates Pydantic models based on form variables.
+        """Fetches records for a subject and dynamically parses them into a Pydantic model.
+
+        Retrieves variable definitions for the specified form, generates a dynamic
+        Pydantic model based on those variables, fetches the records for the subject,
+        and parses the record data into instances of the generated model.
 
         Args:
-            study_key (str): The study key.
-            subject_key (str): The subject key.
-            form_key (Optional[str]): Optional form key to filter records.
-            **kwargs: Additional parameters for the list_records call (e.g., filter, size).
+            study_key: The key of the study.
+            subject_key: The key of the subject.
+            form_key: The key of the form containing the desired variables.
+            record_model_name: Optional name for the dynamically created Pydantic model.
+                               Defaults to f"{form_key.capitalize()}Record".
+            **kwargs: Additional keyword arguments passed to the underlying
+                      `records.list_records` call (e.g., `filter`, `page`, `size`).
 
         Returns:
-            List[BaseModel]: A list of dynamically generated Pydantic model instances,
-                             each representing a record.
+            A list of Pydantic model instances, where each instance represents a record
+            parsed according to the dynamically generated model based on the form's variables.
 
         Raises:
-            ImednetSdkException: If API calls fail.
-            ValueError: If variable metadata cannot be retrieved.
+            ImednetSdkException: If fetching variables or records fails.
+            RuntimeError: If the dynamic model cannot be created or data cannot be parsed.
         """
-        # Use the utility function from utils.py
-        return get_typed_records_for_subject(
-            self, study_key=study_key, subject_key=subject_key, form_key=form_key, **kwargs
+        # Use the imported utility function
+        return _fetch_and_parse_typed_records(
+            client=self,
+            study_key=study_key,
+            subject_key=subject_key,
+            form_key=form_key,
+            record_model_name=record_model_name,
+            **kwargs, # Pass kwargs correctly
         )
 
     # --- Resource Client Properties ---
-
     @property
     def studies(self) -> StudiesClient:
         """Accessor for the Studies API resource client.
@@ -693,7 +654,7 @@ class ImednetClient:
     def jobs(self) -> JobsClient:
         """Accessor for the Jobs API resource client.
 
-        Provides methods for interacting with asynchronous job status endpoints.
+        Provides methods for checking the status of asynchronous jobs.
         The client instance is cached upon first access.
 
         Returns:
@@ -703,25 +664,21 @@ class ImednetClient:
             self._jobs = JobsClient(self)
         return self._jobs
 
-    # --- End Resource Client Properties ---
+    # --- Context Manager Methods ---
+    def __enter__(self) -> "ImednetClient":
+        """Allows the client to be used as a context manager."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Closes the client connection pool upon exiting the context manager block."""
+        self.close()
 
     def close(self):
         """Closes the underlying `httpx.Client` connection pool.
 
         It's recommended to call this method when you are finished with the client,
-        or use the client as a context manager (`with ImednetClient() as client:`)
-        which handles closing automatically.
+        or use the client as a context manager (``with ImednetClient() as client: ...``)
+        to ensure connections are properly released.
         """
         self._client.close()
-
-    def __enter__(self) -> "ImednetClient":
-        """Enables the use of the client as a context manager.
-
-        Returns:
-            The client instance itself.
-        """
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Closes the client connection pool upon exiting the context manager block."""
-        self.close()
+        logger.info("iMednet client connection closed.")

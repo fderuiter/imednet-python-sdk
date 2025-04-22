@@ -34,8 +34,9 @@ class StudiesClient(ResourceClient):
         Raises:
             ImednetSdkException: If the API request fails.
         """
-        return self._request(
-            method="GET", endpoint="/studies", response_model=list[StudyModel], params=kwargs
+        # Use _get instead of _request
+        return self._get(
+            endpoint="/studies", response_model=list[StudyModel], params=kwargs
         )
 
     def get_study_details(self, study_key: str) -> ApiResponse[StudyModel]:
@@ -54,10 +55,9 @@ class StudiesClient(ResourceClient):
         Raises:
             ImednetSdkException: If the API request fails (e.g., study not found).
         """
-        return self._request(
-            method="GET",
-            endpoint=f"/studies/{study_key}",
-            response_model=StudyModel,
+        # Use _get instead of _request
+        return self._get(
+            endpoint=f"/studies/{study_key}", response_model=StudyModel
         )
 
     def get_study_configuration(self, study_key: str) -> ApiResponse[dict]:
@@ -77,8 +77,7 @@ class StudiesClient(ResourceClient):
             ImednetSdkException: If the API request fails.
         """
         # Assuming configuration returns a generic dictionary for now
-        return self._request(
-            method="GET",
+        return self._get(
             endpoint=f"/studies/{study_key}/configuration",
             response_model=dict,  # Use dict if structure isn't strictly defined/modeled
         )
@@ -101,8 +100,7 @@ class StudiesClient(ResourceClient):
             ImednetSdkException: If the API request fails.
         """
         # Assuming user data returns as a list of dictionaries
-        return self._request(
-            method="GET",
+        return self._get(
             endpoint=f"/studies/{study_key}/users",
             response_model=list[dict],  # Use list[dict] or create a UserModel
             params=kwargs,

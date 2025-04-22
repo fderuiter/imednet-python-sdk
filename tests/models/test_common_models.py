@@ -85,7 +85,8 @@ def test_metadata():
     assert metadata.error is None
 
     # Test with error
-    error_detail = ErrorDetail(code="ERR001", message="Something went wrong")
+    # Use 'description' instead of 'message' for ErrorDetail
+    error_detail = ErrorDetail(code="ERR001", description="Something went wrong")
     metadata_error = Metadata(
         status="ERROR",
         path="/api/v1/edc/studies",

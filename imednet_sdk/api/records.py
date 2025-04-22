@@ -79,7 +79,8 @@ class RecordsClient(ResourceClient):
         # Pass any additional kwargs directly to the underlying request method
         params.update(kwargs)
 
-        return self._client._get(
+        # Use self._get instead of self._client._get
+        return self._get(
             endpoint, params=params, response_model=ApiResponse[List[RecordModel]]
         )
 
@@ -137,8 +138,8 @@ class RecordsClient(ResourceClient):
         # The base client's _request method will handle json serialization
         records_payload = [record.model_dump(exclude_none=True) for record in records]
 
-        # Use the internal _post method, expecting JobStatusModel directly
-        return self._client._post(
+        # Use self._post instead of self._client._post
+        return self._post(
             endpoint,
             json=records_payload,
             headers=headers,

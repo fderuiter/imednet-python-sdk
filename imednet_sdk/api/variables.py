@@ -47,6 +47,7 @@ class VariablesClient(ResourceClient):
             raise ValueError("study_key cannot be empty")  # Match test expectation
 
         endpoint = f"/api/v1/edc/studies/{study_key}/variables"
-        return self._client._get(
+        # Use self._get instead of self._client._get
+        return self._get(
             endpoint, params=kwargs, response_model=ApiResponse[List[VariableModel]]
         )

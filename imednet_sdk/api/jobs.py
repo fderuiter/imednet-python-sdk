@@ -42,4 +42,5 @@ class JobsClient(ResourceClient):
             raise ValueError("batch_id is required.")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
-        return self._client._get(endpoint, response_model=JobStatusModel)
+        # Use self._get instead of self._client._get
+        return self._get(endpoint, response_model=JobStatusModel)
