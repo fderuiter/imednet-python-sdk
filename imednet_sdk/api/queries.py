@@ -21,6 +21,8 @@ class QueriesClient(ResourceClient):
     ) -> ApiResponse[List[QueryModel]]:
         """Fetches a list of queries for a given study.
 
+        Corresponds to GET /api/v1/edc/studies/{studyKey}/queries.
+
         Args:
             study_key: The key of the study to fetch queries for.
             page: The page number to retrieve (default: 0).
