@@ -349,9 +349,10 @@ class ImednetClient:
             logger.error(f"Request failed after {self._retries} retries: {e}")
             # Reraise the last exception encountered during retries
             raise e.last_attempt.exception  # type: ignore
-
         # Process the final response (either successful or non-retried error)
         if response_model:
+            if response is None:
+                raise RuntimeError(f"No response received from {method} {endpoint}")
             try:
                 response_json = response.json()
             except json.JSONDecodeError as decode_exc:
@@ -368,24 +369,28 @@ class ImednetClient:
                 if hasattr(response_model, "model_validate"):
                     adapter = TypeAdapter(response_model)
                     return adapter.validate_python(response_json)
-                else:  # Fallback for older Pydantic or different structure
-                    # This part might need adjustment based on exact Pydantic version/usage
+                else:
+                    # Handle list types
                     if (
                         isinstance(response_json, list)
                         and hasattr(response_model, "__args__")
                         and response_model.__args__
                     ):
+                        # Get the item model from the list type
                         item_model = response_model.__args__[0]
-                        return [item_model.parse_obj(item) for item in response_json]
+                        adapter = TypeAdapter(item_model)
+                        return [adapter.validate_python(item) for item in response_json]
                     elif isinstance(response_model, type) and issubclass(response_model, BaseModel):
-                        return response_model.parse_obj(response_json)
+                        # Handle single model types
+                        adapter = TypeAdapter(response_model)
+                        return adapter.validate_python(response_json)
                     else:
                         # If response_model is not a standard Pydantic type/list, return raw JSON
                         logger.warning(
                             f"Unsupported response_model type: {type(response_model)}. "
                             f"Returning raw JSON."
                         )
-                        return response_json  # Or raise error?
+                        return response_json
 
             except ValidationError as validation_exc:
                 logger.error(

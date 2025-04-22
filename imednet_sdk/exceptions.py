@@ -75,39 +75,36 @@ class AuthorizationError(ImednetSdkException):
 
 
 class BadRequestError(ImednetSdkException):
-    """Raised for general bad requests (e.g., 400 Bad Request)."""
+    """Base class for 400-type client errors."""
 
     pass
 
 
-class ValidationError(BadRequestError):
-    """Raised specifically for validation errors (API error code 1000)."""
+class SdkValidationError(BadRequestError):
+    """Raised when the iMednet API returns a validation error (code 1000).
+
+    This error occurs when the API rejects the request due to validation failures,
+    such as invalid field values, missing required fields, or data format issues.
+    """
 
     def __init__(
         self,
         message: str,
-        status_code: Optional[int] = None,
-        api_error_code: Optional[str] = None,
+        status_code: Optional[int] = 400,
+        api_error_code: Optional[str] = "1000",
         request_path: Optional[str] = None,
         response_body: Optional[Dict[str, Any]] = None,
         timestamp: Optional[str] = None,
-        attribute: Optional[str] = None,
-        value: Optional[Any] = None,
     ):
-        """Initializes the validation-specific exception.
-
-        Inherits from BadRequestError and adds fields specific to API validation
-        failures (error code 1000).
+        """Initialize a validation error with API-specific details.
 
         Args:
-            message: The main error message.
-            status_code: The HTTP status code (usually 400 for validation errors).
-            api_error_code: The API error code (usually '1000' for validation).
-            request_path: The path of the API request that caused the error.
-            response_body: The parsed JSON body of the error response.
-            timestamp: An ISO 8601 formatted timestamp string.
-            attribute: The name of the attribute that failed validation.
-            value: The value that failed validation.
+            message: The validation error message.
+            status_code: HTTP status code (defaults to 400).
+            api_error_code: API error code (defaults to "1000" for validation).
+            request_path: The API endpoint path where validation failed.
+            response_body: The full error response body from the API.
+            timestamp: When the error occurred (ISO 8601 format).
         """
         super().__init__(
             message=message,
@@ -117,8 +114,6 @@ class ValidationError(BadRequestError):
             response_body=response_body,
             timestamp=timestamp,
         )
-        self.attribute = attribute
-        self.value = value
 
     def __str__(self) -> str:
         """Returns a string representation including validation-specific details."""

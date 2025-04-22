@@ -51,4 +51,4 @@ class UsersClient(ResourceClient):
         params = kwargs.copy()
         params["includeInactive"] = include_inactive
 
-        return self._get(endpoint, params=params, response_model=ApiResponse[list[UserModel]])
+        return self._get(endpoint, params=params, response_model=ApiResponse[List[UserModel]])

@@ -1,4 +1,14 @@
-"""API client for interacting with the iMednet Records endpoints.
+"""API client for int    def list_records(
+        self,
+        study_key: str,
+        page: Optional[int] = None,
+        size: Optional[int] = None,
+        sort: Optional[str] = None,
+        filter: Optional[str] = None,
+        record_data_filter: Optional[str] = None,
+        **kwargs: Any,
+    ) -> ApiResponse[list[RecordModel]]:
+        Retrieves a list of records for a specific study.th the iMednet Records endpoints.
 
 This module provides the `RecordsClient` class for accessing and creating
 record data within a specific study via the iMednet API.
@@ -29,7 +39,7 @@ class RecordsClient(ResourceClient):
         filter: Optional[str] = None,
         record_data_filter: Optional[str] = None,
         **kwargs: Any,
-    ) -> ApiResponse[List[RecordModel]]:
+    ) -> ApiResponse[list[RecordModel]]:
         """Retrieves a list of records for a specific study.
 
         Corresponds to the `GET /api/v1/edc/studies/{studyKey}/records` endpoint.
@@ -80,7 +90,7 @@ class RecordsClient(ResourceClient):
         params.update(kwargs)
 
         # Use self._get instead of self._client._get
-        return self._get(endpoint, params=params, response_model=ApiResponse[List[RecordModel]])
+        return self._get(endpoint, params=params, response_model=ApiResponse[list[RecordModel]])
 
     def create_records(
         self,

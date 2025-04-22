@@ -22,7 +22,7 @@ class StudiesClient(ResourceClient):
         sort: Optional[str] = None,
         filter: Optional[str] = None,
         **kwargs: Any,
-    ) -> ApiResponse[List[StudyModel]]:
+    ) -> ApiResponse[list[StudyModel]]:
         """
         Retrieves a list of studies based on specified criteria.
 
@@ -62,11 +62,11 @@ class StudiesClient(ResourceClient):
         # The TypeAdapter in _request should handle ApiResponse[List[StudyModel]]
         return self._get(
             endpoint="/studies",
-            response_model=ApiResponse[List[StudyModel]],  # Correct generic response model
+            response_model=ApiResponse[list[StudyModel]],  # Correct generic response model
             params=params,
         )
 
-    def get_study_users(self, study_key: str, **kwargs) -> ApiResponse[list[dict]]:
+    def get_study_users(self, study_key: str, **kwargs) -> ApiResponse[list[dict[Any, Any]]]:
         """
         Retrieves a list of users associated with a specific study.
 

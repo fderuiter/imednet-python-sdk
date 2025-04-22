@@ -42,51 +42,51 @@
 
 ## ❗ imednet_sdk/api/subjects.py
 
-- [ ] Line 74: Fix return type to `ApiResponse[list[SubjectModel]]`
+- [x] Line 74: Fix return type to `ApiResponse[list[SubjectModel]]`
 
 ## ❗ imednet_sdk/api/studies.py
 
-- [ ] Line 63: Fix return type to `ApiResponse[list[StudyModel]]`
-- [ ] Line 87: Fix return type to `ApiResponse[list[dict[Any, Any]]]`
+- [x] Line 63: Fix return type to `ApiResponse[list[StudyModel]]`
+- [x] Line 87: Fix return type to `ApiResponse[list[dict[Any, Any]]]`
 
 ## ❗ imednet_sdk/api/sites.py
 
-- [ ] Line 74: Fix return type to `ApiResponse[list[SiteModel]]`
+- [x] Line 74: Fix return type to `ApiResponse[list[SiteModel]]`
 
 ## ❗ imednet_sdk/api/records.py
 
-- [ ] Line 83: Fix return type to `ApiResponse[list[RecordModel]]`
-- [ ] Line 140: Fix return type to `JobStatusModel`
+- [x] Line 83: Fix return type to `ApiResponse[list[RecordModel]]`
+- [x] Line 140: Fix return type to `JobStatusModel`
 
 ## ❗ imednet_sdk/api/record_revisions.py
 
-- [ ] Line 74: Fix return type to `ApiResponse[list[RecordRevisionModel]]`
+- [x] Line 74: Fix return type to `ApiResponse[list[RecordRevisionModel]]`
 
 ## ❗ imednet_sdk/api/queries.py
 
-- [ ] Line 68: Fix return type to `ApiResponse[list[QueryModel]]`
+- [x] Line 68: Fix return type to `ApiResponse[list[QueryModel]]`
 
 ## ❗ imednet_sdk/api/jobs.py
 
-- [ ] Line 46: Fix return type to `JobStatusModel`
+- [x] Line 46: Fix return type to `JobStatusModel`
 
 ## ❗ imednet_sdk/api/intervals.py
 
-- [ ] Line 74: Fix return type to `ApiResponse[list[IntervalModel]]`
+- [x] Line 74: Fix return type to `ApiResponse[list[IntervalModel]]`
 
 ## ❗ imednet_sdk/api/forms.py
 
-- [ ] Line 74: Fix return type to `ApiResponse[list[FormModel]]`
+- [x] Line 74: Fix return type to `ApiResponse[list[FormModel]]`
 
 ## ❗ imednet_sdk/api/codings.py
 
-- [ ] Line 47: Fix return type to `ApiResponse[list[CodingModel]]`
+- [x] Line 47: Fix return type to `ApiResponse[list[CodingModel]]`
 
 ## ❗ imednet_sdk/client.py
 
-- [ ] Line 71: Replace `SdkValidationError` with `ValidationError` or define `SdkValidationError`
-- [ ] Line 357: Guard against `None` when accessing `JSONDecodeError`
-- [ ] Line 381: Fix `"type[list[T]]" has no attribute "parse_obj"` (adjust annotation or method)
+- [x] Line 71: Replace `SdkValidationError` with `ValidationError` or define `SdkValidationError`
+- [x] Line 357: Guard against `None` when accessing `JSONDecodeError`
+- [x] Line 381: Fix `"type[list[T]]" has no attribute "parse_obj"` (adjust annotation or method)
 - [ ] Line 590: Fix argument count and types for `build_model_from_variables`
 - [ ] Line 614: Fix return type to `ApiResponse[list[Any]]`
 - [ ] Line 614: Fix argument 1 type passed to `_fetch_and_parse_typed_records`

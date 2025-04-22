@@ -68,9 +68,7 @@ class SitesClient(ResourceClient):
             params["filter"] = filter
 
         # Pass any additional kwargs directly to the underlying request method
-        params.update(kwargs)
-
-        # Use self._get instead of self._client._get
+        params.update(kwargs)  # Use self._get instead of self._client._get
         return self._get(endpoint, params=params, response_model=ApiResponse[List[SiteModel]])
 
     # Add other site-related methods here (e.g., get_site_details)

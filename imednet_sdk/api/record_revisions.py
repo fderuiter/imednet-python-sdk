@@ -4,7 +4,7 @@ This module provides the `RecordRevisionsClient` class for accessing the audit t
 (revision history) of records within a specific study via the iMednet API.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.record_revision import RecordRevisionModel
@@ -27,7 +27,7 @@ class RecordRevisionsClient(ResourceClient):
         sort: Optional[str] = None,
         filter: Optional[str] = None,
         **kwargs: Any,
-    ) -> ApiResponse[List[RecordRevisionModel]]:
+    ) -> ApiResponse[list[RecordRevisionModel]]:
         """Retrieves a list of record revisions (audit trail) for a specific study.
 
         Corresponds to the `GET /api/v1/edc/studies/{studyKey}/recordRevisions` endpoint.
@@ -72,5 +72,5 @@ class RecordRevisionsClient(ResourceClient):
 
         # Use self._get instead of self._client._get
         return self._get(
-            endpoint, params=params, response_model=ApiResponse[List[RecordRevisionModel]]
+            endpoint, params=params, response_model=ApiResponse[list[RecordRevisionModel]]
         )
