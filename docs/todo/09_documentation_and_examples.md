@@ -69,7 +69,7 @@
   * [x] Write guide: Filtering and sorting.
   * [x] Write guide: Creating/updating resources.
   * [x] Write guide: Error handling (exceptions).
-  * [ ] Add explanations of core API concepts.
+  * [x] Add explanations of core API concepts.
 * [ ] **Docstrings (`imednet_sdk/`):**
   * [ ] Add/update comprehensive docstrings for all public modules, classes, methods, functions (use Google/NumPy style).
 * [ ] **Usage Examples (`examples/`):**
