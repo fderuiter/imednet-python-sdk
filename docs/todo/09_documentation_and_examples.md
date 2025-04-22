@@ -73,10 +73,10 @@
 * [ ] **Docstrings (`imednet_sdk/`):**
   * [ ] Add/update comprehensive docstrings for all public modules, classes, methods, functions (use Google/NumPy style).
 * [ ] **Usage Examples (`examples/`):**
-  * [ ] Create `examples/list_studies_and_sites.py`.
-  * [ ] Create `examples/find_subjects_by_status.py`.
-  * [ ] Create `examples/get_all_records_for_subject.py` (using pagination).
-  * [ ] Create `examples/create_new_record.py`.
+  * [x] Create `examples/list_studies_and_sites.py`.
+  * [x] Create `examples/find_subjects_by_status.py`.
+  * [x] Create `examples/get_all_records_for_subject.py` (using pagination).
+  * [x] Create `examples/create_new_record.py`.
   * [ ] Create `examples/handle_api_errors.py`.
   * [ ] Ensure examples are clear, commented, and runnable.
 * [ ] **CI/CD for Docs (Optional):**
