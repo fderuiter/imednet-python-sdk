@@ -65,7 +65,7 @@
 * [ ] **Usage Guides (`docs/source/usage.rst`, etc.):**
   * [x] Write guide: Client initialization and authentication.
   * [x] Write guide: Making requests (listing, getting).
-  * [ ] Write guide: Handling pagination (manual, iterators).
+  * [x] Write guide: Handling pagination (manual, iterators).
   * [ ] Write guide: Filtering and sorting.
   * [ ] Write guide: Creating/updating resources.
   * [ ] Write guide: Error handling (exceptions).
