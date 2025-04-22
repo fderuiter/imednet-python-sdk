@@ -71,7 +71,40 @@
   * [x] Write guide: Error handling (exceptions).
   * [x] Add explanations of core API concepts.
 * [ ] **Docstrings (`imednet_sdk/`):**
-  * [ ] Add/update comprehensive docstrings for all public modules, classes, methods, functions (use Google/NumPy style).
+  * [ ] `imednet_sdk/__init__.py` (Module docstring)
+  * [ ] `imednet_sdk/client.py` (Module, `ImednetClient` class, `__init__`, public methods)
+  * [ ] `imednet_sdk/exceptions.py` (Module, all exception classes)
+  * [ ] `imednet_sdk/utils.py` (Module, public functions)
+  * [ ] `imednet_sdk/api/__init__.py` (Module docstring)
+  * [ ] `imednet_sdk/api/_base.py` (Module, `BaseAPIClient` class)
+  * [ ] `imednet_sdk/api/codings.py` (Module, `CodingsAPI` class, public methods)
+  * [ ] `imednet_sdk/api/forms.py` (Module, `FormsAPI` class, public methods)
+  * [ ] `imednet_sdk/api/intervals.py` (Module, `IntervalsAPI` class, public methods)
+  * [ ] `imednet_sdk/api/jobs.py` (Module, `JobsAPI` class, public methods)
+  * [ ] `imednet_sdk/api/queries.py` (Module, `QueriesAPI` class, public methods)
+  * [ ] `imednet_sdk/api/records.py` (Module, `RecordsAPI` class, public methods)
+  * [ ] `imednet_sdk/api/record_revisions.py` (Module, `RecordRevisionsAPI` class, public methods)
+  * [ ] `imednet_sdk/api/sites.py` (Module, `SitesAPI` class, public methods)
+  * [ ] `imednet_sdk/api/studies.py` (Module, `StudiesAPI` class, public methods)
+  * [ ] `imednet_sdk/api/subjects.py` (Module, `SubjectsAPI` class, public methods)
+  * [ ] `imednet_sdk/api/users.py` (Module, `UsersAPI` class, public methods)
+  * [ ] `imednet_sdk/api/variables.py` (Module, `VariablesAPI` class, public methods)
+  * [ ] `imednet_sdk/api/visits.py` (Module, `VisitsAPI` class, public methods)
+  * [ ] `imednet_sdk/models/__init__.py` (Module docstring)
+  * [ ] `imednet_sdk/models/_common.py` (Module, base classes/utils)
+  * [ ] `imednet_sdk/models/coding.py` (Module, `Coding` class)
+  * [ ] `imednet_sdk/models/form.py` (Module, `Form` class)
+  * [ ] `imednet_sdk/models/interval.py` (Module, `Interval` class)
+  * [ ] `imednet_sdk/models/job.py` (Module, `Job` class)
+  * [ ] `imednet_sdk/models/query.py` (Module, `Query` class)
+  * [ ] `imednet_sdk/models/record.py` (Module, `Record` class)
+  * [ ] `imednet_sdk/models/record_revision.py` (Module, `RecordRevision` class)
+  * [ ] `imednet_sdk/models/site.py` (Module, `Site` class)
+  * [ ] `imednet_sdk/models/study.py` (Module, `Study` class)
+  * [ ] `imednet_sdk/models/subject.py` (Module, `Subject` class)
+  * [ ] `imednet_sdk/models/user.py` (Module, `User` class)
+  * [ ] `imednet_sdk/models/variable.py` (Module, `Variable` class)
+  * [ ] `imednet_sdk/models/visit.py` (Module, `Visit` class)
 * [ ] **Usage Examples (`examples/`):**
   * [x] Create `examples/list_studies_and_sites.py`.
   * [x] Create `examples/find_subjects_by_status.py`.
