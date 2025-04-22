@@ -58,8 +58,8 @@ from .exceptions import (ApiError, AuthenticationError, AuthorizationError, BadR
                          ImednetSdkException, NotFoundError, RateLimitError)
 from .exceptions import ValidationError as SdkValidationError  # Alias to avoid name clash
 # Import the new helper function
-from .utils import (_fetch_and_parse_typed_records,  # Import build_model_from_variables
-                    build_model_from_variables)
+from .utils import _fetch_and_parse_typed_records  # Import build_model_from_variables
+from .utils import build_model_from_variables
 
 logger = logging.getLogger(__name__)
 

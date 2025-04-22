@@ -197,7 +197,7 @@ def test_interval_model_serialization():
     for key, value in expected_data.items():
         # Exclude removed fields from the check
         if key not in ["dateCreated", "dateModified", "forms"]:
-             assert dump[key] == value
+            assert dump[key] == value
 
     # Check datetime serialization
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)

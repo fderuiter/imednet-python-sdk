@@ -20,13 +20,13 @@ VALID_KEYWORD_DATA = {
 VALID_SUBJECT_DATA = {
     "studyKey": "PHARMADEMO",
     "subjectId": 1,
-    "subjectOid": "OID-1", # Still provide in base valid data
+    "subjectOid": "OID-1",  # Still provide in base valid data
     "subjectKey": "01-001",
     "subjectStatus": "Enrolled",
     "siteId": 128,
     "siteName": "Chicago Hope Hospital",
     "deleted": False,  # Explicitly setting default
-    "enrollmentStartDate": "2024-11-04 16:03:19", # Still provide in base valid data
+    "enrollmentStartDate": "2024-11-04 16:03:19",  # Still provide in base valid data
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "keywords": [VALID_KEYWORD_DATA],  # Optional list of KeywordModel

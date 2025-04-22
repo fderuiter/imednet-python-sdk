@@ -71,7 +71,7 @@ def test_visit_model_optional_fields_none_or_missing():
     # If it had a value, we could test del data_missing_optionals["dueDate"]
 
     model_missing = VisitModel.model_validate(data_missing_optionals)
-    assert model_missing.dueDate is None # Should default to None if missing
+    assert model_missing.dueDate is None  # Should default to None if missing
     # Verify required fields are still present and valid
     assert model_missing.startDate == date(2024, 11, 4)
     assert model_missing.visitDate == date(2024, 11, 6)
@@ -93,18 +93,25 @@ def test_visit_model_defaults():
 
 def test_visit_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
-    required_fields = ["intervalName", "startDate", "endDate", "visitDate", "visitDateForm", "visitDateQuestion"]
+    required_fields = [
+        "intervalName",
+        "startDate",
+        "endDate",
+        "visitDate",
+        "visitDateForm",
+        "visitDateQuestion",
+    ]
     for field in required_fields:
         invalid_data = VALID_VISIT_DATA.copy()
         # Ensure the field exists before deleting
         if field in invalid_data:
-             del invalid_data[field]
+            del invalid_data[field]
         # For fields that might be None in the base data but are required, set to None
-        elif field == "dueDate": # Example if dueDate became required
-             pass # Skip if it was already None
+        elif field == "dueDate":  # Example if dueDate became required
+            pass  # Skip if it was already None
         else:
-             # If a required field is missing from VALID_VISIT_DATA, the base data is wrong
-             pytest.fail(f"Required field '{field}' missing from VALID_VISIT_DATA for test setup.")
+            # If a required field is missing from VALID_VISIT_DATA, the base data is wrong
+            pytest.fail(f"Required field '{field}' missing from VALID_VISIT_DATA for test setup.")
 
         with pytest.raises(ValidationError) as excinfo:
             VisitModel.model_validate(invalid_data)

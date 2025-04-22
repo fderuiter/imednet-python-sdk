@@ -23,7 +23,7 @@ VALID_CODING_DATA = {
     "codingId": 1,
     "code": "Angina agranulocytic",
     "codedBy": "John Smith",
-    "reason": "Typo fix", # Now optional
+    "reason": "Typo fix",  # Now optional
     "dictionaryName": "MedDRA",
     "dictionaryVersion": "24.0",
     "dateCoded": "2024-11-04 16:03:19",  # Example format

@@ -17,7 +17,7 @@ VALID_VARIABLE_DATA = {
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "formId": 108727,
-    "variableOid": "OID-1", # Now optional
+    "variableOid": "OID-1",  # Now optional
     "deleted": False,  # Explicitly setting default
     "formKey": "FORM_1",
     "formName": "Pre-procedure screening",
@@ -71,7 +71,7 @@ def test_variable_model_defaults():
     del minimal_data["disabled"]
     del minimal_data["deleted"]
     del minimal_data["blinded"]
-    del minimal_data["variableOid"] # Also remove optional oid
+    del minimal_data["variableOid"]  # Also remove optional oid
 
     model = VariableModel.model_validate(minimal_data)
     assert model.disabled is False
