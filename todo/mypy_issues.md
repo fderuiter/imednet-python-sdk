@@ -27,20 +27,20 @@
 
 ## imednet_sdk/api/variables.py (1)
 
-- [ ] Line 51: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[VariableModel]]`)
+- [x] Line 51: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[VariableModel]]`)
 
 ## imednet_sdk/api/users.py (1)
 
-- [ ] Line 54: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[UserModel]]`)
+- [x] Line 54: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[UserModel]]`)
 
 ## imednet_sdk/api/subjects.py (1)
 
-- [ ] Line 72: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[SubjectModel]]`)
+- [x] Line 72: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[SubjectModel]]`)
 
 ## imednet_sdk/api/studies.py (2)
 
-- [ ] Line 63: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[StudyModel]]`)
-- [ ] Line 87: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[dict[Any, Any]]]`)
+- [x] Line 63: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[StudyModel]]`)
+- [x] Line 87: Incompatible return type (got `list[Never] | Any`, expected `ApiResponse[list[dict[Any, Any]]]`)
 
 ## imednet_sdk/api/sites.py (1)
 

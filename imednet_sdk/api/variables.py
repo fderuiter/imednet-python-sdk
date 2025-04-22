@@ -20,7 +20,7 @@ class VariablesClient(ResourceClient):
     data stored in records.
     """
 
-    def list_variables(self, study_key: str, **kwargs) -> ApiResponse[list[VariableModel]]:
+    def list_variables(self, study_key: str, **kwargs) -> ApiResponse[List[VariableModel]]:
         """Retrieves a list of variable definitions for a specific study.
 
         Corresponds to the `GET /api/v1/edc/studies/{studyKey}/variables` endpoint.
@@ -48,4 +48,7 @@ class VariablesClient(ResourceClient):
 
         endpoint = f"/api/v1/edc/studies/{study_key}/variables"
         # Use self._get instead of self._client._get
-        return self._get(endpoint, params=kwargs, response_model=ApiResponse[List[VariableModel]])
+        response: ApiResponse[List[VariableModel]] = self._get(
+            endpoint, params=kwargs, response_model=ApiResponse[List[VariableModel]]
+        )
+        return response

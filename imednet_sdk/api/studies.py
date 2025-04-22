@@ -4,7 +4,7 @@ This module provides the `StudiesClient` class for accessing study-level
 information via the iMednet API.
 """
 
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.study import StudyModel
@@ -22,7 +22,7 @@ class StudiesClient(ResourceClient):
         sort: Optional[str] = None,
         filter: Optional[str] = None,
         **kwargs: Any,
-    ) -> ApiResponse[list[StudyModel]]:
+    ) -> ApiResponse[List[StudyModel]]:
         """
         Retrieves a list of studies based on specified criteria.
 
@@ -60,13 +60,14 @@ class StudiesClient(ResourceClient):
         # The response_model should be ApiResponse[List[StudyModel]]
         # Need to handle the generic ApiResponse structure correctly
         # The TypeAdapter in _request should handle ApiResponse[List[StudyModel]]
-        return self._get(
+        response: ApiResponse[List[StudyModel]] = self._get(
             endpoint="/studies",
-            response_model=ApiResponse[list[StudyModel]],  # Correct generic response model
+            response_model=ApiResponse[List[StudyModel]],  # Correct generic response model
             params=params,
         )
+        return response
 
-    def get_study_users(self, study_key: str, **kwargs) -> ApiResponse[list[dict[Any, Any]]]:
+    def get_study_users(self, study_key: str, **kwargs) -> ApiResponse[List[Dict[Any, Any]]]:
         """
         Retrieves a list of users associated with a specific study.
 
@@ -84,8 +85,11 @@ class StudiesClient(ResourceClient):
             ImednetSdkException: If the API request fails.
         """
         # Assuming user data returns as a list of dictionaries
-        return self._get(
+        response: ApiResponse[List[Dict[Any, Any]]] = self._get(
             endpoint=f"/studies/{study_key}/users",
-            response_model=ApiResponse[List[dict]],  # Use ApiResponse[List[dict]]
+            response_model=ApiResponse[
+                List[Dict[Any, Any]]
+            ],  # Use ApiResponse[List[Dict[Any, Any]]]
             params=kwargs,
         )
+        return response
