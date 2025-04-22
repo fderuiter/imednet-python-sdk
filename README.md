@@ -40,7 +40,7 @@ Development is actively progressing. The core client functionality is implemente
 Once published, you can install the imednet-python-sdk using pip:
 
 ```bash
-pip install imednet-python-sdk 
+pip install imednet-python-sdk
 ```
 
 Currently, you can install it directly from the source code:
@@ -52,7 +52,7 @@ pip install .
 # Or install in editable mode for development (requires cloning the repo first)
 # git clone https://github.com/yourusername/imednet-python-sdk.git
 # cd imednet-python-sdk
-pip install -e .[dev] 
+pip install -e .[dev]
 ```
 
 *(Note: Assumes `[dev]` extra is defined in `pyproject.toml`)*
@@ -89,11 +89,11 @@ The SDK requires your iMednet API Key and Security Key for authentication. You c
    # Example for PowerShell
    # $env:IMEDNET_API_KEY='your_api_key'
    # $env:IMEDNET_SECURITY_KEY='your_security_key'
-   
+
    from imednet_sdk import ImednetClient
-   
+
    # Client automatically uses environment variables
-   client = ImednetClient() 
+   client = ImednetClient()
    ```
 
 ## Usage
@@ -111,12 +111,12 @@ from imednet_sdk.exceptions import ImednetException # Assuming defined in Task 6
 
 try:
     # Initialize the client (reads from env vars if not provided)
-    client = ImednetClient() 
+    client = ImednetClient()
 
     # Example: List studies
     print("Fetching studies...")
     studies_response = client.studies.list_studies(size=5) # Get first 5 studies
-    
+
     print(f"Metadata: {studies_response.metadata}")
     if studies_response.data:
         print("Studies found:")
@@ -129,10 +129,10 @@ try:
     study_key_to_query = 'YOUR_STUDY_KEY' # Replace with a valid key
     if studies_response.data: # Use the key from the first study found if available
         study_key_to_query = studies_response.data[0].study_key
-        
+
     print(f"\nFetching sites for study {study_key_to_query}...")
     sites_response = client.sites.list_sites(study_key=study_key_to_query, size=5)
-    
+
     print(f"Metadata: {sites_response.metadata}")
     if sites_response.data:
         print("Sites found:")

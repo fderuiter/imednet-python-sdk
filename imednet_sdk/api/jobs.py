@@ -1,4 +1,5 @@
 """Client for interacting with the Jobs endpoint."""
+
 # API client for interacting with iMednet Jobs endpoints.
 
 from ..models.job import JobStatusModel
