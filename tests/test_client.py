@@ -10,9 +10,7 @@ import respx
 from httpx import ConnectError, Response, Timeout, TimeoutException
 from pydantic import BaseModel  # Add BaseModel import
 from pydantic import Field
-from pydantic import \
-    ValidationError as \
-    PydanticValidationError  # Import Pydantic's ValidationError as PydanticValidationError, add Field
+from pydantic import ValidationError as PydanticValidationError  # Import Pydantic's ValidationError
 
 from imednet_sdk.client import ImednetClient
 # Import custom exceptions for testing

@@ -133,8 +133,9 @@ def main():
                 except ImednetSdkException as site_err:
                     logging.error(f"    Error fetching sites for study {study_key}: {site_err}")
                     logging.error(
-                        f"      Status Code: {site_err.status_code}, API Code: "
-                        f"{site_err.api_error_code}, Details: {site_err.response_body}"
+                        f"      Status Code: {site_err.status_code}, "
+                        f"API Code: {site_err.api_error_code}, "
+                        f"Details: {site_err.response_body}"
                     )
                 except Exception as site_err:
                     logging.error(
@@ -149,7 +150,7 @@ def main():
         logging.error(f"An SDK/API error occurred: {e}")
         logging.error(
             f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
-            f"Details: {e.response_body}"
+            f"Message: {e.message}"
         )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)

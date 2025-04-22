@@ -357,7 +357,8 @@ class ImednetClient:
                     else:
                         # If response_model is not a standard Pydantic type/list, return raw JSON
                         logger.warning(
-                            f"Unsupported response_model type: {type(response_model)}. Returning raw JSON."
+                            f"Unsupported response_model type: {type(response_model)}. "
+                            f"Returning raw JSON."
                         )
                         return response_json  # Or raise error?
 
@@ -400,69 +401,45 @@ class ImednetClient:
             AuthorizationError: For 403 errors.
             NotFoundError: For 404 errors.
             RateLimitError: For 429 errors.
-            ApiError: For 5xx errors or other unexpected 4xx errors.
-            ImednetSdkException: As a fallback for unhandled status codes or if parsing fails
-                                 unexpectedly.
+            ApiError: For 5xx errors.
+            ImednetSdkException: For other unexpected errors or if the error payload
+                                 cannot be parsed.
         """
         status_code = response.status_code
-        timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        error_details: Dict[str, Any] = {}
-        api_error_code: Optional[str] = None
-        description: str = (
-            f"HTTP error {status_code} occurred for request path '{request_path}'."  # Include path
-        )
-        attribute: Optional[str] = None
-        value: Optional[Any] = None
-
         try:
-            # Use standard json library for parsing error response
+            # Attempt to parse the standard iMednet error structure
             error_data = response.json()
-            # Standard iMednet error structure check (adjust if needed based on actual errors)
             metadata = error_data.get("metadata", {})
             error_info = metadata.get("error", {})
-
             api_error_code = error_info.get("code")
-            # Prioritize 'message', fallback to 'description', then default
-            description = error_info.get("message", error_info.get("description", description))
-            # Check for field-specific errors if they exist in the structure
-            field_error = error_info.get("field")  # Assuming 'field' key holds attribute/value
-            if isinstance(field_error, dict):
-                attribute = field_error.get("attribute")
-                value = field_error.get("value")
-            else:  # Fallback if structure is different
-                attribute = error_info.get("attribute")  # Check top-level error info
-                value = error_info.get("value")
+            message = error_info.get("message", "No error message provided.")
+            details = error_info.get("details")
+        except json.JSONDecodeError:
+            # If JSON parsing fails, use the raw response text
+            api_error_code = None
+            message = f"API request failed with status {status_code}. Response body not valid JSON."
+            details = response.text[:500]  # Include start of response text
+        except Exception as e:
+            # Catch any other unexpected errors during parsing
+            api_error_code = None
+            message = f"Unexpected error parsing API error response: {e}"
+            details = response.text[:500]
 
-            error_details = error_data  # Store the full parsed body
-
-        except json.JSONDecodeError:  # Catch standard JSONDecodeError
-            description = (
-                f"HTTP error {status_code} occurred for request path '{request_path}', "
-                f"and the response body was not valid JSON."
-            )
-            try:
-                error_details = {"raw_response": response.text}
-            except Exception:  # Handle cases where even .text fails
-                error_details = {"raw_response": "[Could not decode response text]"}
-
-        # Ensure request_path is relative for consistency in exceptions
-        relative_request_path = request_path.replace(self.base_url, "")
-
+        # Map status codes and API codes to specific exceptions
         exception_args = {
-            "message": description,
             "status_code": status_code,
             "api_error_code": api_error_code,
-            "request_path": relative_request_path,  # Use relative path
-            "response_body": error_details,
-            "timestamp": timestamp,
+            "message": message,
+            "details": details,
+            "response_body": response.text,  # Always include the raw response body
+            "request_path": request_path,
         }
 
-        # Exception mapping (seems mostly correct, ensure SdkValidationError uses attribute/value)
         if status_code == 400:
-            if api_error_code == "1000":  # Specific validation error code
-                return SdkValidationError(**exception_args, attribute=attribute, value=value)
-            else:
-                return BadRequestError(**exception_args)
+            # Check for specific validation error code (e.g., "1000")
+            if api_error_code == "1000":
+                return SdkValidationError(**exception_args)
+            return BadRequestError(**exception_args)
         elif status_code == 401:
             return AuthenticationError(**exception_args)
         elif status_code == 403:
@@ -472,250 +449,155 @@ class ImednetClient:
         elif status_code == 429:
             return RateLimitError(**exception_args)
         elif status_code >= 500:
-            return ApiError(**exception_args)  # General server error
-        elif status_code >= 400:  # Catch-all for other 4xx errors
-            logger.warning(f"Unhandled 4xx status code {status_code} mapped to generic ApiError.")
             return ApiError(**exception_args)
         else:
-            # This case should ideally not be reached if raise_for_status() is used correctly
-            logger.error(f"Unexpected non-error status code {status_code} in error handler.")
-            return ImednetSdkException(  # Fallback exception
-                f"Unhandled HTTP status code {status_code}.",
-                status_code=status_code,
-                request_path=relative_request_path,
-                response_body=error_details,
-                timestamp=timestamp,
-            )
+            # Fallback for unexpected status codes
+            logger.warning(f"Received unexpected HTTP status code: {status_code}")
+            return ImednetSdkException(**exception_args)
 
     # --- Resource Client Properties ---
+    # Use properties to lazily initialize resource clients
+
     @property
     def studies(self) -> StudiesClient:
-        """Accessor for the Studies API resource client.
-
-        Provides methods for interacting with study-related endpoints (e.g., listing studies).
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `StudiesClient` associated with this `ImednetClient`.
-        """
+        """Access the Studies API resource client."""
         if self._studies is None:
             self._studies = StudiesClient(self)
         return self._studies
 
     @property
     def sites(self) -> SitesClient:
-        """Accessor for the Sites API resource client.
-
-        Provides methods for interacting with site-related endpoints (e.g., listing sites
-        within a study). The client instance is cached upon first access.
-
-        Returns:
-            An instance of `SitesClient` associated with this `ImednetClient`.
-        """
+        """Access the Sites API resource client."""
         if self._sites is None:
             self._sites = SitesClient(self)
         return self._sites
 
     @property
     def forms(self) -> FormsClient:
-        """Accessor for the Forms API resource client.
-
-        Provides methods for interacting with form definition endpoints (e.g., listing forms
-        within a study). The client instance is cached upon first access.
-
-        Returns:
-            An instance of `FormsClient` associated with this `ImednetClient`.
-        """
+        """Access the Forms API resource client."""
         if self._forms is None:
             self._forms = FormsClient(self)
         return self._forms
 
     @property
     def intervals(self) -> IntervalsClient:
-        """Accessor for the Intervals API resource client.
-
-        Provides methods for interacting with interval/visit definition endpoints.
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `IntervalsClient` associated with this `ImednetClient`.
-        """
+        """Access the Intervals API resource client."""
         if self._intervals is None:
             self._intervals = IntervalsClient(self)
         return self._intervals
 
     @property
     def records(self) -> RecordsClient:
-        """Accessor for the Records API resource client.
-
-        Provides methods for interacting with record data endpoints (e.g., listing,
-        creating, updating records). The client instance is cached upon first access.
-
-        Returns:
-            An instance of `RecordsClient` associated with this `ImednetClient`.
-        """
+        """Access the Records API resource client."""
         if self._records is None:
             self._records = RecordsClient(self)
         return self._records
 
     @property
     def record_revisions(self) -> RecordRevisionsClient:
-        """Accessor for the Record Revisions (Audit Trail) API resource client.
-
-        Provides methods for interacting with record audit trail endpoints.
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `RecordRevisionsClient` associated with this `ImednetClient`.
-        """
+        """Access the Record Revisions API resource client."""
         if self._record_revisions is None:
             self._record_revisions = RecordRevisionsClient(self)
         return self._record_revisions
 
     @property
     def variables(self) -> VariablesClient:
-        """Accessor for the Variables API resource client.
-
-        Provides methods for interacting with variable definition endpoints (e.g., listing
-        variables for a study or form). The client instance is cached upon first access.
-
-        Returns:
-            An instance of `VariablesClient` associated with this `ImednetClient`.
-        """
+        """Access the Variables API resource client."""
         if self._variables is None:
             self._variables = VariablesClient(self)
         return self._variables
 
     @property
     def codings(self) -> CodingsClient:
-        """Accessor for the Codings API resource client.
-
-        Provides methods for interacting with coding data endpoints.
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `CodingsClient` associated with this `ImednetClient`.
-        """
+        """Access the Codings API resource client."""
         if self._codings is None:
             self._codings = CodingsClient(self)
         return self._codings
 
     @property
     def subjects(self) -> SubjectsClient:
-        """Accessor for the Subjects API resource client.
-
-        Provides methods for interacting with subject data endpoints (e.g., listing subjects).
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `SubjectsClient` associated with this `ImednetClient`.
-        """
+        """Access the Subjects API resource client."""
         if self._subjects is None:
             self._subjects = SubjectsClient(self)
         return self._subjects
 
     @property
     def users(self) -> UsersClient:
-        """Accessor for the Users API resource client.
-
-        Provides methods for interacting with user data endpoints.
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `UsersClient` associated with this `ImednetClient`.
-        """
+        """Access the Users API resource client."""
         if self._users is None:
             self._users = UsersClient(self)
         return self._users
 
     @property
     def visits(self) -> VisitsClient:
-        """Accessor for the Visits API resource client.
-
-        Provides methods for interacting with subject visit instance endpoints.
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `VisitsClient` associated with this `ImednetClient`.
-        """
+        """Access the Visits API resource client."""
         if self._visits is None:
             self._visits = VisitsClient(self)
         return self._visits
 
     @property
     def jobs(self) -> JobsClient:
-        """Accessor for the Jobs API resource client.
-
-        Provides methods for checking the status of asynchronous jobs.
-        The client instance is cached upon first access.
-
-        Returns:
-            An instance of `JobsClient` associated with this `ImednetClient`.
-        """
+        """Access the Jobs API resource client."""
         if self._jobs is None:
             self._jobs = JobsClient(self)
         return self._jobs
 
-    # --- New Method: get_typed_records ---
-    def get_typed_records(
-        self,
-        study_key: str,
-        form_key: str,
-        record_model_name: Optional[str] = None,
-        **kwargs: Any,
-    ) -> List[BaseModel]:
-        """Fetches records for a form and dynamically parses them into a Pydantic model.
+    # --- Helper Methods ---
+    def build_dynamic_record_model(
+        self, study_key: str, form_key: str, **kwargs: Any
+    ) -> Type[BaseModel]:
+        """Dynamically builds a Pydantic model for a specific form's record data.
 
-        Retrieves variable definitions for the specified form, generates a dynamic
-        Pydantic model based on those variables, fetches the records for the form,
-        and parses the record data into instances of the generated model.
+        Fetches the variable definitions for the given form and study, then constructs
+        a Pydantic model with fields corresponding to those variables.
 
         Args:
             study_key: The key of the study.
-            form_key: The key of the form containing the desired variables.
-            record_model_name: Optional name for the dynamically created Pydantic model.
-                               Defaults to f"{form_key.capitalize()}RecordData".
-            **kwargs: Additional keyword arguments passed to the underlying
-                      `records.list_records` call (e.g., `filter`, `page`, `size`,
-                      `sort`, `record_data_filter`).
+            form_key: The key of the form.
+            **kwargs: Additional arguments passed to the underlying `list_variables` call
+                      (e.g., `page`, `size`).
 
         Returns:
-            A list of Pydantic model instances, where each instance represents a record's
-            `recordData` parsed according to the dynamically generated model based on
-            the form's variables. Records with data that fails validation against the
-            generated model are skipped (with a warning logged).
+            A dynamically created Pydantic `BaseModel` subclass representing the form's structure.
+
+        Raises:
+            ImednetSdkException: If fetching variables fails.
+            RuntimeError: If model creation fails.
+        """
+        return build_model_from_variables(self, study_key, form_key, **kwargs)
+
+    def fetch_and_parse_typed_records(
+        self, study_key: str, form_key: str, **kwargs: Any
+    ) -> ApiResponse[List[BaseModel]]:
+        """Fetches records for a specific form and parses them using a dynamically built model.
+
+        Combines `build_dynamic_record_model` and `records.list_records` to provide
+        strongly-typed record data.
+
+        Args:
+            study_key: The key of the study.
+            form_key: The key of the form.
+            **kwargs: Additional arguments passed to the underlying `list_records` call
+                      (e.g., `filter`, `page`, `size`, `sort`).
+
+        Returns:
+            An `ApiResponse` where the `data` attribute contains a list of dynamically
+            typed Pydantic models representing the fetched records.
 
         Raises:
             ImednetSdkException: If fetching variables or records fails.
-            ValueError: If building the dynamic model fails (e.g., missing 'variableName').
-            RuntimeError: If the dynamic model cannot be created or data cannot be parsed
-                          due to unexpected errors.
+            RuntimeError: If model creation or parsing fails.
         """
-        # Use the imported utility function, passing the necessary resource clients
-        return _fetch_and_parse_typed_records(
-            variables_client=self.variables,  # Pass the variables client instance
-            records_client=self.records,  # Pass the records client instance
-            study_key=study_key,
-            form_key=form_key,
-            record_model_name=record_model_name,
-            **kwargs,  # Pass through other kwargs like filter, size, sort etc.
-        )
+        return _fetch_and_parse_typed_records(self, study_key, form_key, **kwargs)
 
-    # --- Context Manager Methods ---
+    def close(self) -> None:
+        """Closes the underlying HTTP client connection."""
+        self._client.close()
+
     def __enter__(self) -> "ImednetClient":
-        """Allows the client to be used as a context manager."""
+        """Enter the runtime context related to this object."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Closes the client connection pool upon exiting the context manager block."""
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit the runtime context related to this object."""
         self.close()
-
-    def close(self):
-        """Closes the underlying `httpx.Client` connection pool.
-
-        It's recommended to call this method when you are finished with the client,
-        or use the client as a context manager (``with ImednetClient() as client: ...``)
-        to ensure connections are properly released.
-        """
-        self._client.close()
-        logger.info("iMednet client connection closed.")

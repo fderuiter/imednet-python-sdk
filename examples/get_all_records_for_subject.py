@@ -88,7 +88,8 @@ def main():
 
         # --- Get All Records for Subject (with Manual Pagination) ---
         logging.info(
-            f"Fetching all records for subject '{TARGET_SUBJECT_KEY}' in study '{TARGET_STUDY_KEY}'..."
+            f"Fetching all records for subject '{TARGET_SUBJECT_KEY}' "
+            f"in study '{TARGET_STUDY_KEY}'..."
         )
 
         # Construct the filter string
@@ -157,22 +158,23 @@ def main():
                 logging.error(f"An unexpected error occurred during pagination: {e}", exc_info=True)
                 break  # Stop pagination on unexpected error
 
-        # --- Process Results ---
+        # --- Summarize Results ---
         if all_records:
-            logging.info(
-                f"Successfully retrieved {len(all_records)} records in total for subject "
-                f"'{TARGET_SUBJECT_KEY}'."
+            logging.info(f"Successfully retrieved {len(all_records)} records in total.")
+            # Example: Summarize by form key
+            form_counts = {}
+            for record in all_records:
+                form_counts[record.formKey] = form_counts.get(record.formKey, 0) + 1
+            form_keys_summary = ", ".join(
+                [f"{key} ({count})" for key, count in form_counts.items()]
             )
-            # Example: Print summary of first few records
-            for i, record in enumerate(all_records[:5]):
-                logging.info(
-                    f"  Record {i+1}: ID={record.recordId}, FormKey={record.formKey}, "
-                    f"Created={record.dateCreated.strftime('%Y-%m-%d')}"
-                )
-            if len(all_records) > 5:
-                logging.info("  ...")
-        # else: # Message already logged if no records found on first page
-        #    logging.info(f"No records found for subject '{TARGET_SUBJECT_KEY}'.")
+            logging.info(f" Found {len(all_records)} record(s). Form Keys: {form_keys_summary}")
+        elif current_page > 0:  # Check if we attempted pagination but found nothing after page 1
+            logging.info(
+                f"No records found for subject '{TARGET_SUBJECT_KEY}' "
+                f"in study '{TARGET_STUDY_KEY}'."
+            )
+        # If no records were found on page 1, the message was already logged inside the loop
 
     except ImednetSdkException as e:
         # Error during client initialization or initial setup

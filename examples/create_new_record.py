@@ -122,7 +122,8 @@ def main():
         # --- Create New Record(s) ---
         # The create_records method takes a list of RecordPostItem objects
         logging.info(
-            f"Attempting to create a new record for form '{TARGET_FORM_KEY}' for subject '{TARGET_SUBJECT_KEY}'..."
+            f"Attempting to create a new record for form '{TARGET_FORM_KEY}' "
+            f"for subject '{TARGET_SUBJECT_KEY}'..."
         )
 
         # Call the SDK method which corresponds to POST /records
@@ -148,9 +149,9 @@ def main():
     except ImednetSdkException as e:
         logging.error(f"An API error occurred during record creation initiation: {e}")
         logging.error(
-            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, "
-            f"Details: {e.response_body}"
+            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, " f"Message: {e.message}"
         )
+
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)
 

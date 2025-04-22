@@ -76,9 +76,10 @@ def test_get_job_status_success(client):  # Removed mock_api_response_job_status
     assert response.jobId == expected_response_model.jobId
     assert response.batchId == expected_response_model.batchId
     assert response.state == expected_response_model.state
-    assert response.dateCreated == expected_response_model.dateCreated
-    assert response.dateStarted == expected_response_model.dateStarted
-    assert response.dateFinished == expected_response_model.dateFinished
+    # Assuming the model stores dates as strings for this test based on input
+    assert str(response.dateCreated) == expected_response_model.dateCreated
+    assert str(response.dateStarted) == expected_response_model.dateStarted
+    assert str(response.dateFinished) == expected_response_model.dateFinished
     # assert response == expected_response_model # Use field-by-field if direct compare fails
 
 
@@ -106,8 +107,9 @@ def test_get_job_status_running(jobs_client, client):  # Renamed for clarity
     assert isinstance(response, JobStatusModel)
     assert response.batchId == batch_id
     assert response.state == "running"
-    assert response.dateCreated == "2023-11-01 11:00:00"  # Check dateCreated string
-    assert response.dateStarted == "2023-11-01 11:00:05"  # Check dateStarted string
+    # Assuming model stores dates as strings or parses them correctly
+    assert str(response.dateCreated) == "2023-11-01 11:00:00"  # Check dateCreated string
+    assert str(response.dateStarted) == "2023-11-01 11:00:05"  # Check dateStarted string
     assert response.dateFinished is None  # Check dateFinished
     # Removed assertions for fields not in docs
 

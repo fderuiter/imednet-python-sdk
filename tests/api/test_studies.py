@@ -433,7 +433,7 @@ def test_list_studies_404_not_found(studies_client):
     assert excinfo.value.api_error_code == "API-404"
     assert "Resource not found" in excinfo.value.message
     assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
-    # assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError)) # This check is redundant
+    # assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))
 
 
 @respx.mock
@@ -451,4 +451,4 @@ def test_list_studies_500_server_error(studies_client):
     assert excinfo.value.api_error_code == "SYS-500"
     assert "internal server error" in excinfo.value.message.lower()
     assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
-    # assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError)) # This check is redundant
+    # assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))

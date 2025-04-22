@@ -94,38 +94,27 @@ def main():
         # Check if the response contains data
         if not response or not response.data:
             logging.warning(
-                f"No subjects found with status '{TARGET_SUBJECT_STATUS}' in study "
-                f"'{TARGET_STUDY_KEY}'. Response: {response}"
+                f"No subjects found with status '{TARGET_SUBJECT_STATUS}' "
+                f"in study '{TARGET_STUDY_KEY}'. "
+                f"Response: {response}"
             )
             return
 
         subjects = response.data
-        logging.info(f"Found {len(subjects)} subjects with status '{TARGET_SUBJECT_STATUS}':")
+        logging.info(f"Found {len(subjects)} subject(s) with status '{TARGET_SUBJECT_STATUS}'.")
 
-        # Iterate through the list of SubjectModel objects in response.data
+        # Print details of the found subjects
         for subject in subjects:
-            # Access attributes directly from the SubjectModel instance
             logging.info(
-                f"  - Subject Key: {subject.subjectKey}, Status: {subject.subjectStatus}, "
-                f"Site Name: {subject.siteName}, Subject ID: {subject.subjectId}"
+                f"  - Subject Key: {subject.subjectKey}, Site: {subject.siteName}, "
+                f"Status: {subject.subjectStatus}"
             )
-
-        # Handle pagination if necessary (check response.pagination)
-        if response.pagination and response.pagination.totalPages > 1:
-            logging.info(
-                f"Note: Only the first page ({response.pagination.size} subjects) was "
-                f"retrieved. Total pages: {response.pagination.totalPages}"
-            )
-            # Implement pagination logic here if needed to fetch all pages
 
     except ImednetSdkException as e:
         logging.error(f"An API error occurred: {e}")
         logging.error(
-            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, "
-            f"Details: {e.response_body}"
+            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, " f"Message: {e.message}"
         )
-    except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}", exc_info=True)
 
 
 if __name__ == "__main__":

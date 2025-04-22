@@ -1,8 +1,8 @@
 """Pydantic models related to iMednet Subjects.
 
-This module defines the Pydantic models `KeywordModel` (reused from records, consider moving to common if identical)
-and `SubjectModel` which represent the structure of subject information retrieved
-from the iMednet API, typically via the `/subjects` endpoint.
+This module defines the Pydantic models `KeywordModel` (reused from records, consider moving
+to common if identical) and `SubjectModel` which represent the structure of subject information
+retrieved from the iMednet API, typically via the `/subjects` endpoint.
 """
 
 from datetime import datetime

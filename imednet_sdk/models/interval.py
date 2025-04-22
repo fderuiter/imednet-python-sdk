@@ -83,7 +83,8 @@ class IntervalModel(BaseModel):
         None, description="Allowed number of days after the due date the interval can occur"
     )
     eproGracePeriod: Optional[int] = Field(
-        None, description="Allowed number of additional days for ePRO completion after the due date"
+        None,
+        description="Allowed number of additional days for ePRO completion " "after the due date",
     )
 
     # --- Removed Redundant/Conflicting Optional Definitions ---
