@@ -12,7 +12,7 @@ class ResourceClient:
 
     def __init__(self, client: "ImednetClient"):
         """
-        Initialize the resource client.
+        Initializes the resource client, storing a reference to the main ImednetClient.
 
         Args:
             client: The main ImednetClient instance.

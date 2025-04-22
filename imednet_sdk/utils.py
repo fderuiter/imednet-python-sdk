@@ -1,3 +1,4 @@
+"""Utility functions for the iMednet SDK, including dynamic model creation."""
 import logging
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
@@ -18,6 +19,12 @@ logger = logging.getLogger(__name__)
 # Needs refinement based on actual API date formats and validation needs
 # Using Optional[...] for all fields initially, assuming data might be missing.
 TYPE_MAP: Dict[str, Tuple[Type, Dict[str, Any]]] = {
+    """Maps iMednet variableType strings to Python types and Pydantic Field arguments.
+
+    Used by `build_model_from_variables` to dynamically create Pydantic models
+    representing recordData based on form variable definitions.
+    Types are initially Optional to handle potentially missing data.
+    """
     "textField": (Optional[str], {}),
     "numberField": (Optional[float], {}),
     "integerField": (Optional[int], {}),

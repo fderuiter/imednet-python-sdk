@@ -11,9 +11,10 @@ from tenacity import (RetryError, retry, retry_if_exception, retry_if_exception_
                       stop_after_attempt, wait_exponential)
 
 # Import resource clients
-from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient,  # Group API imports
-                  QueriesClient, RecordRevisionsClient, RecordsClient, SitesClient, StudiesClient,
-                  SubjectsClient, UsersClient, VariablesClient, VisitsClient)
+from .api import JobsClient  # Group API imports
+from .api import (CodingsClient, FormsClient, IntervalsClient, QueriesClient, RecordRevisionsClient,
+                  RecordsClient, SitesClient, StudiesClient, SubjectsClient, UsersClient,
+                  VariablesClient, VisitsClient)
 # Import custom exceptions
 from .exceptions import (ApiError, AuthenticationError, AuthorizationError, BadRequestError,
                          ImednetSdkException, NotFoundError, RateLimitError)

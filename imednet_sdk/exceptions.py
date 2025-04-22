@@ -15,6 +15,18 @@ class ImednetSdkException(Exception):
         response_body: Optional[Dict[str, Any]] = None,
         timestamp: Optional[str] = None,  # Consider using datetime object
     ):
+        """Initializes the base SDK exception.
+
+        Args:
+            message: The main error message.
+            status_code: The HTTP status code of the response, if applicable.
+            api_error_code: The specific error code returned by the iMednet API,
+                if applicable.
+            request_path: The path of the API request that caused the error.
+            response_body: The parsed JSON body of the error response, if available.
+            timestamp: An ISO 8601 formatted timestamp string indicating when the
+                error occurred.
+        """
         super().__init__(message)
         self.message = message
         self.status_code = status_code
@@ -24,6 +36,7 @@ class ImednetSdkException(Exception):
         self.timestamp = timestamp  # Store timestamp if available
 
     def __str__(self) -> str:
+        """Returns a string representation of the exception including key details."""
         parts = [f"{self.__class__.__name__}: {self.message}"]
         if self.status_code:
             parts.append(f"Status Code: {self.status_code}")
@@ -75,6 +88,21 @@ class ValidationError(BadRequestError):
         attribute: Optional[str] = None,
         value: Optional[Any] = None,
     ):
+        """Initializes the validation-specific exception.
+
+        Inherits from BadRequestError and adds fields specific to API validation
+        failures (error code 1000).
+
+        Args:
+            message: The main error message.
+            status_code: The HTTP status code (usually 400 for validation errors).
+            api_error_code: The API error code (usually '1000' for validation).
+            request_path: The path of the API request that caused the error.
+            response_body: The parsed JSON body of the error response.
+            timestamp: An ISO 8601 formatted timestamp string.
+            attribute: The name of the attribute that failed validation.
+            value: The value that failed validation.
+        """
         super().__init__(
             message=message,
             status_code=status_code,
@@ -87,6 +115,7 @@ class ValidationError(BadRequestError):
         self.value = value
 
     def __str__(self) -> str:
+        """Returns a string representation including validation-specific details."""
         base_str = super().__str__()
         parts = [base_str]
         if self.attribute:
