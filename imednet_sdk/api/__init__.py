@@ -17,6 +17,7 @@ Example:
     records_response = client.records.list_records(study_key="DEMO")
     ```
 """
+
 from ._base import ResourceClient
 from .codings import CodingsClient
 from .forms import FormsClient

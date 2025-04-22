@@ -47,7 +47,7 @@ import os
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetSdkException # Corrected import
+from imednet_sdk.exceptions import ImednetSdkException  # Corrected import
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -59,7 +59,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 load_dotenv()
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY") # Added security key
+SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")  # Added security key
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 
 
@@ -79,7 +79,7 @@ def main():
         # --- List Studies ---
         logging.info("Fetching studies...")
         # Use list_studies, which returns an ApiResponse
-        studies_response = client.studies.list_studies(size=100) # Fetch up to 100 studies
+        studies_response = client.studies.list_studies(size=100)  # Fetch up to 100 studies
 
         if not studies_response or not studies_response.data:
             logging.warning("No studies found for this account or API call failed.")
@@ -90,7 +90,9 @@ def main():
 
         # Handle study pagination if needed
         if studies_response.pagination and studies_response.pagination.totalPages > 1:
-            logging.info(f"  Note: More study pages available (Total: {studies_response.pagination.totalPages}). Fetching only the first page.")
+            logging.info(
+                f"  Note: More study pages available (Total: {studies_response.pagination.totalPages}). Fetching only the first page."
+            )
 
         for study in studies:
             # Access attributes from the StudyModel
@@ -103,7 +105,9 @@ def main():
                 logging.info(f"  Fetching sites for study key: {study_key}...")
                 try:
                     # Use list_sites with study_key
-                    sites_response = client.sites.list_sites(study_key=study_key, size=100) # Fetch up to 100 sites
+                    sites_response = client.sites.list_sites(
+                        study_key=study_key, size=100
+                    )  # Fetch up to 100 sites
 
                     if sites_response and sites_response.data:
                         sites = sites_response.data
@@ -116,21 +120,30 @@ def main():
 
                         # Handle site pagination if needed
                         if sites_response.pagination and sites_response.pagination.totalPages > 1:
-                             logging.info(f"      Note: More site pages available (Total: {sites_response.pagination.totalPages}). Fetching only the first page.")
+                            logging.info(
+                                f"      Note: More site pages available (Total: {sites_response.pagination.totalPages}). Fetching only the first page."
+                            )
 
                     else:
                         logging.info("    No sites found for this study.")
                 except ImednetSdkException as site_err:
                     logging.error(f"    Error fetching sites for study {study_key}: {site_err}")
-                    logging.error(f"      Status Code: {site_err.status_code}, API Code: {site_err.api_error_code}, Details: {site_err.response_body}")
+                    logging.error(
+                        f"      Status Code: {site_err.status_code}, API Code: {site_err.api_error_code}, Details: {site_err.response_body}"
+                    )
                 except Exception as site_err:
-                     logging.error(f"    An unexpected error occurred fetching sites for study {study_key}: {site_err}", exc_info=True)
+                    logging.error(
+                        f"    An unexpected error occurred fetching sites for study {study_key}: {site_err}",
+                        exc_info=True,
+                    )
             else:
                 logging.warning("  Study Key not found or invalid, cannot fetch sites.")
 
     except ImednetSdkException as e:
         logging.error(f"An SDK/API error occurred: {e}")
-        logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        logging.error(
+            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+        )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)
 

@@ -10,7 +10,7 @@ repos:
     rev: 24.4.2 # Use the version compatible with your project
     hooks:
     -   id: black
-        language_version: python3.10 # Specify your Python version
+        language_version: python3.9 # Specify your Python version
         args: [--line-length=100]
 -   repo: https://github.com/pycqa/isort
     rev: 5.13.2 # Use the version compatible with your project
@@ -23,8 +23,8 @@ repos:
     hooks:
     -   id: flake8
         args: [--max-line-length=100]
-# -   repo: https://github.com/pre-commit/mirrors-mypy
-#     rev: 'v1.10.0' # Use the version compatible with your project
-#     hooks:
-#     -   id: mypy
-#         additional_dependencies: [types-requests] # Add types for libraries if needed
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v1.10.0' # Use the version compatible with your project
+    hooks:
+    -   id: mypy
+        additional_dependencies: [types-requests] # Add types for libraries if needed

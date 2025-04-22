@@ -19,7 +19,7 @@ from .form import FormModel
 from .interval import IntervalFormModel, IntervalModel
 from .job import JobStatusModel
 from .query import QueryCommentModel, QueryModel
-from .record import RecordPostItem, RecordModel
+from .record import RecordModel, RecordPostItem
 from .record_revision import RecordRevisionModel
 from .site import SiteModel
 from .study import StudyModel

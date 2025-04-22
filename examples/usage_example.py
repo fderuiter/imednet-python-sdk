@@ -25,14 +25,17 @@ python examples/usage_example.py
 The script will attempt to connect to the API, list the first few studies,
 and list the sites for the first study found.
 """
-import os
+
 import logging
+import os
+
 from dotenv import load_dotenv
+
 from imednet_sdk import ImednetClient
 from imednet_sdk.exceptions import ImednetSdkException
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Load environment variables
 load_dotenv()
@@ -40,6 +43,7 @@ load_dotenv()
 API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
+
 
 def main():
     """Demonstrates basic client initialization and API calls."""
@@ -56,10 +60,10 @@ def main():
         client = ImednetClient(base_url=BASE_URL)
         logging.info("iMednet client initialized successfully.")
 
-        # --- Example 1: List Studies --- 
+        # --- Example 1: List Studies ---
         logging.info("\n--- Example: Listing Studies ---")
         # Use the studies resource client
-        studies_response = client.studies.list_studies(size=5) # Get first 5 studies
+        studies_response = client.studies.list_studies(size=5)  # Get first 5 studies
 
         if studies_response and studies_response.data:
             logging.info(f"Successfully retrieved {len(studies_response.data)} studies:")
@@ -67,17 +71,21 @@ def main():
             for study in studies_response.data:
                 logging.info(f"  - Study Name: {study.studyName}, Key: {study.studyKey}")
                 if first_study_key is None:
-                    first_study_key = study.studyKey # Save the key of the first study for the next example
+                    first_study_key = (
+                        study.studyKey
+                    )  # Save the key of the first study for the next example
         else:
             logging.warning("No studies found or API call failed.")
-            first_study_key = None # Ensure it's None if no studies found
+            first_study_key = None  # Ensure it's None if no studies found
 
-        # --- Example 2: List Sites for the First Study --- 
+        # --- Example 2: List Sites for the First Study ---
         logging.info("\n--- Example: Listing Sites for a Study ---")
         if first_study_key:
             logging.info(f"Fetching sites for study key: {first_study_key}...")
             # Use the sites resource client
-            sites_response = client.sites.list_sites(study_key=first_study_key, size=5) # Get first 5 sites
+            sites_response = client.sites.list_sites(
+                study_key=first_study_key, size=5
+            )  # Get first 5 sites
 
             if sites_response and sites_response.data:
                 logging.info(f"Successfully retrieved {len(sites_response.data)} sites:")
@@ -101,7 +109,9 @@ def main():
 
     except ImednetSdkException as e:
         logging.error(f"An SDK/API error occurred: {e}")
-        logging.error(f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        logging.error(
+            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+        )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)
 

@@ -34,36 +34,45 @@ target study and print their details.
 Example script demonstrating how to find subjects by their status
 within a specific study using the iMednet Python SDK.
 """
-import os
 import logging
+import os
+
 from dotenv import load_dotenv
+
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetSdkException # Corrected import
+from imednet_sdk.exceptions import ImednetSdkException  # Corrected import
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Load environment variables from .env file
 load_dotenv()
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY") # Added security key
+SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")  # Added security key
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 
 # --- Configuration ---
 # Specify the Study Key and the desired Subject Status to filter by
 TARGET_STUDY_KEY = "DEMO"  # Replace with a valid Study Key from your iMednet instance
-TARGET_SUBJECT_STATUS = "Enrolled"  # Replace with a valid status (e.g., "Enrolled", "Screen Failed", "Completed")
+TARGET_SUBJECT_STATUS = (
+    "Enrolled"  # Replace with a valid status (e.g., "Enrolled", "Screen Failed", "Completed")
+)
 # ---------------------
+
 
 def main():
     """Initializes the client and fetches subjects filtered by status."""
     if not API_KEY or not SECURITY_KEY or not BASE_URL:
-        logging.error("API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables.")
+        logging.error(
+            "API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables."
+        )
         return
 
     if TARGET_STUDY_KEY == "DEMO":
-        logging.warning("Using default 'DEMO' study key. Please replace with your actual Study Key if needed.")
+        logging.warning(
+            "Using default 'DEMO' study key. Please replace with your actual Study Key if needed."
+        )
 
     try:
         # Initialize the client (using environment variables for keys)
@@ -71,7 +80,9 @@ def main():
         logging.info("iMednet client initialized successfully.")
 
         # --- Find Subjects by Status ---
-        logging.info(f"Fetching subjects with status '{TARGET_SUBJECT_STATUS}' in study '{TARGET_STUDY_KEY}'...")
+        logging.info(
+            f"Fetching subjects with status '{TARGET_SUBJECT_STATUS}' in study '{TARGET_STUDY_KEY}'..."
+        )
 
         # Use the list_subjects method with the filter parameter
         # The filter syntax uses == for equality and property names from the API model
@@ -81,12 +92,14 @@ def main():
         response = client.subjects.list_subjects(
             study_key=TARGET_STUDY_KEY,
             filter=subject_filter,
-            size=500 # Optional: Increase page size if expecting many subjects
+            size=500,  # Optional: Increase page size if expecting many subjects
         )
 
         # Check if the response contains data
         if not response or not response.data:
-            logging.warning(f"No subjects found with status '{TARGET_SUBJECT_STATUS}' in study '{TARGET_STUDY_KEY}'. Response: {response}")
+            logging.warning(
+                f"No subjects found with status '{TARGET_SUBJECT_STATUS}' in study '{TARGET_STUDY_KEY}'. Response: {response}"
+            )
             return
 
         subjects = response.data
@@ -95,18 +108,25 @@ def main():
         # Iterate through the list of SubjectModel objects in response.data
         for subject in subjects:
             # Access attributes directly from the SubjectModel instance
-            logging.info(f"  - Subject Key: {subject.subjectKey}, Status: {subject.subjectStatus}, Site Name: {subject.siteName}, Subject ID: {subject.subjectId}")
+            logging.info(
+                f"  - Subject Key: {subject.subjectKey}, Status: {subject.subjectStatus}, Site Name: {subject.siteName}, Subject ID: {subject.subjectId}"
+            )
 
         # Handle pagination if necessary (check response.pagination)
         if response.pagination and response.pagination.totalPages > 1:
-            logging.info(f"Note: Only the first page ({response.pagination.size} subjects) was retrieved. Total pages: {response.pagination.totalPages}")
+            logging.info(
+                f"Note: Only the first page ({response.pagination.size} subjects) was retrieved. Total pages: {response.pagination.totalPages}"
+            )
             # Implement pagination logic here if needed to fetch all pages
 
     except ImednetSdkException as e:
         logging.error(f"An API error occurred: {e}")
-        logging.error(f"Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}")
+        logging.error(
+            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+        )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)
+
 
 if __name__ == "__main__":
     main()

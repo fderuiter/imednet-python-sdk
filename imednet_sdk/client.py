@@ -436,9 +436,7 @@ class ImednetClient:
 
             api_error_code = error_info.get("code")
             # Prioritize 'message', fallback to 'description', then default
-            description = error_info.get(
-                "message", error_info.get("description", description)
-            )
+            description = error_info.get("message", error_info.get("description", description))
             attribute = error_info.get("attribute")
             value = error_info.get("value")
             error_details = error_data
@@ -546,9 +544,7 @@ class ImednetClient:
             "POST", endpoint, json=json, response_model=response_model, timeout=timeout, **kwargs
         )
 
-    def get_typed_records(
-        self, study_key: str, form_key: str, **kwargs
-    ) -> List[BaseModel]:
+    def get_typed_records(self, study_key: str, form_key: str, **kwargs) -> List[BaseModel]:
         """Fetches records for a form and parses `recordData` into dynamic Pydantic models.
 
         This method provides a way to get strongly-typed access to the data within

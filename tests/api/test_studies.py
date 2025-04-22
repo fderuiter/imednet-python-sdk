@@ -1,24 +1,20 @@
 """Tests for the Studies API client."""
 
+import urllib.parse  # Added for URL encoding/parsing
 from datetime import datetime
 
 import pytest
 import respx
-from httpx import Response, Request
-import urllib.parse  # Added for URL encoding/parsing
+from httpx import Request, Response
 
 from imednet_sdk.api.studies import StudiesClient
 from imednet_sdk.client import ImednetClient
+from imednet_sdk.exceptions import NotFoundError  # Import NotFoundError
+from imednet_sdk.exceptions import (ApiError, AuthenticationError, AuthorizationError,
+                                    BadRequestError)
 # Use PaginationInfo based on _common.py
 from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.study import StudyModel
-from imednet_sdk.exceptions import (
-    ApiError,
-    AuthenticationError,
-    AuthorizationError,
-    BadRequestError,
-    NotFoundError,  # Import NotFoundError
-)
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
@@ -92,7 +88,7 @@ MOCK_ERROR_BODY_400 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "1001", # Example: Invalid Parameter
+            "code": "1001",  # Example: Invalid Parameter
             "message": "Invalid parameter value for 'size'. Must be between 1 and 500.",
             "details": "size parameter was -10",
         },
@@ -105,7 +101,7 @@ MOCK_ERROR_BODY_401 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "AUTH-001", # Example: Authentication Failed
+            "code": "AUTH-001",  # Example: Authentication Failed
             "message": "Authentication failed. Invalid API key or Security key.",
             "details": None,
         },
@@ -118,7 +114,7 @@ MOCK_ERROR_BODY_403 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "AUTH-002", # Example: Authorization Failed
+            "code": "AUTH-002",  # Example: Authorization Failed
             "message": "User does not have permission to access this resource.",
             "details": None,
         },
@@ -131,7 +127,7 @@ MOCK_ERROR_BODY_404 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "API-404", # Example: Not Found
+            "code": "API-404",  # Example: Not Found
             "message": "Resource not found.",
             "details": f"Endpoint {STUDIES_ENDPOINT} not found",
         },
@@ -144,7 +140,7 @@ MOCK_ERROR_BODY_500 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "SYS-500", # Example: Internal Server Error
+            "code": "SYS-500",  # Example: Internal Server Error
             "message": "An unexpected internal server error occurred.",
             "details": "Trace ID: xyz789",
         },
@@ -282,10 +278,14 @@ def test_list_studies_with_pagination(studies_client, client):
     expected_page = 2
     expected_size = 50
     # Construct expected URL without encoding params initially for clarity
-    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?page={expected_page}&size={expected_size}"
+    expected_url_pattern = (
+        f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?page={expected_page}&size={expected_size}"
+    )
 
     list_route = respx.get(url=expected_url_pattern).mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use mock data, adjust if needed
     )
 
     studies_client.list_studies(page=expected_page, size=expected_size)
@@ -304,7 +304,9 @@ def test_list_studies_with_sort(studies_client, client):
     expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?sort={encoded_sort_param}"
 
     list_route = respx.get(url=expected_url_pattern).mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use mock data, adjust if needed
     )
 
     studies_client.list_studies(sort=sort_param)
@@ -323,7 +325,9 @@ def test_list_studies_with_filter(studies_client, client):
 
     # Use regex matching for the URL as encoding might vary slightly or be complex
     list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?filter=.*").mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use mock data, adjust if needed
     )
 
     studies_client.list_studies(filter=filter_param)
@@ -347,7 +351,9 @@ def test_list_studies_with_all_params(studies_client, client):
     expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{query_string}"
 
     list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?.*").mock(
-        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+        return_value=Response(
+            200, json=MOCK_SUCCESS_RESPONSE_DICT
+        )  # Use mock data, adjust if needed
     )
 
     studies_client.list_studies(page=page, size=size, sort=sort, filter=filter_str)
