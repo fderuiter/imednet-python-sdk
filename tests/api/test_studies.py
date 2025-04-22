@@ -9,8 +9,13 @@ from httpx import Response
 
 from imednet_sdk.api.studies import StudiesClient
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.exceptions import (ApiError, AuthenticationError, AuthorizationError,
-                                    BadRequestError, NotFoundError)
+from imednet_sdk.exceptions import (
+    ApiError,
+    AuthenticationError,
+    AuthorizationError,
+    BadRequestError,
+    NotFoundError,
+)
 from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.study import StudyModel
 

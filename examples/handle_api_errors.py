@@ -38,8 +38,14 @@ import os
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import (AuthenticationError, BadRequestError, ImednetSdkException,
-                                    NotFoundError, RateLimitError, ValidationError)
+from imednet_sdk.exceptions import (
+    AuthenticationError,
+    BadRequestError,
+    ImednetSdkException,
+    NotFoundError,
+    RateLimitError,
+    ValidationError,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
