@@ -33,18 +33,13 @@ API errors and log how they are caught and handled.
 """
 
 import logging
-# Import standard libraries
 import os
 
-# Import third-party libraries
 from dotenv import load_dotenv
 
-# Import iMednet SDK
 from imednet_sdk import ImednetClient
-# Import specific and base exceptions from the SDK
-from imednet_sdk.exceptions import (AuthenticationError, AuthorizationError, BadRequestError,
-                                    ImednetSdkException, NotFoundError, RateLimitError,
-                                    ValidationError)
+from imednet_sdk.exceptions import (AuthenticationError, BadRequestError, ImednetSdkException,
+                                    NotFoundError, RateLimitError, ValidationError)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -88,7 +83,8 @@ def main():
     except AuthenticationError as e:
         logging.error(f"Caught expected AuthenticationError: {e}")
         logging.error(
-            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+            f"Details: {e.response_body}"
         )
     except ImednetSdkException as e:
         logging.error(f"Caught a general ImednetSdkException (unexpected for auth test 1): {e}")
@@ -113,7 +109,8 @@ def main():
         except AuthenticationError as e:
             logging.error(f"Caught expected AuthenticationError: {e}")
             logging.error(
-                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+                f"Details: {e.response_body}"
             )
         except ImednetSdkException as e:
             logging.error(
@@ -141,7 +138,8 @@ def main():
         except NotFoundError as e:
             logging.error(f"Caught expected NotFoundError: {e}")
             logging.error(
-                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+                f"Details: {e.response_body}"
             )
         except AuthenticationError as e:  # Catch auth error here too, in case credentials are bad
             logging.error(f"Caught AuthenticationError unexpectedly during Not Found test: {e}")
@@ -177,13 +175,15 @@ def main():
         except ValidationError as e:
             logging.error(f"Caught expected ValidationError: {e}")
             logging.error(
-                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+                f"Details: {e.response_body}"
             )
         # Catch general bad request error
         except BadRequestError as e:
             logging.error(f"Caught expected BadRequestError: {e}")
             logging.error(
-                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+                f"Details: {e.response_body}"
             )
         except NotFoundError as e:  # If the VALID_STUDY_KEY was actually invalid
             logging.error(f"Caught NotFoundError unexpectedly during Bad Request test: {e}")
@@ -206,7 +206,8 @@ def main():
             response = client.studies.list_studies(size=5)
             if response and response.data:
                 logging.info(
-                    f"Successfully listed {len(response.data)} studies (up to 5). First study key: {response.data[0].studyKey}"
+                    f"Successfully listed {len(response.data)} studies (up to 5). "
+                    f"First study key: {response.data[0].studyKey}"
                 )
             else:
                 logging.info("Successfully called list_studies, but no studies were returned.")
@@ -224,7 +225,8 @@ def main():
                 f"Caught an unexpected ImednetSdkException during successful call test: {e}"
             )
             logging.error(
-                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+                f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+                f"Details: {e.response_body}"
             )
         except Exception as e:
             logging.error(

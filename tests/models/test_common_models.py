@@ -1,7 +1,7 @@
 """Tests for common data models."""
 
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 import pytest
 from pydantic import BaseModel, TypeAdapter, ValidationError
@@ -206,3 +206,11 @@ def test_api_response_typeadapter_validation_error_metadata():
 
     # Check the error message points to the nested metadata field
     assert "metadata.timestamp" in str(excinfo.value)
+
+
+def test_api_response_no_pagination():
+    """Test ApiResponse initialization when pagination is missing."""
+    data = [{"id": 1, "name": "Test"}]
+    response = ApiResponse[List[Dict]](data=data, pagination=None)
+    assert response.data == data
+    assert response.pagination is None

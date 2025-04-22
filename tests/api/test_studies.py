@@ -5,14 +5,12 @@ from datetime import datetime
 
 import pytest
 import respx
-from httpx import Request, Response
+from httpx import Response
 
 from imednet_sdk.api.studies import StudiesClient
 from imednet_sdk.client import ImednetClient
-from imednet_sdk.exceptions import NotFoundError  # Import NotFoundError
 from imednet_sdk.exceptions import (ApiError, AuthenticationError, AuthorizationError,
-                                    BadRequestError)
-# Use PaginationInfo based on _common.py
+                                    BadRequestError, NotFoundError)
 from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.study import StudyModel
 
@@ -37,42 +35,37 @@ def studies_client(client):
 
 
 # --- Mock Data ---
-# Corrected mock data based on docs/reference/studies.md example
 MOCK_STUDY_1_DICT = {
     "sponsorKey": "100",
     "studyKey": "PHARMADEMO",
     "studyId": 100,
     "studyName": "iMednet Pharma Demonstration Study",
-    "studyDescription": "iMednet Demonstration Study v2 Created 05April2018 After A5 Release",  # Added from docs
+    "studyDescription": "iMednet Demonstration Study v2 Created 05April2018 After A5 Release",
     "studyType": "STUDY",
-    "dateCreated": "2024-11-04 16:03:18",  # Use format from docs
+    "dateCreated": "2024-11-04 16:03:18",
     "dateModified": "2024-11-04 16:03:19",
 }
-# MOCK_STUDY_2_DICT can be added if needed for multi-item tests
 
-# Corrected Metadata based on docs
 MOCK_SUCCESS_METADATA_DICT = {
     "status": "OK",
-    "method": "GET",  # Added method
+    "method": "GET",
     "path": STUDIES_ENDPOINT,
-    "timestamp": "2024-11-04 16:03:18",  # Use fixed timestamp
+    "timestamp": "2024-11-04 16:03:18",
     "error": {},
 }
 
-# Corrected Pagination based on docs
 MOCK_PAGINATION_DICT = {
     "currentPage": 0,
-    "size": 1,  # Adjusted to match single data item
+    "size": 1,
     "totalPages": 1,
     "totalElements": 1,
-    "sort": [{"property": "studyKey", "direction": "ASC"}],  # Use 'property'
+    "sort": [{"property": "studyKey", "direction": "ASC"}],
 }
 
-# Corrected top-level response structure
 MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
-    "data": [MOCK_STUDY_1_DICT],  # Use single item based on pagination
+    "data": [MOCK_STUDY_1_DICT],
 }
 
 
@@ -88,7 +81,7 @@ MOCK_ERROR_BODY_400 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "1001",  # Example: Invalid Parameter
+            "code": "1001",
             "message": "Invalid parameter value for 'size'. Must be between 1 and 500.",
             "details": "size parameter was -10",
         },
@@ -101,7 +94,7 @@ MOCK_ERROR_BODY_401 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "AUTH-001",  # Example: Authentication Failed
+            "code": "AUTH-001",
             "message": "Authentication failed. Invalid API key or Security key.",
             "details": None,
         },
@@ -114,7 +107,7 @@ MOCK_ERROR_BODY_403 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "AUTH-002",  # Example: Authorization Failed
+            "code": "AUTH-002",
             "message": "User does not have permission to access this resource.",
             "details": None,
         },
@@ -127,7 +120,7 @@ MOCK_ERROR_BODY_404 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "API-404",  # Example: Not Found
+            "code": "API-404",
             "message": "Resource not found.",
             "details": f"Endpoint {STUDIES_ENDPOINT} not found",
         },
@@ -140,7 +133,7 @@ MOCK_ERROR_BODY_500 = {
     "metadata": {
         **MOCK_ERROR_METADATA_BASE,
         "error": {
-            "code": "SYS-500",  # Example: Internal Server Error
+            "code": "SYS-500",
             "message": "An unexpected internal server error occurred.",
             "details": "Trace ID: xyz789",
         },
@@ -164,11 +157,10 @@ def test_list_studies_success(studies_client, client):
     assert response is not None
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert isinstance(response.pagination, PaginationInfo)
     assert isinstance(response.data, list)
     assert len(response.data) == 1
     assert isinstance(response.data[0], StudyModel)
-    # Assertions based on corrected mock data
     assert response.data[0].studyKey == "PHARMADEMO"
     assert response.data[0].studyName == "iMednet Pharma Demonstration Study"
     assert (
@@ -179,7 +171,6 @@ def test_list_studies_success(studies_client, client):
     assert response.data[0].dateCreated == datetime.fromisoformat("2024-11-04 16:03:18")
     assert response.data[0].dateModified == datetime.fromisoformat("2024-11-04 16:03:19")
 
-    # Assert pagination fields based on documentation
     assert response.pagination.currentPage == 0
     assert response.pagination.size == 1
     assert response.pagination.totalPages == 1
@@ -194,10 +185,8 @@ def test_list_studies_success(studies_client, client):
 @respx.mock
 def test_list_studies_with_params(studies_client, client):
     """Test retrieving studies list with pagination, sort, and filter."""
-    # Use filter syntax from docs example (==)
     params = {"page": 1, "size": 10, "sort": "studyKey,desc", "filter": "studyKey==PHARMADEMO"}
 
-    # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{STUDIES_ENDPOINT}"}
     mock_pagination = {
         "currentPage": 1,
@@ -210,9 +199,8 @@ def test_list_studies_with_params(studies_client, client):
         "metadata": mock_metadata,
         "pagination": mock_pagination,
         "data": [],
-    }  # Example empty data
+    }
 
-    # Let respx match based on params dictionary
     list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}", params=params).mock(
         return_value=Response(200, json=mock_response)
     )
@@ -221,28 +209,25 @@ def test_list_studies_with_params(studies_client, client):
 
     assert list_route.called
     request = list_route.calls.last.request
-    # Verify parameters were sent correctly
     assert request.url.params["page"] == "1"
     assert request.url.params["size"] == "10"
     assert request.url.params["sort"] == "studyKey,desc"
     assert request.url.params["filter"] == "studyKey==PHARMADEMO"
 
-    # Assert response structure
     assert isinstance(response, ApiResponse)
     assert isinstance(response.metadata, Metadata)
-    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
-    assert response.pagination.currentPage == 1  # Correct assertion to match requested page
+    assert isinstance(response.pagination, PaginationInfo)
+    assert response.pagination.currentPage == 1
     assert response.pagination.size == 10
     assert response.pagination.sort[0].property == "studyKey"
     assert response.pagination.sort[0].direction == "DESC"
     assert isinstance(response.data, list)
-    assert len(response.data) == 0  # Based on mock response
+    assert len(response.data) == 0
 
 
 @respx.mock
 def test_list_studies_empty_response(studies_client):
     """Test retrieving an empty list of studies."""
-    # Correct pagination model
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{STUDIES_ENDPOINT}"}
     mock_pagination = {
         "currentPage": 0,
@@ -266,8 +251,7 @@ def test_list_studies_empty_response(studies_client):
     assert response is not None
     assert isinstance(response.data, list)
     assert len(response.data) == 0
-    # Assert pagination details
-    assert isinstance(response.pagination, PaginationInfo)  # Check for PaginationInfo type
+    assert isinstance(response.pagination, PaginationInfo)
     assert response.pagination.totalElements == 0
     assert response.pagination.totalPages == 0
 
@@ -277,36 +261,30 @@ def test_list_studies_with_pagination(studies_client, client):
     """Test list_studies with pagination parameters."""
     expected_page = 2
     expected_size = 50
-    # Construct expected URL without encoding params initially for clarity
     expected_url_pattern = (
         f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?page={expected_page}&size={expected_size}"
     )
 
     list_route = respx.get(url=expected_url_pattern).mock(
-        return_value=Response(
-            200, json=MOCK_SUCCESS_RESPONSE_DICT
-        )  # Use mock data, adjust if needed
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
     )
 
     studies_client.list_studies(page=expected_page, size=expected_size)
 
     assert list_route.called
     request = list_route.calls.last.request
-    assert str(request.url) == expected_url_pattern  # Check exact URL match
+    assert str(request.url) == expected_url_pattern
 
 
 @respx.mock
 def test_list_studies_with_sort(studies_client, client):
     """Test list_studies with sorting parameters."""
     sort_param = "studyName,desc"
-    # Encode the comma for the expected URL
     encoded_sort_param = urllib.parse.quote(sort_param)
     expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?sort={encoded_sort_param}"
 
     list_route = respx.get(url=expected_url_pattern).mock(
-        return_value=Response(
-            200, json=MOCK_SUCCESS_RESPONSE_DICT
-        )  # Use mock data, adjust if needed
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
     )
 
     studies_client.list_studies(sort=sort_param)
@@ -323,20 +301,15 @@ def test_list_studies_with_filter(studies_client, client):
     encoded_filter = urllib.parse.quote(filter_param)
     expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?filter={encoded_filter}"
 
-    # Use regex matching for the URL as encoding might vary slightly or be complex
     list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?filter=.*").mock(
-        return_value=Response(
-            200, json=MOCK_SUCCESS_RESPONSE_DICT
-        )  # Use mock data, adjust if needed
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
     )
 
     studies_client.list_studies(filter=filter_param)
 
     assert list_route.called
     request = list_route.calls.last.request
-    # Check the raw query string part contains the encoded filter
     assert f"filter={encoded_filter}" in str(request.url)
-    # Additionally, parse and check the decoded value
     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
     assert query_params.get("filter") == [filter_param]
 
@@ -346,26 +319,22 @@ def test_list_studies_with_all_params(studies_client, client):
     """Test list_studies with all parameters combined."""
     page, size, sort, filter_str = 1, 100, "studyId,asc", 'studyType=="STUDY"'
     encoded_filter = urllib.parse.quote(filter_str)
-    # Build query string carefully
     query_string = f"page={page}&size={size}&sort={sort}&filter={encoded_filter}"
     expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{query_string}"
 
     list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?.*").mock(
-        return_value=Response(
-            200, json=MOCK_SUCCESS_RESPONSE_DICT
-        )  # Use mock data, adjust if needed
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)
     )
 
     studies_client.list_studies(page=page, size=size, sort=sort, filter=filter_str)
 
     assert list_route.called
     request = list_route.calls.last.request
-    # Check individual params in the URL query string after parsing
     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
     assert query_params.get("page") == [str(page)]
     assert query_params.get("size") == [str(size)]
     assert query_params.get("sort") == [sort]
-    assert query_params.get("filter") == [filter_str]  # parse_qs decodes it
+    assert query_params.get("filter") == [filter_str]
 
 
 # --- Error Handling Test Cases ---
@@ -427,7 +396,6 @@ def test_list_studies_404_not_found(studies_client):
         return_value=Response(404, json=MOCK_ERROR_BODY_404)
     )
 
-    # Expecting NotFoundError now
     with pytest.raises(NotFoundError) as excinfo:
         studies_client.list_studies()
 
@@ -436,7 +404,6 @@ def test_list_studies_404_not_found(studies_client):
     assert excinfo.value.api_error_code == "API-404"
     assert "Resource not found" in excinfo.value.message
     assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
-    # Check it's not one of the other specific subclasses
     assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))
 
 
@@ -455,5 +422,4 @@ def test_list_studies_500_server_error(studies_client):
     assert excinfo.value.api_error_code == "SYS-500"
     assert "internal server error" in excinfo.value.message.lower()
     assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
-    # Check it's not one of the more specific subclasses
     assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))

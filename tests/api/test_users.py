@@ -5,13 +5,12 @@ from datetime import datetime  # Import datetime
 import pytest
 import respx
 from httpx import Response
-from pydantic import RootModel
 
-from imednet_sdk.api.users import UsersClient  # Import specific client
+from imednet_sdk.api import UsersClient
 from imednet_sdk.client import ImednetClient
-# Use PaginationInfo based on _common.py
-from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
-from imednet_sdk.models.user import UserModel, UserRole  # Import UserRole
+from imednet_sdk.models import ApiResponse, UserModel
+from imednet_sdk.models._common import Metadata, PaginationInfo
+from imednet_sdk.models.user import UserRole  # Import UserRole
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"

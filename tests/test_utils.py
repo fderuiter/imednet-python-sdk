@@ -4,11 +4,10 @@ from datetime import date, datetime
 from typing import Any, Optional
 
 import pytest
-from pydantic import BaseModel, Field
-from pydantic import ValidationError as PydanticValidationError
-from pydantic_core import ValidationError as PydanticCoreValidationError  # Import core error
+from pydantic import BaseModel
+from pydantic_core import ValidationError as PydanticCoreValidationError
 
-from imednet_sdk.utils import TYPE_MAP, build_model_from_variables
+from imednet_sdk.utils import build_model_from_variables
 
 # --- Test Data ---
 
@@ -33,7 +32,7 @@ MOCK_VARS_META_MISSING_TYPE = [
     {"variableName": "patient_id"},  # Should default to 'unknown' -> Optional[Any]
 ]
 
-MOCK_VARS_META_EMPTY = []
+MOCK_VARS_META_EMPTY: list = []  # Added type hint
 
 # --- Test Cases ---
 

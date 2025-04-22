@@ -73,6 +73,7 @@ def test_list_codings_success(codings_client, client):
 
     respx.get(mock_url).mock(return_value=Response(200, json=mock_response))
 
+    # Call the method under test
     response = codings_client.list_codings(study_key=study_key)
 
     assert isinstance(response, ApiResponse)

@@ -12,3 +12,10 @@ Modules:
     exceptions: Defines custom exceptions for API errors.
     utils: Provides utility functions.
 """
+
+from .client import ImednetClient
+
+__all__ = [
+    "ImednetClient",
+    # ... other exports if any ...
+]

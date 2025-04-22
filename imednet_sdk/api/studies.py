@@ -9,76 +9,101 @@ from typing import Any, Dict, List, Optional
 from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.study import StudyModel
 
+from ..exceptions import ImednetSdkException
+from ..models import ApiResponse, StudyModel
 from ._base import ResourceClient
 
 
 class StudiesClient(ResourceClient):
-    """Provides methods for accessing iMednet study data.
+    """Client for interacting with iMednet Study endpoints."""
 
-    This client interacts with endpoints under `/api/v1/edc/studies`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.studies` property.
-    """
+    def list_studies(self, **kwargs) -> ApiResponse[list[StudyModel]]:
+        """
+        Retrieves a list of studies based on specified criteria.
 
-    def list_studies(
-        self,
-        page: Optional[int] = None,
-        size: Optional[int] = None,
-        sort: Optional[str] = None,
-        filter: Optional[str] = None,
-        **kwargs: Any,
-    ) -> ApiResponse[List[StudyModel]]:
-        """Retrieves a list of studies accessible to the authenticated user.
-
-        Corresponds to the `GET /api/v1/edc/studies` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        Corresponds to `GET /studies`.
 
         Args:
-            page: The index of the page to return (0-based). Defaults to 0.
-            size: The number of items per page. Defaults to 25, maximum 500.
-            sort: The property to sort by, optionally including direction
-                  (e.g., 'studyKey,asc', 'studyName,desc').
-            filter: The filter criteria to apply (e.g., 'studyKey=="DEMO"',
-                    'studyStatus=="Active"'). Refer to iMednet API docs for syntax.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request.
+            **kwargs: Additional parameters for filtering, pagination, sorting etc.
+                      (e.g., filter, page, size, sort).
 
         Returns:
-            An `ApiResponse` object containing a list of `StudyModel` instances
-            representing the studies, along with pagination/metadata details.
+            ApiResponse[list[StudyModel]]: An ApiResponse object containing a list
+                                           of StudyModel instances and pagination info.
 
         Raises:
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ImednetSdkException: If the API request fails.
         """
-        endpoint = "/api/v1/edc/studies"
-        params: Dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
-        if size is not None:
-            params["size"] = size
-        if sort is not None:
-            params["sort"] = sort
-        if filter is not None:
-            params["filter"] = filter
-
-        # Pass any additional kwargs directly to the underlying request method
-        params.update(kwargs)
-
-        # Use the helper method from the base class
-        # Note: The type hint for response_model needs to match what _get expects.
-        # If ApiResponse is not a Pydantic model itself, this might need adjustment.
-        # Assuming ApiResponse[List[StudyModel]] can be handled by TypeAdapter.
-        return self._get(
-            endpoint,
-            params=params,
-            response_model=ApiResponse[List[StudyModel]],  # Ensure correct response model typing
+        return self._request(
+            method="GET", endpoint="/studies", response_model=list[StudyModel], params=kwargs
         )
 
-    # Add other study-related methods here (e.g., get_study_details)
-    # def get_study(self, study_key: str, **kwargs: Any) -> StudyModel:
-    #     """Retrieve details for a specific study."""
-    #     if not study_key:
-    #         raise ValueError("study_key cannot be empty")
-    #     endpoint = f"/api/v1/edc/studies/{study_key}"
-    #     # Assuming the single study endpoint returns the model directly, not wrapped in ApiResponse
-    #     return self._get(endpoint, response_model=StudyModel, **kwargs)
+    def get_study_details(self, study_key: str) -> ApiResponse[StudyModel]:
+        """
+        Retrieves detailed information for a specific study.
+
+        Corresponds to `GET /studies/{studyKey}`.
+
+        Args:
+            study_key (str): The unique key identifying the study.
+
+        Returns:
+            ApiResponse[StudyModel]: An ApiResponse object containing a single
+                                     StudyModel instance.
+
+        Raises:
+            ImednetSdkException: If the API request fails (e.g., study not found).
+        """
+        return self._request(
+            method="GET",
+            endpoint=f"/studies/{study_key}",
+            response_model=StudyModel,
+        )
+
+    def get_study_configuration(self, study_key: str) -> ApiResponse[dict]:
+        """
+        Retrieves the configuration details for a specific study.
+
+        Corresponds to `GET /studies/{studyKey}/configuration`.
+
+        Args:
+            study_key (str): The unique key identifying the study.
+
+        Returns:
+            ApiResponse[dict]: An ApiResponse object containing the study configuration
+                               as a dictionary. The exact structure may vary.
+
+        Raises:
+            ImednetSdkException: If the API request fails.
+        """
+        # Assuming configuration returns a generic dictionary for now
+        return self._request(
+            method="GET",
+            endpoint=f"/studies/{study_key}/configuration",
+            response_model=dict,  # Use dict if structure isn't strictly defined/modeled
+        )
+
+    def get_study_users(self, study_key: str, **kwargs) -> ApiResponse[list[dict]]:
+        """
+        Retrieves a list of users associated with a specific study.
+
+        Corresponds to `GET /studies/{studyKey}/users`.
+
+        Args:
+            study_key (str): The unique key identifying the study.
+            **kwargs: Additional parameters for filtering, pagination, sorting etc.
+
+        Returns:
+            ApiResponse[list[dict]]: An ApiResponse object containing a list of user
+                                     dictionaries. Consider creating a UserModel if needed.
+
+        Raises:
+            ImednetSdkException: If the API request fails.
+        """
+        # Assuming user data returns as a list of dictionaries
+        return self._request(
+            method="GET",
+            endpoint=f"/studies/{study_key}/users",
+            response_model=list[dict],  # Use list[dict] or create a UserModel
+            params=kwargs,
+        )

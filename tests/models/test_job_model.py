@@ -143,3 +143,13 @@ def test_job_status_model_with_error():
     dump = model.model_dump(mode="json", exclude_none=True)
     assert dump["error"]["code"] == "E001"
     assert dump["error"]["description"] == "Processing failed"  # Use description field
+
+
+def test_job_status_model_serialization():
+    """Test serialization of JobStatusModel."""
+    model = JobStatusModel(
+        batchId=123,
+        state="Processing",
+        message="Work in progress",
+        resultUrl="http://example.com/result",
+    )

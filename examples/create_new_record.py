@@ -33,15 +33,14 @@ the batch ID of the background job initiated by iMednet.
 """
 
 import logging
-# --- Import required libraries ---
 import os
 from datetime import datetime
 
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetSdkException  # Corrected import
-from imednet_sdk.models import RecordPostItem  # Import the model for type hinting
+from imednet_sdk.exceptions import ImednetSdkException
+from imednet_sdk.models import RecordPostItem
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -77,7 +76,8 @@ def main():
     """Initializes the client, prepares record data, and calls the create_records endpoint."""
     if not API_KEY or not BASE_URL:
         logging.error(
-            "API Key or Base URL not configured. Set IMEDNET_API_KEY and IMEDNET_BASE_URL environment variables."
+            "API Key or Base URL not configured. Set IMEDNET_API_KEY and "
+            "IMEDNET_BASE_URL environment variables."
         )
         return
 
@@ -148,7 +148,8 @@ def main():
     except ImednetSdkException as e:
         logging.error(f"An API error occurred during record creation initiation: {e}")
         logging.error(
-            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+            f"Details: {e.response_body}"
         )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)

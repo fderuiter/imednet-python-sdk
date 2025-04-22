@@ -16,12 +16,11 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
 # Import BaseModel directly from pydantic
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 
-from .exceptions import ApiError, ImednetSdkException
-# Remove BaseModel from this import
-from .models import RecordModel, VariableModel
+from .exceptions import ImednetSdkException
 
 if TYPE_CHECKING:
     from .api._base import ResourceClient
+    from .models import RecordModel, VariableModel
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +136,9 @@ def _fetch_and_parse_typed_records(
         ValueError: If building the dynamic model fails (e.g., missing 'variableName'
                     in variable metadata).
     """
+    # Import models inside the function to break the circular dependency
+    from .models import RecordModel, VariableModel
+
     # 1) Fetch variable metadata
     try:
         variables_response = variables_client.list_variables(

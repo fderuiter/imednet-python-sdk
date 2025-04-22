@@ -37,13 +37,13 @@ automatically handling pagination using the iMednet Python SDK's iterator featur
 """
 import logging
 import os
-from typing import List  # Add this import
+from typing import List
 
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetSdkException  # Corrected import
-from imednet_sdk.models import RecordModel  # Import for type hinting
+from imednet_sdk.exceptions import ImednetSdkException
+from imednet_sdk.models import RecordModel
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -52,7 +52,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 load_dotenv()
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")  # Added security key
+SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 
 # --- Configuration ---
@@ -67,7 +67,8 @@ def main():
     """Initializes the client and fetches all records for a subject, handling pagination."""
     if not API_KEY or not SECURITY_KEY or not BASE_URL:
         logging.error(
-            "API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables."
+            "API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, "
+            "IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables."
         )
         return
 
@@ -114,7 +115,8 @@ def main():
                         # Basic check for safety
                         if total_pages == 0 and len(all_records) > 0:
                             logging.warning(
-                                "API reported 0 total pages but records were found. Stopping pagination."
+                                "API reported 0 total pages but records were found. "
+                                "Stopping pagination."
                             )
                             break
                         elif total_pages == 0:
@@ -130,13 +132,15 @@ def main():
                 elif current_page == 0:
                     # No data found on the first page
                     logging.info(
-                        f"No records found for subject '{TARGET_SUBJECT_KEY}' in study '{TARGET_STUDY_KEY}'."
+                        f"No records found for subject '{TARGET_SUBJECT_KEY}' in study "
+                        f"'{TARGET_STUDY_KEY}'."
                     )
                     break  # Exit loop
                 else:
                     # No data on subsequent pages, should not happen if totalPages is correct
                     logging.warning(
-                        f"No more data found on page {current_page + 1}, but expected {total_pages} total pages. Stopping pagination."
+                        f"No more data found on page {current_page + 1}, but expected "
+                        f"{total_pages} total pages. Stopping pagination."
                     )
                     break
 
@@ -145,7 +149,8 @@ def main():
             except ImednetSdkException as e:
                 logging.error(f"An API error occurred while fetching page {current_page + 1}: {e}")
                 logging.error(
-                    f"Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+                    f"Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+                    f"Details: {e.response_body}"
                 )
                 break  # Stop pagination on error
             except Exception as e:
@@ -155,12 +160,14 @@ def main():
         # --- Process Results ---
         if all_records:
             logging.info(
-                f"Successfully retrieved {len(all_records)} records in total for subject '{TARGET_SUBJECT_KEY}'."
+                f"Successfully retrieved {len(all_records)} records in total for subject "
+                f"'{TARGET_SUBJECT_KEY}'."
             )
             # Example: Print summary of first few records
             for i, record in enumerate(all_records[:5]):
                 logging.info(
-                    f"  Record {i+1}: ID={record.recordId}, FormKey={record.formKey}, Created={record.dateCreated.strftime('%Y-%m-%d')}"
+                    f"  Record {i+1}: ID={record.recordId}, FormKey={record.formKey}, "
+                    f"Created={record.dateCreated.strftime('%Y-%m-%d')}"
                 )
             if len(all_records) > 5:
                 logging.info("  ...")
@@ -171,7 +178,8 @@ def main():
         # Error during client initialization or initial setup
         logging.error(f"An SDK/API error occurred: {e}")
         logging.error(
-            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+            f"Details: {e.response_body}"
         )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)

@@ -8,7 +8,7 @@ the iMednet API, typically via the `/intervals` endpoint.
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class IntervalFormModel(BaseModel):
@@ -121,3 +121,51 @@ class IntervalModel(BaseModel):
     disabled: bool = Field(False, description="Indicates if the interval is soft-deleted")
     dateCreated: datetime = Field(..., description="Date when the interval was created")
     dateModified: datetime = Field(..., description="Last modification date of the interval")
+
+    # Optional fields (might be null or missing)
+    intervalId: Optional[int] = Field(
+        None, description="The unique numeric identifier for the interval."
+    )
+    intervalName: Optional[str] = Field(
+        None, description="The name or label of the interval (e.g., 'Screening', 'Week 4')."
+    )
+    intervalKey: Optional[str] = Field(
+        None, description="A unique key identifying the interval, often user-defined."
+    )
+    intervalOrder: Optional[int] = Field(
+        None, description="The sequential order of the interval within the study schedule."
+    )
+    intervalIsRepeating: Optional[bool] = Field(
+        None, description="Indicates if this interval can occur multiple times for a subject."
+    )
+    intervalIsUnscheduled: Optional[bool] = Field(
+        None, description="Indicates if this interval is not part of the regular schedule."
+    )
+    intervalIsArchived: Optional[bool] = Field(
+        None, description="Indicates if the interval definition is archived."
+    )
+    intervalDateCreated: Optional[datetime] = Field(
+        None, description="The date and time when the interval definition was created."
+    )
+    intervalDateUpdated: Optional[datetime] = Field(
+        None, description="The date and time when the interval definition was last updated."
+    )
+    intervalUpdatedByUserName: Optional[str] = Field(
+        None, description="The username of the user who last updated the interval definition."
+    )
+    intervalCreatedByUserName: Optional[str] = Field(
+        None, description="The username of the user who created the interval definition."
+    )
+
+    # Allow extra fields if the API might add more properties
+    model_config = ConfigDict(extra="allow")
+
+    @field_validator("intervalDateCreated", "intervalDateUpdated", mode="before")
+    @classmethod
+    def parse_datetime_optional(cls, value):
+        """Parse datetime strings into datetime objects, handling None."""
+        if value is None:
+            return None
+        if isinstance(value, datetime):
+            return value
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))

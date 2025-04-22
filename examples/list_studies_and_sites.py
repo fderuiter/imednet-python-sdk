@@ -28,6 +28,14 @@ It handles potential pagination for studies and sites if necessary (though this 
 fetches only the first page by default).
 """
 
+import logging
+import os
+
+from dotenv import load_dotenv
+
+from imednet_sdk import ImednetClient
+from imednet_sdk.exceptions import ImednetSdkException
+
 # examples/list_studies_and_sites.py
 """
 Example script demonstrating how to list studies and their associated sites
@@ -41,13 +49,6 @@ This script assumes:
 - Study and Site objects/dictionaries returned by the SDK have keys like
   'studyName', 'studyOid', 'siteName', 'siteOid'. Adjust access as needed.
 """
-import logging
-import os
-
-from dotenv import load_dotenv
-
-from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import ImednetSdkException  # Corrected import
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -67,7 +68,8 @@ def main():
     """Initializes the client, lists studies, and then lists sites for each study."""
     if not API_KEY or not SECURITY_KEY or not BASE_URL:
         logging.error(
-            "API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables."
+            "API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, "
+            "IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables."
         )
         return
 
@@ -91,7 +93,8 @@ def main():
         # Handle study pagination if needed
         if studies_response.pagination and studies_response.pagination.totalPages > 1:
             logging.info(
-                f"  Note: More study pages available (Total: {studies_response.pagination.totalPages}). Fetching only the first page."
+                f"  Note: More study pages available (Total: "
+                f"{studies_response.pagination.totalPages}). Fetching only the first page."
             )
 
         for study in studies:
@@ -121,7 +124,8 @@ def main():
                         # Handle site pagination if needed
                         if sites_response.pagination and sites_response.pagination.totalPages > 1:
                             logging.info(
-                                f"      Note: More site pages available (Total: {sites_response.pagination.totalPages}). Fetching only the first page."
+                                f"      Note: More site pages available (Total: "
+                                f"{sites_response.pagination.totalPages}). Fetching only the first page."
                             )
 
                     else:
@@ -129,11 +133,13 @@ def main():
                 except ImednetSdkException as site_err:
                     logging.error(f"    Error fetching sites for study {study_key}: {site_err}")
                     logging.error(
-                        f"      Status Code: {site_err.status_code}, API Code: {site_err.api_error_code}, Details: {site_err.response_body}"
+                        f"      Status Code: {site_err.status_code}, API Code: "
+                        f"{site_err.api_error_code}, Details: {site_err.response_body}"
                     )
                 except Exception as site_err:
                     logging.error(
-                        f"    An unexpected error occurred fetching sites for study {study_key}: {site_err}",
+                        f"    An unexpected error occurred fetching sites for study {study_key}: "
+                        f"{site_err}",
                         exc_info=True,
                     )
             else:
@@ -142,7 +148,8 @@ def main():
     except ImednetSdkException as e:
         logging.error(f"An SDK/API error occurred: {e}")
         logging.error(
-            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+            f"Details: {e.response_body}"
         )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)

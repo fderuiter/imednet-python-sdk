@@ -8,6 +8,7 @@ from httpx import Response
 
 from imednet_sdk.client import ImednetClient
 # The client method should return JobStatusModel directly based on docs
+from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.job import JobStatusModel
 
 # ApiResponse might not be needed if the client returns the model directly
@@ -29,40 +30,34 @@ def jobs_client(client):
 
 
 @respx.mock
-def test_get_job_status_success(jobs_client, client):
+def test_get_job_status_success(mock_imednet_client, mock_api_response_job_status):
     """Test successful retrieval of job status."""
-    study_key = "MOCK-STUDY"  # Use example from docs
-    batch_id = "75e63db6-fa41-40bc-b939-cf3bdb246ae8"  # Use example from docs
-    mock_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
-    # Corrected mock response based on docs/reference/jobs.md
-    mock_response_data = {
-        "jobId": "afa2d61e-07ed-4efe-99c5-6f358f5e7d38",  # Use example from docs
-        "batchId": batch_id,
-        "state": "completed",  # Lowercase as per docs
-        "dateCreated": "2020-12-01 21:47:36",  # Use dateCreated
-        "dateModified": "2020-12-01 21:47:42",  # Use dateModified
-        "progress": 100,  # Add progress if applicable
-        "resultUrl": f"/api/v1/edc/jobs/afa2d61e-07ed-4efe-99c5-6f358f5e7d38/results",  # Add resultUrl if applicable
-        "error": None,  # Add error if applicable
-    }
-    # The endpoint returns the job status object directly
-    respx.get(mock_url).mock(return_value=Response(200, json=mock_response_data))
+    study_key = "TEST_STUDY"
+    batch_id = 12345
+    expected_url = f"{mock_imednet_client.base_url}/studies/{study_key}/jobs/{batch_id}"
+    expected_response_model = JobStatusModel(
+        batchId=batch_id, state="Completed", message="Job finished successfully"
+    )
 
-    # Assuming jobs_client.get_job_status is updated to return JobStatusModel directly
-    response = jobs_client.get_job_status(study_key=study_key, batch_id=batch_id)
+    # Configure the mock client's _request method
+    mock_imednet_client._request.return_value = mock_api_response_job_status(
+        expected_response_model
+    )
 
-    # Assert the response is the JobStatusModel directly
-    assert isinstance(response, JobStatusModel)
-    # Assertions based on corrected mock data and documented fields
-    assert response.jobId == "afa2d61e-07ed-4efe-99c5-6f358f5e7d38"
-    assert response.batchId == batch_id
-    assert response.state == "completed"
-    # Compare datetime objects after parsing
-    datetime_format = "%Y-%m-%d %H:%M:%S"
-    assert response.dateCreated == datetime.strptime("2020-12-01 21:47:36", datetime_format)
-    assert response.dateModified == datetime.strptime(
-        "2020-12-01 21:47:42", datetime_format
-    )  # Check dateModified
+    # Call the method under test
+    response = mock_imednet_client.jobs.get_job_status(study_key=study_key, batch_id=batch_id)
+
+    # Assertions
+    mock_imednet_client._request.assert_called_once_with(
+        method="GET",
+        endpoint=f"/studies/{study_key}/jobs/{batch_id}",
+        response_model=JobStatusModel,
+    )
+    assert response is not None
+    assert isinstance(response, ApiResponse)
+    assert response.data == expected_response_model
+    assert response.data.batchId == batch_id
+    assert response.data.state == "Completed"
 
 
 @respx.mock

@@ -3,7 +3,8 @@
 import httpx
 import pytest
 import respx
-from httpx import ConnectError, ReadTimeout, Response
+from httpx import ConnectError, Response
+from tenacity import RetryError
 
 from imednet_sdk.exceptions import ApiError, AuthenticationError, NotFoundError, RateLimitError
 

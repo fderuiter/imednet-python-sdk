@@ -49,7 +49,8 @@ def main():
     """Demonstrates basic client initialization and API calls."""
     if not API_KEY or not SECURITY_KEY or not BASE_URL:
         logging.error(
-            "API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables."
+            "API Key, Security Key, or Base URL not configured. Set IMEDNET_API_KEY, "
+            "IMEDNET_SECURITY_KEY, and IMEDNET_BASE_URL environment variables."
         )
         return
 
@@ -92,7 +93,7 @@ def main():
                 for site in sites_response.data:
                     logging.info(f"  - Site Name: {site.siteName}, ID: {site.siteId}")
             else:
-                logging.warning(f"No sites found for study {first_study_key} or API call failed.")
+                logging.error(f"No sites found for study {first_study_key} or API call failed.")
         else:
             logging.info("Skipping site listing as no studies were found in the previous step.")
 
@@ -110,7 +111,8 @@ def main():
     except ImednetSdkException as e:
         logging.error(f"An SDK/API error occurred: {e}")
         logging.error(
-            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, Details: {e.response_body}"
+            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+            f"Details: {e.response_body}"
         )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)

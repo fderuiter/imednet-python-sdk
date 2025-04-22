@@ -72,17 +72,16 @@ MOCK_VARIABLES_META_TYPED = [
     ),
 ]
 
-MOCK_VARIABLES_RESPONSE_TYPED = ApiResponse(
-    metadata=Metadata(status="OK", method="GET", path="/vars", timestamp=datetime.now(), error={}),
-    pagination=PaginationInfo(
-        currentPage=0,
-        size=len(MOCK_VARIABLES_META_TYPED),
-        totalPages=1,
-        totalElements=len(MOCK_VARIABLES_META_TYPED),
-        sort=[],
-    ),
-    data=MOCK_VARIABLES_META_TYPED,
-)
+MOCK_VARIABLES_RESPONSE_TYPED: dict = {  # Added type hint
+    "data": [
+        {"variableName": "SUBJID", "dataType": "Text"},
+        {"variableName": "VISITDT", "dataType": "Date"},
+        {"variableName": "WEIGHT", "dataType": "Number", "numberDecimalPlaces": 1},
+        {"variableName": "TEMP", "dataType": "Number", "numberDecimalPlaces": 1},
+        {"variableName": "AE", "dataType": "Text"},
+    ],
+    "pagination": {"page": 0, "size": 5, "totalElements": 5, "totalPages": 1},
+}
 
 MOCK_RAW_RECORDS_TYPED = [
     RecordModel(
@@ -167,19 +166,43 @@ MOCK_RAW_RECORDS_TYPED = [
     ),
 ]
 
-MOCK_RECORDS_RESPONSE_TYPED = ApiResponse(
-    metadata=Metadata(
-        status="OK", method="GET", path="/records", timestamp=datetime.now(), error={}
-    ),
-    pagination=PaginationInfo(
-        currentPage=0,
-        size=len(MOCK_RAW_RECORDS_TYPED),
-        totalPages=1,
-        totalElements=len(MOCK_RAW_RECORDS_TYPED),
-        sort=[],
-    ),
-    data=MOCK_RAW_RECORDS_TYPED,
-)
+MOCK_RECORDS_RESPONSE_TYPED: dict = {  # Added type hint
+    "data": [
+        {
+            "recordId": 101,
+            "formKey": "VITALS",
+            "subjectKey": "SUBJ-001",
+            "intervalName": "Screening",
+            "dateCreated": "2023-01-15T10:00:00Z",
+            "data": {
+                "VISITDT": "2023-01-15",
+                "WEIGHT": 70.5,
+                "TEMP": 37.0,
+            },
+        },
+        {
+            "recordId": 102,
+            "formKey": "AE",
+            "subjectKey": "SUBJ-001",
+            "intervalName": "Screening",
+            "dateCreated": "2023-01-15T11:00:00Z",
+            "data": {"AE": "Headache"},
+        },
+        {
+            "recordId": 103,
+            "formKey": "VITALS",
+            "subjectKey": "SUBJ-001",
+            "intervalName": "Week 4",
+            "dateCreated": "2023-02-12T09:30:00Z",
+            "data": {
+                "VISITDT": "2023-02-12",
+                "WEIGHT": 71.0,
+                "TEMP": 36.8,
+            },
+        },
+    ],
+    "pagination": {"page": 0, "size": 3, "totalElements": 3, "totalPages": 1},
+}
 
 # --- Tests for get_typed_records --- #
 

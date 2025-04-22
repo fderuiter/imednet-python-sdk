@@ -44,12 +44,12 @@ from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 import httpx
 from pydantic import BaseModel, TypeAdapter, ValidationError
 # Import tenacity for retry logic
-from tenacity import (RetryError, retry, retry_if_exception, retry_if_exception_type,
-                      stop_after_attempt, wait_exponential)
+from tenacity import RetryError, Retrying, stop_after_attempt, wait_exponential
+
+from imednet_sdk.models._common import ApiResponse
 
 # Import resource clients
-from .api import JobsClient  # Group API imports
-from .api import (CodingsClient, FormsClient, IntervalsClient, QueriesClient, RecordRevisionsClient,
+from .api import (CodingsClient, FormsClient, IntervalsClient, JobsClient, RecordRevisionsClient,
                   RecordsClient, SitesClient, StudiesClient, SubjectsClient, UsersClient,
                   VariablesClient, VisitsClient)
 # Import custom exceptions
@@ -296,56 +296,17 @@ class ImednetClient:
         self,
         method: str,
         endpoint: str,
-        params: Optional[Dict[str, Any]] = None,
+        response_model: Optional[Type[T]] = None,
+        params: Optional[dict] = None,
         json: Optional[Any] = None,
-        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
-        timeout: TimeoutTypes = None,
-        **kwargs: Any,
-    ) -> Union[T, List[T], httpx.Response]:
-        """Makes an HTTP request with retry logic and response handling.
-
-        This is the core method used by `_get`, `_post`, etc., and by the resource
-        clients. It orchestrates the request lifecycle:
-
-        1. **Prepares Request:** Determines the full URL and timeout.
-        2. **Serializes Payload:** Converts Pydantic models in the `json` argument
-           to dictionaries suitable for `httpx`.
-        3. **Applies Retries:** Uses the `tenacity` library to wrap the actual
-           request attempt (`_make_request_attempt`). Retries are performed based
-           on the configured `retries`, `backoff_factor`, `retry_methods`, and
-           `retry_exceptions`.
-        4. **Returns Result:** Returns the processed response (deserialized model
-           or raw `httpx.Response`) from the final successful attempt, or re-raises
-           the exception if retries are exhausted.
-
-        Args:
-            method: The HTTP method (e.g., 'GET', 'POST').
-            endpoint: The API endpoint path (relative to the client's `base_url`).
-            params: Optional dictionary of query parameters.
-            json: Optional request body payload. Can be a dictionary, list, or a
-                  Pydantic model instance (which will be serialized).
-            response_model: Optional Pydantic model class (or `List[ModelClass]`)
-                            to parse the successful JSON response into.
-            timeout: Optional timeout configuration for this specific request,
-                     overriding the client's default `_default_timeout`.
-            **kwargs: Additional keyword arguments passed down to `_make_request_attempt`
-                      and subsequently to `httpx.Client.request` (e.g., `headers`).
-
-        Returns:
-            The result from `_make_request_attempt` after applying retry logic:
-            - An instance or list of `response_model` if provided and successful.
-            - The raw `httpx.Response` object if `response_model` is None and successful.
-
-        Raises:
-            ImednetSdkException: Or its subclasses, if the API returns an error status
-                                 code after exhausting retries.
-            httpx.RequestError: If a network-level error occurs after exhausting retries.
-            RuntimeError: If JSON decoding or Pydantic validation fails.
-            RetryError: If retries are exhausted (though this is typically caught and
-                        the underlying cause is re-raised).
-        """
+        data: Optional[dict] = None,
+        files: Optional[dict] = None,
+        headers: Optional[dict] = None,
+        raise_for_status: bool = True,
+    ) -> Union[ApiResponse[T], httpx.Response]:
+        """Internal method to make HTTP requests with error handling and retries."""
         url = endpoint
-        request_timeout = timeout if timeout is not None else self._default_timeout
+        request_timeout = self._default_timeout
 
         # Handle potential Pydantic model serialization for request body
         request_json = None
@@ -359,26 +320,27 @@ class ImednetClient:
         # Check if the method is configured for retries
         if method.upper() in self._retry_methods:
             # Define the retry decorator dynamically
-            retry_decorator = retry(
+            retry_decorator = Retrying(
                 stop=stop_after_attempt(self._retries + 1),  # Total attempts = initial + retries
                 wait=wait_exponential(
                     multiplier=self._backoff_factor, min=0.5, max=10
                 ),  # Exponential backoff with jitter
-                retry=retry_if_exception_type(
-                    self._retry_exceptions_tuple
-                ),  # Retry only on specific exceptions
                 reraise=True,  # Reraise the last exception after exhausting attempts
             )
             # Apply the decorator to the request attempt function
             try:
-                return retry_decorator(self._make_request_attempt)(
-                    method=method,
-                    url=url,
-                    params=params,
-                    request_json=request_json,
-                    request_timeout=request_timeout,
-                    response_model=response_model,
-                    **kwargs,
+                return retry_decorator(
+                    self._make_request_attempt(
+                        method=method,
+                        url=url,
+                        params=params,
+                        request_json=request_json,
+                        request_timeout=request_timeout,
+                        response_model=response_model,
+                        headers=headers,
+                        data=data,
+                        files=files,
+                    )
                 )
             except RetryError as e:
                 # If tenacity fails, reraise the underlying cause
@@ -392,7 +354,9 @@ class ImednetClient:
                 request_json=request_json,
                 request_timeout=request_timeout,
                 response_model=response_model,
-                **kwargs,
+                headers=headers,
+                data=data,
+                files=files,
             )
 
     def _handle_api_error(self, response: httpx.Response, request_path: str) -> None:
@@ -544,55 +508,29 @@ class ImednetClient:
             "POST", endpoint, json=json, response_model=response_model, timeout=timeout, **kwargs
         )
 
-    def get_typed_records(self, study_key: str, form_key: str, **kwargs) -> List[BaseModel]:
-        """Fetches records for a form and parses `recordData` into dynamic Pydantic models.
-
-        This method provides a way to get strongly-typed access to the data within
-        `recordData` fields, based on the variable definitions (type, name) associated
-        with the specified `form_key`.
-
-        It performs the following steps:
-
-        1. Fetches variable definitions for the `form_key` using `self.variables.list_variables`.
-
-        2. Dynamically builds a Pydantic model based on these variable definitions.
-
-        3. Fetches records for the `form_key` using `self.records.list_records` (handling pagination).
-
-        4. For each fetched record, validates and parses its `recordData` using the dynamically
-           created Pydantic model.
-
-        5. Returns a list of these dynamic Pydantic model instances.
+    def get_typed_records(
+        self, study_key: str, subject_key: str, form_key: Optional[str] = None, **kwargs
+    ) -> List[BaseModel]:
+        """
+        Retrieves records for a subject and dynamically creates Pydantic models based on form variables.
 
         Args:
-            study_key: The key identifying the study.
-
-            form_key: The key identifying the form whose records and variables are needed.
-
-            **kwargs: Additional keyword arguments passed to the underlying
-                      `self.records.list_records` call (e.g., `filter`, `sort`, `size`,
-                      `page`, `record_data_filter`). Pagination arguments (`page`, `size`)
-                      are handled internally to fetch all records matching the criteria.
+            study_key (str): The study key.
+            subject_key (str): The subject key.
+            form_key (Optional[str]): Optional form key to filter records.
+            **kwargs: Additional parameters for the list_records call (e.g., filter, size).
 
         Returns:
-            A list of dynamically created Pydantic model instances, each representing
-            the validated `recordData` of a fetched record for the specified form.
-            Returns an empty list if no variables are found for the form or if
-            no records match the criteria.
+            List[BaseModel]: A list of dynamically generated Pydantic model instances,
+                             each representing a record.
 
         Raises:
-            ImednetSdkException: If fetching variables or records fails due to API errors.
-
-            ValueError: If building the dynamic model fails (e.g., missing `variableName`).
-
-            RuntimeError: If JSON decoding or Pydantic validation fails during processing.
+            ImednetSdkException: If API calls fail.
+            ValueError: If variable metadata cannot be retrieved.
         """
-        return _fetch_and_parse_typed_records(
-            variables_client=self.variables,
-            records_client=self.records,
-            study_key=study_key,
-            form_key=form_key,
-            **kwargs,
+        # Use the utility function from utils.py
+        return get_typed_records_for_subject(
+            self, study_key=study_key, subject_key=subject_key, form_key=form_key, **kwargs
         )
 
     # --- Resource Client Properties ---
