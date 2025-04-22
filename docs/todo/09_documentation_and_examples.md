@@ -66,7 +66,7 @@
   * [x] Write guide: Client initialization and authentication.
   * [x] Write guide: Making requests (listing, getting).
   * [x] Write guide: Handling pagination (manual, iterators).
-  * [ ] Write guide: Filtering and sorting.
+  * [x] Write guide: Filtering and sorting.
   * [ ] Write guide: Creating/updating resources.
   * [ ] Write guide: Error handling (exceptions).
   * [ ] (Optional) Add explanations of core API concepts.
