@@ -71,7 +71,7 @@ class StudiesClient(ResourceClient):
         response = cast(
             ApiResponse[List[StudyModel]],
             self._get(
-                endpoint="/studies",
+                endpoint="/api/v1/edc/studies/",
                 params=params,
                 response_model=ApiResponse[List[StudyModel]],
             ),

@@ -36,21 +36,19 @@ This module is part of the iMednet SDK, designed for seamless interaction with t
 API, enabling efficient data management and retrieval for clinical studies.\r
 """
 
-import json as std_json  # Import standard json library with an alias
+import json as std_json
 import logging
 import os
-
-# Add necessary imports for type hints
 from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 
 import httpx
 from pydantic import BaseModel, TypeAdapter, ValidationError
 
 # Import tenacity for retry logic
-from tenacity import RetryError, Retrying, stop_after_attempt, wait_exponential
+from tenacity import RetryCallState, RetryError, Retrying, stop_after_attempt, wait_exponential
 
 # Import resource clients
-from .api import (
+from imednet_sdk.api import (
     CodingsClient,
     FormsClient,
     IntervalsClient,
@@ -66,7 +64,7 @@ from .api import (
 )
 
 # Import custom exceptions
-from .exceptions import (
+from imednet_sdk.exceptions import (
     ApiError,
     AuthenticationError,
     AuthorizationError,
@@ -233,253 +231,399 @@ class ImednetClient:
             timeout=self._default_timeout,
         )
 
-    def _make_request_attempt(
-        self,
-        method: str,
-        endpoint: str,
-        params: Optional[Dict[str, Any]],
-        json_data: Optional[Any],  # Renamed from json to avoid conflict
-        timeout: TimeoutTypes,  # Use the determined timeout,
-        kwargs: Dict[str, Any],
-    ) -> httpx.Response:
-        """Makes a single HTTP request attempt. Called by the retry logic."""
-        logger.debug(f"Making request: {method} {endpoint} Params: {params} Body: {json_data}")
-
-        # Handle Pydantic model serialization before sending
-        if isinstance(json_data, BaseModel):
-            processed_json_data = json_data.model_dump(by_alias=True, mode="json")
-        else:
-            processed_json_data = json_data
-
+    def _extract_error_details(self, response: httpx.Response) -> Dict[str, Any]:
+        """Extracts common error details from an httpx.Response."""
+        details = {
+            "message": f"API Error {response.status_code}",
+            "status_code": response.status_code,
+            "api_error_code": None,
+            "request_path": str(response.request.url) if response.request else None,
+            "response_body": None,
+            "timestamp": None,
+        }
         try:
-            response = self._client.request(
-                method,
-                endpoint,
-                params=params,
-                json=processed_json_data,  # Use processed data
-                timeout=timeout,  # Pass the specific timeout
-                **kwargs,
+            response_data = response.json()
+            details["response_body"] = response_data
+            # Attempt to extract common fields, adapt based on actual API error structure
+            details["message"] = response_data.get("message", details["message"])
+            # Check common keys for API error code
+            details["api_error_code"] = (
+                str(response_data.get("code", response_data.get("errorCode")))
+                if response_data.get("code") or response_data.get("errorCode")
+                else None
             )
-            # Raise HTTPStatusError for 4xx/5xx responses immediately after the request
-            # This allows the retry logic (_should_retry) to catch specific SDK exceptions
-            response.raise_for_status()
-            return response
-        except httpx.HTTPStatusError as e:
-            # Convert httpx error to our custom SDK exception before retry check
-            sdk_exception = self._handle_api_error(e.response, endpoint)
+            details["timestamp"] = response_data.get("timestamp")
+        except std_json.JSONDecodeError:
             logger.warning(
-                f"Request attempt failed with status {e.response.status_code}. "
-                f"Error: {sdk_exception}. Retrying if applicable..."
+                f"Failed to decode JSON error response for {details['request_path']}. "
+                f"Body: {response.text[:200]}"
             )
-            raise sdk_exception from e
-        except httpx.RequestError as e:
-            # Handle network/connection errors
-            logger.warning(
-                f"Request attempt failed with network error: {e}. Retrying if applicable..."
+            details["message"] = (
+                f"API Error {response.status_code}: Failed to decode JSON response."
             )
-            raise  # Reraise httpx.RequestError for tenacity to catch
+            details["response_body"] = {"raw_text": response.text}
+        except Exception:  # Catch other potential issues during extraction
+            logger.warning("Failed to fully parse error response body.", exc_info=True)
+            if not details["response_body"]:  # Ensure response_body is set if json() failed earlier
+                details["response_body"] = {"raw_text": response.text}
+
+        # Ensure message is set even if extraction fails partially
+        if not details["message"]:
+            details["message"] = f"API Error {response.status_code}"
+
+        return details
+
+    def _should_retry(self, retry_state: "RetryCallState") -> bool:
+        """
+        Determines if a request should be retried based on the outcome.
+
+        Used by `tenacity.Retrying` as the `retry` condition.
+
+        Args:
+            retry_state: The state object provided by tenacity, containing
+                         information about the attempt, outcome, etc
+
+        Returns:
+            True if the request should be retried, False otherwise.
+        """
+        # Don't retry if max attempts reached (handled by stop condition, but good practice)
+        if retry_state.attempt_number >= self._retries + 1:
+            return False
+
+        outcome = retry_state.outcome
+        # Only retry on specific exceptions
+        if (
+            outcome
+            and outcome.failed
+            and isinstance(outcome.exception(), self._retry_exceptions_tuple)
+        ):
+            # Check if the request method is in the allowed retry methods
+            # The request object should be available in the exception context if it's an httpx error
+            request = getattr(outcome.exception(), "request", None)
+            if request and request.method in self._retry_methods:
+                logger.info(
+                    f"Retrying request {request.method} {request.url} "
+                    f"(Attempt {retry_state.attempt_number}/{self._retries}) "
+                    f"due to error: {outcome.exception().__class__.__name__}"
+                )
+                return True
+            elif not request:
+                # If we can't determine the method, retry based on exception only (conservative)
+                logger.warning(
+                    f"Retrying request (method unknown) "
+                    f"(Attempt {retry_state.attempt_number}/{self._retries}) "
+                    f"due to error: {outcome.exception().__class__.__name__}"
+                )
+                return True  # Or decide based on your policy if method is unknown
+
+        # Log why we are not retrying if it's an exception we caught
+        if outcome and outcome.failed:
+            exc = outcome.exception()
+            request = getattr(exc, "request", None)
+            method = request.method if request else "Unknown Method"
+            reason = "exception type not retryable"
+            if (
+                isinstance(exc, self._retry_exceptions_tuple)
+                and request
+                and method not in self._retry_methods
+            ):
+                reason = f"method '{method}' not in retryable methods"
+
+            logger.debug(
+                f"Not retrying request (Attempt {retry_state.attempt_number}) - Reason: {reason} "
+                f"Error: {exc.__class__.__name__}"
+            )
+
+        return False
+
+    def _build_url(self, path: str) -> str:
+        """Constructs the full URL for an API endpoint.
+
+        Ensures that there is exactly one slash between the base URL and the path.
+
+        Args:
+            path: The relative path of the API endpoint.
+
+        Returns:
+            The complete URL string.
+        """
+        # Ensure base_url ends with a slash and path doesn't start with one
+        base = self.base_url.rstrip("/")
+        path = path.lstrip("/")
+        return f"{base}/{path}"
+
+    def _prepare_headers(self, custom_headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
+        """Merges default headers with custom headers provided for a specific request.
+
+        Args:
+            custom_headers: Optional dictionary of custom headers for the request.
+
+        Returns:
+            A dictionary containing the final headers for the request.
+        """
+        headers = self._default_headers.copy()
+        if custom_headers:
+            headers.update(custom_headers)
+        # Ensure Content-Type is set correctly if not overridden
+        if "Content-Type" not in headers:
+            headers["Content-Type"] = "application/json"  # Default if missing
+        return headers
 
     def _request(
         self,
         method: str,
-        endpoint: str,
+        path: str,
+        response_model: Optional[Type[T]] = None,
+        *,
         params: Optional[Dict[str, Any]] = None,
-        json_payload: Optional[Any] = None,  # Renamed parameter from 'json'
-        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
+        json: Optional[Any] = None,
+        data: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
         timeout: Optional[TimeoutTypes] = None,
+        allow_redirects: bool = True,
         **kwargs: Any,
-    ) -> Union[T, List[T], httpx.Response]:
-        """Core request method with retry logic, response parsing, and error handling.
-
-        Handles making the actual HTTP request using the configured httpx client,
-        applying retry logic via tenacity, parsing successful responses into
-        Pydantic models (if specified), and raising appropriate SDK exceptions
-        for API errors.
+    ) -> Optional[T]:
+        """
+        Internal method to make an HTTP request with retry logic.
 
         Args:
             method: HTTP method (e.g., "GET", "POST").
-            endpoint: API endpoint path (relative to base URL).
-            params: Optional dictionary of query parameters.
-            json: Optional request body payload (dict, list, or Pydantic model).
-            response_model: Optional Pydantic model class or -
-            List[ModelClass] for parsing.
-            timeout: Optional timeout override for this specific request.
-            # Add timeout to docstring
-            **kwargs: Additional keyword arguments passed to httpx's request method.
+            path: API endpoint path (relative to base_url).
+            response_model: Pydantic model to parse the successful response into.
+            params: URL query parameters.
+            json: Request body (JSON serializable).
+            data: Request body (form data).
+            files: Files to upload.
+            headers: Custom request headers.
+            timeout: Request timeout configuration.
+            allow_redirects: Whether to follow redirects.
+            **kwargs: Additional arguments passed to httpx.request.
 
         Returns:
-            The deserialized Pydantic model(s) if response_model is provided and
-            the request is successful (2xx status), otherwise the raw httpx.Response.
+            Parsed response model instance or None if response_model is None.
 
         Raises:
-            ImednetSdkException: For API errors (4xx/5xx) or validation issues.
-            httpx.RequestError: For underlying connection/network issues if retries fail.
+            ImednetSdkException: For API errors or validation issues.
             RetryError: If retries are exhausted.
-            RuntimeError: If JSON decoding or Pydantic validation fails.
         """
-        # Determine the timeout for this specific request
-        request_timeout = timeout if timeout is not None else self._default_timeout
-
         # Prepare retry configuration using tenacity
         retryer = Retrying(
-            stop=stop_after_attempt(self._retries + 1),  # +1 because first attempt is not a retry
-            wait=wait_exponential(multiplier=self._backoff_factor, min=1, max=10),
-            retry=(
-                lambda retry_state: isinstance(
-                    retry_state.outcome.exception(), self._retry_exceptions_tuple
-                )
-            ),  # Retry only on specific exceptions
-            reraise=True,  # Reraise the exception if retries fail
+            stop=stop_after_attempt(self._retries),
+            wait=wait_exponential(
+                multiplier=self._backoff_factor, min=1, max=10
+            ),  # Use backoff_factor
+            retry=self._should_retry,  # Use the instance method
+            reraise=True,
         )
 
-        try:
-            # Use tenacity's retry mechanism
-            response = retryer(
-                self._make_request_attempt,
-                method=method,
-                endpoint=endpoint,
-                params=params,
-                json_data=json_payload,  # Pass renamed parameter
-                timeout=request_timeout,
-                **kwargs,
-            )
-        except RetryError as e:
-            logger.error(f"Request failed after {self._retries} retries: {e}")
-            # Reraise the last exception encountered during retries
-            raise e.last_attempt.exception  # type: ignore
-        # Process the final response (either successful or non-retried error)
-        if response_model:
-            if response is None:
-                raise RuntimeError(f"No response received from {method} {endpoint}")
-            try:
-                response_json = response.json()
-            except std_json.JSONDecodeError as decode_exc:  # Use aliased json module
-                logger.error(
-                    f"Failed to decode JSON response from {method} {endpoint}: {decode_exc}"
-                )
-                raise RuntimeError(
-                    f"Failed to decode JSON response from {method} {endpoint}. "
-                    f"Response text: {response.text[:500]}..."
-                ) from decode_exc
-
-            try:
-                # Use model_validate for Pydantic v2
-                if hasattr(response_model, "model_validate"):
-                    adapter = TypeAdapter(response_model)
-                    return adapter.validate_python(response_json)
-                else:
-                    # Handle list types
-                    if (
-                        isinstance(response_json, list)
-                        and hasattr(response_model, "__args__")
-                        and response_model.__args__
-                    ):
-                        # Get the item model from the list type
-                        item_model = response_model.__args__[0]
-                        adapter = TypeAdapter(item_model)
-                        return [adapter.validate_python(item) for item in response_json]
-                    elif isinstance(response_model, type) and issubclass(response_model, BaseModel):
-                        # Handle single model types
-                        adapter = TypeAdapter(response_model)
-                        return adapter.validate_python(response_json)
-                    else:
-                        # If response_model is not a standard Pydantic type/list, return raw JSON
-                        logger.warning(
-                            f"Unsupported response_model type: {type(response_model)}. "
-                            f"Returning raw JSON."
-                        )
-                        return response_json
-
-            except ValidationError as validation_exc:
-                logger.error(
-                    f"Failed to validate response data for {method} {endpoint}: {validation_exc}"
-                )
-                raise RuntimeError(
-                    f"Failed to validate response data: {validation_exc}"
-                ) from validation_exc
-            except Exception as e:  # Catch other potential validation/parsing errors
-                logger.error(
-                    f"Unexpected error during response parsing for {method} {endpoint}: {e}"
-                )
-                raise RuntimeError(f"Unexpected error during response parsing: {e}") from e
-
-        return response  # Return raw response if no model specified
-
-    def _handle_api_error(self, response: httpx.Response, request_path: str) -> ImednetSdkException:
-        """Parses API error responses and raises appropriate `ImednetSdkException` subclasses.
-
-        Analyzes the HTTP status code and, if possible, the JSON error payload
-        (following the standard iMednet error structure in `metadata.error`)
-        to determine the most specific exception to raise.
-
-        This method is called internally by `_make_request_attempt` when a non-2xx
-        status code is received.
-
-        Args:
-            response: The `httpx.Response` object containing the error.
-            request_path: The relative path of the API request that failed, used for context
-                          in the raised exception.
-
-        Raises:
-            BadRequestError: For 400 errors (excluding specific validation errors).
-            SdkValidationError: For 400 errors with API code "1000".
-            AuthenticationError: For 401 errors.
-            AuthorizationError: For 403 errors.
-            NotFoundError: For 404 errors.
-            RateLimitError: For 429 errors.
-            ApiError: For 5xx errors.
-            ImednetSdkException: For other unexpected errors or if the error payload
-                                 cannot be parsed.
-        """
-        status_code = response.status_code
-        try:
-            # Attempt to parse the standard iMednet error structure
-            error_data = response.json()
-            metadata = error_data.get("metadata", {})
-            error_info = metadata.get("error", {})
-            api_error_code = error_info.get("code")
-            message = error_info.get("message", "No error message provided.")
-            details = error_info.get("details")
-        except std_json.JSONDecodeError:
-            # If JSON parsing fails, use the raw response text
-            api_error_code = None
-            message = f"API request failed with status {status_code}. Response body not valid JSON."
-            details = response.text[:500]  # Include start of response text
-        except Exception as e:
-            # Catch any other unexpected errors during parsing
-            api_error_code = None
-            message = f"Unexpected error parsing API error response: {e}"
-            details = response.text[:500]
-
-        # Map status codes and API codes to specific exceptions
-        exception_args = {
-            "status_code": status_code,
-            "api_error_code": api_error_code,
-            "message": message,
-            "details": details,
-            "response_body": response.text,  # Always include the raw response body
-            "request_path": request_path,
+        request_kwargs = {
+            "method": method,
+            "url": self._build_url(path),  # Use the new helper method
+            "params": params,
+            "json": json,
+            "data": data,
+            "files": files,
+            "headers": self._prepare_headers(headers),  # Use the new helper method
+            "timeout": (
+                timeout if timeout is not None else self._default_timeout
+            ),  # Use _default_timeout
+            "follow_redirects": allow_redirects,
+            **kwargs,
         }
 
-        if status_code == 400:
-            # Check for specific validation error code (e.g., "1000")
-            if api_error_code == "1000":
-                return SdkValidationError(**exception_args)
-            return BadRequestError(**exception_args)
-        elif status_code == 401:
-            return AuthenticationError(**exception_args)
-        elif status_code == 403:
-            return AuthorizationError(**exception_args)
-        elif status_code == 404:
-            return NotFoundError(**exception_args)
-        elif status_code == 429:
-            return RateLimitError(**exception_args)
-        elif status_code >= 500:
-            return ApiError(**exception_args)
-        else:
-            # Fallback for unexpected status codes
-            logger.warning(f"Received unexpected HTTP status code: {status_code}")
-            return ImednetSdkException(**exception_args)
+        try:
+            # Wrap the request attempt call in the retryer
+            # Pass request_kwargs explicitly to the target function
+            response = retryer(
+                self._make_request_attempt, request_kwargs=request_kwargs
+            )  # Pass kwargs correctly
+
+            # Process successful response
+            return self._handle_successful_response(response, response_model)
+
+        except RetryError as e:
+            logger.error(f"Request failed after {self._retries} retries: {e}")
+            # The last exception raised during retries is available in e.cause
+            if isinstance(e.cause, ImednetSdkException):
+                raise e.cause  # Reraise the specific SDK exception
+            elif isinstance(e.cause, httpx.RequestError):
+                # Extract details primarily from the request if available
+                request = e.cause.request
+                raise ImednetSdkException(
+                    message=f"Network error after retries: {e.cause}",
+                    request_path=str(request.url) if request else None,
+                    # No response available here, so status_code/response_body are None
+                ) from e.cause
+            else:
+                # For other unexpected errors wrapped by RetryError
+                raise ImednetSdkException(
+                    f"An unexpected error occurred after retries: {e.cause}"
+                ) from e.cause
+        except ImednetSdkException:
+            # Reraise SDK exceptions that were not retried or occurred on the first try
+            raise
+        except Exception as e:
+            # Catch any other unexpected errors during the request process
+            logger.exception(f"Unexpected error during request to {path}: {e}")
+            # Cannot reliably get response details here
+            raise ImednetSdkException(f"An unexpected error occurred: {e}") from e
+
+    def _make_request_attempt(self, request_kwargs: Dict[str, Any]) -> httpx.Response:
+        """
+        Makes a single HTTP request attempt. Separated for retry logic.
+
+        Args:
+            request_kwargs: Dictionary containing all arguments for httpx.request.
+
+        Returns:
+            The httpx.Response object.
+
+        Raises:
+            httpx.RequestError: For connection errors, timeouts, etc.
+            ImednetSdkException: For API errors (4xx/5xx).
+        """
+        logger.debug(f"Making request: {request_kwargs['method']} {request_kwargs['url']}")
+        logger.debug(f"Params: {request_kwargs.get('params')} Body: {request_kwargs.get('json')}")
+        try:
+            response = self._client.request(**request_kwargs)
+            response.raise_for_status()  # Raise HTTPStatusError for 4xx/5xx
+            logger.debug(f"Request successful: {response.status_code} {response.url}")
+            return response
+        except httpx.HTTPStatusError as e:
+            # Handle API errors (4xx/5xx)
+            logger.warning(
+                f"API Error: {e.response.status_code} for {e.request.method} {e.request.url}"
+                f" Response: {e.response.text[:500]}"  # Log truncated response
+            )
+            # Extract details from the response
+            error_details = self._extract_error_details(e.response)
+
+            # Raise specific exceptions based on status code, passing extracted details
+            if e.response.status_code == 400:
+                raise BadRequestError(**error_details) from e
+            elif e.response.status_code == 401:
+                raise AuthenticationError(**error_details) from e
+            elif e.response.status_code == 403:
+                raise AuthorizationError(**error_details) from e
+            elif e.response.status_code == 404:
+                raise NotFoundError(**error_details) from e
+            elif e.response.status_code == 429:
+                raise RateLimitError(**error_details) from e
+            elif 500 <= e.response.status_code < 600:
+                # Raise generic ApiError for 5xx
+                raise ApiError(**error_details) from e
+            else:
+                # Raise generic ApiError for other unexpected 4xx/5xx errors
+                raise ApiError(**error_details) from e
+        except httpx.RequestError as e:
+            # Handle network errors (ConnectError, ReadTimeout, etc.)
+            logger.warning(
+                f"Network Error: {e.__class__.__name__} for {e.request.method} {e.request.url}"
+            )
+            raise  # Reraise network errors for tenacity to potentially retry
+
+    def _handle_successful_response(
+        self, response: httpx.Response, response_model: Optional[Type[T]]
+    ) -> Optional[T]:
+        """Handles successful HTTP responses (2xx status codes).
+
+        Parses the JSON response body into the specified Pydantic model.
+
+        Args:
+            response: The successful `httpx.Response` object.
+            response_model: The Pydantic model type to parse the response into.
+                            If None, returns None.
+
+        Returns:
+            An instance of the `response_model` populated with data, or None.
+
+        Raises:
+            SdkValidationError: If the response body is not valid JSON or does not
+                                conform to the `response_model` schema.
+            ImednetSdkException: For other unexpected errors during parsing.
+        """
+        if response_model is None:
+            return None
+
+        try:
+            # Check if content-type indicates JSON before attempting to parse
+            content_type = response.headers.get("content-type", "").lower()
+            if "application/json" not in content_type:
+                # Handle non-JSON responses if necessary, or raise an error
+                # For now, assume JSON is expected if a model is provided
+                logger.warning(
+                    f"Received non-JSON response (Content-Type: {content_type}) "
+                    f"for {response.request.method} {response.request.url} "
+                    f"when a response model was expected."
+                )
+                # Depending on strictness, you might raise SdkValidationError here
+                # or return None, or try parsing anyway if the server sometimes omits Content-Type
+                # Let's try parsing but log a warning.
+                # If parsing fails below, SdkValidationError will be raised.
+
+            response_data = response.json()
+
+            # Use TypeAdapter for robust parsing, especially for list responses
+            adapter = TypeAdapter(response_model)
+            parsed_response = adapter.validate_python(response_data)
+            logger.debug(
+                f"Successfully parsed response for {response.request.method} "
+                f"{response.request.url} into {response_model.__name__}"
+            )
+            return parsed_response
+
+        except std_json.JSONDecodeError as e:
+            logger.error(
+                f"Failed to decode JSON response from {response.request.method} "
+                f"{response.request.url}. Status: {response.status_code}. "
+                f"Response text: {response.text[:500]}"  # Log truncated text
+            )
+            # Extract details, response_body will contain raw text
+            error_details = self._extract_error_details(response)
+            raise SdkValidationError(
+                message=f"Invalid JSON received from API: {e}",
+                status_code=error_details["status_code"],
+                request_path=error_details["request_path"],
+                response_body=error_details["response_body"],  # Contains raw text here
+            ) from e
+        except ValidationError as e:
+            logger.error(
+                f"Response validation failed for {response_model.__name__} from "
+                f"{response.request.method} {response.request.url}. Errors: {e.errors()}"
+                f" Raw Response: {response.text[:500]}"  # Log truncated text
+            )
+            # Extract details, response_body will contain the parsed (but invalid) JSON
+            error_details = self._extract_error_details(response)
+            # Construct a detailed message including validation errors
+            validation_error_summary = str(e.errors())
+            message = (
+                f"API response did not match expected format ({response_model.__name__}): "
+                f"{validation_error_summary[:200]}..."
+                # Truncate validation errors in message
+            )
+            raise SdkValidationError(
+                message=message,
+                status_code=error_details["status_code"],
+                request_path=error_details["request_path"],
+                response_body=error_details["response_body"],
+                # Note: SdkValidationError doesn't have a dedicated validation_errors field
+                # Consider adding one or logging e.errors() separately if needed.
+            ) from e
+        except Exception as e:
+            # Catch any other unexpected errors during response handling
+            logger.exception(
+                f"Unexpected error handling response from {response.request.method} "
+                f"{response.request.url}: {e}"
+            )
+            # Try to extract details if a response object is available
+            error_details = self._extract_error_details(response) if response else {}
+            raise ImednetSdkException(
+                message=f"An unexpected error occurred while processing the response: {e}",
+                status_code=error_details.get("status_code"),
+                request_path=error_details.get("request_path"),
+                response_body=error_details.get("response_body"),
+            ) from e
 
     # --- Resource Client Properties ---
     # Use properties to lazily initialize resource clients

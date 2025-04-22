@@ -30,11 +30,18 @@ fetches only the first page by default).
 
 import logging
 import os
+import sys
 
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
 from imednet_sdk.exceptions import ImednetSdkException
+
+# Add project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 
 # examples/list_studies_and_sites.py
 """
@@ -81,7 +88,7 @@ def main():
         # --- List Studies ---
         logging.info("Fetching studies...")
         # Use list_studies, which returns an ApiResponse
-        studies_response = client.studies.list_studies(size=100)  # Fetch up to 100 studies
+        studies_response = client.studies.list_studies()
 
         if not studies_response or not studies_response.data:
             logging.warning("No studies found for this account or API call failed.")

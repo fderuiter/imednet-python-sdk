@@ -52,7 +52,7 @@ BASE_URL = os.getenv("IMEDNET_BASE_URL")
 
 # --- Configuration ---
 # Specify the Study Key and Subject Key for which to retrieve records
-TARGET_STUDY_KEY = "DEMO"  # Replace with a valid Study Key
+TARGET_STUDY_KEY = "BRIGHTTEMP-DEV1"  # Replace with a valid Study Key
 TARGET_SUBJECT_KEY = "SUBJ-001"  # Replace with a valid Subject Key
 PAGE_SIZE = 100  # Number of records to fetch per API call (max 500)
 # ---------------------
