@@ -149,7 +149,8 @@ def main():
     except ImednetSdkException as e:
         logging.error(f"An API error occurred during record creation initiation: {e}")
         logging.error(
-            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, " f"Message: {e.message}"
+            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+            f"Details: {e.response_body}"
         )
 
     except Exception as e:

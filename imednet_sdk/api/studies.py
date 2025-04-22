@@ -4,14 +4,11 @@ This module provides the `StudiesClient` class for accessing study-level
 information via the iMednet API.
 """
 
-import urllib.parse  # Add import
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.study import StudyModel
 
-from ..exceptions import ImednetSdkException
-from ..models import ApiResponse, StudyModel
 from ._base import ResourceClient
 
 
@@ -89,6 +86,6 @@ class StudiesClient(ResourceClient):
         # Assuming user data returns as a list of dictionaries
         return self._get(
             endpoint=f"/studies/{study_key}/users",
-            response_model=list[dict],  # Use list[dict] or create a UserModel
+            response_model=ApiResponse[List[dict]],  # Use ApiResponse[List[dict]]
             params=kwargs,
         )

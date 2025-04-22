@@ -11,8 +11,6 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from ..exceptions import ImednetSdkException
-
 logger = logging.getLogger(__name__)
 
 
@@ -104,52 +102,30 @@ class RecordModel(BaseModel):
         if isinstance(value, datetime):
             return value
         try:
+            # Attempt to parse common formats, add more if needed
             return datetime.fromisoformat(value.replace("Z", "+00:00"))
-        except (AttributeError, ValueError) as e:
-            raise ValueError(f"Invalid datetime format: {value}") from e
+        except (ValueError, TypeError):
+            try:
+                # Fallback for formats like "YYYY-MM-DD HH:MM:SS"
+                return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            except (ValueError, TypeError) as e:
+                logger.warning(f"Could not parse datetime: {value}. Error: {e}")
+                raise ValueError(f"Invalid datetime format: {value}") from e
 
 
 class RecordPostItem(BaseModel):
-    """Represents the structure of a single record item for POST requests.
-
-    Used in the list payload when creating or updating records via the
-    `POST /api/v1/edc/studies/{studyKey}/records` endpoint.
+    """Represents the structure for creating a single record via POST /records.
 
     Attributes:
-        formKey: The unique string identifier for the form definition.
-        data: A dictionary containing the data to be saved in the record.
-              Keys are variable names (field names), and values are the data to be saved.
-        siteName: Optional user-defined name of the site.
-        subjectKey: Optional protocol-assigned subject identifier.
-        intervalName: Optional user-defined name of the interval (visit).
-        formId: Optional unique numeric identifier for the form definition.
-        siteId: Optional unique numeric identifier for the site.
-        subjectId: Optional unique numeric identifier for the subject.
-        subjectOid: Optional client-assigned Object Identifier (OID) for the subject.
-        intervalId: Optional unique numeric identifier for the interval.
-        recordId: Optional unique numeric identifier for the record (used for updates).
-        recordOid: Optional client-assigned Object Identifier (OID) for the record.
-
-    Note:
-        When creating records, typically `formKey`, `data`, `siteName` (or `siteId`),
-        `subjectKey` (or `subjectId`), and `intervalName` (or `intervalId`) are required
-        or recommended. Refer to iMednet API documentation for specific requirements.
-        `recordId` or `recordOid` might be used when updating existing records via POST.
+        formKey: The unique string identifier of the form definition.
+        siteName: The name of the site the record belongs to.
+        subjectKey: The protocol-assigned subject identifier.
+        intervalName: The name of the interval (visit) the record belongs to.
+        data: A dictionary containing the record data (variableName: value pairs).
     """
 
-    formKey: str = Field(..., description="User-defined form key")
-    data: Dict[str, Any] = Field(
-        ..., description="Data for the specific record (field keys and values)"
-    )
-
-    siteName: Optional[str] = Field(None, description="User-defined site name")
-    subjectKey: Optional[str] = Field(None, description="Protocol-assigned subject identifier")
-    intervalName: Optional[str] = Field(None, description="User-defined interval name")
-
-    formId: Optional[int] = Field(None, description="System-generated form ID")
-    siteId: Optional[int] = Field(None, description="System-generated site ID")
-    subjectId: Optional[int] = Field(None, description="System-generated subject ID")
-    subjectOid: Optional[str] = Field(None, description="Client-assigned subject OID")
-    intervalId: Optional[int] = Field(None, description="System-generated interval ID")
-    recordId: Optional[int] = Field(None, description="System-generated record ID")
-    recordOid: Optional[str] = Field(None, description="Client-assigned record OID")
+    formKey: str = Field(..., description="Form Key")
+    siteName: str = Field(..., description="Site Name")
+    subjectKey: str = Field(..., description="Subject Key")
+    intervalName: str = Field(..., description="Interval Name")
+    data: Dict[str, Any] = Field(..., description="Record data dictionary")

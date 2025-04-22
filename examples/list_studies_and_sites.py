@@ -150,7 +150,7 @@ def main():
         logging.error(f"An SDK/API error occurred: {e}")
         logging.error(
             f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
-            f"Message: {e.message}"
+            f"Details: {e.response_body}"
         )
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}", exc_info=True)

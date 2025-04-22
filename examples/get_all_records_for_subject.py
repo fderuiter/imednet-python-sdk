@@ -30,11 +30,6 @@ The script will query the API for all records matching the specified subject in
 the target study, handling pagination, and print a summary of the retrieved records.
 """
 
-# examples/get_all_records_for_subject.py
-"""
-Example script demonstrating how to retrieve all records for a specific subject,
-automatically handling pagination using the iMednet Python SDK's iterator feature.
-"""
 import logging
 import os
 from typing import List
@@ -74,7 +69,8 @@ def main():
 
     if TARGET_STUDY_KEY == "DEMO" or TARGET_SUBJECT_KEY == "SUBJ-001":
         logging.warning(
-            "Using default 'DEMO' study key or 'SUBJ-001' subject key. Please replace with your actual values if needed."
+            "Using default 'DEMO' study key or 'SUBJ-001' subject key. "
+            "Please replace with your actual values if needed."
         )
 
     all_records: List[RecordModel] = []
@@ -150,7 +146,7 @@ def main():
             except ImednetSdkException as e:
                 logging.error(f"An API error occurred while fetching page {current_page + 1}: {e}")
                 logging.error(
-                    f"Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+                    f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
                     f"Details: {e.response_body}"
                 )
                 break  # Stop pagination on error
@@ -177,10 +173,9 @@ def main():
         # If no records were found on page 1, the message was already logged inside the loop
 
     except ImednetSdkException as e:
-        # Error during client initialization or initial setup
         logging.error(f"An SDK/API error occurred: {e}")
         logging.error(
-            f"Status Code: {e.status_code}, API Code: {e.api_error_code}, "
+            f"  Status Code: {e.status_code}, API Code: {e.api_error_code}, "
             f"Details: {e.response_body}"
         )
     except Exception as e:

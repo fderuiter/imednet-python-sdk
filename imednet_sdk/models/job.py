@@ -11,8 +11,6 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ._common import ErrorDetail
-
 
 class JobStatusModel(BaseModel):
     """Represents the status and details of an asynchronous background job in iMednet."""

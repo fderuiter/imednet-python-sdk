@@ -101,8 +101,6 @@ def test_list_codings_success(codings_client, client):
 def test_list_codings_with_params(codings_client, client):
     """Test listing codings with query parameters."""
     study_key = "STUDYABC"
-    # Use documented param names and example values
-    params = {"page": 0, "size": 20, "sort": "recordId,desc", "filter": "dictionaryName=MedDRA"}
     mock_url = f"{client.base_url}/api/v1/edc/studies/{study_key}/codings"
     # Corrected mock response structure for an empty result
     mock_metadata = {

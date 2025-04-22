@@ -133,13 +133,6 @@ def test_list_intervals_success(intervals_client, client):
 @respx.mock
 def test_list_intervals_with_params(intervals_client, client):
     """Test list_intervals with query parameters."""
-    # Use filter syntax from docs example (==)
-    params = {
-        "page": 2,
-        "size": 5,
-        "sort": "intervalSequence,desc",
-        "filter": "intervalGroupName==ePRO",  # Use == as per docs
-    }
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{INTERVALS_ENDPOINT}"}
     mock_pagination = {

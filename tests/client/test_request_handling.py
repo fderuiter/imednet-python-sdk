@@ -1,11 +1,7 @@
 """Tests for basic HTTP request handling (headers, methods, params)."""
 
-from unittest.mock import MagicMock, patch
-
 import respx
 from httpx import Response
-
-from imednet_sdk.client import ImednetClient
 
 from .conftest import API_KEY, BASE_URL, SECURITY_KEY
 

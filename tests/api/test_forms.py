@@ -140,13 +140,6 @@ def test_list_forms_success(forms_client, client):
 @respx.mock
 def test_list_forms_with_params(forms_client, client):
     """Test list_forms with query parameters."""
-    # Use filter syntax from docs example (==)
-    params = {
-        "page": 1,
-        "size": 10,
-        "sort": "formName,desc",
-        "filter": "formType==Subject",
-    }
     # Mock response for this specific request (can be empty or tailored)
     mock_metadata = {**MOCK_SUCCESS_METADATA_DICT, "path": f"{FORMS_ENDPOINT}"}
     mock_pagination = {

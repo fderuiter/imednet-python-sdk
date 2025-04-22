@@ -20,7 +20,6 @@ from .exceptions import ImednetSdkException
 
 if TYPE_CHECKING:
     from .api._base import ResourceClient
-    from .models import RecordModel, VariableModel
 
 logger = logging.getLogger(__name__)
 
@@ -136,29 +135,29 @@ def _fetch_and_parse_typed_records(
         ValueError: If building the dynamic model fails (e.g., missing 'variableName'
                     in variable metadata).
     """
-    # Import models inside the function to break the circular dependency
-    from .models import RecordModel, VariableModel
-
     # 1) Fetch variable metadata
     try:
+        # Assuming variables_client has a method like list_variables
         variables_response = variables_client.list_variables(
             study_key, filter=f"formKey=={form_key}"
         )
-        vars_meta: List[VariableModel] = variables_response.data
-        if not vars_meta:
+        # Assuming the response data is a list of objects with model_dump
+        vars_meta_list = variables_response.data
+        if not vars_meta_list:
             logger.warning(
                 f"No variables found for study '{study_key}', form '{form_key}'. "
                 f"Cannot create typed model. Returning empty list."
             )
             return []
+        # Convert Pydantic models (if they are) to dicts for build_model_from_variables
+        vars_meta_dict = [v.model_dump(by_alias=False) for v in vars_meta_list]
+
     except ImednetSdkException as e:
         logger.error(f"Failed to fetch variables for study '{study_key}', form '{form_key}': {e}")
         raise
     except Exception as e:
         logger.error(f"Unexpected error fetching variables for form '{form_key}': {e}")
         raise ImednetSdkException(f"Unexpected error fetching variables: {e}") from e
-
-    vars_meta_dict = [v.model_dump(by_alias=False) for v in vars_meta]
 
     # 2) Build dynamic Record model
     model_name = f"{form_key.replace(' ', '_').capitalize()}RecordData"
@@ -179,11 +178,13 @@ def _fetch_and_parse_typed_records(
         if existing_filter:
             combined_filter = f"({existing_filter}) and {combined_filter}"
 
+        # Assuming records_client has a method like list_records
         records_response = records_client.list_records(study_key, filter=combined_filter, **kwargs)
-        raw_records: List[RecordModel] = records_response.data
+        # Assuming the response data is a list of objects with recordData
+        raw_records_list = records_response.data
 
         # 4) Parse each recordData
-        for record in raw_records:
+        for record in raw_records_list:
             record_data_dict = record.recordData or {}
             try:
                 typed_data_instance = DynamicRecordDataModel.model_validate(record_data_dict)
@@ -200,12 +201,10 @@ def _fetch_and_parse_typed_records(
                 )
 
     except ImednetSdkException as e:
-        logger.error(
-            f"Failed to fetch or parse records for study '{study_key}', form '{form_key}': {e}"
-        )
+        logger.error(f"Failed to fetch records for study '{study_key}', form '{form_key}': {e}")
         raise
     except Exception as e:
-        logger.error(f"Unexpected error fetching/parsing records for form '{form_key}': {e}")
-        raise ImednetSdkException(f"Unexpected error fetching/parsing records: {e}") from e
+        logger.error(f"Unexpected error fetching records for form '{form_key}': {e}")
+        raise ImednetSdkException(f"Unexpected error fetching records: {e}") from e
 
     return typed_records

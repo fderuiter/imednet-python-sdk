@@ -20,22 +20,21 @@ Typical usage involves initializing the client and then accessing resource clien
     from imednet_sdk import ImednetClient
     from imednet_sdk.exceptions import ImednetSdkException
 
-    # Client uses environment variables IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, IMEDNET_BASE_URL by default
-    client = ImednetClient()
-
-    try:
-        response = client.studies.list_studies(size=10)
-        if response and response.data:
-            for study in response.data:
-                print(f"Study: {study.studyName} (Key: {study.studyKey})")
-    except ImednetSdkException as e:
-        print(f"API Error: {e}")
-
-This module is part of the iMednet SDK, designed for seamless interaction with the iMednet
-API, enabling efficient data management and retrieval for clinical studies.
+    # Client uses environment variables IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, IMEDNET_BASE_URL by default\r
+    client = ImednetClient()\r
+\r
+    try:\r
+        response = client.studies.list_studies(size=10)\r
+        if response and response.data:\r
+            for study in response.data:\r
+                print(f"Study: {study.studyName} (Key: {study.studyKey})")\r
+    except ImednetSdkException as e:\r
+        print(f"API Error: {e}")\r
+\r
+This module is part of the iMednet SDK, designed for seamless interaction with the iMednet\r
+API, enabling efficient data management and retrieval for clinical studies.\r
 """
 
-import datetime  # Added for timestamp
 import json  # Import the standard json library
 import logging
 import os
@@ -335,7 +334,8 @@ class ImednetClient:
                     f"Failed to decode JSON response from {method} {endpoint}: {decode_exc}"
                 )
                 raise RuntimeError(
-                    f"Failed to decode JSON response from {method} {endpoint}. Response text: {response.text[:500]}..."
+                    f"Failed to decode JSON response from {method} {endpoint}. "
+                    f"Response text: {response.text[:500]}..."
                 ) from decode_exc
 
             try:

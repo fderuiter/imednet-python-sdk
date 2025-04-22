@@ -164,11 +164,13 @@ def main():
             logging.info("Client initialized with valid credentials.")
             invalid_page = -1  # Page number must be non-negative
             logging.info(
-                f"Attempting to list sites for study '{VALID_STUDY_KEY}' with invalid page number: {invalid_page}"
+                f"Attempting to list sites for study '{VALID_STUDY_KEY}' "
+                f"with invalid page number: {invalid_page}"
             )
             client.sites.list_sites(study_key=VALID_STUDY_KEY, page=invalid_page, size=1)
             logging.warning(
-                "Bad Request or Validation error was expected but not caught. Check SDK or parameter validation."
+                "Bad Request or Validation error was expected but not caught. "
+                "Check SDK or parameter validation."
             )
 
         # Catch specific validation error if distinguished by the SDK (e.g., based on API code 1000)

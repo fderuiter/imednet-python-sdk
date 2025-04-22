@@ -69,8 +69,6 @@ def test_pagination_info():
 
 def test_metadata():
     """Test Metadata model validation."""
-    # Use actual field names for nested PaginationInfo
-    pagination_data = PaginationInfo(currentPage=1, size=10, totalElements=100, totalPages=10)
     metadata = Metadata(
         status="OK",
         path="/api/v1/edc/studies",
@@ -81,7 +79,6 @@ def test_metadata():
     assert metadata.status == "OK"
     assert metadata.path == "/api/v1/edc/studies"
     assert isinstance(metadata.timestamp, datetime)
-    # assert metadata.pagination == pagination_data
     assert metadata.error is None
 
     # Test with error
@@ -96,7 +93,6 @@ def test_metadata():
     )
     assert metadata_error.status == "ERROR"
     assert metadata_error.error == error_detail
-    # assert metadata_error.pagination is None
 
 
 def test_api_response():

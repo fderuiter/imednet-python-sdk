@@ -1,7 +1,5 @@
 # Tests for the Jobs API client.
 
-import datetime
-
 import pytest
 import respx
 from httpx import Response
