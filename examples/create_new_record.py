@@ -39,8 +39,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
+from imednet_sdk.api.records import RecordPostItem
 from imednet_sdk.exceptions import ImednetSdkException
-from imednet_sdk.models import RecordPostItem
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

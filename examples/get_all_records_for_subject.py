@@ -37,8 +37,8 @@ from typing import List
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
+from imednet_sdk.api.records import RecordModel
 from imednet_sdk.exceptions import ImednetSdkException
-from imednet_sdk.models import RecordModel
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

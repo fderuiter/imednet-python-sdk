@@ -36,6 +36,7 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from pydantic_core import ValidationError
 
 from imednet_sdk import ImednetClient
 from imednet_sdk.exceptions import (
@@ -44,7 +45,6 @@ from imednet_sdk.exceptions import (
     ImednetSdkException,
     NotFoundError,
     RateLimitError,
-    ValidationError,
 )
 
 # Configure logging

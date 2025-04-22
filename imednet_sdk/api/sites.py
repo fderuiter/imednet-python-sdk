@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from ._base import ResourceClient, ApiResponse
+from ._base import ApiResponse, ResourceClient
 
 
 class SiteModel(BaseModel):
