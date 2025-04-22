@@ -71,9 +71,7 @@ class SitesClient(ResourceClient):
         params.update(kwargs)
 
         # Use self._get instead of self._client._get
-        return self._get(
-            endpoint, params=params, response_model=ApiResponse[List[SiteModel]]
-        )
+        return self._get(endpoint, params=params, response_model=ApiResponse[List[SiteModel]])
 
     # Add other site-related methods here (e.g., get_site_details)
     # def get_site(self, study_key: str, site_key: str, **kwargs: Any) -> SiteModel:

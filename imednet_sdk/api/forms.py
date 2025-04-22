@@ -71,6 +71,4 @@ class FormsClient(ResourceClient):
         params.update(kwargs)
 
         # Use self._get instead of self._client._get
-        return self._get(
-            endpoint, params=params, response_model=ApiResponse[List[FormModel]]
-        )
+        return self._get(endpoint, params=params, response_model=ApiResponse[List[FormModel]])

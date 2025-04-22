@@ -44,6 +44,4 @@ class CodingsClient(ResourceClient):
 
         endpoint = f"/api/v1/edc/studies/{study_key}/codings"
         # Use self._get instead of self._client._get
-        return self._get(
-            endpoint, params=kwargs, response_model=ApiResponse[List[CodingModel]]
-        )
+        return self._get(endpoint, params=kwargs, response_model=ApiResponse[List[CodingModel]])

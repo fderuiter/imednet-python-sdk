@@ -35,9 +35,7 @@ class StudiesClient(ResourceClient):
             ImednetSdkException: If the API request fails.
         """
         # Use _get instead of _request
-        return self._get(
-            endpoint="/studies", response_model=list[StudyModel], params=kwargs
-        )
+        return self._get(endpoint="/studies", response_model=list[StudyModel], params=kwargs)
 
     def get_study_details(self, study_key: str) -> ApiResponse[StudyModel]:
         """
@@ -56,9 +54,7 @@ class StudiesClient(ResourceClient):
             ImednetSdkException: If the API request fails (e.g., study not found).
         """
         # Use _get instead of _request
-        return self._get(
-            endpoint=f"/studies/{study_key}", response_model=StudyModel
-        )
+        return self._get(endpoint=f"/studies/{study_key}", response_model=StudyModel)
 
     def get_study_configuration(self, study_key: str) -> ApiResponse[dict]:
         """

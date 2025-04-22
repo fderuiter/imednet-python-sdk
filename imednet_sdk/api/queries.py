@@ -65,6 +65,4 @@ class QueriesClient(ResourceClient):
         params = {k: v for k, v in params.items() if v is not None}
 
         # Use self._get instead of self._client._get
-        return self._get(
-            endpoint, params=params, response_model=ApiResponse[List[QueryModel]]
-        )
+        return self._get(endpoint, params=params, response_model=ApiResponse[List[QueryModel]])

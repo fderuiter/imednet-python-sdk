@@ -71,6 +71,4 @@ class SubjectsClient(ResourceClient):
         params.update(kwargs)
 
         # Use self._get instead of self._client._get
-        return self._get(
-            endpoint, params=params, response_model=ApiResponse[List[SubjectModel]]
-        )
+        return self._get(endpoint, params=params, response_model=ApiResponse[List[SubjectModel]])

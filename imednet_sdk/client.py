@@ -230,7 +230,9 @@ class ImednetClient:
             raise sdk_exception from e
         except httpx.RequestError as e:
             # Handle network/connection errors
-            logger.warning(f"Request attempt failed with network error: {e}. Retrying if applicable...")
+            logger.warning(
+                f"Request attempt failed with network error: {e}. Retrying if applicable..."
+            )
             raise  # Reraise httpx.RequestError for tenacity to catch
 
     def _request(
@@ -492,7 +494,7 @@ class ImednetClient:
             subject_key=subject_key,
             form_key=form_key,
             record_model_name=record_model_name,
-            **kwargs, # Pass kwargs correctly
+            **kwargs,  # Pass kwargs correctly
         )
 
     # --- Resource Client Properties ---
