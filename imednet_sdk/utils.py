@@ -11,7 +11,7 @@ handling dynamic data structures based on API metadata. Key functions include:
 
 import logging
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type
 
 # Import BaseModel directly from pydantic
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
@@ -19,32 +19,33 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 from .exceptions import ImednetSdkException
 
 if TYPE_CHECKING:
-    from .api._base import ResourceClient
+    from .api.records import RecordsClient
+    from .api.variables import VariablesClient
 
 logger = logging.getLogger(__name__)
 
 # 1. map iMednet types → (Python type, Pydantic Field args if any)
 # Needs refinement based on actual API date formats and validation needs
 # Using Optional[...] for all fields initially, assuming data might be missing.
-TYPE_MAP: Dict[str, Tuple[Type, Dict[str, Any]]] = {
+TYPE_MAP: Dict[str, Tuple[type[Any], Dict[str, Any]]] = {
     """Maps iMednet variableType strings to Python types and Pydantic Field arguments.
 
     Used by `build_model_from_variables` to dynamically create Pydantic models
     representing recordData based on form variable definitions.
     Types are initially Optional to handle potentially missing data.
     """
-    "textField": (Optional[str], {}),
-    "numberField": (Optional[float], {}),
-    "integerField": (Optional[int], {}),
-    "dateField": (Optional[date], {}),  # TODO: Add validator if format isn't ISO
-    "dateTimeField": (Optional[datetime], {}),  # TODO: Add validator if format isn't ISO
-    "checkboxField": (Optional[bool], {}),  # Assuming API returns true/false or 0/1
-    "radioField": (Optional[str], {}),  # Could potentially be Enum if choices are known
-    "dropdownField": (Optional[str], {}),  # Could potentially be Enum if choices are known
-    "textAreaField": (Optional[str], {}),
+    "textField": (str, {}),
+    "numberField": (float, {}),
+    "integerField": (int, {}),
+    "dateField": (date, {}),  # TODO: Add validator if format isn't ISO
+    "dateTimeField": (datetime, {}),  # TODO: Add validator if format isn't ISO
+    "checkboxField": (bool, {}),  # Assuming API returns true/false or 0/1
+    "radioField": (str, {}),  # Could potentially be Enum if choices are known
+    "dropdownField": (str, {}),  # Could potentially be Enum if choices are known
+    "textAreaField": (str, {}),
     # Add other known types from docs/reference/variables.md if necessary
-    # Default to Optional[Any] for unknown types for flexibility
-    "unknown": (Optional[Any], {}),
+    # Default to Any for unknown types for flexibility
+    "unknown": (Any, {}),
 }
 
 
@@ -95,8 +96,8 @@ def build_model_from_variables(vars_meta: List[Dict[str, Any]], model_name: str)
 
 
 def _fetch_and_parse_typed_records(
-    variables_client: "ResourceClient",  # Use forward reference
-    records_client: "ResourceClient",  # Use forward reference
+    variables_client: "VariablesClient",
+    records_client: "RecordsClient",  # Use forward reference
     study_key: str,
     form_key: str,
     **kwargs,

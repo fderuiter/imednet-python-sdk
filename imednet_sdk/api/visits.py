@@ -18,7 +18,7 @@ class VisitsClient(ResourceClient):
     It is accessed via the `imednet_sdk.client.ImednetClient.visits` property.
     """
 
-    def list_visits(self, study_key: str, **kwargs) -> ApiResponse[List[VisitModel]]:
+    def list_visits(self, study_key: str, **kwargs) -> ApiResponse[list[VisitModel]]:
         """Retrieves a list of visit definitions for a specific study.
 
         Corresponds to the `GET /api/v1/edc/studies/{studyKey}/visits` endpoint.

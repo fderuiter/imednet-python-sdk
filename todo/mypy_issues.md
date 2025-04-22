@@ -1,10 +1,33 @@
 # 📝 mypy TODO List
 
-## ✅ imednet_sdk\models\interval.py
+**Total Errors:** 42
+**Files Affected:** 18
 
-- [x] Fix: "classmethod" used with a non-method
+---
 
-## ✅ tests\client\test_get_typed_records.py
+## ✅ imednet_sdk/models/interval.py
+
+- [x] Line 96: Fix `"classmethod"` used with a non-method
+
+## ✅ imednet_sdk/utils.py
+
+- [x] Line 48: Fix incompatible dict entry type (use `type[Any]` instead of `tuple[type[Any], dict[str, Any]]`)
+- [x] Line 141: Add `list_variables` attribute to `ResourceClient` or fix usage
+- [x] Line 188: Add `list_records` attribute to `ResourceClient` or fix usage
+
+## ✅ imednet_sdk/api/visits.py
+
+- [x] Line 47: Fix return type to `ApiResponse[list[VisitModel]]`
+
+## ✅ imednet_sdk/api/variables.py
+
+- [x] Line 51: Fix return type to `ApiResponse[list[VariableModel]]`
+
+## ✅ imednet_sdk/api/users.py
+
+- [x] Line 54: Fix return type to `ApiResponse[list[UserModel]]`
+
+## ✅ tests/client/test_get_typed_records.py
 
 - [x] Line 87: Add missing named argument `parentRecordId` to `RecordModel`
 - [x] Line 87: Add missing named argument `deleted` to `RecordModel`
@@ -15,78 +38,61 @@
 - [x] Line 150: Add missing named argument `parentRecordId` to `RecordModel`
 - [x] Line 150: Add missing named argument `deleted` to `RecordModel`
 
-## ❗ imednet_sdk\utils.py
+---
 
-- [] Lines 30–47: Fix incompatible types in dict entries (use `type[Any]` instead of typing special forms)
-- [] Line 141: Add `list_variables` attribute to `ResourceClient` or fix usage
-- [] Line 182: Add `list_records` attribute to `ResourceClient` or fix usage
+## ❗ imednet_sdk/api/subjects.py
 
-## ❗ imednet_sdk\api\visits.py
+- [ ] Line 74: Fix return type to `ApiResponse[list[SubjectModel]]`
 
-- [ ] Line 47: Fix return type to match `ApiResponse[list[VisitModel]]`
+## ❗ imednet_sdk/api/studies.py
 
-## ❗ imednet_sdk\api\variables.py
+- [ ] Line 63: Fix return type to `ApiResponse[list[StudyModel]]`
+- [ ] Line 87: Fix return type to `ApiResponse[list[dict[Any, Any]]]`
 
-- [ ] Line 51: Fix return type to match `ApiResponse[list[VariableModel]]`
+## ❗ imednet_sdk/api/sites.py
 
-## ❗ imednet_sdk\api\users.py
+- [ ] Line 74: Fix return type to `ApiResponse[list[SiteModel]]`
 
-- [ ] Line 54: Fix return type to match `ApiResponse[list[UserModel]]`
+## ❗ imednet_sdk/api/records.py
 
-## ❗ imednet_sdk\api\subjects.py
+- [ ] Line 83: Fix return type to `ApiResponse[list[RecordModel]]`
+- [ ] Line 140: Fix return type to `JobStatusModel`
 
-- [ ] Line 74: Fix return type to match `ApiResponse[list[SubjectModel]]`
+## ❗ imednet_sdk/api/record_revisions.py
 
-## ❗ imednet_sdk\api\studies.py
+- [ ] Line 74: Fix return type to `ApiResponse[list[RecordRevisionModel]]`
 
-- [ ] Line 63: Fix return type to match `ApiResponse[list[StudyModel]]`
-- [ ] Line 87: Fix return type to match `ApiResponse[list[dict[Any, Any]]]`
+## ❗ imednet_sdk/api/queries.py
 
-## ❗ imednet_sdk\api\sites.py
+- [ ] Line 68: Fix return type to `ApiResponse[list[QueryModel]]`
 
-- [ ] Line 74: Fix return type to match `ApiResponse[list[SiteModel]]`
+## ❗ imednet_sdk/api/jobs.py
 
-## ❗ imednet_sdk\api\records.py
+- [ ] Line 46: Fix return type to `JobStatusModel`
 
-- [ ] Line 83: Fix return type to match `ApiResponse[list[RecordModel]]`
-- [ ] Line 140: Fix return type to match `JobStatusModel`
+## ❗ imednet_sdk/api/intervals.py
 
-## ❗ imednet_sdk\api\record_revisions.py
+- [ ] Line 74: Fix return type to `ApiResponse[list[IntervalModel]]`
 
-- [ ] Line 74: Fix return type to match `ApiResponse[list[RecordRevisionModel]]`
+## ❗ imednet_sdk/api/forms.py
 
-## ❗ imednet_sdk\api\queries.py
+- [ ] Line 74: Fix return type to `ApiResponse[list[FormModel]]`
 
-- [ ] Line 68: Fix return type to match `ApiResponse[list[QueryModel]]`
+## ❗ imednet_sdk/api/codings.py
 
-## ❗ imednet_sdk\api\jobs.py
+- [ ] Line 47: Fix return type to `ApiResponse[list[CodingModel]]`
 
-- [ ] Line 46: Fix return type to match `JobStatusModel`
+## ❗ imednet_sdk/client.py
 
-## ❗ imednet_sdk\api\intervals.py
+- [ ] Line 71: Replace `SdkValidationError` with `ValidationError` or define `SdkValidationError`
+- [ ] Line 357: Guard against `None` when accessing `JSONDecodeError`
+- [ ] Line 381: Fix `"type[list[T]]" has no attribute "parse_obj"` (adjust annotation or method)
+- [ ] Line 590: Fix argument count and types for `build_model_from_variables`
+- [ ] Line 614: Fix return type to `ApiResponse[list[Any]]`
+- [ ] Line 614: Fix argument 1 type passed to `_fetch_and_parse_typed_records`
+- [ ] Line 614: Fix argument 2 type passed to `_fetch_and_parse_typed_records`
 
-- [ ] Line 74: Fix return type to match `ApiResponse[list[IntervalModel]]`
-
-## ❗ imednet_sdk\api\forms.py
-
-- [ ] Line 74: Fix return type to match `ApiResponse[list[FormModel]]`
-
-## ❗ imednet_sdk\api\codings.py
-
-- [ ] Line 47: Fix return type to match `ApiResponse[list[CodingModel]]`
-
-## ❗ imednet_sdk\client.py
-
-- [ ] Line 71: Replace `SdkValidationError` with `ValidationError` or define it
-- [ ] Line 254: Fix incompatible assignment type (from `Any | None` to `dict[str, Any]`)
-- [ ] Line 331: Guard against `None` for `Future.exception`
-- [ ] Line 357: Guard against `None` for `JSONDecodeError`
-- [ ] Line 590: Fix argument count and type for `build_model_from_variables`
-- [ ] Line 614: Fix return type to match `ApiResponse[list[BaseModel]]`
-- [ ] Line 614: Fix argument 1 to `_fetch_and_parse_typed_records` to be `ResourceClient`
-- [ ] Line 614: Fix argument 2 to `_fetch_and_parse_typed_records` to be `ResourceClient`
-
-## ❗ tests\test_client.py
+## ❗ tests/test_client.py
 
 - [ ] Line 854: Add missing named argument `parentRecordId` to `RecordModel`
 - [ ] Line 854: Add missing named argument `deleted` to `RecordModel`
@@ -96,8 +102,3 @@
 - [ ] Line 894: Add missing named argument `deleted` to `RecordModel`
 - [ ] Line 912: Add missing named argument `parentRecordId` to `RecordModel`
 - [ ] Line 912: Add missing named argument `deleted` to `RecordModel`
-
----
-
-**Total Errors:** 53  
-**Files Affected:** 18  
