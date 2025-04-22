@@ -1,23 +1,64 @@
-"""API client for interacting with the iMednet Records endpoints.
+"""
+Pydantic models and API client for iMednet “records”.
 
-This module provides the `RecordsClient` class for accessing and managing
-record data within a specific study via the iMednet API.
+This module provides:
+
+- `KeywordModel`, `RecordModel`, and `RecordPostItem`: Pydantic models for record data.
+- `RecordsClient`: an API client for `/api/v1/edc/studies/{study_key}/records` endpoints.
 """
 
+import logging
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from ..models._common import ApiResponse
-from ..models.job import JobStatusModel
-from ..models.record import RecordModel, RecordPostItem
-from ._base import ResourceClient
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from ._base import ApiResponse, ResourceClient
+from .jobs import JobStatusModel
+from .records import RecordModel as _ImportedRecordModel
+from .records import RecordPostItem as _ImportedRecordPostItem
+
+logger = logging.getLogger(__name__)
+
+
+class KeywordModel(BaseModel):
+    """Represents a keyword associated with a record in iMednet."""
+
+    keywordName: str = Field(..., description="Name of the keyword")
+    keywordKey: str = Field(..., description="Key of the keyword")
+    keywordId: int = Field(..., description="Unique ID of the keyword")
+    dateAdded: datetime = Field(..., description="Date the keyword was added")
+
+
+class RecordModel(_ImportedRecordModel):
+    """Extends the imported RecordModel to allow extra fields and parsing."""
+
+    model_config = ConfigDict(extra="allow")
+
+    @field_validator("dateCreated", "dateModified", mode="before")
+    @classmethod
+    def _parse_datetime_optional(cls, value):
+        """Parse datetime strings into datetime objects, handling None."""
+        if value is None or isinstance(value, datetime):
+            return value
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except Exception:
+            try:
+                return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            except Exception as e:
+                logger.warning(f"Could not parse datetime field {value!r}: {e}")
+                raise ValueError(f"Invalid datetime format: {value}") from e
+
+
+class RecordPostItem(_ImportedRecordPostItem):
+    """Alias for the imported RecordPostItem used when creating records."""
+
+    pass
 
 
 class RecordsClient(ResourceClient):
-    """Provides methods for accessing and managing iMednet record data.
-
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/records`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.records` property.
-    """
+    """Provides methods for accessing and managing iMednet record data."""
 
     def list_records(
         self,
@@ -31,35 +72,21 @@ class RecordsClient(ResourceClient):
     ) -> ApiResponse[List[RecordModel]]:
         """Retrieves a list of records for a specific study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/records` endpoint.
-        Supports standard pagination, filtering, and sorting parameters, plus
-        a specialized 'recordDataFilter' for filtering on field values within
-        the record data.
+        GET /api/v1/edc/studies/{studyKey}/records
+        Supports pagination, metadata filtering, sorting, and recordDataFilter.
 
         Args:
-            study_key: The unique identifier for the study.
-            page: The index of the page to return (0-based). Defaults to 0.
-            size: The number of items per page. Defaults to 25, maximum 500.
-            sort: The property to sort by, optionally including direction
-                  (e.g., 'subjectKey,asc', 'dateCreated,desc').
-            filter: The filter criteria to apply to record metadata properties
-                    (e.g., 'formKey=="AE"', 'subjectId=="S-001"').
-                    Refer to iMednet API docs for syntax.
-            record_data_filter: The filter criteria to apply to record data fields
-                                (e.g., 'Temperature > 37.5'). This allows filtering
-                                on the actual form field values, not just metadata.
-                                Note: This is passed as 'recordDataFilter' to the API.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request.
-
-        Returns:
-            An `ApiResponse` object containing a list of `RecordModel` instances
-            representing the records, along with pagination/metadata details.
+            study_key: Unique identifier for the study.
+            page: Zero-based page index.
+            size: Number of items per page.
+            sort: Sort expression (e.g., 'dateCreated,desc').
+            filter: Metadata filter (e.g., 'formKey=="AE"').
+            record_data_filter: Filter on form field values.
+            **kwargs: Additional query parameters.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors.
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
@@ -75,16 +102,14 @@ class RecordsClient(ResourceClient):
         if filter is not None:
             params["filter"] = filter
         if record_data_filter is not None:
-            params["recordDataFilter"] = record_data_filter  # Note the camelCase
-
-        # Pass any additional kwargs directly to the underlying request method
+            params["recordDataFilter"] = record_data_filter
         params.update(kwargs)
 
-        # Use self._get instead of self._client._get
-        response: ApiResponse[List[RecordModel]] = self._get(
-            endpoint, params=params, response_model=ApiResponse[List[RecordModel]]
+        return self._get(
+            endpoint,
+            params=params,
+            response_model=ApiResponse[List[RecordModel]],
         )
-        return response
 
     def create_records(
         self,
@@ -93,36 +118,19 @@ class RecordsClient(ResourceClient):
         email_notify: Optional[str] = None,
         **kwargs: Any,
     ) -> JobStatusModel:
-        """Creates one or more records within a specific study asynchronously.
+        """Creates one or more records asynchronously in a background job.
 
-        Corresponds to the `POST /api/v1/edc/studies/{studyKey}/records` endpoint.
-        This operation initiates a background job in iMednet.
+        POST /api/v1/edc/studies/{studyKey}/records
 
         Args:
-            study_key: The unique identifier for the study where the records
-                       will be created.
-            records: A list of `RecordPostItem` objects, each defining a record
-                     to be created. Each item must include required fields like
-                     `formKey`, `subjectId`, `siteId`, `intervalName`, `visitName`,
-                     and the `recordData` dictionary.
-            email_notify: An optional email address to which iMednet will send a
-                          notification upon completion of the background job.
-            **kwargs: Additional keyword arguments passed directly to the underlying
-                      request method (e.g., custom headers, timeout).
-
-        Returns:
-            A `JobStatusModel` instance containing the `batchId` and initial status
-            of the background job created to process the record creation request.
-            Use the `JobsClient.get_job_status` method with the `batchId` to track
-            the job's progress.
+            study_key: Unique identifier for the study.
+            records: List of RecordPostItem defining records to create.
+            email_notify: Optional email for job completion notification.
+            **kwargs: Additional request kwargs (headers, timeout, etc.).
 
         Raises:
-            ValueError: If `study_key` is empty or not provided, or if the `records`
-                        list is empty.
-            ImednetSdkException: If the API request fails to initiate the job (e.g.,
-                               network error, authentication issue, invalid input format).
-                               Note that errors during the background job processing itself
-                               will be reflected in the job status, not raised here.
+            ValueError: If `study_key` is empty or `records` is empty.
+            ImednetSdkException: If the request fails to start the job.
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
@@ -130,21 +138,14 @@ class RecordsClient(ResourceClient):
             raise ValueError("records list cannot be empty")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/records"
-
-        # Prepare headers
         headers = {}
         if email_notify:
             headers["x-email-notify"] = email_notify
 
-        # Prepare data - Pydantic handles serialization of the list of models
-        # The base client's _request method will handle json serialization
-        records_payload = [record.model_dump(exclude_none=True) for record in records]
-
-        # Use self._post instead of self._client._post
-        response: JobStatusModel = self._post(
+        payload = [r.model_dump(exclude_none=True) for r in records]
+        return self._post(
             endpoint,
-            json=records_payload,
+            json=payload,
             headers=headers,
-            response_model=JobStatusModel,  # Expect JobStatusModel directly
+            response_model=JobStatusModel,
         )
-        return response

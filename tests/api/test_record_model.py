@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.record import KeywordModel, RecordModel, RecordPostItem
+from imednet_sdk.api.records import KeywordModel, RecordModel, RecordPostItem
 
 VALID_KEYWORD_DATA = {
     "keywordName": "Data Entry Error",

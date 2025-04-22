@@ -49,8 +49,6 @@ from pydantic import BaseModel, TypeAdapter, ValidationError
 # Import tenacity for retry logic
 from tenacity import RetryError, Retrying, stop_after_attempt, wait_exponential
 
-from imednet_sdk.models._common import ApiResponse
-
 # Import resource clients
 from .api import (
     CodingsClient,
@@ -66,6 +64,7 @@ from .api import (
     VariablesClient,
     VisitsClient,
 )
+from .api._base import ApiResponse
 
 # Import custom exceptions
 from .exceptions import (

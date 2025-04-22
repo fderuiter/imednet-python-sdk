@@ -1,23 +1,53 @@
-"""API client for interacting with the iMednet Queries endpoints.
+"""
+Pydantic models and API client for iMednet “queries”.
 
-This module provides the `QueriesClient` class for accessing query data
-(data clarifications, annotations) within a specific study via the iMednet API.
+This module provides:
+
+- `QueryCommentModel` and `QueryModel`: Pydantic models representing query annotations.
+- `QueriesClient`: an API client for the `/api/v1/edc/studies/{study_key}/queries` endpoint.
 """
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.query import QueryModel
+from pydantic import BaseModel, Field
 
-from ._base import ResourceClient
+from ._base import ApiResponse, ResourceClient
+
+
+class QueryCommentModel(BaseModel):
+    """Represents a single comment or action taken on a query in iMednet."""
+
+    sequence: int = Field(..., description="Query comment sequence")
+    user: str = Field(..., description="User performing the query action")
+    annotationStatus: str = Field(..., description="User-defined query status")
+    comment: str = Field(..., description="User comment applied during query action")
+    closed: bool = Field(False, description="Indicates if the query was closed")
+    date: datetime = Field(..., description="Date of the query comment")
+
+
+class QueryModel(BaseModel):
+    """Represents a query (annotation) raised against data in iMednet."""
+
+    studyKey: str = Field(..., description="Unique study key")
+    subjectId: int = Field(..., description="Mednet Subject ID")
+    subjectOid: str = Field(..., description="Client-assigned subject OID")
+    annotationType: str = Field(..., description="User-defined identifier for query type")
+    annotationId: int = Field(..., description="Unique system identifier for the query")
+    type: Optional[str] = Field(None, description="System text identifier for query type/location")
+    description: str = Field(..., description="Query description")
+    recordId: Optional[int] = Field(None, description="Unique system identifier for record")
+    variable: Optional[str] = Field(None, description="User-defined field identifier")
+    subjectKey: str = Field(..., description="Protocol-assigned subject identifier")
+    dateCreated: datetime = Field(..., description="Date when the query was created")
+    dateModified: datetime = Field(..., description="Date when the query was modified")
+    queryComments: List[QueryCommentModel] = Field(
+        ..., description="List of comments and actions on the query"
+    )
 
 
 class QueriesClient(ResourceClient):
-    """Provides methods for accessing iMednet query data.
-
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/queries`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.queries` property.
-    """
+    """Provides methods for accessing iMednet query data."""
 
     def list_queries(
         self,
@@ -26,46 +56,44 @@ class QueriesClient(ResourceClient):
         size: Optional[int] = None,
         sort: Optional[str] = None,
         filter: Optional[str] = None,
+        **kwargs: Any,
     ) -> ApiResponse[List[QueryModel]]:
         """Retrieves a list of queries for a specific study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/queries` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        GET /api/v1/edc/studies/{studyKey}/queries
+        Supports pagination, filtering, and sorting parameters.
 
         Args:
             study_key: The unique identifier for the study.
-            page: The index of the page to return (0-based). Defaults to 0.
-            size: The number of items per page. Defaults to 25, maximum 500.
-            sort: The property to sort by, optionally including direction
-                  (e.g., 'annotationId,asc', 'queryStatus,desc').
-            filter: The filter criteria to apply (e.g., 'variable=="AETERM"'
-                    'queryStatus=="Open"'). Refer to iMednet API docs for syntax.
+            page: Zero-based page index.
+            size: Number of items per page.
+            sort: Sort expression (e.g., 'annotationId,asc').
+            filter: Filter expression (e.g., 'queryStatus=="Open"').
+            **kwargs: Additional query parameters.
 
         Returns:
-            An `ApiResponse` object containing a list of `QueryModel` instances
-            representing the queries, along with pagination/metadata details.
+            ApiResponse[List[QueryModel]] containing queries and pagination metadata.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors.
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/queries"
-
         params: Dict[str, Any] = {
-            "page": page,
-            "size": size,
-            "sort": sort,
-            "filter": filter,
+            **{
+                k: v
+                for k, v in {"page": page, "size": size, "sort": sort, "filter": filter}.items()
+                if v is not None
+            },
+            **kwargs,
         }
-        # Remove None values to avoid sending empty query parameters
-        params = {k: v for k, v in params.items() if v is not None}
 
-        # Use self._get instead of self._client._get
         response: ApiResponse[List[QueryModel]] = self._get(
-            endpoint, params=params, response_model=ApiResponse[List[QueryModel]]
+            endpoint,
+            params=params,
+            response_model=ApiResponse[List[QueryModel]],
         )
         return response

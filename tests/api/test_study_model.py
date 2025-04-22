@@ -6,8 +6,8 @@ from typing import List
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.study import StudyModel
+from imednet_sdk.api._base import ApiResponse
+from imednet_sdk.api.studies import StudyModel
 
 # Sample valid data based on docs/reference/studies.md
 VALID_STUDY_DATA = {

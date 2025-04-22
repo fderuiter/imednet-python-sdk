@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.record_revision import RecordRevisionModel
+from imednet_sdk.api.record_revisions import RecordRevisionModel
 
 # Sample valid data based on docs/reference/record_revisions.md
 VALID_RECORD_REVISION_DATA = {

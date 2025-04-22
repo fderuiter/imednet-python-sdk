@@ -6,7 +6,7 @@ from typing import Dict, List
 import pytest
 from pydantic import BaseModel, TypeAdapter, ValidationError
 
-from imednet_sdk.models._common import (
+from imednet_sdk.api._base import (
     ApiResponse,
     ErrorDetail,
     FieldError,

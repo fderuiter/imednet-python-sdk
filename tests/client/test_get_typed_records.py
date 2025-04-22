@@ -6,10 +6,10 @@ from unittest.mock import patch
 import pytest
 from pydantic import BaseModel
 
+from imednet_sdk.api._base import ApiResponse, Metadata, PaginationInfo
+from imednet_sdk.api.records import RecordModel
+from imednet_sdk.api.variables import VariableModel
 from imednet_sdk.exceptions import ApiError
-from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo
-from imednet_sdk.models.record import RecordModel
-from imednet_sdk.models.variable import VariableModel
 
 # --- Mock Data for get_typed_records --- #
 MOCK_STUDY_KEY_TYPED = "STUDY_XYZ"

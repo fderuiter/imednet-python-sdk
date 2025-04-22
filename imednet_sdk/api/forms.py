@@ -1,23 +1,44 @@
-"""API client for interacting with the iMednet Forms endpoints.
+"""
+Pydantic model and API client for iMednet “forms”.
 
-This module provides the `FormsClient` class for accessing form definitions
-within a specific study via the iMednet API.
+This module provides:
+
+- `FormModel`: a Pydantic model representing an eCRF definition.
+- `FormsClient`: an API client for the `/api/v1/edc/studies/{study_key}/forms` endpoint.
 """
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.form import FormModel
+from pydantic import BaseModel, Field
 
-from ._base import ResourceClient
+from ._base import ApiResponse, ResourceClient
+
+
+class FormModel(BaseModel):
+    """Represents the definition of an electronic Case Report Form (eCRF) in iMednet."""
+
+    studyKey: str = Field(..., description="Unique study key")
+    formId: int = Field(..., description="Mednet Form ID")
+    formKey: str = Field(..., description="Form key")
+    formName: str = Field(..., description="Name of the eCRF")
+    formType: str = Field(..., description="eCRF type (e.g., 'Subject', 'Site', 'Common')")
+    revision: int = Field(..., description="Number of modifications to the form metadata")
+    embeddedLog: bool = Field(False, description="Embedded log enabled")
+    enforceOwnership: bool = Field(False, description="Enforce ownership enabled")
+    userAgreement: bool = Field(False, description="User agreement required")
+    subjectRecordReport: bool = Field(False, description="Subject record report enabled")
+    unscheduledVisit: bool = Field(False, description="Allowed in unscheduled visits")
+    otherForms: bool = Field(False, description="Included in other forms")
+    eproForm: bool = Field(False, description="Is an ePRO form")
+    allowCopy: bool = Field(True, description="Copy allowed")
+    disabled: bool = Field(False, description="Form is disabled (soft delete)")
+    dateCreated: datetime = Field(..., description="Timestamp when the form was created")
+    dateModified: datetime = Field(..., description="Timestamp when the form was last modified")
 
 
 class FormsClient(ResourceClient):
-    """Provides methods for accessing iMednet form definitions.
-
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/forms`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.forms` property.
-    """
+    """Provides methods for accessing iMednet form definitions."""
 
     def list_forms(
         self,
@@ -30,28 +51,23 @@ class FormsClient(ResourceClient):
     ) -> ApiResponse[List[FormModel]]:
         """Retrieves a list of form definitions for a specific study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/forms` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        GET /api/v1/edc/studies/{studyKey}/forms
+        Supports pagination, filtering, and sorting parameters.
 
         Args:
             study_key: The unique identifier for the study.
-            page: The index of the page to return (0-based). Defaults to 0.
-            size: The number of items per page. Defaults to 25, maximum 500.
-            sort: The property to sort by, optionally including direction
-                  (e.g., 'formName,asc', 'lastUpdatedDate,desc').
-            filter: The filter criteria to apply (e.g., 'formType=="Subject"',
-                    'formName=="Demographics"'). Refer to iMednet API docs for syntax.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request.
+            page: Zero-based page index.
+            size: Number of items per page.
+            sort: Sort expression (e.g., 'formName,asc').
+            filter: Filter expression (e.g., 'formType=="Subject"').
+            **kwargs: Additional query parameters.
 
         Returns:
-            An `ApiResponse` object containing a list of `FormModel` instances
-            representing the form definitions, along with pagination/metadata details.
+            ApiResponse[List[FormModel]] containing forms and pagination metadata.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors.
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
@@ -66,9 +82,10 @@ class FormsClient(ResourceClient):
             params["sort"] = sort
         if filter is not None:
             params["filter"] = filter
-
-        # Pass any additional kwargs directly to the underlying request method
         params.update(kwargs)
 
-        # Use self._get instead of self._client._get
-        return self._get(endpoint, params=params, response_model=ApiResponse[List[FormModel]])
+        return self._get(
+            endpoint,
+            params=params,
+            response_model=ApiResponse[List[FormModel]],
+        )

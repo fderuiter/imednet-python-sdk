@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.form import FormModel
+from imednet_sdk.api.forms import FormModel
 
 # Sample valid data based on docs/reference/forms.md
 VALID_FORM_DATA = {

@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from imednet_sdk.models import ApiResponse, SiteModel
+from imednet_sdk.api.sites import ApiResponse, SiteModel
 
 # Sample valid data based on docs/reference/sites.md
 VALID_SITE_DATA = {

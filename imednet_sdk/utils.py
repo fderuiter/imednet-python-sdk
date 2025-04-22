@@ -45,7 +45,7 @@ TYPE_MAP: Dict[str, Tuple[Type[Any], Dict[str, Any]]] = {
     "textAreaField": (str, {}),
     # Add other known types from docs/reference/variables.md if necessary
     # Default to Any for unknown types for flexibility
-    "unknown": (Type[Any], {}),
+    "unknown": (str, {}),
 }
 
 

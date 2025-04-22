@@ -12,13 +12,13 @@ from pydantic import BaseModel  # Add BaseModel import
 from pydantic import Field
 from pydantic import ValidationError as PydanticValidationError  # Import Pydantic's ValidationError
 
+from imednet_sdk.api._base import ApiResponse, Metadata, PaginationInfo
+from imednet_sdk.api.records import RecordModel
+from imednet_sdk.api.variables import VariableModel
 from imednet_sdk.client import ImednetClient
 
 # Import custom exceptions for testing
 from imednet_sdk.exceptions import ApiError, AuthenticationError, NotFoundError, RateLimitError
-from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo
-from imednet_sdk.models.record import RecordModel
-from imednet_sdk.models.variable import VariableModel
 
 # Constants for testing
 BASE_URL = "https://test.imednetapi.com"

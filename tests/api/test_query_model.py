@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.query import QueryCommentModel, QueryModel
+from imednet_sdk.api.queries import QueryCommentModel, QueryModel
 
 # Sample valid data based on docs/reference/queries.md
 VALID_QUERY_COMMENT_DATA = {

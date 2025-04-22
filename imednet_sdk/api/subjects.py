@@ -1,23 +1,52 @@
-"""API client for interacting with the iMednet Subjects endpoints.
+"""
+Pydantic models and API client for iMednet “subjects”.
 
-This module provides the `SubjectsClient` class for accessing subject information
-within a specific study via the iMednet API.
+This module provides:
+
+- `KeywordModel` and `SubjectModel`: Pydantic models representing subject data.
+- `SubjectsClient`: an API client for the `/api/v1/edc/studies/{study_key}/subjects` endpoint.
 """
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.subject import SubjectModel
+from pydantic import BaseModel, Field
 
-from ._base import ResourceClient
+from ._base import ApiResponse, ResourceClient
+
+
+class KeywordModel(BaseModel):
+    """Represents a keyword associated with a subject in iMednet."""
+
+    keywordName: str = Field(..., description="Name of the keyword")
+    keywordKey: str = Field(..., description="Unique key for the keyword")
+    keywordId: int = Field(..., description="Unique ID for the keyword")
+    dateAdded: datetime = Field(..., description="Date when the keyword was added")
+
+
+class SubjectModel(BaseModel):
+    """Represents a participant (subject) enrolled in a study in iMednet."""
+
+    studyKey: str = Field(..., description="Unique study key for the given study")
+    subjectId: int = Field(..., description="Mednet Subject ID")
+    subjectOid: Optional[str] = Field(None, description="Client-assigned subject OID")
+    subjectKey: str = Field(..., description="Protocol-assigned subject identifier")
+    subjectStatus: str = Field(..., description="Current status of the subject")
+    siteId: int = Field(..., description="Mednet Site ID")
+    siteName: str = Field(..., description="Name of the site")
+    enrollmentStartDate: Optional[datetime] = Field(
+        None, description="Date when the subject enrollment started"
+    )
+    deleted: bool = Field(False, description="Indicates whether the subject was deleted")
+    dateCreated: datetime = Field(..., description="Date when the subject record was created")
+    dateModified: datetime = Field(..., description="Last modification date of the subject record")
+    keywords: Optional[List[KeywordModel]] = Field(
+        default=None, description="List of keywords associated with the subject"
+    )
 
 
 class SubjectsClient(ResourceClient):
-    """Provides methods for accessing iMednet subject data.
-
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/subjects`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.subjects` property.
-    """
+    """Provides methods for accessing iMednet subject data."""
 
     def list_subjects(
         self,
@@ -30,28 +59,23 @@ class SubjectsClient(ResourceClient):
     ) -> ApiResponse[List[SubjectModel]]:
         """Retrieves a list of subjects for a specific study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/subjects` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        GET /api/v1/edc/studies/{studyKey}/subjects
+        Supports pagination, filtering, and sorting parameters.
 
         Args:
             study_key: The unique identifier for the study.
-            page: The index of the page to return (0-based). Defaults to 0.
-            size: The number of items per page. Defaults to 25, maximum 500.
-            sort: The property to sort by, optionally including direction
-                  (e.g., 'subjectKey,asc', 'dateCreated,desc').
-            filter: The filter criteria to apply (e.g., 'siteId==123',
-                    'subjectStatus=="Enrolled"'). Refer to iMednet API docs for syntax.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request.
+            page: Zero-based page index.
+            size: Number of items per page.
+            sort: Sort property and direction (e.g. 'dateCreated,desc').
+            filter: Filter expression (e.g. 'siteId==123').
+            **kwargs: Additional query parameters.
 
         Returns:
-            An `ApiResponse` object containing a list of `SubjectModel` instances
-            representing the subjects, along with pagination/metadata details.
+            ApiResponse[List[SubjectModel]] containing subjects and metadata.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors (network, auth, permissions).
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
@@ -66,10 +90,11 @@ class SubjectsClient(ResourceClient):
             params["sort"] = sort
         if filter is not None:
             params["filter"] = filter
+        params.update(kwargs)
 
-        # Pass any additional kwargs directly to the underlying request method
-        params.update(kwargs)  # Use self._get instead of self._client._get
         response: ApiResponse[List[SubjectModel]] = self._get(
-            endpoint, params=params, response_model=ApiResponse[List[SubjectModel]]
+            endpoint,
+            params=params,
+            response_model=ApiResponse[List[SubjectModel]],
         )
         return response

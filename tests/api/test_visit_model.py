@@ -4,7 +4,7 @@ from datetime import date, datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.visit import VisitModel
+from imednet_sdk.api.visits import VisitModel
 
 # Sample valid data based on docs/reference/visits.md
 VALID_VISIT_DATA = {

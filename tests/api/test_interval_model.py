@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.interval import IntervalFormModel, IntervalModel
+from imednet_sdk.api.intervals import IntervalFormModel, IntervalModel
 
 # Sample valid data based on docs/reference/intervals.md
 VALID_INTERVAL_FORM_DATA = {"formId": 123, "formKey": "MY-FORM-KEY", "formName": "myFormName"}

@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.coding import CodingModel
+from imednet_sdk.api.codings import CodingModel
 
 # Sample valid data based on docs/reference/codings.md
 VALID_CODING_DATA = {

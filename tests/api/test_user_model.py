@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models import UserModel, UserRole
+from imednet_sdk.api.users import UserModel, UserRole
 
 # Sample valid data based on docs/reference/users.md
 VALID_USER_ROLE_DATA = {

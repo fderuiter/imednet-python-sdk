@@ -1,54 +1,72 @@
-"""API client for interacting with the iMednet Variables endpoints.
+"""
+Pydantic model and API client for iMednet “variables”.
 
-This module provides the `VariablesClient` class for accessing variable definitions
-(metadata about data fields) within a specific study via the iMednet API.
+This module provides:
+
+- `VariableModel`: a Pydantic model representing a variable (form field) definition.
+- `VariablesClient`: an API client for the `/api/v1/edc/studies/{study_key}/variables` endpoint.
 """
 
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
-from ..models._common import ApiResponse
-from ..models.variable import VariableModel
-from ._base import ResourceClient
+from pydantic import BaseModel, Field
+
+from ._base import ApiResponse, ResourceClient
+
+
+class VariableModel(BaseModel):
+    """Represents the definition of a variable (field) on an eCRF in iMednet."""
+
+    studyKey: str = Field(..., description="Unique Study Key")
+    variableId: int = Field(..., description="Mednet Variable ID")
+    variableType: str = Field(..., description="Type of the variable (e.g., radioField, textField)")
+    variableName: str = Field(..., description="Name of the variable on the eCRF")
+    sequence: int = Field(..., description="User-defined sequence of the variable")
+    revision: int = Field(..., description="Number of modifications to the variable metadata")
+    disabled: bool = Field(False, description="Flag indicating if the variable is disabled")
+    dateCreated: datetime = Field(..., description="Creation date of the variable")
+    dateModified: datetime = Field(..., description="Last modification date of the variable")
+    formId: int = Field(..., description="Mednet Form ID")
+    variableOid: Optional[str] = Field(None, description="Client-assigned Variable OID")
+    deleted: bool = Field(False, description="Flag indicating if the variable is deleted")
+    formKey: str = Field(..., description="Form key")
+    formName: str = Field(..., description="Name of the eCRF")
+    label: str = Field(..., description="User-defined field label")
+    blinded: bool = Field(False, description="Flag indicating if the variable is blinded")
 
 
 class VariablesClient(ResourceClient):
     """Provides methods for accessing iMednet variable definitions.
 
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/variables`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.variables` property.
-    Variable definitions are crucial for understanding the structure and types of
-    data stored in records.
+    Interacts with endpoints under `/api/v1/edc/studies/{study_key}/variables`.
+    Access via `ImednetClient.variables`.
     """
 
     def list_variables(self, study_key: str, **kwargs) -> ApiResponse[List[VariableModel]]:
-        """Retrieves a list of variable definitions for a specific study.
+        """Retrieves variable definitions for a specific study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/variables` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        GET /api/v1/edc/studies/{studyKey}/variables
+        Supports pagination, filtering (e.g. `filter='formKey=="AE"'`), and sorting via kwargs.
 
         Args:
-            study_key: The unique identifier for the study.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request, such as `page`, `size`, `sort`, `filter`.
-                      Filtering might be useful to get variables for a specific form
-                      (e.g., `filter='formKey=="AE"'`). Refer to the iMednet API
-                      documentation for available options.
+            study_key: Unique identifier for the study.
+            **kwargs: Passed as query params (`page`, `size`, `sort`, `filter`, etc.).
 
         Returns:
-            An `ApiResponse` object containing a list of `VariableModel` instances
-            representing the variable definitions, along with pagination/metadata details.
+            ApiResponse[List[VariableModel]] with variables and pagination metadata.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors (network, auth, permissions).
         """
         if not study_key:
-            raise ValueError("study_key cannot be empty")  # Match test expectation
+            raise ValueError("study_key cannot be empty")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/variables"
-        # Use self._get instead of self._client._get
         response: ApiResponse[List[VariableModel]] = self._get(
-            endpoint, params=kwargs, response_model=ApiResponse[List[VariableModel]]
+            endpoint,
+            params=kwargs,
+            response_model=ApiResponse[List[VariableModel]],
         )
         return response

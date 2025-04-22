@@ -1,23 +1,34 @@
-"""API client for interacting with the iMednet Sites endpoints.
+"""
+Pydantic model and API client for iMednet “sites”.
 
-This module provides the `SitesClient` class for accessing site information
-within a specific study via the iMednet API.
+This module provides:
+
+- `SiteModel`: a Pydantic model representing site metadata.
+- `SitesClient`: an API client for the `/api/v1/edc/studies/{study_key}/sites` endpoint.
 """
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.site import SiteModel  # Assuming SiteModel exists
+from pydantic import BaseModel, Field
 
+from ..models._common import ApiResponse
 from ._base import ResourceClient
 
 
-class SitesClient(ResourceClient):
-    """Provides methods for accessing iMednet site data.
+class SiteModel(BaseModel):
+    """Represents a clinical research site within a study in iMednet."""
 
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/sites`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.sites` property.
-    """
+    studyKey: str = Field(..., description="Unique study key for the given study")
+    siteId: int = Field(..., description="Unique system identifier for the site")
+    siteName: str = Field(..., description="Name of the site")
+    siteEnrollmentStatus: str = Field(..., description="Current enrollment status of the site")
+    dateCreated: datetime = Field(..., description="Date when the site record was created")
+    dateModified: datetime = Field(..., description="Last modification date of the site record")
+
+
+class SitesClient(ResourceClient):
+    """Provides methods for accessing iMednet site data."""
 
     def list_sites(
         self,
@@ -30,28 +41,23 @@ class SitesClient(ResourceClient):
     ) -> ApiResponse[List[SiteModel]]:
         """Retrieves a list of sites for a specific study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/sites` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        GET /api/v1/edc/studies/{studyKey}/sites
+        Supports pagination, filtering, and sorting parameters.
 
         Args:
             study_key: The unique identifier for the study.
-            page: The index of the page to return (0-based). Defaults to 0.
-            size: The number of items per page. Defaults to 25, maximum 500.
-            sort: The property to sort by, optionally including direction
-                  (e.g., 'siteName,asc', 'siteId,desc').
-            filter: The filter criteria to apply (e.g., 'siteName=="Central Hospital"',
-                    'siteStatus=="Active"'). Refer to iMednet API docs for syntax.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request.
+            page: Zero-based page index.
+            size: Number of items per page.
+            sort: Sort property and direction (e.g., 'siteName,asc').
+            filter: Filter expression (e.g., 'siteStatus=="Active"').
+            **kwargs: Additional query parameters.
 
         Returns:
-            An `ApiResponse` object containing a list of `SiteModel` instances
-            representing the sites, along with pagination/metadata details.
+            ApiResponse[List[SiteModel]] containing sites and pagination metadata.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors (network, auth, permissions).
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
@@ -66,19 +72,11 @@ class SitesClient(ResourceClient):
             params["sort"] = sort
         if filter is not None:
             params["filter"] = filter
+        params.update(kwargs)
 
-        # Pass any additional kwargs directly to the underlying request method
-        params.update(kwargs)  # Use self._get instead of self._client._get
         response: ApiResponse[List[SiteModel]] = self._get(
-            endpoint, params=params, response_model=ApiResponse[List[SiteModel]]
+            endpoint,
+            params=params,
+            response_model=ApiResponse[List[SiteModel]],
         )
         return response
-
-    # Add other site-related methods here (e.g., get_site_details)
-    # def get_site(self, study_key: str, site_key: str, **kwargs: Any) -> SiteModel:
-    #     """Retrieve details for a specific site within a study."""
-    #     if not study_key:
-    #         raise ValueError("study_key cannot be empty")
-    #     if not site_key:
-    #         raise ValueError("site_key cannot be empty")
-    #     endpoint = f"/api/v1/edc/studies/{study_key}/sites/{site_key}"

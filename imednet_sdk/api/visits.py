@@ -1,57 +1,77 @@
 """
-API client for interacting with the iMednet
-endpoint = f"/api/v1/edc/studies/{study_key}/visits"
-# Use self._get instead of self._client._get
-response: ApiResponse[List[VisitModel]] = self._get(
-    endpoint, params=kwargs, response_model=ApiResponse[List[VisitModel]]
-)
-return response  # Fixed typo from 'responset' to 'response'
+Pydantic model and API client for iMednet “visits”.
 
-This module provides the `VisitsClient` class for accessing visit definitions
-within a specific study via the iMednet API.
+This module provides:
+
+- `VisitModel`: a Pydantic model representing a subject visit instance.
+- `VisitsClient`: an API client for the `/api/v1/edc/studies/{study_key}/visits` endpoint.
 """
 
-from typing import List
+from datetime import date, datetime
+from typing import List, Optional
 
-from ..models._common import ApiResponse
-from ..models.visit import VisitModel
-from ._base import ResourceClient
+from pydantic import BaseModel, Field
+
+from ._base import ApiResponse, ResourceClient
+
+
+class VisitModel(BaseModel):
+    """Represents a specific instance of a subject visit within a study schedule."""
+
+    visitId: int = Field(..., description="Unique system identifier for the subject visit instance")
+    studyKey: str = Field(..., description="Unique study key for the given study")
+    intervalId: int = Field(..., description="Unique system identifier for the related interval")
+    intervalName: str = Field(..., description="User-defined identifier for the related interval")
+    subjectId: int = Field(..., description="Mednet Subject ID")
+    subjectKey: str = Field(..., description="Protocol-assigned subject identifier")
+    startDate: date = Field(
+        ..., description="Subject visit Start Date defined in interval visit window"
+    )
+    endDate: date = Field(
+        ..., description="Subject visit End Date defined in interval visit window"
+    )
+    dueDate: Optional[date] = Field(
+        None, description="Subject visit Due Date defined in interval visit window"
+    )
+    visitDate: date = Field(..., description="Actual date the visit occurred")
+    visitDateForm: str = Field(..., description="Key of the form where the visitDate is recorded")
+    visitDateQuestion: str = Field(..., description="Variable name where the visitDate is recorded")
+    deleted: bool = Field(False, description="Subject visit deleted flag")
+    dateCreated: datetime = Field(..., description="Timestamp when this visit was created")
+    dateModified: datetime = Field(..., description="Timestamp when this visit was last modified")
 
 
 class VisitsClient(ResourceClient):
     """Provides methods for accessing iMednet visit definitions.
 
-    This client interacts with endpoints under
-    `/api/v1/edc/studies/{study_key}/visits`.
-    It is accessed via the
-    `imednet_sdk.client.ImednetClient.visits` property.
+    Interacts with endpoints under `/api/v1/edc/studies/{study_key}/visits`.
+    Access via `ImednetClient.visits`.
     """
 
     def list_visits(self, study_key: str, **kwargs) -> ApiResponse[List[VisitModel]]:
-        """Retrieves a list of visit definitions for a specific study.
+        """Retrieve visit definitions for a given study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/visits` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        GET /api/v1/edc/studies/{studyKey}/visits
+        Supports pagination, filtering, sorting via kwargs.
 
         Args:
-            study_key: The unique identifier for the study.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request, such as `page`, `size`, `sort`, `filter`.
-                      Refer to the iMednet API documentation for available options.
+            study_key: Unique identifier for the study.
+            **kwargs: Passed as query params (e.g. page, size, sort, filter).
 
         Returns:
-            An `ApiResponse` object containing a list of `VisitModel` instances
-            representing the visit definitions, along with pagination/metadata details.
+            ApiResponse[List[VisitModel]] with visits and metadata.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors (network, auth, permissions).
         """
         if not study_key:
-            raise ValueError("study_key cannot be empty")  # Match test expectation
+            raise ValueError("study_key cannot be empty")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/visits"
-        # Use self._get instead of self._client._get
-        response = self._get(endpoint, params=kwargs, response_model=ApiResponse[List[VisitModel]])
+        response: ApiResponse[List[VisitModel]] = self._get(
+            endpoint,
+            params=kwargs,
+            response_model=ApiResponse[List[VisitModel]],
+        )
         return response

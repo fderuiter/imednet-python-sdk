@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models.job import JobStatusModel
+from imednet_sdk.api.jobs import JobStatusModel
 
 # Mock data based on docs/reference/jobs.md examples
 VALID_JOB_DATA = {

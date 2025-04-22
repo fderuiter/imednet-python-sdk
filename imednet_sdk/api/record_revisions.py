@@ -1,23 +1,51 @@
-"""API client for interacting with the iMednet Record Revisions endpoints.
+"""
+Pydantic model and API client for iMednet “record revisions”.
 
-This module provides the `RecordRevisionsClient` class for accessing record revision
-history within a specific study via the iMednet API.
+This module provides:
+
+- `RecordRevisionModel`:
+    a Pydantic model representing a single entry in a records audit trail.
+- `RecordRevisionsClient`:
+    an API client for the `/api/v1/edc/studies/{study_key}/record-revisions` endpoint.
 """
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.record_revision import RecordRevisionModel
+from pydantic import BaseModel, Field
 
-from ._base import ResourceClient
+from ._base import ApiResponse, ResourceClient
+
+
+class RecordRevisionModel(BaseModel):
+    """Represents a single entry in the audit trail (revision history) of a record."""
+
+    studyKey: str = Field(..., description="Unique study key for the given study")
+    recordRevisionId: int = Field(
+        ..., description="Unique system identifier for the record revision"
+    )
+    recordId: int = Field(..., description="Unique system identifier for the related record")
+    recordOid: str = Field(..., description="Client-assigned record OID")
+    recordRevision: int = Field(..., description="Record revision number")
+    dataRevision: int = Field(..., description="Data revision number")
+    recordStatus: str = Field(..., description="User-defined record status")
+    subjectId: int = Field(..., description="Mednet Subject ID")
+    subjectOid: str = Field(..., description="Client-assigned subject OID")
+    subjectKey: str = Field(..., description="Protocol-assigned subject identifier")
+    siteId: int = Field(..., description="Unique system identifier for the related site")
+    formKey: str = Field(..., description="Form key")
+    intervalId: int = Field(..., description="Unique system identifier for the interval")
+    role: str = Field(..., description="Role of the user who saved the record revision")
+    user: str = Field(..., description="Username of the user who saved the record revision")
+    reasonForChange: Optional[str] = Field(
+        None, description="Reason for the change made in the record revision"
+    )
+    deleted: bool = Field(False, description="Indicates whether the record was deleted")
+    dateCreated: datetime = Field(..., description="Date when the record revision was created")
 
 
 class RecordRevisionsClient(ResourceClient):
-    """Provides methods for accessing iMednet record revision history.
-
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/record-revisions`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.record_revisions` property.
-    """
+    """Provides methods for accessing iMednet record revision history."""
 
     def list_record_revisions(
         self,
@@ -30,28 +58,23 @@ class RecordRevisionsClient(ResourceClient):
     ) -> ApiResponse[List[RecordRevisionModel]]:
         """Retrieves a list of record revisions for a specific study.
 
-        Corresponds to the `GET /api/v1/edc/studies/{studyKey}/record-revisions` endpoint.
-        Supports standard pagination, filtering, and sorting parameters.
+        GET /api/v1/edc/studies/{studyKey}/record-revisions
+        Supports pagination, filtering, and sorting parameters.
 
         Args:
             study_key: The unique identifier for the study.
-            page: The index of the page to return (0-based). Defaults to 0.
-            size: The number of items per page. Defaults to 25, maximum 500.
-            sort: The property to sort by, optionally including direction
-                  (e.g., 'recordId,asc', 'dateCreated,desc').
-            filter: The filter criteria to apply (e.g., 'recordId==123',
-                    'subjectId=="S-001"'). Refer to iMednet API docs for syntax.
-            **kwargs: Additional keyword arguments passed directly as query parameters
-                      to the API request.
+            page: Zero-based page index.
+            size: Number of items per page.
+            sort: Sort expression (e.g., 'recordId,asc').
+            filter: Filter expression (e.g., 'subjectId=="S-001"').
+            **kwargs: Additional query parameters.
 
         Returns:
-            An `ApiResponse` object containing a list of `RecordRevisionModel` instances
-            representing the record revisions, along with pagination/metadata details.
+            ApiResponse[List[RecordRevisionModel]] containing revisions and metadata.
 
         Raises:
-            ValueError: If `study_key` is empty or not provided.
-            ImednetSdkException: If the API request fails (e.g., network error,
-                               authentication issue, invalid permissions).
+            ValueError: If `study_key` is empty.
+            ImednetSdkException: On API errors.
         """
         if not study_key:
             raise ValueError("study_key cannot be empty")
@@ -66,12 +89,10 @@ class RecordRevisionsClient(ResourceClient):
             params["sort"] = sort
         if filter is not None:
             params["filter"] = filter
-
-        # Pass any additional kwargs directly to the underlying request method
         params.update(kwargs)
 
-        # Use self._get instead of self._client._get
-        response: ApiResponse[List[RecordRevisionModel]] = self._get(
-            endpoint, params=params, response_model=ApiResponse[List[RecordRevisionModel]]
+        return self._get(
+            endpoint,
+            params=params,
+            response_model=ApiResponse[List[RecordRevisionModel]],
         )
-        return response
