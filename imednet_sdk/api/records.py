@@ -31,15 +31,17 @@ class KeywordModel(BaseModel):
 # Define the base RecordModel here instead of importing it from itself
 class RecordModel(BaseModel):
     """Represents a record in iMednet with its metadata."""
-    
+
     # Add all necessary fields here - this is a placeholder implementation
     # You'll need to add the actual fields based on your data model
     id: Optional[str] = Field(None, description="Unique identifier for the record")
     formKey: Optional[str] = Field(None, description="Form key for this record")
     dateCreated: Optional[datetime] = Field(None, description="Date when the record was created")
-    dateModified: Optional[datetime] = Field(None, description="Date when the record was last modified")
+    dateModified: Optional[datetime] = Field(
+        None, description="Date when the record was last modified"
+    )
     # Add other fields as needed
-    
+
     model_config = ConfigDict(extra="allow")
 
     @field_validator("dateCreated", "dateModified", mode="before")
@@ -61,13 +63,13 @@ class RecordModel(BaseModel):
 # Define the base RecordPostItem here instead of importing it from itself
 class RecordPostItem(BaseModel):
     """Represents data needed to create a new record in iMednet."""
-    
+
     # Add all necessary fields here - this is a placeholder implementation
     # You'll need to add the actual fields based on your data model
     formKey: str = Field(..., description="Form key for this record")
     subjectKey: str = Field(..., description="Subject key for this record")
     # Add other required fields
-    
+
     # Optional fields
     visitKey: Optional[str] = Field(None, description="Visit key if applicable")
     intervalKey: Optional[str] = Field(None, description="Interval key if applicable")
