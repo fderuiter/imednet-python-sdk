@@ -67,7 +67,7 @@
   * [x] Write guide: Making requests (listing, getting).
   * [x] Write guide: Handling pagination (manual, iterators).
   * [x] Write guide: Filtering and sorting.
-  * [ ] Write guide: Creating/updating resources.
+  * [x] Write guide: Creating/updating resources.
   * [ ] Write guide: Error handling (exceptions).
   * [ ] (Optional) Add explanations of core API concepts.
 * [ ] **Docstrings (`imednet_sdk/`):**
