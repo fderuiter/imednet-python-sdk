@@ -69,7 +69,10 @@ class SitesClient(ResourceClient):
 
         # Pass any additional kwargs directly to the underlying request method
         params.update(kwargs)  # Use self._get instead of self._client._get
-        return self._get(endpoint, params=params, response_model=ApiResponse[List[SiteModel]])
+        response: ApiResponse[List[SiteModel]] = self._get(
+            endpoint, params=params, response_model=ApiResponse[List[SiteModel]]
+        )
+        return response
 
     # Add other site-related methods here (e.g., get_site_details)
     # def get_site(self, study_key: str, site_key: str, **kwargs: Any) -> SiteModel:
@@ -79,5 +82,3 @@ class SitesClient(ResourceClient):
     #     if not site_key:
     #         raise ValueError("site_key cannot be empty")
     #     endpoint = f"/api/v1/edc/studies/{study_key}/sites/{site_key}"
-    #     # Assuming the single site endpoint returns the model directly
-    #     return self._get(endpoint, response_model=SiteModel, **kwargs)

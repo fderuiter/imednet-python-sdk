@@ -43,4 +43,5 @@ class JobsClient(ResourceClient):
 
         endpoint = f"/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
         # Use self._get instead of self._client._get
-        return self._get(endpoint, response_model=JobStatusModel)
+        response: JobStatusModel = self._get(endpoint, response_model=JobStatusModel)
+        return response

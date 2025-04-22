@@ -1,9 +1,11 @@
-"""API client for interacting with the iMe        endpoint = f"/api/v1/edc/studies/{study_key}/visits"
-        # Use self._get instead of self._client._get
-        response: ApiResponse[List[VisitModel]] = self._get(
-            endpoint, params=kwargs, response_model=ApiResponse[List[VisitModel]]
-        )
-        return responset Visits endpoints.
+"""
+API client for interacting with the iMednet
+endpoint = f"/api/v1/edc/studies/{study_key}/visits"
+# Use self._get instead of self._client._get
+response: ApiResponse[List[VisitModel]] = self._get(
+    endpoint, params=kwargs, response_model=ApiResponse[List[VisitModel]]
+)
+return response  # Fixed typo from 'responset' to 'response'
 
 This module provides the `VisitsClient` class for accessing visit definitions
 within a specific study via the iMednet API.

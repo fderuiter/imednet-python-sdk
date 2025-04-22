@@ -4,7 +4,7 @@ This module provides the `QueriesClient` class for accessing query data
 (data clarifications, annotations) within a specific study via the iMednet API.
 """
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from imednet_sdk.models._common import ApiResponse
 from imednet_sdk.models.query import QueryModel
@@ -55,7 +55,7 @@ class QueriesClient(ResourceClient):
 
         endpoint = f"/api/v1/edc/studies/{study_key}/queries"
 
-        params = {
+        params: Dict[str, Any] = {
             "page": page,
             "size": size,
             "sort": sort,
@@ -65,4 +65,7 @@ class QueriesClient(ResourceClient):
         params = {k: v for k, v in params.items() if v is not None}
 
         # Use self._get instead of self._client._get
-        return self._get(endpoint, params=params, response_model=ApiResponse[List[QueryModel]])
+        response: ApiResponse[List[QueryModel]] = self._get(
+            endpoint, params=params, response_model=ApiResponse[List[QueryModel]]
+        )
+        return response

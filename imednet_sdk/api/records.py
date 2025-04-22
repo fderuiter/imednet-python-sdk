@@ -1,30 +1,19 @@
-"""API client for int    def list_records(
-        self,
-        study_key: str,
-        page: Optional[int] = None,
-        size: Optional[int] = None,
-        sort: Optional[str] = None,
-        filter: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **kwargs: Any,
-    ) -> ApiResponse[list[RecordModel]]:
-        Retrieves a list of records for a specific study.th the iMednet Records endpoints.
+"""API client for interacting with the iMednet Records endpoints.
 
-This module provides the `RecordsClient` class for accessing and creating
+This module provides the `RecordsClient` class for accessing and managing
 record data within a specific study via the iMednet API.
 """
 
 from typing import Any, Dict, List, Optional
 
-from imednet_sdk.models._common import ApiResponse
-from imednet_sdk.models.job import JobStatusModel
-from imednet_sdk.models.record import RecordModel, RecordPostItem
-
+from ..models._common import ApiResponse
+from ..models.job import JobStatusModel
+from ..models.record import RecordModel, RecordPostItem
 from ._base import ResourceClient
 
 
 class RecordsClient(ResourceClient):
-    """Provides methods for accessing and creating iMednet record data.
+    """Provides methods for accessing and managing iMednet record data.
 
     This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/records`.
     It is accessed via the `imednet_sdk.client.ImednetClient.records` property.
@@ -39,25 +28,27 @@ class RecordsClient(ResourceClient):
         filter: Optional[str] = None,
         record_data_filter: Optional[str] = None,
         **kwargs: Any,
-    ) -> ApiResponse[list[RecordModel]]:
+    ) -> ApiResponse[List[RecordModel]]:
         """Retrieves a list of records for a specific study.
 
         Corresponds to the `GET /api/v1/edc/studies/{studyKey}/records` endpoint.
-        Supports standard pagination, filtering (on record metadata and data),
-        and sorting parameters.
+        Supports standard pagination, filtering, and sorting parameters, plus
+        a specialized 'recordDataFilter' for filtering on field values within
+        the record data.
 
         Args:
             study_key: The unique identifier for the study.
             page: The index of the page to return (0-based). Defaults to 0.
             size: The number of items per page. Defaults to 25, maximum 500.
             sort: The property to sort by, optionally including direction
-                  (e.g., 'recordId,asc', 'subjectId,desc').
-            filter: The filter criteria to apply to standard record properties
-                    (e.g., 'siteId==123', 'formKey=="AE"'). Refer to iMednet API
-                    docs for syntax.
-            record_data_filter: The filter criteria to apply to fields within the
-                                `recordData` object (e.g., 'AETERM=="Headache"',
-                                'AESEV=="Mild"'). Refer to iMednet API docs for syntax.
+                  (e.g., 'subjectKey,asc', 'dateCreated,desc').
+            filter: The filter criteria to apply to record metadata properties
+                    (e.g., 'formKey=="AE"', 'subjectId=="S-001"').
+                    Refer to iMednet API docs for syntax.
+            record_data_filter: The filter criteria to apply to record data fields
+                                (e.g., 'Temperature > 37.5'). This allows filtering
+                                on the actual form field values, not just metadata.
+                                Note: This is passed as 'recordDataFilter' to the API.
             **kwargs: Additional keyword arguments passed directly as query parameters
                       to the API request.
 
@@ -90,7 +81,10 @@ class RecordsClient(ResourceClient):
         params.update(kwargs)
 
         # Use self._get instead of self._client._get
-        return self._get(endpoint, params=params, response_model=ApiResponse[list[RecordModel]])
+        response: ApiResponse[List[RecordModel]] = self._get(
+            endpoint, params=params, response_model=ApiResponse[List[RecordModel]]
+        )
+        return response
 
     def create_records(
         self,
@@ -147,9 +141,10 @@ class RecordsClient(ResourceClient):
         records_payload = [record.model_dump(exclude_none=True) for record in records]
 
         # Use self._post instead of self._client._post
-        return self._post(
+        response: JobStatusModel = self._post(
             endpoint,
             json=records_payload,
             headers=headers,
             response_model=JobStatusModel,  # Expect JobStatusModel directly
         )
+        return response
