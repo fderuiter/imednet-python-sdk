@@ -13,3 +13,4 @@ This section provides practical guides on how to use the iMednet Python SDK for 
    filtering_sorting
    creating_updating
    error_handling
+   core_concepts
