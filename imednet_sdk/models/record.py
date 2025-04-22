@@ -53,7 +53,7 @@ class RecordModel(BaseModel):
         subjectId: Unique numeric identifier assigned by iMednet to the subject.
         subjectOid: Client-assigned Object Identifier (OID) for the subject.
         subjectKey: Protocol-assigned subject identifier (often the screen/randomization ID).
-        visitId: Optional unique numeric identifier for the specific subject visit instance.
+        visitId: Unique numeric identifier for the specific subject visit instance.
         parentRecordId: Optional unique numeric identifier of a parent record, if applicable.
         deleted: Boolean flag indicating if the record is marked as deleted.
         dateCreated: The date and time when the record was initially created.
@@ -64,96 +64,38 @@ class RecordModel(BaseModel):
                     The structure of this dictionary depends on the specific form definition.
     """
 
+    # --- Fields matching OpenAPI spec ---
     studyKey: str = Field(..., description="Unique study key")
     intervalId: int = Field(..., description="Unique ID for the interval")
     formId: int = Field(..., description="Form ID")
     formKey: str = Field(..., description="Form key")
     siteId: int = Field(..., description="Unique site ID")
     recordId: int = Field(..., description="Unique system ID for the record")
-    recordOid: str = Field(..., description="Client-assigned record OID")
+    recordOid: Optional[str] = Field(
+        None, description="Client-assigned record OID"
+    )  # Made Optional
     recordType: str = Field(..., description="Type of record")
     recordStatus: str = Field(..., description="User-defined record status")
     subjectId: int = Field(..., description="Mednet Subject ID")
-    subjectOid: str = Field(..., description="Client-assigned subject OID")
+    subjectOid: Optional[str] = Field(
+        None, description="Client-assigned subject OID"
+    )  # Made Optional
     subjectKey: str = Field(..., description="Protocol-assigned subject identifier")
-    visitId: Optional[int] = Field(None, description="Unique ID for the subject visit")
+    visitId: int = Field(..., description="Unique ID for the subject visit")  # Made Required
     parentRecordId: Optional[int] = Field(None, description="Parent record ID")
     deleted: bool = Field(False, description="Record deleted flag")
     dateCreated: datetime = Field(..., description="Record creation date")
     dateModified: datetime = Field(..., description="Last modification date")
-    keywords: Optional[List[KeywordModel]] = Field(
-        None, description="List of keywords associated with the record"
+    keywords: List[KeywordModel] = Field(  # Made Required (list can be empty)
+        default_factory=list, description="List of keywords associated with the record"
     )
-    recordData: Dict[str, Any] = Field(
+    recordData: Dict[str, Any] = Field(  # Made Required (dict can be empty)
         default_factory=dict, description="Dynamic record data containing form responses"
-    )
-
-    # Optional fields (might be null or missing)
-    recordId: Optional[int] = Field(
-        None, description="The unique numeric identifier for the record."
-    )
-    subjectId: Optional[int] = Field(
-        None, description="The numeric identifier of the subject associated with this record."
-    )
-    subjectKey: Optional[str] = Field(
-        None, description="The key identifying the subject associated with this record."
-    )
-    siteId: Optional[int] = Field(
-        None, description="The numeric identifier of the site associated with this record."
-    )
-    siteName: Optional[str] = Field(
-        None, description="The name of the site associated with this record."
-    )
-    formId: Optional[int] = Field(
-        None, description="The numeric identifier of the form definition for this record."
-    )
-    formKey: Optional[str] = Field(
-        None, description="The key identifying the form definition for this record."
-    )
-    formInstance: Optional[int] = Field(
-        None,
-        description="The instance number for repeating forms (e.g., 1, 2, 3).",
-    )
-    intervalId: Optional[int] = Field(
-        None,
-        description="The numeric identifier of the interval (visit) associated with this record.",
-    )
-    intervalName: Optional[str] = Field(
-        None, description="The name of the interval (visit) associated with this record."
-    )
-    intervalInstance: Optional[int] = Field(
-        None,
-        description="The instance number for repeating intervals (e.g., 1, 2, 3).",
-    )
-    recordStatus: Optional[str] = Field(
-        None, description="The current status of the record (e.g., 'Complete', 'In Progress')."
-    )
-    recordIsLocked: Optional[bool] = Field(
-        None, description="Indicates if the record is locked from editing."
-    )
-    recordIsArchived: Optional[bool] = Field(
-        None, description="Indicates if the record is archived."
-    )
-    dateCreated: Optional[datetime] = Field(
-        None, description="The date and time when the record was created."
-    )
-    dateUpdated: Optional[datetime] = Field(
-        None, description="The date and time when the record was last updated."
-    )
-    updatedByUserName: Optional[str] = Field(
-        None, description="The username of the user who last updated the record."
-    )
-    createdByUserName: Optional[str] = Field(
-        None, description="The username of the user who created the record."
-    )
-    data: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Dictionary containing the form data (variableName: value).",
     )
 
     model_config = ConfigDict(extra="allow")
 
-    @field_validator("dateCreated", "dateUpdated", mode="before")
+    @field_validator("dateCreated", "dateModified", mode="before")  # Updated validator fields
     @classmethod
     def parse_datetime_optional(cls, value):
         """Parse datetime strings into datetime objects, handling None."""

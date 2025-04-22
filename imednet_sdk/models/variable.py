@@ -7,6 +7,7 @@ data fields within a form.
 """
 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -48,7 +49,7 @@ class VariableModel(BaseModel):
     dateCreated: datetime = Field(..., description="Creation date of the variable")
     dateModified: datetime = Field(..., description="Last modification date of the variable")
     formId: int = Field(..., description="Mednet Form ID")
-    variableOid: str = Field(..., description="Client-assigned Variable OID")
+    variableOid: Optional[str] = Field(None, description="Client-assigned Variable OID")
     deleted: bool = Field(False, description="Flag indicating if the variable is deleted")
     formKey: str = Field(..., description="Form key")
     formName: str = Field(..., description="Name of the eCRF")

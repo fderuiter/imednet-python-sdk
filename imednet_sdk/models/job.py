@@ -35,10 +35,3 @@ class JobStatusModel(BaseModel):
     dateFinished: Optional[datetime] = Field(
         None, description="Timestamp when the job finished processing"
     )
-    # dateModified is not explicitly in the docs example, keep Optional for now
-    dateModified: Optional[datetime] = Field(
-        None, description="Timestamp when the job was last modified"
-    )
-    progress: Optional[int] = Field(None, ge=0, le=100, description="Job progress percentage")
-    resultUrl: Optional[str] = Field(None, description="URL to retrieve job results if applicable")
-    error: Optional[ErrorDetail] = Field(None, description="Error details if the job failed")

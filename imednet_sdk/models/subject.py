@@ -54,13 +54,13 @@ class SubjectModel(BaseModel):
 
     studyKey: str = Field(..., description="Unique study key for the given study")
     subjectId: int = Field(..., description="Mednet Subject ID")
-    subjectOid: str = Field(..., description="Client-assigned subject OID")
+    subjectOid: Optional[str] = Field(None, description="Client-assigned subject OID")
     subjectKey: str = Field(..., description="Protocol-assigned subject identifier")
     subjectStatus: str = Field(..., description="Current status of the subject")
     siteId: int = Field(..., description="Mednet Site ID")
     siteName: str = Field(..., description="Name of the site")
-    enrollmentStartDate: datetime = Field(
-        ..., description="Date when the subject enrollment started"
+    enrollmentStartDate: Optional[datetime] = Field(
+        None, description="Date when the subject enrollment started"
     )
     deleted: bool = Field(False, description="Indicates whether the subject was deleted")
     dateCreated: datetime = Field(..., description="Date when the subject record was created")

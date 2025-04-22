@@ -6,6 +6,7 @@ structure of coding data retrieved from the iMednet API, typically via the
 """
 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -54,7 +55,7 @@ class CodingModel(BaseModel):
     codingId: int = Field(..., description="Mednet Coding ID")
     code: str = Field(..., description="Standardized code")
     codedBy: str = Field(..., description="User who recorded the code")
-    reason: str = Field(..., description="Reason for the coding")
+    reason: Optional[str] = Field(None, description="Reason for the coding")
     dictionaryName: str = Field(..., description="Name of the coding dictionary (e.g., MedDRA)")
     dictionaryVersion: str = Field(..., description="Version of the coding dictionary")
     dateCoded: datetime = Field(..., description="Date when the code was added")

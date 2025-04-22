@@ -90,46 +90,23 @@ class IntervalModel(BaseModel):
     # Removed the block of Optional[...] fields that duplicated required ones like intervalId, intervalName etc.
     # Keep only truly optional fields or fields whose presence might vary.
 
-    # --- Additional Optional Fields (From original model, verify necessity) ---
-    # These might be useful but were potentially part of the duplication. Keep if needed.
-    intervalKey: Optional[str] = Field(
-        None, description="A unique key identifying the interval, often user-defined."
-    )
-    intervalOrder: Optional[int] = Field(  # Potentially redundant with intervalSequence
-        None, description="The sequential order of the interval within the study schedule."
-    )
-    intervalIsRepeating: Optional[bool] = Field(
-        None, description="Indicates if this interval can occur multiple times for a subject."
-    )
-    intervalIsUnscheduled: Optional[bool] = Field(
-        None, description="Indicates if this interval is not part of the regular schedule."
-    )
-    # intervalIsArchived might be redundant with 'disabled' flag, clarify API meaning
-    intervalIsArchived: Optional[bool] = Field(
-        None, description="Indicates if the interval definition is archived."
-    )
-    # Timestamps might be redundant with dateCreated/dateModified, clarify API meaning
-    intervalDateCreated: Optional[datetime] = Field(
-        None,
-        description="The date and time when the interval definition was created (potentially redundant).",
-    )
-    intervalDateUpdated: Optional[datetime] = Field(
-        None,
-        description="The date and time when the interval definition was last updated (potentially redundant).",
-    )
-    intervalUpdatedByUserName: Optional[str] = Field(
-        None, description="The username of the user who last updated the interval definition."
-    )
-    intervalCreatedByUserName: Optional[str] = Field(
-        None, description="The username of the user who created the interval definition."
-    )
+    # --- Removed Fields Not in OpenAPI Spec ---
+    # intervalKey: Optional[str] = Field(...)
+    # intervalOrder: Optional[int] = Field(...)
+    # intervalIsRepeating: Optional[bool] = Field(...)
+    # intervalIsUnscheduled: Optional[bool] = Field(...)
+    # intervalIsArchived: Optional[bool] = Field(...)
+    # intervalDateCreated: Optional[datetime] = Field(...)
+    # intervalDateUpdated: Optional[datetime] = Field(...)
+    # intervalUpdatedByUserName: Optional[str] = Field(...)
+    # intervalCreatedByUserName: Optional[str] = Field(...)
 
     # Allow extra fields if the API might add more properties
     model_config = ConfigDict(extra="allow", populate_by_name=True)  # Added populate_by_name
 
     # Keep validator if date formats need parsing
     @field_validator(
-        "dateCreated", "dateModified", "intervalDateCreated", "intervalDateUpdated", mode="before"
+        "dateCreated", "dateModified", mode="before"  # Removed non-existent fields from validator
     )
     @classmethod
     def parse_datetime_optional(cls, value):

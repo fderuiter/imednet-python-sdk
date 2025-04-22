@@ -41,22 +41,24 @@ class VisitModel(BaseModel):
     intervalName: str = Field(..., description="User-defined identifier for the related interval")
     subjectId: int = Field(..., description="Mednet Subject ID")
     subjectKey: str = Field(..., description="Protocol-assigned subject identifier")
-    startDate: Optional[date] = Field(
-        None, description="Subject visit Start Date defined in interval visit window"
+    startDate: date = Field(  # Changed to required
+        ..., description="Subject visit Start Date defined in interval visit window"
     )
-    endDate: Optional[date] = Field(
-        None, description="Subject visit End Date defined in interval visit window"
+    endDate: date = Field(  # Changed to required
+        ..., description="Subject visit End Date defined in interval visit window"
     )
     dueDate: Optional[date] = Field(
         None, description="Subject visit Due Date defined in interval visit window"
     )
-    visitDate: Optional[date] = Field(
-        None, description="Subject visit Actual Date defined in interval visit window"
+    visitDate: date = Field(  # Changed to required
+        ..., description="Subject visit Actual Date defined in interval visit window"
     )
-    visitDateForm: Optional[str] = Field(
-        None, description="Actual Date Form defined in interval visit window"
+    visitDateForm: str = Field(  # Changed to required
+        ..., description="Actual Date Form defined in interval visit window"
     )
-    visitDateQuestion: Optional[str] = Field(None, description="User-defined field identifier")
+    visitDateQuestion: str = Field(
+        ..., description="User-defined field identifier"
+    )  # Changed to required
     deleted: bool = Field(False, description="Subject visit deleted flag")
     dateCreated: datetime = Field(..., description="Date when this visit was created")
     dateModified: datetime = Field(..., description="Date when this visit was last modified")
