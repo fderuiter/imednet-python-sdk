@@ -77,7 +77,7 @@
   * [x] Create `examples/find_subjects_by_status.py`.
   * [x] Create `examples/get_all_records_for_subject.py` (using pagination).
   * [x] Create `examples/create_new_record.py`.
-  * [ ] Create `examples/handle_api_errors.py`.
+  * [x] Create `examples/handle_api_errors.py`.
   * [ ] Ensure examples are clear, commented, and runnable.
 * [ ] **CI/CD for Docs (Optional):**
   * [ ] Create GitHub Actions workflow to build docs.
