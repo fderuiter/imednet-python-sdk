@@ -36,7 +36,7 @@ This module is part of the iMednet SDK, designed for seamless interaction with t
 API, enabling efficient data management and retrieval for clinical studies.\r
 """
 
-import json  # Import the standard json library
+import json as std_json  # Import standard json library with an alias
 import logging
 import os
 
@@ -64,7 +64,6 @@ from .api import (
     VariablesClient,
     VisitsClient,
 )
-from .api._base import ApiResponse
 
 # Import custom exceptions
 from .exceptions import (
@@ -285,7 +284,7 @@ class ImednetClient:
         method: str,
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
-        json: Optional[Any] = None,  # Keep original name 'json' for public-facing methods
+        json_payload: Optional[Any] = None,  # Renamed parameter from 'json'
         response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
         timeout: Optional[TimeoutTypes] = None,
         **kwargs: Any,
@@ -340,7 +339,7 @@ class ImednetClient:
                 method=method,
                 endpoint=endpoint,
                 params=params,
-                json_data=json,  # Pass original json data
+                json_data=json_payload,  # Pass renamed parameter
                 timeout=request_timeout,
                 **kwargs,
             )
@@ -354,7 +353,7 @@ class ImednetClient:
                 raise RuntimeError(f"No response received from {method} {endpoint}")
             try:
                 response_json = response.json()
-            except json.JSONDecodeError as decode_exc:
+            except std_json.JSONDecodeError as decode_exc:  # Use aliased json module
                 logger.error(
                     f"Failed to decode JSON response from {method} {endpoint}: {decode_exc}"
                 )
@@ -441,7 +440,7 @@ class ImednetClient:
             api_error_code = error_info.get("code")
             message = error_info.get("message", "No error message provided.")
             details = error_info.get("details")
-        except json.JSONDecodeError:
+        except std_json.JSONDecodeError:
             # If JSON parsing fails, use the raw response text
             api_error_code = None
             message = f"API request failed with status {status_code}. Response body not valid JSON."
@@ -569,6 +568,45 @@ class ImednetClient:
             self._jobs = JobsClient(self)
         return self._jobs
 
+    # --- Core Request Methods ---
+    def _get(
+        self,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
+        timeout: Optional[TimeoutTypes] = None,
+        **kwargs: Any,
+    ) -> Union[T, List[T], httpx.Response]:
+        """Internal helper for making GET requests."""
+        return self._request(
+            "GET",
+            endpoint,
+            params=params,
+            response_model=response_model,
+            timeout=timeout,
+            **kwargs,
+        )
+
+    def _post(
+        self,
+        endpoint: str,
+        json: Optional[Any] = None,
+        params: Optional[Dict[str, Any]] = None,
+        response_model: Optional[Union[Type[T], Type[List[T]]]] = None,
+        timeout: Optional[TimeoutTypes] = None,
+        **kwargs: Any,
+    ) -> Union[T, List[T], httpx.Response]:
+        """Internal helper for making POST requests."""
+        return self._request(
+            "POST",
+            endpoint,
+            params=params,
+            json=json,
+            response_model=response_model,
+            timeout=timeout,
+            **kwargs,
+        )
+
     # --- Helper Methods ---
     def build_dynamic_record_model(
         self, study_key: str, form_key: str, **kwargs: Any
@@ -591,11 +629,49 @@ class ImednetClient:
             ImednetSdkException: If fetching variables fails.
             RuntimeError: If model creation fails.
         """
-        return build_model_from_variables(self, study_key, form_key, **kwargs)
+        # 1. Fetch variables using the variables client
+        try:
+            variables_response = self.variables.list_variables(
+                study_key, filter=f"formKey=={form_key}", **kwargs
+            )
+            vars_meta_list = variables_response.data
+            if not vars_meta_list:
+                logger.warning(
+                    f"No variables found for study '{study_key}', form '{form_key}'. "
+                    f"Cannot create typed model."
+                )
+                # Return a base model if no variables found? Or raise?
+                # For now, let's raise an error as the function expects to return a model.
+                raise RuntimeError(
+                    f"No variables found for form '{form_key}' in study '{study_key}'."
+                )
 
-    def fetch_and_parse_typed_records(
+            # Convert Pydantic models (if they are) to dicts
+            vars_meta_dict = [v.model_dump(by_alias=False) for v in vars_meta_list]
+
+        except ImednetSdkException as e:
+            logger.error(
+                f"Failed to fetch variables for study '{study_key}', form '{form_key}': {e}"
+            )
+            raise  # Re-raise the SDK exception
+        except Exception as e:
+            logger.error(f"Unexpected error fetching variables for form '{form_key}': {e}")
+            raise ImednetSdkException(f"Unexpected error fetching variables: {e}") from e
+
+        # 2. Build the model using the utility function
+        model_name = f"{form_key.replace(' ', '_').capitalize()}RecordData"
+        try:
+            return build_model_from_variables(vars_meta_dict, model_name=model_name)
+        except ValueError as e:
+            logger.error(f"Failed to build dynamic model '{model_name}' for form '{form_key}': {e}")
+            raise  # Re-raise the ValueError
+        except Exception as e:
+            logger.error(f"Unexpected error building dynamic model for form '{form_key}': {e}")
+            raise ImednetSdkException(f"Unexpected error building dynamic model: {e}") from e
+
+    def get_typed_records(  # Renamed from fetch_and_parse_typed_records
         self, study_key: str, form_key: str, **kwargs: Any
-    ) -> ApiResponse[List[BaseModel]]:
+    ) -> List[BaseModel]:  # Changed return type annotation
         """Fetches records for a specific form and parses them using a dynamically built model.
 
         Combines `build_dynamic_record_model` and `records.list_records` to provide
@@ -615,7 +691,10 @@ class ImednetClient:
             ImednetSdkException: If fetching variables or records fails.
             RuntimeError: If model creation or parsing fails.
         """
-        return _fetch_and_parse_typed_records(self, study_key, form_key, **kwargs)
+        # Pass the correct client instances to the utility function
+        return _fetch_and_parse_typed_records(
+            self.variables, self.records, study_key, form_key, **kwargs
+        )
 
     def close(self) -> None:
         """Closes the underlying HTTP client connection."""

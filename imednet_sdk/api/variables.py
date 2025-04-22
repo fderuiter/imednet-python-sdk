@@ -8,7 +8,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, cast
 
 from pydantic import BaseModel, Field
 
@@ -64,9 +64,13 @@ class VariablesClient(ResourceClient):
             raise ValueError("study_key cannot be empty")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/variables"
-        response: ApiResponse[List[VariableModel]] = self._get(
-            endpoint,
-            params=kwargs,
-            response_model=ApiResponse[List[VariableModel]],
+        # Cast the result to the expected type
+        response = cast(
+            ApiResponse[List[VariableModel]],
+            self._get(
+                endpoint,
+                params=kwargs,
+                response_model=ApiResponse[List[VariableModel]],
+            ),
         )
         return response

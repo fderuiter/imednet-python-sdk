@@ -8,7 +8,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from pydantic import BaseModel, Field
 
@@ -67,10 +67,14 @@ class StudiesClient(ResourceClient):
         if filter is not None:
             params["filter"] = filter
 
-        response: ApiResponse[List[StudyModel]] = self._get(
-            endpoint="/studies",
-            params=params,
-            response_model=ApiResponse[List[StudyModel]],
+        # Cast the result to the expected type
+        response = cast(
+            ApiResponse[List[StudyModel]],
+            self._get(
+                endpoint="/studies",
+                params=params,
+                response_model=ApiResponse[List[StudyModel]],
+            ),
         )
         return response
 
@@ -90,9 +94,13 @@ class StudiesClient(ResourceClient):
         Raises:
             ImednetSdkException: If the API request fails.
         """
-        response: ApiResponse[List[Dict[Any, Any]]] = self._get(
-            endpoint=f"/studies/{study_key}/users",
-            params=kwargs,
-            response_model=ApiResponse[List[Dict[Any, Any]]],
+        # Cast the result to the expected type
+        response = cast(
+            ApiResponse[List[Dict[Any, Any]]],
+            self._get(
+                endpoint=f"/studies/{study_key}/users",
+                params=kwargs,
+                response_model=ApiResponse[List[Dict[Any, Any]]],
+            ),
         )
         return response

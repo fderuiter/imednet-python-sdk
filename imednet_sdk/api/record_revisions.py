@@ -10,7 +10,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from pydantic import BaseModel, Field
 
@@ -91,8 +91,12 @@ class RecordRevisionsClient(ResourceClient):
             params["filter"] = filter
         params.update(kwargs)
 
-        return self._get(
-            endpoint,
-            params=params,
-            response_model=ApiResponse[List[RecordRevisionModel]],
+        # Cast the result to the expected type
+        return cast(
+            ApiResponse[List[RecordRevisionModel]],
+            self._get(
+                endpoint,
+                params=params,
+                response_model=ApiResponse[List[RecordRevisionModel]],
+            ),
         )

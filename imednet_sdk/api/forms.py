@@ -8,7 +8,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from pydantic import BaseModel, Field
 
@@ -84,8 +84,12 @@ class FormsClient(ResourceClient):
             params["filter"] = filter
         params.update(kwargs)
 
-        return self._get(
-            endpoint,
-            params=params,
-            response_model=ApiResponse[List[FormModel]],
+        # Cast the result to the expected type
+        return cast(
+            ApiResponse[List[FormModel]],
+            self._get(
+                endpoint,
+                params=params,
+                response_model=ApiResponse[List[FormModel]],
+            ),
         )

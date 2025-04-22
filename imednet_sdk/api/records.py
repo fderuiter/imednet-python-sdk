@@ -9,7 +9,7 @@ This module provides:
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -124,10 +124,14 @@ class RecordsClient(ResourceClient):
             params["recordDataFilter"] = record_data_filter
         params.update(kwargs)
 
-        return self._get(
-            endpoint,
-            params=params,
-            response_model=ApiResponse[List[RecordModel]],
+        # Cast the result to the expected type
+        return cast(
+            ApiResponse[List[RecordModel]],
+            self._get(
+                endpoint,
+                params=params,
+                response_model=ApiResponse[List[RecordModel]],
+            ),
         )
 
     def create_records(
@@ -162,9 +166,15 @@ class RecordsClient(ResourceClient):
             headers["x-email-notify"] = email_notify
 
         payload = [r.model_dump(exclude_none=True) for r in records]
-        return self._post(
-            endpoint,
-            json=payload,
-            headers=headers,
-            response_model=JobStatusModel,
+        # Cast the result to the expected type
+        return cast(
+            JobStatusModel,
+            self._post(
+                endpoint,
+                json=payload,
+                # Use the renamed parameter json_payload
+                # if _post was also updated, otherwise keep json
+                headers=headers,
+                response_model=JobStatusModel,
+            ),
         )

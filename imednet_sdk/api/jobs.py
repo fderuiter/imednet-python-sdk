@@ -8,7 +8,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, cast
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -59,5 +59,6 @@ class JobsClient(ResourceClient):
             raise ValueError("batch_id is required.")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/jobs/{batch_id}"
-        response: JobStatusModel = self._get(endpoint, response_model=JobStatusModel)
+        # Cast the result to the expected type
+        response = cast(JobStatusModel, self._get(endpoint, response_model=JobStatusModel))
         return response

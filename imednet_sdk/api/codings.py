@@ -8,7 +8,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, cast
 
 from pydantic import BaseModel, Field
 
@@ -63,8 +63,12 @@ class CodingsClient(ResourceClient):
             raise ValueError("study_key is required.")
 
         endpoint = f"/api/v1/edc/studies/{study_key}/codings"
-        return self._get(
-            endpoint,
-            params=kwargs,
-            response_model=ApiResponse[List[CodingModel]],
+        # Cast the result to the expected type
+        return cast(
+            ApiResponse[List[CodingModel]],
+            self._get(
+                endpoint,
+                params=kwargs,
+                response_model=ApiResponse[List[CodingModel]],
+            ),
         )

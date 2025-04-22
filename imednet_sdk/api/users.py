@@ -8,7 +8,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import List
+from typing import List, cast
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -98,9 +98,13 @@ class UsersClient(ResourceClient):
         endpoint = f"/api/v1/edc/studies/{study_key}/users"
         params = {**kwargs, "includeInactive": include_inactive}
 
-        response: ApiResponse[List[UserModel]] = self._get(
-            endpoint,
-            params=params,
-            response_model=ApiResponse[List[UserModel]],
+        # Cast the result to the expected type
+        response = cast(
+            ApiResponse[List[UserModel]],
+            self._get(
+                endpoint,
+                params=params,
+                response_model=ApiResponse[List[UserModel]],
+            ),
         )
         return response

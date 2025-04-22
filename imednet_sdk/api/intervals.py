@@ -11,7 +11,7 @@ This module provides:
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -128,8 +128,12 @@ class IntervalsClient(ResourceClient):
             params["filter"] = filter
         params.update(kwargs)
 
-        return self._get(
-            endpoint,
-            params=params,
-            response_model=ApiResponse[List[IntervalModel]],
+        # Cast the result to the expected type
+        return cast(
+            ApiResponse[List[IntervalModel]],
+            self._get(
+                endpoint,
+                params=params,
+                response_model=ApiResponse[List[IntervalModel]],
+            ),
         )
