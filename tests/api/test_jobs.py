@@ -69,7 +69,8 @@ def test_get_job_status_success(client):  # Removed mock_api_response_job_status
     assert isinstance(response, JobStatusModel)  # Check for JobStatusModel instance
 
     # Compare model instances - This assumes JobStatusModel correctly parses/stores the data
-    # Direct comparison might fail if date strings aren't parsed into comparable types (like datetime)
+    # Direct comparison might fail if date strings aren't parsed into
+    # comparable types (like datetime)
     # within the model. Adjust assertion if needed.
     assert response.jobId == expected_response_model.jobId
     assert response.batchId == expected_response_model.batchId

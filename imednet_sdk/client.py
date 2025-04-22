@@ -20,7 +20,8 @@ Typical usage involves initializing the client and then accessing resource clien
     from imednet_sdk import ImednetClient
     from imednet_sdk.exceptions import ImednetSdkException
 
-    # Client uses environment variables IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, IMEDNET_BASE_URL by default\r
+    # Client uses environment variables IMEDNET_API_KEY,
+    # IMEDNET_SECURITY_KEY, IMEDNET_BASE_URL by default\r
     client = ImednetClient()\r
 \r
     try:\r
@@ -75,8 +76,8 @@ from .exceptions import (
     ImednetSdkException,
     NotFoundError,
     RateLimitError,
+    SdkValidationError,
 )
-from .exceptions import ValidationError as SdkValidationError  # Alias to avoid name clash
 
 # Import the new helper function
 from .utils import _fetch_and_parse_typed_records  # Import build_model_from_variables
@@ -240,8 +241,8 @@ class ImednetClient:
         endpoint: str,
         params: Optional[Dict[str, Any]],
         json_data: Optional[Any],  # Renamed from json to avoid conflict
-        timeout: TimeoutTypes,  # Use the determined timeout
-        **kwargs: Any,
+        timeout: TimeoutTypes,  # Use the determined timeout,
+        kwargs: Dict[str, Any],
     ) -> httpx.Response:
         """Makes a single HTTP request attempt. Called by the retry logic."""
         logger.debug(f"Making request: {method} {endpoint} Params: {params} Body: {json_data}")
@@ -302,8 +303,10 @@ class ImednetClient:
             endpoint: API endpoint path (relative to base URL).
             params: Optional dictionary of query parameters.
             json: Optional request body payload (dict, list, or Pydantic model).
-            response_model: Optional Pydantic model class or List[ModelClass] for parsing.
-            timeout: Optional timeout override for this specific request.  # Add timeout to docstring
+            response_model: Optional Pydantic model class or -
+            List[ModelClass] for parsing.
+            timeout: Optional timeout override for this specific request.
+            # Add timeout to docstring
             **kwargs: Additional keyword arguments passed to httpx's request method.
 
         Returns:
@@ -338,7 +341,7 @@ class ImednetClient:
                 method=method,
                 endpoint=endpoint,
                 params=params,
-                json_data=json,  # Pass original json data (make_request_attempt handles serialization)
+                json_data=json,  # Pass original json data
                 timeout=request_timeout,
                 **kwargs,
             )
@@ -399,9 +402,7 @@ class ImednetClient:
 
         return response  # Return raw response if no model specified
 
-    def _handle_api_error(
-        self, response: httpx.Response, request_path: str
-    ) -> ImednetSdkException:  # Return type hint added
+    def _handle_api_error(self, response: httpx.Response, request_path: str) -> ImednetSdkException:
         """Parses API error responses and raises appropriate `ImednetSdkException` subclasses.
 
         Analyzes the HTTP status code and, if possible, the JSON error payload

@@ -82,45 +82,32 @@ class IntervalModel(BaseModel):
     positiveSlack: Optional[int] = Field(
         None, description="Allowed number of days after the due date the interval can occur"
     )
-    eproGracePeriod: Optional[int] = Field(
-        None,
-        description="Allowed number of additional days for ePRO completion " "after the due date",
-    )
 
-    # --- Removed Redundant/Conflicting Optional Definitions ---
-    # Removed the block of Optional[...] fields that duplicated required ones like intervalId, intervalName etc.
-    # Keep only truly optional fields or fields whose presence might vary.
 
-    # --- Removed Fields Not in OpenAPI Spec ---
-    # intervalKey: Optional[str] = Field(...)
-    # intervalOrder: Optional[int] = Field(...)
-    # intervalIsRepeating: Optional[bool] = Field(...)
-    # intervalIsUnscheduled: Optional[bool] = Field(...)
-    # intervalIsArchived: Optional[bool] = Field(...)
-    # intervalDateCreated: Optional[datetime] = Field(...)
-    # intervalDateUpdated: Optional[datetime] = Field(...)
-    # intervalUpdatedByUserName: Optional[str] = Field(...)
-    # intervalCreatedByUserName: Optional[str] = Field(...)
+eproGracePeriod: Optional[int] = Field(
+    None,
+    description="Allowed number of additional days for ePRO completion " "after the due date",
+)
 
-    # Allow extra fields if the API might add more properties
-    model_config = ConfigDict(extra="allow", populate_by_name=True)  # Added populate_by_name
+model_config = ConfigDict(extra="allow", populate_by_name=True)  # Added populate_by_name
 
-    # Keep validator if date formats need parsing
-    @field_validator(
-        "dateCreated", "dateModified", mode="before"  # Removed non-existent fields from validator
-    )
-    @classmethod
-    def parse_datetime_optional(cls, value):
-        """Parse datetime strings into datetime objects, handling None."""
-        if value is None:
-            return None
-        if isinstance(value, datetime):
-            return value
-        # Basic ISO format parsing, adjust if API uses different formats
-        try:
-            # Handle potential 'Z' for UTC
-            if "Z" in str(value):
-                value = str(value).replace("Z", "+00:00")
-            return datetime.fromisoformat(str(value))
-        except Exception as e:
-            raise ValueError(f"Invalid datetime format for value: {value}") from e
+
+# Keep validator if date formats need parsing
+@field_validator(
+    "dateCreated", "dateModified", mode="before"  # Removed non-existent fields from validator
+)
+@classmethod
+def parse_datetime_optional(cls, value):
+    """Parse datetime strings into datetime objects, handling None."""
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value
+    # Basic ISO format parsing, adjust if API uses different formats
+    try:
+        # Handle potential 'Z' for UTC
+        if "Z" in str(value):
+            value = str(value).replace("Z", "+00:00")
+        return datetime.fromisoformat(str(value))
+    except Exception as e:
+        raise ValueError(f"Invalid datetime format for value: {value}") from e

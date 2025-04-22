@@ -110,7 +110,7 @@ def main():
             logging.info("Attempting to list studies (expected to fail with 401)...")
             invalid_client.studies.list_studies(size=1)
             logging.warning(
-                "Authentication error was expected but not caught. Check SDK behavior or test setup."
+                "Authentication error was expected but not caught. Check SDK behavior/test setup."
             )
         except AuthenticationError as e:
             logging.error(f"Caught expected AuthenticationError: {e}")

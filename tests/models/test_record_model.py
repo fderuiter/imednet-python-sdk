@@ -77,7 +77,9 @@ def test_record_model_validation():
 
 
 def test_record_model_optional_fields_none_or_missing():
-    """Test validation when optional fields (recordOid, subjectOid, parentRecordId) are None or missing."""
+    """Test validation when optional fields
+    (recordOid, subjectOid, parentRecordId)
+    are None or missing."""
     data_with_none = VALID_RECORD_DATA.copy()
     data_with_none["recordOid"] = None
     data_with_none["subjectOid"] = None

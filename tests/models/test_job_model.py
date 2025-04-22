@@ -15,7 +15,8 @@ VALID_JOB_DATA = {
 
 VALID_JOB_DATA_MINIMAL = {
     "jobId": "afa2d61e-07ed-4efe-99c5-6f358f5e7d38",
-    "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8",  # batchId is optional in model, but often present
+    "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8",
+    # batchId is optional in model, but often present
     "state": "created",
     "dateCreated": "2020-12-01 21:47:36",
 }

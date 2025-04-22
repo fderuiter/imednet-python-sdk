@@ -369,7 +369,8 @@ def test_list_studies_with_all_params(studies_client, client):
 
 # --- Error Handling Test Cases ---
 # These tests mock the base endpoint, which is fine as params don't affect error mocking.
-# Ensure the request_path in the raised exception is checked correctly (should not include query params).
+# Ensure the request_path in the raised exception is checked correctly
+# (should not include query params).
 
 
 @respx.mock
@@ -424,20 +425,23 @@ def test_list_studies_403_forbidden(studies_client):
 
 
 @respx.mock
-def test_list_studies_404_not_found(studies_client):
-    """Test list_studies raises NotFoundError on 404 response."""
-    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
+def test_get_study_404_not_found(studies_client):
+    """Test get_study raises NotFoundError for a non-existent study key."""
+    non_existent_study_key = "STUDY_DOES_NOT_EXIST"
+    get_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}/{non_existent_study_key}").mock(
         return_value=Response(404, json=MOCK_ERROR_BODY_404)
     )
 
     with pytest.raises(NotFoundError) as excinfo:
-        studies_client.list_studies()
+        studies_client.get_study(study_key=non_existent_study_key)
 
-    assert list_route.called
+    assert get_route.called
     assert excinfo.value.status_code == 404
-    assert excinfo.value.api_error_code == "API-404"
-    assert "Resource not found" in excinfo.value.message
-    assert excinfo.value.request_path == STUDIES_ENDPOINT  # Check relative path
+    assert excinfo.value.api_error_code == "SYS-404"
+    assert "not found" in excinfo.value.message.lower()
+    # Ensure the request path in the exception is correct
+    expected_path = f"{STUDIES_ENDPOINT}/{non_existent_study_key}"
+    assert excinfo.value.request_path == expected_path
 
 
 @respx.mock

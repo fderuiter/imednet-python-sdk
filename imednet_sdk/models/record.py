@@ -40,7 +40,8 @@ class RecordModel(BaseModel):
 
     Attributes:
         studyKey: Unique identifier for the study this record belongs to.
-        intervalId: Unique numeric identifier for the interval (visit) this record is associated with.
+        intervalId: Unique numeric identifier for the interval (visit)
+        this record is associated with.
         formId: Unique numeric identifier for the form definition used by this record.
         formKey: Unique string identifier for the form definition.
         siteId: Unique numeric identifier for the site associated with this record.
