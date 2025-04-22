@@ -19,7 +19,7 @@ from .form import FormModel
 from .interval import IntervalFormModel, IntervalModel
 from .job import JobStatusModel
 from .query import QueryCommentModel, QueryModel
-from .record import RecordCreateRequest, RecordModel
+from .record import RecordPostItem, RecordModel
 from .record_revision import RecordRevisionModel
 from .site import SiteModel
 from .study import StudyModel
@@ -45,7 +45,7 @@ __all__ = [
     "KeywordModel",
     "QueryCommentModel",
     "QueryModel",
-    "RecordCreateRequest",
+    "RecordPostItem",
     "RecordModel",
     "RecordRevisionModel",
     "SiteModel",
