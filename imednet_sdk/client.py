@@ -435,8 +435,9 @@ class ImednetClient:
             error_info = metadata.get("error", {})
 
             api_error_code = error_info.get("code")
+            # Use 'message' key from error_info if available, fallback to default
             description = error_info.get(
-                "description", description
+                "message", description
             )
             attribute = error_info.get("attribute")
             value = error_info.get("value")

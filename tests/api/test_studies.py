@@ -4,13 +4,21 @@ from datetime import datetime
 
 import pytest
 import respx
-from httpx import Response
+from httpx import Response, Request
+import urllib.parse  # Added for URL encoding/parsing
 
 from imednet_sdk.api.studies import StudiesClient
 from imednet_sdk.client import ImednetClient
 # Use PaginationInfo based on _common.py
 from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
 from imednet_sdk.models.study import StudyModel
+from imednet_sdk.exceptions import (
+    ApiError,
+    AuthenticationError,
+    AuthorizationError,
+    BadRequestError,
+    NotFoundError,  # Import NotFoundError
+)
 
 # --- Constants ---
 MOCK_BASE_URL = "https://testinstance.imednet.com"
@@ -69,6 +77,80 @@ MOCK_SUCCESS_RESPONSE_DICT = {
     "metadata": MOCK_SUCCESS_METADATA_DICT,
     "pagination": MOCK_PAGINATION_DICT,
     "data": [MOCK_STUDY_1_DICT],  # Use single item based on pagination
+}
+
+
+# --- Mock Error Data ---
+MOCK_ERROR_METADATA_BASE = {
+    "status": "ERROR",
+    "method": "GET",
+    "path": STUDIES_ENDPOINT,
+    "timestamp": "2024-11-04 17:00:00",
+}
+
+MOCK_ERROR_BODY_400 = {
+    "metadata": {
+        **MOCK_ERROR_METADATA_BASE,
+        "error": {
+            "code": "1001", # Example: Invalid Parameter
+            "message": "Invalid parameter value for 'size'. Must be between 1 and 500.",
+            "details": "size parameter was -10",
+        },
+    },
+    "pagination": None,
+    "data": None,
+}
+
+MOCK_ERROR_BODY_401 = {
+    "metadata": {
+        **MOCK_ERROR_METADATA_BASE,
+        "error": {
+            "code": "AUTH-001", # Example: Authentication Failed
+            "message": "Authentication failed. Invalid API key or Security key.",
+            "details": None,
+        },
+    },
+    "pagination": None,
+    "data": None,
+}
+
+MOCK_ERROR_BODY_403 = {
+    "metadata": {
+        **MOCK_ERROR_METADATA_BASE,
+        "error": {
+            "code": "AUTH-002", # Example: Authorization Failed
+            "message": "User does not have permission to access this resource.",
+            "details": None,
+        },
+    },
+    "pagination": None,
+    "data": None,
+}
+
+MOCK_ERROR_BODY_404 = {
+    "metadata": {
+        **MOCK_ERROR_METADATA_BASE,
+        "error": {
+            "code": "API-404", # Example: Not Found
+            "message": "Resource not found.",
+            "details": f"Endpoint {STUDIES_ENDPOINT} not found",
+        },
+    },
+    "pagination": None,
+    "data": None,
+}
+
+MOCK_ERROR_BODY_500 = {
+    "metadata": {
+        **MOCK_ERROR_METADATA_BASE,
+        "error": {
+            "code": "SYS-500", # Example: Internal Server Error
+            "message": "An unexpected internal server error occurred.",
+            "details": "Trace ID: xyz789",
+        },
+    },
+    "pagination": None,
+    "data": None,
 }
 
 
@@ -194,5 +276,178 @@ def test_list_studies_empty_response(studies_client):
     assert response.pagination.totalPages == 0
 
 
-# Note: Tests for error handling (e.g., 4xx/5xx responses)
-# will be added as part of Task 06 (Error Handling and Exceptions).
+@respx.mock
+def test_list_studies_with_pagination(studies_client, client):
+    """Test list_studies with pagination parameters."""
+    expected_page = 2
+    expected_size = 50
+    # Construct expected URL without encoding params initially for clarity
+    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?page={expected_page}&size={expected_size}"
+
+    list_route = respx.get(url=expected_url_pattern).mock(
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+    )
+
+    studies_client.list_studies(page=expected_page, size=expected_size)
+
+    assert list_route.called
+    request = list_route.calls.last.request
+    assert str(request.url) == expected_url_pattern  # Check exact URL match
+
+
+@respx.mock
+def test_list_studies_with_sort(studies_client, client):
+    """Test list_studies with sorting parameters."""
+    sort_param = "studyName,desc"
+    # Encode the comma for the expected URL
+    encoded_sort_param = urllib.parse.quote(sort_param)
+    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?sort={encoded_sort_param}"
+
+    list_route = respx.get(url=expected_url_pattern).mock(
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+    )
+
+    studies_client.list_studies(sort=sort_param)
+
+    assert list_route.called
+    request = list_route.calls.last.request
+    assert str(request.url) == expected_url_pattern
+
+
+@respx.mock
+def test_list_studies_with_filter(studies_client, client):
+    """Test list_studies with filtering parameters."""
+    filter_param = 'studyKey=="DEMO"'
+    encoded_filter = urllib.parse.quote(filter_param)
+    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?filter={encoded_filter}"
+
+    # Use regex matching for the URL as encoding might vary slightly or be complex
+    list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?filter=.*").mock(
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+    )
+
+    studies_client.list_studies(filter=filter_param)
+
+    assert list_route.called
+    request = list_route.calls.last.request
+    # Check the raw query string part contains the encoded filter
+    assert f"filter={encoded_filter}" in str(request.url)
+    # Additionally, parse and check the decoded value
+    query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
+    assert query_params.get("filter") == [filter_param]
+
+
+@respx.mock
+def test_list_studies_with_all_params(studies_client, client):
+    """Test list_studies with all parameters combined."""
+    page, size, sort, filter_str = 1, 100, "studyId,asc", 'studyType=="STUDY"'
+    encoded_filter = urllib.parse.quote(filter_str)
+    # Build query string carefully
+    query_string = f"page={page}&size={size}&sort={sort}&filter={encoded_filter}"
+    expected_url_pattern = f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}?{query_string}"
+
+    list_route = respx.get(url__regex=rf"{MOCK_BASE_URL}{STUDIES_ENDPOINT}\?.*").mock(
+        return_value=Response(200, json=MOCK_SUCCESS_RESPONSE_DICT)  # Use mock data, adjust if needed
+    )
+
+    studies_client.list_studies(page=page, size=size, sort=sort, filter=filter_str)
+
+    assert list_route.called
+    request = list_route.calls.last.request
+    # Check individual params in the URL query string after parsing
+    query_params = urllib.parse.parse_qs(urllib.parse.urlparse(str(request.url)).query)
+    assert query_params.get("page") == [str(page)]
+    assert query_params.get("size") == [str(size)]
+    assert query_params.get("sort") == [sort]
+    assert query_params.get("filter") == [filter_str]  # parse_qs decodes it
+
+
+# --- Error Handling Test Cases ---
+@respx.mock
+def test_list_studies_400_bad_request(studies_client):
+    """Test list_studies raises BadRequestError on 400 response."""
+    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
+        return_value=Response(400, json=MOCK_ERROR_BODY_400)
+    )
+
+    with pytest.raises(BadRequestError) as excinfo:
+        studies_client.list_studies()
+
+    assert list_route.called
+    assert excinfo.value.status_code == 400
+    assert excinfo.value.api_error_code == "1001"
+    assert "Invalid parameter value" in excinfo.value.message
+    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+
+
+@respx.mock
+def test_list_studies_401_unauthorized(studies_client):
+    """Test list_studies raises AuthenticationError on 401 response."""
+    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
+        return_value=Response(401, json=MOCK_ERROR_BODY_401)
+    )
+
+    with pytest.raises(AuthenticationError) as excinfo:
+        studies_client.list_studies()
+
+    assert list_route.called
+    assert excinfo.value.status_code == 401
+    assert excinfo.value.api_error_code == "AUTH-001"
+    assert "Authentication failed" in excinfo.value.message
+    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+
+
+@respx.mock
+def test_list_studies_403_forbidden(studies_client):
+    """Test list_studies raises AuthorizationError on 403 response."""
+    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
+        return_value=Response(403, json=MOCK_ERROR_BODY_403)
+    )
+
+    with pytest.raises(AuthorizationError) as excinfo:
+        studies_client.list_studies()
+
+    assert list_route.called
+    assert excinfo.value.status_code == 403
+    assert excinfo.value.api_error_code == "AUTH-002"
+    assert "does not have permission" in excinfo.value.message
+    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+
+
+@respx.mock
+def test_list_studies_404_not_found(studies_client):
+    """Test list_studies raises NotFoundError on 404 response."""
+    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
+        return_value=Response(404, json=MOCK_ERROR_BODY_404)
+    )
+
+    # Expecting NotFoundError now
+    with pytest.raises(NotFoundError) as excinfo:
+        studies_client.list_studies()
+
+    assert list_route.called
+    assert excinfo.value.status_code == 404
+    assert excinfo.value.api_error_code == "API-404"
+    assert "Resource not found" in excinfo.value.message
+    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+    # Check it's not one of the other specific subclasses
+    assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))
+
+
+@respx.mock
+def test_list_studies_500_server_error(studies_client):
+    """Test list_studies raises ApiError on 500 response."""
+    list_route = respx.get(f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}").mock(
+        return_value=Response(500, json=MOCK_ERROR_BODY_500)
+    )
+
+    with pytest.raises(ApiError) as excinfo:
+        studies_client.list_studies()
+
+    assert list_route.called
+    assert excinfo.value.status_code == 500
+    assert excinfo.value.api_error_code == "SYS-500"
+    assert "internal server error" in excinfo.value.message.lower()
+    assert excinfo.value.request_path == f"{MOCK_BASE_URL}{STUDIES_ENDPOINT}"
+    # Check it's not one of the more specific subclasses
+    assert not isinstance(excinfo.value, (BadRequestError, AuthenticationError, AuthorizationError))
