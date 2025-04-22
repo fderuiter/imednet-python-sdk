@@ -6,8 +6,14 @@ from typing import Dict, List
 import pytest
 from pydantic import BaseModel, TypeAdapter, ValidationError
 
-from imednet_sdk.models._common import (ApiResponse, ErrorDetail, FieldError,
-                                        Metadata, PaginationInfo, SortInfo)
+from imednet_sdk.models._common import (
+    ApiResponse,
+    ErrorDetail,
+    FieldError,
+    Metadata,
+    PaginationInfo,
+    SortInfo,
+)
 
 
 # --- Helper Dummy Model for Generic Tests ---
