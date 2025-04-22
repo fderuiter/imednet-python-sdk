@@ -68,7 +68,7 @@
   * [x] Write guide: Handling pagination (manual, iterators).
   * [x] Write guide: Filtering and sorting.
   * [x] Write guide: Creating/updating resources.
-  * [ ] Write guide: Error handling (exceptions).
+  * [x] Write guide: Error handling (exceptions).
   * [ ] (Optional) Add explanations of core API concepts.
 * [ ] **Docstrings (`imednet_sdk/`):**
   * [ ] Add/update comprehensive docstrings for all public modules, classes, methods, functions (use Google/NumPy style).
