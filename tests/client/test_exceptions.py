@@ -7,6 +7,7 @@
 import pytest
 import respx
 from httpx import Response
+from pydantic_core import ValidationError
 
 from imednet_sdk.exceptions import (
     ApiError,
@@ -15,7 +16,6 @@ from imednet_sdk.exceptions import (
     BadRequestError,
     NotFoundError,
     RateLimitError,
-    ValidationError,
 )
 
 from .conftest import BASE_URL
