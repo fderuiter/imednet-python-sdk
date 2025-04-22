@@ -113,8 +113,13 @@ def test_no_retry_on_4xx_error(default_client):
 
     # Assert that the request was made only once (no retries)
     assert mock_route.call_count == 1
-    # Optionally, assert details about the caught exception
+    assert Response.status_code == 404
+    # Check the exception details
+    assert isinstance(exc_info.value, NotFoundError)
     assert exc_info.value.status_code == 404
+    assert exc_info.value.api_error_code == "API-404"
+    assert "Resource not found" in exc_info.value.message
+    assert exc_info.value.request_path == endpoint  # Check relative path
 
 
 # --- Tenacity Retry Logic Tests --- #

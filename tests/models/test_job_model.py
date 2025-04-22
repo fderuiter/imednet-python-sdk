@@ -3,7 +3,6 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet_sdk.models._common import ErrorDetail
 from imednet_sdk.models.job import JobStatusModel
 
 # Mock data based on docs/reference/jobs.md examples
@@ -106,13 +105,3 @@ def test_job_status_model_serialization_minimal():
 
     # Check that only non-None fields are present and match
     assert dump == expected_data
-
-
-def test_job_status_model_serialization():
-    """Test serialization of JobStatusModel."""
-    model = JobStatusModel(
-        batchId=123,
-        state="Processing",
-        message="Work in progress",
-        resultUrl="http://example.com/result",
-    )

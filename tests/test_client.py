@@ -423,6 +423,9 @@ def test_no_retry_on_4xx_error(default_client):
     assert mock_route.call_count == 1
     # Optionally, assert details about the caught exception
     assert exc_info.value.status_code == 404
+    assert exc_info.value.api_error_code is None  # 404 from httpx doesn't have API code
+    assert "Not Found" in exc_info.value.message  # Default message for NotFoundError
+    assert exc_info.value.request_path == endpoint  # Check relative path
 
 
 # --- End Retry Tests --- #
