@@ -44,7 +44,14 @@ DEFAULT_RETRY_METHODS: Set[str] = {"GET"}  # Only retry GET by default
 
 
 class ImednetClient:
-    """Core HTTP client for interacting with the iMednet API."""
+    """Core HTTP client for interacting with the iMednet API.
+
+    Provides methods for making authenticated requests to various API endpoints,
+    handling responses, errors, and retries. It also serves as an entry point
+    to access specific resource clients (e.g., studies, sites, records).
+
+    This client is designed to be used as a context manager (using `with`).
+    """
 
     DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
 
@@ -69,33 +76,40 @@ class ImednetClient:
         base_url: Optional[str] = None,
         timeout: TimeoutTypes = httpx.Timeout(30.0, connect=5.0),
         retries: int = 3,
-        backoff_factor: float = 1,  # Tenacity uses 'multiplier' in wait_exponential
-        # retry_statuses: Optional[Set[int]] = None, # Replaced by retry_exceptions
+        backoff_factor: float = 1,
         retry_methods: Optional[Set[str]] = None,
         retry_exceptions: Optional[Set[type]] = None,
     ):
-        """Initializes the ImednetClient.
+        """Initializes the ImednetClient with authentication and configuration.
+
+        Sets up the underlying HTTP client, authentication headers, and retry logic
+        based on the provided parameters or environment variables.
 
         Args:
-            api_key: Your iMednet API key. If None, reads from IMEDNET_API_KEY env var.
-            security_key: Your iMednet Security key. If None, reads from IMEDNET_SECURITY_KEY
-                env var.
-            base_url: The base URL for the iMednet API. Defaults to production.
-            timeout: Default request timeout configuration.
-            retries: Number of retry attempts for transient errors.
-            backoff_factor: Factor to determine delay between retries
-                            (delay = backoff_factor * (2 ** attempt)).
-            retry_statuses: Set of HTTP status codes to retry on.
-                            Defaults to {500, 502, 503, 504}.
-            retry_methods: Set of HTTP methods to allow retries for.
-                           Defaults to {"GET", "POST"}.
-            retry_exceptions: Set of httpx exception types to retry on.
-                              Defaults to {ConnectError, ReadTimeout,
-                              PoolTimeout}.
+            api_key: Your iMednet API key. If None, reads from the
+                `IMEDNET_API_KEY` environment variable.
+            security_key: Your iMednet Security key. If None, reads from the
+                `IMEDNET_SECURITY_KEY` environment variable.
+            base_url: The base URL for the iMednet API. Defaults to the production
+                URL (`https://edc.prod.imednetapi.com`).
+            timeout: Default request timeout configuration. Can be a float (total
+                timeout) or an `httpx.Timeout` object. Defaults to 30s total, 5s connect.
+            retries: Number of retry attempts for failed requests eligible for retry.
+                Defaults to 3.
+            backoff_factor: Multiplier for exponential backoff between retries, used by
+                `tenacity.wait_exponential`. Delay = `backoff_factor * (2 ** (attempt - 1))`.
+                Defaults to 1.
+            retry_methods: Set of HTTP methods (uppercase) to allow retries for.
+                           Defaults to `{"GET"}`.
+            retry_exceptions: Set of exception types that trigger a retry attempt.
+                              Defaults include various `httpx` network errors,
+                              `RateLimitError` (429), and `ApiError` (5xx). User-provided
+                              exceptions are added to this default set.
 
         Raises:
-            ValueError: If api_key or security_key is not provided and cannot be found
-                        in environment variables (placeholder for AuthenticationError).
+            ValueError: If `api_key` or `security_key` is not provided directly
+                        and cannot be found in the corresponding environment variables
+                        (`IMEDNET_API_KEY`, `IMEDNET_SECURITY_KEY`).
         """
         self.base_url = base_url or self.DEFAULT_BASE_URL
 
@@ -155,7 +169,12 @@ class ImednetClient:
         response_model: Optional[Union[Type[T], Type[List[T]]]],
         **kwargs: Any,
     ) -> Union[T, List[T], httpx.Response]:
-        """Makes a single HTTP request attempt and handles response/errors."""
+        """Makes a single HTTP request, handles API errors by raising exceptions,
+        and deserializes the response if a model is provided.
+
+        Network-related errors (`httpx.RequestError`) are allowed to propagate
+        to be potentially handled by the retry logic in `_request`.
+        """
         request_path = str(
             self._client.build_request(method, url, params=params, json=request_json).url
         )
@@ -487,11 +506,13 @@ class ImednetClient:
     # --- End Resource Client Properties ---
 
     def close(self):
-        """Closes the underlying HTTP client."""
+        """Closes the underlying HTTP client connection pool."""
         self._client.close()
 
     def __enter__(self):
+        """Enter the runtime context related to this object."""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exit the runtime context and close the client connection pool."""
         self.close()
