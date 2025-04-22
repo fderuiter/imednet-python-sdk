@@ -59,9 +59,9 @@
   * [x] Install Sphinx, theme (e.g., `sphinx_rtd_theme`), extensions (`autodoc`, `napoleon`, `viewcode`, `intersphinx`). Add to `requirements-dev.txt`.
   * [x] Configure `conf.py` (project details, theme, extensions).
   * [x] Create basic `index.rst`.
-* [ ] **API Reference (`docs/source/api.rst`):**
-  * [ ] Use `sphinx.ext.autodoc` (`automodule`, `autoclass`, etc.) to generate reference from docstrings.
-  * [ ] Ensure `imednet_sdk` is in the Python path for Sphinx.
+* [x] **API Reference (`docs/source/api.rst`):**
+  * [x] Use `sphinx.ext.autodoc` (`automodule`, `autoclass`, etc.) to generate reference from docstrings.
+  * [x] Ensure `imednet_sdk` is in the Python path for Sphinx.
 * [ ] **Usage Guides (`docs/source/usage.rst`, etc.):**
   * [x] Write guide: Client initialization and authentication.
   * [x] Write guide: Making requests (listing, getting).
