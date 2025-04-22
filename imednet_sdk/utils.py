@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 # 1. map iMednet types → (Python type, Pydantic Field args if any)
 # Needs refinement based on actual API date formats and validation needs
 # Using Optional[...] for all fields initially, assuming data might be missing.
-TYPE_MAP: Dict[str, Tuple[type[Any], Dict[str, Any]]] = {
+TYPE_MAP: Dict[str, Tuple[Type[Any], Dict[str, Any]]] = {
     """Maps iMednet variableType strings to Python types and Pydantic Field arguments.
 
     Used by `build_model_from_variables` to dynamically create Pydantic models
@@ -45,7 +45,7 @@ TYPE_MAP: Dict[str, Tuple[type[Any], Dict[str, Any]]] = {
     "textAreaField": (str, {}),
     # Add other known types from docs/reference/variables.md if necessary
     # Default to Any for unknown types for flexibility
-    "unknown": (Any, {}),
+    "unknown": (Type[Any], {}),
 }
 
 
@@ -178,28 +178,28 @@ def _fetch_and_parse_typed_records(
         combined_filter = f"formKey=={form_key}"
         if existing_filter:
             combined_filter = f"({existing_filter}) and {combined_filter}"
-
-        # Assuming records_client has a method like list_records
+            # Assuming records_client has a method like list_records
         records_response = records_client.list_records(study_key, filter=combined_filter, **kwargs)
         # Assuming the response data is a list of objects with recordData
         raw_records_list = records_response.data
 
         # 4) Parse each recordData
-        for record in raw_records_list:
-            record_data_dict = record.recordData or {}
-            try:
-                typed_data_instance = DynamicRecordDataModel.model_validate(record_data_dict)
-                typed_records.append(typed_data_instance)
-            except ValidationError as e:
-                logger.warning(
-                    f"Skipping record {record.recordId} (Subject: {record.subjectKey}) in form "
-                    f"'{form_key}' due to validation error: {e}"
-                )
-            except Exception as e:
-                logger.warning(
-                    f"Skipping record {record.recordId} (Subject: {record.subjectKey}) in form "
-                    f"'{form_key}' due to unexpected parsing error: {e}"
-                )
+        if raw_records_list is not None:
+            for record in raw_records_list:
+                record_data_dict = record.recordData or {}
+                try:
+                    typed_data_instance = DynamicRecordDataModel.model_validate(record_data_dict)
+                    typed_records.append(typed_data_instance)
+                except ValidationError as e:
+                    logger.warning(
+                        f"Skipping record {record.recordId} (Subject: {record.subjectKey}) in form "
+                        f"'{form_key}' due to validation error: {e}"
+                    )
+                except Exception as e:
+                    logger.warning(
+                        f"Skipping record {record.recordId} (Subject: {record.subjectKey}) in form "
+                        f"'{form_key}' due to unexpected parsing error: {e}"
+                    )
 
     except ImednetSdkException as e:
         logger.error(f"Failed to fetch records for study '{study_key}', form '{form_key}': {e}")

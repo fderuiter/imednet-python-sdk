@@ -1,4 +1,9 @@
-"""API client for interacting with the iMednet Visits endpoints.
+"""API client for interacting with the iMe        endpoint = f"/api/v1/edc/studies/{study_key}/visits"
+        # Use self._get instead of self._client._get
+        response: ApiResponse[List[VisitModel]] = self._get(
+            endpoint, params=kwargs, response_model=ApiResponse[List[VisitModel]]
+        )
+        return responset Visits endpoints.
 
 This module provides the `VisitsClient` class for accessing visit definitions
 within a specific study via the iMednet API.
@@ -14,11 +19,13 @@ from ._base import ResourceClient
 class VisitsClient(ResourceClient):
     """Provides methods for accessing iMednet visit definitions.
 
-    This client interacts with endpoints under `/api/v1/edc/studies/{study_key}/visits`.
-    It is accessed via the `imednet_sdk.client.ImednetClient.visits` property.
+    This client interacts with endpoints under
+    `/api/v1/edc/studies/{study_key}/visits`.
+    It is accessed via the
+    `imednet_sdk.client.ImednetClient.visits` property.
     """
 
-    def list_visits(self, study_key: str, **kwargs) -> ApiResponse[list[VisitModel]]:
+    def list_visits(self, study_key: str, **kwargs) -> ApiResponse[List[VisitModel]]:
         """Retrieves a list of visit definitions for a specific study.
 
         Corresponds to the `GET /api/v1/edc/studies/{studyKey}/visits` endpoint.
@@ -44,4 +51,5 @@ class VisitsClient(ResourceClient):
 
         endpoint = f"/api/v1/edc/studies/{study_key}/visits"
         # Use self._get instead of self._client._get
-        return self._get(endpoint, params=kwargs, response_model=ApiResponse[List[VisitModel]])
+        response = self._get(endpoint, params=kwargs, response_model=ApiResponse[List[VisitModel]])
+        return response

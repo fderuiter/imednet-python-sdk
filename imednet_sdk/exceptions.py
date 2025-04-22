@@ -95,6 +95,8 @@ class SdkValidationError(BadRequestError):
         request_path: Optional[str] = None,
         response_body: Optional[Dict[str, Any]] = None,
         timestamp: Optional[str] = None,
+        attribute: Optional[str] = None,
+        value: Optional[Any] = None,
     ):
         """Initialize a validation error with API-specific details.
 
@@ -105,6 +107,8 @@ class SdkValidationError(BadRequestError):
             request_path: The API endpoint path where validation failed.
             response_body: The full error response body from the API.
             timestamp: When the error occurred (ISO 8601 format).
+            attribute: The attribute that failed validation.
+            value: The value that failed validation.
         """
         super().__init__(
             message=message,
@@ -114,6 +118,8 @@ class SdkValidationError(BadRequestError):
             response_body=response_body,
             timestamp=timestamp,
         )
+        self.attribute = attribute
+        self.value = value
 
     def __str__(self) -> str:
         """Returns a string representation including validation-specific details."""

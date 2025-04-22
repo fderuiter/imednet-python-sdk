@@ -82,28 +82,23 @@ class IntervalModel(BaseModel):
     positiveSlack: Optional[int] = Field(
         None, description="Allowed number of days after the due date the interval can occur"
     )
+    eproGracePeriod: Optional[int] = Field(
+        None,
+        description="Allowed number of additional days for ePRO completion after the due date",
+    )
 
+    model_config = ConfigDict(extra="allow", populate_by_name=True)  # Added populate_by_name
 
-eproGracePeriod: Optional[int] = Field(
-    None,
-    description="Allowed number of additional days for ePRO completion " "after the due date",
-)
-
-model_config = ConfigDict(extra="allow", populate_by_name=True)  # Added populate_by_name
-
-
-# Keep validator if date formats need parsing
-@classmethod
-@field_validator("dateCreated", "dateModified", mode="before")
-def parse_datetime_optional(cls, value: Any) -> Optional[datetime]:
-    """Parse datetime strings into datetime objects, handling None."""
-    if value is None:
-        return None
-    if isinstance(value, datetime):
-        return value
-    try:
-        if "Z" in str(value):
-            value = str(value).replace("Z", "+00:00")
-        return datetime.fromisoformat(str(value))
-    except Exception as e:
-        raise ValueError(f"Invalid datetime format for value: {value}") from e
+    @field_validator("dateCreated", "dateModified", mode="before")
+    def parse_datetime_optional(cls, value: Any) -> Optional[datetime]:
+        """Parse datetime strings into datetime objects, handling None."""
+        if value is None:
+            return None
+        if isinstance(value, datetime):
+            return value
+        try:
+            if "Z" in str(value):
+                value = str(value).replace("Z", "+00:00")
+            return datetime.fromisoformat(str(value))
+        except Exception as e:
+            raise ValueError(f"Invalid datetime format for value: {value}") from e
