@@ -166,3 +166,5 @@ dist/
 # Cache files
 .pytest_cache/
 .mypy_cache/
+
+archive/
