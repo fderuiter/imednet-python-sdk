@@ -95,7 +95,7 @@ def test_get_job_status_running(jobs_client, client):  # Renamed for clarity
         "batchId": batch_id,
         "state": "running",  # Lowercase as per docs
         "dateCreated": "2023-11-01 11:00:00",  # Use documented format
-        "dateStarted": "2023-11-01 11:00:05",  # Use documented format (assuming dateStarted is relevant here)
+        "dateStarted": "2023-11-01 11:00:05",  # Use documented format
         "dateFinished": None,  # Job is running, so not finished
         # Removed fields not in docs: progress, resultUrl, error, dateModified
     }
