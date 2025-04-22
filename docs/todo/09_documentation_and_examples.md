@@ -64,7 +64,7 @@
   * [ ] Ensure `imednet_sdk` is in the Python path for Sphinx.
 * [ ] **Usage Guides (`docs/source/usage.rst`, etc.):**
   * [x] Write guide: Client initialization and authentication.
-  * [ ] Write guide: Making requests (listing, getting).
+  * [x] Write guide: Making requests (listing, getting).
   * [ ] Write guide: Handling pagination (manual, iterators).
   * [ ] Write guide: Filtering and sorting.
   * [ ] Write guide: Creating/updating resources.
