@@ -53,66 +53,64 @@ def test_visit_model_validation():
 
 
 def test_visit_model_optional_fields_none_or_missing():
-    """Test validation when optional fields are None or missing."""
+    """Test validation when optional fields (dueDate) are None or missing."""
+    # Only dueDate is truly optional according to the latest model
     data_with_none = VALID_VISIT_DATA.copy()
-    data_with_none["startDate"] = None
-    data_with_none["endDate"] = None
     data_with_none["dueDate"] = None
-    data_with_none["visitDate"] = None
-    data_with_none["visitDateForm"] = None
-    data_with_none["visitDateQuestion"] = None
 
     model_none = VisitModel.model_validate(data_with_none)
-    assert model_none.startDate is None
-    assert model_none.endDate is None
     assert model_none.dueDate is None
-    assert model_none.visitDate is None
-    assert model_none.visitDateForm is None
-    assert model_none.visitDateQuestion is None
+    # Verify required fields are still present and valid
+    assert model_none.startDate == date(2024, 11, 4)
+    assert model_none.visitDate == date(2024, 11, 6)
+    assert model_none.visitDateForm == "Follow Up"
+    assert model_none.visitDateQuestion == "AESEV"
 
     data_missing_optionals = VALID_VISIT_DATA.copy()
-    del data_missing_optionals["startDate"]
-    del data_missing_optionals["endDate"]
-    # dueDate is already None in base data
-    del data_missing_optionals["visitDate"]
-    del data_missing_optionals["visitDateForm"]
-    del data_missing_optionals["visitDateQuestion"]
+    # dueDate is already None in base data, so removing it has no effect on validation
+    # If it had a value, we could test del data_missing_optionals["dueDate"]
 
     model_missing = VisitModel.model_validate(data_missing_optionals)
-    assert model_missing.startDate is None
-    assert model_missing.endDate is None
-    assert model_missing.dueDate is None
-    assert model_missing.visitDate is None
-    assert model_missing.visitDateForm is None
-    assert model_missing.visitDateQuestion is None
+    assert model_missing.dueDate is None # Should default to None if missing
+    # Verify required fields are still present and valid
+    assert model_missing.startDate == date(2024, 11, 4)
+    assert model_missing.visitDate == date(2024, 11, 6)
+    assert model_missing.visitDateForm == "Follow Up"
+    assert model_missing.visitDateQuestion == "AESEV"
 
 
 def test_visit_model_defaults():
     """Test default values for boolean fields when not provided."""
     minimal_data = VALID_VISIT_DATA.copy()
     del minimal_data["deleted"]
-    # Remove optional fields as well for minimal test
-    del minimal_data["startDate"]
-    del minimal_data["endDate"]
+    # Remove the only optional field (dueDate) for minimal test
     minimal_data["dueDate"] = None
-    del minimal_data["visitDate"]
-    del minimal_data["visitDateForm"]
-    del minimal_data["visitDateQuestion"]
 
     model = VisitModel.model_validate(minimal_data)
     assert model.deleted is False
+    assert model.dueDate is None
 
 
 def test_visit_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
-    invalid_data = VALID_VISIT_DATA.copy()
-    del invalid_data["intervalName"]  # Remove a required field
+    required_fields = ["intervalName", "startDate", "endDate", "visitDate", "visitDateForm", "visitDateQuestion"]
+    for field in required_fields:
+        invalid_data = VALID_VISIT_DATA.copy()
+        # Ensure the field exists before deleting
+        if field in invalid_data:
+             del invalid_data[field]
+        # For fields that might be None in the base data but are required, set to None
+        elif field == "dueDate": # Example if dueDate became required
+             pass # Skip if it was already None
+        else:
+             # If a required field is missing from VALID_VISIT_DATA, the base data is wrong
+             pytest.fail(f"Required field '{field}' missing from VALID_VISIT_DATA for test setup.")
 
-    with pytest.raises(ValidationError) as excinfo:
-        VisitModel.model_validate(invalid_data)
+        with pytest.raises(ValidationError) as excinfo:
+            VisitModel.model_validate(invalid_data)
 
-    assert "intervalName" in str(excinfo.value)
-    assert "Field required" in str(excinfo.value)
+        assert field in str(excinfo.value)
+        assert "Field required" in str(excinfo.value)
 
 
 def test_visit_model_invalid_data_type():

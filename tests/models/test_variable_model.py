@@ -17,7 +17,7 @@ VALID_VARIABLE_DATA = {
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "formId": 108727,
-    "variableOid": "OID-1",
+    "variableOid": "OID-1", # Now optional
     "deleted": False,  # Explicitly setting default
     "formKey": "FORM_1",
     "formName": "Pre-procedure screening",
@@ -50,12 +50,28 @@ def test_variable_model_validation():
     assert model.blinded == VALID_VARIABLE_DATA["blinded"]
 
 
+def test_variable_model_optional_oid():
+    """Test validation when optional variableOid is None or missing."""
+    # Test with variableOid=None
+    data_with_none_oid = VALID_VARIABLE_DATA.copy()
+    data_with_none_oid["variableOid"] = None
+    model_none_oid = VariableModel.model_validate(data_with_none_oid)
+    assert model_none_oid.variableOid is None
+
+    # Test with missing variableOid
+    data_missing_oid = VALID_VARIABLE_DATA.copy()
+    del data_missing_oid["variableOid"]
+    model_missing_oid = VariableModel.model_validate(data_missing_oid)
+    assert model_missing_oid.variableOid is None
+
+
 def test_variable_model_defaults():
     """Test default values for boolean fields when not provided."""
     minimal_data = VALID_VARIABLE_DATA.copy()
     del minimal_data["disabled"]
     del minimal_data["deleted"]
     del minimal_data["blinded"]
+    del minimal_data["variableOid"] # Also remove optional oid
 
     model = VariableModel.model_validate(minimal_data)
     assert model.disabled is False
@@ -106,11 +122,22 @@ def test_variable_model_serialization():
     # Check basic fields match
     for key, value in expected_data.items():
         if key not in ["dateCreated", "dateModified"]:
-            assert dump[key] == value
+            # Handle optional variableOid
+            if key == "variableOid":
+                assert dump.get(key) == value
+            else:
+                assert dump[key] == value
 
     # Check datetime serialization
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
     assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 20)
+
+    # Test serialization with missing optional oid
+    data_missing_oid = VALID_VARIABLE_DATA.copy()
+    del data_missing_oid["variableOid"]
+    model_missing = VariableModel.model_validate(data_missing_oid)
+    dump_missing = model_missing.model_dump(by_alias=True, exclude_none=True)
+    assert "variableOid" not in dump_missing
 
 
 # Add more tests for edge cases, different variable types, etc.

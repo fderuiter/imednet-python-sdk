@@ -19,25 +19,27 @@ VALID_RECORD_DATA = {
     "formKey": "AE",
     "siteId": 128,
     "recordId": 1,
-    "recordOid": "REC-1",
+    "recordOid": "REC-1", # Now optional
     "recordType": "SUBJECT",
     "recordStatus": "Record Incomplete",
     "deleted": False,
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "subjectId": 326,
-    "subjectOid": "OID-1",
+    "subjectOid": "OID-1", # Now optional
     "subjectKey": "123-456",
-    "visitId": 1,
+    "visitId": 1, # Now required
     "parentRecordId": 34,
-    "keywords": [VALID_KEYWORD_DATA],
-    "recordData": {
+    "keywords": [VALID_KEYWORD_DATA], # Now required
+    "recordData": { # Now required
         "dateCreated": "2018-10-18 06:21:46",
         "unvnum": "1",
         "dateModified": "2018-11-18 07:11:16",
         "aeser": "",
         "aeterm": "Bronchitis",
     },
+    # Removed fields: siteName, dateUpdated, updatedByUserName, createdByUserName,
+    # formInstance, intervalName, intervalInstance, recordIsLocked, recordIsArchived, data
 }
 
 
@@ -60,7 +62,6 @@ def test_record_model_validation():
     assert isinstance(model.dateModified, datetime)
     assert model.dateModified == datetime(2024, 11, 4, 16, 3, 20)
     assert model.subjectId == VALID_RECORD_DATA["subjectId"]
-    assert model.subjectOid == VALID_RECORD_DATA["subjectOid"]
     assert model.subjectKey == VALID_RECORD_DATA["subjectKey"]
     assert model.visitId == VALID_RECORD_DATA["visitId"]
     assert model.parentRecordId == VALID_RECORD_DATA["parentRecordId"]
@@ -76,30 +77,42 @@ def test_record_model_validation():
 
 
 def test_record_model_optional_fields_none_or_missing():
-    """Test validation when optional fields are None or missing."""
+    """Test validation when optional fields (recordOid, subjectOid, parentRecordId) are None or missing."""
     data_with_none = VALID_RECORD_DATA.copy()
-    data_with_none["visitId"] = None
+    data_with_none["recordOid"] = None
+    data_with_none["subjectOid"] = None
     data_with_none["parentRecordId"] = None
-    data_with_none["keywords"] = None
 
     model_none = RecordModel.model_validate(data_with_none)
-    assert model_none.visitId is None
+    assert model_none.recordOid is None
+    assert model_none.subjectOid is None
     assert model_none.parentRecordId is None
-    assert model_none.keywords is None
+    # Check required fields are still valid
+    assert model_none.visitId == VALID_RECORD_DATA["visitId"]
+    assert model_none.keywords == [KeywordModel.model_validate(VALID_KEYWORD_DATA)]
+    assert model_none.recordData == VALID_RECORD_DATA["recordData"]
+
 
     data_missing_optionals = VALID_RECORD_DATA.copy()
-    del data_missing_optionals["visitId"]
+    del data_missing_optionals["recordOid"]
+    del data_missing_optionals["subjectOid"]
     del data_missing_optionals["parentRecordId"]
-    del data_missing_optionals["keywords"]
 
     model_missing = RecordModel.model_validate(data_missing_optionals)
-    assert model_missing.visitId is None
+    assert model_missing.recordOid is None
+    assert model_missing.subjectOid is None
     assert model_missing.parentRecordId is None
-    assert model_missing.keywords is None
+    # Check required fields are still valid
+    assert model_missing.visitId == VALID_RECORD_DATA["visitId"]
+    assert model_missing.keywords == [KeywordModel.model_validate(VALID_KEYWORD_DATA)]
+    assert model_missing.recordData == VALID_RECORD_DATA["recordData"]
 
 
 def test_record_model_empty_record_data_and_keywords():
-    """Test validation with empty recordData and keywords list."""
+    """Test validation with empty recordData and keywords list (now required)."""
+    # Keywords and recordData are now required, so they cannot be empty lists/dicts
+    # unless the schema allows empty lists/dicts for required fields.
+    # Assuming empty list/dict is valid for required fields:
     data_empty = VALID_RECORD_DATA.copy()
     data_empty["keywords"] = []
     data_empty["recordData"] = {}
@@ -108,17 +121,44 @@ def test_record_model_empty_record_data_and_keywords():
     assert model.keywords == []
     assert model.recordData == {}
 
+    # Test if empty list/dict is NOT allowed for required fields (raises ValidationError)
+    # This depends on Pydantic's behavior or specific validators
+    # Example: Test missing keywords (should fail)
+    data_missing_keywords = VALID_RECORD_DATA.copy()
+    del data_missing_keywords["keywords"]
+    with pytest.raises(ValidationError) as excinfo_keywords:
+        RecordModel.model_validate(data_missing_keywords)
+    assert "keywords" in str(excinfo_keywords.value)
+    assert "Field required" in str(excinfo_keywords.value)
+
+    # Example: Test missing recordData (should fail)
+    data_missing_recordData = VALID_RECORD_DATA.copy()
+    del data_missing_recordData["recordData"]
+    with pytest.raises(ValidationError) as excinfo_recordData:
+        RecordModel.model_validate(data_missing_recordData)
+    assert "recordData" in str(excinfo_recordData.value)
+    assert "Field required" in str(excinfo_recordData.value)
+
 
 def test_record_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
-    invalid_data = VALID_RECORD_DATA.copy()
-    del invalid_data["formKey"]
+    required_fields = [
+        "studyKey", "intervalId", "formId", "formKey", "siteId", "recordId",
+        "recordType", "recordStatus", "deleted", "dateCreated", "dateModified",
+        "subjectId", "subjectKey", "visitId", "keywords", "recordData"
+    ]
+    for field in required_fields:
+        invalid_data = VALID_RECORD_DATA.copy()
+        if field in invalid_data:
+            del invalid_data[field]
+        else:
+             pytest.fail(f"Required field '{field}' missing from VALID_RECORD_DATA for test setup.")
 
-    with pytest.raises(ValidationError) as excinfo:
-        RecordModel.model_validate(invalid_data)
+        with pytest.raises(ValidationError) as excinfo:
+            RecordModel.model_validate(invalid_data)
 
-    assert "formKey" in str(excinfo.value)
-    assert "Field required" in str(excinfo.value)
+        assert field in str(excinfo.value)
+        assert "Field required" in str(excinfo.value)
 
 
 def test_record_model_invalid_data_type():
@@ -161,9 +201,20 @@ def test_record_model_serialization():
     keyword_model = KeywordModel.model_validate(VALID_KEYWORD_DATA)
     expected_keyword_dump = keyword_model.model_dump(by_alias=True)
 
+    # Check fields, excluding removed ones and handling optional/required changes
     for key, value in expected_data.items():
+        # Skip removed fields
+        if key in ["siteName", "dateUpdated", "updatedByUserName", "createdByUserName",
+                   "formInstance", "intervalName", "intervalInstance", "recordIsLocked",
+                   "recordIsArchived", "data"]:
+            continue
+
         if key not in ["dateCreated", "dateModified", "keywords", "recordData"]:
-            assert dump[key] == value
+            # Handle optional fields that might be None in the dump
+            if key in ["recordOid", "subjectOid", "parentRecordId"]:
+                assert dump.get(key) == value
+            else:
+                assert dump[key] == value
 
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
     assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 20)
@@ -173,6 +224,22 @@ def test_record_model_serialization():
     assert dump["keywords"][0] == expected_keyword_dump
 
     assert dump["recordData"] == expected_data["recordData"]
+
+    # Test serialization with missing optional fields
+    data_missing_optionals = VALID_RECORD_DATA.copy()
+    del data_missing_optionals["recordOid"]
+    del data_missing_optionals["subjectOid"]
+    del data_missing_optionals["parentRecordId"]
+    model_missing = RecordModel.model_validate(data_missing_optionals)
+    dump_missing = model_missing.model_dump(by_alias=True, exclude_none=True) # exclude_none is important here
+
+    assert "recordOid" not in dump_missing
+    assert "subjectOid" not in dump_missing
+    assert "parentRecordId" not in dump_missing
+    # Ensure required fields are still present
+    assert "visitId" in dump_missing
+    assert "keywords" in dump_missing
+    assert "recordData" in dump_missing
 
 
 VALID_POST_ITEM_REGISTER = {

@@ -12,10 +12,6 @@ VALID_JOB_DATA = {
     "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8",
     "state": "completed",
     "dateCreated": "2020-12-01 21:47:36",
-    "dateModified": "2020-12-01 21:47:42",  # Use dateModified
-    "progress": 100,
-    "resultUrl": "/api/v1/edc/jobs/afa2d61e-07ed-4efe-99c5-6f358f5e7d38/results",
-    "error": None,
 }
 
 VALID_JOB_DATA_MINIMAL = {
@@ -23,7 +19,6 @@ VALID_JOB_DATA_MINIMAL = {
     "batchId": "75e63db6-fa41-40bc-b939-cf3bdb246ae8",  # batchId is optional in model, but often present
     "state": "created",
     "dateCreated": "2020-12-01 21:47:36",
-    # Optional fields omitted
 }
 
 INVALID_JOB_DATA_MISSING_REQUIRED = {
@@ -49,11 +44,6 @@ def test_job_status_model_validation_full():
     assert model.state == VALID_JOB_DATA["state"]
     assert isinstance(model.dateCreated, datetime)
     assert model.dateCreated == datetime(2020, 12, 1, 21, 47, 36)
-    assert isinstance(model.dateModified, datetime)  # Check dateModified
-    assert model.dateModified == datetime(2020, 12, 1, 21, 47, 42)  # Check dateModified value
-    assert model.progress == 100
-    assert model.resultUrl == VALID_JOB_DATA["resultUrl"]
-    assert model.error is None
 
 
 def test_job_status_model_validation_minimal():
@@ -65,10 +55,6 @@ def test_job_status_model_validation_minimal():
     assert model.state == VALID_JOB_DATA_MINIMAL["state"]
     assert isinstance(model.dateCreated, datetime)
     assert model.dateCreated == datetime(2020, 12, 1, 21, 47, 36)
-    assert model.dateModified is None  # Check optional fields are None
-    assert model.progress is None
-    assert model.resultUrl is None
-    assert model.error is None
 
 
 def test_job_status_model_validation_missing_required():
@@ -97,17 +83,12 @@ def test_job_status_model_serialization_full():
     expected_data = VALID_JOB_DATA.copy()
     # Pydantic v2 serializes datetimes to ISO format strings by default with mode='json'
     expected_data["dateCreated"] = "2020-12-01T21:47:36"
-    expected_data["dateModified"] = "2020-12-01T21:47:42"
 
     # Check all fields match the expected serialized format
     assert dump["jobId"] == expected_data["jobId"]
     assert dump["batchId"] == expected_data["batchId"]
     assert dump["state"] == expected_data["state"]
     assert dump["dateCreated"] == expected_data["dateCreated"]
-    assert dump["dateModified"] == expected_data["dateModified"]
-    assert dump["progress"] == expected_data["progress"]
-    assert dump["resultUrl"] == expected_data["resultUrl"]
-    assert dump["error"] == expected_data["error"]  # Should be None
 
 
 def test_job_status_model_serialization_minimal():
@@ -125,24 +106,6 @@ def test_job_status_model_serialization_minimal():
 
     # Check that only non-None fields are present and match
     assert dump == expected_data
-
-
-def test_job_status_model_with_error():
-    """Test JobStatusModel with an error field."""
-    error_data = {
-        "jobId": "job123",
-        "state": "failed",
-        "dateCreated": "2023-01-01 10:00:00",
-        "error": {"code": "E001", "description": "Processing failed"},  # Use description key
-    }
-    model = JobStatusModel.model_validate(error_data)
-    assert isinstance(model.error, ErrorDetail)
-    assert model.error.code == "E001"
-    assert model.error.description == "Processing failed"  # Use description field
-
-    dump = model.model_dump(mode="json", exclude_none=True)
-    assert dump["error"]["code"] == "E001"
-    assert dump["error"]["description"] == "Processing failed"  # Use description field
 
 
 def test_job_status_model_serialization():

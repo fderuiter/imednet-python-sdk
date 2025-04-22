@@ -20,13 +20,13 @@ VALID_KEYWORD_DATA = {
 VALID_SUBJECT_DATA = {
     "studyKey": "PHARMADEMO",
     "subjectId": 1,
-    "subjectOid": "OID-1",
+    "subjectOid": "OID-1", # Still provide in base valid data
     "subjectKey": "01-001",
     "subjectStatus": "Enrolled",
     "siteId": 128,
     "siteName": "Chicago Hope Hospital",
     "deleted": False,  # Explicitly setting default
-    "enrollmentStartDate": "2024-11-04 16:03:19",
+    "enrollmentStartDate": "2024-11-04 16:03:19", # Still provide in base valid data
     "dateCreated": "2024-11-04 16:03:19",
     "dateModified": "2024-11-04 16:03:20",
     "keywords": [VALID_KEYWORD_DATA],  # Optional list of KeywordModel
@@ -93,17 +93,34 @@ def test_subject_model_validation():
 
 def test_subject_model_optional_fields_none_or_missing():
     """Test validation when optional fields are None or missing."""
-    data_with_none = VALID_SUBJECT_DATA.copy()
-    data_with_none["keywords"] = None
+    # Test with keywords=None
+    data_with_none_keywords = VALID_SUBJECT_DATA.copy()
+    data_with_none_keywords["keywords"] = None
+    model_none_keywords = SubjectModel.model_validate(data_with_none_keywords)
+    assert model_none_keywords.keywords is None
 
-    model_none = SubjectModel.model_validate(data_with_none)
-    assert model_none.keywords is None
+    # Test with subjectOid=None
+    data_with_none_oid = VALID_SUBJECT_DATA.copy()
+    data_with_none_oid["subjectOid"] = None
+    model_none_oid = SubjectModel.model_validate(data_with_none_oid)
+    assert model_none_oid.subjectOid is None
 
+    # Test with enrollmentStartDate=None
+    data_with_none_enroll = VALID_SUBJECT_DATA.copy()
+    data_with_none_enroll["enrollmentStartDate"] = None
+    model_none_enroll = SubjectModel.model_validate(data_with_none_enroll)
+    assert model_none_enroll.enrollmentStartDate is None
+
+    # Test with missing optional fields
     data_missing_optionals = VALID_SUBJECT_DATA.copy()
     del data_missing_optionals["keywords"]
+    del data_missing_optionals["subjectOid"]
+    del data_missing_optionals["enrollmentStartDate"]
 
     model_missing = SubjectModel.model_validate(data_missing_optionals)
-    assert model_missing.keywords is None  # Should default to None
+    assert model_missing.keywords is None
+    assert model_missing.subjectOid is None
+    assert model_missing.enrollmentStartDate is None
 
 
 def test_subject_model_defaults():
@@ -169,8 +186,11 @@ def test_subject_model_serialization():
         if key not in ["enrollmentStartDate", "dateCreated", "dateModified", "keywords"]:
             assert dump[key] == value
 
-    # Check datetime serialization
-    assert dump["enrollmentStartDate"] == datetime(2024, 11, 4, 16, 3, 19)
+    # Check datetime serialization (if present)
+    if model.enrollmentStartDate:
+        assert dump["enrollmentStartDate"] == datetime(2024, 11, 4, 16, 3, 19)
+    else:
+        assert dump["enrollmentStartDate"] is None
     assert dump["dateCreated"] == datetime(2024, 11, 4, 16, 3, 19)
     assert dump["dateModified"] == datetime(2024, 11, 4, 16, 3, 20)
 
@@ -178,6 +198,18 @@ def test_subject_model_serialization():
     assert isinstance(dump["keywords"], list)
     assert len(dump["keywords"]) == 1
     assert dump["keywords"][0] == expected_keyword_dump
+
+    # Test serialization with missing optional fields
+    data_missing_optionals = VALID_SUBJECT_DATA.copy()
+    del data_missing_optionals["keywords"]
+    del data_missing_optionals["subjectOid"]
+    del data_missing_optionals["enrollmentStartDate"]
+    model_missing = SubjectModel.model_validate(data_missing_optionals)
+    dump_missing = model_missing.model_dump(by_alias=True)
+
+    assert "keywords" not in dump_missing or dump_missing["keywords"] is None
+    assert "subjectOid" not in dump_missing or dump_missing["subjectOid"] is None
+    assert "enrollmentStartDate" not in dump_missing or dump_missing["enrollmentStartDate"] is None
 
 
 # Add more tests for edge cases, different subject statuses, etc.
@@ -225,12 +257,12 @@ def test_subject_api_response():
         "data": {
             "studyKey": "PHARMADEMO",
             "subjectId": 1,
-            "subjectOid": "OID-1",
+            # "subjectOid": "OID-1", # Test missing optional
             "subjectKey": "01-001",
             "subjectStatus": "Enrolled",
             "siteId": 128,
             "siteName": "Test Site",
-            "enrollmentStartDate": "2024-11-04 16:03:19",
+            # "enrollmentStartDate": "2024-11-04 16:03:19", # Test missing optional
             "dateCreated": "2024-11-04 16:03:19",
             "dateModified": "2024-11-04 16:03:20",
         },
@@ -239,3 +271,5 @@ def test_subject_api_response():
     response = ApiResponse[SubjectModel].model_validate(response_data)
     assert isinstance(response.data, SubjectModel)
     assert response.data.subjectKey == "01-001"
+    assert response.data.subjectOid is None
+    assert response.data.enrollmentStartDate is None

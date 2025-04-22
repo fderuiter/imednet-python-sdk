@@ -23,7 +23,7 @@ VALID_CODING_DATA = {
     "codingId": 1,
     "code": "Angina agranulocytic",
     "codedBy": "John Smith",
-    "reason": "Typo fix",
+    "reason": "Typo fix", # Now optional
     "dictionaryName": "MedDRA",
     "dictionaryVersion": "24.0",
     "dateCoded": "2024-11-04 16:03:19",  # Example format
@@ -57,6 +57,21 @@ def test_coding_model_validation():
     assert model.dateCoded == datetime(2024, 11, 4, 16, 3, 19)
 
 
+def test_coding_model_optional_reason():
+    """Test validation when optional reason is None or missing."""
+    # Test with reason=None
+    data_with_none_reason = VALID_CODING_DATA.copy()
+    data_with_none_reason["reason"] = None
+    model_none_reason = CodingModel.model_validate(data_with_none_reason)
+    assert model_none_reason.reason is None
+
+    # Test with missing reason
+    data_missing_reason = VALID_CODING_DATA.copy()
+    del data_missing_reason["reason"]
+    model_missing_reason = CodingModel.model_validate(data_missing_reason)
+    assert model_missing_reason.reason is None
+
+
 def test_coding_model_missing_required_field():
     """Test ValidationError is raised when a required field is missing."""
     invalid_data = VALID_CODING_DATA.copy()
@@ -85,26 +100,31 @@ def test_coding_model_invalid_data_type():
 def test_coding_model_serialization():
     """Test serialization of the CodingModel."""
     model = CodingModel.model_validate(VALID_CODING_DATA)
-    # Use by_alias=True if field names differ from API keys
-    # (which they do, camelCase vs snake_case if we used aliases)
-    # However, since we are using camelCase directly in the model,
-    # by_alias=True is not strictly needed
-    # unless we explicitly defined aliases. Let's keep it for consistency if needed later.
-    dump = model.model_dump(by_alias=True)  # Pydantic v2 uses model_dump
+    dump = model.model_dump(by_alias=True)
 
-    # Convert datetime back to string format expected in the original data for comparison
     expected_data = VALID_CODING_DATA.copy()
     # Pydantic v2 might serialize datetime differently, adjust if needed
     # expected_data["dateCoded"] = model.dateCoded.isoformat() # Example if isoformat is used
 
     # Check basic fields match
     for key, value in expected_data.items():
-        if key != "dateCoded":  # Handle datetime separately if format differs
-            assert dump[key] == value
+        if key != "dateCoded":
+            # Handle optional reason
+            if key == "reason":
+                assert dump.get(key) == value
+            else:
+                assert dump[key] == value
 
     # Check datetime serialization (adjust format as needed based on actual output)
     # This assumes default Pydantic v2 serialization for datetime
     assert dump["dateCoded"] == datetime(2024, 11, 4, 16, 3, 19)
+
+    # Test serialization with missing optional reason
+    data_missing_reason = VALID_CODING_DATA.copy()
+    del data_missing_reason["reason"]
+    model_missing = CodingModel.model_validate(data_missing_reason)
+    dump_missing = model_missing.model_dump(by_alias=True, exclude_none=True)
+    assert "reason" not in dump_missing
 
 
 # Add more tests for edge cases, optional fields (if any), specific validations etc.
