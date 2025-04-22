@@ -10,12 +10,14 @@ import respx
 from httpx import ConnectError, Response, Timeout, TimeoutException
 from pydantic import BaseModel  # Add BaseModel import
 from pydantic import Field
-from pydantic import ValidationError as PydanticValidationError  # Import Pydantic's ValidationError
+from pydantic import \
+    ValidationError as \
+    PydanticValidationError  # Import Pydantic's ValidationError
 
 from imednet_sdk.client import ImednetClient
-
 # Import custom exceptions for testing
-from imednet_sdk.exceptions import ApiError, AuthenticationError, NotFoundError, RateLimitError
+from imednet_sdk.exceptions import (ApiError, AuthenticationError,
+                                    NotFoundError, RateLimitError)
 from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo
 from imednet_sdk.models.record import RecordModel
 from imednet_sdk.models.variable import VariableModel
