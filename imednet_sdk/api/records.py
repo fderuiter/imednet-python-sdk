@@ -1,5 +1,5 @@
 """
-Pydantic models and API client for iMednet “records”.
+Pydantic models and API client for iMednet "records".
 
 This module provides:
 
@@ -15,8 +15,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from ._base import ApiResponse, ResourceClient
 from .jobs import JobStatusModel
-from .records import RecordModel as _ImportedRecordModel
-from .records import RecordPostItem as _ImportedRecordPostItem
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +28,18 @@ class KeywordModel(BaseModel):
     dateAdded: datetime = Field(..., description="Date the keyword was added")
 
 
-class RecordModel(_ImportedRecordModel):
-    """Extends the imported RecordModel to allow extra fields and parsing."""
-
+# Define the base RecordModel here instead of importing it from itself
+class RecordModel(BaseModel):
+    """Represents a record in iMednet with its metadata."""
+    
+    # Add all necessary fields here - this is a placeholder implementation
+    # You'll need to add the actual fields based on your data model
+    id: Optional[str] = Field(None, description="Unique identifier for the record")
+    formKey: Optional[str] = Field(None, description="Form key for this record")
+    dateCreated: Optional[datetime] = Field(None, description="Date when the record was created")
+    dateModified: Optional[datetime] = Field(None, description="Date when the record was last modified")
+    # Add other fields as needed
+    
     model_config = ConfigDict(extra="allow")
 
     @field_validator("dateCreated", "dateModified", mode="before")
@@ -51,10 +58,20 @@ class RecordModel(_ImportedRecordModel):
                 raise ValueError(f"Invalid datetime format: {value}") from e
 
 
-class RecordPostItem(_ImportedRecordPostItem):
-    """Alias for the imported RecordPostItem used when creating records."""
-
-    pass
+# Define the base RecordPostItem here instead of importing it from itself
+class RecordPostItem(BaseModel):
+    """Represents data needed to create a new record in iMednet."""
+    
+    # Add all necessary fields here - this is a placeholder implementation
+    # You'll need to add the actual fields based on your data model
+    formKey: str = Field(..., description="Form key for this record")
+    subjectKey: str = Field(..., description="Subject key for this record")
+    # Add other required fields
+    
+    # Optional fields
+    visitKey: Optional[str] = Field(None, description="Visit key if applicable")
+    intervalKey: Optional[str] = Field(None, description="Interval key if applicable")
+    # Add other optional fields as needed
 
 
 class RecordsClient(ResourceClient):
