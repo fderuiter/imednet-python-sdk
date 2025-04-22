@@ -13,7 +13,8 @@ while resource-specific models (e.g., `StudyModel`, `RecordModel`) are in their
 respective files.
 """
 
-from ._common import ApiResponse, ErrorDetail, FieldError, Metadata, PaginationInfo, SortInfo
+from ._common import (ApiResponse, ErrorDetail, FieldError, Metadata,
+                      PaginationInfo, SortInfo)
 from .coding import CodingModel
 from .form import FormModel
 from .interval import IntervalFormModel, IntervalModel

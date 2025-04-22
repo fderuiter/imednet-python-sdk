@@ -38,8 +38,9 @@ import os
 from dotenv import load_dotenv
 
 from imednet_sdk import ImednetClient
-from imednet_sdk.exceptions import (AuthenticationError, BadRequestError, ImednetSdkException,
-                                    NotFoundError, RateLimitError, ValidationError)
+from imednet_sdk.exceptions import (AuthenticationError, BadRequestError,
+                                    ImednetSdkException, NotFoundError,
+                                    RateLimitError, ValidationError)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -77,8 +78,8 @@ def main():
         logging.info("Attempting to list studies (expected to fail with 401)...")
         # Any authenticated call should fail
         invalid_client.studies.list_studies(size=1)
-        logging.warning(
-            "Authentication error was expected but not caught. Check SDK behavior or test setup."
+        assert False, (
+            "Authentication error was expected but not caught. " "Check SDK behavior or test setup."
         )
     except AuthenticationError as e:
         logging.error(f"Caught expected AuthenticationError: {e}")

@@ -9,7 +9,8 @@ from httpx import Response
 from imednet_sdk.api.queries import QueriesClient  # Import specific client
 from imednet_sdk.client import ImednetClient
 # Use PaginationInfo based on _common.py
-from imednet_sdk.models._common import ApiResponse, Metadata, PaginationInfo, SortInfo
+from imednet_sdk.models._common import (ApiResponse, Metadata, PaginationInfo,
+                                        SortInfo)
 from imednet_sdk.models.query import QueryCommentModel, QueryModel
 
 # --- Constants ---

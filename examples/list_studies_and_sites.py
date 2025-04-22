@@ -125,7 +125,8 @@ def main():
                         if sites_response.pagination and sites_response.pagination.totalPages > 1:
                             logging.info(
                                 f"      Note: More site pages available (Total: "
-                                f"{sites_response.pagination.totalPages}). Fetching only the first page."
+                                f"{sites_response.pagination.totalPages}). "
+                                f"Fetching only the first page."
                             )
 
                     else:

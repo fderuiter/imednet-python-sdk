@@ -14,7 +14,8 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
 
 # Import BaseModel directly from pydantic
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
+from pydantic import (BaseModel, ConfigDict, Field, ValidationError,
+                      create_model)
 
 from .exceptions import ImednetSdkException
 
