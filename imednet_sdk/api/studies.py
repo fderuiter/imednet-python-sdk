@@ -9,7 +9,11 @@ from ._base import ResourceClient
 
 
 class StudiesClient(ResourceClient):
-    """Client for the Studies API resource."""
+    """Client for the Studies API resource.
+
+    Provides methods for interacting with study-related endpoints,
+    such as listing studies.
+    """
 
     def list_studies(
         self,
@@ -33,6 +37,16 @@ class StudiesClient(ResourceClient):
 
         Returns:
             An ApiResponse containing a list of StudyModel objects.
+
+        Raises:
+            ImednetSdkException: If the API request fails.
+            ApiError: For specific API-related errors (4xx, 5xx).
+            AuthenticationError: If authentication fails (401).
+            AuthorizationError: If authorization fails (403).
+            NotFoundError: If the resource is not found (404).
+            RateLimitError: If rate limits are exceeded (429).
+            ValidationError: If request validation fails (400 with code 1000).
+            BadRequestError: For general bad requests (400).
         """
         endpoint = "/api/v1/edc/studies"
         params: Dict[str, Any] = {}
@@ -48,8 +62,21 @@ class StudiesClient(ResourceClient):
         # Pass any additional kwargs directly to the underlying request method
         params.update(kwargs)
 
-        return self._client._get(  # Correctly calls the base client's _get method
+        # Use the helper method from the base class
+        # Note: The type hint for response_model needs to match what _get expects.
+        # If ApiResponse is not a Pydantic model itself, this might need adjustment.
+        # Assuming ApiResponse[List[StudyModel]] can be handled by TypeAdapter.
+        return self._get(
             endpoint,
             params=params,
-            response_model=ApiResponse[List[StudyModel]],  # Specifies the correct response model
+            response_model=ApiResponse[List[StudyModel]],  # Ensure correct response model typing
         )
+
+    # Add other study-related methods here (e.g., get_study_details)
+    # def get_study(self, study_key: str, **kwargs: Any) -> StudyModel:
+    #     """Retrieve details for a specific study."""
+    #     if not study_key:
+    #         raise ValueError("study_key cannot be empty")
+    #     endpoint = f"/api/v1/edc/studies/{study_key}"
+    #     # Assuming the single study endpoint returns the model directly, not wrapped in ApiResponse
+    #     return self._get(endpoint, response_model=StudyModel, **kwargs)
