@@ -1,0 +1,64 @@
+"""Base models for the iMedNet SDK."""
+
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, Dict, Generic, List, Optional, TypeVar
+
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class SortField(BaseModel):
+    """Sorting information for a field in a paginated response."""
+
+    property: str = Field(..., description="Property to sort by")
+    direction: str = Field(..., description="Sort direction (ASC or DESC)")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class Pagination(BaseModel):
+    """Pagination information in an API response."""
+
+    current_page: int = Field(0, alias="currentPage")
+    size: int = Field(25, alias="size")
+    total_pages: int = Field(0, alias="totalPages")
+    total_elements: int = Field(0, alias="totalElements")
+    sort: List[SortField] = Field(default_factory=list)
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class Error(BaseModel):
+    """Error information in an API response."""
+
+    code: str = Field("", description="Error code")
+    message: str = Field("", description="Error message")
+    details: Dict[str, Any] = Field(default_factory=dict)
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class Metadata(BaseModel):
+    """Metadata information in an API response."""
+
+    status: str = Field("", description="Response status")
+    method: str = Field("", description="HTTP method")
+    path: str = Field("", description="Request path")
+    timestamp: datetime
+    error: Error = Field(default_factory=lambda: Error(code="", message=""))
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+T = TypeVar("T")
+
+
+class ApiResponse(BaseModel, Generic[T]):
+    """Generic API response model."""
+
+    metadata: Metadata
+    pagination: Optional[Pagination] = None
+    data: T
+
+    model_config = ConfigDict(populate_by_name=True)
