@@ -27,6 +27,24 @@ from .endpoints.users import UsersEndpoint
 from .endpoints.variables import VariablesEndpoint
 from .endpoints.visits import VisitsEndpoint
 
+# Import workflow classes
+from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.query_management import QueryManagementWorkflow
+from .workflows.record_mapper import RecordMapper
+from .workflows.record_update import RecordUpdateWorkflow
+from .workflows.subject_data import SubjectDataWorkflow
+
+
+class Workflows:
+    """Namespace for accessing workflow classes."""
+
+    def __init__(self, sdk_instance: "ImednetSDK"):
+        self.data_extraction = DataExtractionWorkflow(sdk_instance)
+        self.query_management = QueryManagementWorkflow(sdk_instance)
+        self.record_mapper = RecordMapper(sdk_instance)
+        self.record_update = RecordUpdateWorkflow(sdk_instance)
+        self.subject_data = SubjectDataWorkflow(sdk_instance)
+
 
 class ImednetSDK:
     """
@@ -89,6 +107,9 @@ class ImednetSDK:
         self.users = UsersEndpoint(self._client, self.ctx)
         self.variables = VariablesEndpoint(self._client, self.ctx)
         self.visits = VisitsEndpoint(self._client, self.ctx)
+
+        # Initialize workflows, passing the SDK instance itself
+        self.workflows = Workflows(self)
 
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""
