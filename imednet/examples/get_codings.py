@@ -19,5 +19,3 @@ try:
             print(f"- Coding ID: {coding.coding_id}, Variable: {coding.variable}")
 except Exception as e:
     print(f"Error: {e}")
-
-# working

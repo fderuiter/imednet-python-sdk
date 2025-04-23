@@ -1,4 +1,5 @@
-"""Endpoints package for the iMedNet SDK.
+"""
+Endpoints package for the iMedNet SDK.
 
 This package contains all API endpoint implementations for accessing iMedNet resources.
 """

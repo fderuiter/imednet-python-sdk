@@ -28,6 +28,9 @@ responses = "^0.25.7"
 pre-commit = "^4.2.0"
 types-requests = "^2.32.0.20250328"
 isort = "^6.0.1"
+sphinx = "^6.2.0"
+sphinx-autodoc-typehints = "*"
+sphinx-rtd-theme = "^3.0.2"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
