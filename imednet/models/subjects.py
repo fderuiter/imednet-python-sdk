@@ -1,103 +1,71 @@
-import datetime
-from dataclasses import dataclass
+from __future__ import annotations
+
+from datetime import datetime
 from typing import Any, Dict, List
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-@dataclass
-class SubjectKeyword:
-    keyword_name: str
-    keyword_key: str
-    keyword_id: int
-    date_added: datetime.datetime
+
+class SubjectKeyword(BaseModel):
+    keyword_name: str = Field("", alias="keywordName")
+    keyword_key: str = Field("", alias="keywordKey")
+    keyword_id: int = Field(0, alias="keywordId")
+    date_added: datetime = Field(default_factory=datetime.now, alias="dateAdded")
+
+    # allow instantiation via field names or aliases
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("date_added", mode="before")
+    def _parse_date_added(cls, v):
+        """
+        If missing or empty, default to now(); if string, normalize space to 'T' and parse ISO.
+        """
+        if not v:
+            return datetime.now()
+        if isinstance(v, str):
+            return datetime.fromisoformat(v.replace(" ", "T"))
+        return v
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "SubjectKeyword":
+    def from_json(cls, data: Dict[str, Any]) -> SubjectKeyword:
         """
-        Create a SubjectKeyword instance from JSON data.
-
-        Args:
-            data: Dictionary containing keyword data from the API
-
-        Returns:
-            SubjectKeyword instance with the data
+        Create a SubjectKeyword instance from JSON-like dict.
         """
-        # Parse datetime string
-        date_added = (
-            datetime.datetime.fromisoformat(data.get("dateAdded", "").replace(" ", "T"))
-            if data.get("dateAdded")
-            else datetime.datetime.now()
-        )
-
-        return cls(
-            keyword_name=data.get("keywordName", ""),
-            keyword_key=data.get("keywordKey", ""),
-            keyword_id=data.get("keywordId", 0),
-            date_added=date_added,
-        )
+        return cls.model_validate(data)
 
 
-@dataclass
-class Subject:
-    study_key: str
-    subject_id: int
-    subject_oid: str
-    subject_key: str
-    subject_status: str
-    site_id: int
-    site_name: str
-    deleted: bool
-    enrollment_start_date: datetime.datetime
-    date_created: datetime.datetime
-    date_modified: datetime.datetime
-    keywords: List[SubjectKeyword]
+class Subject(BaseModel):
+    study_key: str = Field("", alias="studyKey")
+    subject_id: int = Field(0, alias="subjectId")
+    subject_oid: str = Field("", alias="subjectOid")
+    subject_key: str = Field("", alias="subjectKey")
+    subject_status: str = Field("", alias="subjectStatus")
+    site_id: int = Field(0, alias="siteId")
+    site_name: str = Field("", alias="siteName")
+    deleted: bool = Field(False, alias="deleted")
+    enrollment_start_date: datetime = Field(
+        default_factory=datetime.now, alias="enrollmentStartDate"
+    )
+    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
+    date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
+    keywords: List[SubjectKeyword] = Field(default_factory=list, alias="keywords")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("enrollment_start_date", "date_created", "date_modified", mode="before")
+    def _parse_datetimes(cls, v):
+        """
+        If missing or empty, default to now(); if string, normalize space to 'T' and parse ISO.
+        """
+        if not v:
+            return datetime.now()
+        if isinstance(v, str):
+            return datetime.fromisoformat(v.replace(" ", "T"))
+        return v
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "Subject":
+    def from_json(cls, data: Dict[str, Any]) -> Subject:
         """
-        Create a Subject instance from JSON data.
-
-        Args:
-            data: Dictionary containing subject data from the API
-
-        Returns:
-            Subject instance with the data
+        Create a Subject instance from JSON-like dict, including nested keywords.
         """
-        # Parse datetime strings
-        enrollment_start_date = (
-            datetime.datetime.fromisoformat(data.get("enrollmentStartDate", "").replace(" ", "T"))
-            if data.get("enrollmentStartDate")
-            else datetime.datetime.now()
-        )
-
-        date_created = (
-            datetime.datetime.fromisoformat(data.get("dateCreated", "").replace(" ", "T"))
-            if data.get("dateCreated")
-            else datetime.datetime.now()
-        )
-
-        date_modified = (
-            datetime.datetime.fromisoformat(data.get("dateModified", "").replace(" ", "T"))
-            if data.get("dateModified")
-            else datetime.datetime.now()
-        )
-
-        # Handle nested keywords
-        keywords = []
-        keywords_data = data.get("keywords", [])
-        for keyword_data in keywords_data:
-            keywords.append(SubjectKeyword.from_json(keyword_data))
-
-        return cls(
-            study_key=data.get("studyKey", ""),
-            subject_id=data.get("subjectId", 0),
-            subject_oid=data.get("subjectOid", ""),
-            subject_key=data.get("subjectKey", ""),
-            subject_status=data.get("subjectStatus", ""),
-            site_id=data.get("siteId", 0),
-            site_name=data.get("siteName", ""),
-            deleted=data.get("deleted", False),
-            enrollment_start_date=enrollment_start_date,
-            date_created=date_created,
-            date_modified=date_modified,
-            keywords=keywords,
-        )
+        return cls.model_validate(data)

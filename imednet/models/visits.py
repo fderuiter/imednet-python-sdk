@@ -1,81 +1,65 @@
-import datetime
-from dataclasses import dataclass
+from __future__ import annotations
+
+from datetime import date, datetime
 from typing import Any, Dict, Optional
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-@dataclass
-class Visit:
-    visit_id: int
-    study_key: str
-    interval_id: int
-    interval_name: str
-    subject_id: int
-    subject_key: str
-    start_date: Optional[datetime.date]
-    end_date: Optional[datetime.date]
-    due_date: Optional[datetime.date]
-    visit_date: Optional[datetime.date]
-    visit_date_form: str
-    visit_date_question: str
-    deleted: bool
-    date_created: datetime.datetime
-    date_modified: datetime.datetime
+
+class Visit(BaseModel):
+    visit_id: int = Field(0, alias="visitId")
+    study_key: str = Field("", alias="studyKey")
+    interval_id: int = Field(0, alias="intervalId")
+    interval_name: str = Field("", alias="intervalName")
+    subject_id: int = Field(0, alias="subjectId")
+    subject_key: str = Field("", alias="subjectKey")
+    start_date: Optional[date] = Field(None, alias="startDate")
+    end_date: Optional[date] = Field(None, alias="endDate")
+    due_date: Optional[date] = Field(None, alias="dueDate")
+    visit_date: Optional[date] = Field(None, alias="visitDate")
+    visit_date_form: str = Field("", alias="visitDateForm")
+    visit_date_question: str = Field("", alias="visitDateQuestion")
+    deleted: bool = Field(False, alias="deleted")
+    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
+    date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
+
+    # Ensure aliases are recognized on instantiation
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("start_date", "end_date", "due_date", "visit_date", mode="before")
+    def _clean_empty_dates(cls, v):
+        """
+        Treat missing or empty-string dates as None; let Pydantic parse valid ISO date strings.
+        """
+        if not v:
+            return None
+        return v
+
+    @field_validator("date_created", "date_modified", mode="before")
+    def _parse_datetimes(cls, v):
+        """
+        If no timestamp is provided or it's an empty string, default to now().
+        If it's a string, normalize any space to 'T' and parse.
+        """
+        if not v:
+            return datetime.now()
+        if isinstance(v, str):
+            return datetime.fromisoformat(v.replace(" ", "T"))
+        return v
+
+    @field_validator("deleted", mode="before")
+    def _normalize_deleted(cls, v):
+        """
+        Ensure that any falsy value—None, empty string, etc.—becomes False.
+        """
+        if not v:
+            return False
+        return v
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "Visit":
+    def from_json(cls, data: Dict[str, Any]) -> Visit:
         """
-        Create a Visit instance from JSON data.
-
-        Args:
-            data: Dictionary containing visit data from the API
-
-        Returns:
-            Visit instance with the data
+        Create a Visit instance from a JSON-like dict, honoring all the same parsing rules
+        as the original dataclass.from_json.
         """
-        # Parse date strings
-        start_date = None
-        if data.get("startDate"):
-            start_date = datetime.date.fromisoformat(data["startDate"])
-
-        end_date = None
-        if data.get("endDate"):
-            end_date = datetime.date.fromisoformat(data["endDate"])
-
-        due_date = None
-        if data.get("dueDate"):
-            due_date = datetime.date.fromisoformat(data["dueDate"])
-
-        visit_date = None
-        if data.get("visitDate"):
-            visit_date = datetime.date.fromisoformat(data["visitDate"])
-
-        # Parse datetime strings
-        date_created = (
-            datetime.datetime.fromisoformat(data.get("dateCreated", "").replace(" ", "T"))
-            if data.get("dateCreated")
-            else datetime.datetime.now()
-        )
-
-        date_modified = (
-            datetime.datetime.fromisoformat(data.get("dateModified", "").replace(" ", "T"))
-            if data.get("dateModified")
-            else datetime.datetime.now()
-        )
-
-        return cls(
-            visit_id=data.get("visitId", 0),
-            study_key=data.get("studyKey", ""),
-            interval_id=data.get("intervalId", 0),
-            interval_name=data.get("intervalName", ""),
-            subject_id=data.get("subjectId", 0),
-            subject_key=data.get("subjectKey", ""),
-            start_date=start_date,
-            end_date=end_date,
-            due_date=due_date,
-            visit_date=visit_date,
-            visit_date_form=data.get("visitDateForm", ""),
-            visit_date_question=data.get("visitDateQuestion", ""),
-            deleted=data.get("deleted", False),
-            date_created=date_created,
-            date_modified=date_modified,
-        )
+        return cls.model_validate(data)

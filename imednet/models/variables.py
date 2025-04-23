@@ -1,66 +1,48 @@
-import datetime
-from dataclasses import dataclass
+from __future__ import annotations
+
+from datetime import datetime
 from typing import Any, Dict
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-@dataclass
-class Variable:
-    study_key: str
-    variable_id: int
-    variable_type: str
-    variable_name: str
-    sequence: int
-    revision: int
-    disabled: bool
-    date_created: datetime.datetime
-    date_modified: datetime.datetime
-    form_id: int
-    variable_oid: str
-    deleted: bool
-    form_key: str
-    form_name: str
-    label: str
-    blinded: bool
+
+class Variable(BaseModel):
+    study_key: str = Field("", alias="studyKey")
+    variable_id: int = Field(0, alias="variableId")
+    variable_type: str = Field("", alias="variableType")
+    variable_name: str = Field("", alias="variableName")
+    sequence: int = Field(0, alias="sequence")
+    revision: int = Field(0, alias="revision")
+    disabled: bool = Field(False, alias="disabled")
+    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
+    date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
+    form_id: int = Field(0, alias="formId")
+    variable_oid: str = Field("", alias="variableOid")
+    deleted: bool = Field(False, alias="deleted")
+    form_key: str = Field("", alias="formKey")
+    form_name: str = Field("", alias="formName")
+    label: str = Field("", alias="label")
+    blinded: bool = Field(False, alias="blinded")
+
+    # allow population by field names as well as aliases
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("date_created", "date_modified", mode="before")
+    def _parse_datetimes(cls, v):
+        """
+        If no timestamp or empty, default to now();
+        if string, normalize space to 'T' and parse ISO.
+        """
+        if not v:
+            return datetime.now()
+        if isinstance(v, str):
+            return datetime.fromisoformat(v.replace(" ", "T"))
+        return v
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "Variable":
+    def from_json(cls, data: Dict[str, Any]) -> Variable:
         """
-        Create a Variable instance from JSON data.
-
-        Args:
-            data: Dictionary containing variable data from the API
-
-        Returns:
-            Variable instance with the data
+        Create a Variable instance from a JSON-like dict,
+        honoring the same parsing logic as the original.
         """
-        # Parse datetime strings
-        date_created = (
-            datetime.datetime.fromisoformat(data.get("dateCreated", "").replace(" ", "T"))
-            if data.get("dateCreated")
-            else datetime.datetime.now()
-        )
-
-        date_modified = (
-            datetime.datetime.fromisoformat(data.get("dateModified", "").replace(" ", "T"))
-            if data.get("dateModified")
-            else datetime.datetime.now()
-        )
-
-        return cls(
-            study_key=data.get("studyKey", ""),
-            variable_id=data.get("variableId", 0),
-            variable_type=data.get("variableType", ""),
-            variable_name=data.get("variableName", ""),
-            sequence=data.get("sequence", 0),
-            revision=data.get("revision", 0),
-            disabled=data.get("disabled", False),
-            date_created=date_created,
-            date_modified=date_modified,
-            form_id=data.get("formId", 0),
-            variable_oid=data.get("variableOid", ""),
-            deleted=data.get("deleted", False),
-            form_key=data.get("formKey", ""),
-            form_name=data.get("formName", ""),
-            label=data.get("label", ""),
-            blinded=data.get("blinded", False),
-        )
+        return cls.model_validate(data)

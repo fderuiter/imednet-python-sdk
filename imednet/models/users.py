@@ -1,76 +1,46 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
 from typing import Any, Dict, List
 
-
-@dataclass
-class Role:
-    date_created: list[int]
-    date_modified: list[int]
-    role_id: str
-    community_id: int
-    name: str
-    description: str
-    level: int
-    type: str
-    inactive: bool
-
-    @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "Role":
-        """
-        Create a Role instance from JSON data.
-
-        Args:
-            data: Dictionary containing role data from the API
-
-        Returns:
-            Role instance with the data
-        """
-        return cls(
-            date_created=data.get("dateCreated", []),
-            date_modified=data.get("dateModified", []),
-            role_id=data.get("roleId", ""),
-            community_id=data.get("communityId", 0),
-            name=data.get("name", ""),
-            description=data.get("description", ""),
-            level=data.get("level", 0),
-            type=data.get("type", ""),
-            inactive=data.get("inactive", False),
-        )
+from pydantic import BaseModel, ConfigDict, Field
 
 
-@dataclass
-class User:
-    user_id: str
-    login: str
-    first_name: str
-    last_name: str
-    email: str
-    user_active_in_study: bool
-    roles: List[Role]
+class Role(BaseModel):
+    date_created: List[int] = Field(default_factory=list, alias="dateCreated")
+    date_modified: List[int] = Field(default_factory=list, alias="dateModified")
+    role_id: str = Field("", alias="roleId")
+    community_id: int = Field(0, alias="communityId")
+    name: str = Field("", alias="name")
+    description: str = Field("", alias="description")
+    level: int = Field(0, alias="level")
+    type: str = Field("", alias="type")
+    inactive: bool = Field(False, alias="inactive")
+
+    # allow instantiation via field names or aliases
+    model_config = ConfigDict(populate_by_name=True)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "User":
+    def from_json(cls, data: Dict[str, Any]) -> Role:
         """
-        Create a User instance from JSON data.
-
-        Args:
-            data: Dictionary containing user data from the API
-
-        Returns:
-            User instance with the data
+        Create a Role instance from JSON-like dict.
         """
-        # Handle nested roles
-        roles = []
-        roles_data = data.get("roles", [])
-        for role_data in roles_data:
-            roles.append(Role.from_json(role_data))
+        return cls.model_validate(data)
 
-        return cls(
-            user_id=data.get("userId", ""),
-            login=data.get("login", ""),
-            first_name=data.get("firstName", ""),
-            last_name=data.get("lastName", ""),
-            email=data.get("email", ""),
-            user_active_in_study=data.get("userActiveInStudy", False),
-            roles=roles,
-        )
+
+class User(BaseModel):
+    user_id: str = Field("", alias="userId")
+    login: str = Field("", alias="login")
+    first_name: str = Field("", alias="firstName")
+    last_name: str = Field("", alias="lastName")
+    email: str = Field("", alias="email")
+    user_active_in_study: bool = Field(False, alias="userActiveInStudy")
+    roles: List[Role] = Field(default_factory=list, alias="roles")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> User:
+        """
+        Create a User instance from JSON-like dict, including nested Role parsing.
+        """
+        return cls.model_validate(data)

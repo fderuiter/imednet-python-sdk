@@ -1,54 +1,37 @@
-import datetime
-from dataclasses import dataclass
+from __future__ import annotations
+
+from datetime import datetime
 from typing import Any, Dict, Optional
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-@dataclass
-class Job:
-    job_id: str
-    batch_id: str
-    state: str
-    date_created: datetime.datetime
-    date_started: datetime.datetime
-    date_finished: datetime.datetime
+
+class Job(BaseModel):
+    job_id: str = Field("", alias="jobId")
+    batch_id: str = Field("", alias="batchId")
+    state: str = Field("", alias="state")
+    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
+    date_started: datetime = Field(default_factory=datetime.now, alias="dateStarted")
+    date_finished: datetime = Field(default_factory=datetime.now, alias="dateFinished")
+
+    # Allow instantiation via field names or aliases
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("date_created", "date_started", "date_finished", mode="before")
+    def _parse_datetimes(cls, v: Optional[str] | datetime) -> datetime:
+        """
+        If the value is missing or falsy, default to now();
+        if it's a string, normalize space to 'T' and parse ISO.
+        """
+        if not v:
+            return datetime.now()
+        if isinstance(v, str):
+            return datetime.fromisoformat(v.replace(" ", "T"))
+        return v
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "Job":
+    def from_json(cls, data: Dict[str, Any]) -> Job:
         """
-        Create a Job instance from JSON data.
-
-        Args:
-            data: Dictionary containing job data from the API
-
-        Returns:
-            Job instance with the data
+        Create a Job instance from a JSON-like dict.
         """
-        # Parse datetime strings
-        date_created = _parse_datetime(data.get("dateCreated"))
-        date_started = _parse_datetime(data.get("dateStarted"))
-        date_finished = _parse_datetime(data.get("dateFinished"))
-
-        return cls(
-            job_id=data.get("jobId", ""),
-            batch_id=data.get("batchId", ""),
-            state=data.get("state", ""),
-            date_created=date_created,
-            date_started=date_started,
-            date_finished=date_finished,
-        )
-
-
-def _parse_datetime(date_str: Optional[str]) -> datetime.datetime:
-    """
-    Helper function to parse datetime strings from the API.
-
-    Args:
-        date_str: ISO format date string or None
-
-    Returns:
-        Parsed datetime object or current time if None
-    """
-    if not date_str:
-        return datetime.datetime.now()
-
-    return datetime.datetime.fromisoformat(date_str.replace(" ", "T"))
+        return cls.model_validate(data)

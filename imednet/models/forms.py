@@ -1,68 +1,46 @@
-import datetime
-from dataclasses import dataclass
+from __future__ import annotations
+
+from datetime import datetime
 from typing import Any, Dict
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-@dataclass
-class Form:
-    study_key: str
-    form_id: int
-    form_key: str
-    form_name: str
-    form_type: str
-    revision: int
-    embedded_log: bool
-    enforce_ownership: bool
-    user_agreement: bool
-    subject_record_report: bool
-    unscheduled_visit: bool
-    other_forms: bool
-    epro_form: bool
-    allow_copy: bool
-    disabled: bool
-    date_created: datetime.datetime
-    date_modified: datetime.datetime
+
+class Form(BaseModel):
+    study_key: str = Field("", alias="studyKey")
+    form_id: int = Field(0, alias="formId")
+    form_key: str = Field("", alias="formKey")
+    form_name: str = Field("", alias="formName")
+    form_type: str = Field("", alias="formType")
+    revision: int = Field(0, alias="revision")
+    embedded_log: bool = Field(False, alias="embeddedLog")
+    enforce_ownership: bool = Field(False, alias="enforceOwnership")
+    user_agreement: bool = Field(False, alias="userAgreement")
+    subject_record_report: bool = Field(False, alias="subjectRecordReport")
+    unscheduled_visit: bool = Field(False, alias="unscheduledVisit")
+    other_forms: bool = Field(False, alias="otherForms")
+    epro_form: bool = Field(False, alias="eproForm")
+    allow_copy: bool = Field(False, alias="allowCopy")
+    disabled: bool = Field(False, alias="disabled")
+    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
+    date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("date_created", "date_modified", mode="before")
+    def _parse_datetimes(cls, v: str | datetime) -> datetime:
+        """
+        If missing or falsy, default to now(); if string, normalize space to 'T' and parse ISO.
+        """
+        if not v:
+            return datetime.now()
+        if isinstance(v, str):
+            return datetime.fromisoformat(v.replace(" ", "T"))
+        return v
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "Form":
+    def from_json(cls, data: Dict[str, Any]) -> Form:
         """
-        Create a Form instance from JSON data.
-
-        Args:
-            data: Dictionary containing form data from the API
-
-        Returns:
-            Form instance with the data
+        Create a Form instance from JSON-like dict.
         """
-        # Parse datetime strings
-        date_created = (
-            datetime.datetime.fromisoformat(data.get("dateCreated", "").replace(" ", "T"))
-            if data.get("dateCreated")
-            else datetime.datetime.now()
-        )
-
-        date_modified = (
-            datetime.datetime.fromisoformat(data.get("dateModified", "").replace(" ", "T"))
-            if data.get("dateModified")
-            else datetime.datetime.now()
-        )
-
-        return cls(
-            study_key=data.get("studyKey", ""),
-            form_id=data.get("formId", 0),
-            form_key=data.get("formKey", ""),
-            form_name=data.get("formName", ""),
-            form_type=data.get("formType", ""),
-            revision=data.get("revision", 0),
-            embedded_log=data.get("embeddedLog", False),
-            enforce_ownership=data.get("enforceOwnership", False),
-            user_agreement=data.get("userAgreement", False),
-            subject_record_report=data.get("subjectRecordReport", False),
-            unscheduled_visit=data.get("unscheduledVisit", False),
-            other_forms=data.get("otherForms", False),
-            epro_form=data.get("eproForm", False),
-            allow_copy=data.get("allowCopy", False),
-            disabled=data.get("disabled", False),
-            date_created=date_created,
-            date_modified=date_modified,
-        )
+        return cls.model_validate(data)
