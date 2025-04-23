@@ -16,14 +16,25 @@ imednet-sdk/                         ← project root
 │   │
 │   ├── endpoints/                   ← thin facades over REST collections
 │   │   ├── init.py
-│   │   ├── study.py                 ← /studies
-│   │   ├── variable.py              ← /variables
+│   │   ├── coding.py                 ← /studies
+│   │   ├── form.py              ← /forms
+│   │   ├── interval.py                ← /intervals
+│   │   ├── job.py                  ← /jobs
+│   │   ├── query.py                 ← /queries
+│   │   ├── record_revision.py              ← /record_revisions
 │   │   ├── record.py                ← /records
 │   │   ├── site.py                  ← /sites
-│   │   └── query.py                 ← /queries (data-queries, audit trail)
+│   │   ├── study.py                ← /studies
+│   │   ├── user.py                  ← /users
+│   │   ├── variable.py                ← /variables
+│   │   └── visit.py                 ← /visits
 │   │
-│   ├── models/                      ← dataclasses / pydantic schemas
+│   ├── models/                      ← dataclasses / pydantic schemas (built out)
 │   │   ├── init.py
+│   │   ├── study.py                 ← Study(id, key, name, type, …)
+│   │   ├── variable.py              ← Variable(meta fields)
+│   │   ├── record.py                ← Dynamic record values + metadata
+│   │   ├── site.py                  ← Site(id, name, country, …)
 │   │   ├── study.py                 ← Study(id, key, name, type, …)
 │   │   ├── variable.py              ← Variable(meta fields)
 │   │   ├── record.py                ← Dynamic record values + metadata

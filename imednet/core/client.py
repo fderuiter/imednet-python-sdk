@@ -1,45 +1,39 @@
-from __future__ import annotations
+"""Placeholder for the core HTTP client wrapper."""
 
-import time
-from typing import Any, Mapping
+# Purpose:
+# This module provides a robust HTTP client for interacting with the Mednet REST API.
+# It handles authentication, base URL construction, request retries with backoff,
+# common headers, and basic error handling/translation.
 
-import requests
+# Implementation:
+# 1. Define a class `Client`.
+# 2. Initialize with `base_url`, `api_key`, optional `timeout`, `max_retries`, etc.
+# 3. Store the API key securely.
+# 4. Implement private helper methods for constructing headers (e.g., `_get_auth_headers`, `_get_common_headers`).
+# 5. Implement core request methods (`get`, `post`, `put`, `delete`):
+#    a. Accept relative path and parameters/data.
+#    b. Construct the full URL using `base_url` and the relative path.
+#    c. Use a library like `httpx` or `requests` to make the actual HTTP call.
+#    d. Inject appropriate headers (auth, content-type, accept).
+#    e. Implement retry logic (e.g., using `tenacity`) for transient errors (e.g., 5xx status codes, timeouts).
+#    f. Check the response status code.
+#    g. If successful (e.g., 2xx), parse and return the JSON response.
+#    h. If error (e.g., 4xx, 5xx), parse the error response (if any) and raise an appropriate custom exception
+#       from `imednet.core.exceptions` (e.g., `AuthenticationError` for 401, `ApiError` for others).
+# 6. Consider adding logging for requests and responses.
 
-RETRY_STATUS = {429, 500, 502, 503, 504}
-BASE_URL = "https://edc.prod.imednetapi.com/api/v1/edc"
-USER_AGENT = "imednet-sdk/0.1"
+# Integration:
+# - Instantiated by the main `MednetSdk` class.
+# - Passed to all `Endpoint` classes during their initialization.
+# - Forms the foundation for all API communication.
 
 
 class Client:
-    """Thin HTTP wrapper with retry/back‑off."""
+    """Core HTTP client for interacting with the Mednet API."""
 
-    def __init__(self, api_key: str, security_key: str, timeout: int = 30):
-        self.api_key, self.security_key, self.timeout = api_key, security_key, timeout
-        self.session = requests.Session()
-
-    # ---- public verbs ----
-    def get(self, path: str, **kwargs: Any) -> Any:
-        return self._request("GET", path, **kwargs)
-
-    # ---- internals ----
-    def _headers(self) -> Mapping[str, str]:
-        return {
-            "x-api-key": self.api_key,
-            "x-imn-security-key": self.security_key,
-            "User-Agent": USER_AGENT,
-            "Content-Type": "application/json",
-        }
-
-    def _request(self, method: str, path: str, **kwargs: Any) -> Any:
-        url = f"{BASE_URL}{path}"
-        retries = 0
-        while True:
-            resp = self.session.request(
-                method, url, headers=self._headers(), timeout=self.timeout, **kwargs
-            )
-            if resp.status_code not in RETRY_STATUS or retries >= 3:
-                break
-            retries += 1
-            time.sleep(0.5 * 2 ** (retries - 1))
-        resp.raise_for_status()
-        return resp.json()
+    def __init__(self, api_key: str, security_key: str):
+        # Store keys (implementation detail, might store securely later)
+        self.api_key = api_key
+        self.security_key = security_key
+        # Add other initialization logic here later (base_url, httpx client, etc.)
+        pass

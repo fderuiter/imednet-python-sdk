@@ -1,3 +1,15 @@
-"""Top-level imednet package."""
+"""Re-exports core components for easier access."""
 
-__all__: list[str] = ["ImednetSDK"]
+from .client import Client
+from .context import Context
+from .exceptions import ApiError, AuthenticationError, ImednetError  # etc.
+from .paginator import Paginator
+
+__all__ = [
+    "Client",
+    "Context",
+    "Paginator",
+    "ImednetError",
+    "ApiError",
+    "AuthenticationError",
+]
