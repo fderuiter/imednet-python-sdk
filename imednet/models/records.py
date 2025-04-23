@@ -12,14 +12,22 @@ class Keyword(BaseModel):
     keyword_id: int = Field(0, alias="keywordId")
     date_added: datetime = Field(default_factory=datetime.now, alias="dateAdded")
 
-    # allow population by field names as well as aliases
     model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("keyword_name", "keyword_key", mode="before")
+    def _fill_strs(cls, v):
+        if v is None:
+            return ""
+        return v
+
+    @field_validator("keyword_id", mode="before")
+    def _fill_ints(cls, v):
+        if v is None or v == "":
+            return 0
+        return int(v)
 
     @field_validator("date_added", mode="before")
     def _parse_date_added(cls, v):
-        """
-        If missing or empty, default to now(); if string, normalize space to 'T' and parse ISO.
-        """
         if not v:
             return datetime.now()
         if isinstance(v, str):
@@ -28,9 +36,6 @@ class Keyword(BaseModel):
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Keyword:
-        """
-        Create a Keyword instance from JSON-like dict.
-        """
         return cls.model_validate(data)
 
 
@@ -57,11 +62,48 @@ class Record(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    # —— Coerce None/"" → defaults for ints
+    @field_validator(
+        "interval_id",
+        "form_id",
+        "site_id",
+        "record_id",
+        "subject_id",
+        "visit_id",
+        "parent_record_id",
+        mode="before",
+    )
+    def _fill_ints(cls, v):
+        if v is None or v == "":
+            return 0
+        return int(v)
+
+    # —— Coerce None → defaults for strings
+    @field_validator(
+        "study_key",
+        "form_key",
+        "record_oid",
+        "record_type",
+        "record_status",
+        "subject_oid",
+        "subject_key",
+        mode="before",
+    )
+    def _fill_strs(cls, v):
+        if v is None:
+            return ""
+        return v
+
+    # —— Coerce None → empty list
+    @field_validator("keywords", mode="before")
+    def _fill_list(cls, v):
+        if v is None:
+            return []
+        return v
+
+    # —— Parse ISO strings (or default now()) for all datetimes
     @field_validator("date_created", "date_modified", mode="before")
     def _parse_datetimes(cls, v):
-        """
-        If missing or empty, default to now(); if string, normalize space to 'T' and parse ISO.
-        """
         if not v:
             return datetime.now()
         if isinstance(v, str):
@@ -70,7 +112,4 @@ class Record(BaseModel):
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Record:
-        """
-        Create a Record instance from JSON-like dict, including nested Keyword parsing.
-        """
         return cls.model_validate(data)

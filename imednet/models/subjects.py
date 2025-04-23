@@ -12,14 +12,22 @@ class SubjectKeyword(BaseModel):
     keyword_id: int = Field(0, alias="keywordId")
     date_added: datetime = Field(default_factory=datetime.now, alias="dateAdded")
 
-    # allow instantiation via field names or aliases
     model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("keyword_name", "keyword_key", mode="before")
+    def _fill_strs(cls, v):
+        if v is None:
+            return ""
+        return v
+
+    @field_validator("keyword_id", mode="before")
+    def _fill_ints(cls, v):
+        if v is None or v == "":
+            return 0
+        return int(v)
 
     @field_validator("date_added", mode="before")
     def _parse_date_added(cls, v):
-        """
-        If missing or empty, default to now(); if string, normalize space to 'T' and parse ISO.
-        """
         if not v:
             return datetime.now()
         if isinstance(v, str):
@@ -28,9 +36,6 @@ class SubjectKeyword(BaseModel):
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> SubjectKeyword:
-        """
-        Create a SubjectKeyword instance from JSON-like dict.
-        """
         return cls.model_validate(data)
 
 
@@ -52,11 +57,32 @@ class Subject(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    # —— Coerce None/"" → defaults for ints
+    @field_validator("subject_id", "site_id", mode="before")
+    def _fill_ints(cls, v):
+        if v is None or v == "":
+            return 0
+        return int(v)
+
+    # —— Coerce None → defaults for strings
+    @field_validator(
+        "study_key", "subject_oid", "subject_key", "subject_status", "site_name", mode="before"
+    )
+    def _fill_strs(cls, v):
+        if v is None:
+            return ""
+        return v
+
+    # —— Coerce None → empty list
+    @field_validator("keywords", mode="before")
+    def _fill_list(cls, v):
+        if v is None:
+            return []
+        return v
+
+    # —— Parse ISO strings (or default now()) for datetimes
     @field_validator("enrollment_start_date", "date_created", "date_modified", mode="before")
     def _parse_datetimes(cls, v):
-        """
-        If missing or empty, default to now(); if string, normalize space to 'T' and parse ISO.
-        """
         if not v:
             return datetime.now()
         if isinstance(v, str):
@@ -65,7 +91,4 @@ class Subject(BaseModel):
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Subject:
-        """
-        Create a Subject instance from JSON-like dict, including nested keywords.
-        """
         return cls.model_validate(data)

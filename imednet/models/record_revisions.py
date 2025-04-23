@@ -26,14 +26,52 @@ class RecordRevision(BaseModel):
     deleted: bool = Field(False, alias="deleted")
     date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
 
-    # allow instantiation via field names or aliases
     model_config = ConfigDict(populate_by_name=True)
 
+    # —— Coerce None/"" → defaults for all integer fields
+    @field_validator(
+        "record_revision_id",
+        "record_id",
+        "record_revision",
+        "data_revision",
+        "subject_id",
+        "site_id",
+        "interval_id",
+        mode="before",
+    )
+    def _fill_ints(cls, v):
+        if v is None or v == "":
+            return 0
+        return int(v)
+
+    # —— Coerce None → defaults for all string fields
+    @field_validator(
+        "study_key",
+        "record_oid",
+        "record_status",
+        "subject_oid",
+        "subject_key",
+        "form_key",
+        "role",
+        "user",
+        "reason_for_change",
+        mode="before",
+    )
+    def _fill_strs(cls, v):
+        if v is None:
+            return ""
+        return v
+
+    # —— Ensure 'deleted' isn’t None
+    @field_validator("deleted", mode="before")
+    def _fill_deleted(cls, v):
+        if v is None:
+            return False
+        return bool(v)
+
+    # —— Parse ISO strings (or default now()) for date_created
     @field_validator("date_created", mode="before")
     def _parse_date_created(cls, v):
-        """
-        If missing or empty, default to now(); if string, normalize space to 'T' and parse ISO.
-        """
         if not v:
             return datetime.now()
         if isinstance(v, str):

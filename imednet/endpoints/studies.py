@@ -31,7 +31,7 @@ class StudiesEndpoint(BaseEndpoint):
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
-            paginator = Paginator(self._client, self.path, params=params)
+        paginator = Paginator(self._client, self.path, params=params)
         return [Study.model_validate(item) for item in paginator]
 
     def get(self, study_key: str) -> Study:

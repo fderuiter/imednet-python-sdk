@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -17,7 +17,7 @@ class Variable(BaseModel):
     date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
     date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
     form_id: int = Field(0, alias="formId")
-    variable_oid: str = Field("", alias="variableOid")
+    variable_oid: Optional[str] = Field(None, alias="variableOid")
     deleted: bool = Field(False, alias="deleted")
     form_key: str = Field("", alias="formKey")
     form_name: str = Field("", alias="formName")
