@@ -69,3 +69,9 @@ logs/
 
 # ruff
 .ruff_cache/
+
+# Sphinx documentation build
+/docs/_build/
+
+# pip wheel metadata
+pip-wheel-metadata/

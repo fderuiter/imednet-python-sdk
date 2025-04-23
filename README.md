@@ -37,7 +37,19 @@ for study in studies:
     print(study.id, study.name)
 ```
 
-See the full API reference in [docs/reference](docs/reference).
+- See the full API reference in the [HTML docs](docs/_build/html/index.html).
+
+## Documentation
+
+The full documentation is generated with Sphinx and output to `docs/_build/html`.
+To build it locally:
+
+```bash
+poetry install --with dev
+poetry run sphinx-build -b html docs docs/_build/html
+```
+
+Then open `docs/_build/html/index.html` in your browser.
 
 ## Development
 
