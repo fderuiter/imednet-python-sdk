@@ -1,13 +1,16 @@
 import logging
-from typing import Any, Dict, List, Optional, Tuple, Type, Union  # Add Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union  # Add TYPE_CHECKING
 
 import pandas as pd
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 from imednet.endpoints.records import Record as RecordModel
 from imednet.endpoints.variables import Variable as VariableModel
-from imednet.sdk import ImednetSDK
-from imednet.utils.filters import build_filter_string  # Added import
+from imednet.utils.filters import build_filter_string
+
+# Add conditional import
+if TYPE_CHECKING:
+    from ..sdk import ImednetSDK
 
 # Setup basic logging
 logger = logging.getLogger(__name__)
@@ -36,7 +39,7 @@ class RecordMapper:
 
     def __init__(
         self,
-        sdk: ImednetSDK,
+        sdk: "ImednetSDK",  # Change type hint to string literal
         # page_size is not used in current implementation, removed
     ):
         """
