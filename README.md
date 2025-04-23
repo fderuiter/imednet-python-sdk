@@ -1,6 +1,6 @@
 # imednet-python-sdk
 
-[![Build Status](https://github.com/FrederickdeRuiter/imednet-python-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/fderuiter/imednet-python-sdk/actions/workflows/ci.yml)
+[![Build Status](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imednet-python-sdk)](https://pypi.org/project/imednet-python-sdk/)
 
 A Python SDK for interacting with the iMedNet REST API. Provides client, endpoint wrappers, and data models for all resources.
@@ -21,7 +21,7 @@ pip install imednet-python-sdk
 Or install from source:
 
 ```bash
-git clone https://github.com/fderuiter/imednet-python-sdk.git
+git clone https://github.com/Bright-Research/imednet-python-sdk.git
 cd imednet-python-sdk
 poetry install --with dev
 ```
