@@ -1,6 +1,15 @@
 import os
+from pathlib import Path
 
+from dotenv import load_dotenv
 from imednet.sdk import ImednetSDK as ImednetClient
+
+# Construct the path to the .env file in the project root
+project_root = Path(__file__).resolve().parents[2]  # Go up two levels from examples/ to the root
+dotenv_path = project_root / ".env"
+
+# Load environment variables from .env file, overriding existing ones
+load_dotenv(dotenv_path=dotenv_path, override=True)
 
 api_key = os.getenv("IMEDNET_API_KEY")
 security_key = os.getenv("IMEDNET_SECURITY_KEY")
@@ -19,5 +28,3 @@ try:
             print(f"- Subject Key: {subject.subject_key}, Status: {subject.subject_status}")
 except Exception as e:
     print(f"Error: {e}")
-
-# working
