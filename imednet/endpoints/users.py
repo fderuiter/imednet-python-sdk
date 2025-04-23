@@ -1,27 +1,55 @@
-"""Placeholder for the Users endpoint."""
+"""Endpoint for managing users in a study."""
 
-# Purpose:
-# This module provides functionality to interact with the Users endpoint
-# of the Mednet EDC REST API. It allows retrieving the set of users and their roles for a study.
+from typing import Any, Dict, List, Optional, Union
 
-# Implementation:
-# 1. Define a class, perhaps named `UsersEndpoint`.
-# 2. This class should accept the core API client instance during initialization
-#    to handle making the actual HTTP requests.
-# 3. Implement a method like
-#       `get_list(study_key, page=0, size=25, sort=None, include_inactive=False)`
-#    corresponding to the GET request for this endpoint.
-# 4. This method will:
-#    a. Construct the correct API path: /api/v1/edc/studies/{study_key}/users.
-#    b. Prepare request parameters (query params: page, size, sort, includeInactive).
-#    c. Call the `client.get` method on the core client, passing the path and parameters.
-#    d. Handle potential API errors returned by the client.
-#    e. Deserialize the JSON response into appropriate Pydantic models
-#       (e.g., a pagination model containing User items).
-#    f. Return the deserialized data.
+from imednet.core.paginator import Paginator
+from imednet.endpoints.base import BaseEndpoint
+from imednet.models.users import User
 
-# Integration:
-# - This module will be imported and used by the main SDK class (`imednet.sdk.MednetSdk`).
-# - The SDK class will instantiate this endpoint class, passing the configured core client.
-# - Users of the SDK will access the endpoint methods through the SDK instance
-#   (e.g., `sdk.users.get_list(...)`).
+
+class UsersEndpoint(BaseEndpoint):
+    """
+    API endpoint for interacting with users in an iMedNet study.
+
+    Provides methods to list and retrieve user information.
+    """
+
+    path = "/api/v1/edc/studies"
+
+    def list(self, study_key: Optional[str] = None, include_inactive: bool = False) -> List[User]:
+        """
+        List users in a study with optional filtering.
+
+        Args:
+            study_key: Study identifier (uses default from context if not specified)
+            include_inactive: Whether to include inactive users
+
+        Returns:
+            List of User objects
+        """
+        study_key = study_key or self._ctx.default_study_key
+        if not study_key:
+            raise ValueError("Study key must be provided or set in the context")
+
+        params: Dict[str, Any] = {"includeInactive": str(include_inactive).lower()}
+
+        path = self._build_path(study_key, "users")
+        paginator = Paginator(self._client, path, params=params)
+        return [User.from_json(item) for item in paginator]
+
+    def get(self, study_key: str, user_id: Union[str, int]) -> User:
+        """
+        Get a specific user by ID.
+
+        Args:
+            study_key: Study identifier
+            user_id: User identifier (can be a string UUID or integer ID)
+
+        Returns:
+            User object
+        """
+        path = self._build_path(study_key, "users", user_id)
+        raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"User {user_id} not found in study {study_key}")
+        return User.from_json(raw[0])

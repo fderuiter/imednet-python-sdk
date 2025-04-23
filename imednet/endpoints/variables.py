@@ -1,27 +1,62 @@
-"""Placeholder for the Variables endpoint."""
+"""Endpoint for managing variables (data points on eCRFs) in a study."""
 
-# Purpose:
-# This module provides functionality to interact with the Variables endpoint
-# of the Mednet EDC REST API. It allows retrieving the set of variables (data points on eCRFs)
-# for a study.
+from typing import Any, Dict, List, Optional
 
-# Implementation:
-# 1. Define a class, perhaps named `VariablesEndpoint`.
-# 2. This class should accept the core API client instance during initialization
-#    to handle making the actual HTTP requests.
-# 3. Implement a method like `get_list(study_key, page=0, size=25, sort=None, filter=None)`
-#    corresponding to the GET request for this endpoint.
-# 4. This method will:
-#    a. Construct the correct API path: /api/v1/edc/studies/{study_key}/variables.
-#    b. Prepare request parameters (query params: page, size, sort, filter).
-#    c. Call the `client.get` method on the core client, passing the path and parameters.
-#    d. Handle potential API errors returned by the client.
-#    e. Deserialize the JSON response into appropriate Pydantic models
-#   (e.g., a pagination model containing Variable items).
-#    f. Return the deserialized data.
+from imednet.core.paginator import Paginator
+from imednet.endpoints.base import BaseEndpoint
+from imednet.models.variables import Variable
+from imednet.utils.filters import build_filter_string
 
-# Integration:
-# - This module will be imported and used by the main SDK class (`imednet.sdk.MednetSdk`).
-# - The SDK class will instantiate this endpoint class, passing the configured core client.
-# - Users of the SDK will access the endpoint methods through the SDK instance
-#   (e.g., `sdk.variables.get_list(...)`).
+
+class VariablesEndpoint(BaseEndpoint):
+    """
+    API endpoint for interacting with variables (data points on eCRFs) in an iMedNet study.
+
+    Provides methods to list and retrieve individual variables.
+    """
+
+    path = "/api/v1/edc/studies"
+
+    def list(self, study_key: Optional[str] = None, **filters) -> List[Variable]:
+        """
+        List variables in a study with optional filtering.
+
+        Args:
+            study_key: Study identifier (uses default from context if not specified)
+            **filters: Additional filter parameters
+
+        Returns:
+            List of Variable objects
+        """
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        study = filters.pop("studyKey")
+        if not study:
+            raise ValueError("Study key must be provided or set in the context")
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(study, "variables")
+        paginator = Paginator(self._client, path, params=params)
+        return [Variable.from_json(item) for item in paginator]
+
+    def get(self, study_key: str, variable_id: int) -> Variable:
+        """
+        Get a specific variable by ID.
+
+        Args:
+            study_key: Study identifier
+            variable_id: Variable identifier
+
+        Returns:
+            Variable object
+        """
+        path = self._build_path(study_key, "variables", variable_id)
+        raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Variable {variable_id} not found in study {study_key}")
+        return Variable.from_json(raw[0])

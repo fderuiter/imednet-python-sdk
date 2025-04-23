@@ -1,26 +1,58 @@
-"""Placeholder for the Record Revisions endpoint."""
+"""Endpoint for retrieving record revision history in a study."""
 
-# Purpose:
-# This module provides functionality to interact with the Record Revisions endpoint
-# of the Mednet EDC REST API. It allows retrieving the revision history for records in a study.
+from typing import Any, Dict, List, Optional
 
-# Implementation:
-# 1. Define a class, perhaps named `RecordRevisionsEndpoint`.
-# 2. This class should accept the core API client instance during initialization
-#    to handle making the actual HTTP requests.
-# 3. Implement a method like `get_list(study_key, page=0, size=25, sort=None, filter=None)`
-#    corresponding to the GET request for this endpoint.
-# 4. This method will:
-#    a. Construct the correct API path: /api/v1/edc/studies/{study_key}/recordRevisions.
-#    b. Prepare request parameters (query params: page, size, sort, filter).
-#    c. Call the `client.get` method on the core client, passing the path and parameters.
-#    d. Handle potential API errors returned by the client.
-#    e. Deserialize the JSON response into appropriate Pydantic models
-#       (e.g., a pagination model containing RecordRevision items).
-#    f. Return the deserialized data.
+from imednet.core.paginator import Paginator
+from imednet.endpoints.base import BaseEndpoint
+from imednet.models.record_revisions import RecordRevision
+from imednet.utils.filters import build_filter_string
 
-# Integration:
-# - This module will be imported and used by the main SDK class (`imednet.sdk.MednetSdk`).
-# - The SDK class will instantiate this endpoint class, passing the configured core client.
-# - Users of the SDK will access the endpoint methods through the SDK instance
-#   (e.g., `sdk.record_revisions.get_list(...)`).
+
+class RecordRevisionsEndpoint(BaseEndpoint):
+    """
+    API endpoint for accessing record revision history in an iMedNet study.
+
+    Provides methods to list and retrieve record revisions.
+    """
+
+    path = "/api/v1/edc/studies"
+
+    def list(self, study_key: Optional[str] = None, **filters) -> List[RecordRevision]:
+        """
+        List record revisions in a study with optional filtering.
+
+        Args:
+            study_key: Study identifier (uses default from context if not specified)
+            **filters: Additional filter parameters
+
+        Returns:
+            List of RecordRevision objects
+        """
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(filters.get("studyKey", ""), "recordRevisions")
+        paginator = Paginator(self._client, path, params=params)
+        return [RecordRevision.from_json(item) for item in paginator]
+
+    def get(self, study_key: str, record_revision_id: int) -> RecordRevision:
+        """
+        Get a specific record revision by ID.
+
+        Args:
+            study_key: Study identifier
+            record_revision_id: Record revision identifier
+
+        Returns:
+            RecordRevision object
+        """
+        path = self._build_path(study_key, "recordRevisions", record_revision_id)
+        raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Record revision {record_revision_id} not found in study {study_key}")
+        return RecordRevision.from_json(raw[0])

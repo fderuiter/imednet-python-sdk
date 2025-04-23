@@ -1,26 +1,62 @@
-"""Placeholder for the Forms endpoint."""
+"""Endpoint for managing forms (eCRFs) in a study."""
 
-# Purpose:
-# This module provides functionality to interact with the Forms endpoint
-# of the Mednet EDC REST API. It allows retrieving the set of forms (eCRFs) for a study.
+from typing import Any, Dict, List, Optional
 
-# Implementation:
-# 1. Define a class, perhaps named `FormsEndpoint`.
-# 2. This class should accept the core API client instance during initialization
-#    to handle making the actual HTTP requests.
-# 3. Implement a method like `get_list(study_key, page=0, size=25, sort=None, filter=None)`
-#    corresponding to the GET request for this endpoint.
-# 4. This method will:
-#    a. Construct the correct API path: /api/v1/edc/studies/{study_key}/forms.
-#    b. Prepare request parameters (query params: page, size, sort, filter).
-#    c. Call the `client.get` method on the core client, passing the path and parameters.
-#    d. Handle potential API errors returned by the client.
-#    e. Deserialize the JSON response into appropriate Pydantic models
-#       (e.g., a pagination model containing Form items).
-#    f. Return the deserialized data.
+from imednet.core.paginator import Paginator
+from imednet.endpoints.base import BaseEndpoint
+from imednet.models.forms import Form
+from imednet.utils.filters import build_filter_string
 
-# Integration:
-# - This module will be imported and used by the main SDK class (`imednet.sdk.MednetSdk`).
-# - The SDK class will instantiate this endpoint class, passing the configured core client.
-# - Users of the SDK will access the endpoint methods through the SDK instance
-#   (e.g., `sdk.forms.get_list(...)`).
+
+class FormsEndpoint(BaseEndpoint):
+    """
+    API endpoint for interacting with forms (eCRFs) in an iMedNet study.
+
+    Provides methods to list and retrieve individual forms.
+    """
+
+    path = "/api/v1/edc/studies"
+
+    def list(self, study_key: Optional[str] = None, **filters) -> List[Form]:
+        """
+        List forms in a study with optional filtering.
+
+        Args:
+            study_key: Study identifier (uses default from context if not specified)
+            **filters: Additional filter parameters
+
+        Returns:
+            List of Form objects
+        """
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        study = filters.pop("studyKey")
+        if not study:
+            raise ValueError("Study key must be provided or set in the context")
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(study, "forms")
+        paginator = Paginator(self._client, path, params=params)
+        return [Form.from_json(item) for item in paginator]
+
+    def get(self, study_key: str, form_id: int) -> Form:
+        """
+        Get a specific form by ID.
+
+        Args:
+            study_key: Study identifier
+            form_id: Form identifier
+
+        Returns:
+            Form object
+        """
+        path = self._build_path(study_key, "forms", form_id)
+        raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Form {form_id} not found in study {study_key}")
+        return Form.from_json(raw[0])

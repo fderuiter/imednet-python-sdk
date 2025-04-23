@@ -1,26 +1,58 @@
-"""Placeholder for the Subjects endpoint."""
+"""Endpoint for managing subjects in a study."""
 
-# Purpose:
-# This module provides functionality to interact with the Subjects endpoint
-# of the Mednet EDC REST API. It allows retrieving the set of subjects (participants) for a study.
+from typing import Any, Dict, List, Optional
 
-# Implementation:
-# 1. Define a class, perhaps named `SubjectsEndpoint`.
-# 2. This class should accept the core API client instance during initialization
-#    to handle making the actual HTTP requests.
-# 3. Implement a method like `get_list(study_key, page=0, size=25, sort=None, filter=None)`
-#    corresponding to the GET request for this endpoint.
-# 4. This method will:
-#    a. Construct the correct API path: /api/v1/edc/studies/{study_key}/subjects.
-#    b. Prepare request parameters (query params: page, size, sort, filter).
-#    c. Call the `client.get` method on the core client, passing the path and parameters.
-#    d. Handle potential API errors returned by the client.
-#    e. Deserialize the JSON response into appropriate Pydantic models
-#       (e.g., a pagination model containing Subject items).
-#    f. Return the deserialized data.
+from imednet.core.paginator import Paginator
+from imednet.endpoints.base import BaseEndpoint
+from imednet.models.subjects import Subject
+from imednet.utils.filters import build_filter_string
 
-# Integration:
-# - This module will be imported and used by the main SDK class (`imednet.sdk.MednetSdk`).
-# - The SDK class will instantiate this endpoint class, passing the configured core client.
-# - Users of the SDK will access the endpoint methods through the SDK instance
-#   (e.g., `sdk.subjects.get_list(...)`).
+
+class SubjectsEndpoint(BaseEndpoint):
+    """
+    API endpoint for interacting with subjects in an iMedNet study.
+
+    Provides methods to list and retrieve individual subjects.
+    """
+
+    path = "/api/v1/edc/studies"
+
+    def list(self, study_key: Optional[str] = None, **filters) -> List[Subject]:
+        """
+        List subjects in a study with optional filtering.
+
+        Args:
+            study_key: Study identifier (uses default from context if not specified)
+            **filters: Additional filter parameters
+
+        Returns:
+            List of Subject objects
+        """
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(filters.get("studyKey", ""), "subjects")
+        paginator = Paginator(self._client, path, params=params)
+        return [Subject.from_json(item) for item in paginator]
+
+    def get(self, study_key: str, subject_key: str) -> Subject:
+        """
+        Get a specific subject by key.
+
+        Args:
+            study_key: Study identifier
+            subject_key: Subject identifier
+
+        Returns:
+            Subject object
+        """
+        path = self._build_path(study_key, "subjects", subject_key)
+        raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Subject {subject_key} not found in study {study_key}")
+        return Subject.from_json(raw[0])

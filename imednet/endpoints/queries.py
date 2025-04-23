@@ -1,27 +1,58 @@
-"""Placeholder for the Queries endpoint."""
+"""Endpoint for managing queries (dialogue/questions) in a study."""
 
-# Purpose:
-# This module provides functionality to interact with the Queries endpoint
-# of the Mednet EDC REST API. It allows retrieving the set of queries (dialogue/questions)
-#      for a study.
+from typing import Any, Dict, List, Optional
 
-# Implementation:
-# 1. Define a class, perhaps named `QueriesEndpoint`.
-# 2. This class should accept the core API client instance during initialization
-#    to handle making the actual HTTP requests.
-# 3. Implement a method like `get_list(study_key, page=0, size=25, sort=None, filter=None)`
-#    corresponding to the GET request for this endpoint.
-# 4. This method will:
-#    a. Construct the correct API path: /api/v1/edc/studies/{study_key}/queries.
-#    b. Prepare request parameters (query params: page, size, sort, filter).
-#    c. Call the `client.get` method on the core client, passing the path and parameters.
-#    d. Handle potential API errors returned by the client.
-#    e. Deserialize the JSON response into appropriate Pydantic models
-#       (e.g., a pagination model containing Query items).
-#    f. Return the deserialized data.
+from imednet.core.paginator import Paginator
+from imednet.endpoints.base import BaseEndpoint
+from imednet.models.queries import Query
+from imednet.utils.filters import build_filter_string
 
-# Integration:
-# - This module will be imported and used by the main SDK class (`imednet.sdk.MednetSdk`).
-# - The SDK class will instantiate this endpoint class, passing the configured core client.
-# - Users of the SDK will access the endpoint methods through the SDK instance
-#   (e.g., `sdk.queries.get_list(...)`).
+
+class QueriesEndpoint(BaseEndpoint):
+    """
+    API endpoint for interacting with queries (dialogue/questions) in an iMedNet study.
+
+    Provides methods to list and retrieve queries.
+    """
+
+    path = "/api/v1/edc/studies"
+
+    def list(self, study_key: Optional[str] = None, **filters) -> List[Query]:
+        """
+        List queries in a study with optional filtering.
+
+        Args:
+            study_key: Study identifier (uses default from context if not specified)
+            **filters: Additional filter parameters
+
+        Returns:
+            List of Query objects
+        """
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(filters.get("studyKey", ""), "queries")
+        paginator = Paginator(self._client, path, params=params)
+        return [Query.from_json(item) for item in paginator]
+
+    def get(self, study_key: str, annotation_id: int) -> Query:
+        """
+        Get a specific query by annotation ID.
+
+        Args:
+            study_key: Study identifier
+            annotation_id: Query annotation identifier
+
+        Returns:
+            Query object
+        """
+        path = self._build_path(study_key, "queries", annotation_id)
+        raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Query {annotation_id} not found in study {study_key}")
+        return Query.from_json(raw[0])

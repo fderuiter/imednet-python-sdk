@@ -1,26 +1,62 @@
-"""Placeholder for the Codings endpoint."""
+"""Endpoint for managing codings (medical coding) in a study."""
 
-# Purpose:
-# This module provides functionality to interact with the Codings endpoint
-# of the Mednet EDC REST API. It allows retrieving coding activity data for a study.
+from typing import Any, Dict, List, Optional
 
-# Implementation:
-# 1. Define a class, perhaps named `CodingsEndpoint`.
-# 2. This class should accept the core API client instance during initialization
-#    to handle making the actual HTTP requests.
-# 3. Implement a method like `get_list(study_key, page=0, size=25, sort=None, filter=None)`
-#    corresponding to the GET request for this endpoint.
-# 4. This method will:
-#    a. Construct the correct API path: /api/v1/edc/studies/{study_key}/codings.
-#    b. Prepare request parameters (query params: page, size, sort, filter).
-#    c. Call the `client.get` method on the core client, passing the path and parameters.
-#    d. Handle potential API errors returned by the client.
-#    e. Deserialize the JSON response into appropriate Pydantic models
-#       (e.g., a pagination model containing Coding items).
-#    f. Return the deserialized data.
+from imednet.core.paginator import Paginator
+from imednet.endpoints.base import BaseEndpoint
+from imednet.models.codings import Coding
+from imednet.utils.filters import build_filter_string
 
-# Integration:
-# - This module will be imported and used by the main SDK class (`imednet.sdk.MednetSdk`).
-# - The SDK class will instantiate this endpoint class, passing the configured core client.
-# - Users of the SDK will access the endpoint methods through the SDK instance
-#   (e.g., `sdk.codings.get_list(...)`).
+
+class CodingsEndpoint(BaseEndpoint):
+    """
+    API endpoint for interacting with codings (medical coding) in an iMedNet study.
+
+    Provides methods to list and retrieve individual codings.
+    """
+
+    path = "/api/v1/edc/studies"
+
+    def list(self, study_key: Optional[str] = None, **filters) -> List[Coding]:
+        """
+        List codings in a study with optional filtering.
+
+        Args:
+            study_key: Study identifier (uses default from context if not specified)
+            **filters: Additional filter parameters
+
+        Returns:
+            List of Coding objects
+        """
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        study = filters.pop("studyKey")
+        if not study:
+            raise ValueError("Study key must be provided or set in the context")
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(study, "codings")
+        paginator = Paginator(self._client, path, params=params)
+        return [Coding.from_json(item) for item in paginator]
+
+    def get(self, study_key: str, coding_id: str) -> Coding:
+        """
+        Get a specific coding by ID.
+
+        Args:
+            study_key: Study identifier
+            coding_id: Coding identifier
+
+        Returns:
+            Coding object
+        """
+        path = self._build_path(study_key, "codings", coding_id)
+        raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Coding {coding_id} not found in study {study_key}")
+        return Coding.from_json(raw[0])
