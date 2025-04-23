@@ -1,0 +1,51 @@
+name: Publish Python Package to PyPI
+
+# How to trigger this workflow:
+# 1. Make your code changes and commit them.
+# 2. Update CHANGELOG.md with the changes for the new version.
+# 3. Bump the version in pyproject.toml using `poetry version patch` (or minor/major).
+# 4. Commit the updated pyproject.toml and CHANGELOG.md.
+# 5. Create a git tag matching the new version (e.g., `git tag v0.1.1`).
+# 6. Push the commit and the tag (`git push && git push --tags`).
+#    Pushing the tag will trigger this workflow.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Trigger on tags like v1.0.0, v0.2.1, etc.
+
+jobs:
+  build-and-publish:
+    name: Build and publish Python distributions to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Choose a Python version for building
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 'latest' # Or pin to a specific version
+
+      - name: Install dependencies
+        run: poetry install --no-dev --no-interaction --no-ansi
+
+      - name: Build package
+        run: poetry build
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # No API token needed if using trusted publishing
+        # If not using trusted publishing, uncomment the 'with' block below
+        # and add a PYPI_API_TOKEN secret to your repository settings.
+        # with:
+        #   user: __token__
+        #   password: ${{ secrets.PYPI_API_TOKEN }}

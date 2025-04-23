@@ -4,7 +4,13 @@ version = "0.1.0"
 description = ""
 authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
 packages = [{ include = "imednet" }]
-license = "Private"
+include = [
+    "README.md",
+    "LICENSE",
+    { path = "examples", format = "sdist" }, # Include examples only in sdist
+    { path = "examples", format = "wheel" } # Include examples also in wheel
+]
+license = "MIT"
 repository = "https://github.com/Bright-Research/imednet-python-sdk"
 homepage = "https://github.com/Bright-Research/imednet-python-sdk"
 
