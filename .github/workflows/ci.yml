@@ -22,7 +22,7 @@ jobs:
           poetry install --with dev
       - name: Lint & Type‑check
         run: |
-          poetry run ruff .
+          poetry run ruff check .
           poetry run black --check .
           poetry run mypy imednet
       - name: Unit tests
