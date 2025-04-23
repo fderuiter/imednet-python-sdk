@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: abatilo/actions-poetry@v2
+      - name: Install deps
+        run: |
+          poetry install --with dev
+      - name: Lint & Type‑check
+        run: |
+          poetry run ruff .
+          poetry run black --check .
+          poetry run mypy imednet
+      - name: Unit tests
+        run: |
+          poetry run pytest -q --cov=imednet --cov-report=xml
