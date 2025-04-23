@@ -368,6 +368,22 @@ files = [
 ]
 
 [[package]]
+name = "isort"
+version = "6.0.1"
+description = "A Python utility / library to sort Python imports."
+optional = false
+python-versions = ">=3.9.0"
+groups = ["dev"]
+files = [
+    {file = "isort-6.0.1-py3-none-any.whl", hash = "sha256:2dc5d7f65c9678d94c88dfc29161a320eec67328bc97aad576874cb4be1e9615"},
+    {file = "isort-6.0.1.tar.gz", hash = "sha256:1cb5df28dfbc742e490c5e41bad6da41b805b0a8be7bc93cd0fb2a8a890ac450"},
+]
+
+[package.extras]
+colors = ["colorama"]
+plugins = ["setuptools"]
+
+[[package]]
 name = "mypy"
 version = "1.15.0"
 description = "Optional static typing for Python"
@@ -1020,4 +1036,4 @@ pandas = ["pandas"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "4ad050b1d399f31a59e467018a75cd2ecea3600462132c3541b5c3aba2474ed1"
+content-hash = "a1f470e3cc0f029347099f2c4749a213dc027e2ab4a8090cde9eb84f780ccd87"
