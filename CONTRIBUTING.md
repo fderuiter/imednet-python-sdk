@@ -42,6 +42,7 @@ Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md).
 ## Tests
 
 Run tests locally:
+
 ```bash
 poetry run pytest
 ```

@@ -26,8 +26,8 @@ Project maintainers are responsible for clarifying standards of acceptable behav
 
 ## Reporting Guidelines
 
-If you are subject to or witness unacceptable behavior, please report it by contacting the project maintainers at [open an issue](https://github.com/FrederickdeRuiter/imednet-python-sdk/issues) or emailing frederickderuiter@example.com.
+If you are subject to or witness unacceptable behavior, please report it by contacting the project maintainers at [open an issue](https://github.com/FrederickdeRuiter/imednet-python-sdk/issues) or emailing <frederickderuiter@example.com>.
 
 ## License & Attribution
 
-This Code of Conduct is adapted from the Contributor Covenant, version 2.1, available at https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.
+This Code of Conduct is adapted from the Contributor Covenant, version 2.1, available at <https://www.contributor-covenant.org/version/2/1/code_of_conduct.html>.
