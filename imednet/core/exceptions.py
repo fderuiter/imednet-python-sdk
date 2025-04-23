@@ -1,86 +1,97 @@
-"""Placeholder for custom SDK exceptions."""
+"""
+Custom exceptions for the iMednet SDK.
 
-# Purpose:
-# This module defines a hierarchy of custom exceptions specific to the iMednet SDK.
-# This allows users to catch specific types of errors originating from API interactions.
+Defines a hierarchy of exceptions corresponding to HTTP and validation errors.
+"""
 
-# Implementation:
-# 1. Define a base exception class, e.g., `ImednetError(Exception)`.
-# 2. Define more specific exceptions inheriting from the base class:
-#    - `ApiError(ImednetError)`: General error returned by the API (e.g., 4xx, 5xx).
-#      - Could store status code, response body/message.
-#    - `AuthenticationError(ApiError)`: Specifically for 401 Unauthorized.
-#    - `NotFoundError(ApiError)`: Specifically for 404 Not Found.
-#    - `RateLimitError(ApiError)`: Specifically for 429 Too Many Requests.
-#    - `ServerError(ApiError)`: Specifically for 5xx errors.
-#    - `RequestError(ImednetError)`: For errors occurring before/during the request
-#       (e.g., network issues, timeouts).
-#    - `ValidationError(ImednetError)`: For issues with input parameters provided by the user.
-
-# Integration:
-# - Raised by the `Client` when API calls fail.
-# - Raised by `Endpoint` or `Workflow` methods for validation errors.
-# - Users of the SDK can import and use these exceptions in their `try...except` blocks
-#   for robust error handling.
+from typing import Any, Optional
 
 
 class ImednetError(Exception):
-    """Base class for all iMednet SDK errors."""
+    """
+    Base exception for all iMednet SDK errors.
+    """
 
     pass
 
 
 class RequestError(ImednetError):
-    """Error related to making the HTTP request (network, timeout, etc.)."""
+    """
+    Raised when a network request fails after retries.
+    """
 
     pass
 
 
 class ApiError(ImednetError):
-    """Error reported by the Mednet API (4xx or 5xx status code)."""
+    """
+    Raised for generic API errors (non-2xx HTTP status codes).
 
-    def __init__(
-        self, message: str, status_code: int | None = None, response_body: dict | str | None = None
-    ):
-        super().__init__(message)
+    Attributes:
+        status_code: HTTP status code returned by the API.
+        response: Parsed JSON or raw text of the error response.
+    """
+
+    def __init__(self, response: Any, status_code: Optional[int] = None) -> None:
+        super().__init__(str(response))
         self.status_code = status_code
-        self.response_body = response_body
+        self.response = response
 
     def __str__(self) -> str:
         base = super().__str__()
         details = []
-        if self.status_code:
+        if self.status_code is not None:
             details.append(f"Status Code: {self.status_code}")
-        if self.response_body:
-            details.append(f"Response: {self.response_body}")
-        return f"{base} ({', '.join(details)})" if details else base
+        if self.response:
+            details.append(f"Response: {self.response}")
+        if details:
+            return f"{base} ({', '.join(details)})"
+        return base
 
 
 class AuthenticationError(ApiError):
-    """API authentication failed (401)."""
+    """
+    Raised when authentication to the API fails (HTTP 401).
+    """
+
+    pass
+
+
+class AuthorizationError(ApiError):
+    """
+    Raised when access to the API is forbidden (HTTP 403).
+    """
 
     pass
 
 
 class NotFoundError(ApiError):
-    """Resource not found (404)."""
+    """
+    Raised when a requested resource is not found (HTTP 404).
+    """
 
     pass
 
 
 class RateLimitError(ApiError):
-    """Rate limit exceeded (429)."""
+    """
+    Raised when the API rate limit is exceeded (HTTP 429).
+    """
 
     pass
 
 
 class ServerError(ApiError):
-    """Internal server error on the API side (5xx)."""
+    """
+    Raised when the API returns a server error (HTTP 5xx).
+    """
 
     pass
 
 
-class ValidationError(ImednetError):
-    """Invalid input provided to an SDK method."""
+class ValidationError(ApiError):
+    """
+    Raised when a request is malformed or validation fails (HTTP 400).
+    """
 
     pass

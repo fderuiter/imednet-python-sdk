@@ -1,32 +1,55 @@
-"""Placeholder for the API response paginator."""
+"""
+Pagination helper for iterating through paginated API responses.
+"""
 
-# Purpose:
-# This module provides a helper to automatically handle pagination for Mednet API
-# endpoints that return lists of items across multiple pages.
+from typing import Any, Dict, Iterator, Optional
 
-# Implementation:
-# 1. Define a class `Paginator` or a generator function.
-# 2. It should accept the `Client` instance and the specific endpoint method to call
-#    (e.g., `client.get`).
-# 3. It needs the initial path and any fixed query parameters (like filters).
-# 4. Implement the iteration logic:
-#    a. Start with `page = 0`.
-#    b. Make the first API call using the client and initial parameters.
-#    c. Yield each item from the `content` list in the response.
-#    d. Check the pagination metadata in the response (e.g., `pageable`, `totalPages`, `last`).
-#    e. If not the last page (`last` is false), increment the `page` number.
-#    f. Make the next API call with the updated `page` parameter.
-#    g. Repeat steps c-f until the last page is reached.
-# 5. Handle potential errors during pagination.
-
-# Integration:
-# - Used internally by the `get_list` methods in the `Endpoint` classes.
-# - Abstracts the complexity of fetching all pages, providing a simple iterator interface
-#   to the user or other SDK components.
-# - Example usage within an endpoint: `yield from Paginator(self.client, path, params).fetch_all()`
+import httpx
 
 
 class Paginator:
-    """Handles pagination for API list endpoints."""
+    """
+    Iterate over pages of results from the iMednet API.
 
-    pass
+    Example:
+        paginator = Paginator(client, "/api/v1/edc/studies/{study_key}/sites")
+        for item in paginator:
+            # process each item
+    """
+
+    def __init__(
+        self,
+        client: Any,
+        path: str,
+        params: Optional[Dict[str, Any]] = None,
+        page_size: int = 100,
+        page_param: str = "page",
+        size_param: str = "size",
+        data_key: str = "data",
+        metadata_key: str = "metadata",
+    ):
+        self.client = client
+        self.path = path
+        self.params = params.copy() if params else {}
+        self.page_size = page_size
+        self.page_param = page_param
+        self.size_param = size_param
+        self.data_key = data_key
+        self.metadata_key = metadata_key
+
+    def __iter__(self) -> Iterator[Any]:
+        page = 0
+        while True:
+            query = dict(self.params)
+            query[self.page_param] = page
+            query[self.size_param] = self.page_size
+            response: httpx.Response = self.client.get(self.path, params=query)
+            payload = response.json()
+            items = payload.get(self.data_key, []) or []
+            for item in items:
+                yield item
+            metadata = payload.get(self.metadata_key, {})
+            total_pages = metadata.get("totalPages")
+            if total_pages is None or page >= total_pages - 1:
+                break
+            page += 1

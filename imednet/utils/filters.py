@@ -1,19 +1,50 @@
-"""Placeholder for Mednet API filter string generation."""
+"""
+Utility functions for building API filter strings.
 
-# Purpose:
-# This module provides helper functions to construct the filter query string parameter
-# used by many Mednet API list endpoints, based on structured input.
+This module provides functionality to construct filter query parameters
+for iMednet API endpoints based on the reference documentation.
+"""
 
-# Implementation:
-# 1. Define a function, e.g., `build_filter_string(conditions: dict) -> str`.
-# 2. The `conditions` dict could map field names to desired values or comparison operators.
-#    Example: `{"status": "Open", "subject_key": "SUBJ-001"}`
-# 3. The function needs to translate this structure into the Mednet-specific filter syntax.
-#    (e.g., `status eq "Open" and subject_key eq "SUBJ-001"`).
-# 4. Handle different data types (strings need quotes, numbers don't).
-# 5. Handle different comparison operators if needed (e.g., `gt`, `lt`, `ne`).
-# 6. Properly handle encoding for URL query parameters.
+from typing import Any, Dict, List, Tuple, Union
 
-# Integration:
-# - Used by `Endpoint` `get_list` methods when a `filter` argument is provided.
-# - Simplifies the process of creating valid filter strings for users.
+
+def build_filter_string(
+    filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]],
+    and_connector: str = ";",
+    or_connector: str = ",",
+) -> str:
+    """
+    Build a filter string for API requests from a mapping of filters.
+
+    Strings are constructed according to the iMednet API filtering rules:
+    - Use '<', '<=', '>', '>=', '==', '!=', '=~' operators.
+    - Multiple conditions are joined by ';' (AND) or ',' (OR).
+
+    Args:
+        filters: A dict where:
+            - value is a raw value -> equality is assumed (==).
+            - value is a tuple (op, val) -> use provided operator.
+            - value is a list -> multiple equality filters OR-ed.
+        and_connector: String connector for AND conditions (default ';').
+        or_connector: String connector for OR conditions (default ',').
+
+    Returns:
+        A filter string suitable for use as a `filter` query parameter.
+
+    Examples:
+        >>> build_filter_string({'age': ('>', 30), 'status': 'active'})
+        'age>30;status==active'
+        >>> build_filter_string({'type': ['A', 'B']})
+        'type==A,type==B'
+    """
+    parts: List[str] = []
+    for key, value in filters.items():
+        if isinstance(value, tuple) and len(value) == 2:
+            op, val = value
+            parts.append(f"{key}{op}{val}")
+        elif isinstance(value, list):
+            subparts = [f"{key}=={v}" for v in value]
+            parts.append(or_connector.join(subparts))
+        else:
+            parts.append(f"{key}=={value}")
+    return and_connector.join(parts)
