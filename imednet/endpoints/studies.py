@@ -31,9 +31,8 @@ class StudiesEndpoint(BaseEndpoint):
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
-
-        paginator = Paginator(self._client, self.path, params=params)
-        return [Study.from_json(item) for item in paginator]
+            paginator = Paginator(self._client, self.path, params=params)
+        return [Study.model_validate(item) for item in paginator]
 
     def get(self, study_key: str) -> Study:
         """
@@ -49,4 +48,4 @@ class StudiesEndpoint(BaseEndpoint):
         raw = self._client.get(path).json().get("data", [])
         if not raw:
             raise ValueError(f"Study {study_key} not found")
-        return Study.from_json(raw[0])
+        return Study.model_validate(raw[0])

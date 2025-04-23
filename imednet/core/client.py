@@ -92,6 +92,8 @@ class Client:
 
     def _should_retry(self, retry_state: RetryCallState) -> bool:
         """Determine whether to retry based on exception type and attempt count."""
+        if retry_state.outcome is None:
+            return False
         exc = retry_state.outcome.exception()
         if isinstance(exc, (httpx.RequestError,)):
             return True
