@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from imednet.models.base import Metadata, Pagination
+from .validators import parse_datetime, parse_int_or_default, parse_str_or_default
 
 
 class Study(BaseModel):
@@ -20,28 +19,16 @@ class Study(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    @field_validator(
+        "sponsor_key", "study_key", "study_name", "study_description", "study_type", mode="before"
+    )
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @field_validator("study_id", mode="before")
+    def _fill_ints(cls, v):
+        return parse_int_or_default(v)
+
     @field_validator("date_created", "date_modified", mode="before")
     def _parse_dates(cls, v):
-        """
-        Parse or default study creation/modification dates.
-        """
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
-
-
-class StudiesResponse(BaseModel):
-    metadata: Metadata
-    pagination: Pagination
-    data: List[Study]
-
-    model_config = ConfigDict(populate_by_name=True)
-
-    @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> StudiesResponse:
-        """
-        Create a StudiesResponse instance from JSON-like dict.
-        """
-        return cls.model_validate(data)
+        return parse_datetime(v)

@@ -5,6 +5,8 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .validators import parse_bool, parse_datetime, parse_int_or_default, parse_str_or_default
+
 
 class RecordRevision(BaseModel):
     study_key: str = Field("", alias="studyKey")
@@ -28,7 +30,6 @@ class RecordRevision(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    # —— Coerce None/"" → defaults for all integer fields
     @field_validator(
         "record_revision_id",
         "record_id",
@@ -40,11 +41,8 @@ class RecordRevision(BaseModel):
         mode="before",
     )
     def _fill_ints(cls, v):
-        if v is None or v == "":
-            return 0
-        return int(v)
+        return parse_int_or_default(v)
 
-    # —— Coerce None → defaults for all string fields
     @field_validator(
         "study_key",
         "record_oid",
@@ -58,25 +56,15 @@ class RecordRevision(BaseModel):
         mode="before",
     )
     def _fill_strs(cls, v):
-        if v is None:
-            return ""
-        return v
+        return parse_str_or_default(v)
 
-    # —— Ensure 'deleted' isn’t None
     @field_validator("deleted", mode="before")
-    def _fill_deleted(cls, v):
-        if v is None:
-            return False
-        return bool(v)
+    def _parse_deleted(cls, v):
+        return parse_bool(v)
 
-    # —— Parse ISO strings (or default now()) for date_created
     @field_validator("date_created", mode="before")
     def _parse_date_created(cls, v):
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> RecordRevision:

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from .validators import parse_datetime, parse_str_or_default
 
 
 class Job(BaseModel):
@@ -17,17 +19,13 @@ class Job(BaseModel):
     # Allow instantiation via field names or aliases
     model_config = ConfigDict(populate_by_name=True)
 
+    @field_validator("job_id", "batch_id", "state", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
     @field_validator("date_created", "date_started", "date_finished", mode="before")
-    def _parse_datetimes(cls, v: Optional[str] | datetime) -> datetime:
-        """
-        If the value is missing or falsy, default to now();
-        if it's a string, normalize space to 'T' and parse ISO.
-        """
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+    def _parse_datetimes(cls, v):
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Job:

@@ -5,6 +5,14 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .validators import (
+    parse_bool,
+    parse_datetime,
+    parse_int_or_default,
+    parse_list_or_default,
+    parse_str_or_default,
+)
+
 
 class Keyword(BaseModel):
     keyword_name: str = Field("", alias="keywordName")
@@ -16,23 +24,15 @@ class Keyword(BaseModel):
 
     @field_validator("keyword_name", "keyword_key", mode="before")
     def _fill_strs(cls, v):
-        if v is None:
-            return ""
-        return v
+        return parse_str_or_default(v)
 
     @field_validator("keyword_id", mode="before")
     def _fill_ints(cls, v):
-        if v is None or v == "":
-            return 0
-        return int(v)
+        return parse_int_or_default(v)
 
     @field_validator("date_added", mode="before")
     def _parse_date_added(cls, v):
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Keyword:
@@ -62,7 +62,6 @@ class Record(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    # —— Coerce None/"" → defaults for ints
     @field_validator(
         "interval_id",
         "form_id",
@@ -74,11 +73,8 @@ class Record(BaseModel):
         mode="before",
     )
     def _fill_ints(cls, v):
-        if v is None or v == "":
-            return 0
-        return int(v)
+        return parse_int_or_default(v)
 
-    # —— Coerce None → defaults for strings
     @field_validator(
         "study_key",
         "form_key",
@@ -90,26 +86,82 @@ class Record(BaseModel):
         mode="before",
     )
     def _fill_strs(cls, v):
-        if v is None:
-            return ""
-        return v
+        return parse_str_or_default(v)
 
-    # —— Coerce None → empty list
     @field_validator("keywords", mode="before")
     def _fill_list(cls, v):
-        if v is None:
-            return []
-        return v
+        return parse_list_or_default(v)
 
-    # —— Parse ISO strings (or default now()) for all datetimes
+    @field_validator("deleted", mode="before")
+    def parse_bool_field(cls, v):
+        return parse_bool(v)
+
     @field_validator("date_created", "date_modified", mode="before")
     def _parse_datetimes(cls, v):
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Record:
         return cls.model_validate(data)
+
+
+class RecordJobResponse(BaseModel):
+    job_id: str = Field("", alias="jobId")
+    batch_id: str = Field("", alias="batchId")
+    state: str = Field("", alias="state")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("job_id", "batch_id", "state", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> RecordJobResponse:
+        return cls.model_validate(data)
+
+
+class RecordData(BaseModel):
+    __root__: Dict[str, Any]
+
+    def __getitem__(self, item):
+        return self.__root__[item]
+
+    def dict(self, *args, **kwargs):
+        return self.__root__
+
+
+class BaseRecordRequest(BaseModel):
+    form_key: str = Field("", alias="formKey")
+    data: RecordData = Field(default_factory=lambda: RecordData(__root__={}), alias="data")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("form_key", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+
+class RegisterSubjectRequest(BaseRecordRequest):
+    site_name: str = Field("", alias="siteName")
+
+    @field_validator("site_name", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+
+class UpdateScheduledRecordRequest(BaseRecordRequest):
+    subject_key: str = Field("", alias="subjectKey")
+    interval_name: str = Field("", alias="intervalName")
+
+    @field_validator("subject_key", "interval_name", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+
+class CreateNewRecordRequest(BaseRecordRequest):
+    subject_key: str = Field("", alias="subjectKey")
+
+    @field_validator("subject_key", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)

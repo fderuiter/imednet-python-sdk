@@ -5,6 +5,8 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .validators import parse_bool, parse_datetime, parse_int_or_default, parse_str_or_default
+
 
 class Form(BaseModel):
     study_key: str = Field("", alias="studyKey")
@@ -27,16 +29,32 @@ class Form(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    @field_validator("study_key", "form_key", "form_name", "form_type", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @field_validator("form_id", "revision", mode="before")
+    def _fill_ints(cls, v):
+        return parse_int_or_default(v)
+
+    @field_validator(
+        "embedded_log",
+        "enforce_ownership",
+        "user_agreement",
+        "subject_record_report",
+        "unscheduled_visit",
+        "other_forms",
+        "epro_form",
+        "allow_copy",
+        "disabled",
+        mode="before",
+    )
+    def _parse_bools(cls, v: Any) -> bool:
+        return parse_bool(v)
+
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v: str | datetime) -> datetime:
-        """
-        If missing or falsy, default to now(); if string, normalize space to 'T' and parse ISO.
-        """
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+    def _parse_datetimes(cls, v: Any) -> datetime:
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Form:
