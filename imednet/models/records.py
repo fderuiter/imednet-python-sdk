@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator
 
 from .validators import (
     parse_bool,
@@ -121,19 +121,13 @@ class RecordJobResponse(BaseModel):
         return cls.model_validate(data)
 
 
-class RecordData(BaseModel):
-    __root__: Dict[str, Any]
-
-    def __getitem__(self, item):
-        return self.__root__[item]
-
-    def dict(self, *args, **kwargs):
-        return self.__root__
+class RecordData(RootModel[Dict[str, Any]]):
+    pass
 
 
 class BaseRecordRequest(BaseModel):
     form_key: str = Field("", alias="formKey")
-    data: RecordData = Field(default_factory=lambda: RecordData(__root__={}), alias="data")
+    data: RecordData = Field(default_factory=lambda: RecordData({}), alias="data")
 
     model_config = ConfigDict(populate_by_name=True)
 

@@ -41,7 +41,7 @@ class FormsEndpoint(BaseEndpoint):
             params["filter"] = build_filter_string(filters)
 
         path = self._build_path(study, "forms")
-        paginator = Paginator(self._client, path, params=params)
+        paginator = Paginator(self._client, path, params=params, page_size=500)
         return [Form.from_json(item) for item in paginator]
 
     def get(self, study_key: str, form_id: int) -> Form:

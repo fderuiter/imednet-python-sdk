@@ -68,7 +68,7 @@ class RecordsEndpoint(BaseEndpoint):
         self,
         study_key: str,
         records_data: List[Dict[str, Any]],
-        email_notify: Optional[bool] = None,
+        email_notify: Union[bool, str, None] = None,  # Accept bool, str (email), or None
     ) -> Job:
         """
         Create new records in a study.
@@ -76,7 +76,8 @@ class RecordsEndpoint(BaseEndpoint):
         Args:
             study_key: Study identifier
             records_data: List of record data objects to create
-            email_notify: Whether to send email notifications
+            email_notify: Whether to send email notifications (True/False), or an
+            email address as a string.
 
         Returns:
             Job object with information about the created job
@@ -84,7 +85,10 @@ class RecordsEndpoint(BaseEndpoint):
         path = self._build_path(study_key, "records")
         headers = {}
         if email_notify is not None:
-            headers["x-email-notify"] = str(email_notify).lower()
+            if isinstance(email_notify, str):
+                headers["x-email-notify"] = email_notify  # Use email address directly
+            else:
+                headers["x-email-notify"] = str(email_notify).lower()  # Use 'true'/'false' for bool
 
         response = self._client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())

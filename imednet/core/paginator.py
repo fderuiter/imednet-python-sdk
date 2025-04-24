@@ -48,8 +48,9 @@ class Paginator:
             items = payload.get(self.data_key, []) or []
             for item in items:
                 yield item
-            metadata = payload.get(self.metadata_key, {})
-            total_pages = metadata.get("totalPages")
+            # Use 'pagination' key instead of 'metadata' for pagination info
+            pagination = payload.get("pagination", {})
+            total_pages = pagination.get("totalPages")
             if total_pages is None or page >= total_pages - 1:
                 break
             page += 1

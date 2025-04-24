@@ -37,7 +37,7 @@ class IntervalsEndpoint(BaseEndpoint):
             params["filter"] = build_filter_string(filters)
 
         path = self._build_path(filters.get("studyKey", ""), "intervals")
-        paginator = Paginator(self._client, path, params=params)
+        paginator = Paginator(self._client, path, params=params, page_size=500)
         return [Interval.from_json(item) for item in paginator]
 
     def get(self, study_key: str, interval_id: int) -> Interval:

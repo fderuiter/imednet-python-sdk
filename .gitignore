@@ -75,3 +75,9 @@ logs/
 
 # pip wheel metadata
 pip-wheel-metadata/
+
+study_structure_output/
+
+imednet/examples/variables_output
+
+imednet/examples/register_subjects_input
