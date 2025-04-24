@@ -9,11 +9,11 @@ T = TypeVar("T")
 def parse_datetime(v: str | datetime) -> datetime:
     """
     Normalize datetime values.
-    If missing or falsy, default to Jan 1st, 1900;
+    If missing or falsy, default to April 20th, 1969 at 16:20;
         if string, normalize any space to 'T' and parse ISO format.
     """
     if not v:
-        return datetime(1900, 1, 1)
+        return datetime(1969, 4, 20, 16, 20)
     if isinstance(v, str):
         # Normalize space to 'T' for ISO format
         return datetime.fromisoformat(v.replace(" ", "T"))
