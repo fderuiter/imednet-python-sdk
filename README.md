@@ -53,24 +53,24 @@ Then, you can use the SDK like this:
 
 ```python
 import os
-from imednet.sdk import ImednetSDK as ImednetClient
+import json
+from imednet.sdk import ImednetSDK
+from imednet.workflows.study_structure import get_study_structure
 
-# Credentials are read automatically from environment variables
+# Set your credentials and study key (or use environment variables)
 api_key = os.getenv("IMEDNET_API_KEY")
 security_key = os.getenv("IMEDNET_SECURITY_KEY")
-base_url = os.getenv("IMEDNET_BASE_URL") # Optional
+study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
+base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
+
+sdk = ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
 
 try:
-    client = ImednetClient(api_key=api_key, security_key=security_key, base_url=base_url)
-    
-    # Example: List the first 5 studies
-    studies = client.studies.list()
-    print("Studies found:")
-    for study in studies[:5]: # Limit to first 5 for brevity
-        print(f"- Name: {study.study_name}, Key: {study.study_key}")
-
+    structure = get_study_structure(sdk, study_key)
+    print("Study structure loaded:")
+    print(json.dumps(structure.model_dump(by_alias=True), indent=2, ensure_ascii=False, default=str))
 except Exception as e:
-    print(f"Error: {e}")
+    print(f"Error retrieving study structure: {e}")
 ```
 
 ### Using the Command Line Interface (CLI)
@@ -123,9 +123,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribu
 
 ## Governance and Roadmap
 
-This project is currently maintained by Bright Research. We welcome contributions!
-
-*(Optional: Add details about project governance, decision-making processes, and future development plans or roadmap here.)*
+This project is currently maintained by Bright Research.
 
 ## License
 
