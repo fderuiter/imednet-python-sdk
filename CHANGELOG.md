@@ -15,12 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CHANGELOG.md` file.
 - `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`.
 - `todo.md` for tracking future enhancements.
+- Example scripts for retrieving studies, sites, subjects, users, variables, and visits using the iMednet SDK.
+- Validators for model fields to normalize and default values; refactored models to utilize new validation logic.
 
 ### Changed
 
 - Switched project license from Proprietary to MIT License.
 - Updated `README.md` with badges, improved usage examples, installation instructions, and new sections.
 - Updated `pyproject.toml` to reflect MIT license and configure included files.
+- Refactored models to use new validation logic for field normalization and defaults.
 
 ### Removed
 
@@ -28,10 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- (No fixes noted in this set of changes)
+- Updated default datetime value in `parse_datetime` function.
 
 ## [0.1.0] - YYYY-MM-DD
-
-### Added
-
-- First release of the iMedNet Python SDK.
