@@ -102,8 +102,9 @@ imednet subjects list --help
 
 ## Documentation
 
-The full documentation is generated with Sphinx and output to `docs/_build/html`.
-To build it locally:
+The documentation is no longer automatically deployed or published online. To view the documentation, you must build it locally using Sphinx. The output will be in `docs/_build/html`.
+
+To build the documentation locally:
 
 ```bash
 poetry install --with dev
