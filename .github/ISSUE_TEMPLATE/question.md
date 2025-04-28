@@ -25,8 +25,8 @@ If your question relates to specific code, please provide a minimal, runnable sn
 
 **Environment (if applicable)**
 
--   SDK version:
--   Python version:
+- SDK version:
+- Python version:
 
 **Additional context**
 
