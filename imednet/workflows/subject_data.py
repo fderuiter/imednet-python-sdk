@@ -1,28 +1,73 @@
-"""Placeholder for a Subject Data Retrieval workflow."""
+"""Provides a workflow to retrieve comprehensive data for a specific subject."""
 
-# Purpose:
-# This module provides a higher-level workflow to retrieve comprehensive data
-# related to a specific subject within a study.
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-# Implementation:
-# 1. Define a class, perhaps named `SubjectDataWorkflow`.
-# 2. This class should accept the main SDK instance or the necessary endpoint instances
-#    (e.g., Subjects, Visits, Records) during initialization.
-# 3. Implement a method like `get_all_subject_data(study_key, subject_key)`.
-# 4. This method will orchestrate calls to various endpoints:
-#    a. Use `sdk.subjects.get_list` (or a future `get_by_key`) to fetch subject details.
-#    b. Use `sdk.visits.get_list` filtered by `subject_key` to get all visits for the subject.
-#    c. Use `sdk.records.get_list` filtered by `subject_key` (and potentially visit/form)
-#        to get all records.
-#    d. Potentially fetch related queries using `sdk.queries.get_list` filtered by `subject_key`.
-#    e. Aggregate and structure the retrieved data into a meaningful representation
-#       (e.g., a dictionary or a custom Pydantic model containing subject info,
-#       visits, records, queries).
-#    f. Handle pagination if necessary when calling list endpoints.
-#    g. Return the aggregated subject data.
+from pydantic import BaseModel, Field
+
+from ..models import Query, Record, Subject, Visit
+from ..utils.filters import build_filter_string
+
+if TYPE_CHECKING:
+    from ..sdk import ImednetSDK
+
+
+class SubjectComprehensiveData(BaseModel):
+    """Structure to hold aggregated data for a subject."""
+
+    subject_details: Optional[Subject] = Field(None, description="Core details of the subject.")
+    visits: List[Visit] = Field(default_factory=list, description="List of visits for the subject.")
+    records: List[Record] = Field(
+        default_factory=list, description="List of records for the subject."
+    )
+    queries: List[Query] = Field(
+        default_factory=list, description="List of queries related to the subject."
+    )
+
+
+class SubjectDataWorkflow:
+    """
+    Provides methods to retrieve comprehensive data related to a specific subject.
+
+    Args:
+        sdk: An instance of the ImednetSDK.
+    """
+
+    def __init__(self, sdk: "ImednetSDK"):
+        self._sdk = sdk
+
+    def get_all_subject_data(self, study_key: str, subject_key: str) -> SubjectComprehensiveData:
+        """
+        Retrieves subject details, visits, records, and queries for a specific subject.
+
+        Args:
+            study_key: The key identifying the study.
+            subject_key: The key identifying the subject.
+
+        Returns:
+            A SubjectComprehensiveData object containing the aggregated data.
+        """
+        results = SubjectComprehensiveData(subject_details=None)
+        subject_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
+        subject_filter_str = build_filter_string(subject_filter_dict)
+
+        # Fetch Subject Details
+        subject_list = self._sdk.subjects.list(study_key, filter=subject_filter_str)
+        if subject_list:
+            results.subject_details = subject_list[0]
+
+        # Fetch Visits
+        results.visits = self._sdk.visits.list(study_key, filter=subject_filter_str)
+
+        # Fetch Records
+        results.records = self._sdk.records.list(study_key, filter=subject_filter_str)
+
+        # Fetch Queries
+        results.queries = self._sdk.queries.list(study_key, filter=subject_filter_str)
+
+        return results
+
 
 # Integration:
-# - This module could be imported and used directly or accessed via the main SDK class
-#   if helper methods are added there
+# - Accessed via the main SDK instance
 #       (e.g., `sdk.workflows.subject_data.get_all_subject_data(...)`).
-# - It simplifies common tasks by abstracting away the need to call multiple individual endpoints.
+# - Simplifies common tasks by abstracting away the need to call multiple individual endpoints.

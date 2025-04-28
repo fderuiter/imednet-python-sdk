@@ -5,6 +5,14 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .validators import (
+    parse_bool,
+    parse_datetime,
+    parse_int_or_default,
+    parse_list_or_default,
+    parse_str_or_default,
+)
+
 
 class SubjectKeyword(BaseModel):
     keyword_name: str = Field("", alias="keywordName")
@@ -16,23 +24,15 @@ class SubjectKeyword(BaseModel):
 
     @field_validator("keyword_name", "keyword_key", mode="before")
     def _fill_strs(cls, v):
-        if v is None:
-            return ""
-        return v
+        return parse_str_or_default(v)
 
     @field_validator("keyword_id", mode="before")
     def _fill_ints(cls, v):
-        if v is None or v == "":
-            return 0
-        return int(v)
+        return parse_int_or_default(v)
 
     @field_validator("date_added", mode="before")
     def _parse_date_added(cls, v):
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> SubjectKeyword:
@@ -57,37 +57,27 @@ class Subject(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    # —— Coerce None/"" → defaults for ints
     @field_validator("subject_id", "site_id", mode="before")
     def _fill_ints(cls, v):
-        if v is None or v == "":
-            return 0
-        return int(v)
+        return parse_int_or_default(v)
 
-    # —— Coerce None → defaults for strings
     @field_validator(
         "study_key", "subject_oid", "subject_key", "subject_status", "site_name", mode="before"
     )
     def _fill_strs(cls, v):
-        if v is None:
-            return ""
-        return v
+        return parse_str_or_default(v)
 
-    # —— Coerce None → empty list
     @field_validator("keywords", mode="before")
     def _fill_list(cls, v):
-        if v is None:
-            return []
-        return v
+        return parse_list_or_default(v)
 
-    # —— Parse ISO strings (or default now()) for datetimes
+    @field_validator("deleted", mode="before")
+    def parse_bool_field(cls, v):
+        return parse_bool(v)
+
     @field_validator("enrollment_start_date", "date_created", "date_modified", mode="before")
     def _parse_datetimes(cls, v):
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Subject:

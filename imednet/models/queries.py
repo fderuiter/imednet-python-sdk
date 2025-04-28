@@ -5,6 +5,14 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .validators import (
+    parse_bool,
+    parse_datetime,
+    parse_int_or_default,
+    parse_list_or_default,
+    parse_str_or_default,
+)
+
 
 class QueryComment(BaseModel):
     sequence: int = Field(0, alias="sequence")
@@ -17,16 +25,21 @@ class QueryComment(BaseModel):
     # Allow instantiation via field names or aliases
     model_config = ConfigDict(populate_by_name=True)
 
+    @field_validator("annotation_status", "user", "comment", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @field_validator("sequence", mode="before")
+    def _fill_ints(cls, v):
+        return parse_int_or_default(v)
+
     @field_validator("date", mode="before")
     def _parse_date(cls, v):
-        """
-        Treat missing or empty as now(); parse ISO strings (normalize space to 'T').
-        """
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
+
+    @field_validator("closed", mode="before")
+    def parse_bool_field(cls, v):
+        return parse_bool(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> QueryComment:
@@ -53,16 +66,29 @@ class Query(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    @field_validator(
+        "study_key",
+        "subject_oid",
+        "annotation_type",
+        "description",
+        "variable",
+        "subject_key",
+        mode="before",
+    )
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @field_validator("subject_id", "annotation_id", "record_id", mode="before")
+    def _fill_ints(cls, v):
+        return parse_int_or_default(v)
+
+    @field_validator("query_comments", mode="before")
+    def _fill_list(cls, v):
+        return parse_list_or_default(v)
+
     @field_validator("date_created", "date_modified", mode="before")
     def _parse_datetimes(cls, v):
-        """
-        Treat missing or empty as now(); parse ISO strings (normalize space to 'T').
-        """
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Query:

@@ -5,6 +5,8 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .validators import parse_datetime, parse_int_or_default, parse_str_or_default
+
 
 class Coding(BaseModel):
     study_key: str = Field("", alias="studyKey")
@@ -30,17 +32,33 @@ class Coding(BaseModel):
     # allow population by field names as well as aliases
     model_config = ConfigDict(populate_by_name=True)
 
+    @field_validator(
+        "study_key",
+        "site_name",
+        "subject_key",
+        "form_name",
+        "form_key",
+        "variable",
+        "value",
+        "code",
+        "coded_by",
+        "reason",
+        "dictionary_name",
+        "dictionary_version",
+        mode="before",
+    )
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @field_validator(
+        "site_id", "subject_id", "form_id", "revision", "record_id", "coding_id", mode="before"
+    )
+    def _fill_ints(cls, v):
+        return parse_int_or_default(v)
+
     @field_validator("date_coded", mode="before")
     def _parse_date_coded(cls, v: str | datetime) -> datetime:
-        """
-        If missing or falsy, default to now(); if it's a string, normalize
-        any space to 'T' and parse ISO format.
-        """
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Coding:

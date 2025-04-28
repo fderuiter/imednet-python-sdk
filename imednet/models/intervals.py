@@ -5,6 +5,14 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .validators import (
+    parse_bool,
+    parse_datetime,
+    parse_int_or_default,
+    parse_list_or_default,
+    parse_str_or_default,
+)
+
 
 class FormSummary(BaseModel):
     form_id: int = Field(0, alias="formId")
@@ -20,6 +28,14 @@ class FormSummary(BaseModel):
         Create a FormSummary instance from JSON-like dict.
         """
         return cls.model_validate(data)
+
+    @field_validator("form_key", "form_name", mode="before")
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @field_validator("form_id", mode="before")
+    def _fill_ints(cls, v):
+        return parse_int_or_default(v)
 
 
 class Interval(BaseModel):
@@ -47,16 +63,46 @@ class Interval(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+    @field_validator(
+        "study_key",
+        "interval_name",
+        "interval_description",
+        "interval_group_name",
+        "timeline",
+        "defined_using_interval",
+        "window_calculation_form",
+        "window_calculation_date",
+        "actual_date_form",
+        "actual_date",
+        mode="before",
+    )
+    def _fill_strs(cls, v):
+        return parse_str_or_default(v)
+
+    @field_validator(
+        "interval_id",
+        "interval_sequence",
+        "interval_group_id",
+        "due_date_will_be_in",
+        "negative_slack",
+        "positive_slack",
+        "epro_grace_period",
+        mode="before",
+    )
+    def _fill_ints(cls, v):
+        return parse_int_or_default(v)
+
+    @field_validator("forms", mode="before")
+    def _fill_list(cls, v):
+        return parse_list_or_default(v)
+
     @field_validator("date_created", "date_modified", mode="before")
     def _parse_datetimes(cls, v: str | datetime) -> datetime:
-        """
-        If missing or falsy, default to now(); if string, normalize space to 'T' and parse ISO.
-        """
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
+
+    @field_validator("disabled", mode="before")
+    def parse_bool_field(cls, v: Any) -> bool:
+        return parse_bool(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Interval:

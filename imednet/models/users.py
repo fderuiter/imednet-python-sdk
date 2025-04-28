@@ -5,6 +5,14 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
+from .validators import (
+    parse_bool,
+    parse_datetime,
+    parse_int_or_default,
+    parse_list_or_default,
+    parse_str_or_default,
+)
+
 
 class Role(BaseModel):
     date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
@@ -22,32 +30,19 @@ class Role(BaseModel):
     # —— Parse or default datetimes
     @field_validator("date_created", "date_modified", mode="before")
     def _parse_datetimes(cls, v):
-        if not v:
-            return datetime.now()
-        if isinstance(v, str):
-            return datetime.fromisoformat(v.replace(" ", "T"))
-        return v
+        return parse_datetime(v)
 
-    # —— Coerce None/"" → default ints
     @field_validator("community_id", "level", mode="before")
     def _fill_ints(cls, v):
-        if v is None or v == "":
-            return 0
-        return int(v)
+        return parse_int_or_default(v)
 
-    # —— Coerce None → default strings
     @field_validator("role_id", "name", "description", "type", mode="before")
     def _fill_strs(cls, v):
-        if v is None:
-            return ""
-        return v
+        return parse_str_or_default(v)
 
-    # —— Coerce None → default bool
     @field_validator("inactive", mode="before")
-    def _fill_bool(cls, v):
-        if v is None:
-            return False
-        return bool(v)
+    def parse_bool_field(cls, v):
+        return parse_bool(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> Role:
@@ -69,23 +64,17 @@ class User(BaseModel):
     # —— Coerce None → default strings
     @field_validator("user_id", "login", "first_name", "last_name", "email", mode="before")
     def _fill_strs(cls, v):
-        if v is None:
-            return ""
-        return v
+        return parse_str_or_default(v)
 
     # —— Coerce None → default bool
     @field_validator("user_active_in_study", mode="before")
-    def _fill_active_flag(cls, v):
-        if v is None:
-            return False
-        return bool(v)
+    def _parse_active_flag(cls, v):
+        return parse_bool(v)
 
     # —— Coerce None → empty list for roles
     @field_validator("roles", mode="before")
     def _fill_roles(cls, v):
-        if v is None:
-            return []
-        return v
+        return parse_list_or_default(v)
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> User:
