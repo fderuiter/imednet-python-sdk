@@ -37,6 +37,7 @@ def build_filter_string(
         >>> build_filter_string({'type': ['A', 'B']})
         'type==A,type==B'
     """
+
     parts: List[str] = []
     for key, value in filters.items():
         if isinstance(value, tuple) and len(value) == 2:
