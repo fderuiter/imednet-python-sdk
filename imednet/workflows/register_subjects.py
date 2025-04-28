@@ -4,55 +4,52 @@ This workflow is self-contained and does not borrow from record_update.py.
 It provides a simple, robust interface for registering one or more subjects.
 """
 
-from typing import Any, List, Optional
+from typing import TYPE_CHECKING, Any, List, Optional
 
 from imednet.models.records import RegisterSubjectRequest
-from imednet.sdk import ImednetSDK
+
+# Use TYPE_CHECKING to avoid circular import at runtime
+if TYPE_CHECKING:
+    from imednet.sdk import ImednetSDK
 
 
 class RegisterSubjectsWorkflow:
     """
-    Workflow for registering one or more subjects (patients) in iMednet.
+    Manages the registration of subjects using the iMedNet SDK.
 
-    Example usage:
-        workflow = RegisterSubjectsWorkflow(sdk)
-        response = workflow.register_subjects(
-            study_key="PHARMADEMO",
-            subjects=[
-                {
-                    "formKey": "REG",
-                    "siteName": "Minneapolis",
-                    "data": {"textField": "Text value"}
-                },
-                # ... more subjects ...
-            ],
-            email_notify="user@domain.com"
-        )
+    Attributes:
+        _sdk (ImednetSDK): An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):
+    def __init__(self, sdk: "ImednetSDK"):  # Use string literal for type hint
         self._sdk = sdk
 
     def register_subjects(
         self,
         study_key: str,
-        subjects: List[dict],
+        subjects: List[RegisterSubjectRequest],
         email_notify: Optional[str] = None,
-    ) -> Any:
+    ) -> Any:  # Consider defining a more specific return type if possible
         """
-        Register one or more subjects in a study, validating each with RegisterSubjectRequest.
+        Registers multiple subjects in the specified study.
+
+        Args:
+            study_key: The key identifying the study.
+            subjects: A list of RegisterSubjectRequest objects, each defining a subject
+                      to be registered.
+            email_notify: Optional email address to notify upon completion.
+
+        Returns:
+            The response from the API call (e.g., a Job object or similar).
+
+        Raises:
+            ApiError: If the API call fails.
         """
-        if not isinstance(subjects, list) or not subjects:
-            raise ValueError("'subjects' must be a non-empty list of subject dicts.")
-        validated_payload = []
-        for idx, subj in enumerate(subjects):
-            try:
-                model = RegisterSubjectRequest(**subj)
-                validated_payload.append(model.model_dump(by_alias=True, exclude_unset=True))
-            except Exception as e:
-                raise ValueError(f"Subject at index {idx} failed validation: {e}")
-        return self._sdk.records.create(
-            study_key=study_key,
-            records_data=validated_payload,
-            email_notify=email_notify,
+        # Convert Pydantic models to dictionaries for the API call
+        subjects_data = [s.model_dump(by_alias=True) for s in subjects]
+
+        # Call the SDK's records endpoint to create (register) the subjects
+        response = self._sdk.records.create(
+            study_key=study_key, records_data=subjects_data, email_notify=email_notify
         )
+        return response

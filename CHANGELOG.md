@@ -7,30 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Features and Improvements
 
-- Initial project structure.
-- GitHub Actions workflow (`release.yml`) for automated PyPI publishing on tag pushes.
-- Codecov integration to CI workflow (`ci.yml`).
-- `CHANGELOG.md` file.
-- `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`.
-- `todo.md` for tracking future enhancements.
-- Example scripts for retrieving studies, sites, subjects, users, variables, and visits using the iMednet SDK.
-- Validators for model fields to normalize and default values; refactored models to utilize new validation logic.
-
-### Changed
-
-- Switched project license from Proprietary to MIT License.
-- Updated `README.md` with badges, improved usage examples, installation instructions, and new sections.
-- Updated `pyproject.toml` to reflect MIT license and configure included files.
-- Refactored models to use new validation logic for field normalization and defaults.
-
-### Removed
-
-- Version management from `imednet/__init__.py` (handled by Poetry).
+- Added PyPI, code style (Black), linter (Ruff), and typing (Mypy) badges to `README.md`.
+- Added `pandas` to development dependencies for workflow features.
+- Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.
 
 ### Fixed
 
-- Updated default datetime value in `parse_datetime` function.
+- Resolved circular import errors in `imednet/workflows/register_subjects.py` and `imednet/workflows/study_structure.py` by using `typing.TYPE_CHECKING`.
 
-## [0.1.0] - YYYY-MM-DD
+## [0.1.0] - 2025-04-28
+
+### Initial Features
+
+- Initial release of the iMedNet Python SDK.
+- Core client (`ImednetClient`) for handling API requests, authentication, and errors.
+- Endpoints for Studies, Sites, Users, Intervals, Forms, Variables, Records, Subjects, Visits, Queries, Jobs, Codings, Record Revisions.
+- Pydantic models for all API resources with validation.
+- Basic utility functions for date parsing and filter string building.
+- Initial workflows for Data Extraction, Record Mapping, Subject Registration, Query Management, and Study Structure retrieval.
+- Basic CLI interface using Typer.
+- Documentation setup with Sphinx.
+- CI setup with GitHub Actions (linting, testing, type checking).
+- Code formatting with Black and Ruff.
+- Initial unit tests (smoke test).
+- `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `LICENSE`.
