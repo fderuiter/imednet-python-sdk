@@ -18,15 +18,19 @@ class Keyword(BaseModel):
     """
     Represents a keyword associated with a record in the system.
 
-    This model is used to store metadata about a keyword, including its name, 
-    unique identifier, and the date it was added. It also includes custom 
+    This model is used to store metadata about a keyword, including its name,
+    unique identifier, and the date it was added. It also includes custom
     validators to ensure data consistency.
 
     Attributes:
-        keyword_name (str): The name of the keyword. Defaults to an empty string.
-        keyword_key (str): A unique key associated with the keyword. Defaults to an empty string.
-        keyword_id (int): A unique identifier for the keyword. Defaults to 0.
-        date_added (datetime): The timestamp when the keyword was added. Defaults to the current datetime.
+        keyword_name (str): The name of the keyword.
+            Defaults to an empty string.
+        keyword_key (str): A unique key associated with the keyword.
+            Defaults to an empty string.
+        keyword_id (int): A unique identifier for the keyword.
+            Defaults to 0.
+        date_added (datetime): The timestamp when the keyword was added.
+            Defaults to the current datetime.
     """
 
     keyword_name: str = Field("", alias="keywordName")
