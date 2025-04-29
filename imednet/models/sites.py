@@ -9,6 +9,18 @@ from .validators import parse_datetime, parse_int_or_default, parse_str_or_defau
 
 
 class Site(BaseModel):
+    """
+    Represents a clinical study site with associated metadata.
+
+    Attributes:
+        study_key (str): A unique identifier for the study to which the site belongs.
+        site_id (int): A unique identifier for the site.
+        site_name (str): The name of the site.
+        site_enrollment_status (str): The enrollment status of the site (e.g., active, inactive).
+        date_created (datetime): The timestamp when the site was created.
+        date_modified (datetime): The timestamp when the site was last modified.
+    """
+
     study_key: str = Field("", alias="studyKey")
     site_id: int = Field(0, alias="siteId")
     site_name: str = Field("", alias="siteName")

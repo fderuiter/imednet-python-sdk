@@ -9,6 +9,29 @@ from .validators import parse_bool, parse_datetime, parse_int_or_default, parse_
 
 
 class Visit(BaseModel):
+    """
+    Represents a visit in a clinical study.
+    The Visit class models a subject's visit within a clinical study,
+    storing information about when the visit occurred, when it was scheduled,
+    and the associated study and subject details.
+    Attributes:
+        visit_id (int): Unique identifier for the visit.
+        study_key (str): Key identifying the study to which this visit belongs.
+        interval_id (int): Identifier for the interval associated with this visit.
+        interval_name (str): Name of the interval associated with this visit.
+        subject_id (int): Identifier for the subject who attended the visit.
+        subject_key (str): Key identifying the subject who attended the visit.
+        start_date (Optional[datetime]): The date and time when the visit started.
+        end_date (Optional[datetime]): The date and time when the visit ended.
+        due_date (Optional[datetime]): The date and time when the visit was scheduled.
+        visit_date (Optional[datetime]): The date and time when the visit actually occurred.
+        visit_date_form (str): Form identifier associated with the visit date.
+        visit_date_question (str): Question identifier associated with the visit date.
+        deleted (bool): Flag indicating whether this visit has been marked as deleted.
+        date_created (datetime): The date and time when this visit record was created.
+        date_modified (datetime): The date and time when this visit record was last modified.
+    """
+
     visit_id: int = Field(0, alias="visitId")
     study_key: str = Field("", alias="studyKey")
     interval_id: int = Field(0, alias="intervalId")
