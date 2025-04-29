@@ -9,6 +9,15 @@ from .validators import parse_datetime, parse_int_or_default, parse_str_or_defau
 
 
 class Site(BaseModel):
+    """_summary_
+
+    Args:
+        BaseModel (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     study_key: str = Field("", alias="studyKey")
     site_id: int = Field(0, alias="siteId")
     site_name: str = Field("", alias="siteName")

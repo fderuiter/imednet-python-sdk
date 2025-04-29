@@ -9,6 +9,34 @@ from .validators import parse_bool, parse_datetime, parse_int_or_default, parse_
 
 
 class RecordRevision(BaseModel):
+    """
+    A Pydantic model representing record revision data in the iMedNet system.
+    This class models record revisions with properties such as study key, record IDs,
+    revision numbers, statuses, subject information, site details, and audit trail
+    information including user, role, and reason for change.
+    Attributes:
+        study_key (str): The unique identifier for the study.
+        record_revision_id (int): The identifier for the specific record revision.
+        record_id (int): The identifier for the record.
+        record_oid (str): The object identifier for the record.
+        record_revision (int): The revision number for the record.
+        data_revision (int): The revision number for the data.
+        record_status (str): The current status of the record (e.g., "Complete", "Incomplete").
+        subject_id (int): The identifier for the subject.
+        subject_oid (str): The object identifier for the subject.
+        subject_key (str): The unique key for the subject.
+        site_id (int): The identifier for the site.
+        form_key (str): The key identifying the form.
+        interval_id (int): The identifier for the interval.
+        role (str): The role of the user who created or modified the revision.
+        user (str): The username of the person who created or modified the revision.
+        reason_for_change (str): Documentation of why the change was made.
+        deleted (bool): Flag indicating if the record revision is deleted.
+        date_created (datetime): The timestamp when the revision was created.
+    Methods:
+        from_json: Creates a RecordRevision instance from a JSON-like dictionary.
+    """
+
     study_key: str = Field("", alias="studyKey")
     record_revision_id: int = Field(0, alias="recordRevisionId")
     record_id: int = Field(0, alias="recordId")

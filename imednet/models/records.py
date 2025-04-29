@@ -15,6 +15,15 @@ from .validators import (
 
 
 class Keyword(BaseModel):
+    """_summary_
+
+    Args:
+        BaseModel (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     keyword_name: str = Field("", alias="keywordName")
     keyword_key: str = Field("", alias="keywordKey")
     keyword_id: int = Field(0, alias="keywordId")
@@ -40,6 +49,15 @@ class Keyword(BaseModel):
 
 
 class Record(BaseModel):
+    """_summary_
+
+    Args:
+        BaseModel (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     study_key: str = Field("", alias="studyKey")
     interval_id: int = Field(0, alias="intervalId")
     form_id: int = Field(0, alias="formId")

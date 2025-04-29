@@ -51,6 +51,19 @@ class Role(BaseModel):
 
 
 class User(BaseModel):
+    """A model representing a user in the iMedNet system.
+    This class encapsulates all user information including identification, personal details,
+    study participation status, and assigned roles.
+        user_id (str): The unique identifier for the user.
+        login (str): The user's login name.
+        first_name (str): The user's first name.
+        last_name (str): The user's last name.
+        email (str): The user's email address.
+        user_active_in_study (bool): Flag indicating whether the user is active in the study.
+        roles (List[Role]): List of roles assigned to the user.
+        User: A fully instantiated User object.
+    """
+
     user_id: str = Field("", alias="userId")
     login: str = Field("", alias="login")
     first_name: str = Field("", alias="firstName")
