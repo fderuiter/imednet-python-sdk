@@ -30,7 +30,7 @@ def get_sdk() -> ImednetSDK:
     """Initializes and returns the ImednetSDK instance using env vars."""
     api_key = os.getenv("IMEDNET_API_KEY")
     security_key = os.getenv("IMEDNET_SECURITY_KEY")
-    base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
+    base_url = os.getenv("IMEDNET_BASE_URL", "https://edc.prod.imednetapi.com")  # Default value
 
     if not api_key or not security_key:
         print(
@@ -43,7 +43,7 @@ def get_sdk() -> ImednetSDK:
         sdk = ImednetSDK(
             api_key=api_key,
             security_key=security_key,
-            base_url=base_url if base_url else None,
+            base_url=base_url,
         )
         return sdk
     except Exception as e:
