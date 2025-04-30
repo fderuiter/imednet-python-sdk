@@ -23,19 +23,19 @@ class SubjectKeyword(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("keyword_name", "keyword_key", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("keyword_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("date_added", mode="before")
-    def _parse_date_added(cls, v):
+    def _parse_date_added(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> SubjectKeyword:
+    def from_json(cls, data: Dict[str, Any]) -> "SubjectKeyword":
         return cls.model_validate(data)
 
 
@@ -76,27 +76,27 @@ class Subject(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("subject_id", "site_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator(
         "study_key", "subject_oid", "subject_key", "subject_status", "site_name", mode="before"
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("keywords", mode="before")
-    def _fill_list(cls, v):
+    def _fill_list(cls, v: Any) -> list[SubjectKeyword]:
         return parse_list_or_default(v)
 
     @field_validator("deleted", mode="before")
-    def parse_bool_field(cls, v):
+    def parse_bool_field(cls, v: Any) -> bool:
         return parse_bool(v)
 
     @field_validator("enrollment_start_date", "date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v):
+    def _parse_datetimes(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Subject:
+    def from_json(cls, data: Dict[str, Any]) -> "Subject":
         return cls.model_validate(data)

@@ -77,13 +77,13 @@ class Coding(BaseModel):
         "dictionary_version",
         mode="before",
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator(
         "site_id", "subject_id", "form_id", "revision", "record_id", "coding_id", mode="before"
     )
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("date_coded", mode="before")
@@ -91,7 +91,7 @@ class Coding(BaseModel):
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Coding:
+    def from_json(cls, data: Dict[str, Any]) -> "Coding":
         """
         Create a Coding instance from a JSON-like dict.
         """

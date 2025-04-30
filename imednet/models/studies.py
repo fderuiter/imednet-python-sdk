@@ -39,13 +39,13 @@ class Study(BaseModel):
     @field_validator(
         "sponsor_key", "study_key", "study_name", "study_description", "study_type", mode="before"
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: str) -> str:
         return parse_str_or_default(v)
 
     @field_validator("study_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: int) -> int:
         return parse_int_or_default(v)
 
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_dates(cls, v):
+    def _parse_dates(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)

@@ -83,7 +83,9 @@ class Client:
     def __enter__(self) -> Client:
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(
+        self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: object | None
+    ) -> None:
         self.close()
 
     def close(self) -> None:

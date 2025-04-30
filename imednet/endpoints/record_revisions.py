@@ -17,7 +17,7 @@ class RecordRevisionsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[RecordRevision]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[RecordRevision]:
         """
         List record revisions in a study with optional filtering.
 

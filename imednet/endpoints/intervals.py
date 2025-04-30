@@ -17,7 +17,7 @@ class IntervalsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Interval]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Interval]:
         """
         List intervals in a study with optional filtering.
 

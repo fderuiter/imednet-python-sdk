@@ -53,7 +53,7 @@ def get_sdk() -> ImednetSDK:
 
 
 @app.callback()
-def main(ctx: typer.Context):
+def main(ctx: typer.Context) -> None:
     """
     iMednet SDK CLI. Configure authentication via environment variables:
     IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, [IMEDNET_BASE_URL]
@@ -100,7 +100,7 @@ app.add_typer(studies_app)
 
 
 @studies_app.command("list")
-def list_studies():
+def list_studies() -> None:
     """List available studies."""
     sdk = get_sdk()
     try:
@@ -127,7 +127,7 @@ app.add_typer(sites_app)
 @sites_app.command("list")
 def list_sites(
     study_key: str = typer.Argument(..., help="The key identifying the study."),
-):
+) -> None:
     """List sites for a specific study."""
     sdk = get_sdk()
     try:
@@ -160,7 +160,7 @@ def list_subjects(
         "-f",
         help="Filter criteria (e.g., 'subject_status=Screened'). " "Repeat for multiple filters.",
     ),
-):
+) -> None:
     """List subjects for a specific study, with optional filtering."""
     sdk = get_sdk()
     try:
@@ -210,7 +210,7 @@ def extract_records(
         "--visit-filter",
         help="Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters.",
     ),
-):
+) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
     sdk = get_sdk()
     workflow = DataExtractionWorkflow(sdk)
@@ -247,7 +247,7 @@ def extract_records(
 
 # --- Original Hello Command (can be removed or kept for testing) ---
 @app.command()
-def hello(name: str = "World"):
+def hello(name: str = "World") -> None:
     """Says hello"""
     print(f"Hello {name}")
 

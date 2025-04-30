@@ -23,18 +23,18 @@ class FormSummary(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> FormSummary:
+    def from_json(cls, data: Dict[str, Any]) -> "FormSummary":
         """
         Create a FormSummary instance from JSON-like dict.
         """
         return cls.model_validate(data)
 
     @field_validator("form_key", "form_name", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("form_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
 
@@ -105,7 +105,7 @@ class Interval(BaseModel):
         "actual_date",
         mode="before",
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator(
@@ -118,11 +118,11 @@ class Interval(BaseModel):
         "epro_grace_period",
         mode="before",
     )
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("forms", mode="before")
-    def _fill_list(cls, v):
+    def _fill_list(cls, v: Any) -> list[FormSummary]:
         return parse_list_or_default(v)
 
     @field_validator("date_created", "date_modified", mode="before")
@@ -134,7 +134,7 @@ class Interval(BaseModel):
         return parse_bool(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Interval:
+    def from_json(cls, data: Dict[str, Any]) -> "Interval":
         """
         Create an Interval instance from JSON-like dict, including nested forms.
         """

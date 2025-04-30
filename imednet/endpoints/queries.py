@@ -17,7 +17,7 @@ class QueriesEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Query]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Query]:
         """
         List queries in a study with optional filtering.
 

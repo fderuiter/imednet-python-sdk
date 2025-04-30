@@ -5,6 +5,8 @@ from typing import Any, Dict, List, Optional
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.variables import Variable
+
+__all__ = ["Variable"]
 from imednet.utils.filters import build_filter_string
 
 
@@ -17,7 +19,7 @@ class VariablesEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Variable]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Variable]:
         """
         List variables in a study with optional filtering.
 
