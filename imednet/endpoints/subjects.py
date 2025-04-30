@@ -17,7 +17,7 @@ class SubjectsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Subject]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Subject]:
         """
         List subjects in a study with optional filtering.
 

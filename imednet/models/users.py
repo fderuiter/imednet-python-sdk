@@ -29,23 +29,23 @@ class Role(BaseModel):
 
     # —— Parse or default datetimes
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v):
+    def _parse_datetimes(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)
 
     @field_validator("community_id", "level", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("role_id", "name", "description", "type", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("inactive", mode="before")
-    def parse_bool_field(cls, v):
+    def parse_bool_field(cls, v: Any) -> bool:
         return parse_bool(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Role:
+    def from_json(cls, data: Dict[str, Any]) -> "Role":
         """Create a Role from JSON-like dict."""
         return cls.model_validate(data)
 
@@ -76,21 +76,21 @@ class User(BaseModel):
 
     # —— Coerce None → default strings
     @field_validator("user_id", "login", "first_name", "last_name", "email", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     # —— Coerce None → default bool
     @field_validator("user_active_in_study", mode="before")
-    def _parse_active_flag(cls, v):
+    def _parse_active_flag(cls, v: Any) -> bool:
         return parse_bool(v)
 
     # —— Coerce None → empty list for roles
     @field_validator("roles", mode="before")
-    def _fill_roles(cls, v):
+    def _fill_roles(cls, v: Any) -> list[Role]:
         return parse_list_or_default(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> User:
+    def from_json(cls, data: Dict[str, Any]) -> "User":
         """Create a User from JSON-like dict, with nested Role parsing."""
         return cls.model_validate(data)
 

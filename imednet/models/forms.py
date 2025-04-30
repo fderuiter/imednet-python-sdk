@@ -56,11 +56,11 @@ class Form(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("study_key", "form_key", "form_name", "form_type", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("form_id", "revision", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator(
@@ -83,7 +83,7 @@ class Form(BaseModel):
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Form:
+    def from_json(cls, data: Dict[str, Any]) -> "Form":
         """
         Create a Form instance from JSON-like dict.
         """

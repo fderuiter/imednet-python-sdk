@@ -75,12 +75,13 @@ class RecordMapper:
         label_map: Dict[str, str] = {v.variable_name: v.label for v in vars_all}
 
         # 2. Build dynamic Pydantic model for recordData with type hints (simplified)
-        fields: Dict[str, tuple] = {}
+
+        fields: dict[str, tuple[type, object]] = {}
+        # FieldInfo is the correct type for Field()
         for key in variable_keys:
             # Use Any type since specific mapping is removed
-            python_type = Any
             fields[key] = (
-                Optional[python_type],
+                object,
                 Field(None, alias=key, description=label_map.get(key, key)),
             )  # Use get for safety
 

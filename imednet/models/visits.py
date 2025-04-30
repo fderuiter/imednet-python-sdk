@@ -58,29 +58,29 @@ class Visit(BaseModel):
         "visit_date_question",
         mode="before",
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("visit_id", "interval_id", "subject_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("start_date", "end_date", "due_date", "visit_date", mode="before")
-    def _clean_empty_dates(cls, v):
+    def _clean_empty_dates(cls, v: Optional[datetime]) -> Optional[datetime]:
         if not v:
             return None
         return v
 
     @field_validator("deleted", mode="before")
-    def parse_bool_field(cls, v):
+    def parse_bool_field(cls, v: Any) -> bool:
         return parse_bool(v)
 
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v):
+    def _parse_datetimes(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Visit:
+    def from_json(cls, data: Dict[str, Any]) -> "Visit":
         """
         Create a Visit instance from a JSON-like dict, honoring all the same parsing rules
         as the original dataclass.from_json.

@@ -17,7 +17,7 @@ class SitesEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Site]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Site]:
         """
         List sites in a study with optional filtering.
 

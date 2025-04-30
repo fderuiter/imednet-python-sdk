@@ -17,7 +17,7 @@ class CodingsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Coding]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Coding]:
         """
         List codings in a study with optional filtering.
 

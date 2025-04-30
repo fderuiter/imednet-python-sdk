@@ -37,15 +37,15 @@ class Job(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("job_id", "batch_id", "state", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("date_created", "date_started", "date_finished", mode="before")
-    def _parse_datetimes(cls, v):
+    def _parse_datetimes(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Job:
+    def from_json(cls, data: Dict[str, Any]) -> "Job":
         """
         Create a Job instance from a JSON-like dict.
         """

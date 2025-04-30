@@ -6,6 +6,8 @@ from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
+
+__all__ = ["Record"]
 from imednet.utils.filters import build_filter_string
 
 
@@ -19,7 +21,10 @@ class RecordsEndpoint(BaseEndpoint):
     path = "/api/v1/edc/studies"
 
     def list(
-        self, study_key: Optional[str] = None, record_data_filter: Optional[str] = None, **filters
+        self,
+        study_key: Optional[str] = None,
+        record_data_filter: Optional[str] = None,
+        **filters: Any,
     ) -> List[Record]:
         """
         List records in a study with optional filtering.

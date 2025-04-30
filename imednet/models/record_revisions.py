@@ -68,7 +68,7 @@ class RecordRevision(BaseModel):
         "interval_id",
         mode="before",
     )
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator(
@@ -83,19 +83,19 @@ class RecordRevision(BaseModel):
         "reason_for_change",
         mode="before",
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("deleted", mode="before")
-    def _parse_deleted(cls, v):
+    def _parse_deleted(cls, v: Any) -> bool:
         return parse_bool(v)
 
     @field_validator("date_created", mode="before")
-    def _parse_date_created(cls, v):
+    def _parse_date_created(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> RecordRevision:
+    def from_json(cls, data: Dict[str, Any]) -> "RecordRevision":
         """
         Create a RecordRevision instance from JSON-like dict.
         """

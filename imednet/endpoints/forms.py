@@ -17,7 +17,7 @@ class FormsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Form]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Form]:
         """
         List forms in a study with optional filtering.
 

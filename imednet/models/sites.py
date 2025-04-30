@@ -32,19 +32,19 @@ class Site(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("study_key", "site_name", "site_enrollment_status", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("site_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v):
+    def _parse_datetimes(cls, v: str | datetime) -> datetime:
         return parse_datetime(v)
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Site:
+    def from_json(cls, data: Dict[str, Any]) -> "Site":
         """
         Create a Site instance from JSON-like dict.
         """
