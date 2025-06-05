@@ -6,4 +6,5 @@
   <li class="list-group-item">{{ q.description }}</li>
   {% endfor %}
 </ul>
+<a href="{{ url_for('query_state_counts', study_key=study_key) }}" class="btn btn-secondary mt-3">View Counts</a>
 {% endblock %}

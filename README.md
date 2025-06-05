@@ -108,25 +108,42 @@ asyncio.run(main())
 
 ### Using the Command Line Interface (CLI)
 
-After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
+After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command. The CLI groups functionality into several subcommands:
+```bash
+# Manage stored credentials
+imednet credentials save
 
-```powershell
-# List available studies
+# Study and site information
 imednet studies list
+imednet sites list <STUDY_KEY>
 
-# List sites for a specific study (replace STUDY_KEY)
-imednet sites list STUDY_KEY
+# Subject management with optional filtering
+imednet subjects list <STUDY_KEY> --filter "subject_status=Screened"
 
-# List subjects for a specific study, filtering by status (replace STUDY_KEY)
-imednet subjects list STUDY_KEY --filter "subject_status=Screened"
+# User listing with inactive toggle
+imednet users list <STUDY_KEY> --include-inactive
+
+# Query management
+imednet queries open <STUDY_KEY>
+imednet queries counts <STUDY_KEY>
+
+# Data workflows
+imednet workflows extract-records <STUDY_KEY> \
+    --record-filter form_key=AE \
+    --subject-filter subject_status=Screened
+imednet workflows register-subjects <STUDY_KEY> subjects.json
 
 # Get help for a specific command
-imednet subjects list --help 
+imednet subjects list --help
 ```
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples, such as `get_open_queries.py`, can be found in the
   `imednet/examples/` directory.
+
+The accompanying web UI (`imednet-web`) mirrors these capabilities, providing
+forms for filters and workflow execution so you can perform the same tasks in
+your browser.
 
 ### Using the Web UI
 
