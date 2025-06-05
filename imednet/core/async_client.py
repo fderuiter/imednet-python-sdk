@@ -84,7 +84,9 @@ class AsyncClient:
             reraise=True,
         )
         try:
-            response = await retryer(lambda: self._client.request(method, url, **kwargs))
+            response: httpx.Response = await retryer(
+                lambda: self._client.request(method, url, **kwargs)
+            )
         except RetryError as e:
             logger.error("Async request failed after retries: %s", e)
             raise RequestError("Network request failed after retries")
