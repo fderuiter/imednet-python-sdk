@@ -3,7 +3,8 @@ Tutorials
 
 This section walks through common tasks using the ``imednet-python-sdk``. Each
 tutorial assumes that you have installed the package and configured your API
-credentials as environment variables as shown in the :doc:`README <../README>`.
+credentials either as environment variables or by storing them with
+``imednet credentials save`` as shown in the :doc:`README <../README>`.
 
 Authenticating and fetching studies
 -----------------------------------

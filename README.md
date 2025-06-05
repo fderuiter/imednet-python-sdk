@@ -54,6 +54,16 @@ $env:IMEDNET_SECURITY_KEY="your_security_key_here"
 # export IMEDNET_BASE_URL="https://your.imednet.instance/api"
 ```
 
+You can also store these credentials securely using the CLI:
+
+```bash
+imednet credentials save
+```
+
+When running the CLI or web UI, set the environment variable
+`IMEDNET_CRED_PASSWORD` to the encryption password so the stored credentials can
+be loaded.
+
 ### Using the Python SDK
 
 Then, you can use the SDK like this:
@@ -117,6 +127,17 @@ imednet subjects list --help
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples, such as `get_open_queries.py`, can be found in the
   `imednet/examples/` directory.
+
+### Using the Web UI
+
+Run a lightweight web interface with:
+
+```bash
+imednet-web
+```
+
+Ensure the same environment variables are set as for the CLI. The web app lists
+available studies and allows drilling down into subjects for each study.
 
 ## Documentation
 

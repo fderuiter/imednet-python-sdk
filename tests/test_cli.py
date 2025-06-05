@@ -12,6 +12,7 @@ from imednet.cli import (
     list_subjects,
     list_users,
     parse_filter_args,
+    save_credentials_cmd,
 )
 from imednet.core.exceptions import ApiError
 
@@ -44,6 +45,27 @@ def test_get_sdk_missing_credentials():
     with pytest.raises(typer.Exit) as excinfo:
         get_sdk(ctx)
     assert excinfo.value.exit_code == 1
+
+
+@patch.dict(os.environ, {}, clear=True)
+@patch("imednet.cli.resolve_credentials")
+@patch("imednet.cli.ImednetSDK")
+def test_get_sdk_from_saved(mock_sdk, mock_resolve):
+    mock_resolve.return_value = ("saved", "secret", "STUDY1")
+    mock_instance = MagicMock()
+    mock_sdk.return_value = mock_instance
+
+    ctx = MagicMock()
+    ctx.obj = {}
+    sdk = get_sdk(ctx)
+
+    mock_sdk.assert_called_once_with(
+        api_key="saved",
+        security_key="secret",
+        base_url="https://edc.prod.imednetapi.com",
+    )
+    assert os.environ["IMEDNET_STUDY_KEY"] == "STUDY1"
+    assert sdk == mock_instance
 
 
 @patch.dict(
@@ -185,6 +207,14 @@ def test_extract_records_success(mock_get_sdk):
         )
 
         mock_workflow.extract_records_by_criteria.assert_called_once()
+
+
+@patch("imednet.cli.store_creds")
+@patch("imednet.cli.typer.prompt")
+def test_save_credentials_cmd(mock_prompt, mock_store):
+    mock_prompt.side_effect = ["key", "sec", "STUDY", "pass", "pass"]
+    save_credentials_cmd()
+    mock_store.assert_called_once_with("key", "sec", "STUDY", "pass")
 
 
 @patch("imednet.cli.print")
