@@ -20,6 +20,7 @@ load_dotenv()
 
 app = typer.Typer(help="iMednet SDK Command Line Interface")
 
+
 def get_sdk(ctx: typer.Context) -> ImednetSDK:
     """Initializes and caches the ImednetSDK instance using env vars."""
     if "sdk" in ctx.obj:
@@ -68,9 +69,7 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
     filter_dict: Dict[str, Union[str, bool, int]] = {}
     for arg in filter_args:
         if "=" not in arg:
-            print(
-                f"[bold red]Error:[/bold red] Invalid filter format: '{arg}'. " "Use 'key=value'."
-            )
+            print(f"[bold red]Error:[/bold red] Invalid filter format: '{arg}'. Use 'key=value'.")
             raise typer.Exit(code=1)
         key, value = arg.split("=", 1)
         # Basic type inference (can be expanded)
@@ -154,7 +153,7 @@ def list_subjects(
         None,
         "--filter",
         "-f",
-        help="Filter criteria (e.g., 'subject_status=Screened'). " "Repeat for multiple filters.",
+        help="Filter criteria (e.g., 'subject_status=Screened'). Repeat for multiple filters.",
     ),
 ) -> None:
     """List subjects for a specific study, with optional filtering."""
@@ -226,7 +225,7 @@ def extract_records(
     record_filter: Optional[List[str]] = typer.Option(
         None,
         "--record-filter",
-        help="Record filter criteria (e.g., 'form_key=DEMOG'). " "Repeat for multiple filters.",
+        help="Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters.",
     ),
     subject_filter: Optional[List[str]] = typer.Option(
         None,
@@ -237,7 +236,7 @@ def extract_records(
     visit_filter: Optional[List[str]] = typer.Option(
         None,
         "--visit-filter",
-        help="Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters.",
+        help="Visit filter criteria (e.g., 'visit_key=SCREENING'). Repeat for multiple filters.",
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
