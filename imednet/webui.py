@@ -72,7 +72,7 @@ def create_app() -> Flask:
         return render_template("users.html", users=users)
 
     @app.route("/credentials", methods=["GET", "POST"])
-    def credentials_form() -> str:
+    def credentials_form() -> Response | str:
         if request.method == "POST":
             save_credentials(
                 request.form["api_key"],
