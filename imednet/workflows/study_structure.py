@@ -1,3 +1,5 @@
+"""Retrieve the hierarchical structure of a study in iMednet."""
+
 from typing import TYPE_CHECKING, Dict, List
 
 # Import potential exceptions
@@ -19,18 +21,7 @@ if TYPE_CHECKING:
 
 
 def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
-    """Fetches and aggregates study structure information (intervals, forms, variables).
-
-    Args:
-        sdk: An initialized ImednetSDK instance.
-        study_key: The key of the study to fetch structure for.
-
-    Returns:
-        A StudyStructure object containing nested intervals, forms, and variables.
-
-    Raises:
-        ImednetError: If fetching any part of the structure fails.
-    """
+    """Return the intervals, forms and variables comprising a study."""
     try:
         # Fetch all components concurrently (if async were used) or sequentially
         intervals: List[Interval] = sdk.intervals.list(study_key)

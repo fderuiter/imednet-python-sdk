@@ -1,3 +1,5 @@
+"""Models representing iMednet studies and their properties."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -8,22 +10,7 @@ from .validators import parse_datetime, parse_int_or_default, parse_str_or_defau
 
 
 class Study(BaseModel):
-    """Represents a Study in the iMedNet system.
-    This model represents a study in the iMedNet system, including information
-    about the sponsor, study identifiers, name, description, type, and
-    creation/modification dates.
-        sponsor_key (str): The key identifier for the study sponsor. Defaults to "".
-        study_key (str): The unique key identifier for the study. Defaults to "".
-        study_id (int): The numeric identifier for the study. Defaults to 0.
-        study_name (str): The name of the study. Defaults to "".
-        study_description (str): A description of the study. Defaults to "".
-        study_type (str): The type of the study. Defaults to "".
-        date_created (datetime): The date and time when the study was created.
-            Defaults to current time.
-        date_modified (datetime): The date and time when the study was last modified.
-            Defaults to current time.
-        Study: A Study object representing a study in the iMedNet system.
-    """
+    """Represents a study with identifiers and metadata."""
 
     sponsor_key: str = Field("", alias="sponsorKey")
     study_key: str = Field("", alias="studyKey")

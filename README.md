@@ -115,11 +115,14 @@ imednet subjects list --help
 ```
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
-- More examples can be found in the `imednet/examples/` directory.
+- More examples, such as `get_open_queries.py`, can be found in the
+  `imednet/examples/` directory.
 
 ## Documentation
 
-The full documentation is generated with Sphinx and output to `docs/_build/html`.
+The full documentation, including API reference and tutorials, is generated with
+Sphinx and output to `docs/_build/html`. You can browse it online after
+building, or view the `tutorials` section for step‑by‑step guides.
 To build it locally:
 
 ```bash

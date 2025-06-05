@@ -1,3 +1,5 @@
+"""Models describing data queries and associated comments."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -50,32 +52,7 @@ class QueryComment(BaseModel):
 
 
 class Query(BaseModel):
-    """
-    Represents a Query object within the imednet system,
-    encapsulating information about a query raised on a study subject or annotation.
-    Attributes:
-        study_key (str): Unique key identifying the study.
-        subject_id (int): Numeric identifier for the subject.
-        subject_oid (str): Object identifier for the subject.
-        annotation_type (str): Type of annotation associated with the query.
-        annotation_id (int): Numeric identifier for the annotation.
-        type (Optional[str]): Type/category of the query.
-        description (str): Description or details of the query.
-        record_id (int): Identifier for the associated record.
-        variable (str): Name of the variable related to the query.
-        subject_key (str): Key for the subject within the study.
-        date_created (datetime): Timestamp when the query was created.
-        date_modified (datetime): Timestamp when the query was last modified.
-        query_comments (List[QueryComment]): List of comments associated with the query.
-    Methods:
-        from_json(data: Dict[str, Any]) -> Query:
-            Creates a Query instance from a JSON-like dictionary, including nested comments.
-    Field Validators:
-        _fill_strs: Ensures string fields are properly parsed or defaulted.
-        _fill_ints: Ensures integer fields are properly parsed or defaulted.
-        _fill_list: Ensures list fields are properly parsed or defaulted.
-        _parse_datetimes: Ensures datetime fields are properly parsed.
-    """
+    """Data model describing a query raised on study data."""
 
     study_key: str = Field("", alias="studyKey")
     subject_id: int = Field(0, alias="subjectId")

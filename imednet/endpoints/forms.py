@@ -23,7 +23,7 @@ class FormsEndpoint(BaseEndpoint):
 
         Args:
             study_key: Study identifier (uses default from context if not specified)
-            **filters: Additional filter parameters
+            ``**filters``: Additional filter parameters
 
         Returns:
             List of Form objects

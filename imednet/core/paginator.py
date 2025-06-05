@@ -1,6 +1,4 @@
-"""
-Pagination helper for iterating through paginated API responses.
-"""
+"""Pagination helper for iterating through paginated API responses."""
 
 from typing import Any, Dict, Iterator, Optional
 
@@ -8,14 +6,7 @@ import httpx
 
 
 class Paginator:
-    """
-    Iterate over pages of results from the iMednet API.
-
-    Example:
-        paginator = Paginator(client, "/api/v1/edc/studies/{study_key}/sites")
-        for item in paginator:
-            # process each item
-    """
+    """Iterate over pages of results from the iMednet API."""
 
     def __init__(
         self,

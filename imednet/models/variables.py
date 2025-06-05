@@ -1,3 +1,5 @@
+"""Models for variable definitions used in electronic forms."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -9,27 +11,7 @@ from .validators import parse_bool, parse_datetime, parse_int_or_default, parse_
 
 
 class Variable(BaseModel):
-    """Variable model representing a study variable within iMedNet.
-    This class represents a variable within a study in iMedNet, containing metadata about
-    the variable such as its ID, type, name, and associated form details.
-        study_key (str): The key identifier for the study this variable belongs to.
-        variable_id (int): The unique identifier for this variable.
-        variable_type (str): The type of the variable (e.g., "number", "text", "date").
-        variable_name (str): The name of the variable.
-        sequence (int): The sequence order of the variable.
-        revision (int): The revision number of the variable.
-        disabled (bool): Whether the variable is disabled.
-        date_created (datetime): The date and time when the variable was created.
-        date_modified (datetime): The date and time when the variable was last modified.
-        form_id (int): The ID of the form this variable belongs to.
-        variable_oid (Optional[str]): The OID (Object Identifier) of the variable, if available.
-        deleted (bool): Whether the variable has been marked as deleted.
-        form_key (str): The key identifier of the form this variable belongs to.
-        form_name (str): The name of the form this variable belongs to.
-        label (str): The display label for the variable.
-        blinded (bool): Whether the variable is blinded (hidden from certain users).
-        Variable: An instance of the Variable class.
-    """
+    """Definition of a variable used in electronic forms."""
 
     study_key: str = Field("", alias="studyKey")
     variable_id: int = Field(0, alias="variableId")
