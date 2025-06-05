@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This file is automatically updated by the release process.
 
 ## [Unreleased]
 
@@ -33,3 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code formatting with Black and Ruff.
 - Initial unit tests (smoke test).
 - `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `LICENSE`.
+
+[Unreleased]: https://github.com/Bright-Research/imednet-python-sdk/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Bright-Research/imednet-python-sdk/releases/tag/v0.1.0
