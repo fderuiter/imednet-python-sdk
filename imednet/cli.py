@@ -1,6 +1,8 @@
 """Command-line interface for the iMednet SDK."""
 
+import json
 import os
+from pathlib import Path
 from typing import Union
 
 import typer
@@ -18,11 +20,14 @@ from .credentials import (
 from .credentials import (
     save_credentials as store_creds,
 )
+from .models.records import RegisterSubjectRequest
 from .sdk import ImednetSDK
 
 # Import the public filter utility
 from .utils.filters import build_filter_string
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.query_management import QueryManagementWorkflow
+from .workflows.register_subjects import RegisterSubjectsWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -212,6 +217,51 @@ def list_subjects(
 users_app = typer.Typer(name="users", help="Manage users within a study.")
 app.add_typer(users_app)
 
+# --- Queries Commands ---
+queries_app = typer.Typer(name="queries", help="Manage data queries.")
+app.add_typer(queries_app)
+
+
+@queries_app.command("open")
+def list_open_queries_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+) -> None:
+    """List open queries for a study."""
+    sdk = get_sdk(ctx)
+    workflow = QueryManagementWorkflow(sdk)
+    try:
+        queries = workflow.get_open_queries(study_key)
+        if queries:
+            print(queries)
+        else:
+            print("No open queries found.")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@queries_app.command("counts")
+def query_state_counts_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+) -> None:
+    """Get query counts grouped by state for a study."""
+    sdk = get_sdk(ctx)
+    workflow = QueryManagementWorkflow(sdk)
+    try:
+        counts = workflow.get_query_state_counts(study_key)
+        print(counts)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
 
 @users_app.command("list")
 def list_users(
@@ -294,6 +344,38 @@ def extract_records(
 
     except ApiError as e:
         # Print the exception directly
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("register-subjects")
+def register_subjects_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    subjects_file: Path = typer.Argument(
+        ..., help="Path to JSON file containing subject registration data."
+    ),
+    email_notify: Optional[str] = typer.Option(
+        None,
+        "--email-notify",
+        help="Email address to notify when the job completes.",
+    ),
+) -> None:
+    """Register new subjects for a study from a JSON file."""
+    sdk = get_sdk(ctx)
+    workflow = RegisterSubjectsWorkflow(sdk)
+    try:
+        with subjects_file.open() as fh:
+            data = json.load(fh)
+        subjects = [RegisterSubjectRequest.model_validate(d) for d in data]
+        result = workflow.register_subjects(
+            study_key=study_key, subjects=subjects, email_notify=email_notify
+        )
+        print(result)
+    except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)
     except Exception as e:
