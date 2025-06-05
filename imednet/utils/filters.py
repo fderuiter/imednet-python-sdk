@@ -13,29 +13,15 @@ def build_filter_string(
     and_connector: str = ";",
     or_connector: str = ",",
 ) -> str:
-    """
-    Build a filter string for API requests from a mapping of filters.
-
-    Strings are constructed according to the iMednet API filtering rules:
-    - Use '<', '<=', '>', '>=', '==', '!=', '=~' operators.
-    - Multiple conditions are joined by ';' (AND) or ',' (OR).
+    """Return a filter string for API requests.
 
     Args:
-        filters: A dict where:
-            - value is a raw value -> equality is assumed (==).
-            - value is a tuple (op, val) -> use provided operator.
-            - value is a list -> multiple equality filters OR-ed.
-        and_connector: String connector for AND conditions (default ';').
-        or_connector: String connector for OR conditions (default ',').
+        filters: Mapping of filter keys to values or tuples.
+        and_connector: Connector for AND conditions.
+        or_connector: Connector for OR conditions.
 
     Returns:
-        A filter string suitable for use as a `filter` query parameter.
-
-    Examples:
-        >>> build_filter_string({'age': ('>', 30), 'status': 'active'})
-        'age>30;status==active'
-        >>> build_filter_string({'type': ['A', 'B']})
-        'type==A,type==B'
+        String suitable for the ``filter`` query parameter.
     """
     parts: List[str] = []
     for key, value in filters.items():

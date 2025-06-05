@@ -11,35 +11,7 @@ from .validators import parse_datetime, parse_int_or_default, parse_str_or_defau
 
 
 class Coding(BaseModel):
-    """
-    A class representing a medical coding instance in a clinical study.
-    This class models coding data for clinical study records, including study identifiers,
-    subject information, form details, and coding-specific attributes.
-    Attributes:
-        study_key (str): The unique identifier for the study.
-        site_name (str): The name of the study site.
-        site_id (int): The numerical identifier for the study site.
-        subject_id (int): The numerical identifier for the subject.
-        subject_key (str): The unique identifier for the subject.
-        form_id (int): The numerical identifier for the form.
-        form_name (str): The name of the form.
-        form_key (str): The unique identifier for the form.
-        revision (int): The revision number of the form.
-        record_id (int): The numerical identifier for the record.
-        variable (str): The variable name being coded.
-        value (str): The value being coded.
-        coding_id (int): The numerical identifier for the coding instance.
-        code (str): The assigned code.
-        coded_by (str): The identifier of the person who performed the coding.
-        reason (str): The reason for the coding decision.
-        dictionary_name (str): The name of the coding dictionary used.
-        dictionary_version (str): The version of the coding dictionary used.
-        date_coded (datetime): The timestamp when the coding was performed.
-    Note:
-        This model uses Pydantic's BaseModel and supports both field names and their aliases
-        for data population. All string and integer fields have default values, and datetime
-        fields default to the current time if not specified.
-    """
+    """Representation of a coding item in a study."""
 
     study_key: str = Field("", alias="studyKey")
     site_name: str = Field("", alias="siteName")

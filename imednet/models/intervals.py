@@ -41,34 +41,7 @@ class FormSummary(BaseModel):
 
 
 class Interval(BaseModel):
-    """A class representing an interval in a study timeline.
-    This class models various aspects of a study interval, including its identification,
-    temporal properties, and associated forms.
-    Attributes:
-        study_key (str): The unique identifier for the study.
-        interval_id (int): Unique identifier for the interval.
-        interval_name (str): Name of the interval.
-        interval_description (str): Description of the interval.
-        interval_sequence (int): The sequence number of the interval.
-        interval_group_id (int): ID of the group this interval belongs to.
-        interval_group_name (str): Name of the interval group.
-        disabled (bool): Flag indicating if the interval is disabled.
-        date_created (datetime): Timestamp of interval creation.
-        date_modified (datetime): Timestamp of last modification.
-        timeline (str): Timeline identifier for the interval.
-        defined_using_interval (str): Reference to interval used for definition.
-        window_calculation_form (str): Form used for window calculations.
-        window_calculation_date (str): Date used for window calculations.
-        actual_date_form (str): Form containing actual date information.
-        actual_date (str): The actual date of the interval.
-        due_date_will_be_in (int): Number of days until due date.
-        negative_slack (int): Allowed negative slack in days.
-        positive_slack (int): Allowed positive slack in days.
-        epro_grace_period (int): Grace period for ePRO in days.
-        forms (List[FormSummary]): List of forms associated with this interval.
-    Methods:
-        from_json(data: Dict[str, Any]) -> Interval:
-            Creates an Interval instance from a JSON-like dictionary."""
+    """Represents a visit or interval within a study."""
 
     study_key: str = Field("", alias="studyKey")
     interval_id: int = Field(0, alias="intervalId")

@@ -22,7 +22,7 @@ class StudiesEndpoint(BaseEndpoint):
         List studies with optional filtering.
 
         Args:
-            **filters: Filter parameters
+            ``**filters``: Filter parameters
 
         Returns:
             List of Study objects

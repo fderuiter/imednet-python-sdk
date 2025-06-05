@@ -14,8 +14,9 @@ release = "0.1.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
-    "sphinx_autodoc_typehints",
 ]
+
+autodoc_mock_imports = ["pandas"]
 
 # Templates and static paths
 templates_path: list[str] = ["_templates"]

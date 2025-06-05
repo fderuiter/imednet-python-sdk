@@ -32,7 +32,7 @@ class RecordsEndpoint(BaseEndpoint):
         Args:
             study_key: Study identifier (uses default from context if not specified)
             record_data_filter: Optional filter for record data fields
-            **filters: Additional filter parameters
+            ``**filters``: Additional filter parameters
 
         Returns:
             List of Record objects
