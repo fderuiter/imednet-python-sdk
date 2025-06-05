@@ -11,6 +11,13 @@ from rich import print
 from typing_extensions import Any, Dict, List, Optional
 
 from .core.exceptions import ApiError
+from .credentials import (
+    CREDENTIALS_FILE,
+    resolve_credentials,
+)
+from .credentials import (
+    save_credentials as store_creds,
+)
 from .sdk import ImednetSDK
 
 # Import the public filter utility
@@ -21,6 +28,8 @@ from .workflows.data_extraction import DataExtractionWorkflow
 load_dotenv()
 
 app = typer.Typer(help="iMednet SDK Command Line Interface")
+credentials_app = typer.Typer(name="credentials", help="Manage stored credentials")
+app.add_typer(credentials_app)
 
 
 def get_sdk(ctx: typer.Context) -> ImednetSDK:
@@ -28,16 +37,18 @@ def get_sdk(ctx: typer.Context) -> ImednetSDK:
     if "sdk" in ctx.obj:
         return ctx.obj["sdk"]
 
-    api_key = os.getenv("IMEDNET_API_KEY")
-    security_key = os.getenv("IMEDNET_SECURITY_KEY")
     base_url = os.getenv("IMEDNET_BASE_URL", "https://edc.prod.imednetapi.com")
-
-    if not api_key or not security_key:
+    try:
+        api_key, security_key, study_key = resolve_credentials(os.getenv("IMEDNET_CRED_PASSWORD"))
+        if study_key:
+            os.environ.setdefault("IMEDNET_STUDY_KEY", study_key)
+    except RuntimeError as exc:
         print(
-            "[bold red]Error:[/bold red] IMEDNET_API_KEY and "  # Line break
-            "IMEDNET_SECURITY_KEY environment variables must be set."
+            "[bold red]Error:[/bold red] IMEDNET_API_KEY and IMEDNET_SECURITY_KEY"
+            " environment variables must be set or store them using 'imednet"
+            " credentials save'."
         )
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from exc
 
     try:
         sdk = ImednetSDK(
@@ -86,6 +97,21 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
             # This assignment is now valid due to Union type hint
             filter_dict[key.strip()] = value
     return filter_dict
+
+
+@credentials_app.command("save")
+def save_credentials_cmd() -> None:
+    """Prompt for credentials and store them encrypted."""
+    api_key = typer.prompt("x-api-key", hide_input=True)
+    sec_key = typer.prompt("x-imn-security-key", hide_input=True)
+    study_key = typer.prompt("STUDYKEY")
+    password = typer.prompt(
+        "Encryption password",
+        hide_input=True,
+        confirmation_prompt=True,
+    )
+    store_creds(api_key, sec_key, study_key, password)
+    print(f"Credentials saved to {CREDENTIALS_FILE}")
 
 
 # --- Studies Commands ---
