@@ -1,5 +1,5 @@
 import os
-from typing import Union  # Import Union
+from typing import Union
 
 import typer
 from dotenv import load_dotenv
@@ -20,17 +20,15 @@ load_dotenv()
 
 app = typer.Typer(help="iMednet SDK Command Line Interface")
 
-# --- State Management ---
-# Store SDK instance globally for reuse within commands if needed,
-# initialized via callback.
-state = {"sdk": None}
 
+def get_sdk(ctx: typer.Context) -> ImednetSDK:
+    """Initializes and caches the ImednetSDK instance using env vars."""
+    if "sdk" in ctx.obj:
+        return ctx.obj["sdk"]
 
-def get_sdk() -> ImednetSDK:
-    """Initializes and returns the ImednetSDK instance using env vars."""
     api_key = os.getenv("IMEDNET_API_KEY")
     security_key = os.getenv("IMEDNET_SECURITY_KEY")
-    base_url = os.getenv("IMEDNET_BASE_URL", "https://edc.prod.imednetapi.com")  # Default value
+    base_url = os.getenv("IMEDNET_BASE_URL", "https://edc.prod.imednetapi.com")
 
     if not api_key or not security_key:
         print(
@@ -45,9 +43,9 @@ def get_sdk() -> ImednetSDK:
             security_key=security_key,
             base_url=base_url,
         )
+        ctx.obj["sdk"] = sdk
         return sdk
     except Exception as e:
-        # Print the exception directly, which often includes the message
         print(f"[bold red]Error initializing SDK:[/bold red] {e}")
         raise typer.Exit(code=1)
 
@@ -58,11 +56,8 @@ def main(ctx: typer.Context) -> None:
     iMednet SDK CLI. Configure authentication via environment variables:
     IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, [IMEDNET_BASE_URL]
     """
-    # Eagerly initialize SDK to catch auth errors early,
-    # but allow commands to potentially re-initialize if needed.
-    # We don't store it in ctx.obj to avoid pickling issues if Typer internals change.
-    # Instead, commands will call get_sdk().
-    pass
+    """Initialize Typer context object."""
+    ctx.obj = {}
 
 
 # Change input type hint to Optional[List[str]]
@@ -74,9 +69,7 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
     filter_dict: Dict[str, Union[str, bool, int]] = {}
     for arg in filter_args:
         if "=" not in arg:
-            print(
-                f"[bold red]Error:[/bold red] Invalid filter format: '{arg}'. " "Use 'key=value'."
-            )
+            print(f"[bold red]Error:[/bold red] Invalid filter format: '{arg}'. Use 'key=value'.")
             raise typer.Exit(code=1)
         key, value = arg.split("=", 1)
         # Basic type inference (can be expanded)
@@ -100,9 +93,9 @@ app.add_typer(studies_app)
 
 
 @studies_app.command("list")
-def list_studies() -> None:
+def list_studies(ctx: typer.Context) -> None:
     """List available studies."""
-    sdk = get_sdk()
+    sdk = get_sdk(ctx)
     try:
         print("Fetching studies...")
         studies_list = sdk.studies.list()
@@ -126,10 +119,11 @@ app.add_typer(sites_app)
 
 @sites_app.command("list")
 def list_sites(
+    ctx: typer.Context,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
 ) -> None:
     """List sites for a specific study."""
-    sdk = get_sdk()
+    sdk = get_sdk(ctx)
     try:
         print(f"Fetching sites for study '{study_key}'...")
         sites_list = sdk.sites.list(study_key)
@@ -153,16 +147,17 @@ app.add_typer(subjects_app)
 
 @subjects_app.command("list")
 def list_subjects(
+    ctx: typer.Context,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     subject_filter: Optional[List[str]] = typer.Option(
         None,
         "--filter",
         "-f",
-        help="Filter criteria (e.g., 'subject_status=Screened'). " "Repeat for multiple filters.",
+        help="Filter criteria (e.g., 'subject_status=Screened'). Repeat for multiple filters.",
     ),
 ) -> None:
     """List subjects for a specific study, with optional filtering."""
-    sdk = get_sdk()
+    sdk = get_sdk(ctx)
     try:
         # parse_filter_args now correctly accepts Optional[List[str]]
         parsed_filter = parse_filter_args(subject_filter)
@@ -185,6 +180,38 @@ def list_subjects(
         raise typer.Exit(code=1)
 
 
+# --- Users Commands ---
+users_app = typer.Typer(name="users", help="Manage users within a study.")
+app.add_typer(users_app)
+
+
+@users_app.command("list")
+def list_users(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    include_inactive: bool = typer.Option(
+        False,
+        "--include-inactive",
+        "-i",
+        help="Include inactive users in the results.",
+    ),
+) -> None:
+    """List users for a study."""
+    sdk = get_sdk(ctx)
+    try:
+        users = sdk.users.list(study_key, include_inactive=include_inactive)
+        if users:
+            print(users)
+        else:
+            print("No users found.")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
 # --- Workflows Commands ---
 # Store workflow-related commands under a 'workflows' subcommand group.
 workflows_app = typer.Typer(name="workflows", help="Execute common data workflows.")
@@ -193,11 +220,12 @@ app.add_typer(workflows_app)
 
 @workflows_app.command("extract-records")
 def extract_records(
+    ctx: typer.Context,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     record_filter: Optional[List[str]] = typer.Option(
         None,
         "--record-filter",
-        help="Record filter criteria (e.g., 'form_key=DEMOG'). " "Repeat for multiple filters.",
+        help="Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters.",
     ),
     subject_filter: Optional[List[str]] = typer.Option(
         None,
@@ -208,11 +236,11 @@ def extract_records(
     visit_filter: Optional[List[str]] = typer.Option(
         None,
         "--visit-filter",
-        help="Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters.",
+        help="Visit filter criteria (e.g., 'visit_key=SCREENING'). Repeat for multiple filters.",
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
-    sdk = get_sdk()
+    sdk = get_sdk(ctx)
     workflow = DataExtractionWorkflow(sdk)
 
     try:

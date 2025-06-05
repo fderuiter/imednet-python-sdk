@@ -10,6 +10,7 @@ from imednet.cli import (
     list_sites,
     list_studies,
     list_subjects,
+    list_users,
     parse_filter_args,
 )
 from imednet.core.exceptions import ApiError
@@ -24,7 +25,9 @@ def test_get_sdk_success(mock_sdk):
     mock_instance = MagicMock()
     mock_sdk.return_value = mock_instance
 
-    sdk = get_sdk()
+    ctx = MagicMock()
+    ctx.obj = {}
+    sdk = get_sdk(ctx)
 
     mock_sdk.assert_called_once_with(
         api_key="test_api_key",
@@ -36,8 +39,10 @@ def test_get_sdk_success(mock_sdk):
 
 @patch.dict(os.environ, {}, clear=True)
 def test_get_sdk_missing_credentials():
+    ctx = MagicMock()
+    ctx.obj = {}
     with pytest.raises(typer.Exit) as excinfo:
-        get_sdk()
+        get_sdk(ctx)
     assert excinfo.value.exit_code == 1
 
 
@@ -47,9 +52,10 @@ def test_get_sdk_missing_credentials():
 @patch("imednet.cli.ImednetSDK")
 def test_get_sdk_exception(mock_sdk):
     mock_sdk.side_effect = Exception("SDK initialization error")
-
+    ctx = MagicMock()
+    ctx.obj = {}
     with pytest.raises(typer.Exit) as excinfo:
-        get_sdk()
+        get_sdk(ctx)
     assert excinfo.value.exit_code == 1
 
 
@@ -84,7 +90,9 @@ def test_list_studies_success(mock_get_sdk):
     mock_get_sdk.return_value = mock_sdk
     mock_sdk.studies.list.return_value = ["Study1", "Study2"]
 
-    list_studies()
+    ctx = MagicMock()
+    ctx.obj = {}
+    list_studies(ctx)
 
     mock_sdk.studies.list.assert_called_once()
 
@@ -95,7 +103,9 @@ def test_list_studies_empty(mock_get_sdk):
     mock_get_sdk.return_value = mock_sdk
     mock_sdk.studies.list.return_value = []
 
-    list_studies()
+    ctx = MagicMock()
+    ctx.obj = {}
+    list_studies(ctx)
 
     mock_sdk.studies.list.assert_called_once()
 
@@ -105,9 +115,10 @@ def test_list_studies_api_error(mock_get_sdk):
     mock_sdk = MagicMock()
     mock_get_sdk.return_value = mock_sdk
     mock_sdk.studies.list.side_effect = ApiError("API Error")
-
+    ctx = MagicMock()
+    ctx.obj = {}
     with pytest.raises(typer.Exit) as excinfo:
-        list_studies()
+        list_studies(ctx)
     assert excinfo.value.exit_code == 1
 
 
@@ -117,9 +128,24 @@ def test_list_sites_success(mock_get_sdk):
     mock_get_sdk.return_value = mock_sdk
     mock_sdk.sites.list.return_value = ["Site1", "Site2"]
 
-    list_sites("STUDY1")
+    ctx = MagicMock()
+    ctx.obj = {}
+    list_sites(ctx, "STUDY1")
 
     mock_sdk.sites.list.assert_called_once_with("STUDY1")
+
+
+@patch("imednet.cli.get_sdk")
+def test_list_users_success(mock_get_sdk):
+    mock_sdk = MagicMock()
+    mock_get_sdk.return_value = mock_sdk
+    mock_sdk.users.list.return_value = ["User1"]
+
+    ctx = MagicMock()
+    ctx.obj = {}
+    list_users(ctx, "STUDY1", False)
+
+    mock_sdk.users.list.assert_called_once_with("STUDY1", include_inactive=False)
 
 
 @patch("imednet.cli.get_sdk")
@@ -130,7 +156,9 @@ def test_list_subjects_with_filter(mock_get_sdk):
 
     with patch("imednet.cli.build_filter_string") as mock_build_filter:
         mock_build_filter.return_value = "status=active"
-        list_subjects("STUDY1", ["status=active"])
+        ctx = MagicMock()
+        ctx.obj = {}
+        list_subjects(ctx, "STUDY1", ["status=active"])
 
         mock_build_filter.assert_called_once()
         mock_sdk.subjects.list.assert_called_once_with("STUDY1", filter="status=active")
@@ -146,7 +174,10 @@ def test_extract_records_success(mock_get_sdk):
         mock_workflow_class.return_value = mock_workflow
         mock_workflow.extract_records_by_criteria.return_value = ["Record1", "Record2"]
 
+        ctx = MagicMock()
+        ctx.obj = {}
         extract_records(
+            ctx,
             "STUDY1",
             record_filter=["form_key=DEMOG"],
             subject_filter=["status=active"],
