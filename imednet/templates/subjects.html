@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Subjects for {{ study_key }}</h1>
+<ul class="list-group">
+  {% for subj in subjects %}
+  <li class="list-group-item">{{ subj.subject_key }}</li>
+  {% endfor %}
+</ul>
+<a href="{{ url_for('list_sites', study_key=study_key) }}" class="btn btn-secondary mt-3">View Sites</a>
+{% endblock %}
