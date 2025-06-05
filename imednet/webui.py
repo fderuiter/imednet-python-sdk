@@ -19,10 +19,32 @@ from werkzeug.wrappers import Response
 from .credentials import resolve_credentials, save_credentials
 from .models.records import RegisterSubjectRequest
 from .sdk import ImednetSDK
+from .utils.filters import build_filter_string
+from .workflows.data_extraction import DataExtractionWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.register_subjects import RegisterSubjectsWorkflow
 
 DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
+
+
+def _parse_filter_string(filter_str: str) -> dict[str, object]:
+    """Parse a semicolon separated key=value string into a dictionary."""
+    filter_dict: dict[str, object] = {}
+    for pair in filter_str.split(";"):
+        if not pair.strip() or "=" not in pair:
+            continue
+        key, value = pair.split("=", 1)
+        val: object
+        if value.lower() == "true":
+            val = True
+        elif value.lower() == "false":
+            val = False
+        elif value.isdigit():
+            val = int(value)
+        else:
+            val = value
+        filter_dict[key.strip()] = val
+    return filter_dict
 
 
 def _get_sdk() -> ImednetSDK:
@@ -56,11 +78,15 @@ def create_app() -> Flask:
     @app.route("/studies/<study_key>/subjects")
     def list_subjects(study_key: str) -> str:
         sdk = _get_sdk()
-        subjects = sdk.subjects.list(study_key)
+        filter_text = request.args.get("filter", "")
+        filter_dict = _parse_filter_string(filter_text) if filter_text else None
+        filter_str = build_filter_string(filter_dict) if filter_dict else None
+        subjects = sdk.subjects.list(study_key, filter=filter_str)
         return render_template(
             "subjects.html",
             study_key=study_key,
             subjects=subjects,
+            filter_text=filter_text,
         )
 
     @app.route("/studies/<study_key>/sites")
@@ -80,6 +106,17 @@ def create_app() -> Flask:
             queries=queries,
         )
 
+    @app.route("/studies/<study_key>/queries/counts")
+    def query_state_counts(study_key: str) -> str:
+        sdk = _get_sdk()
+        workflow = QueryManagementWorkflow(sdk)
+        counts = workflow.get_query_state_counts(study_key)
+        return render_template(
+            "query_counts.html",
+            study_key=study_key,
+            counts=counts,
+        )
+
     @app.route("/studies/<study_key>/register-subjects", methods=["GET", "POST"])
     def register_subjects(study_key: str) -> Response | str:
         sdk = _get_sdk()
@@ -92,11 +129,33 @@ def create_app() -> Flask:
             return redirect(url_for("list_subjects", study_key=study_key))
         return render_template("register_subjects.html", study_key=study_key)
 
+    @app.route("/studies/<study_key>/records/extract", methods=["GET", "POST"])
+    def extract_records(study_key: str) -> str:
+        sdk = _get_sdk()
+        workflow = DataExtractionWorkflow(sdk)
+        records = None
+        if request.method == "POST":
+            record_filter = request.form.get("record_filter", "")
+            subject_filter = request.form.get("subject_filter", "")
+            visit_filter = request.form.get("visit_filter", "")
+            records = workflow.extract_records_by_criteria(
+                study_key,
+                record_filter=(_parse_filter_string(record_filter) if record_filter else None),
+                subject_filter=(_parse_filter_string(subject_filter) if subject_filter else None),
+                visit_filter=(_parse_filter_string(visit_filter) if visit_filter else None),
+            )
+        return render_template(
+            "extract_records.html",
+            study_key=study_key,
+            records=records,
+        )
+
     @app.route("/users")
     def list_users() -> str:
         sdk = _get_sdk()
-        users = sdk.users.list()
-        return render_template("users.html", users=users)
+        include_inactive = request.args.get("include_inactive") == "1"
+        users = sdk.users.list(include_inactive=include_inactive)
+        return render_template("users.html", users=users, include_inactive=include_inactive)
 
     @app.route("/credentials", methods=["GET", "POST"])
     def credentials_form() -> Response | str:

@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>Users</h1>
+<form method="get" class="mb-3">
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" name="include_inactive" value="1" id="inactive" {% if include_inactive %}checked{% endif %}>
+    <label class="form-check-label" for="inactive">Include Inactive</label>
+  </div>
+  <button type="submit" class="btn btn-primary mt-2">Refresh</button>
+</form>
 <ul class="list-group">
   {% for user in users %}
   <li class="list-group-item">{{ user.user_name }}</li>
