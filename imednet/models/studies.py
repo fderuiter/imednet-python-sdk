@@ -1,3 +1,5 @@
+"""Models representing iMednet studies and their properties."""
+
 from __future__ import annotations
 
 from datetime import datetime

@@ -1,3 +1,5 @@
+"""Models for investigator sites within a study."""
+
 from __future__ import annotations
 
 from datetime import datetime

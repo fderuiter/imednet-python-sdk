@@ -1,3 +1,5 @@
+"""iMednet SDK public package initializer."""
+
 from importlib import metadata as _metadata
 
 from .sdk import ImednetSDK

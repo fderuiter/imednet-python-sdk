@@ -1,3 +1,5 @@
+"""Retrieve the hierarchical structure of a study in iMednet."""
+
 from typing import TYPE_CHECKING, Dict, List
 
 # Import potential exceptions

@@ -1,3 +1,5 @@
+"""Models describing revisions of records in the audit trail."""
+
 from __future__ import annotations
 
 from datetime import datetime

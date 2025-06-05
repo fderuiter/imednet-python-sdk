@@ -1,3 +1,5 @@
+"""Models for visits/intervals and form summaries within a study."""
+
 from __future__ import annotations
 
 from datetime import datetime

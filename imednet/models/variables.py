@@ -1,3 +1,5 @@
+"""Models for variable definitions used in electronic forms."""
+
 from __future__ import annotations
 
 from datetime import datetime

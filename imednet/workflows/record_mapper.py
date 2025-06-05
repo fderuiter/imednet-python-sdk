@@ -1,3 +1,5 @@
+"""Map raw record data from iMednet into custom Pydantic models."""
+
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union  # Add TYPE_CHECKING
 

@@ -1,3 +1,5 @@
+"""Models describing data queries and associated comments."""
+
 from __future__ import annotations
 
 from datetime import datetime

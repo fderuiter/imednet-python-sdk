@@ -1,3 +1,5 @@
+"""Models representing study subjects and related metadata."""
+
 from __future__ import annotations
 
 from datetime import datetime

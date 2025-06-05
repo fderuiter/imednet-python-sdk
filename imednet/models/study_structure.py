@@ -1,3 +1,5 @@
+"""Models describing the structural hierarchy of a study."""
+
 from __future__ import annotations
 
 from datetime import datetime  # Added for type hints
