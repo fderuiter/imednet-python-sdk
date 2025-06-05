@@ -7,6 +7,8 @@ packages = [{ include = "imednet" }]
 include = [
     "README.md",
     "LICENSE",
+    { path = "imednet/templates", format = "sdist" },
+    { path = "imednet/templates", format = "wheel" },
     { path = "examples", format = "sdist" }, # Include examples only in sdist
     { path = "examples", format = "wheel" } # Include examples also in wheel
 ]

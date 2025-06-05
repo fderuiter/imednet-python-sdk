@@ -7,11 +7,14 @@ from imednet.cli import (
     extract_records,
     get_sdk,
     hello,
+    list_open_queries_cmd,
     list_sites,
     list_studies,
     list_subjects,
     list_users,
     parse_filter_args,
+    query_state_counts_cmd,
+    register_subjects_cmd,
     save_credentials_cmd,
 )
 from imednet.core.exceptions import ApiError
@@ -207,6 +210,56 @@ def test_extract_records_success(mock_get_sdk):
         )
 
         mock_workflow.extract_records_by_criteria.assert_called_once()
+
+
+@patch("imednet.cli.get_sdk")
+def test_list_open_queries(mock_get_sdk):
+    mock_sdk = MagicMock()
+    mock_get_sdk.return_value = mock_sdk
+    workflow_instance = MagicMock()
+    with patch("imednet.cli.QueryManagementWorkflow") as mock_wf_cls:
+        mock_wf_cls.return_value = workflow_instance
+        workflow_instance.get_open_queries.return_value = ["Q1"]
+
+        ctx = MagicMock()
+        ctx.obj = {}
+        list_open_queries_cmd(ctx, "STUDY1")
+
+        workflow_instance.get_open_queries.assert_called_once_with("STUDY1")
+
+
+@patch("imednet.cli.get_sdk")
+def test_query_state_counts(mock_get_sdk):
+    mock_sdk = MagicMock()
+    mock_get_sdk.return_value = mock_sdk
+    workflow_instance = MagicMock()
+    with patch("imednet.cli.QueryManagementWorkflow") as mock_wf_cls:
+        mock_wf_cls.return_value = workflow_instance
+        workflow_instance.get_query_state_counts.return_value = {"open": 1}
+
+        ctx = MagicMock()
+        ctx.obj = {}
+        query_state_counts_cmd(ctx, "STUDY1")
+
+        workflow_instance.get_query_state_counts.assert_called_once_with("STUDY1")
+
+
+@patch("imednet.cli.get_sdk")
+def test_register_subjects_cmd(mock_get_sdk, tmp_path):
+    mock_sdk = MagicMock()
+    mock_get_sdk.return_value = mock_sdk
+    workflow_instance = MagicMock()
+    with patch("imednet.cli.RegisterSubjectsWorkflow") as mock_wf_cls:
+        mock_wf_cls.return_value = workflow_instance
+
+        data_file = tmp_path / "subs.json"
+        data_file.write_text("[{}]")
+
+        ctx = MagicMock()
+        ctx.obj = {}
+        register_subjects_cmd(ctx, "STUDY1", data_file, None)
+
+        workflow_instance.register_subjects.assert_called_once()
 
 
 @patch("imednet.cli.store_creds")
