@@ -1,3 +1,5 @@
+"""Models representing eCRF records and requests."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -58,14 +60,7 @@ class Keyword(BaseModel):
 
 
 class Record(BaseModel):
-    """_summary_
-
-    Args:
-        BaseModel (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
+    """Represents an eCRF record."""
 
     study_key: str = Field("", alias="studyKey")
     interval_id: int = Field(0, alias="intervalId")

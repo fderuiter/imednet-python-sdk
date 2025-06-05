@@ -1,3 +1,5 @@
+"""Command-line interface for the iMednet SDK."""
+
 import os
 from typing import Union
 

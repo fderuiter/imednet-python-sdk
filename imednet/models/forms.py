@@ -1,3 +1,5 @@
+"""Pydantic models representing study forms."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -9,31 +11,7 @@ from .validators import parse_bool, parse_datetime, parse_int_or_default, parse_
 
 
 class Form(BaseModel):
-    """
-    A Pydantic model representing a Form entity in the system.
-    This class inherits from BaseModel and defines various attributes of a form including
-    its identifiers, properties, and metadata.
-    Attributes:
-        study_key (str): Key identifier for the study this form belongs to
-        form_id (int): Unique identifier for the form
-        form_key (str): Key identifier for the form
-        form_name (str): Display name of the form
-        form_type (str): Type classification of the form
-        revision (int): Revision number of the form
-        embedded_log (bool): Whether the form has embedded logging
-        enforce_ownership (bool): Whether ownership rules are enforced
-        user_agreement (bool): Whether user agreement is required
-        subject_record_report (bool): Whether the form is a subject record report
-        unscheduled_visit (bool): Whether the form is for unscheduled visits
-        other_forms (bool): Whether the form relates to other forms
-        epro_form (bool): Whether the form is an ePRO form
-        allow_copy (bool): Whether copying is allowed for this form
-        disabled (bool): Whether the form is disabled
-        date_created (datetime): Timestamp of form creation
-        date_modified (datetime): Timestamp of last modification
-    The model includes field validators for proper type conversion and data parsing,
-    and supports JSON serialization/deserialization through Pydantic's model_validate.
-    """
+    """Data model representing a form within a study."""
 
     study_key: str = Field("", alias="studyKey")
     form_id: int = Field(0, alias="formId")
