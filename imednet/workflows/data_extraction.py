@@ -2,9 +2,9 @@
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
+from ..core.exceptions import ImednetError
 from ..models import Record, RecordRevision
 from ..utils.filters import build_filter_string
-from ..core.exceptions import ImednetError
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK

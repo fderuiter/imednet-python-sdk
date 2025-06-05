@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from imednet.core.exceptions import ImednetError
 from imednet.workflows.data_extraction import DataExtractionWorkflow
 
