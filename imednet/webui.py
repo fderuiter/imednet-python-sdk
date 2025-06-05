@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 
 from flask import Flask, redirect, url_for
+from werkzeug.wrappers import Response
 
 from .credentials import resolve_credentials
 from .sdk import ImednetSDK
@@ -28,7 +29,8 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     @app.route("/")
-    def index() -> str:
+    def index() -> Response:
+        """Redirect to the studies listing."""
         return redirect(url_for("list_studies"))
 
     @app.route("/studies")
