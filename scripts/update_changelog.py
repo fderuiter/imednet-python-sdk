@@ -15,10 +15,9 @@ from pathlib import Path
 def last_tag() -> str | None:
     """Return the most recent git tag or ``None`` if none exist."""
     try:
-        return (
-            subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"], text=True)
-            .strip()
-        )
+        return subprocess.check_output(
+            ["git", "describe", "--tags", "--abbrev=0"], text=True
+        ).strip()
     except subprocess.CalledProcessError:
         return None
 
