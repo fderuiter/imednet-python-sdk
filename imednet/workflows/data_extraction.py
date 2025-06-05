@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from ..models import Record, RecordRevision
 from ..utils.filters import build_filter_string
+from ..core.exceptions import ImednetError
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -87,6 +88,9 @@ class DataExtractionWorkflow:
         # Corrected attribute from visit_oid to visit_id and variable name
         if matching_visit_ids:
             records = [r for r in records if r.visit_id in matching_visit_ids]
+
+        if not records:
+            raise ImednetError("No records found for the provided filters")
 
         return records
 

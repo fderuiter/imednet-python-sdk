@@ -80,6 +80,22 @@ except Exception as e:
     print(f"Error retrieving study structure: {e}")
 ```
 
+### Async Usage
+
+The SDK also provides an `AsyncClient` for concurrent requests:
+
+```python
+import asyncio
+from imednet.core.async_client import AsyncClient
+
+async def main():
+    async with AsyncClient(api_key=api_key, security_key=security_key) as client:
+        resp = await client.get("/api/v1/edc/studies")
+        print(resp.json())
+
+asyncio.run(main())
+```
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
@@ -118,10 +134,23 @@ Then open `docs/_build/html/index.html` in your browser.
 - Code style: [Black](https://github.com/psf/black), [ruff](https://github.com/charliermarsh/ruff), [mypy](http://mypy-lang.org/)
 - Testing: [pytest](https://pytest.org/)
 
+Set up a local development environment:
+
+```bash
+./scripts/setup.sh
+```
+
 Build and test:
 
 ```bash
 poetry run pytest --cov=imednet
+```
+
+Before committing changes, run pre-commit hooks to ensure code style and static
+analysis pass:
+
+```bash
+poetry run pre-commit run --all-files
 ```
 
 ## Contributing
