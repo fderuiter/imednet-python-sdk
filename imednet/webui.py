@@ -2,13 +2,25 @@
 
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 
-from flask import Flask, redirect, url_for
+from flask import (
+    Flask,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from werkzeug.wrappers import Response
 
-from .credentials import resolve_credentials
+from .credentials import resolve_credentials, save_credentials
+from .models.records import RegisterSubjectRequest
 from .sdk import ImednetSDK
+from .workflows.query_management import QueryManagementWorkflow
+from .workflows.register_subjects import RegisterSubjectsWorkflow
 
 DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
 
@@ -26,7 +38,9 @@ def _get_sdk() -> ImednetSDK:
 def create_app() -> Flask:
     """Create the Flask application."""
 
-    app = Flask(__name__)
+    template_dir = Path(__file__).with_name("templates")
+    app = Flask(__name__, template_folder=str(template_dir))
+    app.secret_key = os.environ.get("FLASK_SECRET", "dev")
 
     @app.route("/")
     def index() -> Response:
@@ -37,19 +51,65 @@ def create_app() -> Flask:
     def list_studies() -> str:
         sdk = _get_sdk()
         studies = sdk.studies.list()
-        links = "".join(
-            f'<li><a href="{url_for("list_subjects", study_key=s.study_key)}">'
-            f"{s.study_name}</a></li>"
-            for s in studies
-        )
-        return f"<h1>Studies</h1><ul>{links}</ul>"
+        return render_template("studies.html", studies=studies)
 
     @app.route("/studies/<study_key>/subjects")
     def list_subjects(study_key: str) -> str:
         sdk = _get_sdk()
         subjects = sdk.subjects.list(study_key)
-        items = "".join(f"<li>{subj.subject_key}</li>" for subj in subjects)
-        return f"<h1>Subjects for {study_key}</h1><ul>{items}</ul>"
+        return render_template(
+            "subjects.html",
+            study_key=study_key,
+            subjects=subjects,
+        )
+
+    @app.route("/studies/<study_key>/sites")
+    def list_sites(study_key: str) -> str:
+        sdk = _get_sdk()
+        sites = sdk.sites.list(study_key)
+        return render_template("sites.html", study_key=study_key, sites=sites)
+
+    @app.route("/studies/<study_key>/queries/open")
+    def list_open_queries(study_key: str) -> str:
+        sdk = _get_sdk()
+        workflow = QueryManagementWorkflow(sdk)
+        queries = workflow.get_open_queries(study_key)
+        return render_template(
+            "queries.html",
+            study_key=study_key,
+            queries=queries,
+        )
+
+    @app.route("/studies/<study_key>/register-subjects", methods=["GET", "POST"])
+    def register_subjects(study_key: str) -> str:
+        sdk = _get_sdk()
+        workflow = RegisterSubjectsWorkflow(sdk)
+        if request.method == "POST":
+            data = json.loads(request.form["data"])
+            subjects = [RegisterSubjectRequest.model_validate(d) for d in data]
+            workflow.register_subjects(study_key=study_key, subjects=subjects)
+            flash("Subjects registered")
+            return redirect(url_for("list_subjects", study_key=study_key))
+        return render_template("register_subjects.html", study_key=study_key)
+
+    @app.route("/users")
+    def list_users() -> str:
+        sdk = _get_sdk()
+        users = sdk.users.list()
+        return render_template("users.html", users=users)
+
+    @app.route("/credentials", methods=["GET", "POST"])
+    def credentials_form() -> str:
+        if request.method == "POST":
+            save_credentials(
+                request.form["api_key"],
+                request.form["security_key"],
+                request.form.get("study_key", ""),
+                request.form["password"],
+            )
+            flash("Credentials saved")
+            return redirect(url_for("list_studies"))
+        return render_template("credentials.html")
 
     return app
 
