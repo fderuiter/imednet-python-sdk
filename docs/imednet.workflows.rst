@@ -65,6 +65,14 @@ imednet.workflows.visit\_completion module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.audit\_aggregation module
+-------------------------------------------
+
+.. automodule:: imednet.workflows.audit_aggregation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

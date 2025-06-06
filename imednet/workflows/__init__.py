@@ -8,6 +8,7 @@
 # from .subject_data import get_subject_data
 
 # --- Correct workflow class/function imports ---
+from .audit_aggregation import AuditAggregationWorkflow
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
 from .record_update import RecordUpdateWorkflow
@@ -33,5 +34,6 @@ __all__ = [
     "RegisterSubjectsWorkflow",
     "SubjectDataWorkflow",
     "VisitCompletionWorkflow",
+    "AuditAggregationWorkflow",
     "get_study_structure",
 ]
