@@ -1,7 +1,7 @@
 # Guidelines for Contributors
 
 ## Environment Setup
-- Use Python 3.10 with [Poetry](https://python-poetry.org/).
+- Use Python 3.12 with [Poetry](https://python-poetry.org/).
 - Install dependencies including development extras:
   ```bash
   poetry install --with dev

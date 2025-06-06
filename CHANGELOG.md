@@ -26,6 +26,7 @@ This file is automatically updated by the release process.
   summaries.
 - Added `VisitCompletionWorkflow` and CLI command `workflows visit-completion` to
   summarize visit progress for a subject.
+- Updated project to require Python 3.12 only.
 
 ### Fixed
 
