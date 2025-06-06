@@ -16,6 +16,7 @@ from imednet.cli import (
     query_state_counts_cmd,
     register_subjects_cmd,
     save_credentials_cmd,
+    visit_completion_cmd,
 )
 from imednet.core.exceptions import ApiError
 
@@ -270,6 +271,21 @@ def test_register_subjects_cmd(mock_get_sdk, tmp_path):
         register_subjects_cmd(ctx, "STUDY1", data_file, None)
 
         workflow_instance.register_subjects.assert_called_once()
+
+
+@patch("imednet.cli.get_sdk")
+def test_visit_completion_cmd(mock_get_sdk):
+    mock_sdk = MagicMock()
+    mock_get_sdk.return_value = mock_sdk
+    workflow_instance = MagicMock()
+    with patch("imednet.cli.VisitCompletionWorkflow") as mock_wf_cls:
+        mock_wf_cls.return_value = workflow_instance
+
+        ctx = MagicMock()
+        ctx.obj = {}
+        visit_completion_cmd(ctx, "STUDY1", "SUBJ1")
+
+        workflow_instance.get_subject_progress.assert_called_once_with("STUDY1", "SUBJ1")
 
 
 @patch("imednet.cli.store_creds")
