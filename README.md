@@ -169,6 +169,9 @@ imednet workflows extract-records <STUDY_KEY> \
     --record-filter form_key=AE \
     --subject-filter subject_status=Screened
 imednet workflows register-subjects <STUDY_KEY> subjects.json
+imednet workflows push-veeva <STUDY_KEY> DEMOG product__c \
+    --mapping mapping.json --vault myvault --client-id CID \
+    --client-secret SECRET --username USER --password PASS
 
 # Get help for a specific command
 imednet subjects list --help

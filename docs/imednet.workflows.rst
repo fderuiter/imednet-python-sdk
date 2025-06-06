@@ -52,6 +52,14 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.veeva_push module
+----------------------------------
+
+.. automodule:: imednet.workflows.veeva_push
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

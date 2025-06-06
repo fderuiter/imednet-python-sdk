@@ -20,6 +20,8 @@ This file is automatically updated by the release process.
 - Added helper `collect_required_fields_and_picklists` for retrieving required
   fields and picklist options from Vault.
 - Added configurable `default_page_size` for SDK pagination.
+- Introduced `VeevaPushWorkflow` and CLI command `workflows push-veeva` for
+  pushing records to Veeva Vault.
 
 ### Fixed
 

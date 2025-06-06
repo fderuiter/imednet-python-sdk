@@ -13,6 +13,7 @@ from imednet.cli import (
     list_subjects,
     list_users,
     parse_filter_args,
+    push_veeva_cmd,
     query_state_counts_cmd,
     register_subjects_cmd,
     save_credentials_cmd,
@@ -287,3 +288,32 @@ def test_hello(mock_print):
 
     hello()
     mock_print.assert_called_with("Hello World")
+
+
+@patch("imednet.cli.get_sdk")
+def test_push_veeva_cmd(mock_get_sdk, tmp_path):
+    mock_sdk = MagicMock()
+    mock_get_sdk.return_value = mock_sdk
+    workflow_instance = MagicMock()
+    with patch("imednet.cli.VeevaPushWorkflow") as mock_wf_cls:
+        mock_wf_cls.return_value = workflow_instance
+        mapping = tmp_path / "map.json"
+        mapping.write_text("{}")
+
+        ctx = MagicMock()
+        ctx.obj = {}
+        push_veeva_cmd(
+            ctx,
+            "STUDY1",
+            "FORM1",
+            "prod__c",
+            mapping,
+            vault="vault",
+            client_id="cid",
+            client_secret="secret",
+            username="user",
+            password="pwd",
+            object_type=None,
+        )
+
+        workflow_instance.push_form_records.assert_called_once()

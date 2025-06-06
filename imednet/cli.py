@@ -25,9 +25,11 @@ from .sdk import ImednetSDK
 
 # Import the public filter utility
 from .utils.filters import build_filter_string
+from .veeva import VeevaVaultClient
 from .workflows.data_extraction import DataExtractionWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.register_subjects import RegisterSubjectsWorkflow
+from .workflows.veeva_push import VeevaPushWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -375,6 +377,48 @@ def register_subjects_cmd(
     except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("push-veeva")
+def push_veeva_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The iMednet study key."),
+    form_key: str = typer.Argument(..., help="Form key to pull records from."),
+    object_name: str = typer.Argument(..., help="Target Vault object name."),
+    mapping_file: Path = typer.Option(..., "--mapping", help="JSON field mapping"),
+    vault: str = typer.Option(..., "--vault", help="Vault DNS (e.g. myvault)"),
+    client_id: str = typer.Option(..., "--client-id", help="Vault OAuth client id"),
+    client_secret: str = typer.Option(..., "--client-secret", help="Vault OAuth client secret"),
+    username: str = typer.Option(..., "--username", help="Vault username"),
+    password: str = typer.Option(..., "--password", help="Vault password"),
+    object_type: Optional[str] = typer.Option(None, "--object-type", help="Vault object type"),
+) -> None:
+    """Push form records from iMednet to Veeva Vault."""
+    sdk = get_sdk(ctx)
+    with mapping_file.open() as fh:
+        mapping = json.load(fh)
+
+    client = VeevaVaultClient(
+        vault=vault,
+        client_id=client_id,
+        client_secret=client_secret,
+        username=username,
+        password=password,
+    )
+
+    workflow = VeevaPushWorkflow(sdk, client)
+    try:
+        results = workflow.push_form_records(
+            study_key=study_key,
+            form_key=form_key,
+            object_name=object_name,
+            field_mapping=mapping,
+            object_type=object_type,
+        )
+        print(results)
     except Exception as e:
         print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
         raise typer.Exit(code=1)
