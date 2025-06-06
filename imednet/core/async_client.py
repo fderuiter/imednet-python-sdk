@@ -116,25 +116,61 @@ class AsyncClient:
                         code = err.get("code", code)
                         message = err.get("description") or err.get("message", message)
                         field = err.get("field", field)
-            exc_kwargs = {
-                "status_code": status,
-                "code": code,
-                "message": message,
-                "field": field,
-            }
             if status == 400:
-                raise ValidationError(body, **exc_kwargs)
+                raise ValidationError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 401:
-                raise AuthenticationError(body, **exc_kwargs)
+                raise AuthenticationError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 403:
-                raise AuthorizationError(body, **exc_kwargs)
+                raise AuthorizationError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 404:
-                raise NotFoundError(body, **exc_kwargs)
+                raise NotFoundError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 429:
-                raise RateLimitError(body, **exc_kwargs)
+                raise RateLimitError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if 500 <= status < 600:
-                raise ServerError(body, **exc_kwargs)
-            raise ApiError(body, **exc_kwargs)
+                raise ServerError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
+            raise ApiError(
+                body,
+                status,
+                code=code,
+                message=message,
+                field=field,
+            )
 
         return response
 
