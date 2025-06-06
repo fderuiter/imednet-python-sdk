@@ -93,7 +93,7 @@ def resolve_credentials(
     if study_key:
         cred = next((c for c in stored if c["study_key"] == study_key), None)
     if cred is None and stored:
-        cred = stored[0]
+        raise RuntimeError(f"Study key '{study_key}' not found in stored credentials.")
     if cred:
         api_key = api_key or cred["api_key"]
         security_key = security_key or cred["security_key"]
