@@ -24,6 +24,11 @@ imednet.workflows.query_aging module
 ------------------------------------
 
 .. automodule:: imednet.workflows.query_aging
+
+imednet.workflows.coding\_review module
+--------------------------------------
+
+.. automodule:: imednet.workflows.coding_review
    :members:
    :undoc-members:
    :show-inheritance:
@@ -64,6 +69,14 @@ imednet.workflows.enrollment_dashboard module
 ---------------------------------------------
 
 .. automodule:: imednet.workflows.enrollment_dashboard
+
+imednet.workflows.site_performance module
+----------------------------------------
+
+.. automodule:: imednet.workflows.site_performance
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 imednet.workflows.visit\_completion module
 -----------------------------------------
