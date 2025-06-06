@@ -9,7 +9,7 @@ def mock_endpoint():
     client = Mock()
     ctx = Mock()
     ctx.default_study_key = "DEF123"
-    return UsersEndpoint(client, ctx)
+    return UsersEndpoint(client, ctx, 200)
 
 
 @patch("imednet.endpoints.users.Paginator")
@@ -24,6 +24,7 @@ def test_list_with_study_key_and_include_inactive(mock_user, mock_paginator, moc
     assert mock_user.from_json.call_count == 2
     args, kwargs = mock_paginator.call_args
     assert kwargs["params"]["includeInactive"] == "true"
+    assert kwargs["page_size"] == 200
 
 
 @patch("imednet.endpoints.users.Paginator")
@@ -39,6 +40,18 @@ def test_list_uses_default_study_key_and_include_inactive_false(
     assert mock_user.from_json.call_count == 1
     args, kwargs = mock_paginator.call_args
     assert kwargs["params"]["includeInactive"] == "false"
+    assert kwargs["page_size"] == 200
+
+
+@patch("imednet.endpoints.users.Paginator")
+@patch("imednet.endpoints.users.User")
+def test_custom_page_size(mock_user, mock_paginator, mock_endpoint):
+    mock_paginator.return_value = []
+    mock_user.from_json.side_effect = lambda x: x
+
+    mock_endpoint.list(page_size=60)
+    args, kwargs = mock_paginator.call_args
+    assert kwargs["page_size"] == 60
 
 
 def test_list_raises_value_error_if_no_study_key():

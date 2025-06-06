@@ -9,7 +9,7 @@ def mock_endpoint():
     client = Mock()
     ctx = Mock()
     ctx.default_study_key = "DEF123"
-    return SitesEndpoint(client, ctx)
+    return SitesEndpoint(client, ctx, 200)
 
 
 @patch("imednet.endpoints.sites.Paginator")
@@ -26,6 +26,8 @@ def test_list_with_study_key_and_filters(
     assert mock_build_filter.called
     assert mock_paginator.called
     assert result == [{"id": 1}, {"id": 2}]
+    args, kwargs = mock_paginator.call_args
+    assert kwargs["page_size"] == 200
     assert mock_site.from_json.call_count == 2
 
 
@@ -38,6 +40,8 @@ def test_list_with_only_study_key(mock_site, mock_paginator, mock_endpoint):
     result = mock_endpoint.list(study_key="STUDY2")
     assert result == [{"id": 1}]
     assert mock_site.from_json.call_count == 1
+    args, kwargs = mock_paginator.call_args
+    assert kwargs["page_size"] == 200
 
 
 @patch("imednet.endpoints.sites.Paginator")
@@ -49,6 +53,19 @@ def test_list_uses_default_study_key(mock_site, mock_paginator, mock_endpoint):
     result = mock_endpoint.list()
     assert result == [{"id": 1}]
     assert mock_site.from_json.call_count == 1
+    args, kwargs = mock_paginator.call_args
+    assert kwargs["page_size"] == 200
+
+
+@patch("imednet.endpoints.sites.Paginator")
+@patch("imednet.endpoints.sites.Site")
+def test_custom_page_size(mock_site, mock_paginator, mock_endpoint):
+    mock_paginator.return_value = []
+    mock_site.from_json.side_effect = lambda x: x
+
+    mock_endpoint.list(page_size=44)
+    args, kwargs = mock_paginator.call_args
+    assert kwargs["page_size"] == 44
 
 
 def test_list_raises_value_error_if_no_study_key():

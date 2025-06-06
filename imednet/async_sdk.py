@@ -32,8 +32,10 @@ class AsyncImednetSDK:
         timeout: float = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
+        default_page_size: int = 100,
     ) -> None:
         self.ctx = Context()
+        self._default_page_size = default_page_size
         self._client = AsyncClient(
             api_key=api_key,
             security_key=security_key,
@@ -42,19 +44,21 @@ class AsyncImednetSDK:
             retries=retries,
             backoff_factor=backoff_factor,
         )
-        self.studies = AsyncStudiesEndpoint(self._client, self.ctx)
-        self.forms = AsyncFormsEndpoint(self._client, self.ctx)
-        self.sites = AsyncSitesEndpoint(self._client, self.ctx)
-        self.subjects = AsyncSubjectsEndpoint(self._client, self.ctx)
-        self.records = AsyncRecordsEndpoint(self._client, self.ctx)
-        self.codings = AsyncCodingsEndpoint(self._client, self.ctx)
-        self.intervals = AsyncIntervalsEndpoint(self._client, self.ctx)
-        self.jobs = AsyncJobsEndpoint(self._client, self.ctx)
-        self.queries = AsyncQueriesEndpoint(self._client, self.ctx)
-        self.record_revisions = AsyncRecordRevisionsEndpoint(self._client, self.ctx)
-        self.users = AsyncUsersEndpoint(self._client, self.ctx)
-        self.variables = AsyncVariablesEndpoint(self._client, self.ctx)
-        self.visits = AsyncVisitsEndpoint(self._client, self.ctx)
+        self.studies = AsyncStudiesEndpoint(self._client, self.ctx, default_page_size)
+        self.forms = AsyncFormsEndpoint(self._client, self.ctx, default_page_size)
+        self.sites = AsyncSitesEndpoint(self._client, self.ctx, default_page_size)
+        self.subjects = AsyncSubjectsEndpoint(self._client, self.ctx, default_page_size)
+        self.records = AsyncRecordsEndpoint(self._client, self.ctx, default_page_size)
+        self.codings = AsyncCodingsEndpoint(self._client, self.ctx, default_page_size)
+        self.intervals = AsyncIntervalsEndpoint(self._client, self.ctx, default_page_size)
+        self.jobs = AsyncJobsEndpoint(self._client, self.ctx, default_page_size)
+        self.queries = AsyncQueriesEndpoint(self._client, self.ctx, default_page_size)
+        self.record_revisions = AsyncRecordRevisionsEndpoint(
+            self._client, self.ctx, default_page_size
+        )
+        self.users = AsyncUsersEndpoint(self._client, self.ctx, default_page_size)
+        self.variables = AsyncVariablesEndpoint(self._client, self.ctx, default_page_size)
+        self.visits = AsyncVisitsEndpoint(self._client, self.ctx, default_page_size)
 
     async def __aenter__(self) -> "AsyncImednetSDK":
         return self

@@ -10,8 +10,8 @@ class AsyncJobsEndpoint(BaseEndpoint[AsyncClient]):
 
     path = "/api/v1/edc/studies"
 
-    def __init__(self, client: AsyncClient, ctx) -> None:
-        super().__init__(client, ctx)
+    def __init__(self, client: AsyncClient, ctx, default_page_size: int = 100) -> None:
+        super().__init__(client, ctx, default_page_size=default_page_size)
 
     async def get(self, study_key: str, batch_id: str) -> Job:
         endpoint = self._build_path(study_key, "jobs", batch_id)

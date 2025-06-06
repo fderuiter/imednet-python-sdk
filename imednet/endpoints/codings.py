@@ -17,7 +17,12 @@ class CodingsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Coding]:
+    def list(
+        self,
+        study_key: Optional[str] = None,
+        page_size: Optional[int] = None,
+        **filters: Any,
+    ) -> List[Coding]:
         """
         List codings in a study with optional filtering.
 
@@ -46,7 +51,12 @@ class CodingsEndpoint(BaseEndpoint):
             params["filter"] = build_filter_string(filters)
 
         path = self._build_path(study, "codings")
-        paginator = Paginator(self._client, path, params=params)
+        paginator = Paginator(
+            self._client,
+            path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [Coding.from_json(item) for item in paginator]
 
     def get(self, study_key: str, coding_id: str) -> Coding:

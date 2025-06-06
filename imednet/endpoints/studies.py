@@ -1,6 +1,6 @@
 """Endpoint for managing studies in the iMedNet system."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from imednet.core.client import Client
 from imednet.core.paginator import Paginator
@@ -18,7 +18,11 @@ class StudiesEndpoint(BaseEndpoint[Client]):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, **filters: Any) -> List[Study]:
+    def list(
+        self,
+        page_size: Optional[int] = None,
+        **filters: Any,
+    ) -> List[Study]:
         """
         List studies with optional filtering.
 
@@ -32,7 +36,12 @@ class StudiesEndpoint(BaseEndpoint[Client]):
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
-        paginator = Paginator(self._client, self.path, params=params)
+        paginator = Paginator(
+            self._client,
+            self.path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [Study.model_validate(item) for item in paginator]
 
     def get(self, study_key: str) -> Study:

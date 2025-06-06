@@ -134,6 +134,7 @@ class DataExtractionWorkflow:
         # Fetch record revisions
         revisions = self._sdk.record_revisions.list(
             study_key,
+            page_size=None,
             filter=filter_str if filter_str else None,
             **date_kwargs,
         )

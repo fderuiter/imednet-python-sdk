@@ -1,6 +1,6 @@
 """Async endpoint for managing studies."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.async_paginator import AsyncPaginator
@@ -14,15 +14,24 @@ class AsyncStudiesEndpoint(BaseEndpoint[AsyncClient]):
 
     path = "/api/v1/edc/studies"
 
-    def __init__(self, client: AsyncClient, ctx) -> None:
-        super().__init__(client, ctx)
+    def __init__(self, client: AsyncClient, ctx, default_page_size: int = 100) -> None:
+        super().__init__(client, ctx, default_page_size=default_page_size)
 
-    async def list(self, **filters: Any) -> List[Study]:
+    async def list(
+        self,
+        page_size: Optional[int] = None,
+        **filters: Any,
+    ) -> List[Study]:
         filters = self._auto_filter(filters)
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
-        paginator = AsyncPaginator(self._client, self.path, params=params)
+        paginator = AsyncPaginator(
+            self._client,
+            self.path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [Study.model_validate(item) async for item in paginator]
 
     async def get(self, study_key: str) -> Study:
