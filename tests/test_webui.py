@@ -74,7 +74,10 @@ def test_credentials_form_saves(mock_sdk, _mock_creds, mock_save):
             },
         )
         assert resp.status_code == 302
+        with client.session_transaction() as sess:
+            assert sess["cred_password"] == "pwd"
     mock_save.assert_called_once_with("a", "b", "s", "pwd")
+    assert os.environ["IMEDNET_CRED_PASSWORD"] == "pwd"
 
 
 @patch.dict(os.environ, {"IMEDNET_API_KEY": "key", "IMEDNET_SECURITY_KEY": "sec"})
@@ -144,3 +147,13 @@ def test_register_subjects(mock_sdk, mock_wf_cls, _mock_creds):
         )
         assert resp.status_code == 302
     wf_instance.register_subjects.assert_called_once()
+
+
+@patch.dict(os.environ, {}, clear=True)
+@patch("imednet.webui.resolve_credentials", side_effect=RuntimeError)
+def test_redirect_when_no_credentials(mock_resolve):
+    app = create_app()
+    with app.test_client() as client:
+        resp = client.get("/studies")
+        assert resp.status_code == 302
+        assert resp.headers["Location"].endswith("/credentials")
