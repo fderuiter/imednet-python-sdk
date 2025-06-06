@@ -2,13 +2,14 @@
 Base endpoint mix-in for all API resource endpoints.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Generic, TypeVar
 
-from imednet.core.client import Client
 from imednet.core.context import Context
 
+TClient = TypeVar("TClient")
 
-class BaseEndpoint:
+
+class BaseEndpoint(Generic[TClient]):
     """
     Shared base for endpoint wrappers.
 
@@ -17,7 +18,7 @@ class BaseEndpoint:
 
     path: str  # to be set in subclasses
 
-    def __init__(self, client: Client, ctx: Context) -> None:
+    def __init__(self, client: TClient, ctx: Context) -> None:
         self._client = client
         self._ctx = ctx
 

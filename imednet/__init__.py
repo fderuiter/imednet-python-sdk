@@ -2,9 +2,10 @@
 
 from importlib import metadata as _metadata
 
+from .async_sdk import AsyncImednetSDK
 from .sdk import ImednetSDK
 
-__all__ = ["ImednetSDK", "__version__"]
+__all__ = ["ImednetSDK", "AsyncImednetSDK", "__version__"]
 
 try:
     __version__: str = _metadata.version("imednet-sdk")

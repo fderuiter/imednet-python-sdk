@@ -2,13 +2,14 @@
 
 from typing import Any, Dict, List
 
+from imednet.core.client import Client
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.studies import Study
 from imednet.utils.filters import build_filter_string
 
 
-class StudiesEndpoint(BaseEndpoint):
+class StudiesEndpoint(BaseEndpoint[Client]):
     """
     API endpoint for interacting with studies in the iMedNet system.
 
