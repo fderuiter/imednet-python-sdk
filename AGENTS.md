@@ -21,6 +21,20 @@
   poetry run pre-commit run --files <files you changed>
   ```
 
+## Design Principles
+- **Single Responsibility** – Keep each module or class focused on one concern. Prefer
+  composition over long multi-purpose classes.
+- **Open/Closed and Liskov** – Extend functionality with new subclasses or helper
+  functions without altering existing interfaces.
+- **Interface Segregation** – Expose small, well-defined interfaces instead of large
+  "god objects."
+- **Dependency Injection** – Pass dependencies into classes and functions rather
+  than instantiating them internally. This aids testing and reuse.
+- **DRY** – Reuse utilities and base classes. Factor shared routines into
+  `imednet.utils` or `core`.
+- **Testability** – Keep modules decoupled so they can be tested independently. Add
+  unit tests with new classes or functions.
+
 ## Testing
 - Run the test suite with coverage:
   ```bash
