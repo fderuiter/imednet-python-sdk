@@ -77,7 +77,7 @@ def create_app() -> Flask:
         return redirect(url_for("list_studies"))
 
     @app.route("/studies")
-    def list_studies() -> str:
+    def list_studies() -> Response | str:
         creds = list_credentials(session.get("cred_password"))
         if not creds:
             return redirect(url_for("credentials_form"))
@@ -168,7 +168,7 @@ def create_app() -> Flask:
         return render_template("users.html", users=users, include_inactive=include_inactive)
 
     @app.route("/credentials")
-    def credentials_list() -> str:
+    def credentials_list() -> Response | str:
         creds = list_credentials(session.get("cred_password"))
         if not creds:
             return redirect(url_for("credentials_form"))
