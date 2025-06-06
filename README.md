@@ -13,6 +13,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 A Python SDK for interacting with the iMedNet REST API. Provides client, endpoint wrappers, and data models for all resources.
+Requires **Python 3.12**.
 
 See the [Changelog](CHANGELOG.md) for release history.
 
