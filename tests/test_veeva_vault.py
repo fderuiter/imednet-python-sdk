@@ -77,3 +77,36 @@ def test_mapping_interface():
     assert options == {"x": ["a", "b"], "y": ["a", "b"]}
     mapped = interface.apply_mapping({"x": 1, "z": 2}, {"x": "a"})
     assert mapped == {"a": 1, "z": 2}
+
+
+def test_describe_object():
+    client = _client()
+    client._access_token = "token"
+    with (
+        patch.object(client, "get_object_metadata") as mock_meta,
+        patch.object(client, "get_picklist_values") as mock_pick,
+        patch.object(client._client, "get") as mock_get,
+    ):
+        mock_meta.return_value = {
+            "fields": [
+                {"name": "field1", "required": True},
+                {"name": "pick", "type": "Picklist", "picklist": "pl"},
+            ]
+        }
+
+        resp = Mock()
+        resp.json.return_value = {"data": {"fields": [{"name": "extra", "required": True}]}}
+        resp.raise_for_status.return_value = None
+        mock_get.return_value = resp
+
+        mock_pick.return_value = ["A", "B"]
+
+        result = client.describe_object("obj", object_type="type")
+
+        assert result == {
+            "required_fields": ["extra", "field1"],
+            "picklists": {"pick": ["A", "B"]},
+        }
+        mock_meta.assert_called_once_with("obj")
+        mock_get.assert_called_once()
+        mock_pick.assert_called_once_with("pl")
