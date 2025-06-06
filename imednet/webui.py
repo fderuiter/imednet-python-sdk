@@ -17,7 +17,7 @@ from flask import (
 )
 from werkzeug.wrappers import Response
 
-from .credentials import resolve_credentials, save_credentials
+from .credentials import list_credentials, resolve_credentials, save_credentials
 from .models.records import RegisterSubjectRequest
 from .sdk import ImednetSDK
 from .utils.filters import build_filter_string
@@ -48,13 +48,11 @@ def _parse_filter_string(filter_str: str) -> dict[str, object]:
     return filter_dict
 
 
-def _get_sdk() -> ImednetSDK:
-    """Initialize the SDK using environment variables or stored credentials."""
+def _get_sdk(study_key: str) -> ImednetSDK:
+    """Initialize the SDK for the given study."""
     base_url = os.getenv("IMEDNET_BASE_URL", DEFAULT_BASE_URL)
-    api_key, security_key, study_key = resolve_credentials(session.get("cred_password"))
-    if study_key:
-        os.environ.setdefault("IMEDNET_STUDY_KEY", study_key)
-
+    api_key, security_key, _ = resolve_credentials(study_key, session.get("cred_password"))
+    os.environ.setdefault("IMEDNET_STUDY_KEY", study_key)
     return ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
 
 
@@ -67,11 +65,9 @@ def create_app() -> Flask:
 
     @app.before_request
     def _require_credentials() -> Response | None:
-        if request.endpoint == "credentials_form":
+        if request.endpoint in {"credentials_form", "credentials_list"}:
             return None
-        try:
-            resolve_credentials(session.get("cred_password"))
-        except RuntimeError:
+        if not list_credentials(session.get("cred_password")):
             return redirect(url_for("credentials_form"))
         return None
 
@@ -82,13 +78,14 @@ def create_app() -> Flask:
 
     @app.route("/studies")
     def list_studies() -> str:
-        sdk = _get_sdk()
-        studies = sdk.studies.list()
-        return render_template("studies.html", studies=studies)
+        creds = list_credentials(session.get("cred_password"))
+        if not creds:
+            return redirect(url_for("credentials_form"))
+        return render_template("studies.html", studies=creds)
 
     @app.route("/studies/<study_key>/subjects")
     def list_subjects(study_key: str) -> str:
-        sdk = _get_sdk()
+        sdk = _get_sdk(study_key)
         filter_text = request.args.get("filter", "")
         filter_dict = _parse_filter_string(filter_text) if filter_text else None
         filter_str = build_filter_string(filter_dict) if filter_dict else None
@@ -102,13 +99,13 @@ def create_app() -> Flask:
 
     @app.route("/studies/<study_key>/sites")
     def list_sites(study_key: str) -> str:
-        sdk = _get_sdk()
+        sdk = _get_sdk(study_key)
         sites = sdk.sites.list(study_key)
         return render_template("sites.html", study_key=study_key, sites=sites)
 
     @app.route("/studies/<study_key>/queries/open")
     def list_open_queries(study_key: str) -> str:
-        sdk = _get_sdk()
+        sdk = _get_sdk(study_key)
         workflow = QueryManagementWorkflow(sdk)
         queries = workflow.get_open_queries(study_key)
         return render_template(
@@ -119,7 +116,7 @@ def create_app() -> Flask:
 
     @app.route("/studies/<study_key>/queries/counts")
     def query_state_counts(study_key: str) -> str:
-        sdk = _get_sdk()
+        sdk = _get_sdk(study_key)
         workflow = QueryManagementWorkflow(sdk)
         counts = workflow.get_query_state_counts(study_key)
         return render_template(
@@ -130,7 +127,7 @@ def create_app() -> Flask:
 
     @app.route("/studies/<study_key>/register-subjects", methods=["GET", "POST"])
     def register_subjects(study_key: str) -> Response | str:
-        sdk = _get_sdk()
+        sdk = _get_sdk(study_key)
         workflow = RegisterSubjectsWorkflow(sdk)
         if request.method == "POST":
             data = json.loads(request.form["data"])
@@ -142,7 +139,7 @@ def create_app() -> Flask:
 
     @app.route("/studies/<study_key>/records/extract", methods=["GET", "POST"])
     def extract_records(study_key: str) -> str:
-        sdk = _get_sdk()
+        sdk = _get_sdk(study_key)
         workflow = DataExtractionWorkflow(sdk)
         records = None
         if request.method == "POST":
@@ -163,25 +160,35 @@ def create_app() -> Flask:
 
     @app.route("/users")
     def list_users() -> str:
-        sdk = _get_sdk()
+        creds = list_credentials(session.get("cred_password"))
+        study_key = creds[0]["study_key"] if creds else ""
+        sdk = _get_sdk(study_key)
         include_inactive = request.args.get("include_inactive") == "1"
         users = sdk.users.list(include_inactive=include_inactive)
         return render_template("users.html", users=users, include_inactive=include_inactive)
 
-    @app.route("/credentials", methods=["GET", "POST"])
+    @app.route("/credentials")
+    def credentials_list() -> str:
+        creds = list_credentials(session.get("cred_password"))
+        if not creds:
+            return redirect(url_for("credentials_form"))
+        return render_template("credentials_list.html", credentials=creds)
+
+    @app.route("/credentials/new", methods=["GET", "POST"])
     def credentials_form() -> Response | str:
         if request.method == "POST":
             save_credentials(
                 request.form["api_key"],
                 request.form["security_key"],
                 request.form.get("study_key", ""),
+                request.form["study_name"],
                 request.form["password"],
             )
             session["cred_password"] = request.form["password"]
             os.environ["IMEDNET_CRED_PASSWORD"] = request.form["password"]
             flash("Credentials saved")
-            return redirect(url_for("list_studies"))
-        return render_template("credentials.html")
+            return redirect(url_for("credentials_list"))
+        return render_template("credentials_form.html")
 
     return app
 

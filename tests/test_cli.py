@@ -22,7 +22,12 @@ from imednet.core.exceptions import ApiError
 
 # Test SDK initialization
 @patch.dict(
-    os.environ, {"IMEDNET_API_KEY": "test_api_key", "IMEDNET_SECURITY_KEY": "test_security_key"}
+    os.environ,
+    {
+        "IMEDNET_API_KEY": "test_api_key",
+        "IMEDNET_SECURITY_KEY": "test_security_key",
+        "IMEDNET_STUDY_KEY": "STUDY",
+    },
 )
 @patch("imednet.cli.ImednetSDK")
 def test_get_sdk_success(mock_sdk):
@@ -72,7 +77,12 @@ def test_get_sdk_from_saved(mock_sdk, mock_resolve):
 
 
 @patch.dict(
-    os.environ, {"IMEDNET_API_KEY": "test_api_key", "IMEDNET_SECURITY_KEY": "test_security_key"}
+    os.environ,
+    {
+        "IMEDNET_API_KEY": "test_api_key",
+        "IMEDNET_SECURITY_KEY": "test_security_key",
+        "IMEDNET_STUDY_KEY": "STUDY",
+    },
 )
 @patch("imednet.cli.ImednetSDK")
 def test_get_sdk_exception(mock_sdk):
@@ -265,9 +275,9 @@ def test_register_subjects_cmd(mock_get_sdk, tmp_path):
 @patch("imednet.cli.store_creds")
 @patch("imednet.cli.typer.prompt")
 def test_save_credentials_cmd(mock_prompt, mock_store):
-    mock_prompt.side_effect = ["key", "sec", "STUDY", "pass", "pass"]
+    mock_prompt.side_effect = ["key", "sec", "STUDY", "Study", "pwd", "pwd"]
     save_credentials_cmd()
-    mock_store.assert_called_once_with("key", "sec", "STUDY", "pass")
+    mock_store.assert_called_once_with("key", "sec", "STUDY", "Study", "pwd")
 
 
 @patch("imednet.cli.print")
