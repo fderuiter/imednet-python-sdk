@@ -17,6 +17,8 @@ This file is automatically updated by the release process.
   modular, DRY, and SOLID code.
 - Added helper `validate_record_for_upsert` for Veeva Vault record validation.
 - Removed the Flask-based web UI and associated templates to focus on the CLI.
+- Added helper `collect_required_fields_and_picklists` for retrieving required
+  fields and picklist options from Vault.
 
 ### Fixed
 

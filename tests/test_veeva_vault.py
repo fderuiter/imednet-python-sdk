@@ -4,6 +4,7 @@ import pytest
 from imednet.veeva import (
     MappingInterface,
     VeevaVaultClient,
+    collect_required_fields_and_picklists,
     validate_record_for_upsert,
 )
 
@@ -131,3 +132,55 @@ def test_validate_record_for_upsert_autofill_default():
         record = {"name__v": "test"}
         result = validate_record_for_upsert(client, "prod__c", record)
         assert result["status__v"] == "New"
+
+
+def _metadata_v2():
+    return {
+        "fields": [
+            {"name": "name__v", "required": True, "type": "String"},
+            {"name": "category__v", "type": "Picklist", "picklist": "cat_pl"},
+        ]
+    }
+
+
+def _object_type_details():
+    return {
+        "type_fields": [
+            {"name": "status__v", "required": True, "type": "Picklist", "picklist": "status_pl"}
+        ]
+    }
+
+
+def test_collect_required_fields_and_picklists_without_object_type():
+    client = _client()
+    with (
+        patch.object(client, "get_object_metadata", return_value=_metadata_v2()) as meta,
+        patch.object(client, "get_object_type_details") as obj_type,
+        patch.object(client, "get_picklist_values", return_value=["A", "B"]) as pick,
+    ):
+        result = collect_required_fields_and_picklists(client, "prod__c")
+        assert result == {"required_fields": ["name__v"], "picklists": {"category__v": ["A", "B"]}}
+        meta.assert_called_once_with("prod__c")
+        obj_type.assert_not_called()
+        pick.assert_called_once_with("cat_pl")
+
+
+def test_collect_required_fields_and_picklists_with_object_type():
+    client = _client()
+    with (
+        patch.object(client, "get_object_metadata", return_value=_metadata_v2()) as meta,
+        patch.object(
+            client, "get_object_type_details", return_value=_object_type_details()
+        ) as obj_type,
+        patch.object(client, "get_picklist_values") as pick,
+    ):
+        pick.side_effect = [["A", "B"], ["X", "Y"]]
+        result = collect_required_fields_and_picklists(client, "prod__c", "special")
+        assert result == {
+            "required_fields": ["name__v", "status__v"],
+            "picklists": {"category__v": ["A", "B"], "status__v": ["X", "Y"]},
+        }
+        meta.assert_called_once_with("prod__c")
+        obj_type.assert_called_once_with("prod__c", "special")
+        assert pick.call_args_list[0][0][0] == "cat_pl"
+        assert pick.call_args_list[1][0][0] == "status_pl"
