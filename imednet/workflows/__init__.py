@@ -8,13 +8,16 @@
 # from .subject_data import get_subject_data
 
 # --- Correct workflow class/function imports ---
+from .audit_aggregation import AuditAggregationWorkflow
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
 from .record_update import RecordUpdateWorkflow
 from .register_subjects import RegisterSubjectsWorkflow
+from .site_performance import SitePerformanceWorkflow
 from .study_structure import get_study_structure
 from .subject_data import SubjectDataWorkflow
 from .veeva_push import VeevaPushWorkflow
+from .subject_enrollment_dashboard import SubjectEnrollmentDashboard
 from .visit_completion import VisitCompletionWorkflow
 
 __all__ = [
@@ -32,8 +35,11 @@ __all__ = [
     "RecordMapper",
     "RecordUpdateWorkflow",
     "RegisterSubjectsWorkflow",
+    "SitePerformanceWorkflow",
     "SubjectDataWorkflow",
     "VisitCompletionWorkflow",
     "VeevaPushWorkflow",
+    "SubjectEnrollmentDashboard",
+    "AuditAggregationWorkflow",
     "get_study_structure",
 ]

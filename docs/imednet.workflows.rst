@@ -20,6 +20,19 @@ imednet.workflows.query\_management module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.query_aging module
+------------------------------------
+
+.. automodule:: imednet.workflows.query_aging
+
+imednet.workflows.coding\_review module
+--------------------------------------
+
+.. automodule:: imednet.workflows.coding_review
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.workflows.record\_mapper module
 ---------------------------------------
 
@@ -57,6 +70,18 @@ imednet.workflows.enrollment_dashboard module
 
 .. automodule:: imednet.workflows.enrollment_dashboard
 
+imednet.workflows.subject_enrollment_dashboard module
+-----------------------------------------------------
+
+.. automodule:: imednet.workflows.subject_enrollment_dashboard
+imednet.workflows.site_performance module
+----------------------------------------
+
+.. automodule:: imednet.workflows.site_performance
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.workflows.visit\_completion module
 -----------------------------------------
 
@@ -69,6 +94,10 @@ imednet.workflows.veeva\_push module
 -----------------------------------
 
 .. automodule:: imednet.workflows.veeva_push
+imednet.workflows.audit\_aggregation module
+-------------------------------------------
+
+.. automodule:: imednet.workflows.audit_aggregation
    :members:
    :undoc-members:
    :show-inheritance:
