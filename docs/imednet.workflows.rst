@@ -20,6 +20,14 @@ imednet.workflows.query\_management module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.query_aging module
+------------------------------------
+
+.. automodule:: imednet.workflows.query_aging
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.workflows.record\_mapper module
 ---------------------------------------
 
