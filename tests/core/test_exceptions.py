@@ -35,10 +35,13 @@ def test_specific_errors_inheritance():
 def test_api_error_initialization():
     response = {"error": "Test error"}
     status_code = 400
-    error = ApiError(response, status_code)
+    error = ApiError(response, status_code, code="E1", message="boom", field="x")
 
     assert error.response == response
     assert error.status_code == status_code
+    assert error.code == "E1"
+    assert error.message == "boom"
+    assert error.field == "x"
 
 
 def test_api_error_str_with_status_and_response():

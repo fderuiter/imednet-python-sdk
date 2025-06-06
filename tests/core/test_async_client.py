@@ -72,6 +72,27 @@ async def test_status_code_errors(mocker, async_client):
 
 
 @pytest.mark.asyncio
+async def test_error_payload_fields_async(mocker, async_client):
+    mock_response = Mock(spec=httpx.Response)
+    mock_response.is_error = True
+    mock_response.status_code = 400
+    mock_response.json.return_value = {
+        "code": "E123",
+        "message": "Invalid",
+        "field": "site",
+    }
+    mocker.patch.object(async_client._client, "request", AsyncMock(return_value=mock_response))
+
+    with pytest.raises(ValidationError) as exc:
+        await async_client._request("GET", "/test")
+
+    err = exc.value
+    assert err.code == "E123"
+    assert err.message == "Invalid"
+    assert err.field == "site"
+
+
+@pytest.mark.asyncio
 async def test_error_with_non_json_response(mocker, async_client):
     mock_response = Mock(spec=httpx.Response)
     mock_response.is_error = True

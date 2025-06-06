@@ -129,19 +129,80 @@ class Client:
                 body = response.json()
             except Exception:
                 body = response.text
+                code = message = field = None
+            else:
+                code = message = field = None
+                if isinstance(body, dict):
+                    code = body.get("code") or body.get("error")
+                    message = body.get("message") or body.get("description")
+                    field = body.get("field")
+                    if isinstance(body.get("error"), dict):
+                        err = body["error"]
+                        code = err.get("code", code)
+                        message = err.get("description") or err.get("message", message)
+                        field = err.get("field", field)
+                    if isinstance(body.get("metadata"), dict) and isinstance(
+                        body["metadata"].get("error"), dict
+                    ):
+                        err = body["metadata"]["error"]
+                        code = err.get("code", code)
+                        message = err.get("description") or err.get("message", message)
+                        field = err.get("field", field)
             if status == 400:
-                raise ValidationError(body)
+                raise ValidationError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 401:
-                raise AuthenticationError(body)
+                raise AuthenticationError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 403:
-                raise AuthorizationError(body)
+                raise AuthorizationError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 404:
-                raise NotFoundError(body)
+                raise NotFoundError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if status == 429:
-                raise RateLimitError(body)
+                raise RateLimitError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
             if 500 <= status < 600:
-                raise ServerError(body)
-            raise ApiError(body)
+                raise ServerError(
+                    body,
+                    status,
+                    code=code,
+                    message=message,
+                    field=field,
+                )
+            raise ApiError(
+                body,
+                status,
+                code=code,
+                message=message,
+                field=field,
+            )
 
         return response
 

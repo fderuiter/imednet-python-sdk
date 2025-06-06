@@ -140,6 +140,26 @@ class TestClient:
                 client._request("GET", "/test")
 
     @patch("httpx.Client.request")
+    def test_error_payload_fields(self, mock_request, client):
+        mock_response = Mock(spec=httpx.Response)
+        mock_response.is_error = True
+        mock_response.status_code = 400
+        mock_response.json.return_value = {
+            "code": "1000",
+            "message": "Bad data",
+            "field": "page",
+        }
+        mock_request.return_value = mock_response
+
+        with pytest.raises(ValidationError) as exc:
+            client._request("GET", "/test")
+
+        err = exc.value
+        assert err.code == "1000"
+        assert err.message == "Bad data"
+        assert err.field == "page"
+
+    @patch("httpx.Client.request")
     def test_error_with_non_json_response(self, mock_request, client):
         mock_response = Mock(spec=httpx.Response)
         mock_response.is_error = True
