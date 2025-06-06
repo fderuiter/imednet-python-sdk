@@ -29,10 +29,8 @@
 - Pull requests should not lower overall coverage.
 
 ## Changelog
-- The changelog is updated automatically using `scripts/update_changelog.py`.
-  Run the script before releasing to append recent commits to the
-  `Unreleased` section:
-  ```bash
-  poetry run python scripts/update_changelog.py
-  ```
+- Update `CHANGELOG.md` manually. Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style and
+  [semantic versioning](https://semver.org/).
+- Summarize each commit under the `Unreleased` section. When releasing, move
+  these entries under a new version heading.
 

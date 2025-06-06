@@ -42,9 +42,4 @@ jobs:
       - name: Unit tests
         run: |
           poetry run pytest -q --cov=imednet --cov-report=xml
-      - name: Update changelog (non-blocking)
-        # Run the updater for convenience but allow the job to continue if it
-        # modifies CHANGELOG.md since the changes aren't committed in CI.
-        run: poetry run python scripts/update_changelog.py
-        continue-on-error: true
 
