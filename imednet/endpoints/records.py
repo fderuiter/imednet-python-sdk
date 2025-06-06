@@ -24,6 +24,7 @@ class RecordsEndpoint(BaseEndpoint):
         self,
         study_key: Optional[str] = None,
         record_data_filter: Optional[str] = None,
+        page_size: Optional[int] = None,
         **filters: Any,
     ) -> List[Record]:
         """
@@ -49,7 +50,12 @@ class RecordsEndpoint(BaseEndpoint):
             params["recordDataFilter"] = record_data_filter
 
         path = self._build_path(filters.get("studyKey", ""), "records")
-        paginator = Paginator(self._client, path, params=params)
+        paginator = Paginator(
+            self._client,
+            path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [Record.from_json(item) for item in paginator]
 
     def get(self, study_key: str, record_id: Union[str, int]) -> Record:

@@ -8,7 +8,7 @@ from imednet.endpoints.async_sites import AsyncSitesEndpoint
 def endpoint():
     client = MagicMock()
     ctx = MagicMock()
-    return AsyncSitesEndpoint(client, ctx)
+    return AsyncSitesEndpoint(client, ctx, 200)
 
 
 @pytest.mark.asyncio
@@ -24,6 +24,20 @@ async def test_list(mock_build, mock_site, mock_pag, endpoint):
     assert result == [{"id": 1}]
     assert mock_build.called
     assert mock_pag.called
+    args, kwargs = mock_pag.call_args
+    assert kwargs["page_size"] == 200
+
+
+@pytest.mark.asyncio
+@patch("imednet.endpoints.async_sites.AsyncPaginator")
+@patch("imednet.endpoints.async_sites.Site")
+async def test_custom_page_size(mock_site, mock_pag, endpoint):
+    mock_pag.return_value.__aiter__.return_value = []
+    mock_site.from_json.side_effect = lambda x: x
+
+    await endpoint.list(page_size=45)
+    args, kwargs = mock_pag.call_args
+    assert kwargs["page_size"] == 45
 
 
 @pytest.mark.asyncio

@@ -16,7 +16,12 @@ class UsersEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, include_inactive: bool = False) -> List[User]:
+    def list(
+        self,
+        study_key: Optional[str] = None,
+        include_inactive: bool = False,
+        page_size: Optional[int] = None,
+    ) -> List[User]:
         """
         List users in a study with optional filtering.
 
@@ -34,7 +39,12 @@ class UsersEndpoint(BaseEndpoint):
         params: Dict[str, Any] = {"includeInactive": str(include_inactive).lower()}
 
         path = self._build_path(study_key, "users")
-        paginator = Paginator(self._client, path, params=params)
+        paginator = Paginator(
+            self._client,
+            path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [User.from_json(item) for item in paginator]
 
     def get(self, study_key: str, user_id: Union[str, int]) -> User:

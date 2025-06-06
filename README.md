@@ -20,9 +20,14 @@ See the [Changelog](CHANGELOG.md) for release history.
 
 - Simple, consistent interface for API calls
 - Automatic pagination
+- Configurable `default_page_size` for all list operations
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
 - Integration helpers for Veeva Vault APIs
+
+The SDK uses a `default_page_size` (100 by default) for all `list` operations.
+You can set this when initializing `ImednetSDK` or `AsyncImednetSDK` to
+control how many records are fetched per request.
 
 ## Installation
 
@@ -83,7 +88,12 @@ security_key = os.getenv("IMEDNET_SECURITY_KEY")
 study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
 base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
 
-sdk = ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
+sdk = ImednetSDK(
+    api_key=api_key,
+    security_key=security_key,
+    base_url=base_url,
+    default_page_size=200,  # adjust pagination size
+)
 
 try:
     structure = get_study_structure(sdk, study_key)

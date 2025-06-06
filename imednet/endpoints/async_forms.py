@@ -14,10 +14,15 @@ class AsyncFormsEndpoint(BaseEndpoint[AsyncClient]):
 
     path = "/api/v1/edc/studies"
 
-    def __init__(self, client: AsyncClient, ctx) -> None:
-        super().__init__(client, ctx)
+    def __init__(self, client: AsyncClient, ctx, default_page_size: int = 100) -> None:
+        super().__init__(client, ctx, default_page_size=default_page_size)
 
-    async def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Form]:
+    async def list(
+        self,
+        study_key: Optional[str] = None,
+        page_size: Optional[int] = None,
+        **filters: Any,
+    ) -> List[Form]:
         filters = self._auto_filter(filters)
         if study_key:
             filters["studyKey"] = study_key
@@ -31,7 +36,12 @@ class AsyncFormsEndpoint(BaseEndpoint[AsyncClient]):
             params["filter"] = build_filter_string(filters)
 
         path = self._build_path(study, "forms")
-        paginator = AsyncPaginator(self._client, path, params=params, page_size=500)
+        paginator = AsyncPaginator(
+            self._client,
+            path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [Form.from_json(item) async for item in paginator]
 
     async def get(self, study_key: str, form_id: int) -> Form:

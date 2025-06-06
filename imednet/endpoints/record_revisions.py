@@ -17,7 +17,12 @@ class RecordRevisionsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[RecordRevision]:
+    def list(
+        self,
+        study_key: Optional[str] = None,
+        page_size: Optional[int] = None,
+        **filters: Any,
+    ) -> List[RecordRevision]:
         """
         List record revisions in a study with optional filtering.
 
@@ -37,7 +42,12 @@ class RecordRevisionsEndpoint(BaseEndpoint):
             params["filter"] = build_filter_string(filters)
 
         path = self._build_path(filters.get("studyKey", ""), "recordRevisions")
-        paginator = Paginator(self._client, path, params=params)
+        paginator = Paginator(
+            self._client,
+            path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [RecordRevision.from_json(item) for item in paginator]
 
     def get(self, study_key: str, record_revision_id: int) -> RecordRevision:

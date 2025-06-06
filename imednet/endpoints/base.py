@@ -18,9 +18,10 @@ class BaseEndpoint(Generic[TClient]):
 
     path: str  # to be set in subclasses
 
-    def __init__(self, client: TClient, ctx: Context) -> None:
+    def __init__(self, client: TClient, ctx: Context, default_page_size: int = 100) -> None:
         self._client = client
         self._ctx = ctx
+        self._default_page_size = default_page_size
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         # inject default studyKey if missing

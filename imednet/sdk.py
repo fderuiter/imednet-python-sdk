@@ -68,6 +68,7 @@ class ImednetSDK:
         timeout: float = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
+        default_page_size: int = 100,
     ):
         """
         Initialize the SDK with authentication and configuration.
@@ -82,6 +83,7 @@ class ImednetSDK:
         """
         # Initialize context for storing state
         self.ctx = Context()
+        self._default_page_size = default_page_size
 
         # Initialize the HTTP client
         self._client = Client(
@@ -94,19 +96,19 @@ class ImednetSDK:
         )
 
         # Initialize endpoint clients
-        self.codings = CodingsEndpoint(self._client, self.ctx)
-        self.forms = FormsEndpoint(self._client, self.ctx)
-        self.intervals = IntervalsEndpoint(self._client, self.ctx)
-        self.jobs = JobsEndpoint(self._client, self.ctx)
-        self.queries = QueriesEndpoint(self._client, self.ctx)
-        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx)
-        self.records = RecordsEndpoint(self._client, self.ctx)
-        self.sites = SitesEndpoint(self._client, self.ctx)
-        self.studies = StudiesEndpoint(self._client, self.ctx)
-        self.subjects = SubjectsEndpoint(self._client, self.ctx)
-        self.users = UsersEndpoint(self._client, self.ctx)
-        self.variables = VariablesEndpoint(self._client, self.ctx)
-        self.visits = VisitsEndpoint(self._client, self.ctx)
+        self.codings = CodingsEndpoint(self._client, self.ctx, default_page_size)
+        self.forms = FormsEndpoint(self._client, self.ctx, default_page_size)
+        self.intervals = IntervalsEndpoint(self._client, self.ctx, default_page_size)
+        self.jobs = JobsEndpoint(self._client, self.ctx, default_page_size)
+        self.queries = QueriesEndpoint(self._client, self.ctx, default_page_size)
+        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx, default_page_size)
+        self.records = RecordsEndpoint(self._client, self.ctx, default_page_size)
+        self.sites = SitesEndpoint(self._client, self.ctx, default_page_size)
+        self.studies = StudiesEndpoint(self._client, self.ctx, default_page_size)
+        self.subjects = SubjectsEndpoint(self._client, self.ctx, default_page_size)
+        self.users = UsersEndpoint(self._client, self.ctx, default_page_size)
+        self.variables = VariablesEndpoint(self._client, self.ctx, default_page_size)
+        self.visits = VisitsEndpoint(self._client, self.ctx, default_page_size)
 
         # Initialize workflows, passing the SDK instance itself
         self.workflows = Workflows(self)

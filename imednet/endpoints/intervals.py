@@ -17,7 +17,12 @@ class IntervalsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[Interval]:
+    def list(
+        self,
+        study_key: Optional[str] = None,
+        page_size: Optional[int] = None,
+        **filters: Any,
+    ) -> List[Interval]:
         """
         List intervals in a study with optional filtering.
 
@@ -37,7 +42,12 @@ class IntervalsEndpoint(BaseEndpoint):
             params["filter"] = build_filter_string(filters)
 
         path = self._build_path(filters.get("studyKey", ""), "intervals")
-        paginator = Paginator(self._client, path, params=params, page_size=500)
+        paginator = Paginator(
+            self._client,
+            path,
+            params=params,
+            page_size=page_size or self._default_page_size,
+        )
         return [Interval.from_json(item) for item in paginator]
 
     def get(self, study_key: str, interval_id: int) -> Interval:
