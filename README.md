@@ -92,16 +92,16 @@ except Exception as e:
 
 ### Async Usage
 
-The SDK also provides an `AsyncClient` for concurrent requests:
+The SDK also provides an asynchronous interface via `AsyncImednetSDK` and `AsyncClient`:
 
 ```python
 import asyncio
-from imednet.core.async_client import AsyncClient
+from imednet.async_sdk import AsyncImednetSDK
 
 async def main():
-    async with AsyncClient(api_key=api_key, security_key=security_key) as client:
-        resp = await client.get("/api/v1/edc/studies")
-        print(resp.json())
+    async with AsyncImednetSDK(api_key=api_key, security_key=security_key) as sdk:
+        studies = await sdk.studies.list()
+        print(studies)
 
 asyncio.run(main())
 ```

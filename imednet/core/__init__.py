@@ -2,6 +2,8 @@
 Re-exports core components for easier access.
 """
 
+from .async_client import AsyncClient
+from .async_paginator import AsyncPaginator
 from .client import Client
 from .context import Context
 from .exceptions import (
@@ -29,5 +31,7 @@ __all__ = [
     "RateLimitError",
     "ServerError",
     "ValidationError",
+    "AsyncClient",
     "Paginator",
+    "AsyncPaginator",
 ]
