@@ -156,6 +156,11 @@ imednet-web
 
 Ensure the same environment variables are set as for the CLI. The web app lists
 available studies and allows drilling down into subjects for each study.
+If the required credentials or password aren't provided, the interface will
+prompt you to enter them and store them securely for future use. The password
+is retained in your browser session (and temporarily in the
+`IMEDNET_CRED_PASSWORD` environment variable) so subsequent requests can load
+the saved credentials.
 
 ## Documentation
 

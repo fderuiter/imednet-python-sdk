@@ -12,6 +12,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
     url_for,
 )
 from werkzeug.wrappers import Response
@@ -50,7 +51,7 @@ def _parse_filter_string(filter_str: str) -> dict[str, object]:
 def _get_sdk() -> ImednetSDK:
     """Initialize the SDK using environment variables or stored credentials."""
     base_url = os.getenv("IMEDNET_BASE_URL", DEFAULT_BASE_URL)
-    api_key, security_key, study_key = resolve_credentials(os.getenv("IMEDNET_CRED_PASSWORD"))
+    api_key, security_key, study_key = resolve_credentials(session.get("cred_password"))
     if study_key:
         os.environ.setdefault("IMEDNET_STUDY_KEY", study_key)
 
@@ -63,6 +64,16 @@ def create_app() -> Flask:
     template_dir = Path(__file__).with_name("templates")
     app = Flask(__name__, template_folder=str(template_dir))
     app.secret_key = os.environ.get("FLASK_SECRET", "dev")
+
+    @app.before_request
+    def _require_credentials() -> Response | None:
+        if request.endpoint == "credentials_form":
+            return None
+        try:
+            resolve_credentials(session.get("cred_password"))
+        except RuntimeError:
+            return redirect(url_for("credentials_form"))
+        return None
 
     @app.route("/")
     def index() -> Response:
@@ -166,6 +177,8 @@ def create_app() -> Flask:
                 request.form.get("study_key", ""),
                 request.form["password"],
             )
+            session["cred_password"] = request.form["password"]
+            os.environ["IMEDNET_CRED_PASSWORD"] = request.form["password"]
             flash("Credentials saved")
             return redirect(url_for("list_studies"))
         return render_template("credentials.html")
