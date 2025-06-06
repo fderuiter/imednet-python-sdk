@@ -8,7 +8,7 @@
 # from .subject_data import get_subject_data
 
 # --- Correct workflow class/function imports ---
-from .audit_aggregation import AuditAggregationWorkflow
+    "VisitCompletionWorkflow",
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
 from .record_update import RecordUpdateWorkflow
