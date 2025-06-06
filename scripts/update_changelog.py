@@ -16,7 +16,9 @@ def last_tag() -> str | None:
     """Return the most recent git tag or ``None`` if none exist."""
     try:
         return subprocess.check_output(
-            ["git", "describe", "--tags", "--abbrev=0"], text=True
+            ["git", "describe", "--tags", "--abbrev=0"],
+            text=True,
+            stderr=subprocess.DEVNULL,
         ).strip()
     except subprocess.CalledProcessError:
         return None
@@ -29,6 +31,14 @@ def collect_messages(since: str | None) -> list[str]:
     return [f"- {line}" for line in log.strip().splitlines() if line]
 
 
+def existing_unreleased(text: str) -> set[str]:
+    """Return the set of changelog entries already under Unreleased."""
+    m = re.search(r"## \[Unreleased\]\n(?P<entries>(?:- .+\n)*)", text)
+    if not m:
+        return set()
+    return {line.strip() for line in m.group("entries").splitlines() if line}
+
+
 def main() -> None:
     changelog = Path("CHANGELOG.md")
     text = changelog.read_text()
@@ -39,7 +49,11 @@ def main() -> None:
     messages = collect_messages(last_tag())
     if not messages:
         return
-    updated = text[:insert_at] + "\n".join(messages) + "\n" + text[insert_at:]
+    existing = existing_unreleased(text)
+    new_messages = [m for m in messages if m not in existing]
+    if not new_messages:
+        return
+    updated = text[:insert_at] + "\n".join(new_messages) + "\n" + text[insert_at:]
     changelog.write_text(updated)
 
 
