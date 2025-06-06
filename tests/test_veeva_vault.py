@@ -155,7 +155,7 @@ def test_collect_required_fields_and_picklists_without_object_type():
     client = _client()
     with (
         patch.object(client, "get_object_metadata", return_value=_metadata_v2()) as meta,
-        patch.object(client, "get_object_type_details") as obj_type,
+        patch.object(client, "get_object_type_configuration") as obj_type,
         patch.object(
             client, "get_picklist_values", return_value=[{"name": "A"}, {"name": "B"}]
         ) as pick,
@@ -172,7 +172,7 @@ def test_collect_required_fields_and_picklists_with_object_type():
     with (
         patch.object(client, "get_object_metadata", return_value=_metadata_v2()) as meta,
         patch.object(
-            client, "get_object_type_details", return_value=_object_type_details()
+            client, "get_object_type_configuration", return_value=_object_type_details()
         ) as obj_type,
         patch.object(client, "get_picklist_values") as pick,
     ):
@@ -217,3 +217,48 @@ def test_get_object_field_metadata():
         result = client.get_object_field_metadata("obj", "status__v")
         assert result == {"name": "status__v"}
         mock_get.assert_called_once()
+
+
+def _object_type_config():
+    return {
+        "fields": [
+            {"name": "status__v", "required": True, "type": "Picklist", "picklist": "status_pl"}
+        ]
+    }
+
+
+def test_client_collect_required_fields_and_picklists_without_object_type():
+    client = _client()
+    with (
+        patch.object(client, "get_object_metadata", return_value=_metadata_v2()) as meta,
+        patch.object(client, "get_object_type_configuration") as obj_type,
+        patch.object(
+            client, "get_picklist_values", return_value=[{"name": "A"}, {"name": "B"}]
+        ) as pick,
+    ):
+        result = client.collect_required_fields_and_picklists("prod__c")
+        assert result == {"required_fields": ["name__v"], "picklists": {"category__v": ["A", "B"]}}
+        meta.assert_called_once_with("prod__c")
+        obj_type.assert_not_called()
+        pick.assert_called_once_with("cat_pl")
+
+
+def test_client_collect_required_fields_and_picklists_with_object_type():
+    client = _client()
+    with (
+        patch.object(client, "get_object_metadata", return_value=_metadata_v2()) as meta,
+        patch.object(
+            client, "get_object_type_configuration", return_value=_object_type_config()
+        ) as obj_type,
+        patch.object(client, "get_picklist_values") as pick,
+    ):
+        pick.side_effect = [[{"name": "A"}, {"name": "B"}], [{"name": "X"}, {"name": "Y"}]]
+        result = client.collect_required_fields_and_picklists("prod__c", "special")
+        assert result == {
+            "required_fields": ["name__v", "status__v"],
+            "picklists": {"category__v": ["A", "B"], "status__v": ["X", "Y"]},
+        }
+        meta.assert_called_once_with("prod__c")
+        obj_type.assert_called_once_with("prod__c", "special")
+        assert pick.call_args_list[0][0][0] == "cat_pl"
+        assert pick.call_args_list[1][0][0] == "status_pl"
