@@ -32,7 +32,7 @@ def build_filter_string(
     def quote(val: Any) -> str:
         text = str(val)
         if any(c in text for c in (and_connector, or_connector, "(", ")", '"')):
-            text = text.replace('"', "\\\"")
+            text = text.replace('"', '\\"')
             return f'"{text}"'
         return text
 
