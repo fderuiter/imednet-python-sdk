@@ -15,6 +15,7 @@ This file is automatically updated by the release process.
 - Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.
 - Documented a new "Design Principles" section in `AGENTS.md` encouraging
   modular, DRY, and SOLID code.
+- Added helper `validate_record_for_upsert` for Veeva Vault record validation.
 
 ### Fixed
 

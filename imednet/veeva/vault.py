@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Mapping
+from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Tuple
 
 import httpx
 
@@ -87,3 +87,62 @@ class MappingInterface:
     def apply_mapping(record: Mapping[str, Any], mapping: Mapping[str, str]) -> Dict[str, Any]:
         """Return a new dict with fields renamed using the provided mapping."""
         return {mapping.get(k, k): v for k, v in record.items()}
+
+
+def get_required_fields_and_picklists(
+    client: VeevaVaultClient, object_name: str, object_type: str | None = None
+) -> Tuple[set[str], Dict[str, List[str]], Dict[str, str | None]]:
+    """Return required field names, picklist options and defaults for an object."""
+
+    metadata = client.get_object_metadata(object_name)
+    fields: List[Dict[str, Any]] = list(metadata.get("fields", []))
+
+    if object_type:
+        for ot in metadata.get("objectTypes", []):
+            if ot.get("name") == object_type:
+                fields.extend(ot.get("fields", []))
+
+    required: set[str] = set()
+    picklists: Dict[str, List[str]] = {}
+    defaults: Dict[str, str | None] = {}
+
+    for field in fields:
+        name = field.get("name")
+        if not name:
+            continue
+        if field.get("required"):
+            required.add(name)
+
+        picklist = field.get("picklist") or {}
+        values = picklist.get("values")
+        if values:
+            picklists[name] = [v.get("name") for v in values if "name" in v]
+            defaults[name] = picklist.get("defaultValue")
+
+    return required, picklists, defaults
+
+
+def validate_record_for_upsert(
+    client: VeevaVaultClient,
+    object_name: str,
+    record: MutableMapping[str, Any],
+    object_type: str | None = None,
+) -> MutableMapping[str, Any]:
+    """Validate record fields against object metadata."""
+
+    required, picklists, defaults = get_required_fields_and_picklists(
+        client, object_name, object_type
+    )
+
+    for field, options in picklists.items():
+        if field in record:
+            if record[field] not in options:
+                raise ValueError(f"Invalid value '{record[field]}' for field '{field}'")
+        elif defaults.get(field) is not None:
+            record[field] = defaults[field]
+
+    missing = [f for f in required if f not in record]
+    if missing:
+        raise ValueError(f"Missing required fields: {', '.join(missing)}")
+
+    return record
