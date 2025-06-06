@@ -20,6 +20,14 @@ imednet.workflows.query\_management module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.coding\_review module
+--------------------------------------
+
+.. automodule:: imednet.workflows.coding_review
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.workflows.record\_mapper module
 ---------------------------------------
 
