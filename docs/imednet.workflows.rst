@@ -52,6 +52,11 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.enrollment_dashboard module
+---------------------------------------------
+
+.. automodule:: imednet.workflows.enrollment_dashboard
+
 imednet.workflows.visit\_completion module
 -----------------------------------------
 

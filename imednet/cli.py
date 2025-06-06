@@ -26,6 +26,7 @@ from .sdk import ImednetSDK
 # Import the public filter utility
 from .utils.filters import build_filter_string
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.enrollment_dashboard import build_dashboard
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.register_subjects import RegisterSubjectsWorkflow
 from .workflows.visit_completion import VisitCompletionWorkflow
@@ -373,6 +374,31 @@ def register_subjects_cmd(
             study_key=study_key, subjects=subjects, email_notify=email_notify
         )
         print(result)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("enrollment-dashboard")
+def enrollment_dashboard_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    export_csv: Optional[Path] = typer.Option(
+        None,
+        "--export",
+        "-e",
+        help="Path to export the dashboard as CSV.",
+    ),
+) -> None:
+    """Show enrollment dashboard summarizing sites and enrollment dates."""
+    sdk = get_sdk(ctx)
+    try:
+        df = build_dashboard(sdk, study_key)
+        if export_csv:
+            df.to_csv(export_csv, index=False)
+            print(f"Dashboard exported to {export_csv}")
+        else:
+            print(df)
     except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)
