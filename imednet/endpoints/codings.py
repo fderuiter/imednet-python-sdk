@@ -28,11 +28,12 @@ class CodingsEndpoint(BaseEndpoint):
 
         Args:
             study_key: Study identifier (uses default from context if not specified)
-            ``**filters``: Additional filter parameters
+            filters: Additional filter parameters
 
         Returns:
             List of Coding objects
         """
+
         filters = self._auto_filter(filters)
         if study_key:
             filters["studyKey"] = study_key
@@ -70,6 +71,7 @@ class CodingsEndpoint(BaseEndpoint):
         Returns:
             Coding object
         """
+
         path = self._build_path(study_key, "codings", coding_id)
         raw = self._client.get(path).json().get("data", [])
         if not raw:

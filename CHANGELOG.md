@@ -27,6 +27,10 @@ This file is automatically updated by the release process.
 
 - Resolved circular import errors in `imednet/workflows/register_subjects.py` and `imednet/workflows/study_structure.py` by using `typing.TYPE_CHECKING`.
 
+### Removed
+
+- Removed GitHub Actions workflow for documentation generation and deployment (docs.yml). Documentation must now be built and viewed locally.
+
 ## [0.1.0] - 2025-04-28
 
 ### Initial Features

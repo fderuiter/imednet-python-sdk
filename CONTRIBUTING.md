@@ -39,6 +39,17 @@ Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md).
 - Use `black` for formatting.
 - No trailing whitespace.
 
+## Documentation
+
+Documentation is built locally using Sphinx. There is no longer a CI workflow for automatic documentation deployment. To build the docs, run:
+
+```bash
+poetry install --with dev
+poetry run sphinx-build -b html docs docs/_build/html
+```
+
+Open `docs/_build/html/index.html` in your browser to view the documentation.
+
 ## Tests
 
 Run tests locally:

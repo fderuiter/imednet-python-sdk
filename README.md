@@ -2,7 +2,6 @@
 
 \
 [![Build Status](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/Bright-Research/imednet-python-sdk/graph/badge.svg?token=YOUR_CODECOV_TOKEN_HERE)](https://codecov.io/gh/Bright-Research/imednet-python-sdk)
 [![PyPI version](https://img.shields.io/pypi/v/imednet-python-sdk.svg)](https://pypi.org/project/imednet-python-sdk/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imednet-python-sdk)](https://pypi.org/project/imednet-python-sdk/)
 [![PyPI license](https://img.shields.io/pypi/l/imednet-python-sdk.svg)](LICENSE)
@@ -184,10 +183,9 @@ imednet subjects list --help
 
 ## Documentation
 
-The full documentation, including API reference and tutorials, is generated with
-Sphinx and output to `docs/_build/html`. You can browse it online after
-building, or view the `tutorials` section for step‑by‑step guides.
-To build it locally:
+The documentation is no longer automatically deployed or published online. To view the documentation, you must build it locally using Sphinx. The output will be in `docs/_build/html`.
+
+To build the documentation locally:
 
 ```bash
 poetry install --with dev
