@@ -70,6 +70,10 @@ imednet.workflows.enrollment_dashboard module
 
 .. automodule:: imednet.workflows.enrollment_dashboard
 
+imednet.workflows.subject_enrollment_dashboard module
+-----------------------------------------------------
+
+.. automodule:: imednet.workflows.subject_enrollment_dashboard
 imednet.workflows.site_performance module
 ----------------------------------------
 

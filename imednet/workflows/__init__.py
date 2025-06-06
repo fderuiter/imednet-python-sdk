@@ -16,6 +16,7 @@ from .register_subjects import RegisterSubjectsWorkflow
 from .site_performance import SitePerformanceWorkflow
 from .study_structure import get_study_structure
 from .subject_data import SubjectDataWorkflow
+from .subject_enrollment_dashboard import SubjectEnrollmentDashboard
 from .visit_completion import VisitCompletionWorkflow
 
 __all__ = [
@@ -36,6 +37,7 @@ __all__ = [
     "SitePerformanceWorkflow",
     "SubjectDataWorkflow",
     "VisitCompletionWorkflow",
+    "SubjectEnrollmentDashboard",
     "AuditAggregationWorkflow",
     "get_study_structure",
 ]
