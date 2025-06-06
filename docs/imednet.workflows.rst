@@ -20,6 +20,11 @@ imednet.workflows.query\_management module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.query_aging module
+------------------------------------
+
+.. automodule:: imednet.workflows.query_aging
+
 imednet.workflows.coding\_review module
 --------------------------------------
 
