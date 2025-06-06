@@ -42,3 +42,7 @@ jobs:
       - name: Unit tests
         run: |
           poetry run pytest -q --cov=imednet --cov-report=xml
+      - name: Update changelog (non-blocking)
+        run: poetry run python scripts/update_changelog.py
+        continue-on-error: true
+
