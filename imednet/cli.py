@@ -29,6 +29,7 @@ from .workflows.data_extraction import DataExtractionWorkflow
 from .workflows.enrollment_dashboard import build_dashboard
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.register_subjects import RegisterSubjectsWorkflow
+from .workflows.visit_completion import VisitCompletionWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -398,6 +399,26 @@ def enrollment_dashboard_cmd(
             print(f"Dashboard exported to {export_csv}")
         else:
             print(df)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("visit-completion")
+def visit_completion_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    subject_key: str = typer.Argument(..., help="The key identifying the subject."),
+) -> None:
+    """Summarize visit completion for a subject."""
+    sdk = get_sdk(ctx)
+    workflow = VisitCompletionWorkflow(sdk)
+    try:
+        result = workflow.get_subject_progress(study_key, subject_key)
+        print(result)
     except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)

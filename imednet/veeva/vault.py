@@ -72,6 +72,13 @@ class VeevaVaultClient:
         resp.raise_for_status()
         return resp.json().get("data", {})
 
+    def get_object_type_configuration(self, object_name: str, object_type: str) -> Dict[str, Any]:
+        """Return configuration for an object type."""
+        url = f"/api/{self.api_version}/configuration/{object_name}.{object_type}"
+        resp = self._client.get(url, headers=self._headers())
+        resp.raise_for_status()
+        return resp.json().get("data", {})
+
     def get_picklist_values(self, picklist_name: str) -> List[Dict[str, Any]]:
         """Return picklist values for the given picklist."""
         url = f"/api/{self.api_version}/objects/picklists/{picklist_name}"
@@ -85,6 +92,41 @@ class VeevaVaultClient:
         resp = self._client.get(url, headers=self._headers())
         resp.raise_for_status()
         return resp.json().get("field", {})
+
+    def collect_required_fields_and_picklists(
+        self, object_name: str, object_type: str | None = None
+    ) -> Dict[str, Any]:
+        """Return required fields and picklist values for an object."""
+
+        metadata = self.get_object_metadata(object_name)
+        fields: List[Dict[str, Any]] = list(metadata.get("fields", []))
+
+        if object_type:
+            type_details = self.get_object_type_configuration(object_name, object_type)
+            type_fields = type_details.get("fields") or type_details.get("type_fields", [])
+            fields.extend(type_fields)
+
+        required_fields: List[str] = []
+        picklists: Dict[str, List[str]] = {}
+
+        for field in fields:
+            name = field.get("name")
+            if not name:
+                continue
+
+            if field.get("required"):
+                required_fields.append(name)
+
+            field_type = str(field.get("type", "")).lower()
+            if "picklist" in field_type:
+                picklist_name = field.get("picklist")
+                if isinstance(picklist_name, dict):
+                    picklist_name = picklist_name.get("name")
+                if isinstance(picklist_name, str):
+                    raw_values = self.get_picklist_values(picklist_name)
+                    picklists[name] = [str(v["name"]) for v in raw_values if "name" in v]
+
+        return {"required_fields": required_fields, "picklists": picklists}
 
     def upsert_object(self, object_name: str, record: Mapping[str, Any]) -> Dict[str, Any]:
         """Create or update a record for the given object."""
@@ -174,30 +216,4 @@ def collect_required_fields_and_picklists(
 ) -> Dict[str, Any]:
     """Return required fields and picklist values for an object."""
 
-    metadata = client.get_object_metadata(object_name)
-    fields: List[Dict[str, Any]] = list(metadata.get("fields", []))
-
-    if object_type:
-        type_details = client.get_object_type_details(object_name, object_type)
-        fields.extend(type_details.get("type_fields", []))
-
-    required_fields: List[str] = []
-    picklists: Dict[str, List[str]] = {}
-
-    for field in fields:
-        name = field.get("name")
-        if not name:
-            continue
-
-        if field.get("required"):
-            required_fields.append(name)
-
-        if str(field.get("type", "")).lower() == "picklist":
-            picklist_name = field.get("picklist")
-            if isinstance(picklist_name, dict):
-                picklist_name = picklist_name.get("name")
-            if isinstance(picklist_name, str):
-                raw_values = client.get_picklist_values(picklist_name)
-                picklists[name] = [str(v["name"]) for v in raw_values if "name" in v]
-
-    return {"required_fields": required_fields, "picklists": picklists}
+    return client.collect_required_fields_and_picklists(object_name, object_type)

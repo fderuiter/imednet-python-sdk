@@ -19,9 +19,13 @@ This file is automatically updated by the release process.
 - Removed the Flask-based web UI and associated templates to focus on the CLI.
 - Added helper `collect_required_fields_and_picklists` for retrieving required
   fields and picklist options from Vault.
+- Added method `VeevaVaultClient.collect_required_fields_and_picklists` for
+  fetching required fields and picklists directly from the client.
 - Added configurable `default_page_size` for SDK pagination.
 - Added enrollment dashboard workflow and CLI command to export site enrollment
   summaries.
+- Added `VisitCompletionWorkflow` and CLI command `workflows visit-completion` to
+  summarize visit progress for a subject.
 
 ### Fixed
 
