@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>Query Counts for {{ study_key }}</h1>
-<ul class="list-group">
-  <li class="list-group-item">Open: {{ counts.open }}</li>
-  <li class="list-group-item">Closed: {{ counts.closed }}</li>
-  <li class="list-group-item">Unknown: {{ counts.unknown }}</li>
-</ul>
-{% endblock %}
