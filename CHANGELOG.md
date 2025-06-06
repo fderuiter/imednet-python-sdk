@@ -13,6 +13,8 @@ This file is automatically updated by the release process.
 - Added PyPI, code style (Black), linter (Ruff), and typing (Mypy) badges to `README.md`.
 - Added `pandas` to development dependencies for workflow features.
 - Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.
+- Documented a new "Design Principles" section in `AGENTS.md` encouraging
+  modular, DRY, and SOLID code.
 
 ### Fixed
 
