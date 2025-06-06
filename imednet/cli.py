@@ -28,6 +28,7 @@ from .utils.filters import build_filter_string
 from .workflows.data_extraction import DataExtractionWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.register_subjects import RegisterSubjectsWorkflow
+from .workflows.visit_completion import VisitCompletionWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -371,6 +372,26 @@ def register_subjects_cmd(
         result = workflow.register_subjects(
             study_key=study_key, subjects=subjects, email_notify=email_notify
         )
+        print(result)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("visit-completion")
+def visit_completion_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    subject_key: str = typer.Argument(..., help="The key identifying the subject."),
+) -> None:
+    """Summarize visit completion for a subject."""
+    sdk = get_sdk(ctx)
+    workflow = VisitCompletionWorkflow(sdk)
+    try:
+        result = workflow.get_subject_progress(study_key, subject_key)
         print(result)
     except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")

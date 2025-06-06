@@ -52,6 +52,14 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.visit\_completion module
+-----------------------------------------
+
+.. automodule:: imednet.workflows.visit_completion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

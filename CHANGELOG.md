@@ -22,6 +22,8 @@ This file is automatically updated by the release process.
 - Added method `VeevaVaultClient.collect_required_fields_and_picklists` for
   fetching required fields and picklists directly from the client.
 - Added configurable `default_page_size` for SDK pagination.
+- Added `VisitCompletionWorkflow` and CLI command `workflows visit-completion` to
+  summarize visit progress for a subject.
 
 ### Fixed
 
