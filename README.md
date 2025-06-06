@@ -114,6 +114,25 @@ asyncio.run(main())
 `intervals`, `jobs`, `queries`, `record_revisions`, `users`, `variables`, and
 `visits`.
 
+### Handling API Errors
+
+When the API returns a non-success status, the client raises an `ApiError`
+subclass (e.g. `ValidationError`). Besides `status_code` and the raw `response`,
+these exceptions expose `code`, `message`, and `field` attributes parsed from the
+error body:
+
+```python
+from imednet.core.exceptions import ValidationError
+
+try:
+    client.get("/bad")
+except ValidationError as exc:
+    print(exc.status_code)  # HTTP status
+    print(exc.code)        # Error code from API
+    print(exc.message)     # Error message
+    print(exc.field)       # Field info (may be dict or str)
+```
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command. The CLI groups functionality into several subcommands:

@@ -24,24 +24,35 @@ class RequestError(ImednetError):
 
 
 class ApiError(ImednetError):
-    """
-    Raised for generic API errors (non-2xx HTTP status codes).
+    """Raised for generic API errors (non-2xx HTTP status codes)."""
 
-    Attributes:
-        status_code: HTTP status code returned by the API.
-        response: Parsed JSON or raw text of the error response.
-    """
-
-    def __init__(self, response: Any, status_code: Optional[int] = None) -> None:
+    def __init__(
+        self,
+        response: Any,
+        status_code: Optional[int] = None,
+        *,
+        code: Optional[str | int] = None,
+        message: Optional[str] = None,
+        field: Optional[Any] = None,
+    ) -> None:
         super().__init__(str(response))
         self.status_code = status_code
         self.response = response
+        self.code = code
+        self.message = message
+        self.field = field
 
     def __str__(self) -> str:
         base = super().__str__()
         details = []
         if self.status_code is not None:
             details.append(f"Status Code: {self.status_code}")
+        if self.code is not None:
+            details.append(f"Code: {self.code}")
+        if self.message:
+            details.append(f"Message: {self.message}")
+        if self.field:
+            details.append(f"Field: {self.field}")
         if self.response:
             details.append(f"Response: {self.response}")
         if details:

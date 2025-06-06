@@ -129,19 +129,44 @@ class Client:
                 body = response.json()
             except Exception:
                 body = response.text
+                code = message = field = None
+            else:
+                code = message = field = None
+                if isinstance(body, dict):
+                    code = body.get("code") or body.get("error")
+                    message = body.get("message") or body.get("description")
+                    field = body.get("field")
+                    if isinstance(body.get("error"), dict):
+                        err = body["error"]
+                        code = err.get("code", code)
+                        message = err.get("description") or err.get("message", message)
+                        field = err.get("field", field)
+                    if isinstance(body.get("metadata"), dict) and isinstance(
+                        body["metadata"].get("error"), dict
+                    ):
+                        err = body["metadata"]["error"]
+                        code = err.get("code", code)
+                        message = err.get("description") or err.get("message", message)
+                        field = err.get("field", field)
+            exc_kwargs = {
+                "status_code": status,
+                "code": code,
+                "message": message,
+                "field": field,
+            }
             if status == 400:
-                raise ValidationError(body)
+                raise ValidationError(body, **exc_kwargs)
             if status == 401:
-                raise AuthenticationError(body)
+                raise AuthenticationError(body, **exc_kwargs)
             if status == 403:
-                raise AuthorizationError(body)
+                raise AuthorizationError(body, **exc_kwargs)
             if status == 404:
-                raise NotFoundError(body)
+                raise NotFoundError(body, **exc_kwargs)
             if status == 429:
-                raise RateLimitError(body)
+                raise RateLimitError(body, **exc_kwargs)
             if 500 <= status < 600:
-                raise ServerError(body)
-            raise ApiError(body)
+                raise ServerError(body, **exc_kwargs)
+            raise ApiError(body, **exc_kwargs)
 
         return response
 
