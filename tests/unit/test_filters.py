@@ -47,3 +47,26 @@ def test_list_single_value():
 
 def test_tuple_custom_operator():
     assert build_filter_string({"name": ("=~", "John")}) == "name=~John"
+
+
+def test_nested_filters():
+    filters = {
+        "and": [
+            {"status": "active"},
+            {"or": [{"age": (">", 18)}, {"type": ["A", "B"]}]},
+        ]
+    }
+    result = build_filter_string(filters)
+    assert result == "status==active;(age>18,type==A,type==B)"
+
+
+def test_custom_connectors_with_groups():
+    filters = {"and": [{"a": 1}, {"or": [{"b": 2}, {"c": 3}]}]}
+    result = build_filter_string(filters, and_connector="&", or_connector="|")
+    assert result == "a==1&(b==2|c==3)"
+
+
+def test_record_data_filter_building():
+    filters = {"AESER": "Serious", "GENDER": "Male"}
+    result = build_filter_string(filters, and_connector=";", or_connector=",")
+    assert result == "AESER==Serious;GENDER==Male"

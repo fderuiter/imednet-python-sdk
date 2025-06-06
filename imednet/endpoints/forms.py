@@ -37,7 +37,12 @@ class FormsEndpoint(BaseEndpoint):
             raise ValueError("Study key must be provided or set in the context")
 
         params: Dict[str, Any] = {}
-        if filters:
+        filter_arg = filters.pop("filter", None)
+        if filter_arg:
+            params["filter"] = (
+                filter_arg if isinstance(filter_arg, str) else build_filter_string(filter_arg)
+            )
+        elif filters:
             params["filter"] = build_filter_string(filters)
 
         path = self._build_path(study, "forms")

@@ -55,8 +55,8 @@ class DataExtractionWorkflow:
         matching_visit_ids: Optional[List[int]] = None
         if visit_filter:
             # Client-side filtering for subject_key on visits is still needed
-            # as build_filter_string doesn't handle complex AND/OR structures easily
-            # from separate filter dictionaries.
+            # even though build_filter_string now supports nested AND/OR groups
+            # because the API does not allow join across endpoints.
             visit_filter_str = build_filter_string(visit_filter)
             visits = self._sdk.visits.list(study_key, filter=visit_filter_str)
 
