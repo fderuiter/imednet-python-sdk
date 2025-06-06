@@ -116,6 +116,74 @@ imednet.endpoints.visits module
    :undoc-members:
    :show-inheritance:
 
+Async endpoint modules
+----------------------
+
+.. automodule:: imednet.endpoints.async_codings
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_intervals
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_jobs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_queries
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_record_revisions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_records
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_sites
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_studies
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_subjects
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_users
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_variables
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.endpoints.async_visits
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

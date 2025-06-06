@@ -109,6 +109,11 @@ async def main():
 asyncio.run(main())
 ```
 
+`AsyncImednetSDK` exposes the same endpoints as the synchronous SDK:
+`studies`, `forms`, `sites`, `subjects`, `records`, `codings`,
+`intervals`, `jobs`, `queries`, `record_revisions`, `users`, `variables`, and
+`visits`.
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command. The CLI groups functionality into several subcommands:
