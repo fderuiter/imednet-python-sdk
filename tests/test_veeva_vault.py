@@ -156,7 +156,9 @@ def test_collect_required_fields_and_picklists_without_object_type():
     with (
         patch.object(client, "get_object_metadata", return_value=_metadata_v2()) as meta,
         patch.object(client, "get_object_type_details") as obj_type,
-        patch.object(client, "get_picklist_values", return_value=["A", "B"]) as pick,
+        patch.object(
+            client, "get_picklist_values", return_value=[{"name": "A"}, {"name": "B"}]
+        ) as pick,
     ):
         result = collect_required_fields_and_picklists(client, "prod__c")
         assert result == {"required_fields": ["name__v"], "picklists": {"category__v": ["A", "B"]}}
@@ -174,7 +176,7 @@ def test_collect_required_fields_and_picklists_with_object_type():
         ) as obj_type,
         patch.object(client, "get_picklist_values") as pick,
     ):
-        pick.side_effect = [["A", "B"], ["X", "Y"]]
+        pick.side_effect = [[{"name": "A"}, {"name": "B"}], [{"name": "X"}, {"name": "Y"}]]
         result = collect_required_fields_and_picklists(client, "prod__c", "special")
         assert result == {
             "required_fields": ["name__v", "status__v"],
@@ -184,3 +186,34 @@ def test_collect_required_fields_and_picklists_with_object_type():
         obj_type.assert_called_once_with("prod__c", "special")
         assert pick.call_args_list[0][0][0] == "cat_pl"
         assert pick.call_args_list[1][0][0] == "status_pl"
+
+
+def test_get_picklist_values():
+    client = _client()
+    client._access_token = "token"
+    with patch.object(client._client, "get") as mock_get:
+        mock_resp = Mock()
+        mock_resp.json.return_value = {
+            "picklistValues": [
+                {"name": "A"},
+                {"name": "B"},
+            ]
+        }
+        mock_resp.raise_for_status.return_value = None
+        mock_get.return_value = mock_resp
+        result = client.get_picklist_values("my_pl")
+        assert result == [{"name": "A"}, {"name": "B"}]
+        mock_get.assert_called_once()
+
+
+def test_get_object_field_metadata():
+    client = _client()
+    client._access_token = "token"
+    with patch.object(client._client, "get") as mock_get:
+        mock_resp = Mock()
+        mock_resp.json.return_value = {"field": {"name": "status__v"}}
+        mock_resp.raise_for_status.return_value = None
+        mock_get.return_value = mock_resp
+        result = client.get_object_field_metadata("obj", "status__v")
+        assert result == {"name": "status__v"}
+        mock_get.assert_called_once()

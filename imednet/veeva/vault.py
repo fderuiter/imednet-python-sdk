@@ -72,13 +72,19 @@ class VeevaVaultClient:
         resp.raise_for_status()
         return resp.json().get("data", {})
 
-    def get_picklist_values(self, picklist_name: str) -> List[str]:
+    def get_picklist_values(self, picklist_name: str) -> List[Dict[str, Any]]:
         """Return picklist values for the given picklist."""
         url = f"/api/{self.api_version}/objects/picklists/{picklist_name}"
         resp = self._client.get(url, headers=self._headers())
         resp.raise_for_status()
-        values = resp.json().get("picklistValues", [])
-        return [v.get("name") for v in values if "name" in v]
+        return resp.json().get("picklistValues", [])
+
+    def get_object_field_metadata(self, object_name: str, field_name: str) -> Dict[str, Any]:
+        """Return metadata for a specific field of an object."""
+        url = f"/api/{self.api_version}/metadata/vobjects/{object_name}/fields/{field_name}"
+        resp = self._client.get(url, headers=self._headers())
+        resp.raise_for_status()
+        return resp.json().get("field", {})
 
     def upsert_object(self, object_name: str, record: Mapping[str, Any]) -> Dict[str, Any]:
         """Create or update a record for the given object."""
@@ -191,6 +197,7 @@ def collect_required_fields_and_picklists(
             if isinstance(picklist_name, dict):
                 picklist_name = picklist_name.get("name")
             if isinstance(picklist_name, str):
-                picklists[name] = client.get_picklist_values(picklist_name)
+                raw_values = client.get_picklist_values(picklist_name)
+                picklists[name] = [str(v["name"]) for v in raw_values if "name" in v]
 
     return {"required_fields": required_fields, "picklists": picklists}
