@@ -28,22 +28,38 @@ from .endpoints.variables import VariablesEndpoint
 from .endpoints.visits import VisitsEndpoint
 
 # Import workflow classes
+from .workflows.audit_aggregation import AuditAggregationWorkflow
+from .workflows.coding_review import CodingReviewWorkflow
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.query_aging import QueryAgingWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.record_mapper import RecordMapper
 from .workflows.record_update import RecordUpdateWorkflow
+from .workflows.register_subjects import RegisterSubjectsWorkflow
+from .workflows.site_performance import SitePerformanceWorkflow
 from .workflows.subject_data import SubjectDataWorkflow
+from .workflows.subject_enrollment_dashboard import SubjectEnrollmentDashboard
+from .workflows.visit_completion import VisitCompletionWorkflow
+from .workflows.visit_tracking import VisitTrackingWorkflow
 
 
 class Workflows:
     """Namespace for accessing workflow classes."""
 
     def __init__(self, sdk_instance: "ImednetSDK"):
+        self.audit_aggregation = AuditAggregationWorkflow(sdk_instance)
+        self.coding_review = CodingReviewWorkflow(sdk_instance)
         self.data_extraction = DataExtractionWorkflow(sdk_instance)
+        self.query_aging = QueryAgingWorkflow(sdk_instance)
         self.query_management = QueryManagementWorkflow(sdk_instance)
         self.record_mapper = RecordMapper(sdk_instance)
         self.record_update = RecordUpdateWorkflow(sdk_instance)
+        self.register_subjects = RegisterSubjectsWorkflow(sdk_instance)
+        self.site_performance = SitePerformanceWorkflow(sdk_instance)
         self.subject_data = SubjectDataWorkflow(sdk_instance)
+        self.subject_enrollment_dashboard = SubjectEnrollmentDashboard(sdk_instance)
+        self.visit_completion = VisitCompletionWorkflow(sdk_instance)
+        self.visit_tracking = VisitTrackingWorkflow(sdk_instance)
 
 
 class ImednetSDK:
