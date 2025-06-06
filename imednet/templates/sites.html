@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>Sites for {{ study_key }}</h1>
-<ul class="list-group">
-  {% for site in sites %}
-  <li class="list-group-item">{{ site.site_name }}</li>
-  {% endfor %}
-</ul>
-{% endblock %}

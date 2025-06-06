@@ -63,7 +63,7 @@ imednet credentials save
 ```
 
 You will be prompted for the API key, security key, study key, a friendly study
-name, and an encryption password. When running the CLI or web UI, set the
+name, and an encryption password. When running the CLI, set the
 `IMEDNET_CRED_PASSWORD` environment variable to this password so the stored
 credentials can be loaded.
 
@@ -144,25 +144,6 @@ imednet subjects list --help
 - More examples, such as `get_open_queries.py`, can be found in the
   `imednet/examples/` directory.
 
-The accompanying web UI (`imednet-web`) mirrors these capabilities, providing
-forms for filters and workflow execution so you can perform the same tasks in
-your browser.
-
-### Using the Web UI
-
-Run a lightweight web interface with:
-
-```bash
-imednet-web
-```
-
-Ensure the same environment variables are set as for the CLI. On first launch
-you will be redirected to the Credentials page where you can add a study by
-entering its API key, security key, study key, a study name, and an encryption
-password. Existing studies are listed on this page so you can manage them later.
-The encryption password is stored in your browser session (and temporarily in
-`IMEDNET_CRED_PASSWORD`) so subsequent requests can access the saved
-credentials.
 
 ## Documentation
 

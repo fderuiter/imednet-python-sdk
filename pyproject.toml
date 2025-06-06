@@ -7,8 +7,6 @@ packages = [{ include = "imednet" }]
 include = [
     "README.md",
     "LICENSE",
-    { path = "imednet/templates", format = "sdist" },
-    { path = "imednet/templates", format = "wheel" },
     { path = "examples", format = "sdist" }, # Include examples only in sdist
     { path = "examples", format = "wheel" } # Include examples also in wheel
 ]
@@ -18,7 +16,6 @@ homepage = "https://github.com/Bright-Research/imednet-python-sdk"
 
 [tool.poetry.scripts]
 imednet = "imednet.cli:app"
-imednet-web = "imednet.webui:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -29,7 +26,6 @@ httpx = "^0.28.1"
 tenacity = "^9.1.2"
 python-dotenv = "^1.1.0"
 typer = {extras = ["all"], version = "^0.15.2"}
-flask = "^3.0.2"
 cryptography = "^42.0.0"
 
 [tool.poetry.extras]
