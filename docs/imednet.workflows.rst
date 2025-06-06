@@ -57,6 +57,14 @@ imednet.workflows.enrollment_dashboard module
 
 .. automodule:: imednet.workflows.enrollment_dashboard
 
+imednet.workflows.site_performance module
+----------------------------------------
+
+.. automodule:: imednet.workflows.site_performance
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.workflows.visit\_completion module
 -----------------------------------------
 
