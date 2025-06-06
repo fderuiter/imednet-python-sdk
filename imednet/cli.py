@@ -44,7 +44,7 @@ def get_sdk(ctx: typer.Context) -> ImednetSDK:
 
     base_url = os.getenv("IMEDNET_BASE_URL", "https://edc.prod.imednetapi.com")
     try:
-        api_key, security_key, study_key = resolve_credentials(os.getenv("IMEDNET_CRED_PASSWORD"))
+        api_key, security_key, study_key = resolve_credentials()
         if study_key:
             os.environ.setdefault("IMEDNET_STUDY_KEY", study_key)
     except RuntimeError as exc:
@@ -110,12 +110,9 @@ def save_credentials_cmd() -> None:
     api_key = typer.prompt("x-api-key", hide_input=True)
     sec_key = typer.prompt("x-imn-security-key", hide_input=True)
     study_key = typer.prompt("STUDYKEY")
-    password = typer.prompt(
-        "Encryption password",
-        hide_input=True,
-        confirmation_prompt=True,
-    )
-    store_creds(api_key, sec_key, study_key, password)
+    study_name = typer.prompt("Study Name")
+    password = typer.prompt("Encryption password", hide_input=True, confirmation_prompt=True)
+    store_creds(api_key, sec_key, study_key, study_name, password)
     print(f"Credentials saved to {CREDENTIALS_FILE}")
 
 
