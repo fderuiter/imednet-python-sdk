@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from imednet.endpoints.helpers import build_paginator
 from imednet.endpoints.queries import QueriesEndpoint
 
 
@@ -14,16 +15,13 @@ def mock_endpoint():
 
 @patch("imednet.endpoints.queries.Paginator")
 @patch("imednet.endpoints.queries.Query")
-@patch("imednet.endpoints.queries.build_filter_string")
-def test_list_with_study_key_and_filters(
-    mock_build_filter, mock_query, mock_paginator, mock_endpoint
-):
-    mock_build_filter.return_value = "foo=bar"
+@patch("imednet.endpoints.queries.build_paginator", wraps=build_paginator)
+def test_list_with_study_key_and_filters(mock_builder, mock_query, mock_paginator, mock_endpoint):
     mock_paginator.return_value = [{"id": 1}, {"id": 2}]
     mock_query.from_json.side_effect = lambda x: x
 
     result = mock_endpoint.list(study_key="STUDY1", foo="bar")
-    assert mock_build_filter.called
+    mock_builder.assert_called_once()
     assert mock_paginator.called
     assert result == [{"id": 1}, {"id": 2}]
     assert mock_query.from_json.call_count == 2
@@ -56,7 +54,7 @@ def test_list_raises_value_error_if_no_study_key():
     ctx = Mock()
     ctx.default_study_key = None
     endpoint = QueriesEndpoint(client, ctx)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         endpoint.list()
 
 

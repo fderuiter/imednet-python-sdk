@@ -31,6 +31,9 @@ This file is automatically updated by the release process.
   `SubjectEnrollmentDashboard`, `AuditAggregationWorkflow`, `VeevaPushWorkflow`,
   and `VisitTrackingWorkflow`.
 - Updated project to require Python 3.12 only.
+- Consolidated pagination logic for all endpoints using new `build_paginator` helper to keep sync and async APIs aligned.
+- Fixed codings endpoint unit tests not executing by relocating functions outside
+  of another test and ensuring paginator helper is exercised.
 
 ### Fixed
 

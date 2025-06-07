@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from imednet.endpoints.helpers import build_paginator
 from imednet.endpoints.records import RecordsEndpoint
 
 
@@ -14,15 +15,14 @@ def endpoint():
 
 @patch("imednet.endpoints.records.Paginator")
 @patch("imednet.endpoints.records.Record")
-@patch("imednet.endpoints.records.build_filter_string")
-def test_list(mock_build, mock_record, mock_pag, endpoint):
-    mock_build.return_value = "f=b"
+@patch("imednet.endpoints.records.build_paginator", wraps=build_paginator)
+def test_list(mock_builder, mock_record, mock_pag, endpoint):
     mock_pag.return_value = [{"id": 1}]
     mock_record.from_json.side_effect = lambda x: x
 
     result = endpoint.list(study_key="S1", f="b")
     assert result == [{"id": 1}]
-    assert mock_build.called
+    mock_builder.assert_called_once()
     assert mock_pag.called
 
 

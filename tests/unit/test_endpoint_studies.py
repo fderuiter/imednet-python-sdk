@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from imednet.endpoints.helpers import build_paginator
 from imednet.endpoints.studies import StudiesEndpoint
 
 
@@ -13,14 +14,13 @@ def mock_endpoint():
 
 @patch("imednet.endpoints.studies.Paginator")
 @patch("imednet.endpoints.studies.Study")
-@patch("imednet.endpoints.studies.build_filter_string")
-def test_list_with_filters(mock_build_filter, mock_study, mock_paginator, mock_endpoint):
-    mock_build_filter.return_value = "foo=bar"
+@patch("imednet.endpoints.studies.build_paginator", wraps=build_paginator)
+def test_list_with_filters(mock_builder, mock_study, mock_paginator, mock_endpoint):
     mock_paginator.return_value = [{"id": 1}, {"id": 2}]
     mock_study.model_validate.side_effect = lambda x: x
 
     result = mock_endpoint.list(foo="bar")
-    assert mock_build_filter.called
+    mock_builder.assert_called_once()
     assert mock_paginator.called
     assert result == [{"id": 1}, {"id": 2}]
     assert mock_study.model_validate.call_count == 2

@@ -1,10 +1,11 @@
 """Async endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.async_paginator import AsyncPaginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.utils.filters import build_filter_string
@@ -25,22 +26,25 @@ class AsyncRecordsEndpoint(BaseEndpoint[AsyncClient]):
         page_size: Optional[int] = None,
         **filters: Any,
     ) -> List[Record]:
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
+        extra: Dict[str, Any] = {}
+        if isinstance(record_data_filter, (dict, list)):
+            extra["recordDataFilter"] = build_filter_string(
+                record_data_filter, and_connector=";", or_connector=","
+            )
+        elif record_data_filter:
+            extra["recordDataFilter"] = record_data_filter
 
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-        if record_data_filter:
-            params["recordDataFilter"] = record_data_filter
-
-        path = self._build_path(filters.get("studyKey", ""), "records")
-        paginator = AsyncPaginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            AsyncPaginator,
+            build_paginator(
+                self,
+                AsyncPaginator,
+                "records",
+                study_key,
+                page_size,
+                filters,
+                extra_params=extra,
+            ),
         )
         return [Record.from_json(item) async for item in paginator]
 

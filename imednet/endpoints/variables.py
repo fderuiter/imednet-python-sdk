@@ -1,13 +1,13 @@
 """Endpoint for managing variables (data points on eCRFs) in a study."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional, cast
 
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.variables import Variable
 
 __all__ = ["Variable"]
-from imednet.utils.filters import build_filter_string
+from imednet.endpoints.helpers import build_paginator
 
 
 class VariablesEndpoint(BaseEndpoint):
@@ -35,29 +35,16 @@ class VariablesEndpoint(BaseEndpoint):
         Returns:
             List of Variable objects
         """
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        study = filters.pop("studyKey")
-        if not study:
-            raise ValueError("Study key must be provided or set in the context")
-
-        params: Dict[str, Any] = {}
-        filter_arg = filters.pop("filter", None)
-        if filter_arg:
-            params["filter"] = (
-                filter_arg if isinstance(filter_arg, str) else build_filter_string(filter_arg)
-            )
-        elif filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(study, "variables")
-        paginator = Paginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            Paginator,
+            build_paginator(
+                self,
+                Paginator,
+                "variables",
+                study_key,
+                page_size,
+                filters,
+            ),
         )
         return [Variable.from_json(item) for item in paginator]
 

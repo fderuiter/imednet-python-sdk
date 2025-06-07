@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from imednet.endpoints.async_studies import AsyncStudiesEndpoint
+from imednet.endpoints.helpers import build_paginator
 
 
 @pytest.fixture
@@ -14,14 +15,13 @@ def endpoint():
 @pytest.mark.asyncio
 @patch("imednet.endpoints.async_studies.AsyncPaginator")
 @patch("imednet.endpoints.async_studies.Study")
-@patch("imednet.endpoints.async_studies.build_filter_string")
-async def test_list_with_filters(mock_build, mock_study, mock_pag, endpoint):
-    mock_build.return_value = "foo=bar"
+@patch("imednet.endpoints.async_studies.build_paginator", wraps=build_paginator)
+async def test_list_with_filters(mock_builder, mock_study, mock_pag, endpoint):
     mock_pag.return_value.__aiter__.return_value = [{"id": 1}]
     mock_study.model_validate.side_effect = lambda x: x
 
     result = await endpoint.list(foo="bar")
-    assert mock_build.called
+    mock_builder.assert_called_once()
     assert mock_pag.called
     assert result == [{"id": 1}]
     args, kwargs = mock_pag.call_args

@@ -1,14 +1,15 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
+from imednet.utils.filters import build_filter_string
 
 __all__ = ["Record"]
-from imednet.utils.filters import build_filter_string
+from imednet.endpoints.helpers import build_paginator
 
 
 class RecordsEndpoint(BaseEndpoint):
@@ -38,32 +39,25 @@ class RecordsEndpoint(BaseEndpoint):
         Returns:
             List of Record objects
         """
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        params: Dict[str, Any] = {}
-        filter_arg = filters.pop("filter", None)
-        if filter_arg:
-            params["filter"] = (
-                filter_arg if isinstance(filter_arg, str) else build_filter_string(filter_arg)
-            )
-        elif filters:
-            params["filter"] = build_filter_string(filters)
-
+        extra: Dict[str, Any] = {}
         if isinstance(record_data_filter, (dict, list)):
-            params["recordDataFilter"] = build_filter_string(
+            extra["recordDataFilter"] = build_filter_string(
                 record_data_filter, and_connector=";", or_connector=","
             )
         elif record_data_filter:
-            params["recordDataFilter"] = record_data_filter
+            extra["recordDataFilter"] = record_data_filter
 
-        path = self._build_path(filters.get("studyKey", ""), "records")
-        paginator = Paginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            Paginator,
+            build_paginator(
+                self,
+                Paginator,
+                "records",
+                study_key,
+                page_size,
+                filters,
+                extra_params=extra,
+            ),
         )
         return [Record.from_json(item) for item in paginator]
 

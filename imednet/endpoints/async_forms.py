@@ -1,12 +1,12 @@
 """Async endpoint for managing forms (eCRFs) in a study."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional, cast
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.async_paginator import AsyncPaginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.forms import Form
-from imednet.utils.filters import build_filter_string
 
 
 class AsyncFormsEndpoint(BaseEndpoint[AsyncClient]):
@@ -23,24 +23,16 @@ class AsyncFormsEndpoint(BaseEndpoint[AsyncClient]):
         page_size: Optional[int] = None,
         **filters: Any,
     ) -> List[Form]:
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        study = filters.pop("studyKey")
-        if not study:
-            raise ValueError("Study key must be provided or set in the context")
-
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(study, "forms")
-        paginator = AsyncPaginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            AsyncPaginator,
+            build_paginator(
+                self,
+                AsyncPaginator,
+                "forms",
+                study_key,
+                page_size,
+                filters,
+            ),
         )
         return [Form.from_json(item) async for item in paginator]
 

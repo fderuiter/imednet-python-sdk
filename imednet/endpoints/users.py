@@ -1,9 +1,10 @@
 """Endpoint for managing users in a study."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Optional, Union, cast
 
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.users import User
 
 
@@ -36,14 +37,17 @@ class UsersEndpoint(BaseEndpoint):
         if not study_key:
             raise ValueError("Study key must be provided or set in the context")
 
-        params: Dict[str, Any] = {"includeInactive": str(include_inactive).lower()}
-
-        path = self._build_path(study_key, "users")
-        paginator = Paginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            Paginator,
+            build_paginator(
+                self,
+                Paginator,
+                "users",
+                study_key,
+                page_size,
+                None,
+                extra_params={"includeInactive": str(include_inactive).lower()},
+            ),
         )
         return [User.from_json(item) for item in paginator]
 

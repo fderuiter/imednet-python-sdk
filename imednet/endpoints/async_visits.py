@@ -1,12 +1,12 @@
 """Async endpoint for managing visits in a study."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional, cast
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.async_paginator import AsyncPaginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.visits import Visit
-from imednet.utils.filters import build_filter_string
 
 
 class AsyncVisitsEndpoint(BaseEndpoint[AsyncClient]):
@@ -23,20 +23,16 @@ class AsyncVisitsEndpoint(BaseEndpoint[AsyncClient]):
         page_size: Optional[int] = None,
         **filters: Any,
     ) -> List[Visit]:
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(filters.get("studyKey", ""), "visits")
-        paginator = AsyncPaginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            AsyncPaginator,
+            build_paginator(
+                self,
+                AsyncPaginator,
+                "visits",
+                study_key,
+                page_size,
+                filters,
+            ),
         )
         return [Visit.from_json(item) async for item in paginator]
 

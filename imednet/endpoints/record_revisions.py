@@ -1,11 +1,11 @@
 """Endpoint for retrieving record revision history in a study."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional, cast
 
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.record_revisions import RecordRevision
-from imednet.utils.filters import build_filter_string
 
 
 class RecordRevisionsEndpoint(BaseEndpoint):
@@ -33,25 +33,16 @@ class RecordRevisionsEndpoint(BaseEndpoint):
         Returns:
             List of RecordRevision objects
         """
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        params: Dict[str, Any] = {}
-        filter_arg = filters.pop("filter", None)
-        if filter_arg:
-            params["filter"] = (
-                filter_arg if isinstance(filter_arg, str) else build_filter_string(filter_arg)
-            )
-        elif filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(filters.get("studyKey", ""), "recordRevisions")
-        paginator = Paginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            Paginator,
+            build_paginator(
+                self,
+                Paginator,
+                "recordRevisions",
+                study_key,
+                page_size,
+                filters,
+            ),
         )
         return [RecordRevision.from_json(item) for item in paginator]
 
