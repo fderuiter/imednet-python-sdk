@@ -30,6 +30,7 @@ This file is automatically updated by the release process.
   `QueryAgingWorkflow`, `CodingReviewWorkflow`, `SitePerformanceWorkflow`,
   `SubjectEnrollmentDashboard`, `AuditAggregationWorkflow`, `VeevaPushWorkflow`,
   and `VisitTrackingWorkflow`.
+- Introduced `InventoryManagementWorkflow` for retrieving device catalog items.
 - Updated project to require Python 3.12 only.
 
 ### Fixed

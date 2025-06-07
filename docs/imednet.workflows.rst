@@ -14,6 +14,7 @@ Workflow Guides
    workflows/subject_enrollment_dashboard
    workflows/veeva_push
    workflows/visit_tracking
+   workflows/inventory_management
 
 Submodules
 ----------

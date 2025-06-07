@@ -3,6 +3,7 @@
 from .audit_aggregation import AuditAggregationWorkflow
 from .coding_review import CodingReviewWorkflow
 from .data_extraction import DataExtractionWorkflow
+from .inventory_management import InventoryManagementWorkflow
 from .query_aging import QueryAgingWorkflow
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
@@ -20,6 +21,7 @@ __all__ = [
     "AuditAggregationWorkflow",
     "CodingReviewWorkflow",
     "DataExtractionWorkflow",
+    "InventoryManagementWorkflow",
     "QueryAgingWorkflow",
     "QueryManagementWorkflow",
     "RecordMapper",
