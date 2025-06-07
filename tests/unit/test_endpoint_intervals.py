@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from imednet.endpoints.helpers import build_paginator
 from imednet.endpoints.intervals import IntervalsEndpoint
 
 
@@ -14,16 +15,15 @@ def mock_endpoint():
 
 @patch("imednet.endpoints.intervals.Paginator")
 @patch("imednet.endpoints.intervals.Interval")
-@patch("imednet.endpoints.intervals.build_filter_string")
+@patch("imednet.endpoints.intervals.build_paginator", wraps=build_paginator)
 def test_list_with_study_key_and_filters(
-    mock_build_filter, mock_interval, mock_paginator, mock_endpoint
+    mock_builder, mock_interval, mock_paginator, mock_endpoint
 ):
-    mock_build_filter.return_value = "foo=bar"
     mock_paginator.return_value = [{"id": 1}, {"id": 2}]
     mock_interval.from_json.side_effect = lambda x: x
 
     result = mock_endpoint.list(study_key="STUDY1", foo="bar")
-    assert mock_build_filter.called
+    mock_builder.assert_called_once()
     assert mock_paginator.called
     assert result == [{"id": 1}, {"id": 2}]
     args, kwargs = mock_paginator.call_args
@@ -73,7 +73,7 @@ def test_list_raises_value_error_if_no_study_key():
     ctx = Mock()
     ctx.default_study_key = None
     endpoint = IntervalsEndpoint(client, ctx)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         endpoint.list()
 
 

@@ -1,11 +1,11 @@
 """Endpoint for managing subjects in a study."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional, cast
 
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.subjects import Subject
-from imednet.utils.filters import build_filter_string
 
 
 class SubjectsEndpoint(BaseEndpoint):
@@ -33,25 +33,16 @@ class SubjectsEndpoint(BaseEndpoint):
         Returns:
             List of Subject objects
         """
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        params: Dict[str, Any] = {}
-        filter_arg = filters.pop("filter", None)
-        if filter_arg:
-            params["filter"] = (
-                filter_arg if isinstance(filter_arg, str) else build_filter_string(filter_arg)
-            )
-        elif filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(filters.get("studyKey", ""), "subjects")
-        paginator = Paginator(
-            self._client,
-            path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            Paginator,
+            build_paginator(
+                self,
+                Paginator,
+                "subjects",
+                study_key,
+                page_size,
+                filters,
+            ),
         )
         return [Subject.from_json(item) for item in paginator]
 

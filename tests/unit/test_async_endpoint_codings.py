@@ -15,16 +15,15 @@ def endpoint():
 @pytest.mark.asyncio
 @patch("imednet.endpoints.async_codings.AsyncPaginator")
 @patch("imednet.endpoints.async_codings.Coding")
-@patch("imednet.endpoints.async_codings.build_filter_string")
-async def test_list(mock_build, mock_model, mock_pag, endpoint):
-    mock_build.return_value = "x=y"
+@patch("imednet.endpoints.async_codings.build_paginator")
+async def test_list(mock_builder, mock_model, mock_pag, endpoint):
+    mock_builder.return_value = mock_pag.return_value
     mock_pag.return_value.__aiter__.return_value = [{"id": 1}]
     mock_model.from_json.side_effect = lambda x: x
 
     result = await endpoint.list(study_key="S1", x="y")
     assert result == [{"id": 1}]
-    assert mock_build.called
-    assert mock_pag.called
+    mock_builder.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -40,5 +39,5 @@ async def test_get(mock_model, endpoint):
 @pytest.mark.asyncio
 async def test_list_no_study_key(endpoint):
     endpoint._ctx.default_study_key = None
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         await endpoint.list()

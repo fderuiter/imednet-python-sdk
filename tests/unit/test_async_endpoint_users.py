@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from imednet.endpoints.async_users import AsyncUsersEndpoint
+from imednet.endpoints.helpers import build_paginator
 
 
 @pytest.fixture
@@ -15,12 +16,14 @@ def endpoint():
 @pytest.mark.asyncio
 @patch("imednet.endpoints.async_users.AsyncPaginator")
 @patch("imednet.endpoints.async_users.User")
-async def test_list(mock_user, mock_pag, endpoint):
+@patch("imednet.endpoints.async_users.build_paginator", wraps=build_paginator)
+async def test_list(mock_builder, mock_user, mock_pag, endpoint):
     mock_pag.return_value.__aiter__.return_value = [{"id": "u"}]
     mock_user.from_json.side_effect = lambda x: x
 
     result = await endpoint.list("S1", include_inactive=True)
     assert result == [{"id": "u"}]
+    mock_builder.assert_called_once()
     assert mock_pag.called
 
 

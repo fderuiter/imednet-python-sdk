@@ -1,12 +1,12 @@
 """Endpoint for managing studies in the iMedNet system."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional, cast
 
 from imednet.core.client import Client
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.studies import Study
-from imednet.utils.filters import build_filter_string
 
 
 class StudiesEndpoint(BaseEndpoint[Client]):
@@ -32,15 +32,17 @@ class StudiesEndpoint(BaseEndpoint[Client]):
         Returns:
             List of Study objects
         """
-        filters = self._auto_filter(filters)
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-        paginator = Paginator(
-            self._client,
-            self.path,
-            params=params,
-            page_size=page_size or self._default_page_size,
+        paginator = cast(
+            Paginator,
+            build_paginator(
+                self,
+                Paginator,
+                "",
+                None,
+                page_size,
+                filters,
+                require_study=False,
+            ),
         )
         return [Study.model_validate(item) for item in paginator]
 

@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from imednet.endpoints.codings import CodingsEndpoint
+from imednet.endpoints.helpers import build_paginator
 from imednet.models.codings import Coding
 
 SAMPLE_CODING_DATA = {
@@ -110,76 +111,79 @@ def test_coding_str_and_int_parsing():
     assert coding.dictionary_version == ""
     assert coding.date_coded == datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
-    class DummyClient:
-        pass
 
-    @pytest.fixture
-    def endpoint():
-        ep = CodingsEndpoint(client=MagicMock())
-        ep._auto_filter = MagicMock(side_effect=lambda x: x)
-        ep._build_path = MagicMock(side_effect=lambda *args: "/mocked/path/" + "/".join(args))
-        return ep
+@pytest.fixture
+def endpoint():
+    client = MagicMock()
+    ctx = MagicMock()
+    ctx.default_study_key = "DEF"
+    ep = CodingsEndpoint(client=client, ctx=ctx)
+    ep._auto_filter = MagicMock(side_effect=lambda x: x)
+    ep._build_path = MagicMock(side_effect=lambda *args: "/mocked/path/" + "/".join(args))
+    return ep
 
-    def test_list_with_study_key_and_filters(endpoint):
-        paginator_mock = MagicMock()
-        paginator_mock.__iter__.return_value = [{"foo": "bar"}, {"baz": "qux"}]
-        with (
-            patch(
-                "imednet.endpoints.codings.Paginator", return_value=paginator_mock
-            ) as paginator_cls,
-            patch(
-                "imednet.endpoints.codings.Coding.from_json", side_effect=lambda x: x
-            ) as from_json,
-            patch(
-                "imednet.endpoints.codings.build_filter_string", return_value="mocked_filter"
-            ) as filter_str,
-        ):
-            result = endpoint.list(study_key="STUDY1", foo="bar", test=123)
-            assert result == [{"foo": "bar"}, {"baz": "qux"}]
-            endpoint._build_path.assert_called_once_with("STUDY1", "codings")
-            paginator_cls.assert_called_once()
-            assert from_json.call_count == 2
-            assert filter_str.called
 
-    def test_list_with_study_key_no_filters(endpoint):
-        paginator_mock = MagicMock()
-        paginator_mock.__iter__.return_value = [{"a": 1}]
-        with (
-            patch("imednet.endpoints.codings.Paginator", return_value=paginator_mock),
-            patch("imednet.endpoints.codings.Coding.from_json", side_effect=lambda x: x),
-        ):
-            result = endpoint.list(study_key="STUDY2")
-            assert result == [{"a": 1}]
-            endpoint._build_path.assert_called_with("STUDY2", "codings")
+def test_list_with_study_key_and_filters(endpoint):
+    paginator_mock = MagicMock()
+    paginator_mock.__iter__.return_value = [{"foo": "bar"}, {"baz": "qux"}]
+    with (
+        patch("imednet.endpoints.codings.Paginator", return_value=paginator_mock),
+        patch("imednet.endpoints.codings.Coding.from_json", side_effect=lambda x: x) as from_json,
+        patch(
+            "imednet.endpoints.codings.build_paginator",
+            wraps=build_paginator,
+        ) as build_pag,
+    ):
+        result = endpoint.list(study_key="STUDY1", foo="bar", test=123)
+        assert result == [{"foo": "bar"}, {"baz": "qux"}]
+        endpoint._build_path.assert_called_once_with("STUDY1", "codings")
+        build_pag.assert_called_once()
+        assert from_json.call_count == 2
 
-    def test_list_with_study_key_in_filters(endpoint):
-        paginator_mock = MagicMock()
-        paginator_mock.__iter__.return_value = [{"foo": "bar"}]
-        with (
-            patch("imednet.endpoints.codings.Paginator", return_value=paginator_mock),
-            patch("imednet.endpoints.codings.Coding.from_json", side_effect=lambda x: x),
-        ):
-            result = endpoint.list(studyKey="STUDY3")
-            assert result == [{"foo": "bar"}]
-            endpoint._build_path.assert_called_with("STUDY3", "codings")
 
-    def test_list_raises_value_error_if_no_study_key(endpoint):
-        with pytest.raises(ValueError, match="Study key must be provided"):
-            endpoint.list()
+def test_list_with_study_key_no_filters(endpoint):
+    paginator_mock = MagicMock()
+    paginator_mock.__iter__.return_value = [{"a": 1}]
+    with (
+        patch("imednet.endpoints.codings.Paginator", return_value=paginator_mock),
+        patch("imednet.endpoints.codings.Coding.from_json", side_effect=lambda x: x),
+    ):
+        result = endpoint.list(study_key="STUDY2")
+        assert result == [{"a": 1}]
+        endpoint._build_path.assert_called_with("STUDY2", "codings")
 
-    def test_get_success(endpoint):
-        mock_json = {"data": [{"foo": "bar"}]}
-        endpoint._client.get.return_value.json.return_value = mock_json
-        with patch(
-            "imednet.endpoints.codings.Coding.from_json", return_value="CODING_OBJ"
-        ) as from_json:
-            result = endpoint.get("STUDY4", "CODE123")
-            endpoint._build_path.assert_called_with("STUDY4", "codings", "CODE123")
-            endpoint._client.get.assert_called_once()
-            assert result == "CODING_OBJ"
-            from_json.assert_called_once_with({"foo": "bar"})
 
-    def test_get_raises_value_error_if_not_found(endpoint):
-        endpoint._client.get.return_value.json.return_value = {"data": []}
-        with pytest.raises(ValueError, match="Coding CODE404 not found in study STUDY5"):
-            endpoint.get("STUDY5", "CODE404")
+def test_list_with_study_key_in_filters(endpoint):
+    paginator_mock = MagicMock()
+    paginator_mock.__iter__.return_value = [{"foo": "bar"}]
+    with (
+        patch("imednet.endpoints.codings.Paginator", return_value=paginator_mock),
+        patch("imednet.endpoints.codings.Coding.from_json", side_effect=lambda x: x),
+    ):
+        result = endpoint.list(studyKey="STUDY3")
+        assert result == [{"foo": "bar"}]
+        endpoint._build_path.assert_called_with("STUDY3", "codings")
+
+
+def test_list_raises_value_error_if_no_study_key(endpoint):
+    with pytest.raises(ValueError, match="Study key must be provided"):
+        endpoint.list()
+
+
+def test_get_success(endpoint):
+    mock_json = {"data": [{"foo": "bar"}]}
+    endpoint._client.get.return_value.json.return_value = mock_json
+    with patch(
+        "imednet.endpoints.codings.Coding.from_json", return_value="CODING_OBJ"
+    ) as from_json:
+        result = endpoint.get("STUDY4", "CODE123")
+        endpoint._build_path.assert_called_with("STUDY4", "codings", "CODE123")
+        endpoint._client.get.assert_called_once()
+        assert result == "CODING_OBJ"
+        from_json.assert_called_once_with({"foo": "bar"})
+
+
+def test_get_raises_value_error_if_not_found(endpoint):
+    endpoint._client.get.return_value.json.return_value = {"data": []}
+    with pytest.raises(ValueError, match="Coding CODE404 not found in study STUDY5"):
+        endpoint.get("STUDY5", "CODE404")
