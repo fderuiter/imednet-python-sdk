@@ -1,10 +1,14 @@
+import json
 from unittest.mock import Mock, patch
 
 import pytest
 from imednet.veeva import (
+    MappingConfig,
     MappingInterface,
     VeevaVaultClient,
     collect_required_fields_and_picklists,
+    get_required_fields_and_picklists,
+    load_mapping_config,
     validate_record_for_upsert,
 )
 
@@ -40,36 +44,33 @@ def test_headers_without_auth():
 def test_get_picklists():
     client = _client()
     client._access_token = "token"
-    with patch.object(client._client, "get") as mock_get:
+    with patch.object(client, "_request") as mock_req:
         mock_resp = Mock()
         mock_resp.json.return_value = {"data": [1]}
-        mock_resp.raise_for_status.return_value = None
-        mock_get.return_value = mock_resp
+        mock_req.return_value = mock_resp
         result = client.get_picklists()
         assert result == [1]
-        mock_get.assert_called_once()
+        mock_req.assert_called_once()
 
 
 def test_get_object_metadata():
     client = _client()
     client._access_token = "token"
-    with patch.object(client._client, "get") as mock_get:
+    with patch.object(client, "_request") as mock_req:
         mock_resp = Mock()
         mock_resp.json.return_value = {"data": {"fields": []}}
-        mock_resp.raise_for_status.return_value = None
-        mock_get.return_value = mock_resp
+        mock_req.return_value = mock_resp
         result = client.get_object_metadata("obj")
         assert result == {"fields": []}
-        mock_get.assert_called_once()
+        mock_req.assert_called_once()
 
 
 def test_upsert_object():
     client = _client()
     client._access_token = "token"
-    with patch.object(client._client, "post") as mock_post:
+    with patch.object(client, "_request") as mock_post:
         mock_resp = Mock()
         mock_resp.json.return_value = {"data": {"id": "1"}}
-        mock_resp.raise_for_status.return_value = None
         mock_post.return_value = mock_resp
         result = client.upsert_object("obj", {"field": "val"})
         assert result == {"id": "1"}
@@ -82,6 +83,27 @@ def test_mapping_interface():
     assert options == {"x": ["a", "b"], "y": ["a", "b"]}
     mapped = interface.apply_mapping({"x": 1, "z": 2}, {"x": "a"})
     assert mapped == {"a": 1, "z": 2}
+
+
+def test_mapping_interface_transforms_and_defaults():
+    interface = MappingInterface(["a"])
+    result = interface.apply_mapping(
+        {"x": 2},
+        {"x": "a"},
+        transforms={"x": lambda v: v * 3},
+        defaults={"b": 5},
+    )
+    assert result == {"a": 6, "b": 5}
+
+
+def test_load_mapping_config(tmp_path):
+    cfg = {"fields": {"x": {"target": "a", "default": 5, "transform": "builtins.str"}}}
+    path = tmp_path / "mapping.json"
+    path.write_text(json.dumps(cfg))
+    config = load_mapping_config(str(path))
+    assert isinstance(config, MappingConfig)
+    mapped = MappingInterface(["a"]).apply_mapping({"x": 3}, config)
+    assert mapped == {"a": "3"}
 
 
 def _metadata():
@@ -132,6 +154,18 @@ def test_validate_record_for_upsert_autofill_default():
         record = {"name__v": "test"}
         result = validate_record_for_upsert(client, "prod__c", record)
         assert result["status__v"] == "New"
+
+
+def test_get_required_fields_and_picklists_caching():
+    client = _client()
+    from imednet.veeva.vault import _METADATA_CACHE
+
+    _METADATA_CACHE.clear()
+    with patch.object(client, "get_object_metadata", return_value=_metadata()) as meta:
+        first = get_required_fields_and_picklists(client, "prod__c")
+        second = get_required_fields_and_picklists(client, "prod__c")
+        assert first == second
+        meta.assert_called_once_with("prod__c")
 
 
 def _metadata_v2():
@@ -191,7 +225,7 @@ def test_collect_required_fields_and_picklists_with_object_type():
 def test_get_picklist_values():
     client = _client()
     client._access_token = "token"
-    with patch.object(client._client, "get") as mock_get:
+    with patch.object(client, "_request") as mock_get:
         mock_resp = Mock()
         mock_resp.json.return_value = {
             "picklistValues": [
@@ -199,7 +233,6 @@ def test_get_picklist_values():
                 {"name": "B"},
             ]
         }
-        mock_resp.raise_for_status.return_value = None
         mock_get.return_value = mock_resp
         result = client.get_picklist_values("my_pl")
         assert result == [{"name": "A"}, {"name": "B"}]
@@ -209,14 +242,37 @@ def test_get_picklist_values():
 def test_get_object_field_metadata():
     client = _client()
     client._access_token = "token"
-    with patch.object(client._client, "get") as mock_get:
+    with patch.object(client, "_request") as mock_get:
         mock_resp = Mock()
         mock_resp.json.return_value = {"field": {"name": "status__v"}}
-        mock_resp.raise_for_status.return_value = None
         mock_get.return_value = mock_resp
         result = client.get_object_field_metadata("obj", "status__v")
         assert result == {"name": "status__v"}
         mock_get.assert_called_once()
+
+
+def test_bulk_upsert_objects_headers_and_params():
+    client = _client()
+    client._access_token = "token"
+    with patch.object(client, "_request") as req:
+        mock_resp = Mock()
+        mock_resp.json.return_value = {"data": [1]}
+        req.return_value = mock_resp
+        records = [{"name": "a"}]
+        result = client.bulk_upsert_objects(
+            "prod__c",
+            records,
+            id_param="ext",
+            migration_mode=True,
+            no_triggers=True,
+        )
+        assert result == [1]
+        req.assert_called_once()
+        args, kwargs = req.call_args
+        assert args[0] == "POST"
+        assert "idParam" in kwargs["params"] and kwargs["params"]["idParam"] == "ext"
+        assert kwargs["headers"]["X-VaultAPI-MigrationMode"] == "true"
+        assert kwargs["headers"]["X-VaultAPI-NoTriggers"] == "true"
 
 
 def _object_type_config():

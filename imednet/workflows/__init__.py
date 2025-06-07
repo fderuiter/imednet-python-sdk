@@ -13,7 +13,7 @@ from .site_performance import SitePerformanceWorkflow
 from .study_structure import get_study_structure
 from .subject_data import SubjectDataWorkflow
 from .subject_enrollment_dashboard import SubjectEnrollmentDashboard
-from .veeva_push import VeevaPushWorkflow
+from .veeva_push import AsyncVeevaPushWorkflow, VeevaPushWorkflow
 from .visit_completion import VisitCompletionWorkflow
 from .visit_tracking import VisitTrackingWorkflow
 
@@ -30,6 +30,7 @@ __all__ = [
     "SitePerformanceWorkflow",
     "SubjectDataWorkflow",
     "SubjectEnrollmentDashboard",
+    "AsyncVeevaPushWorkflow",
     "VeevaPushWorkflow",
     "VisitCompletionWorkflow",
     "VisitTrackingWorkflow",
