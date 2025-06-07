@@ -25,11 +25,17 @@ from .sdk import ImednetSDK
 
 # Import the public filter utility
 from .utils.filters import build_filter_string
+from .workflows.audit_aggregation import AuditAggregationWorkflow
+from .workflows.coding_review import CodingReviewWorkflow
 from .workflows.data_extraction import DataExtractionWorkflow
 from .workflows.enrollment_dashboard import build_dashboard
+from .workflows.query_aging import QueryAgingWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.register_subjects import RegisterSubjectsWorkflow
+from .workflows.site_performance import SitePerformanceWorkflow
+from .workflows.subject_enrollment_dashboard import SubjectEnrollmentDashboard
 from .workflows.visit_completion import VisitCompletionWorkflow
+from .workflows.visit_tracking import VisitTrackingWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -419,6 +425,154 @@ def visit_completion_cmd(
     try:
         result = workflow.get_subject_progress(study_key, subject_key)
         print(result)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("query-aging")
+def query_aging_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    buckets: Optional[List[int]] = typer.Option(
+        None,
+        "--bucket",
+        "-b",
+        help="Day thresholds for aging buckets (repeat for multiple).",
+    ),
+) -> None:
+    """Show counts of open queries grouped by age buckets."""
+    sdk = get_sdk(ctx)
+    wf = QueryAgingWorkflow(sdk)
+    try:
+        summary = wf.aging_summary(study_key, buckets=buckets)
+        print(summary)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("site-performance")
+def site_performance_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    export_csv: Optional[Path] = typer.Option(
+        None,
+        "--export",
+        "-e",
+        help="Path to export the metrics as CSV.",
+    ),
+) -> None:
+    """Summarize enrollment and query metrics for each site."""
+    sdk = get_sdk(ctx)
+    wf = SitePerformanceWorkflow(sdk)
+    try:
+        df = wf.get_site_metrics(study_key)
+        if export_csv:
+            df.to_csv(export_csv, index=False)
+            print(f"Metrics exported to {export_csv}")
+        else:
+            print(df)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("subject-enrollment")
+def subject_enrollment_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    export_csv: Optional[Path] = typer.Option(
+        None,
+        "--export",
+        "-e",
+        help="Path to export the dashboard as CSV.",
+    ),
+) -> None:
+    """Summarize subject enrollment and dropout rates by site."""
+    sdk = get_sdk(ctx)
+    wf = SubjectEnrollmentDashboard(sdk)
+    try:
+        df = wf.build(study_key)
+        if export_csv:
+            df.to_csv(export_csv, index=False)
+            print(f"Dashboard exported to {export_csv}")
+        else:
+            print(df)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("audit-summary")
+def audit_summary_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    start_date: Optional[str] = typer.Option(None, "--start-date"),
+    end_date: Optional[str] = typer.Option(None, "--end-date"),
+) -> None:
+    """Show counts of record revisions grouped by user."""
+    sdk = get_sdk(ctx)
+    wf = AuditAggregationWorkflow(sdk)
+    try:
+        summary = wf.summary_by_user(study_key, start_date=start_date, end_date=end_date)
+        print(summary)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("visit-tracking")
+def visit_tracking_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+) -> None:
+    """Show visit completion summaries for all subjects."""
+    sdk = get_sdk(ctx)
+    wf = VisitTrackingWorkflow(sdk)
+    try:
+        summary = wf.summary_by_subject(study_key)
+        print(summary)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("coding-issues")
+def coding_issues_cmd(
+    ctx: typer.Context,
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    mode: str = typer.Option(
+        "uncoded",
+        "--mode",
+        "-m",
+        help="Issue type: 'uncoded' or 'inconsistent'.",
+    ),
+) -> None:
+    """List uncoded or inconsistent codings for a study."""
+    sdk = get_sdk(ctx)
+    wf = CodingReviewWorkflow(sdk)
+    try:
+        if mode == "inconsistent":
+            items = wf.get_inconsistent_codings(study_key)
+        else:
+            items = wf.get_uncoded_items(study_key)
+        print(items)
     except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)

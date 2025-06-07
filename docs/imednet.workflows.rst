@@ -1,6 +1,20 @@
 imednet.workflows package
 =========================
 
+Workflow Guides
+---------------
+
+.. toctree::
+   :maxdepth: 1
+
+   workflows/audit_aggregation
+   workflows/coding_review
+   workflows/query_aging
+   workflows/site_performance
+   workflows/subject_enrollment_dashboard
+   workflows/veeva_push
+   workflows/visit_tracking
+
 Submodules
 ----------
 

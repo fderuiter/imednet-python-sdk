@@ -26,6 +26,10 @@ This file is automatically updated by the release process.
   summaries.
 - Added `VisitCompletionWorkflow` and CLI command `workflows visit-completion` to
   summarize visit progress for a subject.
+- Added additional workflows and CLI commands:
+  `QueryAgingWorkflow`, `CodingReviewWorkflow`, `SitePerformanceWorkflow`,
+  `SubjectEnrollmentDashboard`, `AuditAggregationWorkflow`, `VeevaPushWorkflow`,
+  and `VisitTrackingWorkflow`.
 - Updated project to require Python 3.12 only.
 
 ### Fixed
