@@ -29,6 +29,7 @@ from .endpoints.visits import VisitsEndpoint
 
 # Import workflow classes
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.incremental_sync import IncrementalSyncWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.record_mapper import RecordMapper
 from .workflows.record_update import RecordUpdateWorkflow
@@ -40,6 +41,7 @@ class Workflows:
 
     def __init__(self, sdk_instance: "ImednetSDK"):
         self.data_extraction = DataExtractionWorkflow(sdk_instance)
+        self.incremental_sync = IncrementalSyncWorkflow(sdk_instance)
         self.query_management = QueryManagementWorkflow(sdk_instance)
         self.record_mapper = RecordMapper(sdk_instance)
         self.record_update = RecordUpdateWorkflow(sdk_instance)

@@ -14,6 +14,7 @@ from .sdk import ImednetSDK
 # Import the public filter utility
 from .utils.filters import build_filter_string
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.incremental_sync import IncrementalSyncWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -238,6 +239,23 @@ def extract_records(
 
     except ApiError as e:
         # Print the exception directly
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("incremental-sync")
+def incremental_sync(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    state_file: str = typer.Option("sync_state.json", "--state-file", help="Path to state file."),
+):
+    """Synchronize new or changed records since the last run."""
+    sdk = get_sdk()
+    workflow = IncrementalSyncWorkflow(sdk, state_file)
+
+    try:
+        records = workflow.sync(study_key)
+        print(f"Retrieved {len(records)} updated records.")
+    except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)
     except Exception as e:

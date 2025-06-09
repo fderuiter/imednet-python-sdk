@@ -52,6 +52,18 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.incremental\_sync module
+-----------------------------------------
+
+This workflow fetches only the record revisions created since the last run and
+stores the latest timestamp in a JSON state file. It can be executed from the
+CLI via ``imednet workflows incremental-sync``.
+
+.. automodule:: imednet.workflows.incremental_sync
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
