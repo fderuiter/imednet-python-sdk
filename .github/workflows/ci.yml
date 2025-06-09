@@ -44,3 +44,8 @@ jobs:
       - name: Unit tests
         run: |
           poetry run pytest -q --cov=imednet --cov-report=xml
+      - name: Build documentation
+        run: |
+          poetry install --with dev
+          sphinx-build -b html docs docs/_build/html
+
