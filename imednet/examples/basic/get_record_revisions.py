@@ -1,3 +1,5 @@
+import os
+
 from imednet.sdk import ImednetSDK as ImednetClient
 
 """
@@ -7,14 +9,20 @@ It initializes the iMednet client with API credentials, lists available studies,
 selects the first study found, and then retrieves and prints the record revisions
 associated with that study. It prints the total count of revisions and details
 for the first five revisions found. Basic error handling is included.
-Note: Replace placeholder API keys, security keys, and potentially the base URL
-with actual values before running.
+Set your API credentials via the environment variables `IMEDNET_API_KEY` and
+`IMEDNET_SECURITY_KEY`. Optionally configure `IMEDNET_BASE_URL` and
+`IMEDNET_STUDY_KEY`.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY")
+security_key = os.getenv("IMEDNET_SECURITY_KEY")
+base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
+study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
+
+if not api_key or not security_key:
+    raise RuntimeError(
+        "IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set."
+    )
 
 try:
     client = ImednetClient(api_key=api_key, security_key=security_key, base_url=base_url)

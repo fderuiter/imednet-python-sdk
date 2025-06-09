@@ -16,7 +16,14 @@ from types import TracebackType
 from typing import Any, Dict, Optional, Union
 
 import httpx
-from tenacity import RetryCallState, RetryError, Retrying, stop_after_attempt, wait_exponential
+from tenacity import (
+    AsyncRetrying,
+    RetryCallState,
+    RetryError,
+    Retrying,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from imednet.core.exceptions import (
     ApiError,
@@ -44,6 +51,8 @@ class Client:
     """
 
     DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
+
+    _client: Any
 
     def __init__(
         self,
@@ -105,28 +114,8 @@ class Client:
             return True
         return False
 
-    def _request(
-        self,
-        method: str,
-        url: str,
-        **kwargs: Any,
-    ) -> httpx.Response:
-        """
-        Internal request with retry logic and error handling.
-        """
-        retryer = Retrying(
-            stop=stop_after_attempt(self.retries),
-            wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self._should_retry,
-            reraise=True,
-        )
-        try:
-            response = retryer(lambda: self._client.request(method, url, **kwargs))
-        except RetryError as e:
-            logger.error("Request failed after retries: %s", e)
-            raise RequestError("Network request failed after retries")
-
-        # HTTP error handling
+    def _process_response(self, response: httpx.Response) -> httpx.Response:
+        """Validate the HTTP response and raise appropriate errors."""
         if response.is_error:
             status = response.status_code
             try:
@@ -148,6 +137,29 @@ class Client:
             raise ApiError(body)
 
         return response
+
+    def _request(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        """
+        Internal request with retry logic and error handling.
+        """
+        retryer = Retrying(
+            stop=stop_after_attempt(self.retries),
+            wait=wait_exponential(multiplier=self.backoff_factor),
+            retry=self._should_retry,
+            reraise=True,
+        )
+        try:
+            response = retryer(lambda: self._client.request(method, url, **kwargs))
+        except RetryError as e:
+            logger.error("Request failed after retries: %s", e)
+            raise RequestError("Network request failed after retries")
+
+        return self._process_response(response)
 
     def get(
         self,
@@ -178,3 +190,80 @@ class Client:
             json: JSON body for the request.
         """
         return self._request("POST", path, json=json, **kwargs)
+
+
+class AsyncClient(Client):
+    """Asynchronous variant of :class:`Client` using ``httpx.AsyncClient``."""
+
+    def __init__(
+        self,
+        api_key: str,
+        security_key: str,
+        base_url: Optional[str] = None,
+        timeout: Union[float, httpx.Timeout] = 30.0,
+        retries: int = 3,
+        backoff_factor: float = 1.0,
+    ) -> None:
+        super().__init__(
+            api_key=api_key,
+            security_key=security_key,
+            base_url=base_url,
+            timeout=timeout,
+            retries=retries,
+            backoff_factor=backoff_factor,
+        )
+        headers = self._client.headers
+        self._client.close()
+        self._client = httpx.AsyncClient(
+            base_url=self.base_url,
+            headers=headers,
+            timeout=self.timeout,
+        )
+
+    async def __aenter__(self) -> "AsyncClient":
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb) -> None:
+        await self.close()
+
+    async def close(self) -> None:  # type: ignore[override]
+        """Close the underlying asynchronous HTTP client."""
+        await self._client.aclose()
+
+    async def _request_async(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        """Internal async request with retry logic and error handling."""
+        retryer = AsyncRetrying(
+            stop=stop_after_attempt(self.retries),
+            wait=wait_exponential(multiplier=self.backoff_factor),
+            retry=self._should_retry,
+            reraise=True,
+        )
+        try:
+            response: httpx.Response = await retryer(self._client.request, method, url, **kwargs)
+        except RetryError as e:
+            logger.error("Request failed after retries: %s", e)
+            raise RequestError("Network request failed after retries")
+        return self._process_response(response)
+
+    async def get(  # type: ignore[override]
+        self,
+        path: str,
+        params: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        """Make an asynchronous GET request."""
+        return await self._request_async("GET", path, params=params, **kwargs)
+
+    async def post(  # type: ignore[override]
+        self,
+        path: str,
+        json: Optional[Any] = None,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        """Make an asynchronous POST request."""
+        return await self._request_async("POST", path, json=json, **kwargs)

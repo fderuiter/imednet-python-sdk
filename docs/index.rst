@@ -5,7 +5,7 @@ Welcome to imednet-sdk's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   modules
+   api/modules
 
 
 Indices and tables

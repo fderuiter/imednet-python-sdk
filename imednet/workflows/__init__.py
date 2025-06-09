@@ -8,6 +8,7 @@
 # from .subject_data import get_subject_data
 
 # --- Correct workflow class/function imports ---
+from .job_monitoring import JobMonitoringWorkflow
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
 from .record_update import RecordUpdateWorkflow
@@ -27,6 +28,7 @@ __all__ = [
     #
     # Updated:
     "QueryManagementWorkflow",
+    "JobMonitoringWorkflow",
     "RecordMapper",
     "RecordUpdateWorkflow",
     "RegisterSubjectsWorkflow",

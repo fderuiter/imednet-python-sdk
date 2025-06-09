@@ -34,6 +34,8 @@ jobs:
       - name: Install deps
         run: |
           poetry install --with dev
+      - name: Pre-commit
+        uses: pre-commit/action@v3.0.1
       - name: Lint & Type‑check
         run: |
           poetry run ruff check .
@@ -42,3 +44,8 @@ jobs:
       - name: Unit tests
         run: |
           poetry run pytest -q --cov=imednet --cov-report=xml
+      - name: Build documentation
+        run: |
+          poetry install --with dev
+          poetry run sphinx-build -b html docs docs/_build/html
+
