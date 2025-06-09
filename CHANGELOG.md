@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features and Improvements
 
+- CLI commands now default to using the `IMEDNET_STUDY_KEY` environment
+  variable for the study key. A new `--study-key` option allows overriding it.
+
 - Added PyPI, code style (Black), linter (Ruff), and typing (Mypy) badges to `README.md`.
 - Added `pandas` to development dependencies for workflow features.
 - Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.

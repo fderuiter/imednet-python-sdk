@@ -30,6 +30,27 @@ load_dotenv()
 
 app = typer.Typer(help="iMednet SDK Command Line Interface")
 
+# Study key option used across commands
+STUDY_KEY_OPTION = typer.Option(
+    None,
+    "--study-key",
+    envvar="IMEDNET_STUDY_KEY",
+    help="The key identifying the study."
+    " Can also be set with the IMEDNET_STUDY_KEY environment variable.",
+)
+
+
+def require_study_key(study_key: Optional[str]) -> str:
+    """Return the provided study key or exit if missing."""
+    if not study_key:
+        print(
+            "[bold red]Error:[/bold red] IMEDNET_STUDY_KEY environment variable "
+            "not set and --study-key was not provided."
+        )
+        raise typer.Exit(code=1)
+    return study_key
+
+
 # --- State Management ---
 # Store SDK instance globally for reuse within commands if needed,
 # initialized via callback.
@@ -136,9 +157,10 @@ app.add_typer(sites_app)
 
 @sites_app.command("list")
 def list_sites(
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
 ):
     """List sites for a specific study."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     try:
         print(f"Fetching sites for study '{study_key}'...")
@@ -163,7 +185,7 @@ app.add_typer(subjects_app)
 
 @subjects_app.command("list")
 def list_subjects(
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     subject_filter: Optional[List[str]] = typer.Option(
         None,
         "--filter",
@@ -172,6 +194,7 @@ def list_subjects(
     ),
 ):
     """List subjects for a specific study, with optional filtering."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     try:
         # parse_filter_args now correctly accepts Optional[List[str]]
@@ -203,7 +226,7 @@ app.add_typer(workflows_app)
 
 @workflows_app.command("extract-records")
 def extract_records(
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     record_filter: Optional[List[str]] = typer.Option(
         None,
         "--record-filter",
@@ -222,6 +245,7 @@ def extract_records(
     ),
 ):
     """Extract records based on criteria spanning subjects, visits, and records."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = DataExtractionWorkflow(sdk)
 
@@ -257,7 +281,7 @@ def extract_records(
 
 @workflows_app.command("extract-audit-trail")
 def extract_audit_trail(
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     start_date: Optional[str] = typer.Option(None, help="Filter start date"),
     end_date: Optional[str] = typer.Option(None, help="Filter end date"),
     user_filter: Optional[List[str]] = typer.Option(
@@ -267,6 +291,7 @@ def extract_audit_trail(
     ),
 ):
     """Extract record revision audit trail."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = DataExtractionWorkflow(sdk)
 
@@ -289,12 +314,13 @@ def extract_audit_trail(
 
 @workflows_app.command("wait-for-job")
 def wait_for_job(
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     batch_id: str = typer.Argument(..., help="Job batch identifier"),
     timeout: int = typer.Option(300, help="Seconds to wait before timing out"),
     poll_interval: int = typer.Option(5, help="Seconds between polls"),
 ):
     """Wait for a background job to complete."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = JobMonitoringWorkflow(sdk)
 
@@ -319,7 +345,7 @@ def wait_for_job(
 
 @workflows_app.command("open-queries")
 def open_queries(
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     additional_filter: Optional[List[str]] = typer.Option(
         None,
         "--filter",
@@ -328,6 +354,7 @@ def open_queries(
     ),
 ):
     """List open queries for a study."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = QueryManagementWorkflow(sdk)
 
@@ -344,8 +371,9 @@ def open_queries(
 
 
 @workflows_app.command("site-progress")
-def site_progress(study_key: str = typer.Argument(..., help="The study key")):
+def site_progress(study_key: Optional[str] = STUDY_KEY_OPTION):
     """Show site progress metrics."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = SiteProgressWorkflow(sdk)
 
@@ -362,11 +390,12 @@ def site_progress(study_key: str = typer.Argument(..., help="The study key")):
 
 @workflows_app.command("record-dataframe")
 def record_dataframe(
-    study_key: str = typer.Argument(..., help="Study key"),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     visit_key: Optional[str] = typer.Option(None, help="Optional visit key"),
     use_labels_as_columns: bool = typer.Option(True, help="Use variable labels"),
 ):
     """Output records as a CSV string."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = RecordMapper(sdk)
 
@@ -385,10 +414,11 @@ def record_dataframe(
 
 @workflows_app.command("subject-data")
 def subject_data(
-    study_key: str = typer.Argument(..., help="Study key"),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     subject_key: str = typer.Argument(..., help="Subject key"),
 ):
     """Retrieve all data related to a subject."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = SubjectDataWorkflow(sdk)
 
@@ -404,8 +434,9 @@ def subject_data(
 
 
 @workflows_app.command("validate")
-def validate_credentials(study_key: str = typer.Argument(..., help="Study key")):
+def validate_credentials(study_key: Optional[str] = STUDY_KEY_OPTION):
     """Validate API credentials against a study key."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = CredentialValidationWorkflow(sdk)
 
@@ -422,11 +453,12 @@ def validate_credentials(study_key: str = typer.Argument(..., help="Study key"))
 
 @workflows_app.command("register-subjects")
 def register_subjects(
-    study_key: str = typer.Argument(..., help="Study key"),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     subjects_file: str = typer.Argument(..., help="Path to JSON file of subjects"),
     email_notify: Optional[str] = typer.Option(None, help="Notification email"),
 ):
     """Register multiple subjects from a JSON file."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = RegisterSubjectsWorkflow(sdk)
 
@@ -448,11 +480,12 @@ def register_subjects(
 
 @workflows_app.command("submit-record-batch")
 def submit_record_batch(
-    study_key: str = typer.Argument(..., help="Study key"),
+    study_key: Optional[str] = STUDY_KEY_OPTION,
     batch_file: str = typer.Argument(..., help="Path to JSON batch file"),
     wait_for_completion: bool = typer.Option(False, help="Wait for job to finish"),
 ):
     """Submit a batch of record updates from a JSON file."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
     workflow = RecordUpdateWorkflow(sdk)
 
@@ -480,8 +513,9 @@ def submit_record_batch(
 
 
 @workflows_app.command("study-structure")
-def study_structure(study_key: str = typer.Argument(..., help="Study key")):
+def study_structure(study_key: Optional[str] = STUDY_KEY_OPTION):
     """Retrieve the study structure definition."""
+    study_key = require_study_key(study_key)
     sdk = get_sdk()
 
     try:
