@@ -81,17 +81,20 @@ except Exception as e:
 
 ### Using the Command Line Interface (CLI)
 
-After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
+After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command. Most commands automatically read the study key from the `IMEDNET_STUDY_KEY` environment variable, but you can override it with the `--study-key` option:
 
 ```powershell
 # List available studies
 imednet studies list
 
-# List sites for a specific study (replace STUDY_KEY)
-imednet sites list STUDY_KEY
+# List sites for a specific study
+imednet sites list
 
-# List subjects for a specific study, filtering by status (replace STUDY_KEY)
-imednet subjects list STUDY_KEY --filter "subject_status=Screened"
+# Override the study key for a single command
+imednet sites list --study-key MYSTUDY
+
+# List subjects for a specific study, filtering by status
+imednet subjects list --filter "subject_status=Screened"
 
 # Get help for a specific command
 imednet subjects list --help 
