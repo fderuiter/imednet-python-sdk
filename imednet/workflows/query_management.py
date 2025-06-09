@@ -46,8 +46,12 @@ class QueryManagementWorkflow:
         # Build filter string from dictionary
         filter_str = build_filter_string(additional_filter) if additional_filter else None
 
+        list_kwargs: Dict[str, Any] = {**kwargs}
+        if filter_str:
+            list_kwargs["filter"] = filter_str
+
         # Fetch potentially relevant queries
-        all_matching_queries = self._sdk.queries.list(study_key, filter=filter_str, **kwargs)
+        all_matching_queries = self._sdk.queries.list(study_key, **list_kwargs)
 
         open_queries: List[Query] = []
         for query in all_matching_queries:
@@ -92,9 +96,11 @@ class QueryManagementWorkflow:
 
         filter_str = build_filter_string(final_filter_dict)
 
-        return self._sdk.queries.list(
-            study_key, filter=filter_str if filter_str else None, **kwargs
-        )
+        list_kwargs: Dict[str, Any] = {**kwargs}
+        if filter_str:
+            list_kwargs["filter"] = filter_str
+
+        return self._sdk.queries.list(study_key, **list_kwargs)
 
     def get_queries_by_site(
         self,
@@ -123,9 +129,11 @@ class QueryManagementWorkflow:
 
         filter_str = build_filter_string(final_filter_dict)
 
-        return self._sdk.queries.list(
-            study_key, filter=filter_str if filter_str else None, **kwargs
-        )
+        list_kwargs: Dict[str, Any] = {**kwargs}
+        if filter_str:
+            list_kwargs["filter"] = filter_str
+
+        return self._sdk.queries.list(study_key, **list_kwargs)
 
     def get_query_state_counts(self, study_key: str, **kwargs: Any) -> Dict[str, int]:
         """

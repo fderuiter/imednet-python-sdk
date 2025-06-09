@@ -203,7 +203,8 @@ def list_subjects(
         filter_str = build_filter_string(parsed_filter) if parsed_filter else None
 
         print(f"Fetching subjects for study '{study_key}'...")
-        subjects_list = sdk.subjects.list(study_key, filter=filter_str)
+        list_kwargs = {"filter": filter_str} if filter_str else {}
+        subjects_list = sdk.subjects.list(study_key, **list_kwargs)
         if subjects_list:
             print(f"Found {len(subjects_list)} subjects:")
             print(subjects_list)

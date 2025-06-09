@@ -76,9 +76,13 @@ class DataExtractionWorkflow:
 
         record_filter_str = build_filter_string(final_record_filter_dict)
 
+        list_kwargs: Dict[str, Any] = {}
+        if record_filter_str:
+            list_kwargs["filter"] = record_filter_str
+
         records = self._sdk.records.list(
             study_key,
-            filter=record_filter_str if record_filter_str else None,
+            **list_kwargs,
         )
 
         # Client-side filtering fallback
@@ -128,10 +132,13 @@ class DataExtractionWorkflow:
         filter_str = build_filter_string(final_filter_dict)
 
         # Fetch record revisions
+        list_kwargs: Dict[str, Any] = {**date_kwargs}
+        if filter_str:
+            list_kwargs["filter"] = filter_str
+
         revisions = self._sdk.record_revisions.list(
             study_key,
-            filter=filter_str if filter_str else None,
-            **date_kwargs,
+            **list_kwargs,
         )
         return revisions
 

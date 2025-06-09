@@ -105,9 +105,11 @@ class RecordMapper:
         filter_str = build_filter_string(record_filter_dict) if record_filter_dict else None
 
         try:
-            recs_all: List[RecordModel] = self.sdk.records.list(
-                study_key=study_key, filter=filter_str
-            )
+            list_kwargs: Dict[str, Any] = {}
+            if filter_str:
+                list_kwargs["filter"] = filter_str
+
+            recs_all: List[RecordModel] = self.sdk.records.list(study_key=study_key, **list_kwargs)
         except Exception as e:
             logger.error(f"Failed to fetch records for study '{study_key}': {e}")
             return pd.DataFrame()  # Return empty on fetch failure
