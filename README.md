@@ -97,8 +97,19 @@ imednet sites list --study-key MYSTUDY
 imednet subjects list --filter "subject_status=Screened"
 
 # Get help for a specific command
-imednet subjects list --help 
+imednet subjects list --help
 ```
+
+### Using the Desktop UI
+
+Install the optional UI dependencies and run the `imednet-ui` command:
+
+```bash
+pip install imednet-python-sdk[ui]
+imednet-ui
+```
+
+The application allows you to enter your API credentials, save them securely, and execute common workflows like data extraction.
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `imednet/examples/` directory.

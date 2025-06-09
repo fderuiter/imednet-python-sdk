@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `pandas` to development dependencies for workflow features.
 - Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.
 - Exposed all workflow helpers through new CLI subcommands.
+- Added a Tkinter-based desktop UI (`imednet-ui`) for running workflows with
+  encrypted credential storage.
 
 ### Fixed
 
