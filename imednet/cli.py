@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Union  # Import Union
 
@@ -13,7 +14,16 @@ from .sdk import ImednetSDK
 
 # Import the public filter utility
 from .utils.filters import build_filter_string
+from .workflows.credential_validation import CredentialValidationWorkflow
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.job_monitoring import JobMonitoringWorkflow
+from .workflows.query_management import QueryManagementWorkflow
+from .workflows.record_mapper import RecordMapper
+from .workflows.record_update import RecordUpdateWorkflow
+from .workflows.register_subjects import RegisterSubjectsWorkflow
+from .workflows.site_progress import SiteProgressWorkflow
+from .workflows.study_structure import get_study_structure
+from .workflows.subject_data import SubjectDataWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -238,6 +248,246 @@ def extract_records(
 
     except ApiError as e:
         # Print the exception directly
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("extract-audit-trail")
+def extract_audit_trail(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    start_date: Optional[str] = typer.Option(None, help="Filter start date"),
+    end_date: Optional[str] = typer.Option(None, help="Filter end date"),
+    user_filter: Optional[List[str]] = typer.Option(
+        None,
+        "--user-filter",
+        help="User filter criteria (e.g., 'user_id=5'). Repeat for multiple filters.",
+    ),
+):
+    """Extract record revision audit trail."""
+    sdk = get_sdk()
+    workflow = DataExtractionWorkflow(sdk)
+
+    try:
+        parsed_user_filter = parse_filter_args(user_filter)
+        revisions = workflow.extract_audit_trail(
+            study_key,
+            start_date=start_date,
+            end_date=end_date,
+            user_filter=parsed_user_filter,
+        )
+        print(revisions)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("wait-for-job")
+def wait_for_job(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    batch_id: str = typer.Argument(..., help="Job batch identifier"),
+    timeout: int = typer.Option(300, help="Seconds to wait before timing out"),
+    poll_interval: int = typer.Option(5, help="Seconds between polls"),
+):
+    """Wait for a background job to complete."""
+    sdk = get_sdk()
+    workflow = JobMonitoringWorkflow(sdk)
+
+    try:
+        job = workflow.wait_for_job(
+            study_key,
+            batch_id,
+            timeout=timeout,
+            poll_interval=poll_interval,
+        )
+        print(job)
+    except TimeoutError as exc:
+        print(f"[bold red]Timeout:[/bold red] {exc}")
+        raise typer.Exit(code=1)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("open-queries")
+def open_queries(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    additional_filter: Optional[List[str]] = typer.Option(
+        None,
+        "--filter",
+        "-f",
+        help="Additional filter criteria. Repeat for multiple filters.",
+    ),
+):
+    """List open queries for a study."""
+    sdk = get_sdk()
+    workflow = QueryManagementWorkflow(sdk)
+
+    try:
+        parsed_filter = parse_filter_args(additional_filter)
+        queries = workflow.get_open_queries(study_key, additional_filter=parsed_filter)
+        print(queries)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("site-progress")
+def site_progress(study_key: str = typer.Argument(..., help="The study key")):
+    """Show site progress metrics."""
+    sdk = get_sdk()
+    workflow = SiteProgressWorkflow(sdk)
+
+    try:
+        results = workflow.get_site_progress(study_key)
+        print(results)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("record-dataframe")
+def record_dataframe(
+    study_key: str = typer.Argument(..., help="Study key"),
+    visit_key: Optional[str] = typer.Option(None, help="Optional visit key"),
+    use_labels_as_columns: bool = typer.Option(True, help="Use variable labels"),
+):
+    """Output records as a CSV string."""
+    sdk = get_sdk()
+    workflow = RecordMapper(sdk)
+
+    try:
+        df = workflow.dataframe(
+            study_key, visit_key=visit_key, use_labels_as_columns=use_labels_as_columns
+        )
+        print(df.to_csv(index=False))
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("subject-data")
+def subject_data(
+    study_key: str = typer.Argument(..., help="Study key"),
+    subject_key: str = typer.Argument(..., help="Subject key"),
+):
+    """Retrieve all data related to a subject."""
+    sdk = get_sdk()
+    workflow = SubjectDataWorkflow(sdk)
+
+    try:
+        result = workflow.get_all_subject_data(study_key, subject_key)
+        print(result)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("validate")
+def validate_credentials(study_key: str = typer.Argument(..., help="Study key")):
+    """Validate API credentials against a study key."""
+    sdk = get_sdk()
+    workflow = CredentialValidationWorkflow(sdk)
+
+    try:
+        valid = workflow.validate(study_key)
+        print(valid)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("register-subjects")
+def register_subjects(
+    study_key: str = typer.Argument(..., help="Study key"),
+    subjects_file: str = typer.Argument(..., help="Path to JSON file of subjects"),
+    email_notify: Optional[str] = typer.Option(None, help="Notification email"),
+):
+    """Register multiple subjects from a JSON file."""
+    sdk = get_sdk()
+    workflow = RegisterSubjectsWorkflow(sdk)
+
+    try:
+        with open(subjects_file, "r", encoding="utf-8") as f:
+            subjects = json.load(f)
+        result = workflow.register_subjects(study_key, subjects, email_notify=email_notify)
+        print(result)
+    except FileNotFoundError:
+        print(f"[bold red]File not found:[/bold red] {subjects_file}")
+        raise typer.Exit(code=1)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("submit-record-batch")
+def submit_record_batch(
+    study_key: str = typer.Argument(..., help="Study key"),
+    batch_file: str = typer.Argument(..., help="Path to JSON batch file"),
+    wait_for_completion: bool = typer.Option(False, help="Wait for job to finish"),
+):
+    """Submit a batch of record updates from a JSON file."""
+    sdk = get_sdk()
+    workflow = RecordUpdateWorkflow(sdk)
+
+    try:
+        with open(batch_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        job = workflow.submit_record_batch(
+            study_key,
+            data,
+            wait_for_completion=wait_for_completion,
+        )
+        print(job)
+    except FileNotFoundError:
+        print(f"[bold red]File not found:[/bold red] {batch_file}")
+        raise typer.Exit(code=1)
+    except TimeoutError as exc:
+        print(f"[bold red]Timeout:[/bold red] {exc}")
+        raise typer.Exit(code=1)
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@workflows_app.command("study-structure")
+def study_structure(study_key: str = typer.Argument(..., help="Study key")):
+    """Retrieve the study structure definition."""
+    sdk = get_sdk()
+
+    try:
+        struct = get_study_structure(sdk, study_key)
+        print(struct)
+    except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)
     except Exception as e:
