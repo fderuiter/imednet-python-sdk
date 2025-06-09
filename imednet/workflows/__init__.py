@@ -8,6 +8,7 @@
 # from .subject_data import get_subject_data
 
 # --- Correct workflow class/function imports ---
+from .data_quality import DataQualityWorkflow
 from .job_monitoring import JobMonitoringWorkflow
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
@@ -33,5 +34,6 @@ __all__ = [
     "RecordUpdateWorkflow",
     "RegisterSubjectsWorkflow",
     "SubjectDataWorkflow",
+    "DataQualityWorkflow",
     "get_study_structure",
 ]

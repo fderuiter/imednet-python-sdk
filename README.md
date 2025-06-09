@@ -79,6 +79,16 @@ except Exception as e:
     print(f"Error retrieving study structure: {e}")
 ```
 
+You can also check data quality using the ``DataQualityWorkflow``:
+
+```python
+from imednet.workflows import DataQualityWorkflow
+
+dq = DataQualityWorkflow(sdk)
+missing = dq.check_missing_required(study_key)
+print(f"Records with missing required fields: {len(missing)}")
+```
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:

@@ -29,6 +29,7 @@ from .endpoints.visits import VisitsEndpoint
 
 # Import workflow classes
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.data_quality import DataQualityWorkflow
 from .workflows.job_monitoring import JobMonitoringWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.record_mapper import RecordMapper
@@ -46,6 +47,7 @@ class Workflows:
         self.record_mapper = RecordMapper(sdk_instance)
         self.record_update = RecordUpdateWorkflow(sdk_instance)
         self.subject_data = SubjectDataWorkflow(sdk_instance)
+        self.data_quality = DataQualityWorkflow(sdk_instance)
 
 
 class ImednetSDK:

@@ -12,6 +12,14 @@ imednet.workflows.data\_extraction module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.data_quality module
+------------------------------------
+
+.. automodule:: imednet.workflows.data_quality
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.workflows.query\_management module
 ------------------------------------------
 
