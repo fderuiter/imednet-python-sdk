@@ -56,8 +56,10 @@ imednet.workflows.incremental\_sync module
 -----------------------------------------
 
 This workflow fetches only the record revisions created since the last run and
-stores the latest timestamp in a JSON state file. It can be executed from the
-CLI via ``imednet workflows incremental-sync``.
+stores the latest timestamp in a JSON state file. By default the SDK stores
+this state in ``sync_state.json``. The workflow can also be executed from the
+CLI via ``imednet workflows incremental-sync`` which allows overriding the
+state file path.
 
 .. automodule:: imednet.workflows.incremental_sync
    :members:

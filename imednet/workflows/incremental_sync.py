@@ -14,7 +14,16 @@ if TYPE_CHECKING:  # pragma: no cover - used for type hints only
 
 
 class IncrementalSyncWorkflow:
-    """Synchronize newly created or updated records since the last run."""
+    """Synchronize newly created or updated records since the last run.
+
+    Parameters
+    ----------
+    sdk:
+        The :class:`~imednet.sdk.ImednetSDK` instance to use for API calls.
+    state_file:
+        Path to the JSON file used for storing the timestamp of the last
+        successful sync.
+    """
 
     def __init__(self, sdk: "ImednetSDK", state_file: str) -> None:
         self._sdk = sdk
