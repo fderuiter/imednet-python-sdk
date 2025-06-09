@@ -52,6 +52,14 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.data\_quality module
+-------------------------------------
+
+.. automodule:: imednet.workflows.data_quality
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
