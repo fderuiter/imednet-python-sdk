@@ -28,11 +28,26 @@ imednet.workflows.record\_mapper module
    :undoc-members:
    :show-inheritance:
 
-
 imednet.workflows.record\_update module
 ---------------------------------------
 
 .. automodule:: imednet.workflows.record_update
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+imednet.workflows.register\_subjects module
+-------------------------------------------
+
+.. automodule:: imednet.workflows.register_subjects
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+imednet.workflows.study\_structure module
+-----------------------------------------
+
+.. automodule:: imednet.workflows.study_structure
    :members:
    :undoc-members:
    :show-inheritance:
