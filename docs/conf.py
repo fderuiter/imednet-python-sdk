@@ -33,7 +33,6 @@ release = "0.1.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
-    "sphinx_autodoc_typehints",
 ]
 
 # Templates and static paths

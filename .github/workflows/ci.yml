@@ -47,5 +47,5 @@ jobs:
       - name: Build documentation
         run: |
           poetry install --with dev
-          poetry run sphinx-build -b html docs docs/_build/html
+          sphinx-build -b html docs docs/_build/html
 
