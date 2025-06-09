@@ -12,6 +12,7 @@ This module defines the `Client` class which handles:
 from __future__ import annotations
 
 import logging
+from types import TracebackType
 from typing import Any, Dict, Optional, Union
 
 import httpx
@@ -83,7 +84,12 @@ class Client:
     def __enter__(self) -> Client:
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type[BaseException]],
+        exc: Optional[BaseException],
+        tb: Optional[TracebackType],
+    ) -> None:
         self.close()
 
     def close(self) -> None:
