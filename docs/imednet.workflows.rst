@@ -52,6 +52,22 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.job_monitoring module
+--------------------------------------
+
+.. automodule:: imednet.workflows.job_monitoring
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Example usage
+~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   sdk = ImednetSDK(api_key="KEY", security_key="SEC")
+   job = sdk.workflows.job_monitoring.wait_for_job("STUDY", "batch123")
+
 Module contents
 ---------------
 
