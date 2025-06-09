@@ -109,7 +109,8 @@ pip install imednet-python-sdk[ui]
 imednet-ui
 ```
 
-The application allows you to enter your API credentials, save them securely, and execute common workflows like data extraction.
+The desktop application now mirrors the CLI. Select any command from the drop-down,
+enter its parameters, and view the output without using the terminal.
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `imednet/examples/` directory.
