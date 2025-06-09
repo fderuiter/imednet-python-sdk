@@ -238,39 +238,18 @@ class AsyncClient(Client):
             reraise=True,
         )
         try:
-            response = await retryer(self._client.request, method, url, **kwargs)
+            response: httpx.Response = await retryer(self._client.request, method, url, **kwargs)
         except RetryError as e:
             logger.error("Request failed after retries: %s", e)
             raise RequestError("Network request failed after retries")
-
-        if response.is_error:
-            status = response.status_code
-            try:
-                body = response.json()
-            except Exception:
-                body = response.text
-            if status == 400:
-                raise ValidationError(body)
-            if status == 401:
-                raise AuthenticationError(body)
-            if status == 403:
-                raise AuthorizationError(body)
-            if status == 404:
-                raise NotFoundError(body)
-            if status == 429:
-                raise RateLimitError(body)
-            if 500 <= status < 600:
-                raise ServerError(body)
-            raise ApiError(body)
-
-        return response
+        return self._process_response(response)
 
     async def get(
         self,
         path: str,
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> httpx.Response:
+    ) -> httpx.Response:  # type: ignore[override]
         """Make an asynchronous GET request."""
         return await self._request_async("GET", path, params=params, **kwargs)
 
@@ -279,6 +258,6 @@ class AsyncClient(Client):
         path: str,
         json: Optional[Any] = None,
         **kwargs: Any,
-    ) -> httpx.Response:
+    ) -> httpx.Response:  # type: ignore[override]
         """Make an asynchronous POST request."""
         return await self._request_async("POST", path, json=json, **kwargs)
