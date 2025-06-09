@@ -14,7 +14,7 @@ class DummyClient:
 
 
 def make_response(items, total_pages):
-    return httpx.Response(200, json={'data': items, 'pagination': {'totalPages': total_pages}})
+    return httpx.Response(200, json={"data": items, "pagination": {"totalPages": total_pages}})
 
 
 def test_paginator_iterates_through_pages():
@@ -23,7 +23,7 @@ def test_paginator_iterates_through_pages():
         make_response([3], 2),
     ]
     client = DummyClient(responses)
-    paginator = Paginator(client, '/items', page_size=2)
+    paginator = Paginator(client, "/items", page_size=2)
     assert list(paginator) == [1, 2, 3]
-    assert client.calls[0][1]['page'] == 0
-    assert client.calls[1][1]['page'] == 1
+    assert client.calls[0][1]["page"] == 0
+    assert client.calls[1][1]["page"] == 1
