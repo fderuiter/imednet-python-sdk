@@ -52,6 +52,14 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.site\_progress module
+--------------------------------------
+
+.. automodule:: imednet.workflows.site_progress
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
