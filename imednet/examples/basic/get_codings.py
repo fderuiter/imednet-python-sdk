@@ -1,4 +1,5 @@
 from imednet.sdk import ImednetSDK as ImednetClient
+import os
 
 """
 This script demonstrates how to retrieve coding information from the iMednet API
@@ -8,10 +9,10 @@ retrieves the codings for the first study found, and prints the total count
 of codings along with details for the first five codings.
 Requires:
 - imednet-python-sdk installed (`pip install imednet-python-sdk`)
-- Valid API key and security key (replace placeholders).
+- Valid API key and security key provided via environment variables.
 Usage:
-1. Replace the placeholder values for `api_key` and `security_key`.
-2. Optionally set `base_url` if using a custom iMednet instance.
+1. Ensure `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY` environment variables are set.
+2. Optionally set `IMEDNET_BASE_URL` and `IMEDNET_STUDY_KEY` if using a custom iMednet instance.
 3. Run the script.
 The script will output:
 - The total number of codings found for the first study accessed via the API key.
@@ -19,10 +20,10 @@ The script will output:
 - An error message if any issues occur during the API interaction.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY")
+security_key = os.getenv("IMEDNET_SECURITY_KEY")
+base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
+study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
 
 try:
     client = ImednetClient(api_key=api_key, security_key=security_key, base_url=base_url)

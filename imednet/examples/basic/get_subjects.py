@@ -1,4 +1,5 @@
 from imednet.sdk import ImednetSDK as ImednetClient
+import os
 
 """
 Example script demonstrating how to retrieve subjects from IMedNet studies using the IMedNet SDK.
@@ -18,10 +19,10 @@ Raises:
     Exception: Any errors that occur during API communication
 """
 
-api_key = "XXX"
-security_key = "XXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXX"
+api_key = os.getenv("IMEDNET_API_KEY")
+security_key = os.getenv("IMEDNET_SECURITY_KEY")
+base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
+study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
 
 try:
     client = ImednetClient(api_key=api_key, security_key=security_key, base_url=base_url)

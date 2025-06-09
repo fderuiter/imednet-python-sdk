@@ -1,4 +1,5 @@
 from imednet.sdk import ImednetSDK as ImednetClient
+import os
 
 """
 Example script demonstrating how to list available studies using the iMednet SDK.
@@ -11,15 +12,15 @@ Prerequisites:
 - An active iMednet account with API access.
 - Your API key and security key.
 Usage:
-1. Replace the placeholder values for `api_key`, `security_key`, and optionally
-    `base_url` with your actual credentials and environment URL.
+1. Ensure the environment variables `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`
+   are set. Optionally configure `IMEDNET_BASE_URL` and `IMEDNET_STUDY_KEY`.
 2. Run the script.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY")
+security_key = os.getenv("IMEDNET_SECURITY_KEY")
+base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
+study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
 
 try:
     client = ImednetClient(api_key=api_key, security_key=security_key, base_url=base_url)
