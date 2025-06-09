@@ -21,20 +21,18 @@ class RecordMapper:
     Maps EDC records for a study into a pandas DataFrame.
 
     Features:
-      - Fetches variable definitions for column mapping.
-      - Dynamically creates a Pydantic model for type validation of record data.
-      - Fetches records, applying server-side filtering where possible.
-      - Merges metadata and record data.
-      - Offers choice between variable names or labels for column headers.
-      - Handles parsing errors gracefully for individual records.
+        - Fetches variable definitions for column mapping.
+        - Dynamically creates a Pydantic model for type validation of record data.
+        - Fetches records, applying server-side filtering where possible.
+        - Merges metadata and record data.
+        - Offers choice between variable names or labels for column headers.
+        - Handles parsing errors gracefully for individual records.
 
-    Example:
-        sdk = ImednetSDK(api_key, security_key, base_url)
-        mapper = RecordMapper(sdk)
-        # Get DataFrame with labels as columns, filtered by visit
-        df_labels = mapper.dataframe(study_key="MYSTUDY", visit_key="VISIT1")
-        # Get DataFrame with variable names as columns
-        df_names = mapper.dataframe(study_key="MYSTUDY", use_labels_as_columns=False)
+    Examples:
+        >>> sdk = ImednetSDK(api_key, security_key, base_url)
+        >>> mapper = RecordMapper(sdk)
+        >>> df_labels = mapper.dataframe(study_key="MYSTUDY", visit_key="VISIT1")
+        >>> df_names = mapper.dataframe(study_key="MYSTUDY", use_labels_as_columns=False)
     """
 
     def __init__(

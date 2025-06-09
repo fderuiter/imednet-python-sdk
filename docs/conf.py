@@ -33,7 +33,13 @@ release = "0.1.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
 ]
+
+# Enable generation of autosummary pages
+autosummary_generate = True
 
 # Templates and static paths
 templates_path: list[str] = ["_templates"]
