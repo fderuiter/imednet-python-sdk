@@ -53,6 +53,14 @@ imednet.workflows.job_monitoring module
    :undoc-members:
    :show-inheritance:
 
+imednet.workflows.site_progress module
+--------------------------------------
+
+.. automodule:: imednet.workflows.site_progress
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Example usage
 ~~~~~~~~~~~~~
 
