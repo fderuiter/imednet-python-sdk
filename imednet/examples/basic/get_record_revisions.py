@@ -19,6 +19,11 @@ security_key = os.getenv("IMEDNET_SECURITY_KEY")
 base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
 study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
 
+if not api_key or not security_key:
+    raise RuntimeError(
+        "IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set."
+    )
+
 try:
     client = ImednetClient(api_key=api_key, security_key=security_key, base_url=base_url)
     studies = client.studies.list()
