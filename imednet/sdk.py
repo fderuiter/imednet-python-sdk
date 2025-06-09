@@ -26,6 +26,7 @@ from .endpoints.subjects import SubjectsEndpoint
 from .endpoints.users import UsersEndpoint
 from .endpoints.variables import VariablesEndpoint
 from .endpoints.visits import VisitsEndpoint
+from .workflows.credential_validation import CredentialValidationWorkflow
 
 # Import workflow classes
 from .workflows.data_extraction import DataExtractionWorkflow
@@ -48,6 +49,7 @@ class Workflows:
         self.record_update = RecordUpdateWorkflow(sdk_instance)
         self.subject_data = SubjectDataWorkflow(sdk_instance)
         self.site_progress = SiteProgressWorkflow(sdk_instance)
+        self.credential_validation = CredentialValidationWorkflow(sdk_instance)
 
 
 class ImednetSDK:
