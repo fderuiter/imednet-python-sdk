@@ -28,11 +28,26 @@ imednet.workflows.record\_mapper module
    :undoc-members:
    :show-inheritance:
 
-
 imednet.workflows.record\_update module
 ---------------------------------------
 
 .. automodule:: imednet.workflows.record_update
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+imednet.workflows.register\_subjects module
+-------------------------------------------
+
+.. automodule:: imednet.workflows.register_subjects
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+imednet.workflows.study\_structure module
+-----------------------------------------
+
+.. automodule:: imednet.workflows.study_structure
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,22 +59,6 @@ imednet.workflows.subject\_data module
    :members:
    :undoc-members:
    :show-inheritance:
-
-imednet.workflows.job_monitoring module
---------------------------------------
-
-.. automodule:: imednet.workflows.job_monitoring
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Example usage
-~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   sdk = ImednetSDK(api_key="KEY", security_key="SEC")
-   job = sdk.workflows.job_monitoring.wait_for_job("STUDY", "batch123")
 
 Module contents
 ---------------
