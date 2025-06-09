@@ -1,23 +1,27 @@
+from __future__ import annotations
+
+from typing import List, Optional
+
 import httpx
 from imednet.core.paginator import Paginator
 
 
 class DummyClient:
-    def __init__(self, responses):
+    def __init__(self, responses: List[httpx.Response]) -> None:
         self._responses = responses
-        self.calls = []
+        self.calls: List[tuple[str, Optional[dict[str, int]]]] = []
 
-    def get(self, path, params=None):
+    def get(self, path: str, params: Optional[dict[str, int]] = None) -> httpx.Response:
         call_num = len(self.calls)
         self.calls.append((path, params))
         return self._responses[call_num]
 
 
-def make_response(items, total_pages):
+def make_response(items: List[int], total_pages: int) -> httpx.Response:
     return httpx.Response(200, json={"data": items, "pagination": {"totalPages": total_pages}})
 
 
-def test_paginator_iterates_through_pages():
+def test_paginator_iterates_through_pages() -> None:
     responses = [
         make_response([1, 2], 2),
         make_response([3], 2),

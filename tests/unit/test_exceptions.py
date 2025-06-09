@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from imednet.core.exceptions import ApiError
 
 
-def test_api_error_str_includes_details():
+def test_api_error_str_includes_details() -> None:
     err = ApiError({"detail": "oops"}, status_code=404)
     text = str(err)
     assert "Status Code: 404" in text
