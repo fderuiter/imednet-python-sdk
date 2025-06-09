@@ -1,4 +1,4 @@
-"""Workflow package exports for imednet SDK."""
+"""Workflow package exports for the iMedNet SDK."""
 
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
