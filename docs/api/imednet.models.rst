@@ -84,6 +84,14 @@ imednet.models.studies module
    :undoc-members:
    :show-inheritance:
 
+imednet.models.study\_structure module
+--------------------------------------
+
+.. automodule:: imednet.models.study_structure
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.models.subjects module
 ------------------------------
 
@@ -96,6 +104,14 @@ imednet.models.users module
 ---------------------------
 
 .. automodule:: imednet.models.users
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+imednet.models.validators module
+--------------------------------
+
+.. automodule:: imednet.models.validators
    :members:
    :undoc-members:
    :show-inheritance:

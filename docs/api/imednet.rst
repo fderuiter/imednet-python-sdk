@@ -16,6 +16,14 @@ Subpackages
 Submodules
 ----------
 
+imednet.cli module
+------------------
+
+.. automodule:: imednet.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.sdk module
 ------------------
 

@@ -102,13 +102,15 @@ imednet subjects list --help
 
 ## Documentation
 
-The documentation is no longer automatically deployed or published online. To view the documentation, you must build it locally using Sphinx. The output will be in `docs/_build/html`.
+The documentation is not automatically deployed or published online. To view it
+you must build it locally using Sphinx. Generated pages will be placed in
+`docs/_build/html`.
 
-To build the documentation locally:
+To build the documentation locally run:
 
 ```bash
 poetry install --with dev
-poetry run sphinx-build -b html docs docs/_build/html
+poetry run scripts/generate_docs.sh
 ```
 
 Then open `docs/_build/html/index.html` in your browser.
