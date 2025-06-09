@@ -68,12 +68,14 @@ class ImednetDesktopApp:
         data = self.cred_mgr.load()
         if not data:
             return
-        self.api_var.set(data.get("api_key", ""))
-        self.sec_var.set(data.get("security_key", ""))
-        if data.get("base_url"):
-            self.url_var.set(data["base_url"])
-        if data.get("study_key"):
-            self.study_var.set(data["study_key"])
+        self.api_var.set(data.get("api_key") or "")
+        self.sec_var.set(data.get("security_key") or "")
+        url = data.get("base_url")
+        if url is not None:
+            self.url_var.set(url)
+        study_key = data.get("study_key")
+        if study_key is not None:
+            self.study_var.set(study_key)
 
     def _save_credentials(self) -> None:
         self.cred_mgr.save(
