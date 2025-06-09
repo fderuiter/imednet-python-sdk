@@ -244,20 +244,20 @@ class AsyncClient(Client):
             raise RequestError("Network request failed after retries")
         return self._process_response(response)
 
-    async def get(
+    async def get(  # type: ignore[override]
         self,
         path: str,
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> httpx.Response:  # type: ignore[override]
+    ) -> httpx.Response:
         """Make an asynchronous GET request."""
         return await self._request_async("GET", path, params=params, **kwargs)
 
-    async def post(
+    async def post(  # type: ignore[override]
         self,
         path: str,
         json: Optional[Any] = None,
         **kwargs: Any,
-    ) -> httpx.Response:  # type: ignore[override]
+    ) -> httpx.Response:
         """Make an asynchronous POST request."""
         return await self._request_async("POST", path, json=json, **kwargs)
