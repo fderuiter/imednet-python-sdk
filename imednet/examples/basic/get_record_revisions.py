@@ -1,5 +1,6 @@
-from imednet.sdk import ImednetSDK as ImednetClient
 import os
+
+from imednet.sdk import ImednetSDK as ImednetClient
 
 """
 This script demonstrates how to retrieve record revisions for a specific study

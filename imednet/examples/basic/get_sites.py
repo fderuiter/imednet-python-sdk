@@ -1,5 +1,6 @@
-from imednet.sdk import ImednetSDK as ImednetClient
 import os
+
+from imednet.sdk import ImednetSDK as ImednetClient
 
 """
 This script demonstrates how to use the Imednet Python SDK to retrieve a list of studies
@@ -12,7 +13,8 @@ Requires:
 - API Key and Security Key for authentication.
 - The `imednet-python-sdk` package installed (`pip install imednet-python-sdk`).
 Usage:
-1. Ensure the environment variables `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY` are set. Optionally configure `IMEDNET_BASE_URL` and `IMEDNET_STUDY_KEY`.
+1. Ensure the environment variables `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY` are set.
+   Optionally configure `IMEDNET_BASE_URL` and `IMEDNET_STUDY_KEY`.
 2. Run the script. It will print the total number of sites for the first study found
     and the details of up to the first five sites.
 3. If an error occurs during the API interaction, an error message will be printed.

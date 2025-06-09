@@ -1,5 +1,6 @@
-from imednet.sdk import ImednetSDK as ImednetClient
 import os
+
+from imednet.sdk import ImednetSDK as ImednetClient
 
 """
 Example script demonstrating how to retrieve subjects from IMedNet studies using the IMedNet SDK.
