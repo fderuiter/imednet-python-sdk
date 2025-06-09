@@ -101,7 +101,7 @@ imednet sites list STUDY_KEY
 imednet subjects list STUDY_KEY --filter "subject_status=Screened"
 
 # Get help for a specific command
-imednet subjects list --help 
+imednet subjects list --help
 ```
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
