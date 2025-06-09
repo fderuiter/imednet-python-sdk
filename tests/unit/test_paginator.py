@@ -1,5 +1,4 @@
 import httpx
-
 from imednet.core.paginator import Paginator
 
 

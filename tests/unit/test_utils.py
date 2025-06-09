@@ -1,7 +1,7 @@
 from datetime import datetime
 
+from imednet.utils.dates import format_iso_datetime, parse_iso_datetime
 from imednet.utils.filters import build_filter_string
-from imednet.utils.dates import parse_iso_datetime, format_iso_datetime
 
 
 class TestFilters:

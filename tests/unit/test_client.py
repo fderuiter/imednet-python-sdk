@@ -1,6 +1,5 @@
 import httpx
 import pytest
-
 from imednet.core.client import Client
 from imednet.core.exceptions import NotFoundError
 

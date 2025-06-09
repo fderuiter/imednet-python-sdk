@@ -1,8 +1,7 @@
-import pytest
 import httpx
-
-from imednet.endpoints.studies import StudiesEndpoint
+import pytest
 from imednet.core.context import Context
+from imednet.endpoints.studies import StudiesEndpoint
 
 
 class DummyClient:
