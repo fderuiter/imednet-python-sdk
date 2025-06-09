@@ -51,6 +51,8 @@ class Client:
 
     DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
 
+    _client: Any
+
     def __init__(
         self,
         api_key: str,
@@ -106,28 +108,8 @@ class Client:
             return True
         return False
 
-    def _request(
-        self,
-        method: str,
-        url: str,
-        **kwargs: Any,
-    ) -> httpx.Response:
-        """
-        Internal request with retry logic and error handling.
-        """
-        retryer = Retrying(
-            stop=stop_after_attempt(self.retries),
-            wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self._should_retry,
-            reraise=True,
-        )
-        try:
-            response = retryer(lambda: self._client.request(method, url, **kwargs))
-        except RetryError as e:
-            logger.error("Request failed after retries: %s", e)
-            raise RequestError("Network request failed after retries")
-
-        # HTTP error handling
+    def _process_response(self, response: httpx.Response) -> httpx.Response:
+        """Validate the HTTP response and raise appropriate errors."""
         if response.is_error:
             status = response.status_code
             try:
@@ -149,6 +131,29 @@ class Client:
             raise ApiError(body)
 
         return response
+
+    def _request(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        """
+        Internal request with retry logic and error handling.
+        """
+        retryer = Retrying(
+            stop=stop_after_attempt(self.retries),
+            wait=wait_exponential(multiplier=self.backoff_factor),
+            retry=self._should_retry,
+            reraise=True,
+        )
+        try:
+            response = retryer(lambda: self._client.request(method, url, **kwargs))
+        except RetryError as e:
+            logger.error("Request failed after retries: %s", e)
+            raise RequestError("Network request failed after retries")
+
+        return self._process_response(response)
 
     def get(
         self,
@@ -219,7 +224,7 @@ class AsyncClient(Client):
         """Close the underlying asynchronous HTTP client."""
         await self._client.aclose()
 
-    async def _request(
+    async def _request_async(
         self,
         method: str,
         url: str,
@@ -267,7 +272,7 @@ class AsyncClient(Client):
         **kwargs: Any,
     ) -> httpx.Response:
         """Make an asynchronous GET request."""
-        return await self._request("GET", path, params=params, **kwargs)
+        return await self._request_async("GET", path, params=params, **kwargs)
 
     async def post(
         self,
@@ -276,4 +281,4 @@ class AsyncClient(Client):
         **kwargs: Any,
     ) -> httpx.Response:
         """Make an asynchronous POST request."""
-        return await self._request("POST", path, json=json, **kwargs)
+        return await self._request_async("POST", path, json=json, **kwargs)
