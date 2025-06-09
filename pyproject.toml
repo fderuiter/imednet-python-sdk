@@ -16,6 +16,7 @@ homepage = "https://github.com/Bright-Research/imednet-python-sdk"
 
 [tool.poetry.scripts]
 imednet = "imednet.cli:app"
+imednet-ui = "imednet.ui.desktop:run"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -26,9 +27,11 @@ httpx = "^0.28.1"
 tenacity = "^9.1.2"
 python-dotenv = "^1.1.0"
 typer = {extras = ["all"], version = "^0.15.2"}
+cryptography = "^42.0.5"
 
 [tool.poetry.extras]
 pandas = ["pandas"]
+ui = ["cryptography"]
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"
