@@ -53,8 +53,8 @@ class SiteProgressWorkflow:
 
             results.append(
                 SiteProgress(
-                    siteId=site.site_id,
-                    siteName=site.site_name,
+                    site_id=site.site_id,
+                    site_name=site.site_name,
                     subjects_enrolled=len(subjects),
                     visits_completed=visits_completed,
                     open_queries=open_queries,
