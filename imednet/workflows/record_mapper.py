@@ -1,12 +1,11 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union  # Add TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type  # Add TYPE_CHECKING
 
 import pandas as pd
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 from imednet.endpoints.records import Record as RecordModel
 from imednet.endpoints.variables import Variable as VariableModel
-from imednet.utils.filters import build_filter_string
 
 # Add conditional import
 if TYPE_CHECKING:
@@ -89,7 +88,7 @@ class RecordMapper:
         )
 
         # 3. Fetch records for the study with server-side filtering
-        record_filter_dict: Dict[str, Union[Any, Tuple[str, Any], List[Any]]] = {}
+        record_filter_dict: Dict[str, Any] = {}
         if visit_key is not None:
             # Assuming visit_key corresponds to visit_id which is an int in the model
             # If visit_key can be something else, adjust filter key accordingly
@@ -102,11 +101,9 @@ class RecordMapper:
                     "Fetching all records."
                 )
 
-        filter_str = build_filter_string(record_filter_dict) if record_filter_dict else None
-
         try:
             recs_all: List[RecordModel] = self.sdk.records.list(
-                study_key=study_key, filter=filter_str
+                study_key=study_key, **record_filter_dict
             )
         except Exception as e:
             logger.error(f"Failed to fetch records for study '{study_key}': {e}")

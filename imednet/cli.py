@@ -13,7 +13,6 @@ from .core.exceptions import ApiError
 from .sdk import ImednetSDK
 
 # Import the public filter utility
-from .utils.filters import build_filter_string
 from .workflows.credential_validation import CredentialValidationWorkflow
 from .workflows.data_extraction import DataExtractionWorkflow
 from .workflows.job_monitoring import JobMonitoringWorkflow
@@ -198,12 +197,10 @@ def list_subjects(
     sdk = get_sdk()
     try:
         # parse_filter_args now correctly accepts Optional[List[str]]
-        parsed_filter = parse_filter_args(subject_filter)
-        # Use the imported public build_filter_string utility
-        filter_str = build_filter_string(parsed_filter) if parsed_filter else None
+        parsed_filter = parse_filter_args(subject_filter) or {}
 
         print(f"Fetching subjects for study '{study_key}'...")
-        subjects_list = sdk.subjects.list(study_key, filter=filter_str)
+        subjects_list = sdk.subjects.list(study_key, **parsed_filter)
         if subjects_list:
             print(f"Found {len(subjects_list)} subjects:")
             print(subjects_list)
