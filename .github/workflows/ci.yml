@@ -34,6 +34,8 @@ jobs:
       - name: Install deps
         run: |
           poetry install --with dev
+      - name: Pre-commit
+        uses: pre-commit/action@v3.0.1
       - name: Lint & Type‑check
         run: |
           poetry run ruff check .
