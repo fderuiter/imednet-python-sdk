@@ -1,7 +1,6 @@
 import asyncio
 
 import httpx
-
 from imednet.core.client import AsyncClient
 
 
