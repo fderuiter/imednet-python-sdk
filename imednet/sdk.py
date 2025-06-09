@@ -34,6 +34,7 @@ from .workflows.job_monitoring import JobMonitoringWorkflow
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.record_mapper import RecordMapper
 from .workflows.record_update import RecordUpdateWorkflow
+from .workflows.site_progress import SiteProgressWorkflow
 from .workflows.subject_data import SubjectDataWorkflow
 
 
@@ -48,7 +49,7 @@ class Workflows:
         self.record_update = RecordUpdateWorkflow(sdk_instance)
         self.subject_data = SubjectDataWorkflow(sdk_instance)
         self.data_quality = DataQualityWorkflow(sdk_instance)
-
+        self.site_progress = SiteProgressWorkflow(sdk_instance)
 
 class ImednetSDK:
     """
