@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -22,13 +23,13 @@ class Study(BaseModel):
     @field_validator(
         "sponsor_key", "study_key", "study_name", "study_description", "study_type", mode="before"
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("study_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_dates(cls, v):
+    def _parse_dates(cls, v: Any) -> datetime:
         return parse_datetime(v)

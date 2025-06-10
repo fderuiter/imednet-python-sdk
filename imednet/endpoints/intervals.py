@@ -56,3 +56,6 @@ class IntervalsEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Interval {interval_id} not found in study {study_key}")
         return Interval.from_json(raw[0])
+
+
+__all__ = ["IntervalsEndpoint"]

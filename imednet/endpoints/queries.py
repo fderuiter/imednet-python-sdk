@@ -56,3 +56,6 @@ class QueriesEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
         return Query.from_json(raw[0])
+
+
+__all__ = ["QueriesEndpoint"]

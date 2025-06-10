@@ -84,7 +84,7 @@ def get_sdk() -> ImednetSDK:
 
 
 @app.callback()
-def main(ctx: typer.Context):
+def main(ctx: typer.Context) -> None:
     """
     iMednet SDK CLI. Configure authentication via environment variables:
     IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, [IMEDNET_BASE_URL]
@@ -97,7 +97,9 @@ def main(ctx: typer.Context):
 
 
 # Change input type hint to Optional[List[str]]
-def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, Any]]:
+def parse_filter_args(
+    filter_args: Optional[List[str]],
+) -> Optional[Dict[str, Any]]:
     """Parses a list of 'key=value' strings into a dictionary."""
     if not filter_args:  # Handle None input
         return None
@@ -131,7 +133,7 @@ app.add_typer(studies_app)
 
 
 @studies_app.command("list")
-def list_studies():
+def list_studies() -> None:
     """List available studies."""
     sdk = get_sdk()
     try:
@@ -158,7 +160,7 @@ app.add_typer(sites_app)
 @sites_app.command("list")
 def list_sites(
     study_key: Optional[str] = STUDY_KEY_OPTION,
-):
+) -> None:
     """List sites for a specific study."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -190,10 +192,9 @@ def list_subjects(
         None,
         "--filter",
         "-f",
-        help="Filter criteria (e.g., 'subject_status=Screened'). " "Repeat for multiple filters.",
+        help="Filter criteria (e.g., subject_status=Screened). " "Repeat for multiple filters.",
     ),
-):
-    """List subjects for a specific study, with optional filtering."""
+) -> None:
     study_key = require_study_key(study_key)
     sdk = get_sdk()
     try:
@@ -243,7 +244,7 @@ def extract_records(
         "--visit-filter",
         help="Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters.",
     ),
-):
+) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -289,7 +290,7 @@ def extract_audit_trail(
         "--user-filter",
         help="User filter criteria (e.g., 'user_id=5'). Repeat for multiple filters.",
     ),
-):
+) -> None:
     """Extract record revision audit trail."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -352,7 +353,7 @@ def open_queries(
         "-f",
         help="Additional filter criteria. Repeat for multiple filters.",
     ),
-):
+) -> None:
     """List open queries for a study."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -371,7 +372,7 @@ def open_queries(
 
 
 @workflows_app.command("site-progress")
-def site_progress(study_key: Optional[str] = STUDY_KEY_OPTION):
+def site_progress(study_key: Optional[str] = STUDY_KEY_OPTION) -> None:
     """Show site progress metrics."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -393,7 +394,7 @@ def record_dataframe(
     study_key: Optional[str] = STUDY_KEY_OPTION,
     visit_key: Optional[str] = typer.Option(None, help="Optional visit key"),
     use_labels_as_columns: bool = typer.Option(True, help="Use variable labels"),
-):
+) -> None:
     """Output records as a CSV string."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -416,7 +417,7 @@ def record_dataframe(
 def subject_data(
     study_key: Optional[str] = STUDY_KEY_OPTION,
     subject_key: str = typer.Argument(..., help="Subject key"),
-):
+) -> None:
     """Retrieve all data related to a subject."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -434,7 +435,7 @@ def subject_data(
 
 
 @workflows_app.command("validate")
-def validate_credentials(study_key: Optional[str] = STUDY_KEY_OPTION):
+def validate_credentials(study_key: Optional[str] = STUDY_KEY_OPTION) -> None:
     """Validate API credentials against a study key."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -456,7 +457,7 @@ def register_subjects(
     study_key: Optional[str] = STUDY_KEY_OPTION,
     subjects_file: str = typer.Argument(..., help="Path to JSON file of subjects"),
     email_notify: Optional[str] = typer.Option(None, help="Notification email"),
-):
+) -> None:
     """Register multiple subjects from a JSON file."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -483,7 +484,7 @@ def submit_record_batch(
     study_key: Optional[str] = STUDY_KEY_OPTION,
     batch_file: str = typer.Argument(..., help="Path to JSON batch file"),
     wait_for_completion: bool = typer.Option(False, help="Wait for job to finish"),
-):
+) -> None:
     """Submit a batch of record updates from a JSON file."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -513,7 +514,7 @@ def submit_record_batch(
 
 
 @workflows_app.command("study-structure")
-def study_structure(study_key: Optional[str] = STUDY_KEY_OPTION):
+def study_structure(study_key: Optional[str] = STUDY_KEY_OPTION) -> None:
     """Retrieve the study structure definition."""
     study_key = require_study_key(study_key)
     sdk = get_sdk()
@@ -531,7 +532,7 @@ def study_structure(study_key: Optional[str] = STUDY_KEY_OPTION):
 
 # --- Original Hello Command (can be removed or kept for testing) ---
 @app.command()
-def hello(name: str = "World"):
+def hello(name: str = "World") -> None:
     """Says hello"""
     print(f"Hello {name}")
 

@@ -60,3 +60,6 @@ class VariablesEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Variable {variable_id} not found in study {study_key}")
         return Variable.from_json(raw[0])
+
+
+__all__ = ["VariablesEndpoint"]

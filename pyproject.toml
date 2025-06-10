@@ -81,3 +81,15 @@ strict = true
 
 [tool.mypy-imednet.core]
 strict = true
+
+[tool.mypy-imednet.models]
+strict = true
+
+[tool.mypy-imednet.endpoints]
+strict = true
+
+[tool.mypy-imednet.workflows]
+strict = true
+
+[tool.mypy-imednet.cli]
+strict = true

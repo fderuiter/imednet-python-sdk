@@ -49,3 +49,6 @@ class StudiesEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Study {study_key} not found")
         return Study.model_validate(raw[0])
+
+
+__all__ = ["StudiesEndpoint"]
