@@ -56,3 +56,6 @@ class VisitsEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Visit {visit_id} not found in study {study_key}")
         return Visit.from_json(raw[0])
+
+
+__all__ = ["VisitsEndpoint"]

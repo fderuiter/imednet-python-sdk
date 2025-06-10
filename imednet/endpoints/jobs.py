@@ -32,3 +32,6 @@ class JobsEndpoint(BaseEndpoint):
         if not data:
             raise ValueError(f"Job {batch_id} not found in study {study_key}")
         return Job.from_json(data)
+
+
+__all__ = ["JobsEndpoint"]

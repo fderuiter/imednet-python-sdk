@@ -23,15 +23,15 @@ class Keyword(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("keyword_name", "keyword_key", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("keyword_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("date_added", mode="before")
-    def _parse_date_added(cls, v):
+    def _parse_date_added(cls, v: Any) -> datetime:
         return parse_datetime(v)
 
     @classmethod
@@ -72,7 +72,7 @@ class Record(BaseModel):
         "parent_record_id",
         mode="before",
     )
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator(
@@ -85,19 +85,19 @@ class Record(BaseModel):
         "subject_key",
         mode="before",
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("keywords", mode="before")
-    def _fill_list(cls, v):
+    def _fill_list(cls, v: Any) -> List[Keyword]:
         return parse_list_or_default(v)
 
     @field_validator("deleted", mode="before")
-    def parse_bool_field(cls, v):
+    def parse_bool_field(cls, v: Any) -> bool:
         return parse_bool(v)
 
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v):
+    def _parse_datetimes(cls, v: Any) -> datetime:
         return parse_datetime(v)
 
     @classmethod
@@ -113,7 +113,7 @@ class RecordJobResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("job_id", "batch_id", "state", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @classmethod
@@ -132,7 +132,7 @@ class BaseRecordRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("form_key", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
 
@@ -140,7 +140,7 @@ class RegisterSubjectRequest(BaseRecordRequest):
     site_name: str = Field("", alias="siteName")
 
     @field_validator("site_name", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
 
@@ -149,7 +149,7 @@ class UpdateScheduledRecordRequest(BaseRecordRequest):
     interval_name: str = Field("", alias="intervalName")
 
     @field_validator("subject_key", "interval_name", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
 

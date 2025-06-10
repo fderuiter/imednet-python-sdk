@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exposed all workflow helpers through new CLI subcommands.
 - Added a Tkinter-based desktop UI (`imednet-ui`) for running workflows with
   encrypted credential storage.
+- Added a dedicated results viewer in the desktop UI for exploring table and
+  JSON output.
 - Desktop UI now supports saving and loading command parameter templates.
 - Added credential profile management with encryption for switching between
   multiple saved profiles.

@@ -60,3 +60,6 @@ class FormsEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Form {form_id} not found in study {study_key}")
         return Form.from_json(raw[0])
+
+
+__all__ = ["FormsEndpoint"]

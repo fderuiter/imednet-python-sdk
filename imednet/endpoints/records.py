@@ -92,3 +92,6 @@ class RecordsEndpoint(BaseEndpoint):
 
         response = self._client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
+
+
+__all__ = ["RecordsEndpoint"]

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -35,25 +35,25 @@ class Visit(BaseModel):
         "visit_date_question",
         mode="before",
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("visit_id", "interval_id", "subject_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("start_date", "end_date", "due_date", "visit_date", mode="before")
-    def _clean_empty_dates(cls, v):
+    def _clean_empty_dates(cls, v: Any) -> Optional[datetime]:
         if not v:
             return None
-        return v
+        return cast(datetime, v)
 
     @field_validator("deleted", mode="before")
-    def parse_bool_field(cls, v):
+    def parse_bool_field(cls, v: Any) -> bool:
         return parse_bool(v)
 
     @field_validator("date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v):
+    def _parse_datetimes(cls, v: Any) -> datetime:
         return parse_datetime(v)
 
     @classmethod

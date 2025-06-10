@@ -62,3 +62,6 @@ class CodingsEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Coding {coding_id} not found in study {study_key}")
         return Coding.from_json(raw[0])
+
+
+__all__ = ["CodingsEndpoint"]

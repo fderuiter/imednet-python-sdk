@@ -29,6 +29,8 @@ python-dotenv = "^1.1.0"
 typer = {extras = ["all"], version = "^0.15.2"}
 cryptography = "^42.0.5"
 keyring = "^25.2.1"
+ttkbootstrap = "^1.13.10"
+tkinterdnd2 = "^0.4.3"
 
 [tool.poetry.extras]
 pandas = ["pandas"]
@@ -81,4 +83,16 @@ exclude = '^imednet/examples/.*$'
 strict = true
 
 [tool.mypy-imednet.core]
+strict = true
+
+[tool.mypy-imednet.models]
+strict = true
+
+[tool.mypy-imednet.endpoints]
+strict = true
+
+[tool.mypy-imednet.workflows]
+strict = true
+
+[tool.mypy-imednet.cli]
 strict = true

@@ -56,3 +56,6 @@ class SubjectsEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Subject {subject_key} not found in study {study_key}")
         return Subject.from_json(raw[0])
+
+
+__all__ = ["SubjectsEndpoint"]

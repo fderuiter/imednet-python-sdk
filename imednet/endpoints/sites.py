@@ -60,3 +60,6 @@ class SitesEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Site {site_id} not found in study {study_key}")
         return Site.from_json(raw[0])
+
+
+__all__ = ["SitesEndpoint"]

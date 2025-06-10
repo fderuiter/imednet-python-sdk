@@ -56,3 +56,6 @@ class RecordRevisionsEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"Record revision {record_revision_id} not found in study {study_key}")
         return RecordRevision.from_json(raw[0])
+
+
+__all__ = ["RecordRevisionsEndpoint"]
