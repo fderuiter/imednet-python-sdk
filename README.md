@@ -114,6 +114,17 @@ The desktop application now mirrors the CLI. Select any command from the drop-do
 enter its parameters, and view the output without using the terminal. Parameter sets
 can be saved and loaded as templates for quick reuse.
 
+### Saving Secrets
+
+You can securely store API tokens with `imednet.store`:
+
+```python
+from imednet.store import save_secret, load_secret
+
+save_secret("api_key", "my-key")
+api_key = load_secret("api_key")
+```
+
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `imednet/examples/` directory.
 
