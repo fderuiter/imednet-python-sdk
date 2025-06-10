@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "name__v": "subject_id__v",
+      "label__v": "Subject ID",
+      "data_type__v": "Text",
+      "required__v": true,
+      "default_value__v": null,
+      "picklist_values__v": []
+    },
+    {
+      "name__v": "site__v",
+      "label__v": "Site",
+      "data_type__v": "Lookup",
+      "required__v": true,
+      "default_value__v": null,
+      "picklist_values__v": []
+    },
+    {
+      "name__v": "status__v",
+      "label__v": "Status",
+      "data_type__v": "Picklist",
+      "required__v": false,
+      "default_value__v": "Enrolled",
+      "picklist_values__v": ["Screening", "Enrolled", "Completed"]
+    }
+  ]
+}
