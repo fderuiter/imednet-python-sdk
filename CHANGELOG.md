@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exposed all workflow helpers through new CLI subcommands.
 - Added a Tkinter-based desktop UI (`imednet-ui`) for running workflows with
   encrypted credential storage.
+- Wait-for-job CLI command now displays a progress spinner and supports
+  cancelling with Ctrl+C.
 
 ### Fixed
 

@@ -5,11 +5,13 @@ from typing import Union  # Import Union
 import typer
 from dotenv import load_dotenv
 from rich import print
+from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 # Keep existing Any, Dict, List, Optional imports
 from typing_extensions import Any, Dict, List, Optional
 
 from .core.exceptions import ApiError
+from .models.jobs import Job
 from .sdk import ImednetSDK
 
 # Import the public filter utility
@@ -324,16 +326,36 @@ def wait_for_job(
     sdk = get_sdk()
     workflow = JobMonitoringWorkflow(sdk)
 
+    progress = Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        TimeElapsedColumn(),
+    )
+
+    job: Optional[Job] = None
+
     try:
-        job = workflow.wait_for_job(
-            study_key,
-            batch_id,
-            timeout=timeout,
-            poll_interval=poll_interval,
-        )
+        with progress:
+            task_id = progress.add_task("Waiting for job", start=True)
+
+            def _notify(j: Job) -> None:
+                progress.update(task_id, description=f"State: {j.state}")
+
+            job = workflow.wait_for_job(
+                study_key,
+                batch_id,
+                timeout=timeout,
+                poll_interval=poll_interval,
+                notify=_notify,
+            )
+            progress.update(task_id, description=f"Completed: {job.state}")
         print(job)
     except TimeoutError as exc:
         print(f"[bold red]Timeout:[/bold red] {exc}")
+        raise typer.Exit(code=1)
+    except KeyboardInterrupt:
+        progress.stop()
+        print("[bold yellow]Cancelled by user.[/bold yellow]")
         raise typer.Exit(code=1)
     except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
