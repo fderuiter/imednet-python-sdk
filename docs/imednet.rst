@@ -12,6 +12,7 @@ Subpackages
    imednet.models
    imednet.utils
    imednet.workflows
+   imednet.ui
 
 Submodules
 ----------

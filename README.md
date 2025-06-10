@@ -21,6 +21,7 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Automatic pagination
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
+- Encrypted credential profile management for the desktop UI
 
 ## Installation
 
