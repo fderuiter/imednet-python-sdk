@@ -1,0 +1,88 @@
+{
+  "studies.list": {
+    "description": "List available studies.",
+    "params": {}
+  },
+  "sites.list": {
+    "description": "List sites for a study.",
+    "params": {}
+  },
+  "subjects.list": {
+    "description": "List subjects for the active study.",
+    "params": {
+      "subject_filter": {
+        "type": "string",
+        "example": "subject_status=Screened"
+      }
+    }
+  },
+  "workflows.extract-records": {
+    "description": "Extract records based on subject, visit and record filters.",
+    "params": {
+      "record_filter": {"type": "string", "example": "form_key=DEMOG"},
+      "subject_filter": {"type": "string", "example": "subject_status=Screened"},
+      "visit_filter": {"type": "string", "example": "visit_key=SCREENING"}
+    }
+  },
+  "workflows.extract-audit-trail": {
+    "description": "Extract audit trail entries for records.",
+    "params": {
+      "start_date": {"type": "string", "example": "2024-01-01"},
+      "end_date": {"type": "string", "example": "2024-02-01"},
+      "user_filter": {"type": "string", "example": "user_id=5"}
+    }
+  },
+  "workflows.wait-for-job": {
+    "description": "Wait for a job batch to complete.",
+    "params": {
+      "batch_id": {"type": "string", "example": "abc123"},
+      "timeout": {"type": "integer", "example": 300},
+      "poll_interval": {"type": "integer", "example": 5}
+    }
+  },
+  "workflows.open-queries": {
+    "description": "List open queries for a study.",
+    "params": {
+      "additional_filter": {"type": "string", "example": "site_key=001"}
+    }
+  },
+  "workflows.site-progress": {
+    "description": "Display site progress metrics.",
+    "params": {}
+  },
+  "workflows.record-dataframe": {
+    "description": "Return records as a CSV string.",
+    "params": {
+      "visit_key": {"type": "string", "example": "SCREENING"},
+      "use_labels_as_columns": {"type": "boolean", "example": true}
+    }
+  },
+  "workflows.subject-data": {
+    "description": "Retrieve all data for a subject.",
+    "params": {
+      "subject_key": {"type": "string", "example": "SUBJ001"}
+    }
+  },
+  "workflows.validate": {
+    "description": "Validate credentials for the study.",
+    "params": {}
+  },
+  "workflows.register-subjects": {
+    "description": "Register multiple subjects from a JSON file.",
+    "params": {
+      "subjects_file": {"type": "string", "example": "subjects.json"},
+      "email_notify": {"type": "string", "example": "user@example.com"}
+    }
+  },
+  "workflows.submit-record-batch": {
+    "description": "Submit a batch of record updates.",
+    "params": {
+      "batch_file": {"type": "string", "example": "records.json"},
+      "wait_for_completion": {"type": "boolean", "example": false}
+    }
+  },
+  "workflows.study-structure": {
+    "description": "Retrieve the study structure definition.",
+    "params": {}
+  }
+}
