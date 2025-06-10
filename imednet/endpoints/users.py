@@ -53,3 +53,6 @@ class UsersEndpoint(BaseEndpoint):
         if not raw:
             raise ValueError(f"User {user_id} not found in study {study_key}")
         return User.from_json(raw[0])
+
+
+__all__ = ["UsersEndpoint"]

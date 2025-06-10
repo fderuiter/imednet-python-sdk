@@ -24,7 +24,7 @@ class SortField(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("property", "direction", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
 
@@ -40,11 +40,11 @@ class Pagination(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("current_page", "size", "total_pages", "total_elements", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("sort", mode="before")
-    def _fill_list(cls, v):
+    def _fill_list(cls, v: Any) -> List[SortField]:
         return parse_list_or_default(v)
 
 
@@ -58,11 +58,11 @@ class Error(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("code", "message", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("details", mode="before")
-    def _fill_details(cls, v):
+    def _fill_details(cls, v: Any) -> Dict[str, Any]:
         return v if isinstance(v, dict) else {}
 
 
@@ -78,11 +78,11 @@ class Metadata(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("status", "method", "path", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("timestamp", mode="before")
-    def _parse_datetime(cls, v):
+    def _parse_datetime(cls, v: Any) -> datetime:
         return parse_datetime(v)
 
 

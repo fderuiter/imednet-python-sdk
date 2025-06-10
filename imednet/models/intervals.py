@@ -30,11 +30,11 @@ class FormSummary(BaseModel):
         return cls.model_validate(data)
 
     @field_validator("form_key", "form_name", mode="before")
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator("form_id", mode="before")
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
 
@@ -76,7 +76,7 @@ class Interval(BaseModel):
         "actual_date",
         mode="before",
     )
-    def _fill_strs(cls, v):
+    def _fill_strs(cls, v: Any) -> str:
         return parse_str_or_default(v)
 
     @field_validator(
@@ -89,11 +89,11 @@ class Interval(BaseModel):
         "epro_grace_period",
         mode="before",
     )
-    def _fill_ints(cls, v):
+    def _fill_ints(cls, v: Any) -> int:
         return parse_int_or_default(v)
 
     @field_validator("forms", mode="before")
-    def _fill_list(cls, v):
+    def _fill_list(cls, v: Any) -> List[FormSummary]:
         return parse_list_or_default(v)
 
     @field_validator("date_created", "date_modified", mode="before")
