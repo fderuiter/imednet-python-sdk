@@ -1,8 +1,9 @@
 from importlib import metadata as _metadata
 
 from .sdk import ImednetSDK
+from .vault_client import VaultClient
 
-__all__ = ["ImednetSDK", "__version__"]
+__all__ = ["ImednetSDK", "VaultClient", "__version__"]
 
 try:
     __version__: str = _metadata.version("imednet-sdk")
