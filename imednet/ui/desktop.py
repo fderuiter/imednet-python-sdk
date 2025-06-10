@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.resources
 import json
 import tkinter as tk
 from tkinter import Variable, messagebox, ttk
@@ -91,6 +92,64 @@ CLI_COMMANDS: Dict[str, Dict[str, Any]] = {
 }
 
 
+with importlib.resources.open_text(__package__, "help.json") as fh:
+    HELP_DATA: Dict[str, Any] = json.load(fh)
+
+
+class ToolTip:
+    """Simple tooltip for Tkinter widgets."""
+
+    def __init__(self, widget: tk.Widget, text: str) -> None:
+        self.widget = widget
+        self.text = text
+        self.tipwindow: Optional[tk.Toplevel] = None
+        widget.bind("<Enter>", self.show)
+        widget.bind("<Leave>", self.hide)
+
+    def update_text(self, text: str) -> None:
+        self.text = text
+
+    def show(self, _event: Optional[object] = None) -> None:
+        if self.tipwindow or not self.text:
+            return
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 10
+        self.tipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f"+{x}+{y}")
+        label = ttk.Label(
+            tw,
+            text=self.text,
+            justify="left",
+            background="#ffffe0",
+            relief="solid",
+            borderwidth=1,
+        )
+        label.pack(ipadx=1)
+
+    def hide(self, _event: Optional[object] = None) -> None:
+        if self.tipwindow:
+            self.tipwindow.destroy()
+            self.tipwindow = None
+
+
+def _add_placeholder(entry: ttk.Entry, text: str) -> None:
+    def on_focus_in(_event: object) -> None:
+        if entry.get() == text:
+            entry.delete(0, tk.END)
+            entry.configure(foreground="black")
+
+    def on_focus_out(_event: object) -> None:
+        if not entry.get():
+            entry.insert(0, text)
+            entry.configure(foreground="grey")
+
+    entry.insert(0, text)
+    entry.configure(foreground="grey")
+    entry.bind("<FocusIn>", on_focus_in)
+    entry.bind("<FocusOut>", on_focus_out)
+
+
 class ImednetDesktopApp:
     """Basic Tkinter UI for interacting with iMednet workflows."""
 
@@ -140,6 +199,7 @@ class ImednetDesktopApp:
         )
         cb.grid(row=6, column=1, sticky="ew", pady=(10, 0))
         cb.bind("<<ComboboxSelected>>", self._update_param_fields)
+        self.command_tooltip = ToolTip(cb, HELP_DATA[self.command_var.get()]["description"])
 
         self.params_frame = ttk.Frame(frm)
         self.params_frame.grid(row=7, column=0, columnspan=2, sticky="nsew")
@@ -179,7 +239,11 @@ class ImednetDesktopApp:
         for widget in self.params_frame.winfo_children():
             widget.destroy()
         self.param_vars: Dict[str, Any] = {}
-        cfg = CLI_COMMANDS[self.command_var.get()]
+        cmd = self.command_var.get()
+        cfg = CLI_COMMANDS[cmd]
+        help_cfg = HELP_DATA.get(cmd, {})
+        if hasattr(self, "command_tooltip"):
+            self.command_tooltip.update_text(help_cfg.get("description", ""))
         for row, field in enumerate(cfg["params"]):
             f_type = field.get("type", "str")
             default = field.get("default", "")
@@ -189,12 +253,25 @@ class ImednetDesktopApp:
                 var = tk.BooleanVar(value=bool(default))
                 cb = ttk.Checkbutton(self.params_frame, text=label, variable=var)
                 cb.grid(row=row, column=0, sticky="w", columnspan=2)
+                hint_lbl = ttk.Label(self.params_frame, text="?")
+                hint_lbl.grid(row=row, column=2, sticky="w")
             else:
                 ttk.Label(self.params_frame, text=label).grid(row=row, column=0, sticky="w")
                 var = tk.StringVar(value=str(default))
-                ttk.Entry(self.params_frame, textvariable=var, width=30).grid(
-                    row=row, column=1, sticky="ew"
-                )
+                ent = ttk.Entry(self.params_frame, textvariable=var, width=30)
+                ent.grid(row=row, column=1, sticky="ew")
+                hint = help_cfg.get("params", {}).get(field["name"], {}).get("example")
+                if hint:
+                    _add_placeholder(ent, str(hint))
+                hint_lbl = ttk.Label(self.params_frame, text="?")
+                hint_lbl.grid(row=row, column=2, sticky="w")
+            param_help = help_cfg.get("params", {}).get(field["name"], {})
+            tip_parts = []
+            if "type" in param_help:
+                tip_parts.append(f"Type: {param_help['type']}")
+            if "example" in param_help:
+                tip_parts.append(f"Example: {param_help['example']}")
+            ToolTip(hint_lbl, "\n".join(tip_parts))
             self.param_vars[field["name"]] = (var, f_type)
         self.params_frame.columnconfigure(1, weight=1)
 
