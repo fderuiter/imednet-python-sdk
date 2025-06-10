@@ -28,10 +28,11 @@ tenacity = "^9.1.2"
 python-dotenv = "^1.1.0"
 typer = {extras = ["all"], version = "^0.15.2"}
 cryptography = "^42.0.5"
+ttkbootstrap = "^1.10.1"
 
 [tool.poetry.extras]
 pandas = ["pandas"]
-ui = ["cryptography"]
+ui = ["cryptography", "ttkbootstrap"]
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"
