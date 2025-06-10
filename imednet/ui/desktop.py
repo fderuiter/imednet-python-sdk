@@ -19,6 +19,7 @@ from ..workflows.site_progress import SiteProgressWorkflow
 from ..workflows.study_structure import get_study_structure
 from ..workflows.subject_data import SubjectDataWorkflow
 from .credential_manager import CredentialManager
+from .results_viewer import ResultsViewer
 from .template_manager import TemplateManager
 
 
@@ -214,6 +215,7 @@ class ImednetDesktopApp:
 
         run_btn = ttk.Button(frm, text="Run", command=self._run_command)
         run_btn.grid(row=9, column=0, columnspan=2, pady=5)
+        self.view_btn = ttk.Button(frm, text="View Results", command=self._view_results)
 
         self.output = tk.Text(frm, height=10, width=60)
         self.output.grid(row=10, column=0, columnspan=2, pady=5)
@@ -362,6 +364,10 @@ class ImednetDesktopApp:
             result = self._dispatch_command(sdk, cmd, params)
             self.output.delete("1.0", tk.END)
             self.output.insert(tk.END, str(result))
+            self._last_result = result
+            self.view_btn.grid_forget()
+            if self._is_viewable(result):
+                self.view_btn.grid(row=11, column=0, columnspan=2, pady=5)
         except Exception as exc:  # noqa: BLE001
             messagebox.showerror("Error", str(exc))
 
@@ -437,6 +443,20 @@ class ImednetDesktopApp:
         if cmd == "workflows.study-structure":
             return get_study_structure(sdk, study_key)
         raise ValueError(f"Unknown command: {cmd}")
+
+    def _is_viewable(self, data: Any) -> bool:
+        try:
+            import pandas as pd
+
+            if isinstance(data, pd.DataFrame):
+                return True
+        except Exception:
+            pass
+        return isinstance(data, (dict, list))
+
+    def _view_results(self) -> None:
+        if hasattr(self, "_last_result") and self._last_result is not None:
+            ResultsViewer(self.master, self._last_result)
 
 
 def run() -> None:
