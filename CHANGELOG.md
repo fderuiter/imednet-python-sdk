@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Desktop UI now supports saving and loading command parameter templates.
 - Added credential profile management with encryption for switching between
   multiple saved profiles.
+- Added credential wizard tab for verifying and storing API keys.
 
 ### Fixed
 
