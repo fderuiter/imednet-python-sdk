@@ -1,0 +1,20 @@
+{
+  "forms": [
+    {
+      "id": 1,
+      "name": "Demographics",
+      "variables": [
+        {"id": 101, "name": "Age"},
+        {"id": 102, "name": "Sex"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Vitals",
+      "variables": [
+        {"id": 201, "name": "Height"},
+        {"id": 202, "name": "Weight"}
+      ]
+    }
+  ]
+}
