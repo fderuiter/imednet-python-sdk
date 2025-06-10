@@ -2,5 +2,6 @@
 
 from .credential_manager import CredentialManager
 from .desktop import ImednetDesktopApp, run
+from .template_manager import TemplateManager
 
-__all__ = ["CredentialManager", "ImednetDesktopApp", "run"]
+__all__ = ["CredentialManager", "ImednetDesktopApp", "TemplateManager", "run"]
