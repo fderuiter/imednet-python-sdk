@@ -16,16 +16,27 @@ CONFIG_ROOT.mkdir(mode=0o700, exist_ok=True)
 
 _SECRETS_FILE = CONFIG_ROOT / "secrets.enc"
 _KEY_FILE = CONFIG_ROOT / "secrets.key"
+_FERNET_KEYRING_NAME = "fernet_key"
 
 
 def _get_fernet() -> Fernet:
+    try:
+        key = keyring.get_password("medveeva", _FERNET_KEYRING_NAME)
+        if key:
+            return Fernet(key.encode())
+    except Exception:
+        pass
+
     if _KEY_FILE.exists():
-        key = _KEY_FILE.read_bytes()
+        key_bytes = _KEY_FILE.read_bytes()
     else:
-        key = Fernet.generate_key()
-        _KEY_FILE.write_bytes(key)
-        _KEY_FILE.chmod(0o600)
-    return Fernet(key)
+        key_bytes = Fernet.generate_key()
+        try:
+            keyring.set_password("medveeva", _FERNET_KEYRING_NAME, key_bytes.decode())
+        except Exception:
+            _KEY_FILE.write_bytes(key_bytes)
+            _KEY_FILE.chmod(0o600)
+    return Fernet(key_bytes)
 
 
 def _save_file_secret(name: str, value: str) -> None:
