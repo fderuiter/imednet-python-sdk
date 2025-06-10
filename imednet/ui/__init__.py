@@ -1,6 +1,7 @@
 """Desktop UI for the iMednet SDK."""
 
 from .credential_manager import CredentialManager
+from .creds_wizard import MednetTab
 from .desktop import ImednetDesktopApp, run
 from .profile_manager import ProfileManager
 from .results_viewer import ResultsViewer
@@ -12,5 +13,6 @@ __all__ = [
     "TemplateManager",
     "ProfileManager",
     "ResultsViewer",
+    "MednetTab",
     "run",
 ]
