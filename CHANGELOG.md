@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a Tkinter-based desktop UI (`imednet-ui`) for running workflows with
   encrypted credential storage.
 - Desktop UI now supports saving and loading command parameter templates.
+- Added credential profile management with encryption for switching between
+  multiple saved profiles.
 
 ### Fixed
 
