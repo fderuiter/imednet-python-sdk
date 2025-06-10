@@ -100,6 +100,19 @@ imednet subjects list --filter "subject_status=Screened"
 imednet subjects list --help
 ```
 
+### Credential Profiles
+
+The SDK now supports storing multiple named credential profiles. Use the
+`ProfileManager` class or the desktop UI to create and switch between profiles
+without re-entering keys. The CLI accepts a global `--profile` option (or the
+`IMEDNET_PROFILE` environment variable) to run commands under a specific
+profile:
+
+```bash
+# Run using credentials saved under the "test" profile
+imednet --profile test studies list
+```
+
 ### Using the Desktop UI
 
 Install the optional UI dependencies and run the `imednet-ui` command:

@@ -11,6 +11,7 @@ from typing_extensions import Any, Dict, List, Optional
 
 from .core.exceptions import ApiError
 from .sdk import ImednetSDK
+from .ui.credential_manager import ProfileManager
 
 # Import the public filter utility
 from .utils.filters import build_filter_string
@@ -54,20 +55,28 @@ def require_study_key(study_key: Optional[str]) -> str:
 # --- State Management ---
 # Store SDK instance globally for reuse within commands if needed,
 # initialized via callback.
-state = {"sdk": None}
+state: Dict[str, Any] = {"sdk": None, "profile": None}
 
 
 def get_sdk() -> ImednetSDK:
-    """Initializes and returns the ImednetSDK instance using env vars."""
-    api_key = os.getenv("IMEDNET_API_KEY")
-    security_key = os.getenv("IMEDNET_SECURITY_KEY")
-    base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
+    """Initializes and returns the ImednetSDK instance using env vars or profile."""
+    profile = state.get("profile") or os.getenv("IMEDNET_PROFILE")
+    if profile:
+        mgr = ProfileManager()
+        data = mgr.load_profile(profile)
+        if not data:
+            print(f"[bold red]Error:[/bold red] Profile '{profile}' not found")
+            raise typer.Exit(code=1)
+        api_key = data.get("api_key")
+        security_key = data.get("security_key")
+        base_url = data.get("base_url")
+    else:
+        api_key = os.getenv("IMEDNET_API_KEY")
+        security_key = os.getenv("IMEDNET_SECURITY_KEY")
+        base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
 
     if not api_key or not security_key:
-        print(
-            "[bold red]Error:[/bold red] IMEDNET_API_KEY and "  # Line break
-            "IMEDNET_SECURITY_KEY environment variables must be set."
-        )
+        print("[bold red]Error:[/bold red] Missing API or security key.")
         raise typer.Exit(code=1)
 
     try:
@@ -84,16 +93,22 @@ def get_sdk() -> ImednetSDK:
 
 
 @app.callback()
-def main(ctx: typer.Context):
+def main(
+    ctx: typer.Context,
+    profile: Optional[str] = typer.Option(
+        None, "--profile", envvar="IMEDNET_PROFILE", help="Credential profile to use"
+    ),
+):
     """
     iMednet SDK CLI. Configure authentication via environment variables:
-    IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, [IMEDNET_BASE_URL]
+    IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, [IMEDNET_BASE_URL] or select a
+    saved credential profile with --profile/IMEDNET_PROFILE.
     """
     # Eagerly initialize SDK to catch auth errors early,
     # but allow commands to potentially re-initialize if needed.
     # We don't store it in ctx.obj to avoid pickling issues if Typer internals change.
     # Instead, commands will call get_sdk().
-    pass
+    state["profile"] = profile
 
 
 # Change input type hint to Optional[List[str]]

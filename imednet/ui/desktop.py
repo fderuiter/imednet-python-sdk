@@ -17,7 +17,7 @@ from ..workflows.register_subjects import RegisterSubjectsWorkflow
 from ..workflows.site_progress import SiteProgressWorkflow
 from ..workflows.study_structure import get_study_structure
 from ..workflows.subject_data import SubjectDataWorkflow
-from .credential_manager import CredentialManager
+from .credential_manager import CredentialManager, ProfileManager
 
 
 def _parse_filter_string(value: str) -> Optional[Dict[str, Any]]:
@@ -95,11 +95,15 @@ class ImednetDesktopApp:
     """Basic Tkinter UI for interacting with iMednet workflows."""
 
     def __init__(
-        self, master: tk.Tk, credential_manager: Optional[CredentialManager] = None
+        self,
+        master: tk.Tk,
+        credential_manager: Optional[CredentialManager] = None,
+        profile_manager: Optional[ProfileManager] = None,
     ) -> None:
         self.master = master
         self.master.title("iMednet SDK")
         self.cred_mgr = credential_manager or CredentialManager()
+        self.profile_mgr = profile_manager or ProfileManager()
         self._build()
         self._load_saved()
 
@@ -107,30 +111,50 @@ class ImednetDesktopApp:
         frm = ttk.Frame(self.master, padding="10")
         frm.grid(row=0, column=0, sticky="nsew")
 
-        ttk.Label(frm, text="API Key").grid(row=0, column=0, sticky="w")
-        self.api_var = tk.StringVar()
-        ttk.Entry(frm, textvariable=self.api_var, width=40).grid(row=0, column=1, sticky="ew")
+        ttk.Label(frm, text="Profile").grid(row=0, column=0, sticky="w")
+        self.profile_var = tk.StringVar()
+        self.profile_combo = ttk.Combobox(
+            frm,
+            textvariable=self.profile_var,
+            state="readonly",
+            values=self.profile_mgr.list_profiles(),
+        )
+        self.profile_combo.grid(row=0, column=1, sticky="ew")
+        self.profile_combo.bind("<<ComboboxSelected>>", self._on_profile_select)
 
-        ttk.Label(frm, text="Security Key").grid(row=1, column=0, sticky="w")
-        self.sec_var = tk.StringVar()
-        ttk.Entry(frm, textvariable=self.sec_var, width=40, show="*").grid(
-            row=1, column=1, sticky="ew"
+        row_base = 1
+        ttk.Label(frm, text="API Key").grid(row=row_base, column=0, sticky="w")
+        self.api_var = tk.StringVar()
+        ttk.Entry(frm, textvariable=self.api_var, width=40).grid(
+            row=row_base, column=1, sticky="ew"
         )
 
-        ttk.Label(frm, text="Base URL").grid(row=2, column=0, sticky="w")
+        ttk.Label(frm, text="Security Key").grid(row=row_base + 1, column=0, sticky="w")
+        self.sec_var = tk.StringVar()
+        ttk.Entry(frm, textvariable=self.sec_var, width=40, show="*").grid(
+            row=row_base + 1, column=1, sticky="ew"
+        )
+
+        ttk.Label(frm, text="Base URL").grid(row=row_base + 2, column=0, sticky="w")
         self.url_var = tk.StringVar()
-        ttk.Entry(frm, textvariable=self.url_var, width=40).grid(row=2, column=1, sticky="ew")
+        ttk.Entry(frm, textvariable=self.url_var, width=40).grid(
+            row=row_base + 2, column=1, sticky="ew"
+        )
 
-        ttk.Label(frm, text="Study Key").grid(row=3, column=0, sticky="w")
+        ttk.Label(frm, text="Study Key").grid(row=row_base + 3, column=0, sticky="w")
         self.study_var = tk.StringVar()
-        ttk.Entry(frm, textvariable=self.study_var, width=40).grid(row=3, column=1, sticky="ew")
+        ttk.Entry(frm, textvariable=self.study_var, width=40).grid(
+            row=row_base + 3, column=1, sticky="ew"
+        )
 
-        save_btn = ttk.Button(frm, text="Save Credentials", command=self._save_credentials)
-        save_btn.grid(row=4, column=0, columnspan=2, pady=(5, 10))
+        save_btn = ttk.Button(frm, text="Save Profile", command=self._save_profile)
+        save_btn.grid(row=row_base + 4, column=0, pady=(5, 0))
+        del_btn = ttk.Button(frm, text="Delete", command=self._delete_profile)
+        del_btn.grid(row=row_base + 4, column=1, pady=(5, 0), sticky="e")
 
-        ttk.Separator(frm).grid(row=5, column=0, columnspan=2, sticky="ew")
+        ttk.Separator(frm).grid(row=row_base + 5, column=0, columnspan=2, sticky="ew")
 
-        ttk.Label(frm, text="Command").grid(row=6, column=0, sticky="w", pady=(10, 0))
+        ttk.Label(frm, text="Command").grid(row=row_base + 6, column=0, sticky="w", pady=(10, 0))
         self.command_var = tk.StringVar(value=list(CLI_COMMANDS.keys())[0])
         cb = ttk.Combobox(
             frm,
@@ -138,42 +162,73 @@ class ImednetDesktopApp:
             values=list(CLI_COMMANDS.keys()),
             state="readonly",
         )
-        cb.grid(row=6, column=1, sticky="ew", pady=(10, 0))
+        cb.grid(row=row_base + 6, column=1, sticky="ew", pady=(10, 0))
         cb.bind("<<ComboboxSelected>>", self._update_param_fields)
 
         self.params_frame = ttk.Frame(frm)
-        self.params_frame.grid(row=7, column=0, columnspan=2, sticky="nsew")
+        self.params_frame.grid(row=row_base + 7, column=0, columnspan=2, sticky="nsew")
 
         run_btn = ttk.Button(frm, text="Run", command=self._run_command)
-        run_btn.grid(row=8, column=0, columnspan=2, pady=5)
+        run_btn.grid(row=row_base + 8, column=0, columnspan=2, pady=5)
 
         self.output = tk.Text(frm, height=10, width=60)
-        self.output.grid(row=9, column=0, columnspan=2, pady=5)
+        self.output.grid(row=row_base + 9, column=0, columnspan=2, pady=5)
 
         frm.columnconfigure(1, weight=1)
         self._update_param_fields()
 
     def _load_saved(self) -> None:
-        data = self.cred_mgr.load()
-        if not data:
-            return
-        self.api_var.set(data.get("api_key") or "")
-        self.sec_var.set(data.get("security_key") or "")
-        url = data.get("base_url")
-        if url is not None:
-            self.url_var.set(url)
-        study_key = data.get("study_key")
-        if study_key is not None:
-            self.study_var.set(study_key)
+        profiles = self.profile_mgr.list_profiles()
+        self.profile_combo.configure(values=profiles)
+        current = self.profile_mgr.current()
+        if current:
+            self.profile_var.set(current)
+            data = self.profile_mgr.load_profile(current)
+        else:
+            data = None
+        if data:
+            self.api_var.set(data.get("api_key") or "")
+            self.sec_var.set(data.get("security_key") or "")
+            url = data.get("base_url")
+            if url is not None:
+                self.url_var.set(url)
+            study_key = data.get("study_key")
+            if study_key is not None:
+                self.study_var.set(study_key)
 
-    def _save_credentials(self) -> None:
-        self.cred_mgr.save(
+    def _save_profile(self) -> None:
+        name = self.profile_var.get() or "default"
+        self.profile_mgr.save_profile(
+            name,
             self.api_var.get(),
             self.sec_var.get(),
             self.url_var.get() or None,
             self.study_var.get() or None,
         )
-        messagebox.showinfo("Saved", "Credentials saved successfully.")
+        self.profile_mgr.set_current(name)
+        messagebox.showinfo("Saved", "Profile saved successfully.")
+        self._load_saved()
+
+    def _delete_profile(self) -> None:
+        name = self.profile_var.get()
+        if not name:
+            return
+        self.profile_mgr.delete_profile(name)
+        self.profile_var.set("")
+        self._load_saved()
+
+    def _on_profile_select(self, _event: Optional[object] = None) -> None:
+        name = self.profile_var.get()
+        if not name:
+            return
+        self.profile_mgr.set_current(name)
+        data = self.profile_mgr.load_profile(name)
+        if not data:
+            return
+        self.api_var.set(data.get("api_key") or "")
+        self.sec_var.set(data.get("security_key") or "")
+        self.url_var.set(data.get("base_url") or "")
+        self.study_var.set(data.get("study_key") or "")
 
     def _update_param_fields(self, _event: Optional[object] = None) -> None:
         for widget in self.params_frame.winfo_children():
