@@ -3,7 +3,7 @@ from __future__ import annotations
 import importlib.resources
 import json
 import tkinter as tk
-from tkinter import Variable, messagebox, ttk
+from tkinter import Variable, messagebox, simpledialog, ttk
 from typing import Any, Dict, Optional, cast
 
 from ..sdk import ImednetSDK
@@ -19,6 +19,7 @@ from ..workflows.site_progress import SiteProgressWorkflow
 from ..workflows.study_structure import get_study_structure
 from ..workflows.subject_data import SubjectDataWorkflow
 from .credential_manager import CredentialManager
+from .template_manager import TemplateManager
 
 
 def _parse_filter_string(value: str) -> Optional[Dict[str, Any]]:
@@ -154,11 +155,15 @@ class ImednetDesktopApp:
     """Basic Tkinter UI for interacting with iMednet workflows."""
 
     def __init__(
-        self, master: tk.Tk, credential_manager: Optional[CredentialManager] = None
+        self,
+        master: tk.Tk,
+        credential_manager: Optional[CredentialManager] = None,
+        template_manager: Optional[TemplateManager] = None,
     ) -> None:
         self.master = master
         self.master.title("iMednet SDK")
         self.cred_mgr = credential_manager or CredentialManager()
+        self.template_mgr = template_manager or TemplateManager()
         self._build()
         self._load_saved()
 
@@ -204,11 +209,14 @@ class ImednetDesktopApp:
         self.params_frame = ttk.Frame(frm)
         self.params_frame.grid(row=7, column=0, columnspan=2, sticky="nsew")
 
+        self.template_frame = ttk.Frame(frm)
+        self.template_frame.grid(row=8, column=0, columnspan=2, sticky="w", pady=5)
+
         run_btn = ttk.Button(frm, text="Run", command=self._run_command)
-        run_btn.grid(row=8, column=0, columnspan=2, pady=5)
+        run_btn.grid(row=9, column=0, columnspan=2, pady=5)
 
         self.output = tk.Text(frm, height=10, width=60)
-        self.output.grid(row=9, column=0, columnspan=2, pady=5)
+        self.output.grid(row=10, column=0, columnspan=2, pady=5)
 
         frm.columnconfigure(1, weight=1)
         self._update_param_fields()
@@ -274,6 +282,62 @@ class ImednetDesktopApp:
             ToolTip(hint_lbl, "\n".join(tip_parts))
             self.param_vars[field["name"]] = (var, f_type)
         self.params_frame.columnconfigure(1, weight=1)
+
+        self._render_template_controls()
+
+    def _render_template_controls(self) -> None:
+        for widget in self.template_frame.winfo_children():
+            widget.destroy()
+        if not self.param_vars:
+            return
+        names = self.template_mgr.list()
+        self.template_var = tk.StringVar(value=names[0] if names else "")
+        if names:
+            cb = ttk.Combobox(
+                self.template_frame,
+                textvariable=self.template_var,
+                values=names,
+                state="readonly",
+                width=20,
+            )
+            cb.grid(row=0, column=0, sticky="ew")
+            ttk.Button(
+                self.template_frame,
+                text="Load",
+                command=self._load_template,
+            ).grid(row=0, column=1, padx=(5, 0))
+        ttk.Button(
+            self.template_frame,
+            text="Save as Template",
+            command=self._save_template,
+        ).grid(row=0, column=2, padx=(5, 0))
+        self.template_frame.columnconfigure(0, weight=1)
+
+    def _save_template(self) -> None:
+        params = {name: var.get() for name, (var, _t) in self.param_vars.items()}
+        if not any(params.values()):
+            messagebox.showerror("Error", "Fill in parameters first.")
+            return
+        name = simpledialog.askstring("Template Name", "Enter template name:")
+        if not name:
+            return
+        self.template_mgr.save(name, params)
+        messagebox.showinfo("Saved", f"Template '{name}' saved.")
+        self._render_template_controls()
+
+    def _load_template(self) -> None:
+        name = getattr(self, "template_var", tk.StringVar()).get()
+        data = self.template_mgr.load(name)
+        if not data:
+            messagebox.showerror("Error", "Template not found.")
+            return
+        for key, value in data.items():
+            if key in self.param_vars:
+                var, f_type = self.param_vars[key]
+                if f_type == "bool":
+                    var.set(bool(value))
+                else:
+                    var.set(str(value))
 
     def _create_sdk(self) -> ImednetSDK:
         return ImednetSDK(
