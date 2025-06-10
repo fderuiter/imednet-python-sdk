@@ -28,6 +28,7 @@ tenacity = "^9.1.2"
 python-dotenv = "^1.1.0"
 typer = {extras = ["all"], version = "^0.15.2"}
 cryptography = "^42.0.5"
+keyring = "^25.2.0"
 ttkbootstrap = "^1.13.10"
 tkinterdnd2 = "^0.4.3"
 

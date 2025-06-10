@@ -28,6 +28,14 @@ imednet.ui.template_manager module
    :undoc-members:
    :show-inheritance:
 
+imednet.ui.creds_wizard module
+------------------------------
+
+.. automodule:: imednet.ui.creds_wizard
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.ui.desktop module
 -------------------------
 

@@ -80,6 +80,15 @@ except Exception as e:
     print(f"Error retrieving study structure: {e}")
 ```
 
+You can securely store secrets for later retrieval:
+
+```python
+from imednet.utils import save_secret, load_secret
+
+save_secret("api_key", "my_api_key")
+print(load_secret("api_key"))
+```
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command. Most commands automatically read the study key from the `IMEDNET_STUDY_KEY` environment variable, but you can override it with the `--study-key` option:
