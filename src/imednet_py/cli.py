@@ -1,20 +1,24 @@
 """Command line interface for iMednet SDK."""
 
-import click
+import typer
 
 
-@click.group()
-def cli() -> None:
+app = typer.Typer()
+
+
+@app.callback()
+def main() -> None:
     """iMednet command line interface."""
+    pass
 
 
-@cli.command()
+@app.command()
 def version() -> None:
     """Print package version."""
     from . import __version__
 
-    click.echo(__version__)
+    typer.echo(__version__)
 
 
 if __name__ == "__main__":
-    cli()
+    app()

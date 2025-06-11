@@ -2,7 +2,7 @@ from __future__ import annotations
 
 API_BASE_URL = "https://edc.prod.imednetapi.com/api/v1/edc/"
 
-import requests
+import httpx
 
 
 class ImednetClient:
@@ -13,11 +13,12 @@ class ImednetClient:
         self.security_key = security_key
         self.session = self._build_session()
 
-    def _build_session(self) -> requests.Session:
-        """Create a requests session preloaded with authentication headers."""
-        session = requests.Session()
-        session.headers.update({
-            "x-api-key": self.api_key,
-            "x-imn-security-key": self.security_key,
-        })
-        return session
+    def _build_session(self) -> httpx.Client:
+        """Create an HTTPX client preloaded with authentication headers."""
+        return httpx.Client(
+            base_url=API_BASE_URL,
+            headers={
+                "x-api-key": self.api_key,
+                "x-imn-security-key": self.security_key,
+            },
+        )
