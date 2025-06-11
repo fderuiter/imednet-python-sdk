@@ -4,6 +4,8 @@ from typing import Generic, List, TypeVar, Dict, Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from .base import IMNModel
+
 T = TypeVar("T")
 
 
@@ -17,12 +19,27 @@ class Meta(BaseModel):
     error: Dict[str, Any] | None = None
 
 
-class Envelope(BaseModel, Generic[T]):
+class Pagination(IMNModel):
+    """Pagination block returned by the API."""
+
+    current_page: int = Field(..., alias="currentPage")
+    page_size: int = Field(..., alias="pageSize")
+    total_pages: int = Field(..., alias="totalPages")
+    total_records: int = Field(..., alias="totalRecords")
+
+
+class Envelope(IMNModel, Generic[T]):
     """Generic API envelope model."""
 
-    model_config = ConfigDict(extra="allow")
+    metadata: Meta
+    pagination: Pagination
+    data: List[T]
 
-    data: T
+    def model_dump(self, **kwargs: Any) -> Dict[str, Any]:
+        """Dump model using camelCase aliases by default."""
+
+        kwargs.setdefault("by_alias", True)
+        return super().model_dump(**kwargs)
 
 
 class Study(BaseModel):
@@ -49,13 +66,13 @@ class Record(BaseModel):
     key: str | None = None
 
 
-class StudiesEnvelope(Envelope[List[Study]]):
+class StudiesEnvelope(Envelope[Study]):
     pass
 
 
-class SitesEnvelope(Envelope[List[Site]]):
+class SitesEnvelope(Envelope[Site]):
     pass
 
 
-class RecordsEnvelope(Envelope[List[Record]]):
+class RecordsEnvelope(Envelope[Record]):
     pass
