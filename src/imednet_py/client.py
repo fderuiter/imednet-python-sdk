@@ -1,24 +1,185 @@
 from __future__ import annotations
 
-API_BASE_URL = "https://edc.prod.imednetapi.com/api/v1/edc/"
+import os
+from typing import Any, Dict, Optional, List
 
-import httpx
+import logging
+
+import requests
+
+from . import __version__
+from .models import (
+    RecordsEnvelope,
+    Record,
+    SitesEnvelope,
+    Site,
+    StudiesEnvelope,
+    Study,
+)
+
+
+class ImednetAPIError(Exception):
+    """Exception raised for API errors."""
+
+    def __init__(self, status_code: int, code: Optional[str], description: str) -> None:
+        self.status_code = status_code
+        self.code = code
+        self.description = description
+        super().__init__(f"{status_code} {code or ''}: {description}")
+
+API_BASE_URL = "https://edc.prod.imednetapi.com/api/v1/edc/"
 
 
 class ImednetClient:
     """Simple client for the iMednet API."""
 
-    def __init__(self, api_key: str, security_key: str) -> None:
-        self.api_key = api_key
-        self.security_key = security_key
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        security_key: Optional[str] = None,
+        *,
+        base_url: str = API_BASE_URL,
+    ) -> None:
+        self.api_key = api_key or os.getenv("IMEDNET_API_KEY")
+        self.security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        if not self.api_key or not self.security_key:
+            raise ValueError("API and security keys are required")
+        self.base_url = base_url
         self.session = self._build_session()
 
-    def _build_session(self) -> httpx.Client:
-        """Create an HTTPX client preloaded with authentication headers."""
-        return httpx.Client(
-            base_url=API_BASE_URL,
-            headers={
+    # ------------------------------------------------------------------
+    # session helpers
+
+    def _build_session(self) -> requests.Session:
+        """Create a requests session preloaded with authentication headers."""
+        session = requests.Session()
+        session.headers.update(
+            {
                 "x-api-key": self.api_key,
                 "x-imn-security-key": self.security_key,
-            },
+                "Accept": "application/json",
+                "User-Agent": f"imednet-py/{__version__}",
+            }
         )
+        return session
+
+    def _request(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: Optional[Dict[str, Any]] = None,
+        json: Optional[Any] = None,
+        headers: Optional[Dict[str, str]] = None,
+        timeout: int | float = 30,
+        retries: Any = None,
+    ) -> Any:
+        """Low-level HTTP helper used by the SDK."""
+
+        url = self.base_url + path.lstrip("/")
+        request_headers = self.session.headers.copy()
+        if headers:
+            request_headers.update(headers)
+
+        response = self.session.request(
+            method,
+            url,
+            params=params,
+            json=json,
+            headers=request_headers,
+            timeout=timeout,
+        )
+
+        logging.debug(
+            "HTTP %s %s -> %s in %.0f ms",
+            method,
+            url,
+            response.status_code,
+            response.elapsed.total_seconds() * 1000,
+        )
+
+        if 200 <= response.status_code < 300:
+            if response.headers.get("Content-Type", "").startswith("application/json"):
+                return response.json()
+            return response.content
+
+        try:
+            payload = response.json()
+        except ValueError:
+            description = response.text
+            code = None
+        else:
+            error_data = payload.get("metadata", {}).get("error", {})
+            code = error_data.get("code")
+            description = error_data.get("description", response.text)
+
+        raise ImednetAPIError(response.status_code, code, description)
+
+    # ------------------------------------------------------------------
+    # endpoint wrappers
+
+    def get_studies(self, **params: Any) -> List[Study]:
+        """Return all studies."""
+
+        payload = self._request("GET", "studies", params=params)
+        envelope = StudiesEnvelope.model_validate(payload)
+        return envelope.data
+
+    def get_sites(self, study_key: str, **filters: Any) -> List[Site]:
+        """Return sites for a study."""
+
+        path = f"studies/{study_key}/sites"
+        payload = self._request("GET", path, params=filters)
+        envelope = SitesEnvelope.model_validate(payload)
+        return envelope.data
+
+    def get_records(self, study_key: str, **filters: Any) -> List[Record]:
+        """Return records for a study."""
+
+        path = f"studies/{study_key}/records"
+        payload = self._request("GET", path, params=filters)
+        envelope = RecordsEnvelope.model_validate(payload)
+        return envelope.data
+
+    # ------------------------------------------------------------------
+    # pagination helpers
+
+    def iter_pages(self, path: str, page_size: int = 500):
+        """Yield raw pages of results from ``path`` respecting pagination."""
+
+        if page_size > 500:
+            raise ValueError("page_size must be <= 500")
+
+        page = 0
+        while True:
+            payload = self._request(
+                "GET",
+                path,
+                params={"page": page, "size": page_size},
+            )
+            yield payload
+
+            pagination = (
+                payload.get("metadata", {}).get("pagination", {})
+            )
+            current = pagination.get("currentPage")
+            total = pagination.get("totalPages")
+            if current is None or total is None or current + 1 >= total:
+                break
+            page += 1
+
+    def iter_records(self, study_key: str, page_size: int = 500):
+        """Iterate over records for ``study_key`` page by page."""
+
+        path = f"studies/{study_key}/records"
+        for page in self.iter_pages(path, page_size=page_size):
+            envelope = RecordsEnvelope.model_validate(page)
+            yield envelope.data
+
+    def get_all_records(self, study_key: str, page_size: int = 500) -> List[Record]:
+        """Return all records for ``study_key`` as a list."""
+
+        records: List[Record] = []
+        for page in self.iter_records(study_key, page_size=page_size):
+            records.extend(page)
+        return records
