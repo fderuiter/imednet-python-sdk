@@ -1,10 +1,20 @@
 from __future__ import annotations
 
-from typing import Generic, List, TypeVar
+from typing import Generic, List, TypeVar, Dict, Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 T = TypeVar("T")
+
+
+class Meta(BaseModel):
+    """Top-level metadata block included in API responses."""
+
+    status: str
+    method: str
+    path: str
+    timestamp: str
+    error: Dict[str, Any] | None = None
 
 
 class Envelope(BaseModel, Generic[T]):
