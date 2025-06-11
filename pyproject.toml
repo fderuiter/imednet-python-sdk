@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imednet"
+version = "0.1.0"
+description = "iMednet Python SDK"
+requires-python = ">=3.11"
+authors = [{name = "iMednet", email = "info@example.com"}]
+license = {text = "MIT"}
+dependencies = [
+    "click>=8.1",
+]
+readme = "README.md"
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+]
+
+[project.urls]
+Homepage = "https://example.com"
+
+[project.scripts]
+imednet = "imednet.cli:cli"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["imednet"]
+
+[tool.black]
+line-length = 100
+
+[tool.ruff]
+line-length = 100
+
