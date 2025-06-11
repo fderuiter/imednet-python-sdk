@@ -1,6 +1,7 @@
 import pytest
+import requests_mock
 
-from imednet_py.client import ImednetClient
+from imednet_py.client import ImednetAPIError, ImednetClient
 
 
 def test_session_headers() -> None:
@@ -23,3 +24,30 @@ def test_missing_keys(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
     with pytest.raises(ValueError):
         ImednetClient()
+
+
+def test_request_success() -> None:
+    client = ImednetClient(api_key="key", security_key="sec")
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://edc.prod.imednetapi.com/api/v1/edc/hello",
+            json={"hello": "world"},
+            headers={"Content-Type": "application/json"},
+        )
+        result = client._request("GET", "hello")
+        assert result == {"hello": "world"}
+
+
+def test_request_error() -> None:
+    client = ImednetClient(api_key="key", security_key="sec")
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://edc.prod.imednetapi.com/api/v1/edc/missing",
+            status_code=404,
+            json={"metadata": {"error": {"code": "NOT_FOUND", "description": "Nope"}}},
+            headers={"Content-Type": "application/json"},
+        )
+        with pytest.raises(ImednetAPIError) as exc:
+            client._request("GET", "missing")
+        assert exc.value.code == "NOT_FOUND"
+        assert exc.value.description == "Nope"

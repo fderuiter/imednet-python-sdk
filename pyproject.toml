@@ -20,6 +20,7 @@ readme = "README.md"
 [project.optional-dependencies]
 tests = [
     "pytest",
+    "requests-mock",
 ]
 
 [project.urls]

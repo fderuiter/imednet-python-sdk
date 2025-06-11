@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 import os
-from typing import Optional
+from typing import Any, Dict, Optional
+
+import logging
 
 import requests
 
 from . import __version__
+
+
+class ImednetAPIError(Exception):
+    """Exception raised for API errors."""
+
+    def __init__(self, status_code: int, code: Optional[str], description: str) -> None:
+        self.status_code = status_code
+        self.code = code
+        self.description = description
+        super().__init__(f"{status_code} {code or ''}: {description}")
 
 API_BASE_URL = "https://edc.prod.imednetapi.com/api/v1/edc/"
 
@@ -27,6 +39,9 @@ class ImednetClient:
         self.base_url = base_url
         self.session = self._build_session()
 
+    # ------------------------------------------------------------------
+    # session helpers
+
     def _build_session(self) -> requests.Session:
         """Create a requests session preloaded with authentication headers."""
         session = requests.Session()
@@ -39,3 +54,55 @@ class ImednetClient:
             }
         )
         return session
+
+    def _request(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: Optional[Dict[str, Any]] = None,
+        json: Optional[Any] = None,
+        headers: Optional[Dict[str, str]] = None,
+        timeout: int | float = 30,
+        retries: Any = None,
+    ) -> Any:
+        """Low-level HTTP helper used by the SDK."""
+
+        url = self.base_url + path.lstrip("/")
+        request_headers = self.session.headers.copy()
+        if headers:
+            request_headers.update(headers)
+
+        response = self.session.request(
+            method,
+            url,
+            params=params,
+            json=json,
+            headers=request_headers,
+            timeout=timeout,
+        )
+
+        logging.debug(
+            "HTTP %s %s -> %s in %.0f ms",
+            method,
+            url,
+            response.status_code,
+            response.elapsed.total_seconds() * 1000,
+        )
+
+        if 200 <= response.status_code < 300:
+            if response.headers.get("Content-Type", "").startswith("application/json"):
+                return response.json()
+            return response.content
+
+        try:
+            payload = response.json()
+        except ValueError:
+            description = response.text
+            code = None
+        else:
+            error_data = payload.get("metadata", {}).get("error", {})
+            code = error_data.get("code")
+            description = error_data.get("description", response.text)
+
+        raise ImednetAPIError(response.status_code, code, description)
