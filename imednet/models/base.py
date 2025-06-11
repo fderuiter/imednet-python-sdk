@@ -89,11 +89,24 @@ class Metadata(BaseModel):
 T = TypeVar("T")
 
 
-class ApiResponse(BaseModel, Generic[T]):
-    """Generic API response model."""
+class Envelope(BaseModel, Generic[T]):
+    """Generic API response wrapper used by the iMedNet API."""
 
     metadata: Metadata
     pagination: Optional[Pagination] = None
     data: T
 
     model_config = ConfigDict(populate_by_name=True)
+
+
+# Backwards compatibility alias
+ApiResponse = Envelope
+
+__all__ = [
+    "SortField",
+    "Pagination",
+    "Error",
+    "Metadata",
+    "Envelope",
+    "ApiResponse",
+]

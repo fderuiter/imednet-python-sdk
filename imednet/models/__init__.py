@@ -3,6 +3,7 @@
 This package contains all data models used by the SDK to represent iMedNet resources.
 """
 
+from imednet.models.base import Envelope
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import FormSummary, Interval
@@ -69,4 +70,5 @@ __all__: list[str] = [
     "parse_str_or_default",
     "parse_list_or_default",
     "parse_dict_or_default",
+    "Envelope",
 ]

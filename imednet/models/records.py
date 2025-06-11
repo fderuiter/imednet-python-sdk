@@ -1,3 +1,5 @@
+"""Data models for record-related API endpoints."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -122,7 +124,12 @@ class RecordJobResponse(BaseModel):
 
 
 class RecordData(RootModel[Dict[str, Any]]):
-    pass
+    """Flexible record data placeholder.
+
+    The schema of ``recordData`` varies by form. Study-specific
+    validation will be added in a future milestone using a
+    schema inspector.
+    """
 
 
 class BaseRecordRequest(BaseModel):
