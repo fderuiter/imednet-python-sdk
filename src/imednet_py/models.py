@@ -76,3 +76,13 @@ class SitesEnvelope(Envelope[Site]):
 
 class RecordsEnvelope(Envelope[Record]):
     pass
+
+
+class Sort(BaseModel):
+    """Sort order item used in pagination metadata."""
+
+    # ``property`` is a reserved keyword in Python, use ``property_`` internally
+    property_: str = Field(alias="property")
+    direction: str
+
+    model_config = ConfigDict(populate_by_name=True)
