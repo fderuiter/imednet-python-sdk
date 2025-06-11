@@ -59,3 +59,20 @@ class SitesEnvelope(Envelope[List[Site]]):
 
 class RecordsEnvelope(Envelope[List[Record]]):
     pass
+
+
+class Sort(BaseModel):
+    """Sorting information used in paginated responses."""
+
+    property: str = Field(alias="property")
+    direction: str
+
+
+class Pagination(BaseModel):
+    """Pagination details included in API responses."""
+
+    current_page: int = Field(alias="currentPage")
+    size: int
+    total_pages: int = Field(alias="totalPages")
+    total_elements: int = Field(alias="totalElements")
+    sort: List[Sort]

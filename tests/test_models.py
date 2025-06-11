@@ -1,5 +1,5 @@
 from imednet_py.base import IMNModel
-from imednet_py.models import Meta
+from imednet_py.models import Meta, Pagination
 from pydantic import Field
 
 
@@ -29,3 +29,27 @@ def test_meta_model() -> None:
     assert meta.path == "/studies"
     assert meta.timestamp == "2025-06-11T00:00:00Z"
     assert meta.error is None
+
+
+def test_pagination_model() -> None:
+    sample = {
+        "pagination": {
+            "currentPage": 1,
+            "size": 10,
+            "totalPages": 3,
+            "totalElements": 25,
+            "sort": [
+                {"property": "updatedAt", "direction": "DESC"}
+            ],
+        }
+    }
+
+    pagination = Pagination.model_validate(sample["pagination"])
+
+    assert pagination.current_page == 1
+    assert pagination.size == 10
+    assert pagination.total_pages == 3
+    assert pagination.total_elements == 25
+    assert isinstance(pagination.sort, list)
+    assert pagination.sort[0].property == "updatedAt"
+    assert pagination.sort[0].direction == "DESC"
