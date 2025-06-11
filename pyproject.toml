@@ -1,42 +1,43 @@
 [build-system]
-requires = ["setuptools>=77", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.9"]
+build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "imednet-py"
 version = "0.1.0"
 description = "iMednet Python SDK"
-requires-python = ">=3.11"
-authors = [{name = "iMednet", email = "info@example.com"}]
-license = {file = "LICENSE"}
-dependencies = [
-    "typer>=0.12",
-    "httpx>=0.27",
-    "requests>=2.31",
-    "pydantic>=2",
-]
+authors = ["iMednet <info@example.com>"]
+license = "MIT"
 readme = "README.md"
+requires-python = ">=3.9"
 
-[project.optional-dependencies]
-tests = [
-    "pytest",
-    "requests-mock",
-]
+[tool.poetry.dependencies]
+python = "^3.9"
+typer = ">=0.12"
+httpx = "^0.27"
+requests = ">=2.31"
+pydantic = "^2.7"
+pandas = {extras = ["parquet"], version = "^2.2"}
 
-[project.urls]
-Homepage = "https://example.com"
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-asyncio = "*"
+respx = "*"
+ruff = "*"
+mypy = "*"
+pre-commit = "*"
+requests-mock = "*"
 
-[project.scripts]
+[tool.poetry.scripts]
 imednet = "imednet_py.cli:app"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[[tool.poetry.packages]]
+include = "imednet_py"
+from = "src"
 
-[tool.setuptools.package-data]
-"imednet_py" = ["py.typed"]
+[[tool.poetry.include]]
+path = "src/imednet_py/py.typed"
 
 [tool.black]
 line-length = 100
