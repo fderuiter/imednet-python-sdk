@@ -33,3 +33,8 @@ class Study(BaseModel):
     @field_validator("date_created", "date_modified", mode="before")
     def _parse_dates(cls, v: Any) -> datetime:
         return parse_datetime(v)
+
+    @classmethod
+    def from_api(cls, item: dict[str, Any]) -> "Study":
+        """Create a Study from a raw API item."""
+        return cls.model_validate(item)

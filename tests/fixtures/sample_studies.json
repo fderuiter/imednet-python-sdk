@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "status": "OK",
+    "method": "GET",
+    "path": "/api/v1/edc/studies",
+    "timestamp": "2025-05-01T00:00:00Z"
+  },
+  "data": [
+    {
+      "studyKey": "S1",
+      "studyId": 1,
+      "studyName": "Study One",
+      "studyDescription": "Desc",
+      "studyType": "EDC",
+      "dateCreated": "2025-01-01T00:00:00Z",
+      "dateModified": "2025-01-01T00:00:00Z",
+      "sponsorKey": "SP1"
+    }
+  ]
+}

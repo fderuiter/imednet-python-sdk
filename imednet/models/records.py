@@ -38,6 +38,11 @@ class Keyword(BaseModel):
     def from_json(cls, data: Dict[str, Any]) -> Keyword:
         return cls.model_validate(data)
 
+    @classmethod
+    def from_api(cls, item: Dict[str, Any]) -> "Keyword":
+        """Alias of ``from_json`` for API payloads."""
+        return cls.model_validate(item)
+
 
 class Record(BaseModel):
     study_key: str = Field("", alias="studyKey")
@@ -104,6 +109,11 @@ class Record(BaseModel):
     def from_json(cls, data: Dict[str, Any]) -> Record:
         return cls.model_validate(data)
 
+    @classmethod
+    def from_api(cls, item: Dict[str, Any]) -> "Record":
+        """Alias of ``from_json`` for API payloads."""
+        return cls.model_validate(item)
+
 
 class RecordJobResponse(BaseModel):
     job_id: str = Field("", alias="jobId")
@@ -119,6 +129,11 @@ class RecordJobResponse(BaseModel):
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> RecordJobResponse:
         return cls.model_validate(data)
+
+    @classmethod
+    def from_api(cls, item: Dict[str, Any]) -> "RecordJobResponse":
+        """Alias of ``from_json`` for API payloads."""
+        return cls.model_validate(item)
 
 
 class RecordData(RootModel[Dict[str, Any]]):

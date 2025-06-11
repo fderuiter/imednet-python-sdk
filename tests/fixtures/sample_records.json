@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "status": "OK",
+    "method": "GET",
+    "path": "/api/v1/edc/studies/S1/records",
+    "timestamp": "2025-05-01T00:00:00Z"
+  },
+  "data": [
+    {
+      "studyKey": "S1",
+      "recordId": 100,
+      "formId": 5,
+      "formKey": "F5",
+      "intervalId": 1,
+      "recordOid": "OID1",
+      "recordType": "Scheduled",
+      "recordStatus": "Complete",
+      "deleted": false,
+      "dateCreated": "2025-01-01T00:00:00Z",
+      "dateModified": "2025-01-01T00:00:00Z",
+      "subjectId": 11,
+      "subjectKey": "SUB1",
+      "visitId": 101,
+      "recordData": {"v1": "a"}
+    }
+  ]
+}

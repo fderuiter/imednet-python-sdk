@@ -37,3 +37,8 @@ class Site(BaseModel):
         Create a Site instance from JSON-like dict.
         """
         return cls.model_validate(data)
+
+    @classmethod
+    def from_api(cls, item: Dict[str, Any]) -> "Site":
+        """Alias of ``from_json`` for API payloads."""
+        return cls.model_validate(item)

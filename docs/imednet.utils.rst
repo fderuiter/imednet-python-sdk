@@ -20,6 +20,14 @@ imednet.utils.filters module
    :undoc-members:
    :show-inheritance:
 
+imednet.utils.parsing module
+----------------------------
+
+.. automodule:: imednet.utils.parsing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.utils.typing module
 ---------------------------
 

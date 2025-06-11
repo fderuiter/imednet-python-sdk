@@ -97,3 +97,7 @@ class ApiResponse(BaseModel, Generic[T]):
     data: T
 
     model_config = ConfigDict(populate_by_name=True)
+
+
+class Envelope(ApiResponse[List[T]], Generic[T]):
+    """Standard list envelope returned by many iMedNet endpoints."""
