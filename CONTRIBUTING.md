@@ -14,3 +14,7 @@ Examples:
 feat(api): add new endpoint
 fix(cli): handle empty arguments
 ```
+
+## Branch protection
+
+The `main` branch is protected. All changes must be made through pull requests.
