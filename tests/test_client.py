@@ -2,6 +2,7 @@ import pytest
 import requests_mock
 
 from imednet_py.client import ImednetAPIError, ImednetClient
+from imednet_py.models import Record, Site, Study
 
 
 def test_session_headers() -> None:
@@ -51,3 +52,45 @@ def test_request_error() -> None:
             client._request("GET", "missing")
         assert exc.value.code == "NOT_FOUND"
         assert exc.value.description == "Nope"
+
+
+def test_get_studies_wrapper() -> None:
+    client = ImednetClient(api_key="key", security_key="sec")
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://edc.prod.imednetapi.com/api/v1/edc/studies",
+            json={"data": [{"key": "S1"}]},
+            headers={"Content-Type": "application/json"},
+        )
+        result = client.get_studies(page=2, size=5)
+        req = m.request_history[0]
+        assert req.qs == {"page": ["2"], "size": ["5"]}
+        assert isinstance(result[0], Study)
+
+
+def test_get_sites_wrapper() -> None:
+    client = ImednetClient(api_key="key", security_key="sec")
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://edc.prod.imednetapi.com/api/v1/edc/studies/ABC/sites",
+            json={"data": [{"key": "site1"}]},
+            headers={"Content-Type": "application/json"},
+        )
+        sites = client.get_sites("ABC", filter="active")
+        req = m.request_history[0]
+        assert req.qs == {"filter": ["active"]}
+        assert isinstance(sites[0], Site)
+
+
+def test_get_records_wrapper() -> None:
+    client = ImednetClient(api_key="key", security_key="sec")
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://edc.prod.imednetapi.com/api/v1/edc/studies/XYZ/records",
+            json={"data": [{"key": "rec1"}]},
+            headers={"Content-Type": "application/json"},
+        )
+        recs = client.get_records("XYZ", recordDataFilter="latest")
+        req = m.request_history[0]
+        assert req.qs.get("recorddatafilter") == ["latest"]
+        assert isinstance(recs[0], Record)

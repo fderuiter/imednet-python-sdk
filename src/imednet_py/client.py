@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 import logging
 
 import requests
 
 from . import __version__
+from .models import (
+    RecordsEnvelope,
+    Record,
+    SitesEnvelope,
+    Site,
+    StudiesEnvelope,
+    Study,
+)
 
 
 class ImednetAPIError(Exception):
@@ -106,3 +114,29 @@ class ImednetClient:
             description = error_data.get("description", response.text)
 
         raise ImednetAPIError(response.status_code, code, description)
+
+    # ------------------------------------------------------------------
+    # endpoint wrappers
+
+    def get_studies(self, **params: Any) -> List[Study]:
+        """Return all studies."""
+
+        payload = self._request("GET", "studies", params=params)
+        envelope = StudiesEnvelope.model_validate(payload)
+        return envelope.data
+
+    def get_sites(self, study_key: str, **filters: Any) -> List[Site]:
+        """Return sites for a study."""
+
+        path = f"studies/{study_key}/sites"
+        payload = self._request("GET", path, params=filters)
+        envelope = SitesEnvelope.model_validate(payload)
+        return envelope.data
+
+    def get_records(self, study_key: str, **filters: Any) -> List[Record]:
+        """Return records for a study."""
+
+        path = f"studies/{study_key}/records"
+        payload = self._request("GET", path, params=filters)
+        envelope = RecordsEnvelope.model_validate(payload)
+        return envelope.data
