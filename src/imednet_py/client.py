@@ -140,3 +140,46 @@ class ImednetClient:
         payload = self._request("GET", path, params=filters)
         envelope = RecordsEnvelope.model_validate(payload)
         return envelope.data
+
+    # ------------------------------------------------------------------
+    # pagination helpers
+
+    def iter_pages(self, path: str, page_size: int = 500):
+        """Yield raw pages of results from ``path`` respecting pagination."""
+
+        if page_size > 500:
+            raise ValueError("page_size must be <= 500")
+
+        page = 0
+        while True:
+            payload = self._request(
+                "GET",
+                path,
+                params={"page": page, "size": page_size},
+            )
+            yield payload
+
+            pagination = (
+                payload.get("metadata", {}).get("pagination", {})
+            )
+            current = pagination.get("currentPage")
+            total = pagination.get("totalPages")
+            if current is None or total is None or current + 1 >= total:
+                break
+            page += 1
+
+    def iter_records(self, study_key: str, page_size: int = 500):
+        """Iterate over records for ``study_key`` page by page."""
+
+        path = f"studies/{study_key}/records"
+        for page in self.iter_pages(path, page_size=page_size):
+            envelope = RecordsEnvelope.model_validate(page)
+            yield envelope.data
+
+    def get_all_records(self, study_key: str, page_size: int = 500) -> List[Record]:
+        """Return all records for ``study_key`` as a list."""
+
+        records: List[Record] = []
+        for page in self.iter_records(study_key, page_size=page_size):
+            records.extend(page)
+        return records

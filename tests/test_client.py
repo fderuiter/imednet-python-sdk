@@ -94,3 +94,36 @@ def test_get_records_wrapper() -> None:
         req = m.request_history[0]
         assert req.qs.get("recorddatafilter") == ["latest"]
         assert isinstance(recs[0], Record)
+
+
+def test_iter_records_pagination() -> None:
+    client = ImednetClient(api_key="key", security_key="sec")
+    pages = [
+        {
+            "data": [{"key": "r1"}, {"key": "r2"}],
+            "metadata": {"pagination": {"currentPage": 0, "totalPages": 3}},
+        },
+        {
+            "data": [{"key": "r3"}],
+            "metadata": {"pagination": {"currentPage": 1, "totalPages": 3}},
+        },
+        {
+            "data": [{"key": "r4"}],
+            "metadata": {"pagination": {"currentPage": 2, "totalPages": 3}},
+        },
+    ]
+
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://edc.prod.imednetapi.com/api/v1/edc/studies/ABC/records",
+            [
+                {"json": pages[0], "headers": {"Content-Type": "application/json"}},
+                {"json": pages[1], "headers": {"Content-Type": "application/json"}},
+                {"json": pages[2], "headers": {"Content-Type": "application/json"}},
+            ],
+        )
+
+        records = client.get_all_records("ABC", page_size=2)
+
+        assert [r.key for r in records] == ["r1", "r2", "r3", "r4"]
+        assert len(m.request_history) == 3
