@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added PyPI, code style (Black), linter (Ruff), and typing (Mypy) badges to `README.md`.
 - Added `pandas` to development dependencies for workflow features.
+- Implemented `Site` model with alias support for API responses.
 - Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.
 - Exposed all workflow helpers through new CLI subcommands.
 - Added a Tkinter-based desktop UI (`imednet-ui`) for running workflows with
