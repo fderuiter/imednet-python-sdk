@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from imednet.cli import cli
+from imednet_py.cli import cli
 
 
 def test_version() -> None:

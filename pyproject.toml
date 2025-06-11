@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "imednet"
+name = "imednet-py"
 version = "0.1.0"
 description = "iMednet Python SDK"
 requires-python = ">=3.11"
@@ -11,6 +11,7 @@ authors = [{name = "iMednet", email = "info@example.com"}]
 license = {text = "MIT"}
 dependencies = [
     "click>=8.1",
+    "requests>=2.0",
 ]
 readme = "README.md"
 
@@ -23,11 +24,14 @@ tests = [
 Homepage = "https://example.com"
 
 [project.scripts]
-imednet = "imednet.cli:cli"
+imednet = "imednet_py.cli:cli"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["imednet"]
+packages = ["imednet_py"]
+
+[tool.setuptools.package-data]
+"imednet_py" = ["py.typed"]
 
 [tool.black]
 line-length = 100
