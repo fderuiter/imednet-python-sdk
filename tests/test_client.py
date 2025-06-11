@@ -59,7 +59,21 @@ def test_get_studies_wrapper() -> None:
     with requests_mock.Mocker() as m:
         m.get(
             "https://edc.prod.imednetapi.com/api/v1/edc/studies",
-            json={"data": [{"key": "S1"}]},
+            json={
+                "data": [{"key": "S1"}],
+                "metadata": {
+                    "status": "success",
+                    "method": "GET",
+                    "path": "/studies",
+                    "timestamp": "2025-06-11T00:00:00Z",
+                },
+                "pagination": {
+                    "currentPage": 0,
+                    "pageSize": 5,
+                    "totalPages": 1,
+                    "totalRecords": 1,
+                },
+            },
             headers={"Content-Type": "application/json"},
         )
         result = client.get_studies(page=2, size=5)
@@ -73,7 +87,21 @@ def test_get_sites_wrapper() -> None:
     with requests_mock.Mocker() as m:
         m.get(
             "https://edc.prod.imednetapi.com/api/v1/edc/studies/ABC/sites",
-            json={"data": [{"key": "site1"}]},
+            json={
+                "data": [{"key": "site1"}],
+                "metadata": {
+                    "status": "success",
+                    "method": "GET",
+                    "path": "studies/ABC/sites",
+                    "timestamp": "2025-06-11T00:00:00Z",
+                },
+                "pagination": {
+                    "currentPage": 0,
+                    "pageSize": 20,
+                    "totalPages": 1,
+                    "totalRecords": 1,
+                },
+            },
             headers={"Content-Type": "application/json"},
         )
         sites = client.get_sites("ABC", filter="active")
@@ -87,7 +115,21 @@ def test_get_records_wrapper() -> None:
     with requests_mock.Mocker() as m:
         m.get(
             "https://edc.prod.imednetapi.com/api/v1/edc/studies/XYZ/records",
-            json={"data": [{"key": "rec1"}]},
+            json={
+                "data": [{"key": "rec1"}],
+                "metadata": {
+                    "status": "success",
+                    "method": "GET",
+                    "path": "studies/XYZ/records",
+                    "timestamp": "2025-06-11T00:00:00Z",
+                },
+                "pagination": {
+                    "currentPage": 0,
+                    "pageSize": 100,
+                    "totalPages": 1,
+                    "totalRecords": 1,
+                },
+            },
             headers={"Content-Type": "application/json"},
         )
         recs = client.get_records("XYZ", recordDataFilter="latest")
@@ -101,15 +143,48 @@ def test_iter_records_pagination() -> None:
     pages = [
         {
             "data": [{"key": "r1"}, {"key": "r2"}],
-            "metadata": {"pagination": {"currentPage": 0, "totalPages": 3}},
+            "metadata": {
+                "status": "success",
+                "method": "GET",
+                "path": "studies/ABC/records",
+                "timestamp": "2025-06-11T00:00:00Z",
+            },
+            "pagination": {
+                "currentPage": 0,
+                "pageSize": 2,
+                "totalPages": 3,
+                "totalRecords": 4,
+            },
         },
         {
             "data": [{"key": "r3"}],
-            "metadata": {"pagination": {"currentPage": 1, "totalPages": 3}},
+            "metadata": {
+                "status": "success",
+                "method": "GET",
+                "path": "studies/ABC/records",
+                "timestamp": "2025-06-11T00:00:00Z",
+            },
+            "pagination": {
+                "currentPage": 1,
+                "pageSize": 2,
+                "totalPages": 3,
+                "totalRecords": 4,
+            },
         },
         {
             "data": [{"key": "r4"}],
-            "metadata": {"pagination": {"currentPage": 2, "totalPages": 3}},
+            "metadata": {
+                "status": "success",
+                "method": "GET",
+                "path": "studies/ABC/records",
+                "timestamp": "2025-06-11T00:00:00Z",
+            },
+            "pagination": {
+                "currentPage": 2,
+                "pageSize": 2,
+                "totalPages": 3,
+                "totalRecords": 4,
+            },
         },
     ]
 

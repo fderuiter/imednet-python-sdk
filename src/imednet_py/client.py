@@ -159,9 +159,7 @@ class ImednetClient:
             )
             yield payload
 
-            pagination = (
-                payload.get("metadata", {}).get("pagination", {})
-            )
+            pagination = payload.get("pagination", {})
             current = pagination.get("currentPage")
             total = pagination.get("totalPages")
             if current is None or total is None or current + 1 >= total:
