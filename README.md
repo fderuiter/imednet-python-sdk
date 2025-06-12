@@ -21,6 +21,7 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Automatic pagination
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
+- Pandas helpers for DataFrame conversion and CSV export
 
 ## Installation
 
@@ -78,6 +79,22 @@ except Exception as e:
     print(f"Error retrieving study structure: {e}")
 ```
 
+### Exporting records to CSV
+
+Install the optional pandas dependency and call
+``export_records_csv`` to save all records for a study:
+
+```bash
+pip install imednet-python-sdk[pandas]
+```
+
+```python
+from imednet.utils.pandas import export_records_csv
+
+sdk = ImednetSDK()
+export_records_csv(sdk, study_key, "records.csv")
+```
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
@@ -115,6 +132,14 @@ automatically instrument the underlying HTTP calls,
 or provide your own tracer to `imednet.core.client.Client`.
 
 
+### Tracing with OpenTelemetry
+
+The SDK can emit OpenTelemetry spans for each HTTP request. Install
+`opentelemetry-instrumentation-requests` to enable automatic tracing or provide your own
+tracer to :class:`imednet.core.client.Client`.
+
+## Documentation
+
 The documentation is no longer automatically deployed or published online. To
 view the documentation, you must build it locally using Sphinx. The output will
 be in `docs/_build/html`.
@@ -125,11 +150,13 @@ You can build the docs using the included Makefile target:
 make docs
 ```
 
-This installs the development dependencies and runs the Sphinx build. If you
-prefer, you can run the commands manually:
+This installs the development dependencies and automatically regenerates the API
+documentation before running the Sphinx build. If you prefer, you can run the
+commands manually:
 
 ```bash
 ./scripts/setup.sh
+poetry run sphinx-apidoc -o docs imednet
 poetry run sphinx-build -b html docs docs/_build/html
 ```
 
