@@ -1,8 +1,6 @@
 from datetime import datetime
 from unittest.mock import MagicMock
 
-import pandas as pd
-
 from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet.workflows.record_mapper import RecordMapper

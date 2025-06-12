@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from imednet.models.jobs import Job
 from imednet.workflows.record_update import RecordUpdateWorkflow
 

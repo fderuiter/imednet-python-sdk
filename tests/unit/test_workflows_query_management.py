@@ -28,9 +28,7 @@ def test_get_queries_for_subject_builds_combined_filter() -> None:
     wf = QueryManagementWorkflow(sdk)
     wf.get_queries_for_subject("STUDY", "SUBJ1", additional_filter={"type": "x"})
 
-    sdk.queries.list.assert_called_once_with(
-        "STUDY", filter="subject_key==SUBJ1;type==x"
-    )
+    sdk.queries.list.assert_called_once_with("STUDY", filter="subject_key==SUBJ1;type==x")
 
 
 def test_get_query_state_counts_aggregates_states() -> None:

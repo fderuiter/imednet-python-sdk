@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from imednet.models.records import Record
 from imednet.models.record_revisions import RecordRevision
+from imednet.models.records import Record
 from imednet.models.subjects import Subject
 from imednet.models.visits import Visit
 from imednet.workflows.data_extraction import DataExtractionWorkflow
@@ -10,7 +10,10 @@ from imednet.workflows.data_extraction import DataExtractionWorkflow
 def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
     sdk = MagicMock()
     sdk.subjects.list.return_value = [Subject(subject_key="S1"), Subject(subject_key="S2")]
-    sdk.visits.list.return_value = [Visit(visit_id=1, subject_key="S1"), Visit(visit_id=2, subject_key="S2")]
+    sdk.visits.list.return_value = [
+        Visit(visit_id=1, subject_key="S1"),
+        Visit(visit_id=2, subject_key="S2"),
+    ]
     records = [
         Record(record_id=1, subject_key="S1", visit_id=1),
         Record(record_id=2, subject_key="S2", visit_id=2),
