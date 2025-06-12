@@ -21,6 +21,7 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Automatic pagination
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
+- Pandas helpers for DataFrame conversion and CSV export
 
 ## Installation
 
@@ -76,6 +77,22 @@ try:
     print(json.dumps(structure.model_dump(by_alias=True), indent=2, ensure_ascii=False, default=str))
 except Exception as e:
     print(f"Error retrieving study structure: {e}")
+```
+
+### Exporting records to CSV
+
+Install the optional pandas dependency and call
+``export_records_csv`` to save all records for a study:
+
+```bash
+pip install imednet-python-sdk[pandas]
+```
+
+```python
+from imednet.utils.pandas import export_records_csv
+
+sdk = ImednetSDK()
+export_records_csv(sdk, study_key, "records.csv")
 ```
 
 ### Using the Command Line Interface (CLI)
