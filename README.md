@@ -220,6 +220,18 @@ poetry run pytest --cov=imednet
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute.
 
+## Versioning and Releases
+
+This project follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
+See [CHANGELOG.md](CHANGELOG.md) for the full release history.
+
+To publish a new release:
+
+1. Update the changelog with the upcoming version notes.
+2. Run `poetry version` to bump the version number.
+3. Commit the changes and create a tag like `vX.Y.Z`.
+4. Push the tag to trigger the workflow in `.github/workflows/release.yml`.
+
 ## Governance and Roadmap
 
 This project is currently maintained by Bright Research.
