@@ -14,7 +14,15 @@ from __future__ import annotations
 import logging
 import os
 import time
+from contextlib import nullcontext
 from typing import Any, Dict, Optional, Union
+
+try:  # pragma: no cover - optional dependency
+    from opentelemetry import trace
+    from opentelemetry.trace import Tracer
+except Exception:  # pragma: no cover - opentelemetry not installed
+    trace = None  # type: ignore
+    Tracer = Any  # type: ignore
 
 import httpx
 from tenacity import RetryCallState, RetryError, Retrying, stop_after_attempt, wait_exponential
@@ -56,6 +64,7 @@ class Client:
         retries: int = 3,
         backoff_factor: float = 1.0,
         log_level: Union[int, str] = logging.INFO,
+        tracer: Optional[Tracer] = None,
     ):
         """
         Initialize the HTTP client.
@@ -73,6 +82,7 @@ class Client:
             retries: Max retry attempts for transient errors.
             backoff_factor: Factor for exponential backoff between retries.
             log_level: Logging level or name.
+            tracer: Optional OpenTelemetry tracer to record spans.
         """
         api_key = api_key or os.getenv("IMEDNET_API_KEY")
         security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
@@ -98,6 +108,13 @@ class Client:
             },
             timeout=self.timeout,
         )
+
+        if tracer is not None:
+            self._tracer = tracer
+        elif trace is not None:
+            self._tracer = trace.get_tracer(__name__)
+        else:
+            self._tracer = None
 
     def __enter__(self) -> Client:
         return self
@@ -133,22 +150,36 @@ class Client:
             retry=self._should_retry,
             reraise=True,
         )
-        try:
-            start = time.monotonic()
-            response = retryer(lambda: self._client.request(method, url, **kwargs))
-            latency = time.monotonic() - start
-            logger.info(
+
+        span_cm = (
+            self._tracer.start_as_current_span(
                 "http_request",
-                extra={
-                    "method": method,
-                    "url": url,
-                    "status_code": response.status_code,
-                    "latency": latency,
-                },
+                attributes={"endpoint": url, "method": method},
             )
-        except RetryError as e:
-            logger.error("Request failed after retries: %s", e)
-            raise RequestError("Network request failed after retries")
+            if self._tracer
+            else nullcontext()
+        )
+
+        with span_cm as span:
+            try:
+                start = time.monotonic()
+                response = retryer(lambda: self._client.request(method, url, **kwargs))
+                latency = time.monotonic() - start
+                logger.info(
+                    "http_request",
+                    extra={
+                        "method": method,
+                        "url": url,
+                        "status_code": response.status_code,
+                        "latency": latency,
+                    },
+                )
+            except RetryError as e:
+                logger.error("Request failed after retries: %s", e)
+                raise RequestError("Network request failed after retries")
+
+            if span is not None:
+                span.set_attribute("status_code", response.status_code)
 
         # HTTP error handling
         if response.is_error:
