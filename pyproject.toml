@@ -51,6 +51,7 @@ python-json-logger = "^2.0.7"
 pandas = ["pandas"]
 pyarrow = ["pyarrow"]
 sqlalchemy = ["SQLAlchemy"]
+airflow = ["apache-airflow", "apache-airflow-providers-amazon"]
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"

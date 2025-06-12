@@ -47,4 +47,4 @@ def export_to_sql(
 
     df: pd.DataFrame = RecordMapper(sdk).dataframe(study_key)
     engine = create_engine(conn_str)
-    df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)
+    df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
