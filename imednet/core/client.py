@@ -32,6 +32,7 @@ from tenacity import (
     wait_exponential,
 )
 
+from imednet import metrics
 from imednet.core.exceptions import (
     ApiError,
     AuthenticationError,
@@ -170,6 +171,13 @@ class Client:
                 start = time.monotonic()
                 response = retryer(lambda: self._client.request(method, url, **kwargs))
                 latency = time.monotonic() - start
+                if metrics.API_CALLS is not None and metrics.API_LATENCY is not None:
+                    metrics.API_CALLS.labels(
+                        endpoint=url,
+                        method=method,
+                        status=str(response.status_code),
+                    ).inc()
+                    metrics.API_LATENCY.labels(endpoint=url, method=method).observe(latency)
                 logger.info(
                     "http_request",
                     extra={

@@ -20,3 +20,17 @@ Example configuration::
    RequestsInstrumentor().instrument()
    tracer = trace.get_tracer(__name__)
    client = Client(api_key="A", security_key="B", tracer=tracer)
+
+Prometheus Metrics
+------------------
+
+If ``prometheus-client`` is installed, you can expose metrics about API calls.
+Start the metrics server by passing ``enable_metrics=True`` to
+:class:`imednet.sdk.ImednetSDK`::
+
+   from imednet.sdk import ImednetSDK
+
+   sdk = ImednetSDK(enable_metrics=True, metrics_port=8000)
+
+Metrics are available on ``http://localhost:8000`` and include call counts and
+latency histograms.

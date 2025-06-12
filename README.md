@@ -23,6 +23,7 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Workflow utilities for data extraction and mapping
 - Pandas helpers for DataFrame conversion and CSV export
 - Optional in-memory caching for study and variable listings
+- Optional Prometheus metrics for API usage
 
 Calls to `sdk.studies.list()` and `sdk.variables.list()` cache results in memory.
 Use `refresh=True` to fetch fresh data.
@@ -91,6 +92,23 @@ client = Client(api_key="...", security_key="...", log_level="INFO")
 ```
 
 If `opentelemetry` is installed, you can pass a tracer instance or rely on the global provider. Each request is wrapped in a span with attributes for the endpoint path and status code. Installing `opentelemetry-instrumentation-requests` enables automatic propagation of trace context.
+
+### Prometheus Metrics
+
+Install the optional `prometheus-client` extra to expose metrics about API usage:
+
+```bash
+pip install imednet-python-sdk[metrics]
+```
+
+Enable the metrics server when creating the SDK:
+
+```python
+from imednet.sdk import ImednetSDK
+
+sdk = ImednetSDK(enable_metrics=True, metrics_port=8000)
+```
+Metrics are then available on `http://localhost:8000` for scraping by Prometheus.
 
     print(json.dumps(structure.model_dump(by_alias=True), indent=2, ensure_ascii=False, default=str))
 except Exception as e:

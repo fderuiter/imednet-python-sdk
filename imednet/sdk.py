@@ -15,6 +15,7 @@ import os
 import time
 from typing import Any, Dict, List, Optional, Union
 
+from . import metrics
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
@@ -87,6 +88,8 @@ class ImednetSDK:
         retries: int = 3,
         backoff_factor: float = 1.0,
         enable_async: bool = False,
+        enable_metrics: bool = False,
+        metrics_port: int = 8000,
     ):
         """
         Initialize the SDK with authentication and configuration.
@@ -101,6 +104,8 @@ class ImednetSDK:
             timeout: Request timeout in seconds.
             retries: Max retry attempts for transient errors.
             backoff_factor: Factor for exponential backoff between retries.
+            enable_metrics: Start Prometheus metrics server if True.
+            metrics_port: Port for the metrics HTTP server.
         """
         api_key = api_key or os.getenv("IMEDNET_API_KEY")
         security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
@@ -110,6 +115,8 @@ class ImednetSDK:
 
         # Initialize context for storing state
         self.ctx = Context()
+        if enable_metrics:
+            metrics.enable_metrics(metrics_port)
 
         # Initialize the HTTP clients
         self._client = Client(
