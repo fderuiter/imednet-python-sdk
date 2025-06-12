@@ -17,13 +17,39 @@ import time
 from contextlib import nullcontext
 from typing import Any, Dict, Optional, Union
 
-try:  # pragma: no cover - optional dependency
+try:  # opentelemetry is optional
     from opentelemetry import trace
     from opentelemetry.trace import Tracer
-except Exception:  # pragma: no cover - opentelemetry not installed
-    trace = None  # type: ignore
-    Tracer = Any  # type: ignore
+except Exception:  # pragma: no cover - optional dependency
+    trace = None
+    Tracer = None
 
+        tracer: Optional[Tracer] = None,
+            tracer: Optional OpenTelemetry tracer.
+        self.tracer = tracer
+        if self.tracer is None and trace is not None:
+            self.tracer = trace.get_tracer(__name__)
+
+            span_cm = (
+                self.tracer.start_as_current_span("http_request") if self.tracer else nullcontext()
+            with span_cm as span:
+                if span is not None:
+                    span.set_attribute("http.method", method)
+                    span.set_attribute("http.url", url)
+                    span.set_attribute("http.target", httpx.URL(url).path)
+                response = retryer(lambda: self._client.request(method, url, **kwargs))
+                latency = time.monotonic() - start
+                logger.info(
+                    "http_request",
+                    extra={
+                        "method": method,
+                        "url": url,
+                        "status_code": response.status_code,
+                        "latency": latency,
+                    },
+                )
+                if span is not None:
+                    span.set_attribute("http.status_code", response.status_code)
 import httpx
 from tenacity import RetryCallState, RetryError, Retrying, stop_after_attempt, wait_exponential
 
