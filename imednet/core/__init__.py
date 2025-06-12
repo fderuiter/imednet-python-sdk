@@ -2,7 +2,7 @@
 Re-exports core components for easier access.
 """
 
-from .client import Client
+from .client import AsyncClient, Client
 from .context import Context
 from .exceptions import (
     ApiError,
@@ -15,10 +15,11 @@ from .exceptions import (
     ServerError,
     ValidationError,
 )
-from .paginator import Paginator
+from .paginator import AsyncPaginator, Paginator
 
 __all__ = [
     "Client",
+    "AsyncClient",
     "Context",
     "ImednetError",
     "RequestError",
@@ -30,4 +31,5 @@ __all__ = [
     "ServerError",
     "ValidationError",
     "Paginator",
+    "AsyncPaginator",
 ]

@@ -2,9 +2,9 @@
 
 from typing import Any, Dict, List, Optional
 
-from imednet.core.client import Client
+from imednet.core.client import AsyncClient, Client
 from imednet.core.context import Context
-from imednet.core.paginator import Paginator
+from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.studies import Study
 from imednet.utils.filters import build_filter_string
@@ -19,8 +19,13 @@ class StudiesEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def __init__(self, client: Client, ctx: Context) -> None:
-        super().__init__(client, ctx)
+    def __init__(
+        self,
+        client: Client,
+        ctx: Context,
+        async_client: AsyncClient | None = None,
+    ) -> None:
+        super().__init__(client, ctx, async_client)
         self._studies_cache: Optional[List[Study]] = None
 
     def list(self, refresh: bool = False, **filters) -> List[Study]:
@@ -46,6 +51,23 @@ class StudiesEndpoint(BaseEndpoint):
             self._studies_cache = result
         return result
 
+    async def async_list(self, refresh: bool = False, **filters: Any) -> List[Study]:
+        """Asynchronous version of :meth:`list`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        filters = self._auto_filter(filters)
+        if not filters and not refresh and self._studies_cache is not None:
+            return self._studies_cache
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+        paginator = AsyncPaginator(self._async_client, self.path, params=params)
+        result = [Study.model_validate(item) async for item in paginator]
+        if not filters:
+            self._studies_cache = result
+        return result
+
     def get(self, study_key: str) -> Study:
         """
         Get a specific study by key.
@@ -58,6 +80,16 @@ class StudiesEndpoint(BaseEndpoint):
         """
         path = self._build_path(study_key)
         raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Study {study_key} not found")
+        return Study.model_validate(raw[0])
+
+    async def async_get(self, study_key: str) -> Study:
+        """Asynchronous version of :meth:`get`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        path = self._build_path(study_key)
+        raw = (await self._async_client.get(path)).json().get("data", [])
         if not raw:
             raise ValueError(f"Study {study_key} not found")
         return Study.model_validate(raw[0])

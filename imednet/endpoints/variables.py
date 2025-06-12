@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
-from imednet.core.client import Client
+from imednet.core.client import AsyncClient, Client
 from imednet.core.context import Context
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
@@ -19,8 +19,13 @@ class VariablesEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def __init__(self, client: Client, ctx: Context) -> None:
-        super().__init__(client, ctx)
+    def __init__(
+        self,
+        client: Client,
+        ctx: Context,
+        async_client: AsyncClient | None = None,
+    ) -> None:
+        super().__init__(client, ctx, async_client)
         self._variables_cache: Dict[str, List[Variable]] = {}
 
     def list(
