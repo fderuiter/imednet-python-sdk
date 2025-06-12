@@ -1,7 +1,9 @@
 import os
+from typing import AsyncIterator, Iterator
 
 import pytest
 from imednet.async_sdk import AsyncImednetSDK
+from imednet.models.studies import Study
 from imednet.sdk import ImednetSDK
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
@@ -17,34 +19,64 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def _create_sdk() -> ImednetSDK:
-    return ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+@pytest.fixture(scope="module")
+def sdk() -> Iterator[ImednetSDK]:
+    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
+        yield client
 
 
-def test_list_studies() -> None:
-    with _create_sdk() as sdk:
-        studies = sdk.studies.list()
-        assert isinstance(studies, list)
-        if studies:
-            assert hasattr(studies[0], "study_key")
-
-
-def test_list_sites() -> None:
-    with _create_sdk() as sdk:
-        studies = sdk.studies.list()
-        if not studies:
-            pytest.skip("No studies available to test sites endpoint")
-        study_key = studies[0].study_key
-        sites = sdk.sites.list(study_key=study_key)
-        assert isinstance(sites, list)
-
-
-@pytest.mark.asyncio
-async def test_async_studies() -> None:
+@pytest.fixture(scope="module")
+async def async_sdk() -> AsyncIterator[AsyncImednetSDK]:
     async with AsyncImednetSDK(
         api_key=API_KEY,
         security_key=SECURITY_KEY,
         base_url=BASE_URL,
-    ) as sdk:
-        studies = await sdk.studies.async_list()
-        assert isinstance(studies, list)
+    ) as client:
+        yield client
+
+
+@pytest.fixture(scope="module")
+def study_key(sdk: ImednetSDK) -> str:
+    studies = sdk.studies.list()
+    if not studies:
+        pytest.skip("No studies available for e2e tests")
+    return studies[0].study_key
+
+
+def test_list_studies(sdk: ImednetSDK) -> None:
+    studies = sdk.studies.list()
+    assert isinstance(studies, list)
+    assert studies, "No studies returned from server"
+    assert isinstance(studies[0], Study)
+
+
+def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
+    sites = sdk.sites.list(study_key=study_key)
+    assert isinstance(sites, list)
+
+
+def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
+    study = sdk.studies.get(study_key)
+    assert study.study_key == study_key
+
+
+def test_list_forms(sdk: ImednetSDK, study_key: str) -> None:
+    forms = sdk.forms.list(study_key=study_key)
+    assert isinstance(forms, list)
+
+
+def test_list_subjects(sdk: ImednetSDK, study_key: str) -> None:
+    subjects = sdk.subjects.list(study_key=study_key)
+    assert isinstance(subjects, list)
+
+
+def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
+    records = sdk.records.list(study_key=study_key)
+    assert isinstance(records, list)
+
+
+@pytest.mark.asyncio
+async def test_async_studies(async_sdk: AsyncImednetSDK) -> None:
+    studies = await async_sdk.studies.async_list()
+    assert isinstance(studies, list)
+    assert studies, "No studies returned from server"
