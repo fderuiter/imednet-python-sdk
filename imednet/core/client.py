@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from typing import Any, Dict, Optional, Union
 
 import httpx
@@ -28,6 +29,7 @@ from imednet.core.exceptions import (
     ServerError,
     ValidationError,
 )
+from imednet.utils.json_logging import configure_json_logging
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +55,7 @@ class Client:
         timeout: Union[float, httpx.Timeout] = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
+        log_level: Union[int, str] = logging.INFO,
     ):
         """
         Initialize the HTTP client.
@@ -69,6 +72,7 @@ class Client:
             timeout: Request timeout in seconds or httpx.Timeout.
             retries: Max retry attempts for transient errors.
             backoff_factor: Factor for exponential backoff between retries.
+            log_level: Logging level or name.
         """
         api_key = api_key or os.getenv("IMEDNET_API_KEY")
         security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
@@ -79,6 +83,10 @@ class Client:
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
         self.backoff_factor = backoff_factor
+
+        level = logging.getLevelName(log_level.upper()) if isinstance(log_level, str) else log_level
+        configure_json_logging(level)
+        logger.setLevel(level)
 
         self._client = httpx.Client(
             base_url=self.base_url,
@@ -126,7 +134,18 @@ class Client:
             reraise=True,
         )
         try:
+            start = time.monotonic()
             response = retryer(lambda: self._client.request(method, url, **kwargs))
+            latency = time.monotonic() - start
+            logger.info(
+                "http_request",
+                extra={
+                    "method": method,
+                    "url": url,
+                    "status_code": response.status_code,
+                    "latency": latency,
+                },
+            )
         except RetryError as e:
             logger.error("Request failed after retries: %s", e)
             raise RequestError("Network request failed after retries")
