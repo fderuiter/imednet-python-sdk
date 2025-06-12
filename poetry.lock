@@ -2017,6 +2017,7 @@ docs = ["furo (>=2023.7.26)", "proselint (>=0.13)", "sphinx (>=7.1.2,!=7.3)", "s
 test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=23.1)", "pytest (>=7.4)", "pytest-env (>=0.8.2)", "pytest-freezer (>=0.4.8) ; platform_python_implementation == \"PyPy\" or platform_python_implementation == \"GraalVM\" or platform_python_implementation == \"CPython\" and sys_platform == \"win32\" and python_version >= \"3.13\"", "pytest-mock (>=3.11.1)", "pytest-randomly (>=3.12)", "pytest-timeout (>=2.1)", "setuptools (>=68)", "time-machine (>=2.10) ; platform_python_implementation == \"CPython\""]
 
 [extras]
+airflow = []
 pandas = ["pandas"]
 pyarrow = ["pyarrow"]
 sqlalchemy = ["SQLAlchemy"]
@@ -2024,4 +2025,4 @@ sqlalchemy = ["SQLAlchemy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "77013d18651628f80c0d4a64081944d20b0f89d9a577e971c16367b403631543"
+content-hash = "d58eb4add7cb4b30a59b39cd503afae50ef463a896af6fef2c92f9f4b5c0151f"
