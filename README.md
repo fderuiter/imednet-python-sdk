@@ -128,6 +128,22 @@ imednet subjects list --help
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `imednet/examples/` directory.
 
+### JSON Logging
+
+All logs from the SDK use JSON format so they can be easily parsed. Pass `log_level`
+ to `imednet.core.client.Client` to adjust verbosity. Call
+ `imednet.utils.configure_json_logging()` if you want to enable the same formatting
+ for your entire application.
+
+
+### Tracing with OpenTelemetry
+
+The SDK can emit OpenTelemetry spans for each HTTP request.
+Install `opentelemetry-instrumentation-requests`
+automatically instrument the underlying HTTP calls,
+or provide your own tracer to `imednet.core.client.Client`.
+
+
 ### Tracing with OpenTelemetry
 
 The SDK can emit OpenTelemetry spans for each HTTP request. Install
