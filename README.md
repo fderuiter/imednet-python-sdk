@@ -111,11 +111,13 @@ You can build the docs using the included Makefile target:
 make docs
 ```
 
-This installs the development dependencies and runs the Sphinx build. If you
-prefer, you can run the commands manually:
+This installs the development dependencies and automatically regenerates the API
+documentation before running the Sphinx build. If you prefer, you can run the
+commands manually:
 
 ```bash
 ./scripts/setup.sh
+poetry run sphinx-apidoc -o docs imednet
 poetry run sphinx-build -b html docs docs/_build/html
 ```
 
