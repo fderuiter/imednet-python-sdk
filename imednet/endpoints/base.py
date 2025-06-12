@@ -2,9 +2,9 @@
 Base endpoint mix-in for all API resource endpoints.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
-from imednet.core.client import Client
+from imednet.core.client import AsyncClient, Client
 from imednet.core.context import Context
 
 
@@ -17,8 +17,11 @@ class BaseEndpoint:
 
     path: str  # to be set in subclasses
 
-    def __init__(self, client: Client, ctx: Context) -> None:
+    def __init__(
+        self, client: Client, ctx: Context, async_client: Optional[AsyncClient] = None
+    ) -> None:
         self._client = client
+        self._async_client = async_client
         self._ctx = ctx
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:

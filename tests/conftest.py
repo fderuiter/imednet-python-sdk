@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from imednet.core.client import Client
@@ -24,6 +24,13 @@ def dummy_client():
 
 
 @pytest.fixture
+def async_dummy_client():
+    client = MagicMock()
+    client.get = AsyncMock()
+    return client
+
+
+@pytest.fixture
 def response_factory():
     def factory(data):
         return DummyResponse(data)
@@ -34,7 +41,7 @@ def response_factory():
 @pytest.fixture
 def paginator_factory(monkeypatch):
     def factory(module, items):
-        captured = {}
+        captured = {"count": 0}
 
         class DummyPaginator:
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
@@ -42,6 +49,7 @@ def paginator_factory(monkeypatch):
                 captured["path"] = path
                 captured["params"] = params or {}
                 captured["page_size"] = page_size
+                captured["count"] += 1
                 self._items = items
 
             def __iter__(self):
