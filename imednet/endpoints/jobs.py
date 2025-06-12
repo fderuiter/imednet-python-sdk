@@ -32,3 +32,14 @@ class JobsEndpoint(BaseEndpoint):
         if not data:
             raise ValueError(f"Job {batch_id} not found in study {study_key}")
         return JobStatus.from_json(data)
+
+    async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
+        """Asynchronous version of :meth:`get`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        endpoint = self._build_path(study_key, "jobs", batch_id)
+        response = await self._async_client.get(endpoint)
+        data = response.json()
+        if not data:
+            raise ValueError(f"Job {batch_id} not found in study {study_key}")
+        return JobStatus.from_json(data)
