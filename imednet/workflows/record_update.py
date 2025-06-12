@@ -4,7 +4,7 @@ import time
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from ..models import Job
-from ..utils.schema import SchemaCache, validate_record_data
+from ..utils.schema import SchemaValidator
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -24,7 +24,8 @@ class RecordUpdateWorkflow:
 
     def __init__(self, sdk: "ImednetSDK"):
         self._sdk = sdk
-        self._schema = SchemaCache()
+        self._validator = SchemaValidator(sdk)
+        self._schema = self._validator.schema
 
     def submit_record_batch(
         self,
@@ -61,16 +62,14 @@ class RecordUpdateWorkflow:
             # ImednetApiError: If the initial submission or status polling fails.
             # Commented out as not defined here
         """
-        # Refresh schema if empty
-        first = records_data[0] if records_data else {}
-        form_ref = first.get("formKey") or self._schema.form_key_from_id(first.get("formId", 0))
-        if form_ref and not self._schema.variables_for_form(form_ref):
-            self._schema.refresh(self._sdk.forms, self._sdk.variables, study_key)
+        if records_data:
+            first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
+                records_data[0].get("formId", 0)
+            )
+            if first_ref and not self._schema.variables_for_form(first_ref):
+                self._validator.refresh(study_key)
 
-        for rec in records_data:
-            fk = rec.get("formKey") or self._schema.form_key_from_id(rec.get("formId", 0))
-            if fk:
-                validate_record_data(self._schema, fk, rec.get("data", {}))
+        self._validator.validate_batch(study_key, records_data)
 
         # Call the SDK's records.create method - Pass records_data directly
         initial_job_status = self._sdk.records.create(
