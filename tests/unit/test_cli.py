@@ -49,9 +49,7 @@ def test_subjects_list_with_filter(runner, monkeypatch):
         ["subjects", "list", "STUDY", "--filter", "subject_status=Screened"],
     )
     assert result.exit_code == 0
-    mock_sdk.subjects.list.assert_called_once_with(
-        "STUDY", filter="subject_status==Screened"
-    )
+    mock_sdk.subjects.list.assert_called_once_with("STUDY", filter="subject_status==Screened")
 
 
 def test_invalid_filter_reports_error(runner, monkeypatch):
@@ -89,4 +87,3 @@ def test_extract_records_calls_workflow(runner, monkeypatch):
         subject_filter=None,
         visit_filter=None,
     )
-

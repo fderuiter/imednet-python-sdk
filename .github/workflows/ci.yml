@@ -34,6 +34,9 @@ jobs:
       - name: Install deps
         run: |
           poetry install --with dev
+      - name: Format code
+        run: |
+          poetry run black .
       - name: Lint & Type‑check
         run: |
           poetry run ruff check .
