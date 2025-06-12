@@ -23,6 +23,7 @@ packages = [{ include = "imednet" }]
 include = [
     "README.md",
     "LICENSE",
+    "imednet/py.typed",
     { path = "examples", format = "sdist" }, # Include examples only in sdist
     { path = "examples", format = "wheel" } # Include examples also in wheel
 ]
