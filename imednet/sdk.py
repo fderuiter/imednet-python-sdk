@@ -8,8 +8,9 @@ This module provides the ImednetSDK class which:
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Union
+
 import os
+from typing import Any, Dict, List, Optional, Union
 
 from .core.client import Client
 from .core.context import Context

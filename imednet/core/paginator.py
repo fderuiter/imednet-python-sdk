@@ -11,7 +11,8 @@ class Paginator:
     """
     Iterate over pages of results from the iMednet API.
 
-    Example:
+    Example::
+
         paginator = Paginator(client, "/api/v1/edc/studies/{study_key}/sites")
         for item in paginator:
             # process each item
