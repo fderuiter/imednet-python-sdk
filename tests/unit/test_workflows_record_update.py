@@ -1,6 +1,10 @@
 from unittest.mock import MagicMock
 
+import pytest
+from imednet.core.exceptions import ValidationError
 from imednet.models.jobs import Job
+from imednet.models.variables import Variable
+from imednet.utils.schema import SchemaCache
 from imednet.workflows.record_update import RecordUpdateWorkflow
 
 
@@ -12,7 +16,7 @@ def test_submit_record_batch_no_wait() -> None:
     wf = RecordUpdateWorkflow(sdk)
     result = wf.submit_record_batch("STUDY", [{"a": 1}])
 
-    sdk.records.create.assert_called_once_with("STUDY", [{"a": 1}])
+    sdk.records.create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
     assert result == job
 
 
@@ -34,7 +38,7 @@ def test_submit_record_batch_wait_for_completion(monkeypatch) -> None:
         timeout=5,
     )
 
-    sdk.records.create.assert_called_once_with("STUDY", [{"a": 1}])
+    sdk.records.create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
     sdk.jobs.get.assert_called_with("STUDY", "1")
     assert result.state == "COMPLETED"
 
@@ -64,3 +68,21 @@ def test_update_scheduled_record_builds_payload() -> None:
         }
     ]
     assert result == "job"
+
+
+def test_submit_record_batch_validation() -> None:
+    sdk = MagicMock()
+    wf = RecordUpdateWorkflow(sdk)
+
+    schema = SchemaCache()
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    schema._form_variables = {"F1": {"age": var}}
+    schema._form_id_to_key = {1: "F1"}
+    wf._schema = schema
+
+    with pytest.raises(ValidationError):
+        wf.submit_record_batch("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
+    sdk.records.create.assert_not_called()
+
+    wf.submit_record_batch("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
+    sdk.records.create.assert_called_once()

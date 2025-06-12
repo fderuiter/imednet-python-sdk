@@ -19,6 +19,16 @@ def __getattr__(name: str):
             }
         )
         return globals()[name]
+    if name in {"SchemaCache", "validate_record_data"}:
+        from .schema import SchemaCache, validate_record_data
+
+        globals().update(
+            {
+                "SchemaCache": SchemaCache,
+                "validate_record_data": validate_record_data,
+            }
+        )
+        return globals()[name]
     raise AttributeError(name)
 
 
@@ -31,4 +41,6 @@ __all__ = [
     "export_records_csv",
     "JsonDict",
     "DataFrame",
+    "SchemaCache",
+    "validate_record_data",
 ]

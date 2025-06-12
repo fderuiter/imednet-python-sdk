@@ -97,6 +97,22 @@ except Exception as e:
     print(f"Error retrieving study structure: {e}")
 ```
 
+### Record Validation
+
+The SDK can validate record payloads locally using cached form metadata. Create
+a :class:`~imednet.utils.schema.SchemaCache` and pass it to
+``RecordsEndpoint.create`` or the ``RecordUpdateWorkflow`` methods. A
+``ValidationError`` is raised if variables are unknown or required fields are
+missing.
+
+```python
+from imednet.utils.schema import SchemaCache
+
+schema = SchemaCache()
+schema.refresh(sdk.forms, sdk.variables, study_key)
+sdk.records.create(study_key, record_data, schema=schema)
+```
+
 ### Exporting records to CSV
 
 Install the optional pandas dependency and call

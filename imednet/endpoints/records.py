@@ -7,6 +7,7 @@ from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.utils.filters import build_filter_string
+from imednet.utils.schema import SchemaCache, validate_record_data
 
 
 class RecordsEndpoint(BaseEndpoint):
@@ -69,6 +70,8 @@ class RecordsEndpoint(BaseEndpoint):
         study_key: str,
         records_data: List[Dict[str, Any]],
         email_notify: Union[bool, str, None] = None,  # Accept bool, str (email), or None
+        *,
+        schema: Optional[SchemaCache] = None,
     ) -> Job:
         """
         Create new records in a study.
@@ -77,11 +80,19 @@ class RecordsEndpoint(BaseEndpoint):
             study_key: Study identifier
             records_data: List of record data objects to create
             email_notify: Whether to send email notifications (True/False), or an
-            email address as a string.
+                email address as a string.
+            schema: Optional :class:`SchemaCache` instance used for local
+                validation.
 
         Returns:
             Job object with information about the created job
         """
+        if schema is not None:
+            for rec in records_data:
+                fk = rec.get("formKey") or schema.form_key_from_id(rec.get("formId", 0))
+                if fk:
+                    validate_record_data(schema, fk, rec.get("data", {}))
+
         path = self._build_path(study_key, "records")
         headers = {}
         if email_notify is not None:
