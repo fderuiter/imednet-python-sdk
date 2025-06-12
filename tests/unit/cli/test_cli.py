@@ -7,8 +7,9 @@ from imednet.core.exceptions import ApiError
 from typer.testing import CliRunner
 
 
-def _setup_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Set required environment variables."""
+@pytest.fixture(autouse=True)
+def env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Set required environment variables for each test."""
     monkeypatch.setenv("IMEDNET_API_KEY", "key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "secret")
 
