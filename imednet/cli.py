@@ -11,6 +11,13 @@ from rich import print
 from typing_extensions import Any, Dict, List, Optional
 
 from .core.exceptions import ApiError
+from .integrations.export import (
+    export_to_csv,
+    export_to_excel,
+    export_to_json,
+    export_to_parquet,
+    export_to_sql,
+)
 from .sdk import ImednetSDK
 
 # Import the public filter utility
@@ -145,6 +152,82 @@ def list_sites(
         raise typer.Exit(code=1)
     except Exception as e:
         print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+# --- Export Commands ---
+export_app = typer.Typer(name="export", help="Export study data to various formats.")
+app.add_typer(export_app)
+
+
+@export_app.command("parquet")
+def export_parquet(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination Parquet file."),
+) -> None:
+    """Export study records to a Parquet file."""
+    sdk = get_sdk()
+    try:
+        export_to_parquet(sdk, study_key, str(path))
+    except Exception as e:
+        print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("csv")
+def export_csv(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination CSV file."),
+) -> None:
+    """Export study records to a CSV file."""
+    sdk = get_sdk()
+    try:
+        export_to_csv(sdk, study_key, str(path))
+    except Exception as e:
+        print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("excel")
+def export_excel(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination Excel workbook."),
+) -> None:
+    """Export study records to an Excel workbook."""
+    sdk = get_sdk()
+    try:
+        export_to_excel(sdk, study_key, str(path))
+    except Exception as e:
+        print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("json")
+def export_json_cmd(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination JSON file."),
+) -> None:
+    """Export study records to a JSON file."""
+    sdk = get_sdk()
+    try:
+        export_to_json(sdk, study_key, str(path))
+    except Exception as e:
+        print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("sql")
+def export_sql(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    table: str = typer.Argument(..., help="Destination table name."),
+    connection_string: str = typer.Argument(..., help="Database connection string."),
+) -> None:
+    """Export study records to a SQL table."""
+    sdk = get_sdk()
+    try:
+        export_to_sql(sdk, study_key, table, connection_string)
+    except Exception as e:
+        print(f"[bold red]Error:[/bold red] {e}")
         raise typer.Exit(code=1)
 
 

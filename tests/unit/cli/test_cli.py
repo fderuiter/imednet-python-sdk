@@ -177,3 +177,56 @@ def test_records_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
+
+
+def test_export_parquet_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_parquet", func)
+    result = runner.invoke(cli.app, ["export", "parquet", "STUDY", "out.parquet"])
+    assert result.exit_code == 0
+    func.assert_called_once_with(sdk, "STUDY", "out.parquet")
+
+
+def test_export_csv_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_csv", func)
+    result = runner.invoke(cli.app, ["export", "csv", "STUDY", "out.csv"])
+    assert result.exit_code == 0
+    func.assert_called_once_with(sdk, "STUDY", "out.csv")
+
+
+def test_export_excel_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_excel", func)
+    result = runner.invoke(cli.app, ["export", "excel", "STUDY", "out.xlsx"])
+    assert result.exit_code == 0
+    func.assert_called_once_with(sdk, "STUDY", "out.xlsx")
+
+
+def test_export_json_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_json", func)
+    result = runner.invoke(cli.app, ["export", "json", "STUDY", "out.json"])
+    assert result.exit_code == 0
+    func.assert_called_once_with(sdk, "STUDY", "out.json")
+
+
+def test_export_sql_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_sql", func)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "table", "sqlite://"],
+    )
+    assert result.exit_code == 0
+    func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
