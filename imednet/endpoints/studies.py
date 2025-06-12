@@ -2,7 +2,8 @@
 
 from typing import Any, Dict, List, Optional
 
-from imednet.core.client import AsyncClient, Client
+from imednet.core.async_client import AsyncClient
+from imednet.core.client import Client
 from imednet.core.context import Context
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint

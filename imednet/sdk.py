@@ -13,7 +13,8 @@ import asyncio
 import os
 from typing import Any, Dict, List, Optional, Union
 
-from .core.client import AsyncClient, Client
+from .core.async_client import AsyncClient
+from .core.client import Client
 from .core.context import Context
 from .endpoints.codings import CodingsEndpoint
 from .endpoints.forms import FormsEndpoint

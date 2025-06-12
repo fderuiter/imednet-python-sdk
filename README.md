@@ -96,6 +96,23 @@ If `opentelemetry` is installed, you can pass a tracer instance or rely on the g
 except Exception as e:
     print(f"Error retrieving study structure: {e}")
 ```
+### Async Usage
+
+Use `AsyncImednetSDK` when working with asyncio:
+
+```python
+import os
+from imednet.async_sdk import AsyncImednetSDK
+
+async def main():
+    study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
+    async with AsyncImednetSDK() as sdk:
+        studies = await sdk.studies.async_list()
+        print(studies)
+
+# asyncio.run(main())
+```
+
 
 ### Record Validation
 
