@@ -44,7 +44,7 @@ Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md).
 Documentation is built locally using Sphinx. There is no longer a CI workflow for automatic documentation deployment. To build the docs, run:
 
 ```bash
-poetry install --with dev
+./scripts/setup.sh
 poetry run sphinx-build -b html docs docs/_build/html
 ```
 

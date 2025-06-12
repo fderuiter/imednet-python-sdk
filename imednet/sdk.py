@@ -9,6 +9,7 @@ This module provides the ImednetSDK class which:
 
 from __future__ import annotations
 
+import os
 from typing import Optional
 
 from .core.client import Client
@@ -62,8 +63,8 @@ class ImednetSDK:
 
     def __init__(
         self,
-        api_key: str,
-        security_key: str,
+        api_key: Optional[str] = None,
+        security_key: Optional[str] = None,
         base_url: Optional[str] = None,
         timeout: float = 30.0,
         retries: int = 3,
@@ -73,13 +74,22 @@ class ImednetSDK:
         Initialize the SDK with authentication and configuration.
 
         Args:
-            api_key: iMednet API key.
-            security_key: iMednet security key.
-            base_url: Base URL for API; uses default if None.
+            api_key: iMednet API key. If not provided, the value from the
+                ``IMEDNET_API_KEY`` environment variable will be used.
+            security_key: iMednet security key. If not provided, the value from
+                the ``IMEDNET_SECURITY_KEY`` environment variable will be used.
+            base_url: Base URL for API. Falls back to ``IMEDNET_BASE_URL`` if
+                unset and defaults to the production URL otherwise.
             timeout: Request timeout in seconds.
             retries: Max retry attempts for transient errors.
             backoff_factor: Factor for exponential backoff between retries.
         """
+        api_key = api_key or os.getenv("IMEDNET_API_KEY")
+        security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        if not api_key or not security_key:
+            raise ValueError("API key and security key are required")
+        base_url = base_url or os.getenv("IMEDNET_BASE_URL")
+
         # Initialize context for storing state
         self.ctx = Context()
 
