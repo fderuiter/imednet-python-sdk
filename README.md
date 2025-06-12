@@ -234,17 +234,7 @@ All logs from the SDK use JSON format so they can be easily parsed. Pass `log_le
 
 ### Tracing with OpenTelemetry
 
-The SDK can emit OpenTelemetry spans for each HTTP request.
-Install `opentelemetry-instrumentation-requests`
-automatically instrument the underlying HTTP calls,
-or provide your own tracer to `imednet.core.client.Client`.
-
-
-### Tracing with OpenTelemetry
-
-The SDK can emit OpenTelemetry spans for each HTTP request. Install
-`opentelemetry-instrumentation-requests` to enable automatic tracing or provide your own
-tracer to :class:`imednet.core.client.Client`.
+Install `opentelemetry-instrumentation-requests` to automatically trace HTTP requests or pass your own tracer to `imednet.core.client.Client`.
 
 ## Documentation
 
