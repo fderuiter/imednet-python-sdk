@@ -112,6 +112,18 @@ def test_extract_records_calls_workflow(
     )
 
 
+def test_extract_records_api_error(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CLI surfaces workflow errors."""
+    workflow = MagicMock()
+    workflow.extract_records_by_criteria.side_effect = ApiError("fail")
+    monkeypatch.setattr(cli, "DataExtractionWorkflow", MagicMock(return_value=workflow))
+    result = runner.invoke(cli.app, ["workflows", "extract-records", "STUDY"])
+    assert result.exit_code == 1
+    assert "API Error" in result.stdout
+
+
 def test_records_list_success(runner: CliRunner, sdk: MagicMock) -> None:
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1, "subjectKey": "S1"}
@@ -130,6 +142,25 @@ def test_records_list_output_csv(runner: CliRunner, sdk: MagicMock) -> None:
         result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "csv"])
         assert result.exit_code == 0
         assert os.path.exists("records.csv")
+    sdk.records.list.assert_called_once_with("STUDY")
+
+
+def test_records_list_output_json(runner: CliRunner, sdk: MagicMock) -> None:
+    rec = MagicMock()
+    rec.model_dump.return_value = {"recordId": 1}
+    sdk.records.list.return_value = [rec]
+    with runner.isolated_filesystem():
+        result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "json"])
+        assert result.exit_code == 0
+        assert os.path.exists("records.json")
+    sdk.records.list.assert_called_once_with("STUDY")
+
+
+def test_records_list_no_records(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.records.list.return_value = []
+    result = runner.invoke(cli.app, ["records", "list", "STUDY"])
+    assert result.exit_code == 0
+    assert "No records found." in result.stdout
     sdk.records.list.assert_called_once_with("STUDY")
 
 
