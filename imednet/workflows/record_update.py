@@ -4,6 +4,7 @@ import time
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from ..models import Job
+from ..utils.schema import SchemaCache, validate_record_data
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -23,6 +24,7 @@ class RecordUpdateWorkflow:
 
     def __init__(self, sdk: "ImednetSDK"):
         self._sdk = sdk
+        self._schema = SchemaCache()
 
     def submit_record_batch(
         self,
@@ -59,8 +61,23 @@ class RecordUpdateWorkflow:
             # ImednetApiError: If the initial submission or status polling fails.
             # Commented out as not defined here
         """
+        # Refresh schema if empty
+        first = records_data[0] if records_data else {}
+        form_ref = first.get("formKey") or self._schema.form_key_from_id(first.get("formId", 0))
+        if form_ref and not self._schema.variables_for_form(form_ref):
+            self._schema.refresh(self._sdk.forms, self._sdk.variables, study_key)
+
+        for rec in records_data:
+            fk = rec.get("formKey") or self._schema.form_key_from_id(rec.get("formId", 0))
+            if fk:
+                validate_record_data(self._schema, fk, rec.get("data", {}))
+
         # Call the SDK's records.create method - Pass records_data directly
-        initial_job_status = self._sdk.records.create(study_key, records_data)
+        initial_job_status = self._sdk.records.create(
+            study_key,
+            records_data,
+            schema=self._schema,
+        )
 
         if not wait_for_completion:
             return initial_job_status

@@ -1,6 +1,9 @@
 import imednet.endpoints.records as records
 import pytest
+from imednet.core.exceptions import ValidationError
 from imednet.models.records import Record
+from imednet.models.variables import Variable
+from imednet.utils.schema import SchemaCache
 
 
 def test_list_builds_path_filters_and_data_filter(
@@ -59,3 +62,22 @@ def test_create_sends_headers_and_parses_job(dummy_client, context, response_fac
     )
     assert called["data"] == {"jobId": "1"}
     assert res == "JOB"
+
+
+def test_create_validates_data(dummy_client, context, response_factory):
+    ep = records.RecordsEndpoint(dummy_client, context)
+    schema = SchemaCache()
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    schema._form_variables = {"F1": {"age": var}}
+    schema._form_id_to_key = {1: "F1"}
+
+    dummy_client.post.return_value = response_factory({"jobId": "1"})
+
+    # invalid key
+    with pytest.raises(ValidationError):
+        ep.create("S1", [{"formKey": "F1", "data": {"bad": 1}}], schema=schema)
+    dummy_client.post.assert_not_called()
+
+    # valid
+    ep.create("S1", [{"formKey": "F1", "data": {"age": 5}}], schema=schema)
+    dummy_client.post.assert_called_once()
