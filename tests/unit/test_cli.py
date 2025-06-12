@@ -1,11 +1,8 @@
-import builtins
-from types import SimpleNamespace
 from unittest.mock import MagicMock
 
+import imednet.cli as cli
 import pytest
 from typer.testing import CliRunner
-
-import imednet.cli as cli
 
 
 def _setup_env(monkeypatch):
