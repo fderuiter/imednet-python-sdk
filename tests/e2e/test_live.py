@@ -6,10 +6,16 @@ import pytest_asyncio
 from imednet.async_sdk import AsyncImednetSDK
 from imednet.core.exceptions import ServerError
 from imednet.models.forms import Form
+from imednet.models.intervals import Interval
+from imednet.models.queries import Query
+from imednet.models.record_revisions import RecordRevision
 from imednet.models.records import Record
 from imednet.models.sites import Site
 from imednet.models.studies import Study
 from imednet.models.subjects import Subject
+from imednet.models.users import User
+from imednet.models.variables import Variable
+from imednet.models.visits import Visit
 from imednet.sdk import ImednetSDK
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
@@ -94,6 +100,48 @@ def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(records, list)
     if records:
         assert isinstance(records[0], Record)
+
+
+def test_list_intervals(sdk: ImednetSDK, study_key: str) -> None:
+    intervals = sdk.intervals.list(study_key=study_key)
+    assert isinstance(intervals, list)
+    if intervals:
+        assert isinstance(intervals[0], Interval)
+
+
+def test_list_visits(sdk: ImednetSDK, study_key: str) -> None:
+    visits = sdk.visits.list(study_key=study_key)
+    assert isinstance(visits, list)
+    if visits:
+        assert isinstance(visits[0], Visit)
+
+
+def test_list_variables(sdk: ImednetSDK, study_key: str) -> None:
+    variables = sdk.variables.list(study_key=study_key)
+    assert isinstance(variables, list)
+    if variables:
+        assert isinstance(variables[0], Variable)
+
+
+def test_list_users(sdk: ImednetSDK, study_key: str) -> None:
+    users = sdk.users.list(study_key=study_key)
+    assert isinstance(users, list)
+    if users:
+        assert isinstance(users[0], User)
+
+
+def test_list_queries(sdk: ImednetSDK, study_key: str) -> None:
+    queries = sdk.queries.list(study_key=study_key)
+    assert isinstance(queries, list)
+    if queries:
+        assert isinstance(queries[0], Query)
+
+
+def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
+    revisions = sdk.record_revisions.list(study_key=study_key)
+    assert isinstance(revisions, list)
+    if revisions:
+        assert isinstance(revisions[0], RecordRevision)
 
 
 @pytest.mark.asyncio(scope="module")
