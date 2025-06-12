@@ -1,11 +1,9 @@
-import inspect
 from datetime import datetime
-from typing import Any, get_args, get_origin, Union
-
-import pytest
-from pydantic import BaseModel, ValidationError
+from typing import Any, Union, get_args, get_origin
 
 import imednet.models as models
+import pytest
+from pydantic import BaseModel, ValidationError
 
 
 def _build_value(annotation: Any) -> Any:
