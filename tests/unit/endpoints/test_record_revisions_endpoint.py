@@ -1,6 +1,5 @@
-import pytest
-
 import imednet.endpoints.record_revisions as record_revisions
+import pytest
 from imednet.models.record_revisions import RecordRevision
 
 

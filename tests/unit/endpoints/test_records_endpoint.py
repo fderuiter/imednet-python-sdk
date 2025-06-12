@@ -1,16 +1,20 @@
-import pytest
-
 import imednet.endpoints.records as records
+import pytest
 from imednet.models.records import Record
-from imednet.models.jobs import Job
 
 
-def test_list_builds_path_filters_and_data_filter(dummy_client, context, paginator_factory, patch_build_filter):
+def test_list_builds_path_filters_and_data_filter(
+    dummy_client, context, paginator_factory, patch_build_filter
+):
     ep = records.RecordsEndpoint(dummy_client, context)
     captured = paginator_factory(records, [{"recordId": 1}])
     filter_capture = patch_build_filter(records)
 
-    result = ep.list(study_key="S1", record_data_filter="age>10", status="open")
+    result = ep.list(
+        study_key="S1",
+        record_data_filter="age>10",
+        status="open",
+    )
 
     assert captured["path"] == "/api/v1/edc/studies/S1/records"
     assert captured["params"] == {"filter": "FILTERED", "recordDataFilter": "age>10"}

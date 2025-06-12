@@ -1,11 +1,11 @@
-import pytest
-from unittest.mock import MagicMock
-
 import imednet.endpoints.studies as studies
+import pytest
 from imednet.models.studies import Study
 
 
-def test_list_builds_path_and_filters(monkeypatch, dummy_client, context, paginator_factory, patch_build_filter):
+def test_list_builds_path_and_filters(
+    monkeypatch, dummy_client, context, paginator_factory, patch_build_filter
+):
     ep = studies.StudiesEndpoint(dummy_client, context)
     captured = paginator_factory(studies, [{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)

@@ -1,10 +1,11 @@
-import pytest
-
 import imednet.endpoints.forms as forms
+import pytest
 from imednet.models.forms import Form
 
 
-def test_list_requires_study_key_and_page_size(monkeypatch, dummy_client, context, paginator_factory, patch_build_filter):
+def test_list_requires_study_key_and_page_size(
+    monkeypatch, dummy_client, context, paginator_factory, patch_build_filter
+):
     ep = forms.FormsEndpoint(dummy_client, context)
     captured = paginator_factory(forms, [{"formId": 1}])
     filter_capture = patch_build_filter(forms)

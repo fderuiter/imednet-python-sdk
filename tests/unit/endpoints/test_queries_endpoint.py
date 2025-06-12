@@ -1,6 +1,5 @@
-import pytest
-
 import imednet.endpoints.queries as queries
+import pytest
 from imednet.models.queries import Query
 
 

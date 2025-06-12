@@ -1,6 +1,5 @@
-import pytest
-
 import imednet.endpoints.users as users
+import pytest
 from imednet.models.users import User
 
 

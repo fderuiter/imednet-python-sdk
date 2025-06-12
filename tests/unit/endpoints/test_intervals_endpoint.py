@@ -1,10 +1,11 @@
-import pytest
-
 import imednet.endpoints.intervals as intervals
+import pytest
 from imednet.models.intervals import Interval
 
 
-def test_list_uses_default_study_and_page_size(dummy_client, context, paginator_factory, patch_build_filter):
+def test_list_uses_default_study_and_page_size(
+    dummy_client, context, paginator_factory, patch_build_filter
+):
     context.set_default_study_key("S1")
     ep = intervals.IntervalsEndpoint(dummy_client, context)
     captured = paginator_factory(intervals, [{"intervalId": 1}])

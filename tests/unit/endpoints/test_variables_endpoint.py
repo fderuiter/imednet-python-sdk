@@ -1,10 +1,11 @@
-import pytest
-
 import imednet.endpoints.variables as variables
+import pytest
 from imednet.models.variables import Variable
 
 
-def test_list_requires_study_key_page_size(dummy_client, context, paginator_factory, patch_build_filter):
+def test_list_requires_study_key_page_size(
+    dummy_client, context, paginator_factory, patch_build_filter
+):
     ep = variables.VariablesEndpoint(dummy_client, context)
     capture = paginator_factory(variables, [{"variableId": 1}])
     patch = patch_build_filter(variables)
