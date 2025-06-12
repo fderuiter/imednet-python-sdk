@@ -17,7 +17,6 @@ SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
 
-
 pytestmark = pytest.mark.skipif(
     not RUN_E2E or not (API_KEY and SECURITY_KEY),
     reason=(
@@ -71,7 +70,7 @@ def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
     try:
         study = sdk.studies.get(study_key)
     except ServerError as exc:
-        pytest.skip(f"Server error retrieving study: {exc}")
+        pytest.fail(f"Server error retrieving study {study_key}: {exc.response}")
     else:
         assert study.study_key == study_key
 
