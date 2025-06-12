@@ -56,8 +56,8 @@ class AsyncClient:
         log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
     ) -> None:
-        api_key = api_key or os.getenv("IMEDNET_API_KEY")
-        security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        api_key = (api_key or os.getenv("IMEDNET_API_KEY") or "").strip()
+        security_key = (security_key or os.getenv("IMEDNET_SECURITY_KEY") or "").strip()
         if not api_key or not security_key:
             raise ValueError("API key and security key are required")
 

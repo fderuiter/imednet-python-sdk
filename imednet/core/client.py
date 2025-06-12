@@ -89,8 +89,8 @@ class Client:
             log_level: Logging level or name.
             tracer: Optional OpenTelemetry tracer to record spans.
         """
-        api_key = api_key or os.getenv("IMEDNET_API_KEY")
-        security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        api_key = (api_key or os.getenv("IMEDNET_API_KEY") or "").strip()
+        security_key = (security_key or os.getenv("IMEDNET_SECURITY_KEY") or "").strip()
         if not api_key or not security_key:
             raise ValueError("API key and security key are required")
 
