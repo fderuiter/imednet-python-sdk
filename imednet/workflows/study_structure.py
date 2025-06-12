@@ -1,3 +1,4 @@
+import asyncio
 from typing import TYPE_CHECKING, Dict, List
 
 # Import potential exceptions
@@ -69,6 +70,51 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
 
     except Exception as e:
         # Catch potential API errors or processing errors
+        raise ImednetError(
+            f"Failed to retrieve or process study structure for {study_key}: {e}"
+        ) from e
+
+
+async def async_get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
+    """Asynchronous variant of :func:`get_study_structure`."""
+    try:
+        intervals, forms, variables = await asyncio.gather(
+            sdk.intervals.async_list(study_key),
+            sdk.forms.async_list(study_key),
+            sdk.variables.async_list(study_key),
+        )
+
+        forms_by_id: Dict[int, Form] = {f.form_id: f for f in forms}
+        variables_by_form_id: Dict[int, List[Variable]] = {}
+        for var in variables:
+            variables_by_form_id.setdefault(var.form_id, []).append(var)
+
+        interval_structures: List[IntervalStructure] = []
+        for interval in intervals:
+            form_structures: List[FormStructure] = []
+            for form_summary in interval.forms:
+                full_form = forms_by_id.get(form_summary.form_id)
+                if full_form:
+                    form_vars = variables_by_form_id.get(full_form.form_id, [])
+                    form_structures.append(
+                        FormStructure(
+                            **full_form.model_dump(),
+                            variables=form_vars,
+                        )
+                    )
+
+            interval_structures.append(
+                IntervalStructure(
+                    **interval.model_dump(),
+                    forms=form_structures,
+                )
+            )
+
+        return StudyStructure(
+            study_key=study_key, intervals=interval_structures
+        )  # type: ignore[call-arg]
+
+    except Exception as e:  # pragma: no cover - unexpected
         raise ImednetError(
             f"Failed to retrieve or process study structure for {study_key}: {e}"
         ) from e
