@@ -81,7 +81,7 @@ except Exception as e:
 
 ### Using the Command Line Interface (CLI)
 
-After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
+After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, first verify the CLI is available by running `imednet --help`. You can then use the `imednet` command:
 
 ```powershell
 # List available studies
