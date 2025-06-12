@@ -15,5 +15,8 @@ repos:
     rev: v1.10.0
     hooks:
       - id: mypy
-        additional_dependencies: ["pandas-stubs", "types-requests"]
+        additional_dependencies:
+          - pandas-stubs
+          - types-requests
+          - pydantic
         args: ["--ignore-missing-imports", "--no-strict-optional"]

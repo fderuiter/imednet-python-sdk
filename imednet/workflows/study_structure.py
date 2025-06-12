@@ -72,3 +72,60 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
         raise ImednetError(
             f"Failed to retrieve or process study structure for {study_key}: {e}"
         ) from e
+
+
+async def async_get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
+    """Asynchronous version of :func:`get_study_structure`.
+
+    This function will use the async endpoints when an async client is available
+    on the SDK instance. If the SDK was not initialized for async usage, it
+    falls back to the synchronous endpoints.
+
+    Args:
+        sdk: Initialized :class:`ImednetSDK` instance.
+        study_key: Study identifier.
+
+    Returns:
+        Aggregated :class:`StudyStructure` for the study.
+    """
+
+    try:
+        if sdk._async_client is not None:
+            intervals: List[Interval] = await sdk.intervals.async_list(study_key)  # type: ignore[attr-defined]
+            forms: List[Form] = await sdk.forms.async_list(study_key)  # type: ignore[attr-defined]
+            variables: List[Variable] = await sdk.variables.async_list(study_key)  # type: ignore[attr-defined]
+        else:
+            intervals = sdk.intervals.list(study_key)
+            forms = sdk.forms.list(study_key)
+            variables = sdk.variables.list(study_key)
+
+        forms_by_id: Dict[int, Form] = {f.form_id: f for f in forms}
+        variables_by_form_id: Dict[int, List[Variable]] = {}
+        for var in variables:
+            variables_by_form_id.setdefault(var.form_id, []).append(var)
+
+        interval_structures: List[IntervalStructure] = []
+        for interval in intervals:
+            form_structures: List[FormStructure] = []
+            for form_summary in interval.forms:
+                full_form = forms_by_id.get(form_summary.form_id)
+                if full_form:
+                    form_vars = variables_by_form_id.get(full_form.form_id, [])
+                    form_struct = FormStructure(
+                        **full_form.model_dump(),
+                        variables=form_vars,
+                    )
+                    form_structures.append(form_struct)
+
+            interval_struct = IntervalStructure(
+                **interval.model_dump(),
+                forms=form_structures,
+            )
+            interval_structures.append(interval_struct)
+
+        return StudyStructure(study_key=study_key, intervals=interval_structures)  # type: ignore[call-arg]
+
+    except Exception as e:
+        raise ImednetError(
+            f"Failed to retrieve or process study structure for {study_key}: {e}"
+        ) from e
