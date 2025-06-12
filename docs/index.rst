@@ -5,6 +5,7 @@ Welcome to imednet-sdk's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   logging_and_tracing
    modules
 
 
