@@ -109,8 +109,14 @@ imednet sites list STUDY_KEY
 # List subjects for a specific study, filtering by status (replace STUDY_KEY)
 imednet subjects list STUDY_KEY --filter "subject_status=Screened"
 
+# List records for a specific study and save as CSV
+imednet records list STUDY_KEY --output csv
+
+# Save records as JSON
+imednet records list STUDY_KEY --output json
+
 # Get help for a specific command
-imednet subjects list --help 
+imednet subjects list --help
 ```
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
