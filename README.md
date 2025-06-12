@@ -176,6 +176,54 @@ imednet subjects list --help
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `imednet/examples/` directory.
 
+### Airflow Integration
+
+Custom operators and sensors integrate with Apache Airflow. Install the SDK and the Amazon provider:
+
+```bash
+pip install imednet-python-sdk apache-airflow apache-airflow-providers-amazon
+```
+
+Example DAG:
+
+```python
+from datetime import datetime
+from airflow import DAG
+from imednet.airflow import ImednetToS3Operator, ImednetJobSensor
+
+default_args = {"start_date": datetime(2024, 1, 1)}
+
+with DAG(
+    dag_id="imednet_example",
+    schedule_interval=None,
+    default_args=default_args,
+    catchup=False,
+) as dag:
+    export_records = ImednetToS3Operator(
+        task_id="export_records",
+        study_key="STUDY_KEY",
+        s3_bucket="your-bucket",
+        s3_key="imednet/records.json",
+    )
+
+    wait_for_job = ImednetJobSensor(
+        task_id="wait_for_job",
+        study_key="STUDY_KEY",
+        batch_id="BATCH_ID",
+        poke_interval=60,
+    )
+
+    export_records >> wait_for_job
+```
+
+Create an Airflow connection ``imednet_default`` or override ``imednet_conn_id``.
+Provide your API credentials in that connection.
+Use the login/password or ``extra`` JSON to provide ``api_key`` and ``security_key``.
+``base_url`` may be added in ``extra`` for a non-standard environment.
+The operators fall back to ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY`` if not set.
+``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default) to write to S3.
+
+
 ### JSON Logging
 
 All logs from the SDK use JSON format so they can be easily parsed. Pass `log_level`
