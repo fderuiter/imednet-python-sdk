@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
-from imednet.core.paginator import Paginator
+from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.variables import Variable
 from imednet.utils.filters import build_filter_string
@@ -63,6 +63,33 @@ class VariablesEndpoint(BaseEndpoint):
             self._variables_cache[study] = result
         return result
 
+    async def async_list(
+        self, study_key: Optional[str] = None, refresh: bool = False, **filters: Any
+    ) -> List[Variable]:
+        """Asynchronous version of :meth:`list`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        study = filters.pop("studyKey")
+        if not study:
+            raise ValueError("Study key must be provided or set in the context")
+        if not filters and not refresh and study in self._variables_cache:
+            return self._variables_cache[study]
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(study, "variables")
+        paginator = AsyncPaginator(self._async_client, path, params=params, page_size=500)
+        result = [Variable.from_json(item) async for item in paginator]
+        if not filters:
+            self._variables_cache[study] = result
+        return result
+
     def get(self, study_key: str, variable_id: int) -> Variable:
         """
         Get a specific variable by ID.
@@ -76,6 +103,16 @@ class VariablesEndpoint(BaseEndpoint):
         """
         path = self._build_path(study_key, "variables", variable_id)
         raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Variable {variable_id} not found in study {study_key}")
+        return Variable.from_json(raw[0])
+
+    async def async_get(self, study_key: str, variable_id: int) -> Variable:
+        """Asynchronous version of :meth:`get`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        path = self._build_path(study_key, "variables", variable_id)
+        raw = (await self._async_client.get(path)).json().get("data", [])
         if not raw:
             raise ValueError(f"Variable {variable_id} not found in study {study_key}")
         return Variable.from_json(raw[0])

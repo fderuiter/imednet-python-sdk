@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.core.paginator import Paginator
+from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
@@ -48,6 +48,29 @@ class RecordsEndpoint(BaseEndpoint):
         paginator = Paginator(self._client, path, params=params)
         return [Record.from_json(item) for item in paginator]
 
+    async def async_list(
+        self,
+        study_key: Optional[str] = None,
+        record_data_filter: Optional[str] = None,
+        **filters: Any,
+    ) -> List[Record]:
+        """Asynchronous version of :meth:`list`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+        if record_data_filter:
+            params["recordDataFilter"] = record_data_filter
+
+        path = self._build_path(filters.get("studyKey", ""), "records")
+        paginator = AsyncPaginator(self._async_client, path, params=params)
+        return [Record.from_json(item) async for item in paginator]
+
     def get(self, study_key: str, record_id: Union[str, int]) -> Record:
         """
         Get a specific record by ID.
@@ -61,6 +84,16 @@ class RecordsEndpoint(BaseEndpoint):
         """
         path = self._build_path(study_key, "records", record_id)
         raw = self._client.get(path).json().get("data", [])
+        if not raw:
+            raise ValueError(f"Record {record_id} not found in study {study_key}")
+        return Record.from_json(raw[0])
+
+    async def async_get(self, study_key: str, record_id: Union[str, int]) -> Record:
+        """Asynchronous version of :meth:`get`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        path = self._build_path(study_key, "records", record_id)
+        raw = (await self._async_client.get(path)).json().get("data", [])
         if not raw:
             raise ValueError(f"Record {record_id} not found in study {study_key}")
         return Record.from_json(raw[0])
@@ -102,4 +135,32 @@ class RecordsEndpoint(BaseEndpoint):
                 headers["x-email-notify"] = str(email_notify).lower()  # Use 'true'/'false' for bool
 
         response = self._client.post(path, json=records_data, headers=headers)
+        return Job.from_json(response.json())
+
+    async def async_create(
+        self,
+        study_key: str,
+        records_data: List[Dict[str, Any]],
+        email_notify: Union[bool, str, None] = None,
+        *,
+        schema: Optional[SchemaCache] = None,
+    ) -> Job:
+        """Asynchronous version of :meth:`create`."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        if schema is not None:
+            for rec in records_data:
+                fk = rec.get("formKey") or schema.form_key_from_id(rec.get("formId", 0))
+                if fk:
+                    validate_record_data(schema, fk, rec.get("data", {}))
+
+        path = self._build_path(study_key, "records")
+        headers = {}
+        if email_notify is not None:
+            if isinstance(email_notify, str):
+                headers["x-email-notify"] = email_notify
+            else:
+                headers["x-email-notify"] = str(email_notify).lower()
+
+        response = await self._async_client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
