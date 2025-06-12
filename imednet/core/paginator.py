@@ -2,7 +2,7 @@
 Pagination helper for iterating through paginated API responses.
 """
 
-from typing import Any, Dict, Iterator, Optional
+from typing import Any, AsyncIterator, Dict, Iterator, Optional
 
 import httpx
 
@@ -50,6 +50,27 @@ class Paginator:
             for item in items:
                 yield item
             # Use 'pagination' key instead of 'metadata' for pagination info
+            pagination = payload.get("pagination", {})
+            total_pages = pagination.get("totalPages")
+            if total_pages is None or page >= total_pages - 1:
+                break
+            page += 1
+
+
+class AsyncPaginator(Paginator):
+    """Asynchronous variant of :class:`Paginator`."""
+
+    async def __aiter__(self) -> AsyncIterator[Any]:
+        page = 0
+        while True:
+            query = dict(self.params)
+            query[self.page_param] = page
+            query[self.size_param] = self.page_size
+            response: httpx.Response = await self.client.get(self.path, params=query)
+            payload = response.json()
+            items = payload.get(self.data_key, []) or []
+            for item in items:
+                yield item
             pagination = payload.get("pagination", {})
             total_pages = pagination.get("totalPages")
             if total_pages is None or page >= total_pages - 1:

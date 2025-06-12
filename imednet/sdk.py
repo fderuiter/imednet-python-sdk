@@ -9,10 +9,11 @@ This module provides the ImednetSDK class which:
 
 from __future__ import annotations
 
+import asyncio
 import os
 from typing import Any, Dict, List, Optional, Union
 
-from .core.client import Client
+from .core.client import AsyncClient, Client
 from .core.context import Context
 from .endpoints.codings import CodingsEndpoint
 from .endpoints.forms import FormsEndpoint
@@ -82,6 +83,7 @@ class ImednetSDK:
         timeout: float = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
+        enable_async: bool = False,
     ):
         """
         Initialize the SDK with authentication and configuration.
@@ -106,7 +108,7 @@ class ImednetSDK:
         # Initialize context for storing state
         self.ctx = Context()
 
-        # Initialize the HTTP client
+        # Initialize the HTTP clients
         self._client = Client(
             api_key=api_key,
             security_key=security_key,
@@ -115,21 +117,33 @@ class ImednetSDK:
             retries=retries,
             backoff_factor=backoff_factor,
         )
+        self._async_client = (
+            AsyncClient(
+                api_key=api_key,
+                security_key=security_key,
+                base_url=base_url,
+                timeout=timeout,
+                retries=retries,
+                backoff_factor=backoff_factor,
+            )
+            if enable_async
+            else None
+        )
 
         # Initialize endpoint clients
-        self.codings = CodingsEndpoint(self._client, self.ctx)
-        self.forms = FormsEndpoint(self._client, self.ctx)
-        self.intervals = IntervalsEndpoint(self._client, self.ctx)
-        self.jobs = JobsEndpoint(self._client, self.ctx)
-        self.queries = QueriesEndpoint(self._client, self.ctx)
-        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx)
-        self.records = RecordsEndpoint(self._client, self.ctx)
-        self.sites = SitesEndpoint(self._client, self.ctx)
-        self.studies = StudiesEndpoint(self._client, self.ctx)
-        self.subjects = SubjectsEndpoint(self._client, self.ctx)
-        self.users = UsersEndpoint(self._client, self.ctx)
-        self.variables = VariablesEndpoint(self._client, self.ctx)
-        self.visits = VisitsEndpoint(self._client, self.ctx)
+        self.codings = CodingsEndpoint(self._client, self.ctx, self._async_client)
+        self.forms = FormsEndpoint(self._client, self.ctx, self._async_client)
+        self.intervals = IntervalsEndpoint(self._client, self.ctx, self._async_client)
+        self.jobs = JobsEndpoint(self._client, self.ctx, self._async_client)
+        self.queries = QueriesEndpoint(self._client, self.ctx, self._async_client)
+        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx, self._async_client)
+        self.records = RecordsEndpoint(self._client, self.ctx, self._async_client)
+        self.sites = SitesEndpoint(self._client, self.ctx, self._async_client)
+        self.studies = StudiesEndpoint(self._client, self.ctx, self._async_client)
+        self.subjects = SubjectsEndpoint(self._client, self.ctx, self._async_client)
+        self.users = UsersEndpoint(self._client, self.ctx, self._async_client)
+        self.variables = VariablesEndpoint(self._client, self.ctx, self._async_client)
+        self.visits = VisitsEndpoint(self._client, self.ctx, self._async_client)
 
         # Initialize workflows, passing the SDK instance itself
         self.workflows = Workflows(self)
@@ -138,12 +152,25 @@ class ImednetSDK:
         """Support for context manager protocol."""
         return self
 
+    async def __aenter__(self) -> "ImednetSDK":
+        return self
+
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """Cleanup resources when exiting context."""
         self.close()
 
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.aclose()
+
     def close(self) -> None:
         """Close the client connection and free resources."""
+        self._client.close()
+        if self._async_client is not None:
+            asyncio.run(self._async_client.aclose())
+
+    async def aclose(self) -> None:
+        if self._async_client is not None:
+            await self._async_client.aclose()
         self._client.close()
 
     def set_default_study(self, study_key: str) -> None:
