@@ -22,6 +22,7 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
 - Pandas helpers for DataFrame conversion and CSV export
+- Helper to wait for background job completion
 
 ## Installation
 
@@ -93,6 +94,18 @@ from imednet.utils.pandas import export_records_csv
 
 sdk = ImednetSDK()
 export_records_csv(sdk, study_key, "records.csv")
+```
+
+### Waiting for job completion
+
+Use :func:`imednet.utils.jobs.wait_for_job` to poll a batch job until it
+reaches a terminal state:
+
+```python
+from imednet.utils.jobs import wait_for_job
+
+job = sdk.records.create(study_key, records_data)
+final_status = wait_for_job(sdk, study_key, job.batch_id)
 ```
 
 ### Using the Command Line Interface (CLI)
