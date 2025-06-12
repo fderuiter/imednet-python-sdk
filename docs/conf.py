@@ -22,12 +22,14 @@ Note:
 """
 
 
-# Add project root directory to sys.path
+# Add project root directory to sys.path so `imednet` can be imported
 sys.path.insert(0, os.path.abspath(".."))
+
+from imednet import __version__ as imednet_version  # noqa: E402
 
 project = "imednet-sdk"
 author = "Frederick de Ruiter"
-release = "0.1.0"
+release = imednet_version
 
 # Sphinx extensions
 extensions = [
