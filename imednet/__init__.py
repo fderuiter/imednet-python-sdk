@@ -1,8 +1,9 @@
 from importlib import metadata as _metadata
 
+from .metrics import enable_metrics
 from .sdk import ImednetSDK
 
-__all__ = ["ImednetSDK", "__version__"]
+__all__ = ["ImednetSDK", "enable_metrics", "__version__"]
 
 try:
     __version__: str = _metadata.version("imednet-sdk")

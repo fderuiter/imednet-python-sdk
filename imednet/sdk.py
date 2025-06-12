@@ -26,6 +26,7 @@ from .endpoints.subjects import SubjectsEndpoint
 from .endpoints.users import UsersEndpoint
 from .endpoints.variables import VariablesEndpoint
 from .endpoints.visits import VisitsEndpoint
+from .metrics import enable_metrics as _enable_metrics
 
 # Import workflow classes
 from .workflows.data_extraction import DataExtractionWorkflow
@@ -68,6 +69,9 @@ class ImednetSDK:
         timeout: float = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
+        *,
+        enable_metrics: bool = False,
+        metrics_port: int = 8000,
     ):
         """
         Initialize the SDK with authentication and configuration.
@@ -79,6 +83,8 @@ class ImednetSDK:
             timeout: Request timeout in seconds.
             retries: Max retry attempts for transient errors.
             backoff_factor: Factor for exponential backoff between retries.
+            enable_metrics: Start a Prometheus metrics server if True.
+            metrics_port: Port for the metrics server.
         """
         # Initialize context for storing state
         self.ctx = Context()
@@ -92,6 +98,9 @@ class ImednetSDK:
             retries=retries,
             backoff_factor=backoff_factor,
         )
+
+        if enable_metrics:
+            _enable_metrics(metrics_port)
 
         # Initialize endpoint clients
         self.codings = CodingsEndpoint(self._client, self.ctx)

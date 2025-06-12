@@ -21,6 +21,7 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Automatic pagination
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
+- Optional Prometheus metrics for API monitoring
 
 ## Installation
 

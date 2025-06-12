@@ -12,11 +12,13 @@ This module defines the `Client` class which handles:
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any, Dict, Optional, Union
 
 import httpx
 from tenacity import RetryCallState, RetryError, Retrying, stop_after_attempt, wait_exponential
 
+from imednet import metrics
 from imednet.core.exceptions import (
     ApiError,
     AuthenticationError,
@@ -78,6 +80,7 @@ class Client:
                 "x-imn-security-key": security_key,
             },
             timeout=self.timeout,
+            trust_env=False,
         )
 
     def __enter__(self) -> Client:
@@ -114,11 +117,18 @@ class Client:
             retry=self._should_retry,
             reraise=True,
         )
+
+        start_time = time.perf_counter()
         try:
             response = retryer(lambda: self._client.request(method, url, **kwargs))
         except RetryError as e:
             logger.error("Request failed after retries: %s", e)
             raise RequestError("Network request failed after retries")
+        finally:
+            if metrics.metrics_enabled and metrics.API_CALLS and metrics.API_LATENCY:
+                elapsed = time.perf_counter() - start_time
+                metrics.API_CALLS.labels(method=method, endpoint=url).inc()
+                metrics.API_LATENCY.labels(method=method, endpoint=url).observe(elapsed)
 
         # HTTP error handling
         if response.is_error:

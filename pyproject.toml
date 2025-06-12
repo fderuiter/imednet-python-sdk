@@ -37,9 +37,11 @@ httpx = "^0.28.1"
 tenacity = "^9.1.2"
 python-dotenv = "^1.1.0"
 typer = {extras = ["all"], version = "^0.15.2"}
+prometheus-client = { version = "^0.22.1", optional = true }
 
 [tool.poetry.extras]
 pandas = ["pandas"]
+metrics = ["prometheus-client"]
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"
