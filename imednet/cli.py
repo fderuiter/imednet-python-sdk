@@ -199,7 +199,9 @@ def list_records(
         None,
         "--output",
         "-o",
-        help="Save records to the given format (json or csv)",
+        help="Save records to the given format",
+        show_choices=True,
+        rich_help_panel="Output Options",
     ),
 ):
     """List records for a study."""

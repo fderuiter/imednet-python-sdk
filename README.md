@@ -149,6 +149,9 @@ imednet records list STUDY_KEY --output csv
 # Save records as JSON
 imednet records list STUDY_KEY --output json
 
+# Omit --output to print a table preview
+imednet records list STUDY_KEY
+
 # Get help for a specific command
 imednet subjects list --help
 ```
