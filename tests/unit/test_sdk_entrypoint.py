@@ -29,6 +29,15 @@ def _create_sdk() -> sdk_mod.ImednetSDK:
     )
 
 
+def test_env_var_credentials(monkeypatch) -> None:
+    monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
+
+    sdk = sdk_mod.ImednetSDK()
+
+    assert isinstance(sdk._client, Client)
+
+
 def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
     sdk = _create_sdk()
 
