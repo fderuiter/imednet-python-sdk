@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "imednet-sdk"
 version = "0.1.0"
-description = "Python SDK for the iMedNet clinical trials API"
+description = "Official Python client for the iMedNet clinical trials API"
 readme = "README.md"
 keywords = ["imednet", "clinical trials", "sdk", "api"]
 classifiers = [
@@ -13,6 +13,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
+maintainers = ["Frederick de Ruiter <frederick.deruiter@brightresearch.com>"]
 packages = [{ include = "imednet" }]
 include = [
     "README.md",
