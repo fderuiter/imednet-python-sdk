@@ -38,7 +38,8 @@ poetry install --with dev
 
 ## Usage
 
-First, ensure you have set your iMedNet API credentials as environment variables:
+First, ensure you have set your iMedNet API credentials as environment variables.
+Keep these keys secure and never commit them to source control:
 
 ```powershell
 # For PowerShell:
@@ -63,13 +64,11 @@ import json
 from imednet.sdk import ImednetSDK
 from imednet.workflows.study_structure import get_study_structure
 
-# Set your credentials and study key (or use environment variables)
-api_key = os.getenv("IMEDNET_API_KEY")
-security_key = os.getenv("IMEDNET_SECURITY_KEY")
+# Credentials are automatically read from the IMEDNET_API_KEY and
+# IMEDNET_SECURITY_KEY environment variables.
 study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
-base_url = os.getenv("IMEDNET_BASE_URL")  # Optional
 
-sdk = ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
+sdk = ImednetSDK()  # uses environment variables for authentication
 
 try:
     structure = get_study_structure(sdk, study_key)

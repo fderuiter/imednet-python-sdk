@@ -12,6 +12,7 @@ This module defines the `Client` class which handles:
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Dict, Optional, Union
 
 import httpx
@@ -46,8 +47,8 @@ class Client:
 
     def __init__(
         self,
-        api_key: str,
-        security_key: str,
+        api_key: Optional[str] = None,
+        security_key: Optional[str] = None,
         base_url: Optional[str] = None,
         timeout: Union[float, httpx.Timeout] = 30.0,
         retries: int = 3,
@@ -55,6 +56,11 @@ class Client:
     ):
         """
         Initialize the HTTP client.
+
+        Credentials can be supplied directly or via environment variables
+        `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. If `base_url` is not
+        provided, the `IMEDNET_BASE_URL` environment variable will be used if
+        present.
 
         Args:
             api_key: iMednet API key.
@@ -64,7 +70,12 @@ class Client:
             retries: Max retry attempts for transient errors.
             backoff_factor: Factor for exponential backoff between retries.
         """
-        self.base_url = base_url or self.DEFAULT_BASE_URL
+        api_key = api_key or os.getenv("IMEDNET_API_KEY")
+        security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        if not api_key or not security_key:
+            raise ValueError("API key and security key are required")
+
+        self.base_url = base_url or os.getenv("IMEDNET_BASE_URL") or self.DEFAULT_BASE_URL
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
         self.backoff_factor = backoff_factor
