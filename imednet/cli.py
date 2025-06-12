@@ -187,6 +187,43 @@ def list_subjects(
         raise typer.Exit(code=1)
 
 
+# --- Jobs Commands ---
+jobs_app = typer.Typer(name="jobs", help="Manage background jobs.")
+app.add_typer(jobs_app)
+
+
+@jobs_app.command("status")
+def job_status(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    batch_id: str = typer.Argument(..., help="Job batch ID."),
+):
+    """Fetch a job's current status."""
+    sdk = get_sdk()
+    try:
+        job = sdk.get_job(study_key, batch_id)
+        print(job.model_dump())
+    except Exception as e:  # Catch ApiError and others
+        print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@jobs_app.command("wait")
+def job_wait(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    batch_id: str = typer.Argument(..., help="Job batch ID."),
+    interval: int = typer.Option(5, help="Polling interval in seconds."),
+    timeout: int = typer.Option(300, help="Maximum time to wait."),
+):
+    """Wait for a job to reach a terminal state."""
+    sdk = get_sdk()
+    try:
+        job = sdk.poll_job(study_key, batch_id, interval=interval, timeout=timeout)
+        print(job.model_dump())
+    except Exception as e:
+        print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
 # --- Records Commands ---
 records_app = typer.Typer(name="records", help="Manage records within a study.")
 app.add_typer(records_app)

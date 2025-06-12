@@ -1,7 +1,7 @@
 """Endpoint for checking job status in a study."""
 
 from imednet.endpoints.base import BaseEndpoint
-from imednet.models.jobs import Job
+from imednet.models.jobs import JobStatus
 
 
 class JobsEndpoint(BaseEndpoint):
@@ -13,7 +13,7 @@ class JobsEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def get(self, study_key: str, batch_id: str) -> Job:
+    def get(self, study_key: str, batch_id: str) -> JobStatus:
         """
         Get a specific job by batch ID.
 
@@ -22,7 +22,7 @@ class JobsEndpoint(BaseEndpoint):
             batch_id: Batch ID of the job
 
         Returns:
-            Job object with current state and timestamps
+            JobStatus object with current state and timestamps
         """
         # Construct the endpoint path
         endpoint = self._build_path(study_key, "jobs", batch_id)
@@ -31,4 +31,4 @@ class JobsEndpoint(BaseEndpoint):
         data = response.json()
         if not data:
             raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        return Job.from_json(data)
+        return JobStatus.from_json(data)

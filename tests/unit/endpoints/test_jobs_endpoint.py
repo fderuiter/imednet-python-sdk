@@ -1,6 +1,6 @@
 import imednet.endpoints.jobs as jobs
 import pytest
-from imednet.models.jobs import Job
+from imednet.models.jobs import JobStatus
 
 
 def test_get_success(dummy_client, context, response_factory):
@@ -10,7 +10,7 @@ def test_get_success(dummy_client, context, response_factory):
     result = ep.get("S1", "B1")
 
     dummy_client.get.assert_called_once_with("/api/v1/edc/studies/S1/jobs/B1")
-    assert isinstance(result, Job)
+    assert isinstance(result, JobStatus)
 
 
 def test_get_not_found(dummy_client, context, response_factory):

@@ -10,7 +10,9 @@ This module provides the ImednetSDK class which:
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
+import time
 from typing import Any, Dict, List, Optional, Union
 
 from .core.async_client import AsyncClient
@@ -32,7 +34,7 @@ from .endpoints.visits import VisitsEndpoint
 from .models.codings import Coding
 from .models.forms import Form
 from .models.intervals import Interval
-from .models.jobs import Job
+from .models.jobs import Job, JobStatus
 from .models.queries import Query
 from .models.record_revisions import RecordRevision
 from .models.records import Record
@@ -261,6 +263,35 @@ class ImednetSDK:
         """Return users for the specified study."""
         return self.users.list(study_key, include_inactive)
 
-    def get_job(self, study_key: str, batch_id: str) -> Job:
+    def get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Return job details for the specified batch."""
         return self.jobs.get(study_key, batch_id)
+
+    def poll_job(
+        self,
+        study_key: str,
+        batch_id: str,
+        *,
+        interval: int = 5,
+        timeout: int = 300,
+    ) -> JobStatus:
+        """Poll a job until it reaches a terminal state."""
+
+        start = time.monotonic()
+        while True:
+            job = self.get_job(study_key, batch_id)
+            logging.info(
+                "Job %s state=%s progress=%s",
+                batch_id,
+                job.state,
+                getattr(job, "progress", ""),
+            )
+            if job.state.upper() in {"COMPLETED", "FAILED", "CANCELLED"}:
+                if job.state.upper() == "FAILED":
+                    raise RuntimeError(f"Job {batch_id} failed")
+                return job
+
+            if time.monotonic() - start >= timeout:
+                raise TimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+
+            time.sleep(interval)
