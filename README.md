@@ -281,6 +281,9 @@ Build and test:
 poetry run pytest --cov=imednet
 ```
 
+Run `./scripts/setup.sh` once before running tests to install the development
+dependencies and set up the pre-commit hooks.
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute.
