@@ -79,18 +79,16 @@ class StudiesEndpoint(BaseEndpoint):
         Returns:
             Study object
         """
-        path = self._build_path(study_key)
-        raw = self._client.get(path).json().get("data", [])
-        if not raw:
+        studies = self.list(refresh=True, studyKey=study_key)
+        if not studies:
             raise ValueError(f"Study {study_key} not found")
-        return Study.model_validate(raw[0])
+        return studies[0]
 
     async def async_get(self, study_key: str) -> Study:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key)
-        raw = (await self._async_client.get(path)).json().get("data", [])
-        if not raw:
+        studies = await self.async_list(refresh=True, studyKey=study_key)
+        if not studies:
             raise ValueError(f"Study {study_key} not found")
-        return Study.model_validate(raw[0])
+        return studies[0]
