@@ -23,7 +23,7 @@ from imednet.models.sites import Site
 from imednet.models.studies import Study
 from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
 from imednet.models.subjects import Subject, SubjectKeyword
-from imednet.models.users import User
+from imednet.models.users import Role, User
 from imednet.models.validators import (
     parse_bool,
     parse_datetime,

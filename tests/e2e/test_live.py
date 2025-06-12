@@ -16,6 +16,7 @@ API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
+
 pytestmark = pytest.mark.skipif(
     not RUN_E2E or not (API_KEY and SECURITY_KEY),
     reason=(
