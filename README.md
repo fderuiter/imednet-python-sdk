@@ -33,7 +33,7 @@ Or install from source:
 ```bash
 git clone https://github.com/Bright-Research/imednet-python-sdk.git
 cd imednet-python-sdk
-poetry install --with dev
+./scripts/setup.sh
 ```
 
 ## Usage
@@ -115,7 +115,7 @@ This installs the development dependencies and runs the Sphinx build. If you
 prefer, you can run the commands manually:
 
 ```bash
-poetry install --with dev
+./scripts/setup.sh
 poetry run sphinx-build -b html docs docs/_build/html
 ```
 
