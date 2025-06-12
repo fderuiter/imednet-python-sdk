@@ -4,7 +4,8 @@ Base endpoint mix-in for all API resource endpoints.
 
 from typing import Any, Dict
 
-from imednet.core.client import AsyncClient, Client
+from imednet.core.async_client import AsyncClient
+from imednet.core.client import Client
 from imednet.core.context import Context
 
 

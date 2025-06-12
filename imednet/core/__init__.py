@@ -2,8 +2,8 @@
 Re-exports core components for easier access.
 """
 
-from .client import AsyncClient, Client
-from .context import Context
+from .async_client import AsyncClient
+from .client import Client
 from .exceptions import (
     ApiError,
     AuthenticationError,

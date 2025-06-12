@@ -1,6 +1,6 @@
 import pytest
 from imednet import sdk as sdk_mod
-from imednet.core.client import AsyncClient
+from imednet.core.async_client import AsyncClient
 
 
 def _create_async_sdk() -> sdk_mod.ImednetSDK:
