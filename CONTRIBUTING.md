@@ -57,3 +57,6 @@ Run tests locally:
 ```bash
 poetry run pytest
 ```
+
+Run `./scripts/setup.sh` before running tests to ensure all development
+dependencies are installed and pre-commit hooks are set up.
