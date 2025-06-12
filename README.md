@@ -78,6 +78,19 @@ except Exception as e:
     print(f"Error retrieving study structure: {e}")
 ```
 
+### Waiting for Jobs
+
+Long-running tasks are processed asynchronously. Use
+`imednet.utils.wait_for_job` to poll for completion:
+
+```python
+from imednet.utils import wait_for_job
+
+job = sdk.records.create(study_key, records_data)
+final = wait_for_job(sdk, study_key, job.batch_id, timeout=120)
+print(final.state)
+```
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:

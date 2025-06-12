@@ -1,15 +1,12 @@
 """Placeholder for Record Creation/Update workflows."""
 
-import time
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from ..models import Job
+from ..utils.jobs import wait_for_job
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
-
-# Define terminal states for job polling
-TERMINAL_JOB_STATES = {"COMPLETED", "FAILED", "CANCELLED"}  # Adjust if needed based on API
 
 
 class RecordUpdateWorkflow:
@@ -69,30 +66,13 @@ class RecordUpdateWorkflow:
             # Should not happen if API call was successful, but good practice to check
             raise ValueError("Submission successful but no batch_id received.")
 
-        start_time = time.monotonic()
-        batch_id = initial_job_status.batch_id
-        current_job_status = initial_job_status
-
-        while True:
-            if current_job_status.state.upper() in TERMINAL_JOB_STATES:
-                return current_job_status
-
-            elapsed_time = time.monotonic() - start_time
-            if elapsed_time >= timeout:
-                raise TimeoutError(
-                    f"Timeout ({timeout}s) waiting for job batch '{batch_id}' "
-                    f"to complete. Last state: {current_job_status.state}"
-                )
-
-            # Wait before polling again
-            time.sleep(poll_interval)
-
-            # Poll the job status using the batch_id
-            # Assuming sdk.jobs.get expects study_key and batch_id
-            current_job_status = self._sdk.jobs.get(study_key, batch_id)  # Added study_key
-
-        # This line is technically unreachable due to the loop structure but ensures return type
-        return current_job_status
+        return wait_for_job(
+            sdk=self._sdk,
+            study_key=study_key,
+            batch_id=initial_job_status.batch_id,
+            timeout=timeout,
+            poll_interval=poll_interval,
+        )
 
     def register_subject(
         self,

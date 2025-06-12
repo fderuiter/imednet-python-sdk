@@ -20,6 +20,14 @@ imednet.utils.filters module
    :undoc-members:
    :show-inheritance:
 
+imednet.utils.jobs module
+-------------------------
+
+.. automodule:: imednet.utils.jobs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.utils.typing module
 ---------------------------
 
