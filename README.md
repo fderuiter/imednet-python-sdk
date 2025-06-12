@@ -246,8 +246,10 @@ To publish a new release:
 
 1. Update the changelog with the upcoming version notes.
 2. Run `poetry version` to bump the version number.
-3. Commit the changes and create a tag like `vX.Y.Z`.
-4. Push the tag to trigger the workflow in `.github/workflows/release.yml`.
+3. Rebuild the documentation so the new version appears in the docs:
+   `make docs`
+4. Commit the changes and create a tag like `vX.Y.Z`.
+5. Push the tag to trigger the workflow in `.github/workflows/release.yml`.
 
 ## Governance and Roadmap
 
