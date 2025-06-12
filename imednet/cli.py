@@ -29,11 +29,6 @@ load_dotenv()
 
 app = typer.Typer(help="iMednet SDK Command Line Interface")
 
-# --- State Management ---
-# Store SDK instance globally for reuse within commands if needed,
-# initialized via callback.
-state = {"sdk": None}
-
 
 def get_sdk() -> ImednetSDK:
     """Initializes and returns the ImednetSDK instance using env vars."""
@@ -74,7 +69,6 @@ def main(ctx: typer.Context):
     pass
 
 
-# Change input type hint to Optional[List[str]]
 def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, Any]]:
     """Parses a list of 'key=value' strings into a dictionary."""
     if not filter_args:  # Handle None input
@@ -94,10 +88,8 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
         elif value.lower() == "false":
             filter_dict[key.strip()] = False
         elif value.isdigit():
-            # This assignment is now valid due to Union type hint
             filter_dict[key.strip()] = int(value)
         else:
-            # This assignment is now valid due to Union type hint
             filter_dict[key.strip()] = value
     return filter_dict
 
@@ -249,7 +241,6 @@ def list_subjects(
     """List subjects for a specific study, with optional filtering."""
     sdk = get_sdk()
     try:
-        # parse_filter_args now correctly accepts Optional[List[str]]
         parsed_filter = parse_filter_args(subject_filter)
         # Use the imported public build_filter_string utility
         filter_str = build_filter_string(parsed_filter) if parsed_filter else None
@@ -388,7 +379,6 @@ def extract_records(
     workflow = DataExtractionWorkflow(sdk)
 
     try:
-        # parse_filter_args now correctly accepts Optional[List[str]]
         parsed_record_filter = parse_filter_args(record_filter)
         parsed_subject_filter = parse_filter_args(subject_filter)
         parsed_visit_filter = parse_filter_args(visit_filter)

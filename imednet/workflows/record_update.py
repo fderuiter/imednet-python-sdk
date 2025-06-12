@@ -105,7 +105,7 @@ class RecordUpdateWorkflow:
 
             # Poll the job status using the batch_id
             # Assuming sdk.jobs.get expects study_key and batch_id
-            current_job_status = self._sdk.jobs.get(study_key, batch_id)  # Added study_key
+            current_job_status = self._sdk.jobs.get(study_key, batch_id)
 
         # This line is technically unreachable due to the loop structure but ensures return type
         return current_job_status
