@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union  # Add TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 
 import pandas as pd
 from pydantic import BaseModel, Field, ValidationError, create_model
@@ -8,7 +8,6 @@ from imednet.endpoints.records import Record as RecordModel
 from imednet.endpoints.variables import Variable as VariableModel
 from imednet.utils.filters import build_filter_string
 
-# Add conditional import
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
 
@@ -39,20 +38,18 @@ class RecordMapper:
 
     def __init__(
         self,
-        sdk: "ImednetSDK",  # Change type hint to string literal
-        # page_size is not used in current implementation, removed
+        sdk: "ImednetSDK",
     ):
         """
         :param sdk: An initialized ImednetSDK instance (with API credentials)
         """
         self.sdk = sdk
-        # self.page_size = page_size # Removed
 
     def dataframe(
         self,
         study_key: str,
         visit_key: Optional[str] = None,
-        use_labels_as_columns: bool = True,  # Added parameter
+        use_labels_as_columns: bool = True,
     ) -> pd.DataFrame:
         """
         Fetches variables and records for a study and returns a DataFrame.
@@ -77,7 +74,7 @@ class RecordMapper:
         # 2. Build dynamic Pydantic model for recordData with type hints (simplified)
         fields: Dict[str, tuple] = {}
         for key in variable_keys:
-            # Use Any type since specific mapping is removed
+            # Use Any type for variable values
             python_type = Any
             fields[key] = (
                 Optional[python_type],
@@ -113,9 +110,6 @@ class RecordMapper:
         except Exception as e:
             logger.error(f"Failed to fetch records for study '{study_key}': {e}")
             return pd.DataFrame()  # Return empty on fetch failure
-
-        # Removed client-side filtering
-        # if visit_key is not None:``
 
         # 4. Parse each record with error handling
         rows: List[Dict[str, Any]] = []

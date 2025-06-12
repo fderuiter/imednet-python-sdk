@@ -293,6 +293,8 @@ and provide `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY` (optionally
 IMEDNET_RUN_E2E=1 IMEDNET_API_KEY=... IMEDNET_SECURITY_KEY=... pytest tests/e2e
 ```
 
+Run `./scripts/setup.sh` once before running tests to install the development
+dependencies and set up the pre-commit hooks.
 
 ## Contributing
 
