@@ -63,6 +63,8 @@ def test_list_studies(sdk: ImednetSDK) -> None:
     assert isinstance(studies, list)
     assert studies, "No studies returned from server"
     assert isinstance(studies[0], Study)
+    study = sdk.studies.get(studies[0].study_key)
+    assert study.study_key == studies[0].study_key
 
 
 def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
@@ -70,6 +72,8 @@ def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(sites, list)
     if sites:
         assert isinstance(sites[0], Site)
+        site = sdk.sites.get(study_key, sites[0].site_id)
+        assert site.site_id == sites[0].site_id
 
 
 def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
@@ -86,6 +90,8 @@ def test_list_forms(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(forms, list)
     if forms:
         assert isinstance(forms[0], Form)
+        form = sdk.forms.get(study_key, forms[0].form_id)
+        assert form.form_id == forms[0].form_id
 
 
 def test_list_subjects(sdk: ImednetSDK, study_key: str) -> None:
@@ -93,6 +99,8 @@ def test_list_subjects(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(subjects, list)
     if subjects:
         assert isinstance(subjects[0], Subject)
+        subject = sdk.subjects.get(study_key, subjects[0].subject_key)
+        assert subject.subject_key == subjects[0].subject_key
 
 
 def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
@@ -100,6 +108,8 @@ def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(records, list)
     if records:
         assert isinstance(records[0], Record)
+        record = sdk.records.get(study_key, records[0].record_id)
+        assert record.record_id == records[0].record_id
 
 
 def test_list_intervals(sdk: ImednetSDK, study_key: str) -> None:
@@ -107,6 +117,8 @@ def test_list_intervals(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(intervals, list)
     if intervals:
         assert isinstance(intervals[0], Interval)
+        interval = sdk.intervals.get(study_key, intervals[0].interval_id)
+        assert interval.interval_id == intervals[0].interval_id
 
 
 def test_list_visits(sdk: ImednetSDK, study_key: str) -> None:
@@ -114,6 +126,8 @@ def test_list_visits(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(visits, list)
     if visits:
         assert isinstance(visits[0], Visit)
+        visit = sdk.visits.get(study_key, visits[0].visit_id)
+        assert visit.visit_id == visits[0].visit_id
 
 
 def test_list_variables(sdk: ImednetSDK, study_key: str) -> None:
@@ -121,6 +135,8 @@ def test_list_variables(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(variables, list)
     if variables:
         assert isinstance(variables[0], Variable)
+        variable = sdk.variables.get(study_key, variables[0].variable_id)
+        assert variable.variable_id == variables[0].variable_id
 
 
 def test_list_users(sdk: ImednetSDK, study_key: str) -> None:
@@ -128,6 +144,8 @@ def test_list_users(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(users, list)
     if users:
         assert isinstance(users[0], User)
+        user = sdk.users.get(study_key, users[0].user_id)
+        assert user.user_id == users[0].user_id
 
 
 def test_list_queries(sdk: ImednetSDK, study_key: str) -> None:
@@ -135,6 +153,8 @@ def test_list_queries(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(queries, list)
     if queries:
         assert isinstance(queries[0], Query)
+        query = sdk.queries.get(study_key, queries[0].annotation_id)
+        assert query.annotation_id == queries[0].annotation_id
 
 
 def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
@@ -142,6 +162,8 @@ def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(revisions, list)
     if revisions:
         assert isinstance(revisions[0], RecordRevision)
+        revision = sdk.record_revisions.get(study_key, revisions[0].record_revision_id)
+        assert revision.record_revision_id == revisions[0].record_revision_id
 
 
 @pytest.mark.asyncio(scope="module")
@@ -150,3 +172,5 @@ async def test_async_studies(async_sdk: AsyncImednetSDK) -> None:
     assert isinstance(studies, list)
     assert studies, "No studies returned from server"
     assert isinstance(studies[0], Study)
+    study = await async_sdk.studies.async_get(studies[0].study_key)
+    assert study.study_key == studies[0].study_key
