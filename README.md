@@ -281,6 +281,18 @@ Build and test:
 poetry run pytest --cov=imednet
 ```
 
+### End-to-End Tests
+
+A minimal live test suite resides in `tests/e2e`. These checks exercise several
+live endpoints including studies, sites, forms, subjects and records. The tests
+are skipped by default and require valid credentials. Set `IMEDNET_RUN_E2E=1`
+and provide `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY` (optionally
+`IMEDNET_BASE_URL`) to enable them:
+
+```bash
+IMEDNET_RUN_E2E=1 IMEDNET_API_KEY=... IMEDNET_SECURITY_KEY=... pytest tests/e2e
+```
+
 Run `./scripts/setup.sh` once before running tests to install the development
 dependencies and set up the pre-commit hooks.
 
