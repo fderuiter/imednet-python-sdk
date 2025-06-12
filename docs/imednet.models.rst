@@ -4,14 +4,6 @@ imednet.models package
 Submodules
 ----------
 
-imednet.models.base module
---------------------------
-
-.. automodule:: imednet.models.base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 imednet.models.codings module
 -----------------------------
 

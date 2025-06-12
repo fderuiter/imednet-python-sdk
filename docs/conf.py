@@ -33,7 +33,21 @@ release = "0.1.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
+    "sphinx.ext.autosummary",
 ]
+
+autosummary_generate = True
+
+# Mock heavy optional dependencies so autodoc does not import them
+autodoc_mock_imports = ["pandas", "numpy", "matplotlib", "pydantic"]
+
+suppress_warnings = ["ref.ref"]
+
+# Display type hints in the description instead of the signature to keep
+# function signatures concise in the rendered documentation.
+autodoc_typehints = "description"
 
 # Templates and static paths
 templates_path: list[str] = ["_templates"]

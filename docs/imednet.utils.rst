@@ -20,6 +20,14 @@ imednet.utils.filters module
    :undoc-members:
    :show-inheritance:
 
+imednet.utils.pandas module
+--------------------------
+
+.. automodule:: imednet.utils.pandas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.utils.typing module
 ---------------------------
 

@@ -36,10 +36,3 @@ imednet.core.paginator module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: imednet.core
-   :members:
-   :undoc-members:
-   :show-inheritance:
