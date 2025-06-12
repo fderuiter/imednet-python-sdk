@@ -6,7 +6,7 @@ This package contains all data models used by the SDK to represent iMedNet resou
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import FormSummary, Interval
-from imednet.models.jobs import Job
+from imednet.models.jobs import Job, JobStatus
 from imednet.models.queries import Query, QueryComment
 from imednet.models.record_revisions import RecordRevision
 from imednet.models.records import (
@@ -41,6 +41,7 @@ __all__: list[str] = [
     "FormSummary",
     "Interval",
     "Job",
+    "JobStatus",
     "Keyword",
     "Query",
     "QueryComment",
