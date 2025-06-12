@@ -245,12 +245,5 @@ def extract_records(
         raise typer.Exit(code=1)
 
 
-# --- Original Hello Command (can be removed or kept for testing) ---
-@app.command()
-def hello(name: str = "World"):
-    """Says hello"""
-    print(f"Hello {name}")
-
-
 if __name__ == "__main__":
     app()
