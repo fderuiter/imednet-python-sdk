@@ -1,0 +1,147 @@
+import os
+from unittest.mock import MagicMock
+
+import imednet.cli as cli
+import pytest
+from imednet.core.exceptions import ApiError
+from typer.testing import CliRunner
+
+
+def _setup_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Set required environment variables."""
+    monkeypatch.setenv("IMEDNET_API_KEY", "key")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "secret")
+
+
+@pytest.fixture()
+def runner() -> CliRunner:
+    return CliRunner()
+
+
+@pytest.fixture()
+def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
+    """Provide a mocked SDK and patch get_sdk."""
+    mock_sdk = MagicMock()
+    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=mock_sdk))
+    return mock_sdk
+
+
+def test_missing_env_vars(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
+    monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
+    result = runner.invoke(cli.app, ["studies", "list"])
+    assert result.exit_code == 1
+    assert "IMEDNET_API_KEY" in result.stdout
+
+
+def test_studies_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.studies.list.return_value = ["study1"]
+    result = runner.invoke(cli.app, ["studies", "list"])
+    assert result.exit_code == 0
+    sdk.studies.list.assert_called_once_with()
+    assert "study1" in result.stdout
+
+
+def test_studies_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.studies.list.side_effect = ApiError("boom")
+    result = runner.invoke(cli.app, ["studies", "list"])
+    assert result.exit_code == 1
+    assert "API Error" in result.stdout
+
+
+def test_sites_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.sites.list.return_value = ["site1"]
+    result = runner.invoke(cli.app, ["sites", "list", "STUDY"])
+    assert result.exit_code == 0
+    sdk.sites.list.assert_called_once_with("STUDY")
+    assert "site1" in result.stdout
+
+
+def test_sites_list_missing_argument(runner: CliRunner) -> None:
+    result = runner.invoke(cli.app, ["sites", "list"])
+    assert result.exit_code != 0
+
+
+def test_sites_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.sites.list.side_effect = ApiError("fail")
+    result = runner.invoke(cli.app, ["sites", "list", "STUDY"])
+    assert result.exit_code == 1
+    assert "API Error" in result.stdout
+
+
+def test_subjects_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.subjects.list.return_value = ["S1"]
+    result = runner.invoke(
+        cli.app,
+        ["subjects", "list", "STUDY", "--filter", "subject_status=Screened"],
+    )
+    assert result.exit_code == 0
+    sdk.subjects.list.assert_called_once_with("STUDY", filter="subject_status==Screened")
+
+
+def test_subjects_list_invalid_filter(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["subjects", "list", "STUDY", "--filter", "badfilter"])
+    assert result.exit_code == 1
+    assert "Invalid filter format" in result.stdout
+    sdk.subjects.list.assert_not_called()
+
+
+def test_subjects_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.subjects.list.side_effect = ApiError("boom")
+    result = runner.invoke(cli.app, ["subjects", "list", "STUDY"])
+    assert result.exit_code == 1
+    assert "API Error" in result.stdout
+
+
+def test_extract_records_calls_workflow(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workflow = MagicMock()
+    monkeypatch.setattr(cli, "DataExtractionWorkflow", MagicMock(return_value=workflow))
+    workflow.extract_records_by_criteria.return_value = [1]
+    result = runner.invoke(
+        cli.app,
+        ["workflows", "extract-records", "STUDY", "--record-filter", "form_key=DEMOG"],
+    )
+    assert result.exit_code == 0
+    workflow.extract_records_by_criteria.assert_called_once_with(
+        study_key="STUDY",
+        record_filter={"form_key": "DEMOG"},
+        subject_filter=None,
+        visit_filter=None,
+    )
+
+
+def test_records_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    rec = MagicMock()
+    rec.model_dump.return_value = {"recordId": 1, "subjectKey": "S1"}
+    sdk.records.list.return_value = [rec]
+    result = runner.invoke(cli.app, ["records", "list", "STUDY"])
+    assert result.exit_code == 0
+    sdk.records.list.assert_called_once_with("STUDY")
+    assert "S1" in result.stdout
+
+
+def test_records_list_output_csv(runner: CliRunner, sdk: MagicMock) -> None:
+    rec = MagicMock()
+    rec.model_dump.return_value = {"recordId": 1}
+    sdk.records.list.return_value = [rec]
+    with runner.isolated_filesystem():
+        result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "csv"])
+        assert result.exit_code == 0
+        assert os.path.exists("records.csv")
+    sdk.records.list.assert_called_once_with("STUDY")
+
+
+def test_records_list_invalid_output(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "txt"])
+    assert result.exit_code == 1
+    assert "Invalid output format" in result.stdout
+    sdk.records.list.assert_not_called()
+
+
+def test_records_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.records.list.side_effect = ApiError("oops")
+    result = runner.invoke(cli.app, ["records", "list", "STUDY"])
+    assert result.exit_code == 1
+    assert "API Error" in result.stdout
