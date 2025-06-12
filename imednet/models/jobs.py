@@ -47,3 +47,8 @@ class JobStatus(Job):
             return int(v)
         except (TypeError, ValueError):
             return 0
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> "JobStatus":
+        """Create a JobStatus instance from a JSON-like dict."""
+        return cls.model_validate(data)
