@@ -11,6 +11,7 @@ from rich import print
 from typing_extensions import Any, Dict, List, Optional
 
 from .core.exceptions import ApiError
+from .integrations import export
 from .sdk import ImednetSDK
 
 # Import the public filter utility
@@ -266,6 +267,102 @@ def list_records(
                 print(df.head().to_string(index=False))
                 if len(df) > 5:
                     print(f"... ({len(df)} total records)")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+# --- Export Commands ---
+export_app = typer.Typer(name="export", help="Export study data.")
+app.add_typer(export_app)
+
+
+@export_app.command("csv")
+def export_csv(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination file path."),
+):
+    """Export records for a study to CSV."""
+    sdk = get_sdk()
+    try:
+        export.export_csv(sdk, study_key, str(path))
+        print(f"Saved records to {path}")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("excel")
+def export_excel(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination file path."),
+):
+    """Export records for a study to Excel."""
+    sdk = get_sdk()
+    try:
+        export.export_excel(sdk, study_key, str(path))
+        print(f"Saved records to {path}")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("json")
+def export_json(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination file path."),
+):
+    """Export records for a study to JSON."""
+    sdk = get_sdk()
+    try:
+        export.export_json(sdk, study_key, str(path))
+        print(f"Saved records to {path}")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("parquet")
+def export_parquet(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    path: Path = typer.Argument(..., help="Destination file path."),
+):
+    """Export records for a study to Parquet."""
+    sdk = get_sdk()
+    try:
+        export.export_parquet(sdk, study_key, str(path))
+        print(f"Saved records to {path}")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@export_app.command("sql")
+def export_sql(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    table: str = typer.Argument(..., help="Target table name."),
+    connection_string: str = typer.Argument(..., help="SQLAlchemy connection string."),
+):
+    """Export records for a study to a SQL table."""
+    sdk = get_sdk()
+    try:
+        export.export_sql(sdk, study_key, table, connection_string)
+        print(f"Exported records to table {table}")
     except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)

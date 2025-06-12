@@ -177,3 +177,36 @@ def test_records_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
+
+
+def test_export_csv_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    helper = MagicMock()
+    monkeypatch.setattr(cli.export, "export_csv", helper)
+    result = runner.invoke(cli.app, ["export", "csv", "STUDY", "out.csv"])
+    assert result.exit_code == 0
+    helper.assert_called_once_with(sdk, "STUDY", "out.csv")
+
+
+def test_export_parquet_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    helper = MagicMock()
+    monkeypatch.setattr(cli.export, "export_parquet", helper)
+    result = runner.invoke(cli.app, ["export", "parquet", "STUDY", "out.parquet"])
+    assert result.exit_code == 0
+    helper.assert_called_once_with(sdk, "STUDY", "out.parquet")
+
+
+def test_export_sql_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    helper = MagicMock()
+    monkeypatch.setattr(cli.export, "export_sql", helper)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "records", "sqlite:///:memory:"],
+    )
+    assert result.exit_code == 0
+    helper.assert_called_once_with(sdk, "STUDY", "records", "sqlite:///:memory:")
