@@ -74,6 +74,20 @@ sdk = ImednetSDK()  # uses environment variables for authentication
 try:
     structure = get_study_structure(sdk, study_key)
     print("Study structure loaded:")
+## JSON Logging and Tracing
+
+The SDK can emit structured JSON logs for each HTTP request. Call `configure_json_logging()` before creating a client and control the log level with the `log_level` parameter.
+
+```python
+from imednet.utils import configure_json_logging
+from imednet.core.client import Client
+
+configure_json_logging()
+client = Client(api_key="...", security_key="...", log_level="INFO")
+```
+
+If `opentelemetry` is installed, you can pass a tracer instance or rely on the global provider. Each request is wrapped in a span with attributes for the endpoint path and status code. Installing `opentelemetry-instrumentation-requests` enables automatic propagation of trace context.
+
     print(json.dumps(structure.model_dump(by_alias=True), indent=2, ensure_ascii=False, default=str))
 except Exception as e:
     print(f"Error retrieving study structure: {e}")
@@ -121,6 +135,28 @@ imednet subjects list --help
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `imednet/examples/` directory.
+
+### JSON Logging
+
+All logs from the SDK use JSON format so they can be easily parsed. Pass `log_level`
+ to `imednet.core.client.Client` to adjust verbosity. Call
+ `imednet.utils.configure_json_logging()` if you want to enable the same formatting
+ for your entire application.
+
+
+### Tracing with OpenTelemetry
+
+The SDK can emit OpenTelemetry spans for each HTTP request.
+Install `opentelemetry-instrumentation-requests`
+automatically instrument the underlying HTTP calls,
+or provide your own tracer to `imednet.core.client.Client`.
+
+
+### Tracing with OpenTelemetry
+
+The SDK can emit OpenTelemetry spans for each HTTP request. Install
+`opentelemetry-instrumentation-requests` to enable automatic tracing or provide your own
+tracer to :class:`imednet.core.client.Client`.
 
 ## Documentation
 

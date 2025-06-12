@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import httpx
 import pytest
 from imednet.core import exceptions
@@ -63,3 +65,22 @@ def test_request_error_mapping(monkeypatch, status, exc) -> None:
     monkeypatch.setattr(client._client, "request", lambda *a, **kw: resp)
     with pytest.raises(exc):
         client.get("/some")
+
+
+def test_tracer_records_span(monkeypatch) -> None:
+    tracer = MagicMock()
+    span_cm = MagicMock()
+    span = MagicMock()
+    span_cm.__enter__.return_value = span
+    tracer.start_as_current_span.return_value = span_cm
+
+    client = Client(api_key="A", security_key="B", tracer=tracer)
+    resp = DummyResponse({"ok": True}, 200)
+    monkeypatch.setattr(client._client, "request", lambda *a, **kw: resp)
+
+    client.get("/trace")
+
+    tracer.start_as_current_span.assert_called_with(
+        "http_request", attributes={"endpoint": "/trace", "method": "GET"}
+    )
+    span.set_attribute.assert_called_with("status_code", 200)

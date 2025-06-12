@@ -13,8 +13,16 @@ from __future__ import annotations
 
 import logging
 import os
+import time
+from contextlib import nullcontext
 from typing import Any, Dict, Optional, Union
 
+try:  # opentelemetry is optional
+    from opentelemetry import trace
+    from opentelemetry.trace import Tracer
+except Exception:  # pragma: no cover - optional dependency
+    trace = None
+    Tracer = None
 import httpx
 from tenacity import RetryCallState, RetryError, Retrying, stop_after_attempt, wait_exponential
 
@@ -28,6 +36,7 @@ from imednet.core.exceptions import (
     ServerError,
     ValidationError,
 )
+from imednet.utils.json_logging import configure_json_logging
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +62,8 @@ class Client:
         timeout: Union[float, httpx.Timeout] = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
+        log_level: Union[int, str] = logging.INFO,
+        tracer: Optional[Tracer] = None,
     ):
         """
         Initialize the HTTP client.
@@ -69,6 +80,8 @@ class Client:
             timeout: Request timeout in seconds or httpx.Timeout.
             retries: Max retry attempts for transient errors.
             backoff_factor: Factor for exponential backoff between retries.
+            log_level: Logging level or name.
+            tracer: Optional OpenTelemetry tracer to record spans.
         """
         api_key = api_key or os.getenv("IMEDNET_API_KEY")
         security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
@@ -80,6 +93,10 @@ class Client:
         self.retries = retries
         self.backoff_factor = backoff_factor
 
+        level = logging.getLevelName(log_level.upper()) if isinstance(log_level, str) else log_level
+        configure_json_logging(level)
+        logger.setLevel(level)
+
         self._client = httpx.Client(
             base_url=self.base_url,
             headers={
@@ -90,6 +107,13 @@ class Client:
             },
             timeout=self.timeout,
         )
+
+        if tracer is not None:
+            self._tracer = tracer
+        elif trace is not None:
+            self._tracer = trace.get_tracer(__name__)
+        else:
+            self._tracer = None
 
     def __enter__(self) -> Client:
         return self
@@ -125,11 +149,36 @@ class Client:
             retry=self._should_retry,
             reraise=True,
         )
-        try:
-            response = retryer(lambda: self._client.request(method, url, **kwargs))
-        except RetryError as e:
-            logger.error("Request failed after retries: %s", e)
-            raise RequestError("Network request failed after retries")
+
+        span_cm = (
+            self._tracer.start_as_current_span(
+                "http_request",
+                attributes={"endpoint": url, "method": method},
+            )
+            if self._tracer
+            else nullcontext()
+        )
+
+        with span_cm as span:
+            try:
+                start = time.monotonic()
+                response = retryer(lambda: self._client.request(method, url, **kwargs))
+                latency = time.monotonic() - start
+                logger.info(
+                    "http_request",
+                    extra={
+                        "method": method,
+                        "url": url,
+                        "status_code": response.status_code,
+                        "latency": latency,
+                    },
+                )
+            except RetryError as e:
+                logger.error("Request failed after retries: %s", e)
+                raise RequestError("Network request failed after retries")
+
+            if span is not None:
+                span.set_attribute("status_code", response.status_code)
 
         # HTTP error handling
         if response.is_error:
