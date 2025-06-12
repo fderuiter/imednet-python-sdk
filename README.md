@@ -93,13 +93,27 @@ imednet sites list STUDY_KEY
 imednet subjects list STUDY_KEY --filter "subject_status=Screened"
 
 # Get help for a specific command
-imednet subjects list --help 
+imednet subjects list --help
 ```
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `imednet/examples/` directory.
 
-## Documentation
+### JSON Logging
+
+All logs from the SDK use JSON format so they can be easily parsed. Pass `log_level`
+ to `imednet.core.client.Client` to adjust verbosity. Call
+ `imednet.utils.configure_json_logging()` if you want to enable the same formatting
+ for your entire application.
+
+
+### Tracing with OpenTelemetry
+
+The SDK can emit OpenTelemetry spans for each HTTP request.
+Install `opentelemetry-instrumentation-requests`
+automatically instrument the underlying HTTP calls,
+or provide your own tracer to `imednet.core.client.Client`.
+
 
 The documentation is no longer automatically deployed or published online. To
 view the documentation, you must build it locally using Sphinx. The output will
