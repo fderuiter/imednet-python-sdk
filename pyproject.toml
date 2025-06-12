@@ -6,11 +6,16 @@ readme = "README.md"
 keywords = ["imednet", "clinical trials", "sdk", "api"]
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Typing :: Typed",
 ]
 authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
 maintainers = ["Frederick de Ruiter <frederick.deruiter@brightresearch.com>"]
