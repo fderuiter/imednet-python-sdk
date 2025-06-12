@@ -18,6 +18,32 @@ imednet.core.client module
 imednet.core.context module
 ---------------------------
 
+
+Logging and tracing
+-------------------
+The :class:`imednet.core.client.Client` can emit JSON formatted logs of each HTTP
+request when you configure logging:
+
+.. code-block:: python
+
+    from imednet.utils import configure_json_logging
+    from imednet.core.client import Client
+
+    configure_json_logging()
+    client = Client(api_key="...", security_key="...", log_level="INFO")
+
+If ``opentelemetry`` is installed, pass a tracer instance or rely on the global
+tracer provider. Each request is executed within a span and works with
+``opentelemetry-instrumentation-requests`` for automatic context propagation:
+
+.. code-block:: python
+
+    from opentelemetry import trace
+    from opentelemetry.instrumentation.requests import RequestsInstrumentor
+
+    RequestsInstrumentor().instrument()
+    tracer = trace.get_tracer("my-app")
+    client = Client(api_key="...", security_key="...", tracer=tracer)
 .. automodule:: imednet.core.context
    :members:
    :undoc-members:

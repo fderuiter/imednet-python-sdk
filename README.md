@@ -74,17 +74,19 @@ sdk = ImednetSDK()  # uses environment variables for authentication
 try:
     structure = get_study_structure(sdk, study_key)
     print("Study structure loaded:")
-## Logging and Tracing
+## JSON Logging and Tracing
 
-`Client` emits JSON-formatted logs of each request, including method, URL,
-status code, and latency. You can control the log level via the `log_level`
-parameter when instantiating a client.
+The SDK can emit structured JSON logs for each HTTP request. Call `configure_json_logging()` before creating a client and control the log level with the `log_level` parameter.
 
-If `opentelemetry` is installed, you can pass a tracer instance or rely on the
-global tracer provider. Each request is wrapped in a span with attributes for the
-endpoint path and status code. Installing
-`opentelemetry-instrumentation-requests` enables automatic propagation of trace
-context for all HTTP requests.
+```python
+from imednet.utils import configure_json_logging
+from imednet.core.client import Client
+
+configure_json_logging()
+client = Client(api_key="...", security_key="...", log_level="INFO")
+```
+
+If `opentelemetry` is installed, you can pass a tracer instance or rely on the global provider. Each request is wrapped in a span with attributes for the endpoint path and status code. Installing `opentelemetry-instrumentation-requests` enables automatic propagation of trace context.
 
     print(json.dumps(structure.model_dump(by_alias=True), indent=2, ensure_ascii=False, default=str))
 except Exception as e:
