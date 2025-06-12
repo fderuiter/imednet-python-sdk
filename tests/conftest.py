@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
+from imednet.core.client import Client
 from imednet.core.context import Context
 
 
@@ -65,3 +66,19 @@ def patch_build_filter(monkeypatch):
         return captured
 
     return patch
+
+
+@pytest.fixture
+def http_client():
+    return Client("key", "secret", base_url="https://api.test")
+
+
+@pytest.fixture
+def respx_mock_client(http_client, respx_mock):
+    respx_mock.base_url = http_client.base_url
+    return respx_mock
+
+
+@pytest.fixture
+def sample_data():
+    return {"data": [1]}
