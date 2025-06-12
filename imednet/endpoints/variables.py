@@ -2,6 +2,8 @@
 
 from typing import Any, Dict, List, Optional
 
+from imednet.core.client import Client
+from imednet.core.context import Context
 from imednet.core.paginator import Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.variables import Variable
@@ -17,7 +19,13 @@ class VariablesEndpoint(BaseEndpoint):
 
     path = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, **filters) -> List[Variable]:
+    def __init__(self, client: Client, ctx: Context) -> None:
+        super().__init__(client, ctx)
+        self._variables_cache: Dict[str, List[Variable]] = {}
+
+    def list(
+        self, study_key: Optional[str] = None, refresh: bool = False, **filters
+    ) -> List[Variable]:
         """
         List variables in a study with optional filtering.
 
@@ -35,6 +43,8 @@ class VariablesEndpoint(BaseEndpoint):
         study = filters.pop("studyKey")
         if not study:
             raise ValueError("Study key must be provided or set in the context")
+        if not filters and not refresh and study in self._variables_cache:
+            return self._variables_cache[study]
 
         params: Dict[str, Any] = {}
         if filters:
@@ -42,7 +52,10 @@ class VariablesEndpoint(BaseEndpoint):
 
         path = self._build_path(study, "variables")
         paginator = Paginator(self._client, path, params=params, page_size=500)
-        return [Variable.from_json(item) for item in paginator]
+        result = [Variable.from_json(item) for item in paginator]
+        if not filters:
+            self._variables_cache[study] = result
+        return result
 
     def get(self, study_key: str, variable_id: int) -> Variable:
         """
