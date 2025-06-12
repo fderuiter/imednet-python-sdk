@@ -74,6 +74,18 @@ sdk = ImednetSDK()  # uses environment variables for authentication
 try:
     structure = get_study_structure(sdk, study_key)
     print("Study structure loaded:")
+## Logging and Tracing
+
+`Client` emits JSON-formatted logs of each request, including method, URL,
+status code, and latency. You can control the log level via the `log_level`
+parameter when instantiating a client.
+
+If `opentelemetry` is installed, you can pass a tracer instance or rely on the
+global tracer provider. Each request is wrapped in a span with attributes for the
+endpoint path and status code. Installing
+`opentelemetry-instrumentation-requests` enables automatic propagation of trace
+context for all HTTP requests.
+
     print(json.dumps(structure.model_dump(by_alias=True), indent=2, ensure_ascii=False, default=str))
 except Exception as e:
     print(f"Error retrieving study structure: {e}")
