@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from ..core.exceptions import ValidationError
 from ..endpoints.forms import FormsEndpoint
 from ..endpoints.variables import VariablesEndpoint
 from ..models.variables import Variable
+
+if TYPE_CHECKING:
+    from ..sdk import ImednetSDK
 
 
 class SchemaCache:
@@ -80,3 +83,31 @@ def validate_record_data(
         )
     for name, value in data.items():
         _check_type(variables[name], value)
+
+
+class SchemaValidator:
+    """Validate record payloads using variable metadata from the API."""
+
+    def __init__(self, sdk: "ImednetSDK") -> None:
+        self._sdk = sdk
+        self.schema = SchemaCache()
+
+    def refresh(self, study_key: str) -> None:
+        """Load variable definitions for ``study_key`` using :meth:`sdk.variables.list`."""
+        self.schema._form_variables.clear()
+        self.schema._form_id_to_key.clear()
+        variables = self._sdk.variables.list(study_key=study_key, refresh=True)
+        for var in variables:
+            self.schema._form_id_to_key[var.form_id] = var.form_key
+            self.schema._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
+
+    def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
+        form_key = record.get("formKey") or self.schema.form_key_from_id(record.get("formId", 0))
+        if form_key and not self.schema.variables_for_form(form_key):
+            self.refresh(study_key)
+        if form_key:
+            validate_record_data(self.schema, form_key, record.get("data", {}))
+
+    def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
+        for rec in records:
+            self.validate_record(study_key, rec)

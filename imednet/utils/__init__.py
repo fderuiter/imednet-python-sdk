@@ -19,13 +19,14 @@ def __getattr__(name: str):
             }
         )
         return globals()[name]
-    if name in {"SchemaCache", "validate_record_data"}:
-        from .schema import SchemaCache, validate_record_data
+    if name in {"SchemaCache", "validate_record_data", "SchemaValidator"}:
+        from .schema import SchemaCache, SchemaValidator, validate_record_data
 
         globals().update(
             {
                 "SchemaCache": SchemaCache,
                 "validate_record_data": validate_record_data,
+                "SchemaValidator": SchemaValidator,
             }
         )
         return globals()[name]
@@ -43,4 +44,5 @@ __all__ = [
     "DataFrame",
     "SchemaCache",
     "validate_record_data",
+    "SchemaValidator",
 ]
