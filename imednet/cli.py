@@ -1,6 +1,8 @@
 import os
+from pathlib import Path
 from typing import Union  # Import Union
 
+import pandas as pd
 import typer
 from dotenv import load_dotenv
 from rich import print
@@ -178,6 +180,54 @@ def list_subjects(
             print("No subjects found matching the criteria.")
     except ApiError as e:
         # Print the exception directly
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+# --- Records Commands ---
+records_app = typer.Typer(name="records", help="Manage records within a study.")
+app.add_typer(records_app)
+
+
+@records_app.command("list")
+def list_records(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    output: Optional[str] = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Save records to the given format (json or csv)",
+    ),
+):
+    """List records for a study."""
+    sdk = get_sdk()
+    try:
+        if output and output.lower() not in {"json", "csv"}:
+            print("[bold red]Invalid output format. Use 'json' or 'csv'.[/bold red]")
+            raise typer.Exit(code=1)
+        print(f"Fetching records for study '{study_key}'...")
+        records = sdk.records.list(study_key)
+        rows = [r.model_dump(by_alias=True) for r in records]
+        df = pd.DataFrame(rows)
+
+        if output:
+            path = Path(f"records.{output}")
+            if output == "csv":
+                df.to_csv(path, index=False)
+            else:
+                df.to_json(path, orient="records", indent=2)
+            print(f"Saved {len(df)} records to {path}")
+        else:
+            if df.empty:
+                print("No records found.")
+            else:
+                print(df.head().to_string(index=False))
+                if len(df) > 5:
+                    print(f"... ({len(df)} total records)")
+    except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)
     except Exception as e:

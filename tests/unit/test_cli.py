@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock
 
 import imednet.cli as cli
@@ -87,3 +88,29 @@ def test_extract_records_calls_workflow(runner, monkeypatch):
         subject_filter=None,
         visit_filter=None,
     )
+
+
+def test_records_list_calls_sdk(runner, monkeypatch):
+    _setup_env(monkeypatch)
+    mock_sdk = MagicMock()
+    rec = MagicMock()
+    rec.model_dump.return_value = {"recordId": 1, "subjectKey": "S1"}
+    mock_sdk.records.list.return_value = [rec]
+    monkeypatch.setattr(cli, "ImednetSDK", MagicMock(return_value=mock_sdk))
+    result = runner.invoke(cli.app, ["records", "list", "STUDY"])
+    assert result.exit_code == 0
+    mock_sdk.records.list.assert_called_once_with("STUDY")
+    assert "S1" in result.stdout
+
+
+def test_records_list_writes_csv(runner, monkeypatch):
+    _setup_env(monkeypatch)
+    mock_sdk = MagicMock()
+    rec = MagicMock()
+    rec.model_dump.return_value = {"recordId": 1}
+    mock_sdk.records.list.return_value = [rec]
+    monkeypatch.setattr(cli, "ImednetSDK", MagicMock(return_value=mock_sdk))
+    with runner.isolated_filesystem():
+        result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "csv"])
+        assert result.exit_code == 0
+        assert os.path.exists("records.csv")
