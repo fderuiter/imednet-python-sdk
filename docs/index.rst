@@ -7,6 +7,7 @@ Welcome to imednet-sdk's documentation!
 
    logging_and_tracing
    cli
+   airflow
    modules
 
 
