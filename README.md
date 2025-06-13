@@ -1,15 +1,16 @@
 # imednet-python-sdk
 
-\
-[![Build Status](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml)
-[![PyPI version](https://img.shields.io/pypi/v/imednet-python-sdk.svg)](https://pypi.org/project/imednet-python-sdk/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imednet-python-sdk)](https://pypi.org/project/imednet-python-sdk/)
-[![PyPI license](https://img.shields.io/pypi/l/imednet-python-sdk.svg)](LICENSE)
-[![PyPI downloads](https://img.shields.io/pypi/dm/imednet-python-sdk.svg)](https://pypi.org/project/imednet-python-sdk/)
+[![CI](https://img.shields.io/github/actions/workflow/status/Bright-Research/imednet-python-sdk/ci.yml?branch=main)](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/imednet-sdk.svg)](https://pypi.org/project/imednet-sdk/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imednet-sdk.svg)](https://pypi.org/project/imednet-sdk/)
+[![PyPI license](https://img.shields.io/pypi/l/imednet-sdk.svg)](LICENSE)
+[![PyPI downloads](https://img.shields.io/pypi/dm/imednet-sdk.svg)](https://pypi.org/project/imednet-sdk/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Ruff](https://img.shields.io/badge/Ruff-checked-green?logo=ruff&logoColor=white)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Last commit](https://img.shields.io/github/last-commit/Bright-Research/imednet-python-sdk.svg)](https://github.com/Bright-Research/imednet-python-sdk/commits/main)
 
 A Python SDK for interacting with the iMedNet REST API. Provides client, endpoint wrappers, and data models for all resources.
 
@@ -30,7 +31,7 @@ Use `refresh=True` to fetch fresh data.
 ## Installation
 
 ```bash
-pip install imednet-python-sdk
+pip install imednet-sdk
 ```
 
 Or install from source:
@@ -136,7 +137,7 @@ Install the optional pandas dependency and call
 ``export_records_csv`` to save all records for a study:
 
 ```bash
-pip install imednet-python-sdk[pandas]
+pip install imednet-sdk[pandas]
 ```
 
 ```python
@@ -148,7 +149,7 @@ export_records_csv(sdk, study_key, "records.csv")
 
 ### Using the Command Line Interface (CLI)
 
-After installing the package (`pip install imednet-python-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
+After installing the package (`pip install imednet-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
 
 ```powershell
 # List available studies
@@ -181,7 +182,7 @@ imednet subjects list --help
 Custom operators and sensors integrate with Apache Airflow. Install the SDK and the Amazon provider:
 
 ```bash
-pip install imednet-python-sdk apache-airflow apache-airflow-providers-amazon
+pip install imednet-sdk apache-airflow apache-airflow-providers-amazon
 ```
 
 Example DAG:
