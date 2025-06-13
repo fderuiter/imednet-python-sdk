@@ -1,3 +1,5 @@
+import contextlib
+
 import httpx
 import pytest
 import respx
@@ -55,3 +57,23 @@ def test_timeout_handling():
 
     with pytest.raises(httpx.ReadTimeout):
         client.get("/slow")
+
+
+@respx.mock
+def test_tracer_records_span():
+    class DummyTracer:
+        def __init__(self):
+            self.called = False
+
+        def start_as_current_span(self, name, attributes=None):
+            self.called = True
+            return contextlib.nullcontext()
+
+    tracer = DummyTracer()
+    client = Client("k", "s", base_url="https://api.test", tracer=tracer)
+    respx.get("https://api.test/ping").respond(status_code=200, json={"ok": True})
+
+    resp = client.get("/ping")
+
+    assert resp.status_code == 200
+    assert tracer.called
