@@ -92,11 +92,22 @@ src = ["imednet"]
 select = ["E", "F", "I"]
 ignore = ["D", "ANN", "S101"]
 
+# ────────────────────────────────────────────────────────────────
 [tool.mypy]
 python_version = "3.10"
-strict = false
-ignore_missing_imports = true
+strict = true
 plugins = ["pydantic.mypy"]
-# ────────────────────────────────────────────────────────────────
 # Ignore all files under imednet/examples/
-exclude                = '^imednet/examples/.*$'
+exclude = '^imednet/examples/.*$'
+# Disable noisy strict error codes
+disable_error_code = [
+    "no-untyped-def",
+    "no-untyped-call",
+    "attr-defined",
+    "misc",
+    "unused-ignore",
+]
+# Ignore missing stubs for optional integrations
+[[tool.mypy.overrides]]
+module = ["opentelemetry.*", "airflow.*"]
+ignore_missing_imports = true
