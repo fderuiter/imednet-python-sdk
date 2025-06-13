@@ -1,8 +1,7 @@
 import httpx
 import pytest
 import respx
-from imednet.async_sdk import AsyncImednetSDK
-from imednet.sdk import ImednetSDK
+from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
 @respx.mock
