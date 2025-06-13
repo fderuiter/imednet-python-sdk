@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet.workflows.record_mapper import RecordMapper
+from pydantic import BaseModel, ValidationError
 
 
 def test_dataframe_builds_expected_structure() -> None:
@@ -53,3 +54,58 @@ def test_dataframe_empty_when_no_variables() -> None:
     mapper = RecordMapper(sdk)
     df = mapper.dataframe("STUDY")
     assert df.empty
+
+
+def test_invalid_visit_key_logs_warning(caplog) -> None:
+    sdk = MagicMock()
+    sdk.variables.list.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
+    sdk.records.list.return_value = []
+    mapper = RecordMapper(sdk)
+
+    with caplog.at_level("WARNING"):
+        df = mapper.dataframe("S", visit_key="bad")
+
+    assert df.empty
+    assert "Invalid visit_key" in caplog.text
+    sdk.records.list.assert_called_once_with(study_key="S", filter=None)
+
+
+def test_records_fetch_error_returns_empty(caplog) -> None:
+    sdk = MagicMock()
+    sdk.variables.list.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
+    sdk.records.list.side_effect = Exception("boom")
+    mapper = RecordMapper(sdk)
+
+    with caplog.at_level("ERROR"):
+        df = mapper.dataframe("S")
+
+    assert df.empty
+    assert "Failed to fetch records" in caplog.text
+
+
+def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
+    sdk = MagicMock()
+    sdk.variables.list.return_value = [Variable(variable_name="V", label="L", form_id=1)]
+    record = Record(
+        record_id=1,
+        subject_key="S1",
+        visit_id=1,
+        form_id=1,
+        record_status="Complete",
+        date_created=datetime.now(),
+        record_data={"V": "x"},
+    )
+    sdk.records.list.return_value = [record]
+
+    class DummyModel(BaseModel):
+        def __init__(self, **kwargs):
+            raise ValidationError([], DummyModel)
+
+    monkeypatch.setattr("imednet.workflows.record_mapper.create_model", lambda *a, **k: DummyModel)
+
+    mapper = RecordMapper(sdk)
+    with caplog.at_level("WARNING"):
+        df = mapper.dataframe("S")
+
+    assert df.empty
+    assert "Failed to parse record data" in caplog.text

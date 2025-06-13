@@ -1,3 +1,5 @@
+from unittest.mock import AsyncMock
+
 import imednet.endpoints.codings as codings
 import imednet.endpoints.forms as forms
 import imednet.endpoints.intervals as intervals
@@ -151,3 +153,44 @@ async def test_async_get_job(dummy_client, context, response_factory):
     dummy_client.get = fake_get
     result = await ep.async_get("S1", "B1")
     assert isinstance(result, JobStatus)
+
+
+@pytest.mark.asyncio
+async def test_async_get_record(dummy_client, context, response_factory):
+    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+
+    async def fake_get(path):
+        assert path == "/api/v1/edc/studies/S1/records/1"
+        return response_factory({"data": [{"recordId": 1}]})
+
+    dummy_client.get = fake_get
+    rec = await ep.async_get("S1", 1)
+    assert isinstance(rec, Record)
+
+
+@pytest.mark.asyncio
+async def test_async_get_record_not_found(dummy_client, context, response_factory):
+    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+
+    async def fake_get(path):
+        return response_factory({"data": []})
+
+    dummy_client.get = fake_get
+    with pytest.raises(ValueError):
+        await ep.async_get("S1", 1)
+
+
+@pytest.mark.asyncio
+async def test_async_create_record(dummy_client, context, response_factory, monkeypatch):
+    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
+
+    monkeypatch.setattr(records.Job, "from_json", lambda d: d)
+    job = await ep.async_create("S1", [{"foo": "bar"}], email_notify="user@test")
+
+    dummy_client.post.assert_awaited_once_with(
+        "/api/v1/edc/studies/S1/records",
+        json=[{"foo": "bar"}],
+        headers={"x-email-notify": "user@test"},
+    )
+    assert job == {"jobId": "1"}

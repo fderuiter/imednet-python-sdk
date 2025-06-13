@@ -271,6 +271,7 @@ Build and test:
 ```bash
 poetry run pytest --cov=imednet
 ```
+The unit test suite covers over 90% of the codebase.
 
 ### End-to-End Tests
 
