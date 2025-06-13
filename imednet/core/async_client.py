@@ -23,6 +23,7 @@ from tenacity import (
     wait_exponential,
 )
 
+from imednet.utils import sanitize_base_url
 from imednet.utils.json_logging import configure_json_logging
 
 from .client import Client
@@ -65,6 +66,7 @@ class AsyncClient:
         self.base_url = self.base_url.rstrip("/")
         if self.base_url.endswith("/api"):
             self.base_url = self.base_url[:-4]
+          
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
         self.backoff_factor = backoff_factor

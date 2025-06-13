@@ -12,15 +12,13 @@ from .typing import DataFrame, JsonDict
 _LAZY_ATTRS: dict[str, tuple[str, str]] = {
     "records_to_dataframe": ("imednet.utils.pandas", "records_to_dataframe"),
     "export_records_csv": ("imednet.utils.pandas", "export_records_csv"),
-    "SchemaCache": ("imednet.utils.schema", "SchemaCache"),
-    "validate_record_data": ("imednet.utils.schema", "validate_record_data"),
-    "SchemaValidator": ("imednet.utils.schema", "SchemaValidator"),
     "parse_bool": ("imednet.utils.validators", "parse_bool"),
     "parse_datetime": ("imednet.utils.validators", "parse_datetime"),
     "parse_int_or_default": ("imednet.utils.validators", "parse_int_or_default"),
     "parse_str_or_default": ("imednet.utils.validators", "parse_str_or_default"),
     "parse_list_or_default": ("imednet.utils.validators", "parse_list_or_default"),
     "parse_dict_or_default": ("imednet.utils.validators", "parse_dict_or_default"),
+    "sanitize_base_url": ("imednet.utils.url", "sanitize_base_url"),
 }
 
 
@@ -44,13 +42,11 @@ __all__ = [
     "export_records_csv",
     "JsonDict",
     "DataFrame",
-    "SchemaCache",
-    "validate_record_data",
-    "SchemaValidator",
     "parse_bool",
     "parse_datetime",
     "parse_int_or_default",
     "parse_str_or_default",
     "parse_list_or_default",
     "parse_dict_or_default",
+    "sanitize_base_url",
 ]

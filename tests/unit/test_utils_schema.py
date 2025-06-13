@@ -4,7 +4,7 @@ import pytest
 from imednet.core.exceptions import UnknownVariableTypeError, ValidationError
 from imednet.models.forms import Form
 from imednet.models.variables import Variable
-from imednet.utils.schema import (
+from imednet.validation.schema import (
     SchemaCache,
     SchemaValidator,
     _check_type,

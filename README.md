@@ -52,6 +52,7 @@ Keep these keys secure and never commit them to source control:
 $env:IMEDNET_API_KEY="your_api_key_here"
 $env:IMEDNET_SECURITY_KEY="your_security_key_here"
 # Optional: Set if using a non-standard base URL
+
 # $env:IMEDNET_BASE_URL="https://your.imednet.instance"
 
 # For Bash/Zsh:
@@ -118,13 +119,13 @@ async def main():
 ### Record Validation
 
 The SDK can validate record payloads locally using cached form metadata. Create
-a :class:`~imednet.utils.schema.SchemaCache` and pass it to
+a :class:`~imednet.validation.schema.SchemaCache` and pass it to
 ``RecordsEndpoint.create`` or the ``RecordUpdateWorkflow`` methods. A
 ``ValidationError`` is raised if variables are unknown or required fields are
 missing.
 
 ```python
-from imednet.utils.schema import SchemaCache
+from imednet.validation.schema import SchemaCache
 
 schema = SchemaCache()
 schema.refresh(sdk.forms, sdk.variables, study_key)
@@ -159,7 +160,6 @@ pip install pandas[excel]
 from imednet.integrations import export
 
 export.export_to_excel(sdk, study_key, "records.xlsx")
-```
 
 ### Using the Command Line Interface (CLI)
 
@@ -194,10 +194,10 @@ imednet subjects list --help
 
 ### Airflow Integration
 
-Custom operators and sensors integrate with Apache Airflow. Install the SDK and the Amazon provider:
+Custom operators and sensors integrate with Apache Airflow. Install the package with the ``airflow`` extra:
 
 ```bash
-pip install imednet-sdk apache-airflow apache-airflow-providers-amazon
+pip install 'imednet-sdk[airflow]'
 ```
 
 Example DAG:

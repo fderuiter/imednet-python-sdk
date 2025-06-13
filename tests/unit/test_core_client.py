@@ -85,3 +85,8 @@ def test_tracer_records_span(monkeypatch) -> None:
         "http_request", attributes={"endpoint": "/trace", "method": "GET"}
     )
     span.set_attribute.assert_called_with("status_code", 200)
+
+
+def test_base_url_sanitized() -> None:
+    client = Client(api_key="A", security_key="B", base_url="https://host/api/")
+    assert client.base_url == "https://host"
