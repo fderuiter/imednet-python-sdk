@@ -118,13 +118,13 @@ async def main():
 ### Record Validation
 
 The SDK can validate record payloads locally using cached form metadata. Create
-a :class:`~imednet.utils.schema.SchemaCache` and pass it to
+a :class:`~imednet.validation.schema.SchemaCache` and pass it to
 ``RecordsEndpoint.create`` or the ``RecordUpdateWorkflow`` methods. A
 ``ValidationError`` is raised if variables are unknown or required fields are
 missing.
 
 ```python
-from imednet.utils.schema import SchemaCache
+from imednet.validation.schema import SchemaCache
 
 schema = SchemaCache()
 schema.refresh(sdk.forms, sdk.variables, study_key)

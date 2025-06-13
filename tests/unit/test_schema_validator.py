@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from imednet.core.exceptions import ValidationError
 from imednet.models.variables import Variable
-from imednet.utils.schema import SchemaValidator
+from imednet.validation.schema import SchemaValidator
 
 
 def _build_sdk(variable: Variable) -> MagicMock:
@@ -38,7 +38,7 @@ def test_refresh_called_when_form_not_cached() -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var)
     validator = SchemaValidator(sdk)
-    validator.refresh = MagicMock(wraps=validator.refresh)
+    validator.refresh = MagicMock(wraps=validator.refresh)  # type: ignore[assignment]
 
     validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
 
