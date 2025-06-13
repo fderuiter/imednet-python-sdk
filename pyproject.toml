@@ -24,8 +24,7 @@ include = [
     "README.md",
     "LICENSE",
     "imednet/py.typed",
-    { path = "examples", format = "sdist" }, # Include examples only in sdist
-    { path = "examples", format = "wheel" } # Include examples also in wheel
+    { path = "examples", format = "sdist" } # Include examples only in sdist
 ]
 license = "MIT"
 repository = "https://github.com/Bright-Research/imednet-python-sdk"
@@ -98,5 +97,5 @@ strict = false
 ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
 # ────────────────────────────────────────────────────────────────
-# Ignore all files under imednet/examples/
-exclude                = '^imednet/examples/.*$'
+# Ignore all files under examples/
+exclude                = '^examples/.*$'
