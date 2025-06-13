@@ -59,7 +59,7 @@ def test_record_update_submit_and_wait(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(time, "sleep", lambda *_: None)
 
     wf = RecordUpdateWorkflow(sdk)
-    job = wf.submit_record_batch(
+    job = wf.create_or_update_records(
         "ST", [{"formKey": "F1", "data": {"x": 1}}], wait_for_completion=True, poll_interval=0
     )
 
@@ -157,7 +157,7 @@ def test_record_update_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
     wf = RecordUpdateWorkflow(sdk)
     with pytest.raises(TimeoutError):
-        wf.submit_record_batch(
+        wf.create_or_update_records(
             "ST",
             [{"formKey": "F1", "data": {"x": 1}}],
             wait_for_completion=True,
