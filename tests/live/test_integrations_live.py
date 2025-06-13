@@ -39,6 +39,7 @@ def test_export_to_csv(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
 
 
 def test_export_to_excel(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
+    pytest.importorskip("openpyxl")
     p = tmp_path / "out.xlsx"
     export.export_to_excel(sdk, study_key, str(p))
     assert p.exists()
@@ -65,6 +66,7 @@ def test_export_to_sql(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
 
 
 def test_imednet_hook() -> None:
+    pytest.importorskip("airflow")
     from imednet.integrations.airflow import ImednetHook
 
     hook = ImednetHook()
