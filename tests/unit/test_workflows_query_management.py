@@ -20,6 +20,7 @@ def test_get_open_queries_filters_latest_comment() -> None:
     result = wf.get_open_queries("STUDY", additional_filter={"state": "new"})
 
     sdk.queries.list.assert_called_once_with("STUDY", state="new")
+    assert sdk.queries.list.call_args.kwargs == {"state": "new"}
     assert result == [query_open]
 
 
@@ -29,6 +30,7 @@ def test_get_queries_for_subject_builds_combined_filter() -> None:
     wf.get_queries_for_subject("STUDY", "SUBJ1", additional_filter={"type": "x"})
 
     sdk.queries.list.assert_called_once_with("STUDY", subject_key="SUBJ1", type="x")
+    assert sdk.queries.list.call_args.kwargs == {"subject_key": "SUBJ1", "type": "x"}
 
 
 def test_get_query_state_counts_aggregates_states() -> None:
@@ -42,4 +44,5 @@ def test_get_query_state_counts_aggregates_states() -> None:
     counts = wf.get_query_state_counts("STUDY")
 
     sdk.queries.list.assert_called_once_with("STUDY")
+    assert sdk.queries.list.call_args.kwargs == {}
     assert counts == {"open": 1, "closed": 1, "unknown": 1}
