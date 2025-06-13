@@ -242,6 +242,7 @@ def test_subject_data_calls_workflow(
     assert result.exit_code == 0
     workflow.get_all_subject_data.assert_called_once_with("STUDY", "SUBJ")
 
+
 def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
     sdk.queries.list.return_value = ["Q1"]
     result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
@@ -288,6 +289,7 @@ def test_record_revisions_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
     assert result.exit_code == 0
     assert "No record revisions found." in result.stdout
+
 
 def test_jobs_status_success(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["jobs", "status", "STUDY", "BATCH"])

@@ -5,6 +5,7 @@ import pytest
 import pytest_asyncio
 from imednet.async_sdk import AsyncImednetSDK
 from imednet.core.exceptions import ServerError
+from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval
 from imednet.models.queries import Query
@@ -174,3 +175,130 @@ async def test_async_studies(async_sdk: AsyncImednetSDK) -> None:
     assert isinstance(studies[0], Study)
     study = await async_sdk.studies.async_get(studies[0].study_key)
     assert study.study_key == studies[0].study_key
+
+
+def test_job_get_known_batch(sdk: ImednetSDK, study_key: str) -> None:
+    batch_id = os.getenv("IMEDNET_BATCH_ID")
+    if not batch_id:
+        pytest.skip("IMEDNET_BATCH_ID not set")
+    job = sdk.jobs.get(study_key, batch_id)
+    assert job.batch_id == batch_id
+
+
+def test_create_record_and_poll_job(sdk: ImednetSDK, study_key: str) -> None:
+    form_key = os.getenv("IMEDNET_FORM_KEY")
+    if not form_key:
+        pytest.skip("IMEDNET_FORM_KEY not set for record creation")
+    record = {"formKey": form_key, "data": {}}
+    job = sdk.records.create(study_key, [record])
+    assert job.batch_id
+    polled = sdk.jobs.get(study_key, job.batch_id)
+    assert polled.batch_id == job.batch_id
+
+
+def test_list_codings(sdk: ImednetSDK, study_key: str) -> None:
+    codings = sdk.codings.list(study_key=study_key)
+    assert isinstance(codings, list)
+    if codings:
+        assert isinstance(codings[0], Coding)
+        coding = sdk.codings.get(study_key, str(codings[0].coding_id))
+        assert coding.coding_id == codings[0].coding_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_sites(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    sites = await async_sdk.sites.async_list(study_key)
+    assert isinstance(sites, list)
+    if sites:
+        site = await async_sdk.sites.async_get(study_key, sites[0].site_id)
+        assert site.site_id == sites[0].site_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_subjects(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    subjects = await async_sdk.subjects.async_list(study_key)
+    assert isinstance(subjects, list)
+    if subjects:
+        subject = await async_sdk.subjects.async_get(study_key, subjects[0].subject_key)
+        assert subject.subject_key == subjects[0].subject_key
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_records(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    records = await async_sdk.records.async_list(study_key)
+    assert isinstance(records, list)
+    if records:
+        record = await async_sdk.records.async_get(study_key, records[0].record_id)
+        assert record.record_id == records[0].record_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_intervals(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    intervals = await async_sdk.intervals.async_list(study_key)
+    assert isinstance(intervals, list)
+    if intervals:
+        interval = await async_sdk.intervals.async_get(study_key, intervals[0].interval_id)
+        assert interval.interval_id == intervals[0].interval_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_visits(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    visits = await async_sdk.visits.async_list(study_key)
+    assert isinstance(visits, list)
+    if visits:
+        visit = await async_sdk.visits.async_get(study_key, visits[0].visit_id)
+        assert visit.visit_id == visits[0].visit_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_variables(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    variables = await async_sdk.variables.async_list(study_key)
+    assert isinstance(variables, list)
+    if variables:
+        variable = await async_sdk.variables.async_get(study_key, variables[0].variable_id)
+        assert variable.variable_id == variables[0].variable_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_forms(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    forms = await async_sdk.forms.async_list(study_key)
+    assert isinstance(forms, list)
+    if forms:
+        form = await async_sdk.forms.async_get(study_key, forms[0].form_id)
+        assert form.form_id == forms[0].form_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_queries(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    queries = await async_sdk.queries.async_list(study_key)
+    assert isinstance(queries, list)
+    if queries:
+        query = await async_sdk.queries.async_get(study_key, queries[0].annotation_id)
+        assert query.annotation_id == queries[0].annotation_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_record_revisions(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    revisions = await async_sdk.record_revisions.async_list(study_key)
+    assert isinstance(revisions, list)
+    if revisions:
+        rev = await async_sdk.record_revisions.async_get(study_key, revisions[0].record_revision_id)
+        assert rev.record_revision_id == revisions[0].record_revision_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_users(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    users = await async_sdk.users.async_list(study_key)
+    assert isinstance(users, list)
+    if users:
+        user = await async_sdk.users.async_get(study_key, users[0].user_id)
+        assert user.user_id == users[0].user_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_codings(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    codings = await async_sdk.codings.async_list(study_key)
+    assert isinstance(codings, list)
+    if codings:
+        coding = await async_sdk.codings.async_get(study_key, str(codings[0].coding_id))
+        assert coding.coding_id == codings[0].coding_id

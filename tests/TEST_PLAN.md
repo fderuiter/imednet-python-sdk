@@ -147,8 +147,9 @@ By systematically adding tests for these specific files and classes/functions, f
 
 ## Live End-to-End Tests
 
-Real API integration tests are optional but recommended. See `LIVE_TEST_PLAN.md` in
-this directory for a complete list of features. Every endpoint, workflow method, CLI
+Real API integration tests are optional but recommended. See
+[docs/live_test_plan.rst](../docs/live_test_plan.rst) for a complete list of
+features. Every endpoint, workflow method, CLI
 command (including export and job utilities), and integration helper should have a
 dedicated live test that runs only when `IMEDNET_RUN_E2E=1` and valid credentials are
 supplied.
