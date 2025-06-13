@@ -21,6 +21,7 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
     "parse_str_or_default": ("imednet.utils.validators", "parse_str_or_default"),
     "parse_list_or_default": ("imednet.utils.validators", "parse_list_or_default"),
     "parse_dict_or_default": ("imednet.utils.validators", "parse_dict_or_default"),
+    "sanitize_base_url": ("imednet.utils.url", "sanitize_base_url"),
 }
 
 
@@ -53,4 +54,5 @@ __all__ = [
     "parse_str_or_default",
     "parse_list_or_default",
     "parse_dict_or_default",
+    "sanitize_base_url",
 ]
