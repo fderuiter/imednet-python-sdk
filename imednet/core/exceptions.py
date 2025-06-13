@@ -95,9 +95,3 @@ class ValidationError(ApiError):
     """
 
     pass
-
-
-class JobTimeoutError(ImednetError):
-    """Raised when a background job does not complete within the allotted time."""
-
-    pass

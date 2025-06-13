@@ -9,7 +9,6 @@ from .exceptions import (
     AuthenticationError,
     AuthorizationError,
     ImednetError,
-    JobTimeoutError,
     NotFoundError,
     RateLimitError,
     RequestError,
@@ -30,6 +29,5 @@ __all__ = [
     "RateLimitError",
     "ServerError",
     "ValidationError",
-    "JobTimeoutError",
     "Paginator",
 ]
