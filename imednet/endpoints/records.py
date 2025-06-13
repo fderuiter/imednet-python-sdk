@@ -7,7 +7,7 @@ from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.utils.filters import build_filter_string
-from imednet.utils.schema import SchemaCache, validate_record_data
+from imednet.validation.schema import SchemaCache, validate_record_data
 
 
 class RecordsEndpoint(BaseEndpoint):

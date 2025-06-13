@@ -4,7 +4,7 @@ import time
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from ..models import Job
-from ..utils.schema import SchemaValidator
+from ..validation.schema import SchemaValidator
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
