@@ -230,3 +230,15 @@ def test_export_sql_calls_helper(
     )
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+
+
+def test_jobs_status_success(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["jobs", "status", "STUDY", "BATCH"])
+    assert result.exit_code == 0
+    sdk.get_job.assert_called_once_with("STUDY", "BATCH")
+
+
+def test_jobs_wait_success(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["jobs", "wait", "STUDY", "BATCH"])
+    assert result.exit_code == 0
+    sdk.poll_job.assert_called_once_with("STUDY", "BATCH", interval=5, timeout=300)
