@@ -73,8 +73,7 @@ class DataExtractionWorkflow:
 
         records = self._sdk.records.list(
             study_key=study_key,
-            record_data_filter=None,
-            **final_record_filter_dict,
+            **final_record_filter_dict,  # type: ignore[arg-type]
         )
 
         # Client-side filtering fallback

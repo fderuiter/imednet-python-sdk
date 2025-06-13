@@ -89,11 +89,14 @@ class RecordMapper:
         try:
             return self.sdk.records.list(
                 study_key=study_key,
-                record_data_filter=None,
-                **filters,
+                **filters,  # type: ignore[arg-type]
             )
         except Exception as exc:  # pragma: no cover - unexpected
-            logger.error("Failed to fetch records for study '%s': %s", study_key, exc)
+            logger.error(
+                "Failed to fetch records for study '%s': %s",
+                study_key,
+                exc,
+            )
             return []
 
     def _parse_records(

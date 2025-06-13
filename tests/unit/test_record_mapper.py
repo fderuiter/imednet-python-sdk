@@ -32,7 +32,7 @@ def test_dataframe_builds_expected_structure() -> None:
     df = mapper.dataframe("STUDY", visit_key="1")
 
     sdk.variables.list.assert_called_once_with(study_key="STUDY")
-    sdk.records.list.assert_called_once_with(study_key="STUDY", record_data_filter=None, visitId=1)
+    sdk.records.list.assert_called_once_with(study_key="STUDY", visitId=1)
 
     expected_columns = [
         "recordId",
@@ -68,7 +68,7 @@ def test_invalid_visit_key_logs_warning(caplog) -> None:
 
     assert df.empty
     assert "Invalid visit_key" in caplog.text
-    sdk.records.list.assert_called_once_with(study_key="S", record_data_filter=None)
+    sdk.records.list.assert_called_once_with(study_key="S")
 
 
 def test_records_fetch_error_returns_empty(caplog) -> None:
