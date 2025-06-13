@@ -15,6 +15,7 @@ import logging
 import os
 import time
 from contextlib import nullcontext
+from types import TracebackType
 from typing import Any, Dict, Optional, Union
 
 try:  # opentelemetry is optional
@@ -34,17 +35,28 @@ from tenacity import (
 
 from imednet.core.exceptions import (
     ApiError,
-    AuthenticationError,
-    AuthorizationError,
+    BadRequestError,
+    ConflictError,
+    ForbiddenError,
     NotFoundError,
     RateLimitError,
     RequestError,
     ServerError,
-    ValidationError,
+    UnauthorizedError,
 )
 from imednet.utils.json_logging import configure_json_logging
 
 logger = logging.getLogger(__name__)
+
+
+STATUS_TO_ERROR: dict[int, type[ApiError]] = {
+    400: BadRequestError,
+    401: UnauthorizedError,
+    403: ForbiddenError,
+    404: NotFoundError,
+    409: ConflictError,
+    429: RateLimitError,
+}
 
 
 class Client:
@@ -124,7 +136,12 @@ class Client:
     def __enter__(self) -> Client:
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type[BaseException]],
+        exc: Optional[BaseException],
+        tb: Optional[TracebackType],
+    ) -> None:
         self.close()
 
     def close(self) -> None:
@@ -193,16 +210,9 @@ class Client:
                 body = response.json()
             except Exception:
                 body = response.text
-            if status == 400:
-                raise ValidationError(body)
-            if status == 401:
-                raise AuthenticationError(body)
-            if status == 403:
-                raise AuthorizationError(body)
-            if status == 404:
-                raise NotFoundError(body)
-            if status == 429:
-                raise RateLimitError(body)
+            exc_cls = STATUS_TO_ERROR.get(status)
+            if exc_cls:
+                raise exc_cls(body)
             if 500 <= status < 600:
                 raise ServerError(body)
             raise ApiError(body)

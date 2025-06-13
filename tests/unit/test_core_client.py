@@ -50,10 +50,11 @@ def test_retry_logic_retries_request_errors(monkeypatch) -> None:
 @pytest.mark.parametrize(
     "status,exc",
     [
-        (400, exceptions.ValidationError),
-        (401, exceptions.AuthenticationError),
-        (403, exceptions.AuthorizationError),
+        (400, exceptions.BadRequestError),
+        (401, exceptions.UnauthorizedError),
+        (403, exceptions.ForbiddenError),
         (404, exceptions.NotFoundError),
+        (409, exceptions.ConflictError),
         (429, exceptions.RateLimitError),
         (500, exceptions.ServerError),
         (418, exceptions.ApiError),
