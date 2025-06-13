@@ -87,44 +87,30 @@ class ImednetSDK:
         retries: int = 3,
         backoff_factor: float = 1.0,
         enable_async: bool = False,
-    ):
-        """
-        Initialize the SDK with authentication and configuration.
+    ) -> None:
+        """Initialize the SDK with credentials and configuration."""
 
-        Args:
-            api_key: iMednet API key. If not provided, the value from the
-                ``IMEDNET_API_KEY`` environment variable will be used.
-            security_key: iMednet security key. If not provided, the value from
-                the ``IMEDNET_SECURITY_KEY`` environment variable will be used.
-            base_url: Base URL for API. Falls back to ``IMEDNET_BASE_URL`` if
-                unset and defaults to the production URL otherwise.
-            timeout: Request timeout in seconds.
-            retries: Max retry attempts for transient errors.
-            backoff_factor: Factor for exponential backoff between retries.
-        """
-        api_key = api_key or os.getenv("IMEDNET_API_KEY")
-        security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
-        if not api_key or not security_key:
-            raise ValueError("API key and security key are required")
-        base_url = base_url or os.getenv("IMEDNET_BASE_URL")
+        self._api_key = api_key or os.getenv("IMEDNET_API_KEY")
+        self._security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        self._base_url = base_url or os.getenv("IMEDNET_BASE_URL")
 
-        # Initialize context for storing state
+        self._validate_env()
+
         self.ctx = Context()
 
-        # Initialize the HTTP clients
         self._client = Client(
-            api_key=api_key,
-            security_key=security_key,
-            base_url=base_url,
+            api_key=self._api_key,
+            security_key=self._security_key,
+            base_url=self._base_url,
             timeout=timeout,
             retries=retries,
             backoff_factor=backoff_factor,
         )
         self._async_client = (
             AsyncClient(
-                api_key=api_key,
-                security_key=security_key,
-                base_url=base_url,
+                api_key=self._api_key,
+                security_key=self._security_key,
+                base_url=self._base_url,
                 timeout=timeout,
                 retries=retries,
                 backoff_factor=backoff_factor,
@@ -133,7 +119,16 @@ class ImednetSDK:
             else None
         )
 
-        # Initialize endpoint clients
+        self._init_endpoints()
+        self.workflows = Workflows(self)
+
+    def _validate_env(self) -> None:
+        """Ensure required credentials are present."""
+        if not self._api_key or not self._security_key:
+            raise ValueError("API key and security key are required")
+
+    def _init_endpoints(self) -> None:
+        """Instantiate endpoint clients."""
         self.codings = CodingsEndpoint(self._client, self.ctx, self._async_client)
         self.forms = FormsEndpoint(self._client, self.ctx, self._async_client)
         self.intervals = IntervalsEndpoint(self._client, self.ctx, self._async_client)
@@ -147,9 +142,6 @@ class ImednetSDK:
         self.users = UsersEndpoint(self._client, self.ctx, self._async_client)
         self.variables = VariablesEndpoint(self._client, self.ctx, self._async_client)
         self.visits = VisitsEndpoint(self._client, self.ctx, self._async_client)
-
-        # Initialize workflows, passing the SDK instance itself
-        self.workflows = Workflows(self)
 
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""
