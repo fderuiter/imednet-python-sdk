@@ -6,7 +6,6 @@ import typer
 from rich import print
 
 from ..core.exceptions import ApiError
-from ..utils.filters import build_filter_string
 from .utils import parse_filter_args
 
 app = typer.Typer(name="subjects", help="Manage subjects within a study.")
@@ -28,10 +27,9 @@ def list_subjects(
     sdk = get_sdk()
     try:
         parsed_filter = parse_filter_args(subject_filter)
-        filter_str = build_filter_string(parsed_filter) if parsed_filter else None
 
         print(f"Fetching subjects for study '{study_key}'...")
-        subjects_list = sdk.subjects.list(study_key, filter=filter_str)
+        subjects_list = sdk.subjects.list(study_key, **(parsed_filter or {}))
         if subjects_list:
             print(f"Found {len(subjects_list)} subjects:")
             print(subjects_list)

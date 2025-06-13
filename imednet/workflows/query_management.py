@@ -3,7 +3,6 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from ..models import Query
-from ..utils.filters import build_filter_string
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -43,11 +42,10 @@ class QueryManagementWorkflow:
         Returns:
             A list of open Query objects matching the criteria.
         """
-        # Build filter string from dictionary
-        filter_str = build_filter_string(additional_filter) if additional_filter else None
+        filters = dict(additional_filter) if additional_filter else {}
 
         # Fetch potentially relevant queries
-        all_matching_queries = self._sdk.queries.list(study_key, filter=filter_str, **kwargs)
+        all_matching_queries = self._sdk.queries.list(study_key, **filters, **kwargs)
 
         open_queries: List[Query] = []
         for query in all_matching_queries:
@@ -87,14 +85,9 @@ class QueryManagementWorkflow:
         # Build filter dictionary
         final_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
         if additional_filter:
-            # Simple merge, assumes no key conflicts. API filter string uses ';' (AND) by default.
             final_filter_dict.update(additional_filter)
 
-        filter_str = build_filter_string(final_filter_dict)
-
-        return self._sdk.queries.list(
-            study_key, filter=filter_str if filter_str else None, **kwargs
-        )
+        return self._sdk.queries.list(study_key, **final_filter_dict, **kwargs)
 
     def get_queries_by_site(
         self,
@@ -118,14 +111,9 @@ class QueryManagementWorkflow:
         # Build filter dictionary
         final_filter_dict: Dict[str, Any] = {"site_key": site_key}
         if additional_filter:
-            # Simple merge, assumes no key conflicts. API filter string uses ';' (AND) by default.
             final_filter_dict.update(additional_filter)
 
-        filter_str = build_filter_string(final_filter_dict)
-
-        return self._sdk.queries.list(
-            study_key, filter=filter_str if filter_str else None, **kwargs
-        )
+        return self._sdk.queries.list(study_key, **final_filter_dict, **kwargs)
 
     def get_query_state_counts(self, study_key: str, **kwargs: Any) -> Dict[str, int]:
         """

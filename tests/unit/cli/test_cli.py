@@ -77,7 +77,7 @@ def test_subjects_list_success(runner: CliRunner, sdk: MagicMock) -> None:
         ["subjects", "list", "STUDY", "--filter", "subject_status=Screened"],
     )
     assert result.exit_code == 0
-    sdk.subjects.list.assert_called_once_with("STUDY", filter="subject_status==Screened")
+    sdk.subjects.list.assert_called_once_with("STUDY", subject_status="Screened")
 
 
 def test_subjects_list_invalid_filter(runner: CliRunner, sdk: MagicMock) -> None:
