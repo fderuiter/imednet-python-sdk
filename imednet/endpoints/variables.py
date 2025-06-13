@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
-from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.variables import Variable
@@ -102,24 +101,16 @@ class VariablesEndpoint(BaseEndpoint):
         Returns:
             Variable object
         """
-        path = self._build_path(study_key, "variables", variable_id)
-        try:
-            raw = self._client.get(path).json().get("data", [])
-        except NotFoundError:
-            return self._fallback_from_list(study_key, variable_id, "variable_id")
-        if not raw:
+        variables = self.list(study_key=study_key, refresh=True, variableId=variable_id)
+        if not variables:
             raise ValueError(f"Variable {variable_id} not found in study {study_key}")
-        return Variable.from_json(raw[0])
+        return variables[0]
 
     async def async_get(self, study_key: str, variable_id: int) -> Variable:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "variables", variable_id)
-        try:
-            raw = (await self._async_client.get(path)).json().get("data", [])
-        except NotFoundError:
-            return await self._async_fallback_from_list(study_key, variable_id, "variable_id")
-        if not raw:
+        variables = await self.async_list(study_key=study_key, refresh=True, variableId=variable_id)
+        if not variables:
             raise ValueError(f"Variable {variable_id} not found in study {study_key}")
-        return Variable.from_json(raw[0])
+        return variables[0]

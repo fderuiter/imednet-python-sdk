@@ -2,7 +2,6 @@
 
 from typing import Any, Dict, List, Optional
 
-from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.visits import Visit
@@ -68,24 +67,16 @@ class VisitsEndpoint(BaseEndpoint):
         Returns:
             Visit object
         """
-        path = self._build_path(study_key, "visits", visit_id)
-        try:
-            raw = self._client.get(path).json().get("data", [])
-        except NotFoundError:
-            return self._fallback_from_list(study_key, visit_id, "visit_id")
-        if not raw:
+        visits = self.list(study_key=study_key, refresh=True, visitId=visit_id)
+        if not visits:
             raise ValueError(f"Visit {visit_id} not found in study {study_key}")
-        return Visit.from_json(raw[0])
+        return visits[0]
 
     async def async_get(self, study_key: str, visit_id: int) -> Visit:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "visits", visit_id)
-        try:
-            raw = (await self._async_client.get(path)).json().get("data", [])
-        except NotFoundError:
-            return await self._async_fallback_from_list(study_key, visit_id, "visit_id")
-        if not raw:
+        visits = await self.async_list(study_key=study_key, refresh=True, visitId=visit_id)
+        if not visits:
             raise ValueError(f"Visit {visit_id} not found in study {study_key}")
-        return Visit.from_json(raw[0])
+        return visits[0]

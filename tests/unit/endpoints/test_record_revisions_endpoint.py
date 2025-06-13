@@ -17,8 +17,13 @@ def test_list_uses_filters(dummy_client, context, paginator_factory, patch_build
     assert isinstance(result[0], RecordRevision)
 
 
-def test_get_not_found(dummy_client, context, response_factory):
+def test_get_not_found(monkeypatch, dummy_client, context):
     ep = record_revisions.RecordRevisionsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": []})
+
+    def fake_list(self, study_key=None, refresh=False, **filters):
+        return []
+
+    monkeypatch.setattr(record_revisions.RecordRevisionsEndpoint, "list", fake_list)
+
     with pytest.raises(ValueError):
         ep.get("S1", 1)
