@@ -1,3 +1,23 @@
-from .operators import ImednetJobSensor, ImednetToS3Operator
+"""Deprecated Airflow integration location."""
 
-__all__ = ["ImednetToS3Operator", "ImednetJobSensor"]
+import warnings
+
+from imednet.integrations.airflow import (
+    ImednetExportOperator,
+    ImednetHook,
+    ImednetJobSensor,
+    ImednetToS3Operator,
+)
+
+warnings.warn(
+    "`imednet.airflow` is deprecated; use `imednet.integrations.airflow` instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+__all__ = [
+    "ImednetHook",
+    "ImednetToS3Operator",
+    "ImednetJobSensor",
+    "ImednetExportOperator",
+]

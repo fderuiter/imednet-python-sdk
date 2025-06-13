@@ -196,7 +196,7 @@ def test_to_s3_operator_uploads(monkeypatch):
 
     import importlib
 
-    from imednet.airflow import operators as ops
+    from imednet.integrations.airflow import operators as ops
 
     importlib.reload(ops)
 
@@ -210,4 +210,4 @@ def test_to_s3_operator_uploads(monkeypatch):
     assert result == "k"
     body = s3.get_object(Bucket="bucket", Key="k")["Body"].read().decode()
     assert "id" in body
-    sys.modules.pop("imednet.airflow.operators", None)
+    sys.modules.pop("imednet.integrations.airflow.operators", None)

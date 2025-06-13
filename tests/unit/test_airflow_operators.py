@@ -73,7 +73,7 @@ def _setup_airflow(monkeypatch):
 
 def _import_operators(monkeypatch):
     _setup_airflow(monkeypatch)
-    import imednet.airflow.operators as ops
+    import imednet.integrations.airflow.operators as ops
 
     importlib.reload(ops)
     return ops
