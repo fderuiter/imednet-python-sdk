@@ -295,3 +295,21 @@ class ImednetSDK:
                 raise TimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
 
             time.sleep(interval)
+
+
+class AsyncImednetSDK(ImednetSDK):
+    """Async variant of :class:`ImednetSDK` using the async HTTP client."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover - thin wrapper
+        kwargs["enable_async"] = True
+        super().__init__(*args, **kwargs)
+
+    async def __aenter__(self) -> "AsyncImednetSDK":
+        await super().__aenter__()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await super().__aexit__(exc_type, exc_val, exc_tb)
+
+
+__all__: list[str] = ["ImednetSDK", "AsyncImednetSDK", "Workflows"]
