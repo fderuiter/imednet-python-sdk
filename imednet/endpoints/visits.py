@@ -67,7 +67,7 @@ class VisitsEndpoint(BaseEndpoint):
         Returns:
             Visit object
         """
-        visits = self.list(study_key=study_key, refresh=True, visitId=visit_id)
+        visits = self.list(study_key=study_key, visitId=visit_id)
         if not visits:
             raise ValueError(f"Visit {visit_id} not found in study {study_key}")
         return visits[0]
@@ -76,7 +76,7 @@ class VisitsEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        visits = await self.async_list(study_key=study_key, refresh=True, visitId=visit_id)
+        visits = await self.async_list(study_key=study_key, visitId=visit_id)
         if not visits:
             raise ValueError(f"Visit {visit_id} not found in study {study_key}")
         return visits[0]

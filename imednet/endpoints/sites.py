@@ -75,7 +75,7 @@ class SitesEndpoint(BaseEndpoint):
         Returns:
             Site object
         """
-        sites = self.list(study_key=study_key, refresh=True, siteId=site_id)
+        sites = self.list(study_key=study_key, siteId=site_id)
         if not sites:
             raise ValueError(f"Site {site_id} not found in study {study_key}")
         return sites[0]
@@ -84,7 +84,7 @@ class SitesEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        sites = await self.async_list(study_key=study_key, refresh=True, siteId=site_id)
+        sites = await self.async_list(study_key=study_key, siteId=site_id)
         if not sites:
             raise ValueError(f"Site {site_id} not found in study {study_key}")
         return sites[0]

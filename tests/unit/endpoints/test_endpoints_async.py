@@ -170,7 +170,7 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
 
     rec = await ep.async_get("S1", 1)
 
-    assert called == {"study_key": "S1", "refresh": True, "filters": {"recordId": 1}}
+    assert called == {"study_key": "S1", "refresh": False, "filters": {"recordId": 1}}
     assert isinstance(rec, Record)
 
 

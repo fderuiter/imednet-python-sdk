@@ -74,7 +74,7 @@ class UsersEndpoint(BaseEndpoint):
         Returns:
             User object
         """
-        users = self.list(study_key=study_key, refresh=True, userId=user_id)
+        users = self.list(study_key=study_key, userId=user_id)
         if not users:
             raise ValueError(f"User {user_id} not found in study {study_key}")
         return users[0]
@@ -83,7 +83,7 @@ class UsersEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        users = await self.async_list(study_key=study_key, refresh=True, userId=user_id)
+        users = await self.async_list(study_key=study_key, userId=user_id)
         if not users:
             raise ValueError(f"User {user_id} not found in study {study_key}")
         return users[0]

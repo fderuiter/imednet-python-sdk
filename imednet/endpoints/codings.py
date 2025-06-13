@@ -77,7 +77,7 @@ class CodingsEndpoint(BaseEndpoint):
             Coding object
         """
 
-        codings = self.list(study_key=study_key, refresh=True, codingId=coding_id)
+        codings = self.list(study_key=study_key, codingId=coding_id)
         if not codings:
             raise ValueError(f"Coding {coding_id} not found in study {study_key}")
         return codings[0]
@@ -86,7 +86,7 @@ class CodingsEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        codings = await self.async_list(study_key=study_key, refresh=True, codingId=coding_id)
+        codings = await self.async_list(study_key=study_key, codingId=coding_id)
         if not codings:
             raise ValueError(f"Coding {coding_id} not found in study {study_key}")
         return codings[0]

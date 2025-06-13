@@ -67,7 +67,7 @@ class QueriesEndpoint(BaseEndpoint):
         Returns:
             Query object
         """
-        queries = self.list(study_key=study_key, refresh=True, annotationId=annotation_id)
+        queries = self.list(study_key=study_key, annotationId=annotation_id)
         if not queries:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
         return queries[0]
@@ -76,9 +76,7 @@ class QueriesEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        queries = await self.async_list(
-            study_key=study_key, refresh=True, annotationId=annotation_id
-        )
+        queries = await self.async_list(study_key=study_key, annotationId=annotation_id)
         if not queries:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
         return queries[0]

@@ -82,7 +82,7 @@ class RecordsEndpoint(BaseEndpoint):
         Returns:
             Record object
         """
-        records = self.list(study_key=study_key, refresh=True, recordId=record_id)
+        records = self.list(study_key=study_key, recordId=record_id)
         if not records:
             raise ValueError(f"Record {record_id} not found in study {study_key}")
         return records[0]
@@ -91,7 +91,7 @@ class RecordsEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        records = await self.async_list(study_key=study_key, refresh=True, recordId=record_id)
+        records = await self.async_list(study_key=study_key, recordId=record_id)
         if not records:
             raise ValueError(f"Record {record_id} not found in study {study_key}")
         return records[0]

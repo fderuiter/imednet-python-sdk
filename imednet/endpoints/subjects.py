@@ -67,7 +67,7 @@ class SubjectsEndpoint(BaseEndpoint):
         Returns:
             Subject object
         """
-        subjects = self.list(study_key=study_key, refresh=True, subjectKey=subject_key)
+        subjects = self.list(study_key=study_key, subjectKey=subject_key)
         if not subjects:
             raise ValueError(f"Subject {subject_key} not found in study {study_key}")
         return subjects[0]
@@ -76,7 +76,7 @@ class SubjectsEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        subjects = await self.async_list(study_key=study_key, refresh=True, subjectKey=subject_key)
+        subjects = await self.async_list(study_key=study_key, subjectKey=subject_key)
         if not subjects:
             raise ValueError(f"Subject {subject_key} not found in study {study_key}")
         return subjects[0]

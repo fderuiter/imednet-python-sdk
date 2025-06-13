@@ -69,9 +69,7 @@ class RecordRevisionsEndpoint(BaseEndpoint):
         Returns:
             RecordRevision object
         """
-        revisions = self.list(
-            study_key=study_key, refresh=True, recordRevisionId=record_revision_id
-        )
+        revisions = self.list(study_key=study_key, recordRevisionId=record_revision_id)
         if not revisions:
             raise ValueError(f"Record revision {record_revision_id} not found in study {study_key}")
         return revisions[0]
@@ -80,9 +78,7 @@ class RecordRevisionsEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        revisions = await self.async_list(
-            study_key=study_key, refresh=True, recordRevisionId=record_revision_id
-        )
+        revisions = await self.async_list(study_key=study_key, recordRevisionId=record_revision_id)
         if not revisions:
             raise ValueError(f"Record revision {record_revision_id} not found in study {study_key}")
         return revisions[0]
