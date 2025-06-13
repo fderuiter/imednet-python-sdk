@@ -28,9 +28,9 @@ def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
         visit_filter={"visit_id": 1},
     )
 
-    sdk.subjects.list.assert_called_once_with("STUDY", filter="status==active")
-    sdk.visits.list.assert_called_once_with("STUDY", filter="visit_id==1")
-    sdk.records.list.assert_called_once_with("STUDY", filter=None)
+    sdk.subjects.list.assert_called_once_with(study_key="STUDY", status="active")
+    sdk.visits.list.assert_called_once_with(study_key="STUDY", visit_id=1)
+    sdk.records.list.assert_called_once_with(study_key="STUDY", record_data_filter=None)
 
     assert [r.record_id for r in result] == [1, 2]
 

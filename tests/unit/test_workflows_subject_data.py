@@ -22,10 +22,10 @@ def test_get_all_subject_data_aggregates_across_endpoints() -> None:
     wf = SubjectDataWorkflow(sdk)
     result = wf.get_all_subject_data("STUDY", "S1")
 
-    sdk.subjects.list.assert_called_once_with("STUDY", filter="subject_key==S1")
-    sdk.visits.list.assert_called_once_with("STUDY", filter="subject_key==S1")
-    sdk.records.list.assert_called_once_with("STUDY", filter="subject_key==S1")
-    sdk.queries.list.assert_called_once_with("STUDY", filter="subject_key==S1")
+    sdk.subjects.list.assert_called_once_with(study_key="STUDY", subject_key="S1")
+    sdk.visits.list.assert_called_once_with(study_key="STUDY", subject_key="S1")
+    sdk.records.list.assert_called_once_with(study_key="STUDY", subject_key="S1")
+    sdk.queries.list.assert_called_once_with(study_key="STUDY", subject_key="S1")
 
     assert result.subject_details == subject
     assert result.visits == [visit]

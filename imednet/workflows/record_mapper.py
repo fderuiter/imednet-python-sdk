@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field, ValidationError, create_model
 
 from imednet.endpoints.records import Record as RecordModel  # type: ignore[attr-defined]
 from imednet.endpoints.variables import Variable as VariableModel  # type: ignore[attr-defined]
-from imednet.utils.filters import build_filter_string
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -87,9 +86,8 @@ class RecordMapper:
                     "Invalid visit_key '%s'. Should be convertible to int. Fetching all records.",
                     visit_key,
                 )
-        filter_str = build_filter_string(filters) if filters else None
         try:
-            return self.sdk.records.list(study_key=study_key, filter=filter_str)
+            return self.sdk.records.list(study_key=study_key, record_data_filter=None, **filters)
         except Exception as exc:  # pragma: no cover - unexpected
             logger.error("Failed to fetch records for study '%s': %s", study_key, exc)
             return []

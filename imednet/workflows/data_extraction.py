@@ -44,8 +44,7 @@ class DataExtractionWorkflow:
         """
         matching_subject_keys: Optional[List[str]] = None
         if subject_filter:
-            subject_filter_str = build_filter_string(subject_filter)
-            subjects = self._sdk.subjects.list(study_key, filter=subject_filter_str)
+            subjects = self._sdk.subjects.list(study_key=study_key, **subject_filter)
             matching_subject_keys = [s.subject_key for s in subjects]
             if not matching_subject_keys:
                 return []
@@ -53,11 +52,7 @@ class DataExtractionWorkflow:
         # Changed type hint from List[str] to List[int]
         matching_visit_ids: Optional[List[int]] = None
         if visit_filter:
-            # Client-side filtering for subject_key on visits is still needed
-            # as build_filter_string doesn't handle complex AND/OR structures easily
-            # from separate filter dictionaries.
-            visit_filter_str = build_filter_string(visit_filter)
-            visits = self._sdk.visits.list(study_key, filter=visit_filter_str)
+            visits = self._sdk.visits.list(study_key=study_key, **visit_filter)
 
             if matching_subject_keys:
                 visits = [v for v in visits if v.subject_key in matching_subject_keys]
@@ -74,11 +69,10 @@ class DataExtractionWorkflow:
         # Client-side filtering is used below for subject/visit matching,
         # so no need to add complex 'in' clauses here even if build_filter_string supported it.
 
-        record_filter_str = build_filter_string(final_record_filter_dict)
-
         records = self._sdk.records.list(
-            study_key,
-            filter=record_filter_str if record_filter_str else None,
+            study_key=study_key,
+            record_data_filter=None,
+            **final_record_filter_dict,
         )
 
         # Client-side filtering fallback
