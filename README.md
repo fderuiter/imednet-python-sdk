@@ -175,7 +175,8 @@ imednet subjects list --help
 ```
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
-- More examples can be found in the `imednet/examples/` directory.
+- More examples can be found in the `examples/` directory.
+- An architecture diagram is available in `docs/architecture.rst`.
 
 ### Airflow Integration
 
