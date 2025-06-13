@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Union
 
+from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.users import User
@@ -65,7 +66,10 @@ class UsersEndpoint(BaseEndpoint):
             User object
         """
         path = self._build_path(study_key, "users", user_id)
-        raw = self._client.get(path).json().get("data", [])
+        try:
+            raw = self._client.get(path).json().get("data", [])
+        except NotFoundError:
+            return self._fallback_from_list(study_key, user_id, "user_id")
         if not raw:
             raise ValueError(f"User {user_id} not found in study {study_key}")
         return User.from_json(raw[0])
@@ -75,7 +79,10 @@ class UsersEndpoint(BaseEndpoint):
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         path = self._build_path(study_key, "users", user_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
+        try:
+            raw = (await self._async_client.get(path)).json().get("data", [])
+        except NotFoundError:
+            return await self._async_fallback_from_list(study_key, user_id, "user_id")
         if not raw:
             raise ValueError(f"User {user_id} not found in study {study_key}")
         return User.from_json(raw[0])

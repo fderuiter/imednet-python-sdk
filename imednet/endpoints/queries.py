@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
+from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.queries import Query
@@ -68,7 +69,10 @@ class QueriesEndpoint(BaseEndpoint):
             Query object
         """
         path = self._build_path(study_key, "queries", annotation_id)
-        raw = self._client.get(path).json().get("data", [])
+        try:
+            raw = self._client.get(path).json().get("data", [])
+        except NotFoundError:
+            return self._fallback_from_list(study_key, annotation_id, "annotation_id")
         if not raw:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
         return Query.from_json(raw[0])
@@ -78,7 +82,10 @@ class QueriesEndpoint(BaseEndpoint):
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         path = self._build_path(study_key, "queries", annotation_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
+        try:
+            raw = (await self._async_client.get(path)).json().get("data", [])
+        except NotFoundError:
+            return await self._async_fallback_from_list(study_key, annotation_id, "annotation_id")
         if not raw:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
         return Query.from_json(raw[0])

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
+from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.forms import Form
@@ -108,7 +109,10 @@ class FormsEndpoint(BaseEndpoint):
             Form object
         """
         path = self._build_path(study_key, "forms", form_id)
-        raw = self._client.get(path).json().get("data", [])
+        try:
+            raw = self._client.get(path).json().get("data", [])
+        except NotFoundError:
+            return self._fallback_from_list(study_key, form_id, "form_id")
         if not raw:
             raise ValueError(f"Form {form_id} not found in study {study_key}")
         return Form.from_json(raw[0])
@@ -118,7 +122,10 @@ class FormsEndpoint(BaseEndpoint):
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         path = self._build_path(study_key, "forms", form_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
+        try:
+            raw = (await self._async_client.get(path)).json().get("data", [])
+        except NotFoundError:
+            return await self._async_fallback_from_list(study_key, form_id, "form_id")
         if not raw:
             raise ValueError(f"Form {form_id} not found in study {study_key}")
         return Form.from_json(raw[0])
