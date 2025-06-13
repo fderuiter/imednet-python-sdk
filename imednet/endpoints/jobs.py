@@ -11,7 +11,7 @@ class JobsEndpoint(BaseEndpoint):
     Provides a method to fetch a job by its batch ID.
     """
 
-    path = "/api/v1/edc/studies"
+    PATH = "/api/v1/edc/studies"
 
     def get(self, study_key: str, batch_id: str) -> JobStatus:
         """

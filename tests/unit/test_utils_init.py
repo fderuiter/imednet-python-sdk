@@ -15,12 +15,12 @@ def test_lazy_load_pandas_functions() -> None:
 
 def test_lazy_load_schema_objects() -> None:
     cache_cls = utils.SchemaCache
-    from imednet.utils.schema import SchemaCache as expected_cache
-    from imednet.utils.schema import SchemaValidator as expected_validator
+    from imednet.utils.schema import SchemaCache as ExpectedCache
+    from imednet.utils.schema import SchemaValidator as ExpectedValidator
     from imednet.utils.schema import validate_record_data as expected_validate
 
-    assert cache_cls is expected_cache
-    assert utils.SchemaValidator is expected_validator
+    assert cache_cls is ExpectedCache
+    assert utils.SchemaValidator is ExpectedValidator
     assert utils.validate_record_data is expected_validate
 
 

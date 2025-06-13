@@ -17,7 +17,7 @@ class RecordsEndpoint(BaseEndpoint):
     Provides methods to list, retrieve, and create records.
     """
 
-    path = "/api/v1/edc/studies"
+    PATH = "/api/v1/edc/studies"
 
     def list(
         self, study_key: Optional[str] = None, record_data_filter: Optional[str] = None, **filters

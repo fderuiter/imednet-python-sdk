@@ -18,7 +18,7 @@ class VariablesEndpoint(BaseEndpoint):
     Provides methods to list and retrieve individual variables.
     """
 
-    path = "/api/v1/edc/studies"
+    PATH = "/api/v1/edc/studies"
 
     def __init__(
         self,

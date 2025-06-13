@@ -36,10 +36,10 @@ def _setup_airflow(monkeypatch):
     models_mod.BaseOperator = DummyBaseOperator
     sensors_base.BaseSensorOperator = DummySensorOperator
 
-    class DummyAirflowException(Exception):
+    class DummyAirflowError(Exception):
         pass
 
-    exc_mod.AirflowException = DummyAirflowException
+    exc_mod.AirflowException = DummyAirflowError
     s3_mod.S3Hook = MagicMock
 
     hooks_pkg.base = hooks_base

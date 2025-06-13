@@ -145,7 +145,7 @@ def test_to_s3_operator_uploads(monkeypatch):
         def __init__(self, **kwargs):
             pass
 
-    class DummyAirflowException(Exception):
+    class DummyAirflowError(Exception):
         pass
 
     class DummyS3Hook:
@@ -165,7 +165,7 @@ def test_to_s3_operator_uploads(monkeypatch):
     models_mod.BaseOperator = DummyBaseOperator
     s3_mod.S3Hook = DummyS3Hook
     sensors_base.BaseSensorOperator = DummySensorOperator
-    exc_mod.AirflowException = DummyAirflowException
+    exc_mod.AirflowException = DummyAirflowError
 
     hooks_pkg.base = hooks_base
     airflow.hooks = hooks_pkg

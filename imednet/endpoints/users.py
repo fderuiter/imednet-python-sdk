@@ -14,7 +14,7 @@ class UsersEndpoint(BaseEndpoint):
     Provides methods to list and retrieve user information.
     """
 
-    path = "/api/v1/edc/studies"
+    PATH = "/api/v1/edc/studies"
 
     def list(self, study_key: Optional[str] = None, include_inactive: bool = False) -> List[User]:
         """
