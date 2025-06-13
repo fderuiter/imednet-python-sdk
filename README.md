@@ -171,6 +171,10 @@ imednet records list STUDY_KEY
 
 # Get help for a specific command
 imednet subjects list --help
+
+# Show installed SDK version
+imednet version
+imednet --version
 ```
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
