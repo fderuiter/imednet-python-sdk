@@ -121,6 +121,87 @@ def list_studies():
         raise typer.Exit(code=1)
 
 
+# --- Queries Commands ---
+queries_app = typer.Typer(name="queries", help="Manage queries within a study.")
+app.add_typer(queries_app)
+
+
+@queries_app.command("list")
+def list_queries(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+) -> None:
+    """List queries for a study."""
+    sdk = get_sdk()
+    try:
+        print(f"Fetching queries for study '{study_key}'...")
+        queries = sdk.queries.list(study_key)
+        if queries:
+            print(f"Found {len(queries)} queries:")
+            print(queries)
+        else:
+            print("No queries found.")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+# --- Variables Commands ---
+variables_app = typer.Typer(name="variables", help="Manage variables within a study.")
+app.add_typer(variables_app)
+
+
+@variables_app.command("list")
+def list_variables(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+) -> None:
+    """List variables for a study."""
+    sdk = get_sdk()
+    try:
+        print(f"Fetching variables for study '{study_key}'...")
+        variables = sdk.variables.list(study_key)
+        if variables:
+            print(f"Found {len(variables)} variables:")
+            print(variables)
+        else:
+            print("No variables found.")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+# --- Record Revisions Commands ---
+record_revisions_app = typer.Typer(name="record-revisions", help="Manage record revision history.")
+app.add_typer(record_revisions_app)
+
+
+@record_revisions_app.command("list")
+def list_record_revisions(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+) -> None:
+    """List record revisions for a study."""
+    sdk = get_sdk()
+    try:
+        print(f"Fetching record revisions for study '{study_key}'...")
+        revisions = sdk.record_revisions.list(study_key)
+        if revisions:
+            print(f"Found {len(revisions)} record revisions:")
+            print(revisions)
+        else:
+            print("No record revisions found.")
+    except ApiError as e:
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
 # --- Sites Commands ---
 sites_app = typer.Typer(name="sites", help="Manage sites within a study.")
 app.add_typer(sites_app)
