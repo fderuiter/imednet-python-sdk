@@ -241,3 +241,14 @@ def test_subject_data_calls_workflow(
     result = runner.invoke(cli.app, ["subject-data", "STUDY", "SUBJ"])
     assert result.exit_code == 0
     workflow.get_all_subject_data.assert_called_once_with("STUDY", "SUBJ")
+
+def test_jobs_status_success(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["jobs", "status", "STUDY", "BATCH"])
+    assert result.exit_code == 0
+    sdk.get_job.assert_called_once_with("STUDY", "BATCH")
+
+
+def test_jobs_wait_success(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["jobs", "wait", "STUDY", "BATCH"])
+    assert result.exit_code == 0
+    sdk.poll_job.assert_called_once_with("STUDY", "BATCH", interval=5, timeout=300)
