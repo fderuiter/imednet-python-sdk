@@ -81,7 +81,7 @@ class RecordMapper:
                 Field(None, alias=key, description=label_map.get(key, key)),
             )  # Use get for safety
 
-        RecordDataModel: Type[BaseModel] = create_model(
+        record_data_model: Type[BaseModel] = create_model(
             "RecordData",
             __base__=BaseModel,
             **fields,  # type: ignore
@@ -129,7 +129,7 @@ class RecordMapper:
                 # Parse recordData through dynamic model
                 # Ensure record_data is a dict before attempting to parse
                 record_data_dict = r.record_data if isinstance(r.record_data, dict) else {}
-                parsed_data = RecordDataModel(**record_data_dict).model_dump(by_alias=False)
+                parsed_data = record_data_model(**record_data_dict).model_dump(by_alias=False)
                 rows.append({**meta, **parsed_data})
             except (ValidationError, TypeError) as e:
                 parsing_errors += 1

@@ -18,7 +18,7 @@ class FormsEndpoint(BaseEndpoint):
     Provides methods to list and retrieve individual forms.
     """
 
-    path = "/api/v1/edc/studies"
+    PATH = "/api/v1/edc/studies"
 
     def __init__(
         self,

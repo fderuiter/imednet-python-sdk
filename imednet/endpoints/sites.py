@@ -15,7 +15,7 @@ class SitesEndpoint(BaseEndpoint):
     Provides methods to list and retrieve individual sites.
     """
 
-    path = "/api/v1/edc/studies"
+    PATH = "/api/v1/edc/studies"
 
     def list(self, study_key: Optional[str] = None, **filters) -> List[Site]:
         """

@@ -18,7 +18,7 @@ class StudiesEndpoint(BaseEndpoint):
     Provides methods to list available studies and retrieve specific studies.
     """
 
-    path = "/api/v1/edc/studies"
+    PATH = "/api/v1/edc/studies"
 
     def __init__(
         self,
@@ -46,7 +46,7 @@ class StudiesEndpoint(BaseEndpoint):
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
-        paginator = Paginator(self._client, self.path, params=params)
+        paginator = Paginator(self._client, self.PATH, params=params)
         result = [Study.model_validate(item) for item in paginator]
         if not filters:
             self._studies_cache = result
@@ -63,7 +63,7 @@ class StudiesEndpoint(BaseEndpoint):
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
-        paginator = AsyncPaginator(self._async_client, self.path, params=params)
+        paginator = AsyncPaginator(self._async_client, self.PATH, params=params)
         result = [Study.model_validate(item) async for item in paginator]
         if not filters:
             self._studies_cache = result

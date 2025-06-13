@@ -16,7 +16,7 @@ class BaseEndpoint:
     Handles context injection and filtering.
     """
 
-    path: str  # to be set in subclasses
+    PATH: str  # to be set in subclasses
 
     def __init__(
         self,
@@ -36,5 +36,5 @@ class BaseEndpoint:
 
     def _build_path(self, *args: Any) -> str:
         # join path segments after base path
-        segments = [self.path.strip("/")] + [str(a).strip("/") for a in args]
+        segments = [self.PATH.strip("/")] + [str(a).strip("/") for a in args]
         return "/" + "/".join(segments)
