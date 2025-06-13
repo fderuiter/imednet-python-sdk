@@ -19,22 +19,27 @@ def test_successful_get_sync_client():
 
 
 @respx.mock
-def test_retry_on_transient_500():
+def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
     client = Client("k", "s", base_url="https://api.test", retries=3)
-    call_count = {"n": 0}
+    calls = {"count": 0}
 
-    def responder(request):
-        call_count["n"] += 1
-        if call_count["n"] < 3:
-            raise httpx.ReadTimeout("boom", request=request)
+    def request(method: str, url: str, **kwargs: object) -> httpx.Response:
+        calls["count"] += 1
+        if calls["count"] < 3:
+            raise exceptions.ServerError({}, status_code=500)
         return httpx.Response(200, json={"ok": True})
 
-    respx.get("https://api.test/api/v1/edc/studies").mock(side_effect=responder)
+    monkeypatch.setattr(client._client, "request", request)
+    monkeypatch.setattr(
+        client,
+        "_should_retry",
+        lambda state: isinstance(state.outcome.exception(), exceptions.ServerError),
+    )
 
     resp = client.get("/api/v1/edc/studies")
 
     assert resp.status_code == 200
-    assert call_count["n"] == 3
+    assert calls["count"] == 3
 
 
 @respx.mock
