@@ -278,3 +278,14 @@ def test_record_revisions_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
     assert result.exit_code == 0
     assert "No record revisions found." in result.stdout
+
+def test_jobs_status_success(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["jobs", "status", "STUDY", "BATCH"])
+    assert result.exit_code == 0
+    sdk.get_job.assert_called_once_with("STUDY", "BATCH")
+
+
+def test_jobs_wait_success(runner: CliRunner, sdk: MagicMock) -> None:
+    result = runner.invoke(cli.app, ["jobs", "wait", "STUDY", "BATCH"])
+    assert result.exit_code == 0
+    sdk.poll_job.assert_called_once_with("STUDY", "BATCH", interval=5, timeout=300)
