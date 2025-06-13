@@ -24,6 +24,7 @@ Available Commands
    imednet subjects list <STUDY_KEY> [--filter key=value ...]
    imednet records list <STUDY_KEY> [--output csv|json]
    imednet workflows extract-records <STUDY_KEY> [options]
+   imednet version
 
 Examples
 --------
