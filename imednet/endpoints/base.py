@@ -38,3 +38,19 @@ class BaseEndpoint:
         # join path segments after base path
         segments = [self.PATH.strip("/")] + [str(a).strip("/") for a in args]
         return "/" + "/".join(segments)
+
+    # ------------------------------------------------------------------
+    # Helper methods
+    # ------------------------------------------------------------------
+    def _fallback_from_list(self, study_key: str, item_id: Any, attr: str):
+        """Return an item from ``list`` when direct ``get`` fails."""
+        for item in self.list(study_key):  # type: ignore[attr-defined]
+            if str(getattr(item, attr)) == str(item_id):
+                return item
+        raise ValueError(f"{attr} {item_id} not found in study {study_key}")
+
+    async def _async_fallback_from_list(self, study_key: str, item_id: Any, attr: str):
+        for item in await self.async_list(study_key):  # type: ignore[attr-defined]
+            if str(getattr(item, attr)) == str(item_id):
+                return item
+        raise ValueError(f"{attr} {item_id} not found in study {study_key}")

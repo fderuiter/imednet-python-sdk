@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
+from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.codings import Coding
@@ -78,7 +79,10 @@ class CodingsEndpoint(BaseEndpoint):
         """
 
         path = self._build_path(study_key, "codings", coding_id)
-        raw = self._client.get(path).json().get("data", [])
+        try:
+            raw = self._client.get(path).json().get("data", [])
+        except NotFoundError:
+            return self._fallback_from_list(study_key, coding_id, "coding_id")
         if not raw:
             raise ValueError(f"Coding {coding_id} not found in study {study_key}")
         return Coding.from_json(raw[0])
@@ -88,7 +92,10 @@ class CodingsEndpoint(BaseEndpoint):
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         path = self._build_path(study_key, "codings", coding_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
+        try:
+            raw = (await self._async_client.get(path)).json().get("data", [])
+        except NotFoundError:
+            return await self._async_fallback_from_list(study_key, coding_id, "coding_id")
         if not raw:
             raise ValueError(f"Coding {coding_id} not found in study {study_key}")
         return Coding.from_json(raw[0])
