@@ -109,3 +109,77 @@ def test_query_management_counts():
     counts = wf.get_query_state_counts("ST")
 
     assert counts == {"open": 1, "closed": 1, "unknown": 1}
+
+
+@respx.mock
+def test_data_extraction_no_matching_subjects() -> None:
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
+    subjects_route = respx.get("https://api.test/api/v1/edc/studies/ST/subjects").respond(
+        json={"data": []}
+    )
+    visits_route = respx.get("https://api.test/api/v1/edc/studies/ST/visits").mock(
+        side_effect=AssertionError("visits should not be called")
+    )
+    records_route = respx.get("https://api.test/api/v1/edc/studies/ST/records").mock(
+        side_effect=AssertionError("records should not be called")
+    )
+
+    wf = DataExtractionWorkflow(sdk)
+    recs = wf.extract_records_by_criteria("ST", subject_filter={"status": "active"})
+
+    assert recs == []
+    assert subjects_route.called
+    assert not visits_route.called
+    assert not records_route.called
+
+
+@respx.mock
+def test_record_update_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
+    respx.get(re.compile("https://api.test/api/v1/edc/studies/ST/variables.*")).respond(
+        json={"data": []}
+    )
+    respx.post("https://api.test/api/v1/edc/studies/ST/records").respond(
+        json={"batchId": "B1", "state": "PROCESSING"}
+    )
+    respx.get("https://api.test/api/v1/edc/studies/ST/jobs/B1").respond(
+        json={"batchId": "B1", "state": "PROCESSING"}
+    )
+
+    counter = {"v": 0}
+
+    def monotonic() -> int:
+        counter["v"] += 1
+        return counter["v"]
+
+    monkeypatch.setattr(time, "monotonic", monotonic)
+    monkeypatch.setattr(time, "sleep", lambda *_: None)
+
+    wf = RecordUpdateWorkflow(sdk)
+    with pytest.raises(TimeoutError):
+        wf.submit_record_batch(
+            "ST",
+            [{"formKey": "F1", "data": {"x": 1}}],
+            wait_for_completion=True,
+            timeout=1,
+            poll_interval=0,
+        )
+
+
+@respx.mock
+def test_get_open_queries() -> None:
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
+    respx.get("https://api.test/api/v1/edc/studies/ST/queries").respond(
+        json={
+            "data": [
+                {"queryComments": [{"sequence": 1, "closed": True}]},
+                {"queryComments": [{"sequence": 1, "closed": False}]},
+            ]
+        }
+    )
+
+    wf = QueryManagementWorkflow(sdk)
+    queries = wf.get_open_queries("ST")
+
+    assert len(queries) == 1
+    assert not queries[0].query_comments[0].closed
