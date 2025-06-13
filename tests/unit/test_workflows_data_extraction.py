@@ -29,8 +29,11 @@ def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
     )
 
     sdk.subjects.list.assert_called_once_with("STUDY", status="active")
+    assert sdk.subjects.list.call_args.kwargs == {"status": "active"}
     sdk.visits.list.assert_called_once_with("STUDY", visit_id=1)
+    assert sdk.visits.list.call_args.kwargs == {"visit_id": 1}
     sdk.records.list.assert_called_once_with(study_key="STUDY", record_data_filter=None)
+    assert sdk.records.list.call_args.kwargs == {"study_key": "STUDY", "record_data_filter": None}
 
     assert [r.record_id for r in result] == [1, 2]
 
@@ -56,4 +59,10 @@ def test_extract_audit_trail_builds_filters_and_dates() -> None:
         start_date="2021-01-01",
         end_date="2021-01-02",
     )
+    assert sdk.record_revisions.list.call_args.kwargs == {
+        "role": "data",
+        "status": "open",
+        "start_date": "2021-01-01",
+        "end_date": "2021-01-02",
+    }
     assert result == revisions
