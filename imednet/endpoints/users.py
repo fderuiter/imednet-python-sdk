@@ -2,10 +2,10 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.users import User
+from imednet.utils.filters import build_filter_string
 
 
 class UsersEndpoint(BaseEndpoint):
@@ -17,7 +17,9 @@ class UsersEndpoint(BaseEndpoint):
 
     PATH = "/api/v1/edc/studies"
 
-    def list(self, study_key: Optional[str] = None, include_inactive: bool = False) -> List[User]:
+    def list(
+        self, study_key: Optional[str] = None, include_inactive: bool = False, **filters: Any
+    ) -> List[User]:
         """
         List users in a study with optional filtering.
 
@@ -33,13 +35,18 @@ class UsersEndpoint(BaseEndpoint):
             raise ValueError("Study key must be provided or set in the context")
 
         params: Dict[str, Any] = {"includeInactive": str(include_inactive).lower()}
+        if filters:
+            params["filter"] = build_filter_string(filters)
 
         path = self._build_path(study_key, "users")
         paginator = Paginator(self._client, path, params=params)
         return [User.from_json(item) for item in paginator]
 
     async def async_list(
-        self, study_key: Optional[str] = None, include_inactive: bool = False
+        self,
+        study_key: Optional[str] = None,
+        include_inactive: bool = False,
+        **filters: Any,
     ) -> List[User]:
         """Asynchronous version of :meth:`list`."""
         if self._async_client is None:
@@ -49,6 +56,8 @@ class UsersEndpoint(BaseEndpoint):
             raise ValueError("Study key must be provided or set in the context")
 
         params: Dict[str, Any] = {"includeInactive": str(include_inactive).lower()}
+        if filters:
+            params["filter"] = build_filter_string(filters)
 
         path = self._build_path(study_key, "users")
         paginator = AsyncPaginator(self._async_client, path, params=params)
@@ -65,24 +74,16 @@ class UsersEndpoint(BaseEndpoint):
         Returns:
             User object
         """
-        path = self._build_path(study_key, "users", user_id)
-        try:
-            raw = self._client.get(path).json().get("data", [])
-        except NotFoundError:
-            return self._fallback_from_list(study_key, user_id, "user_id")
-        if not raw:
+        users = self.list(study_key=study_key, refresh=True, userId=user_id)
+        if not users:
             raise ValueError(f"User {user_id} not found in study {study_key}")
-        return User.from_json(raw[0])
+        return users[0]
 
     async def async_get(self, study_key: str, user_id: Union[str, int]) -> User:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "users", user_id)
-        try:
-            raw = (await self._async_client.get(path)).json().get("data", [])
-        except NotFoundError:
-            return await self._async_fallback_from_list(study_key, user_id, "user_id")
-        if not raw:
+        users = await self.async_list(study_key=study_key, refresh=True, userId=user_id)
+        if not users:
             raise ValueError(f"User {user_id} not found in study {study_key}")
-        return User.from_json(raw[0])
+        return users[0]

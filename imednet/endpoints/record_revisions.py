@@ -2,7 +2,6 @@
 
 from typing import Any, Dict, List, Optional
 
-from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.record_revisions import RecordRevision
@@ -70,28 +69,20 @@ class RecordRevisionsEndpoint(BaseEndpoint):
         Returns:
             RecordRevision object
         """
-        path = self._build_path(study_key, "recordRevisions", record_revision_id)
-        try:
-            raw = self._client.get(path).json().get("data", [])
-        except NotFoundError:
-            return self._fallback_from_list(study_key, record_revision_id, "record_revision_id")
-        if not raw:
+        revisions = self.list(
+            study_key=study_key, refresh=True, recordRevisionId=record_revision_id
+        )
+        if not revisions:
             raise ValueError(f"Record revision {record_revision_id} not found in study {study_key}")
-        return RecordRevision.from_json(raw[0])
+        return revisions[0]
 
     async def async_get(self, study_key: str, record_revision_id: int) -> RecordRevision:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "recordRevisions", record_revision_id)
-        try:
-            raw = (await self._async_client.get(path)).json().get("data", [])
-        except NotFoundError:
-            return await self._async_fallback_from_list(
-                study_key,
-                record_revision_id,
-                "record_revision_id",
-            )
-        if not raw:
+        revisions = await self.async_list(
+            study_key=study_key, refresh=True, recordRevisionId=record_revision_id
+        )
+        if not revisions:
             raise ValueError(f"Record revision {record_revision_id} not found in study {study_key}")
-        return RecordRevision.from_json(raw[0])
+        return revisions[0]

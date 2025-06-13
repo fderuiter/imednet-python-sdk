@@ -156,26 +156,33 @@ async def test_async_get_job(dummy_client, context, response_factory):
 
 
 @pytest.mark.asyncio
-async def test_async_get_record(dummy_client, context, response_factory):
+async def test_async_get_record(monkeypatch, dummy_client, context, response_factory):
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    called = {}
 
-    async def fake_get(path):
-        assert path == "/api/v1/edc/studies/S1/records/1"
-        return response_factory({"data": [{"recordId": 1}]})
+    async def fake_list(self, study_key=None, refresh=False, **filters):
+        called["study_key"] = study_key
+        called["refresh"] = refresh
+        called["filters"] = filters
+        return [Record(record_id=1)]
 
-    dummy_client.get = fake_get
+    monkeypatch.setattr(records.RecordsEndpoint, "async_list", fake_list)
+
     rec = await ep.async_get("S1", 1)
+
+    assert called == {"study_key": "S1", "refresh": True, "filters": {"recordId": 1}}
     assert isinstance(rec, Record)
 
 
 @pytest.mark.asyncio
-async def test_async_get_record_not_found(dummy_client, context, response_factory):
+async def test_async_get_record_not_found(monkeypatch, dummy_client, context, response_factory):
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
 
-    async def fake_get(path):
-        return response_factory({"data": []})
+    async def fake_list(self, study_key=None, refresh=False, **filters):
+        return []
 
-    dummy_client.get = fake_get
+    monkeypatch.setattr(records.RecordsEndpoint, "async_list", fake_list)
+
     with pytest.raises(ValueError):
         await ep.async_get("S1", 1)
 

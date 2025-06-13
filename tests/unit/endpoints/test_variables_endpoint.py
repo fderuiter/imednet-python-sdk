@@ -22,9 +22,14 @@ def test_list_requires_study_key_page_size(
     assert isinstance(result[0], Variable)
 
 
-def test_get_not_found(dummy_client, context, response_factory):
+def test_get_not_found(monkeypatch, dummy_client, context):
     ep = variables.VariablesEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": []})
+
+    def fake_list(self, study_key=None, refresh=False, **filters):
+        return []
+
+    monkeypatch.setattr(variables.VariablesEndpoint, "list", fake_list)
+
     with pytest.raises(ValueError):
         ep.get("S1", 1)
 

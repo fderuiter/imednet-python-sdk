@@ -2,7 +2,6 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.core.exceptions import NotFoundError
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
@@ -83,27 +82,19 @@ class RecordsEndpoint(BaseEndpoint):
         Returns:
             Record object
         """
-        path = self._build_path(study_key, "records", record_id)
-        try:
-            raw = self._client.get(path).json().get("data", [])
-        except NotFoundError:
-            return self._fallback_from_list(study_key, record_id, "record_id")
-        if not raw:
+        records = self.list(study_key=study_key, refresh=True, recordId=record_id)
+        if not records:
             raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return Record.from_json(raw[0])
+        return records[0]
 
     async def async_get(self, study_key: str, record_id: Union[str, int]) -> Record:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "records", record_id)
-        try:
-            raw = (await self._async_client.get(path)).json().get("data", [])
-        except NotFoundError:
-            return await self._async_fallback_from_list(study_key, record_id, "record_id")
-        if not raw:
+        records = await self.async_list(study_key=study_key, refresh=True, recordId=record_id)
+        if not records:
             raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return Record.from_json(raw[0])
+        return records[0]
 
     def create(
         self,
