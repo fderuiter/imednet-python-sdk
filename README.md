@@ -24,6 +24,7 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Workflow utilities for data extraction and mapping
 - Pandas helpers for DataFrame conversion and CSV export
 - Optional in-memory caching for study and variable listings
+- Fully typed API checked with mypy in strict mode
 
 Calls to `sdk.studies.list()` and `sdk.variables.list()` cache results in memory.
 Use `refresh=True` to fetch fresh data.
@@ -264,13 +265,17 @@ Then open `docs/_build/html/index.html` in your browser.
 
 ## Development
 
-- Code style: [Black](https://github.com/psf/black), [ruff](https://github.com/charliermarsh/ruff), [mypy](http://mypy-lang.org/)
+- Code style: [Black](https://github.com/psf/black) and [ruff](https://github.com/astral-sh/ruff)
+- Type checking: [mypy](http://mypy-lang.org/) in strict mode
 - Testing: [pytest](https://pytest.org/)
 
-Build and test:
+Run the quality checks:
 
 ```bash
-poetry run pytest --cov=imednet
+poetry run ruff check --fix .
+poetry run black --check .
+poetry run mypy imednet
+poetry run pytest -q
 ```
 The unit test suite covers over 90% of the codebase.
 
@@ -287,7 +292,8 @@ IMEDNET_RUN_E2E=1 IMEDNET_API_KEY=... IMEDNET_SECURITY_KEY=... pytest tests/live
 ```
 
 Run `./scripts/setup.sh` once before running tests to install the development
-dependencies and set up the pre-commit hooks.
+dependencies and set up the pre-commit hooks. The hooks run black, ruff,
+`mypy` in strict mode, and pytest automatically.
 
 ## Contributing
 

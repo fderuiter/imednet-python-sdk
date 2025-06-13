@@ -11,7 +11,14 @@ We love your input! We want to make contributing to this project as easy and tra
 1. Fork the repository.
 2. Create a new branch: `git checkout -b feature/my-feature` or `git checkout -b fix/my-bug`.
 3. Write tests for your change (`pytest`).
-4. Ensure code style with `black`, `ruff`, and type checks with `mypy`.
+4. Ensure code style and strict type checking by running:
+
+   ```bash
+   poetry run ruff check --fix .
+   poetry run black --check .
+   poetry run mypy imednet
+   poetry run pytest -q
+   ```
 5. Commit your changes following Conventional Commits:
    - `feat: add new endpoint for X`
    - `fix: correct pagination logic`
@@ -59,4 +66,5 @@ poetry run pytest
 ```
 
 Run `./scripts/setup.sh` before running tests to ensure all development
-dependencies are installed and pre-commit hooks are set up.
+dependencies are installed and the pre-commit hooks are set up. The hooks format
+with black, lint with ruff, enforce strict type checks, and run pytest.
