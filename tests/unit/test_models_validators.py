@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from imednet.models import validators
+from imednet.utils import validators
 
 
 def test_parse_bool_various_inputs():

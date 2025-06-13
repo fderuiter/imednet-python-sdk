@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from .validators import parse_datetime, parse_str_or_default
+from imednet.utils.validators import parse_datetime, parse_str_or_default
 
 
 class Job(BaseModel):

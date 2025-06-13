@@ -30,6 +30,35 @@ def __getattr__(name: str):
             }
         )
         return globals()[name]
+    if name in {
+        "parse_bool",
+        "parse_datetime",
+        "parse_int_or_default",
+        "parse_str_or_default",
+        "parse_list_or_default",
+        "parse_dict_or_default",
+    }:
+        from .validators import (
+            parse_bool,
+            parse_datetime,
+            parse_dict_or_default,
+            parse_int_or_default,
+            parse_list_or_default,
+            parse_str_or_default,
+        )
+
+        globals().update(
+            {
+                "parse_bool": parse_bool,
+                "parse_datetime": parse_datetime,
+                "parse_int_or_default": parse_int_or_default,
+                "parse_str_or_default": parse_str_or_default,
+                "parse_list_or_default": parse_list_or_default,
+                "parse_dict_or_default": parse_dict_or_default,
+            }
+        )
+        return globals()[name]
+
     raise AttributeError(name)
 
 
@@ -45,4 +74,10 @@ __all__ = [
     "SchemaCache",
     "validate_record_data",
     "SchemaValidator",
+    "parse_bool",
+    "parse_datetime",
+    "parse_int_or_default",
+    "parse_str_or_default",
+    "parse_list_or_default",
+    "parse_dict_or_default",
 ]

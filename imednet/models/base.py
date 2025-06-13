@@ -7,7 +7,7 @@ from typing import Any, Dict, Generic, List, Optional, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from .validators import (
+from imednet.utils.validators import (
     parse_datetime,
     parse_int_or_default,
     parse_list_or_default,
