@@ -6,6 +6,7 @@ Welcome to imednet-sdk's documentation!
    :caption: Contents:
 
    logging_and_tracing
+   api_overview
    cli
    airflow
    modules
