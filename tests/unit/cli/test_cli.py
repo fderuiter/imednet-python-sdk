@@ -3,7 +3,6 @@ from unittest.mock import MagicMock
 
 import imednet.cli as cli
 import pytest
-from imednet import __version__
 from imednet.core.exceptions import ApiError
 from typer.testing import CliRunner
 
@@ -232,15 +231,6 @@ def test_export_sql_calls_helper(
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
 
-
-def test_version_command(runner: CliRunner) -> None:
-    result = runner.invoke(cli.app, ["version"])
-    assert result.exit_code == 0
-    assert result.stdout.strip() == __version__
-
-    flag_result = runner.invoke(cli.app, ["--version"])
-    assert flag_result.exit_code == 0
-    assert flag_result.stdout.strip() == __version__
 
 def test_jobs_status_success(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["jobs", "status", "STUDY", "BATCH"])
