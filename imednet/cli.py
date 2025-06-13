@@ -23,6 +23,7 @@ from .sdk import ImednetSDK
 # Import the public filter utility
 from .utils.filters import build_filter_string
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.subject_data import SubjectDataWorkflow
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -400,6 +401,26 @@ def extract_records(
 
     except ApiError as e:
         # Print the exception directly
+        print(f"[bold red]API Error:[/bold red] {e}")
+        raise typer.Exit(code=1)
+    except Exception as e:
+        print(f"[bold red]An unexpected error occurred:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+
+@app.command("subject-data")
+def subject_data(
+    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    subject_key: str = typer.Argument(..., help="The key identifying the subject."),
+):
+    """Retrieve all data for a single subject."""
+    sdk = get_sdk()
+    workflow = SubjectDataWorkflow(sdk)
+
+    try:
+        data = workflow.get_all_subject_data(study_key, subject_key)
+        print(data.model_dump())
+    except ApiError as e:
         print(f"[bold red]API Error:[/bold red] {e}")
         raise typer.Exit(code=1)
     except Exception as e:
