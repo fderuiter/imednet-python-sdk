@@ -107,6 +107,9 @@ class Client:
             raise ValueError("API key and security key are required")
 
         self.base_url = base_url or os.getenv("IMEDNET_BASE_URL") or self.DEFAULT_BASE_URL
+        self.base_url = self.base_url.rstrip("/")
+        if self.base_url.endswith("/api"):
+            self.base_url = self.base_url[:-4]
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
         self.backoff_factor = backoff_factor

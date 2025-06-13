@@ -52,12 +52,12 @@ Keep these keys secure and never commit them to source control:
 $env:IMEDNET_API_KEY="your_api_key_here"
 $env:IMEDNET_SECURITY_KEY="your_security_key_here"
 # Optional: Set if using a non-standard base URL
-# $env:IMEDNET_BASE_URL="https://your.imednet.instance/api"
+# $env:IMEDNET_BASE_URL="https://your.imednet.instance"
 
 # For Bash/Zsh:
 # export IMEDNET_API_KEY="your_api_key_here"
 # export IMEDNET_SECURITY_KEY="your_security_key_here"
-# export IMEDNET_BASE_URL="https://your.imednet.instance/api"
+# export IMEDNET_BASE_URL="https://your.imednet.instance"
 ```
 
 ### Using the Python SDK
@@ -145,6 +145,20 @@ from imednet.utils.pandas import export_records_csv
 
 sdk = ImednetSDK()
 export_records_csv(sdk, study_key, "records.csv")
+```
+
+### Exporting records to Excel
+
+Install `openpyxl` or the pandas `excel` extras to enable Excel export:
+
+```bash
+pip install pandas[excel]
+```
+
+```python
+from imednet.integrations import export
+
+export.export_to_excel(sdk, study_key, "records.xlsx")
 ```
 
 ### Using the Command Line Interface (CLI)
