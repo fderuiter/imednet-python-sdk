@@ -127,7 +127,7 @@ def test_record_mapper_dataframe(sdk: ImednetSDK, study_key: str) -> None:
 def test_record_update_submit_batch(sdk: ImednetSDK, study_key: str) -> None:
     if os.getenv("IMEDNET_ALLOW_MUTATION") != "1":
         pytest.skip("Mutating tests are disabled")
-    job = sdk.workflows.record_update.submit_record_batch(study_key, [])
+    job = sdk.workflows.record_update.create_or_update_records(study_key, [])
     assert job.batch_id
 
 
