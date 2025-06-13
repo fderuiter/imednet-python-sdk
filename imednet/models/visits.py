@@ -5,7 +5,12 @@ from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from .validators import parse_bool, parse_datetime, parse_int_or_default, parse_str_or_default
+from imednet.utils.validators import (
+    parse_bool,
+    parse_datetime,
+    parse_int_or_default,
+    parse_str_or_default,
+)
 
 
 class Visit(BaseModel):

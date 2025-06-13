@@ -24,7 +24,9 @@ from imednet.models.studies import Study
 from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
 from imednet.models.subjects import Subject, SubjectKeyword
 from imednet.models.users import Role, User
-from imednet.models.validators import (
+from imednet.models.variables import Variable
+from imednet.models.visits import Visit
+from imednet.utils.validators import (
     parse_bool,
     parse_datetime,
     parse_dict_or_default,
@@ -32,8 +34,6 @@ from imednet.models.validators import (
     parse_list_or_default,
     parse_str_or_default,
 )
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
 
 __all__: list[str] = [
     "Coding",
