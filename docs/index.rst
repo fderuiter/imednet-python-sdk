@@ -9,6 +9,7 @@ Welcome to imednet-sdk's documentation!
    api_overview
    cli
    airflow
+   live_test_plan
    modules
 
 
