@@ -2,12 +2,45 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
-from ..core.exceptions import ValidationError
+from ..core.exceptions import UnknownVariableTypeError, ValidationError
 from ..endpoints.forms import FormsEndpoint
 from ..endpoints.variables import VariablesEndpoint
 from ..models.variables import Variable
+
+
+def _validate_int(value: Any) -> None:
+    if not isinstance(value, int):
+        raise ValidationError("Value must be an integer")
+
+
+def _validate_float(value: Any) -> None:
+    if not isinstance(value, (int, float)):
+        raise ValidationError("Value must be numeric")
+
+
+def _validate_bool(value: Any) -> None:
+    if not isinstance(value, bool):
+        raise ValidationError("Value must be boolean")
+
+
+def _validate_text(value: Any) -> None:
+    if not isinstance(value, str):
+        raise ValidationError("Value must be a string")
+
+
+_TYPE_VALIDATORS: dict[str, Callable[[Any], None]] = {
+    "int": _validate_int,
+    "integer": _validate_int,
+    "number": _validate_int,
+    "float": _validate_float,
+    "decimal": _validate_float,
+    "bool": _validate_bool,
+    "boolean": _validate_bool,
+    "text": _validate_text,
+    "string": _validate_text,
+}
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -41,23 +74,14 @@ class SchemaCache:
         return self._form_id_to_key.get(form_id)
 
 
-def _check_type(var: Variable, value: Any) -> None:
-    t = var.variable_type.lower()
+def _check_type(var_type: str, value: Any) -> None:
     if value is None:
         return
-    if t in {"int", "integer", "number"}:
-        if not isinstance(value, int):
-            raise ValidationError(f"{var.variable_name} must be an integer")
-    elif t in {"float", "decimal"}:
-        if not isinstance(value, (int, float)):
-            raise ValidationError(f"{var.variable_name} must be numeric")
-    elif t in {"bool", "boolean"}:
-        if not isinstance(value, bool):
-            raise ValidationError(f"{var.variable_name} must be boolean")
-    elif t in {"text", "string"}:
-        if not isinstance(value, str):
-            raise ValidationError(f"{var.variable_name} must be a string")
-    # Dates and other types are skipped for brevity
+    try:
+        validator = _TYPE_VALIDATORS[var_type.lower()]
+    except KeyError:
+        raise UnknownVariableTypeError(var_type)
+    validator(value)
 
 
 def validate_record_data(
@@ -82,7 +106,7 @@ def validate_record_data(
             f"Missing required variables for form {form_key}: {', '.join(missing_required)}"
         )
     for name, value in data.items():
-        _check_type(variables[name], value)
+        _check_type(variables[name].variable_type, value)
 
 
 class SchemaValidator:

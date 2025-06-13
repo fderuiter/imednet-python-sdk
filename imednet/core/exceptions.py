@@ -119,3 +119,9 @@ class ConflictError(ApiError):
     """Raised for HTTP 409 conflict errors."""
 
     pass
+
+
+class UnknownVariableTypeError(ValidationError):
+    """Raised when an unrecognized variable type is encountered."""
+
+    pass
