@@ -2,64 +2,37 @@
 Re-exports utility functions for easier access.
 """
 
+from importlib import import_module
+
 from .dates import format_iso_datetime, parse_iso_datetime
 from .filters import build_filter_string
 from .json_logging import configure_json_logging
 from .typing import DataFrame, JsonDict
 
+_LAZY_ATTRS: dict[str, tuple[str, str]] = {
+    "records_to_dataframe": ("imednet.utils.pandas", "records_to_dataframe"),
+    "export_records_csv": ("imednet.utils.pandas", "export_records_csv"),
+    "SchemaCache": ("imednet.utils.schema", "SchemaCache"),
+    "validate_record_data": ("imednet.utils.schema", "validate_record_data"),
+    "SchemaValidator": ("imednet.utils.schema", "SchemaValidator"),
+    "parse_bool": ("imednet.utils.validators", "parse_bool"),
+    "parse_datetime": ("imednet.utils.validators", "parse_datetime"),
+    "parse_int_or_default": ("imednet.utils.validators", "parse_int_or_default"),
+    "parse_str_or_default": ("imednet.utils.validators", "parse_str_or_default"),
+    "parse_list_or_default": ("imednet.utils.validators", "parse_list_or_default"),
+    "parse_dict_or_default": ("imednet.utils.validators", "parse_dict_or_default"),
+}
 
-def __getattr__(name: str):
-    if name in {"records_to_dataframe", "export_records_csv"}:
-        from .pandas import export_records_csv, records_to_dataframe
 
-        globals().update(
-            {
-                "records_to_dataframe": records_to_dataframe,
-                "export_records_csv": export_records_csv,
-            }
-        )
-        return globals()[name]
-    if name in {"SchemaCache", "validate_record_data", "SchemaValidator"}:
-        from .schema import SchemaCache, SchemaValidator, validate_record_data
-
-        globals().update(
-            {
-                "SchemaCache": SchemaCache,
-                "validate_record_data": validate_record_data,
-                "SchemaValidator": SchemaValidator,
-            }
-        )
-        return globals()[name]
-    if name in {
-        "parse_bool",
-        "parse_datetime",
-        "parse_int_or_default",
-        "parse_str_or_default",
-        "parse_list_or_default",
-        "parse_dict_or_default",
-    }:
-        from .validators import (
-            parse_bool,
-            parse_datetime,
-            parse_dict_or_default,
-            parse_int_or_default,
-            parse_list_or_default,
-            parse_str_or_default,
-        )
-
-        globals().update(
-            {
-                "parse_bool": parse_bool,
-                "parse_datetime": parse_datetime,
-                "parse_int_or_default": parse_int_or_default,
-                "parse_str_or_default": parse_str_or_default,
-                "parse_list_or_default": parse_list_or_default,
-                "parse_dict_or_default": parse_dict_or_default,
-            }
-        )
-        return globals()[name]
-
-    raise AttributeError(name)
+def __getattr__(name: str):  # noqa: D401
+    try:
+        module_path, obj_name = _LAZY_ATTRS[name]
+    except KeyError:
+        raise AttributeError(name) from None
+    mod = import_module(module_path)
+    obj = getattr(mod, obj_name)
+    globals()[name] = obj
+    return obj
 
 
 __all__ = [
