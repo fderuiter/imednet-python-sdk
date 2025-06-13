@@ -144,3 +144,11 @@ The current test suite only includes a basic smoke test (`tests/unit/test_smoke.
 9. **Use `typer.testing.CliRunner`:** For testing CLI commands.
 
 By systematically adding tests for these specific files and classes/functions, focusing on both successful paths and error conditions, the project should be able to achieve the 90% coverage target.
+
+## Live End-to-End Tests
+
+Real API integration tests are optional but recommended. See `LIVE_TEST_PLAN.md` in
+this directory for a complete list of features. Every endpoint, workflow method, CLI
+command (including export and job utilities), and integration helper should have a
+dedicated live test that runs only when `IMEDNET_RUN_E2E=1` and valid credentials are
+supplied.
