@@ -230,3 +230,51 @@ def test_export_sql_calls_helper(
     )
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+
+
+def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.queries.list.return_value = ["Q1"]
+    result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
+    assert result.exit_code == 0
+    sdk.queries.list.assert_called_once_with("STUDY")
+    assert "Found 1 queries:" in result.stdout
+    assert "Q1" in result.stdout
+
+
+def test_queries_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.queries.list.return_value = []
+    result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
+    assert result.exit_code == 0
+    assert "No queries found." in result.stdout
+
+
+def test_variables_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.variables.list.return_value = ["V1"]
+    result = runner.invoke(cli.app, ["variables", "list", "STUDY"])
+    assert result.exit_code == 0
+    sdk.variables.list.assert_called_once_with("STUDY")
+    assert "Found 1 variables:" in result.stdout
+    assert "V1" in result.stdout
+
+
+def test_variables_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.variables.list.return_value = []
+    result = runner.invoke(cli.app, ["variables", "list", "STUDY"])
+    assert result.exit_code == 0
+    assert "No variables found." in result.stdout
+
+
+def test_record_revisions_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.record_revisions.list.return_value = ["R1"]
+    result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
+    assert result.exit_code == 0
+    sdk.record_revisions.list.assert_called_once_with("STUDY")
+    assert "Found 1 record revisions:" in result.stdout
+    assert "R1" in result.stdout
+
+
+def test_record_revisions_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.record_revisions.list.return_value = []
+    result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
+    assert result.exit_code == 0
+    assert "No record revisions found." in result.stdout
