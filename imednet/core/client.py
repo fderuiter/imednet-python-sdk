@@ -44,6 +44,7 @@ from imednet.core.exceptions import (
     ServerError,
     UnauthorizedError,
 )
+from imednet.utils import sanitize_base_url
 from imednet.utils.json_logging import configure_json_logging
 
 logger = logging.getLogger(__name__)
@@ -106,7 +107,8 @@ class Client:
         if not api_key or not security_key:
             raise ValueError("API key and security key are required")
 
-        self.base_url = base_url or os.getenv("IMEDNET_BASE_URL") or self.DEFAULT_BASE_URL
+        raw_base_url = base_url or os.getenv("IMEDNET_BASE_URL") or self.DEFAULT_BASE_URL
+        self.base_url = sanitize_base_url(raw_base_url)
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
         self.backoff_factor = backoff_factor

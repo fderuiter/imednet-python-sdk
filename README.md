@@ -51,13 +51,13 @@ Keep these keys secure and never commit them to source control:
 # For PowerShell:
 $env:IMEDNET_API_KEY="your_api_key_here"
 $env:IMEDNET_SECURITY_KEY="your_security_key_here"
-# Optional: Set if using a non-standard base URL
-# $env:IMEDNET_BASE_URL="https://your.imednet.instance/api"
+# Optional: Set if using a non-standard base URL (do not include `/api`)
+# $env:IMEDNET_BASE_URL="https://your.imednet.instance"
 
 # For Bash/Zsh:
 # export IMEDNET_API_KEY="your_api_key_here"
 # export IMEDNET_SECURITY_KEY="your_security_key_here"
-# export IMEDNET_BASE_URL="https://your.imednet.instance/api"
+# export IMEDNET_BASE_URL="https://your.imednet.instance"
 ```
 
 ### Using the Python SDK
@@ -147,6 +147,21 @@ sdk = ImednetSDK()
 export_records_csv(sdk, study_key, "records.csv")
 ```
 
+### Exporting records to Excel
+
+Install the ``excel`` extra to enable ``export_to_excel``:
+
+```bash
+pip install imednet-sdk[excel]
+```
+
+```python
+from imednet.utils.pandas import export_to_excel
+
+sdk = ImednetSDK()
+export_to_excel(sdk, study_key, "records.xlsx")
+```
+
 ### Using the Command Line Interface (CLI)
 
 After installing the package (`pip install imednet-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
@@ -180,10 +195,10 @@ imednet subjects list --help
 
 ### Airflow Integration
 
-Custom operators and sensors integrate with Apache Airflow. Install the SDK and the Amazon provider:
+Custom operators and sensors integrate with Apache Airflow. Install the package with the ``airflow`` extra:
 
 ```bash
-pip install imednet-sdk apache-airflow apache-airflow-providers-amazon
+pip install 'imednet-sdk[airflow]'
 ```
 
 Example DAG:
