@@ -19,7 +19,7 @@ class ImednetHook(BaseHook):
         super().__init__()
         self.imednet_conn_id = imednet_conn_id
 
-    def get_conn(self) -> ImednetSDK:  # type: ignore[override]
+    def get_conn(self) -> ImednetSDK:
         conn = self.get_connection(self.imednet_conn_id)
         extras = conn.extra_dejson
         api_key = extras.get("api_key") or conn.login or os.getenv("IMEDNET_API_KEY")

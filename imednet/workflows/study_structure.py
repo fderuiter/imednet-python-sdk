@@ -66,7 +66,7 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
             )
             interval_structures.append(interval_struct)
 
-        return StudyStructure(study_key=study_key, intervals=interval_structures)  # type: ignore[call-arg]
+        return StudyStructure(study_key=study_key, intervals=interval_structures)
 
     except Exception as e:
         # Catch potential API errors or processing errors
@@ -110,9 +110,7 @@ async def async_get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyS
                 )
             )
 
-        return StudyStructure(
-            study_key=study_key, intervals=interval_structures
-        )  # type: ignore[call-arg]
+        return StudyStructure(study_key=study_key, intervals=interval_structures)
 
     except Exception as e:  # pragma: no cover - unexpected
         raise ImednetError(

@@ -72,6 +72,7 @@ sphinx-rtd-theme = "^3.0.2"
 boto3 = "^1.34"
 moto = "^5.0"
 sqlalchemy = "^2.0"
+pandas-stubs = "^2.2.3.250527"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -109,5 +110,5 @@ disable_error_code = [
 ]
 # Ignore missing stubs for optional integrations
 [[tool.mypy.overrides]]
-module = ["opentelemetry.*", "airflow.*"]
+module = ["opentelemetry.*", "airflow.*", "httpx", "tenacity", "sqlalchemy", "pythonjsonlogger"]
 ignore_missing_imports = true

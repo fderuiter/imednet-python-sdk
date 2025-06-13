@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 import pandas as pd
 
@@ -39,7 +39,7 @@ def export_to_sql(
     study_key: str,
     table: str,
     conn_str: str,
-    if_exists: str = "replace",
+    if_exists: Literal["fail", "replace", "append"] = "replace",
     **kwargs: Any,
 ) -> None:
     """Export study records to a SQL table."""
@@ -47,4 +47,4 @@ def export_to_sql(
 
     df: pd.DataFrame = RecordMapper(sdk).dataframe(study_key)
     engine = create_engine(conn_str)
-    df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+    df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)
