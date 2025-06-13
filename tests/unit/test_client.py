@@ -1,12 +1,13 @@
 import httpx
 import pytest
 from imednet.core.exceptions import (
-    AuthenticationError,
-    AuthorizationError,
+    BadRequestError,
+    ConflictError,
+    ForbiddenError,
     NotFoundError,
     RateLimitError,
     ServerError,
-    ValidationError,
+    UnauthorizedError,
 )
 
 
@@ -22,10 +23,11 @@ def test_get_success(http_client, respx_mock_client, sample_data):
 @pytest.mark.parametrize(
     "status,exc",
     [
-        (400, ValidationError),
-        (401, AuthenticationError),
-        (403, AuthorizationError),
+        (400, BadRequestError),
+        (401, UnauthorizedError),
+        (403, ForbiddenError),
         (404, NotFoundError),
+        (409, ConflictError),
         (429, RateLimitError),
         (500, ServerError),
     ],

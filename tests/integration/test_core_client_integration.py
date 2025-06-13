@@ -47,7 +47,7 @@ def test_authentication_error():
     client = Client("k", "s", base_url="https://api.test")
     respx.get("https://api.test/protected").respond(status_code=401, json={})
 
-    with pytest.raises(exceptions.AuthenticationError):
+    with pytest.raises(exceptions.UnauthorizedError):
         client.get("/protected")
 
 
