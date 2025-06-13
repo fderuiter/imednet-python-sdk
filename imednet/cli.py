@@ -10,7 +10,6 @@ from rich import print
 # Keep existing Any, Dict, List, Optional imports
 from typing_extensions import Any, Dict, List, Optional
 
-from . import __version__
 from .core.exceptions import ApiError
 from .integrations.export import (
     export_to_csv,
@@ -28,20 +27,7 @@ from .workflows.data_extraction import DataExtractionWorkflow
 # Load environment variables from .env file if it exists
 load_dotenv()
 
-
 app = typer.Typer(help="iMednet SDK Command Line Interface")
-
-
-def _version_callback(value: bool) -> None:
-    if value:
-        print(__version__)
-        raise typer.Exit()
-
-
-@app.command()
-def version() -> None:
-    """Print the installed SDK version."""
-    print(__version__)
 
 
 def get_sdk() -> ImednetSDK:
@@ -71,18 +57,15 @@ def get_sdk() -> ImednetSDK:
 
 
 @app.callback()
-def main(
-    ctx: typer.Context,
-    version: Optional[bool] = typer.Option(
-        None,
-        "--version",
-        "-v",
-        help="Show the SDK version and exit.",
-        callback=_version_callback,
-        is_eager=True,
-    ),
-) -> None:
-    """iMednet SDK CLI entry point."""
+def main(ctx: typer.Context):
+    """
+    iMednet SDK CLI. Configure authentication via environment variables:
+    IMEDNET_API_KEY, IMEDNET_SECURITY_KEY, [IMEDNET_BASE_URL]
+    """
+    # Eagerly initialize SDK to catch auth errors early,
+    # but allow commands to potentially re-initialize if needed.
+    # We don't store it in ctx.obj to avoid pickling issues if Typer internals change.
+    # Instead, commands will call get_sdk().
     pass
 
 
