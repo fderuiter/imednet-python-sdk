@@ -19,7 +19,7 @@ Example DAG
 
    from datetime import datetime
    from airflow import DAG
-   from imednet.airflow import ImednetToS3Operator, ImednetJobSensor
+   from imednet.integrations.airflow import ImednetToS3Operator, ImednetJobSensor
 
    default_args = {"start_date": datetime(2024, 1, 1)}
 

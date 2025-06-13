@@ -1,33 +1,12 @@
-"""Airflow integration helpers for exporting study data."""
+"""Airflow operator for exporting study records."""
 
 from __future__ import annotations
 
-import os
 from typing import Any, Dict, Iterable, Optional
 
-from airflow.hooks.base import BaseHook
 from airflow.models import BaseOperator
 
-from ..sdk import ImednetSDK
-from . import export
-
-
-class ImednetHook(BaseHook):
-    """Retrieve an :class:`ImednetSDK` instance from an Airflow connection."""
-
-    def __init__(self, imednet_conn_id: str = "imednet_default") -> None:
-        super().__init__()
-        self.imednet_conn_id = imednet_conn_id
-
-    def get_conn(self) -> ImednetSDK:  # type: ignore[override]
-        conn = self.get_connection(self.imednet_conn_id)
-        extras = conn.extra_dejson
-        api_key = extras.get("api_key") or conn.login or os.getenv("IMEDNET_API_KEY")
-        security_key = (
-            extras.get("security_key") or conn.password or os.getenv("IMEDNET_SECURITY_KEY")
-        )
-        base_url = extras.get("base_url") or os.getenv("IMEDNET_BASE_URL")
-        return ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
+from .. import export
 
 
 class ImednetExportOperator(BaseOperator):
@@ -53,6 +32,8 @@ class ImednetExportOperator(BaseOperator):
         self.imednet_conn_id = imednet_conn_id
 
     def execute(self, context: Dict[str, Any]) -> str:
+        from . import ImednetHook
+
         hook = ImednetHook(self.imednet_conn_id)
         sdk = hook.get_conn()
         export_callable = getattr(export, self.export_func)
@@ -60,4 +41,4 @@ class ImednetExportOperator(BaseOperator):
         return self.output_path
 
 
-__all__ = ["ImednetHook", "ImednetExportOperator"]
+__all__ = ["ImednetExportOperator"]

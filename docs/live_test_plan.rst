@@ -101,7 +101,7 @@ The integration helpers require validation using temporary files or buckets:
 - ``export_to_json``
 - ``export_to_parquet``
 - ``export_to_sql``
-- ``ImednetToS3Operator`` and ``ImednetJobSensor`` from the Airflow module
-- ``ImednetExportOperator`` from the Airflow module
+- ``ImednetToS3Operator`` and ``ImednetJobSensor`` from ``imednet.integrations.airflow``
+- ``ImednetExportOperator`` from ``imednet.integrations.airflow``
 - ``ImednetHook`` for connection retrieval
 

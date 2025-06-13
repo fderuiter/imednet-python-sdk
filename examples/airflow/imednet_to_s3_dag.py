@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from imednet.airflow import ImednetToS3Operator
+from imednet.integrations.airflow import ImednetToS3Operator
 
 from airflow import DAG
 

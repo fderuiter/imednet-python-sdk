@@ -12,7 +12,7 @@ from airflow.models import BaseOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.sensors.base import BaseSensorOperator
 
-from ..sdk import ImednetSDK
+from ...sdk import ImednetSDK
 
 
 class ImednetToS3Operator(BaseOperator):

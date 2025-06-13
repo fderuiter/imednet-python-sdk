@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from imednet.airflow import ImednetJobSensor
+from imednet.integrations.airflow import ImednetJobSensor
 
 from airflow import DAG
 
