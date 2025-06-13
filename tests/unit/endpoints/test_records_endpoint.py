@@ -25,19 +25,27 @@ def test_list_builds_path_filters_and_data_filter(
     assert isinstance(result[0], Record)
 
 
-def test_get_success(dummy_client, context, response_factory):
+def test_get_success(dummy_client, context, monkeypatch):
     ep = records.RecordsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": [{"recordId": 1}]})
+    captured = {}
+
+    def fake_list(study_key=None, refresh=False, **filters):
+        captured["study_key"] = study_key
+        captured["refresh"] = refresh
+        captured["filters"] = filters
+        return [Record(record_id=1)]
+
+    monkeypatch.setattr(ep, "list", fake_list)
 
     res = ep.get("S1", 1)
 
-    dummy_client.get.assert_called_once_with("/api/v1/edc/studies/S1/records/1")
+    assert captured == {"study_key": "S1", "refresh": True, "filters": {"recordId": 1}}
     assert isinstance(res, Record)
 
 
-def test_get_not_found(dummy_client, context, response_factory):
+def test_get_not_found(dummy_client, context, monkeypatch):
     ep = records.RecordsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": []})
+    monkeypatch.setattr(ep, "list", lambda **kwargs: [])
     with pytest.raises(ValueError):
         ep.get("S1", 1)
 

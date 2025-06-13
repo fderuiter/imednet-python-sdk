@@ -107,18 +107,16 @@ class FormsEndpoint(BaseEndpoint):
         Returns:
             Form object
         """
-        path = self._build_path(study_key, "forms", form_id)
-        raw = self._client.get(path).json().get("data", [])
-        if not raw:
+        forms = self.list(study_key=study_key, refresh=True, formId=form_id)
+        if not forms:
             raise ValueError(f"Form {form_id} not found in study {study_key}")
-        return Form.from_json(raw[0])
+        return forms[0]
 
     async def async_get(self, study_key: str, form_id: int) -> Form:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "forms", form_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
-        if not raw:
+        forms = await self.async_list(study_key=study_key, refresh=True, formId=form_id)
+        if not forms:
             raise ValueError(f"Form {form_id} not found in study {study_key}")
-        return Form.from_json(raw[0])
+        return forms[0]

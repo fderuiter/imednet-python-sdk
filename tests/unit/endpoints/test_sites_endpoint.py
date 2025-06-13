@@ -19,8 +19,8 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
     assert isinstance(result[0], Site)
 
 
-def test_get_not_found(dummy_client, context, response_factory):
+def test_get_not_found(dummy_client, context, monkeypatch):
     ep = sites.SitesEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": []})
+    monkeypatch.setattr(ep, "list", lambda **kwargs: [])
     with pytest.raises(ValueError):
         ep.get("S1", 1)

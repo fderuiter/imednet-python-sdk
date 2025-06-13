@@ -67,18 +67,18 @@ class QueriesEndpoint(BaseEndpoint):
         Returns:
             Query object
         """
-        path = self._build_path(study_key, "queries", annotation_id)
-        raw = self._client.get(path).json().get("data", [])
-        if not raw:
+        queries = self.list(study_key=study_key, refresh=True, annotationId=annotation_id)
+        if not queries:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
-        return Query.from_json(raw[0])
+        return queries[0]
 
     async def async_get(self, study_key: str, annotation_id: int) -> Query:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "queries", annotation_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
-        if not raw:
+        queries = await self.async_list(
+            study_key=study_key, refresh=True, annotationId=annotation_id
+        )
+        if not queries:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
-        return Query.from_json(raw[0])
+        return queries[0]

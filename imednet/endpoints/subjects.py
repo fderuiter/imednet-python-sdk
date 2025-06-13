@@ -67,18 +67,16 @@ class SubjectsEndpoint(BaseEndpoint):
         Returns:
             Subject object
         """
-        path = self._build_path(study_key, "subjects", subject_key)
-        raw = self._client.get(path).json().get("data", [])
-        if not raw:
+        subjects = self.list(study_key=study_key, refresh=True, subjectKey=subject_key)
+        if not subjects:
             raise ValueError(f"Subject {subject_key} not found in study {study_key}")
-        return Subject.from_json(raw[0])
+        return subjects[0]
 
     async def async_get(self, study_key: str, subject_key: str) -> Subject:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "subjects", subject_key)
-        raw = (await self._async_client.get(path)).json().get("data", [])
-        if not raw:
+        subjects = await self.async_list(study_key=study_key, refresh=True, subjectKey=subject_key)
+        if not subjects:
             raise ValueError(f"Subject {subject_key} not found in study {study_key}")
-        return Subject.from_json(raw[0])
+        return subjects[0]

@@ -19,8 +19,8 @@ def test_list_builds_path_with_default(
     assert isinstance(result[0], Subject)
 
 
-def test_get_not_found(dummy_client, context, response_factory):
+def test_get_not_found(dummy_client, context, monkeypatch):
     ep = subjects.SubjectsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": []})
+    monkeypatch.setattr(ep, "list", lambda **kwargs: [])
     with pytest.raises(ValueError):
         ep.get("S1", "X")

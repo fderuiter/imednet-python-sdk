@@ -64,18 +64,18 @@ class UsersEndpoint(BaseEndpoint):
         Returns:
             User object
         """
-        path = self._build_path(study_key, "users", user_id)
-        raw = self._client.get(path).json().get("data", [])
-        if not raw:
+        users = self.list(study_key=study_key)
+        filtered = [u for u in users if str(u.user_id) == str(user_id)]
+        if not filtered:
             raise ValueError(f"User {user_id} not found in study {study_key}")
-        return User.from_json(raw[0])
+        return filtered[0]
 
     async def async_get(self, study_key: str, user_id: Union[str, int]) -> User:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "users", user_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
-        if not raw:
+        users = await self.async_list(study_key=study_key)
+        filtered = [u for u in users if str(u.user_id) == str(user_id)]
+        if not filtered:
             raise ValueError(f"User {user_id} not found in study {study_key}")
-        return User.from_json(raw[0])
+        return filtered[0]

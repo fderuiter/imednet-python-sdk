@@ -44,7 +44,6 @@ from imednet.core.exceptions import (
     ServerError,
     UnauthorizedError,
 )
-from imednet.utils import sanitize_base_url
 from imednet.utils.json_logging import configure_json_logging
 
 logger = logging.getLogger(__name__)

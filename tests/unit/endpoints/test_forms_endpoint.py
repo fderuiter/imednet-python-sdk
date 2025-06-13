@@ -23,19 +23,29 @@ def test_list_requires_study_key_and_page_size(
     assert isinstance(result[0], Form)
 
 
-def test_get_success(dummy_client, context, response_factory):
+def test_get_success(dummy_client, context, monkeypatch):
     ep = forms.FormsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": [{"formId": 1}]})
+    captured = {}
+
+    def fake_list(study_key=None, refresh=False, **filters):
+        captured["study_key"] = study_key
+        captured["refresh"] = refresh
+        captured["filters"] = filters
+        return [Form(form_id=1)]
+
+    monkeypatch.setattr(ep, "list", fake_list)
 
     res = ep.get("S1", 1)
 
-    dummy_client.get.assert_called_once_with("/api/v1/edc/studies/S1/forms/1")
+    assert captured == {"study_key": "S1", "refresh": True, "filters": {"formId": 1}}
     assert isinstance(res, Form)
 
 
-def test_get_not_found(dummy_client, context, response_factory):
+def test_get_not_found(dummy_client, context, monkeypatch):
     ep = forms.FormsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": []})
+
+    monkeypatch.setattr(ep, "list", lambda **kwargs: [])
+
     with pytest.raises(ValueError):
         ep.get("S1", 1)
 

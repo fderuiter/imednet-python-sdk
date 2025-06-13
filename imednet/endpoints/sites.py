@@ -75,18 +75,16 @@ class SitesEndpoint(BaseEndpoint):
         Returns:
             Site object
         """
-        path = self._build_path(study_key, "sites", site_id)
-        raw = self._client.get(path).json().get("data", [])
-        if not raw:
+        sites = self.list(study_key=study_key, refresh=True, siteId=site_id)
+        if not sites:
             raise ValueError(f"Site {site_id} not found in study {study_key}")
-        return Site.from_json(raw[0])
+        return sites[0]
 
     async def async_get(self, study_key: str, site_id: int) -> Site:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "sites", site_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
-        if not raw:
+        sites = await self.async_list(study_key=study_key, refresh=True, siteId=site_id)
+        if not sites:
             raise ValueError(f"Site {site_id} not found in study {study_key}")
-        return Site.from_json(raw[0])
+        return sites[0]

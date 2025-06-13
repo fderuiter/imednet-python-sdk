@@ -101,18 +101,16 @@ class IntervalsEndpoint(BaseEndpoint):
         Returns:
             Interval object
         """
-        path = self._build_path(study_key, "intervals", interval_id)
-        raw = self._client.get(path).json().get("data", [])
-        if not raw:
+        intervals = self.list(study_key=study_key, refresh=True, intervalId=interval_id)
+        if not intervals:
             raise ValueError(f"Interval {interval_id} not found in study {study_key}")
-        return Interval.from_json(raw[0])
+        return intervals[0]
 
     async def async_get(self, study_key: str, interval_id: int) -> Interval:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        path = self._build_path(study_key, "intervals", interval_id)
-        raw = (await self._async_client.get(path)).json().get("data", [])
-        if not raw:
+        intervals = await self.async_list(study_key=study_key, refresh=True, intervalId=interval_id)
+        if not intervals:
             raise ValueError(f"Interval {interval_id} not found in study {study_key}")
-        return Interval.from_json(raw[0])
+        return intervals[0]

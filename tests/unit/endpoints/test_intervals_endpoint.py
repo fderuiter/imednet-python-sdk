@@ -20,9 +20,9 @@ def test_list_uses_default_study_and_page_size(
     assert isinstance(result[0], Interval)
 
 
-def test_get_not_found(dummy_client, context, response_factory):
+def test_get_not_found(dummy_client, context, monkeypatch):
     ep = intervals.IntervalsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory({"data": []})
+    monkeypatch.setattr(ep, "list", lambda **kwargs: [])
     with pytest.raises(ValueError):
         ep.get("S1", 1)
 
