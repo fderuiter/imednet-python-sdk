@@ -39,6 +39,23 @@ def test_check_type_int() -> None:
         _check_type(var, "bad")
 
 
+def test_check_type_other_types() -> None:
+    bool_var = _make_var("flag", "boolean")
+    float_var = _make_var("score", "float")
+    str_var = _make_var("name", "string")
+
+    _check_type(bool_var, True)
+    _check_type(float_var, 1.5)
+    _check_type(str_var, "ok")
+
+    with pytest.raises(ValidationError):
+        _check_type(bool_var, "nope")
+    with pytest.raises(ValidationError):
+        _check_type(float_var, "nan")
+    with pytest.raises(ValidationError):
+        _check_type(str_var, 123)
+
+
 def test_validate_record_data_errors() -> None:
     cache = SchemaCache()
     var = _make_var("age")

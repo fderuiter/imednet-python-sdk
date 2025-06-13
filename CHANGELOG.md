@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added PyPI, code style (Black), linter (Ruff), and typing (Mypy) badges to `README.md`.
 - Added `pandas` to development dependencies for workflow features.
-- Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.
+- Added a comprehensive test suite ensuring over 90% coverage.
 
 ### Fixed
 
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Removed GitHub Actions workflow for documentation generation and deployment (docs.yml). Documentation must now be built and viewed locally.
+- Removed obsolete TEST_PLAN.md file.
 
 ## [0.1.0] - 2025-04-28
 
