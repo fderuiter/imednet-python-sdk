@@ -67,7 +67,7 @@ non-destructive calls. Each bullet corresponds to a separate live test.
 - ``QueryManagementWorkflow.get_queries_by_site``
 - ``QueryManagementWorkflow.get_query_state_counts``
 - ``RecordMapper.dataframe``
-- ``RecordUpdateWorkflow.submit_record_batch``
+- ``RecordUpdateWorkflow.create_or_update_records``
 - ``RecordUpdateWorkflow.register_subject``
 - ``RecordUpdateWorkflow.update_scheduled_record``
 - ``RecordUpdateWorkflow.create_new_record``

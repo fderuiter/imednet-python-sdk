@@ -7,19 +7,19 @@ from imednet.models.variables import Variable
 from imednet.workflows.record_update import RecordUpdateWorkflow
 
 
-def test_submit_record_batch_no_wait() -> None:
+def test_create_or_update_records_no_wait() -> None:
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
     sdk.records.create.return_value = job
 
     wf = RecordUpdateWorkflow(sdk)
-    result = wf.submit_record_batch("STUDY", [{"a": 1}])
+    result = wf.create_or_update_records("STUDY", [{"a": 1}])
 
     sdk.records.create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
     assert result == job
 
 
-def test_submit_record_batch_wait_for_completion(monkeypatch) -> None:
+def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
     sdk = MagicMock()
     initial_job = Job(batch_id="1", state="PROCESSING")
     completed_job = Job(batch_id="1", state="COMPLETED")
@@ -29,7 +29,7 @@ def test_submit_record_batch_wait_for_completion(monkeypatch) -> None:
     wf = RecordUpdateWorkflow(sdk)
     # patch sleep to avoid delay
     monkeypatch.setattr("time.sleep", lambda *args: None)
-    result = wf.submit_record_batch(
+    result = wf.create_or_update_records(
         "STUDY",
         [{"a": 1}],
         wait_for_completion=True,
@@ -45,7 +45,7 @@ def test_submit_record_batch_wait_for_completion(monkeypatch) -> None:
 def test_update_scheduled_record_builds_payload() -> None:
     sdk = MagicMock()
     wf = RecordUpdateWorkflow(sdk)
-    wf.submit_record_batch = MagicMock(return_value="job")
+    wf.create_or_update_records = MagicMock(return_value="job")
 
     result = wf.update_scheduled_record(
         "STUDY",
@@ -56,8 +56,8 @@ def test_update_scheduled_record_builds_payload() -> None:
         subject_identifier_type="oid",
     )
 
-    wf.submit_record_batch.assert_called_once()
-    called = wf.submit_record_batch.call_args.kwargs
+    wf.create_or_update_records.assert_called_once()
+    called = wf.create_or_update_records.call_args.kwargs
     assert called["records_data"] == [
         {
             "formKey": "F1",
@@ -69,18 +69,18 @@ def test_update_scheduled_record_builds_payload() -> None:
     assert result == "job"
 
 
-def test_submit_record_batch_validation() -> None:
+def test_create_or_update_records_validation() -> None:
     sdk = MagicMock()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk.variables.list.return_value = [var]
     wf = RecordUpdateWorkflow(sdk)
 
     with pytest.raises(ValidationError):
-        wf.submit_record_batch("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
+        wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
     sdk.records.create.assert_not_called()
 
     sdk.records.create.return_value = Job(batch_id="1", state="PROCESSING")
-    wf.submit_record_batch("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
+    wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
     sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
     sdk.records.create.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema

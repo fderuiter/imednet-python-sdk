@@ -1,16 +1,14 @@
-"""Placeholder for Record Creation/Update workflows."""
+"""Workflows for creating and updating records."""
 
-import time
+import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from ..models import Job
 from ..utils.schema import SchemaValidator
+from .job_poller import JobPoller
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
-
-# Define terminal states for job polling
-TERMINAL_JOB_STATES = {"COMPLETED", "FAILED", "CANCELLED"}  # Adjust if needed based on API
 
 
 class RecordUpdateWorkflow:
@@ -27,7 +25,7 @@ class RecordUpdateWorkflow:
         self._validator = SchemaValidator(sdk)
         self._schema = self._validator.schema
 
-    def submit_record_batch(
+    def create_or_update_records(
         self,
         study_key: str,
         records_data: List[Dict[str, Any]],
@@ -36,7 +34,7 @@ class RecordUpdateWorkflow:
         poll_interval: int = 5,
     ) -> Job:
         """
-        Submits a batch of record data for creation or update.
+        Submit a batch of record data for creation or update.
 
         Optionally waits for the background job to complete by polling its status.
 
@@ -53,12 +51,11 @@ class RecordUpdateWorkflow:
             poll_interval: Time in seconds between job status checks.
 
         Returns:
-            A Job object representing the initial status or the final status
-            if `wait_for_completion` is True.
+            A Job object representing the initial or final status.
 
         Raises:
-            TimeoutError: If `wait_for_completion` is True and the job does not
-                          complete within the specified timeout.
+            JobTimeoutError: If ``wait_for_completion`` is True and the job does
+                not complete within ``timeout`` seconds.
             # ImednetApiError: If the initial submission or status polling fails.
             # Commented out as not defined here
         """
@@ -78,37 +75,43 @@ class RecordUpdateWorkflow:
             schema=self._schema,
         )
 
-        if not wait_for_completion:
-            return initial_job_status
+        if wait_for_completion:
+            if not initial_job_status.batch_id:
+                raise ValueError("Submission successful but no batch_id received.")
+            poller = JobPoller(
+                self._sdk,
+                study_key,
+                initial_job_status.batch_id,
+                timeout_s=timeout,
+                poll_interval_s=poll_interval,
+            )
+            return poller.wait()
+        return initial_job_status
 
-        if not initial_job_status.batch_id:
-            # Should not happen if API call was successful, but good practice to check
-            raise ValueError("Submission successful but no batch_id received.")
-
-        start_time = time.monotonic()
-        batch_id = initial_job_status.batch_id
-        current_job_status = initial_job_status
-
-        while True:
-            if current_job_status.state.upper() in TERMINAL_JOB_STATES:
-                return current_job_status
-
-            elapsed_time = time.monotonic() - start_time
-            if elapsed_time >= timeout:
-                raise TimeoutError(
-                    f"Timeout ({timeout}s) waiting for job batch '{batch_id}' "
-                    f"to complete. Last state: {current_job_status.state}"
-                )
-
-            # Wait before polling again
-            time.sleep(poll_interval)
-
-            # Poll the job status using the batch_id
-            # Assuming sdk.jobs.get expects study_key and batch_id
-            current_job_status = self._sdk.jobs.get(study_key, batch_id)
-
-        # This line is technically unreachable due to the loop structure but ensures return type
-        return current_job_status
+    def submit_record_batch(
+        self,
+        study_key: str,
+        records_data: List[Dict[str, Any]],
+        wait_for_completion: bool = False,
+        timeout: int = 300,
+        poll_interval: int = 5,
+    ) -> Job:
+        """Deprecated alias for :meth:`create_or_update_records`."""
+        warnings.warn(
+            (
+                "RecordUpdateWorkflow.submit_record_batch is deprecated; "
+                "use create_or_update_records instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.create_or_update_records(
+            study_key=study_key,
+            records_data=records_data,
+            wait_for_completion=wait_for_completion,
+            timeout=timeout,
+            poll_interval=poll_interval,
+        )
 
     def register_subject(
         self,
@@ -248,5 +251,5 @@ class RecordUpdateWorkflow:
 
 # Integration:
 # - Accessed via the main SDK instance
-#       (e.g., `sdk.workflows.record_update.submit_record_batch(...)`).
-# - Simplifies the process of submitting data and optionally monitoring the asynchronous job.
+#       (e.g., `sdk.workflows.record_update.create_or_update_records(...)`).
+# - Simplifies submitting data and optionally monitoring the asynchronous job.

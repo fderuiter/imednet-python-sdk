@@ -119,3 +119,9 @@ class ConflictError(ApiError):
     """Raised for HTTP 409 conflict errors."""
 
     pass
+
+
+class JobTimeoutError(ImednetError, TimeoutError):
+    """Raised when a background job does not finish within the timeout."""
+
+    pass
