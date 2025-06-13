@@ -232,6 +232,16 @@ def test_export_sql_calls_helper(
     func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
 
 
+def test_subject_data_calls_workflow(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workflow = MagicMock()
+    monkeypatch.setattr(cli, "SubjectDataWorkflow", MagicMock(return_value=workflow))
+    workflow.get_all_subject_data.return_value = MagicMock()
+    result = runner.invoke(cli.app, ["subject-data", "STUDY", "SUBJ"])
+    assert result.exit_code == 0
+    workflow.get_all_subject_data.assert_called_once_with("STUDY", "SUBJ")
+
 def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
     sdk.queries.list.return_value = ["Q1"]
     result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
