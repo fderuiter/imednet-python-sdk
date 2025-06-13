@@ -13,7 +13,7 @@ RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
 pytestmark = pytest.mark.skipif(
     not RUN_E2E or not (API_KEY and SECURITY_KEY),
     reason=(
-        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run e2e tests"
+        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run live tests"
     ),
 )
 

@@ -1,4 +1,5 @@
 import os
+from typing import Iterator
 
 import pytest
 from imednet.core.exceptions import ValidationError
@@ -13,13 +14,13 @@ RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
 pytestmark = pytest.mark.skipif(
     not RUN_E2E or not (API_KEY and SECURITY_KEY),
     reason=(
-        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run e2e tests"
+        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run live tests"
     ),
 )
 
 
 @pytest.fixture(scope="module")
-def sdk() -> ImednetSDK:
+def sdk() -> Iterator[ImednetSDK]:
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
@@ -28,14 +29,14 @@ def sdk() -> ImednetSDK:
 def study_key(sdk: ImednetSDK) -> str:
     studies = sdk.studies.list()
     if not studies:
-        pytest.skip("No studies available for e2e tests")
+        pytest.skip("No studies available for live tests")
     return studies[0].study_key
 
 
 def _get_first_variable(sdk: ImednetSDK, study_key: str):
     variables = sdk.variables.list(study_key=study_key)
     if not variables:
-        pytest.skip("No variables available for e2e tests")
+        pytest.skip("No variables available for live tests")
     return variables[0]
 
 
