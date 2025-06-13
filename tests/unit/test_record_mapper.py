@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, Dict
 from unittest.mock import MagicMock
 
 from imednet.models.records import Record
@@ -109,3 +110,40 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
 
     assert df.empty
     assert "Failed to parse record data" in caplog.text
+
+
+def test_parse_records_counts_errors() -> None:
+    mapper = RecordMapper(MagicMock())
+    record_ok = Record(
+        record_id=1,
+        subject_key="S1",
+        visit_id=1,
+        form_id=1,
+        record_status="Complete",
+        date_created=datetime.now(),
+        record_data={"V": "x"},
+    )
+    record_bad = Record(
+        record_id=2,
+        subject_key="S2",
+        visit_id=1,
+        form_id=1,
+        record_status="Complete",
+        date_created=datetime.now(),
+        record_data={"error": True},
+    )
+
+    class DummyModel(BaseModel):
+        def __init__(self, **data: Any) -> None:
+            if data.get("error"):
+                raise ValidationError([], DummyModel)
+            self._data = data
+
+        def model_dump(self, by_alias: bool = False) -> Dict[str, Any]:
+            return self._data
+
+    rows, errors = mapper._parse_records([record_ok, record_bad], DummyModel)
+
+    assert errors == 1
+    assert len(rows) == 1
+    assert rows[0]["recordId"] == 1
