@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
-from imednet.core.exceptions import ValidationError
+from imednet.core.exceptions import UnknownVariableTypeError, ValidationError
 from imednet.models.forms import Form
 from imednet.models.variables import Variable
 from imednet.utils.schema import (
@@ -34,9 +34,9 @@ def test_schema_cache_refresh() -> None:
 
 def test_check_type_int() -> None:
     var = _make_var("age")
-    _check_type(var, 5)
+    _check_type(var.variable_type, 5)
     with pytest.raises(ValidationError):
-        _check_type(var, "bad")
+        _check_type(var.variable_type, "bad")
 
 
 def test_check_type_other_types() -> None:
@@ -44,16 +44,21 @@ def test_check_type_other_types() -> None:
     float_var = _make_var("score", "float")
     str_var = _make_var("name", "string")
 
-    _check_type(bool_var, True)
-    _check_type(float_var, 1.5)
-    _check_type(str_var, "ok")
+    _check_type(bool_var.variable_type, True)
+    _check_type(float_var.variable_type, 1.5)
+    _check_type(str_var.variable_type, "ok")
 
     with pytest.raises(ValidationError):
-        _check_type(bool_var, "nope")
+        _check_type(bool_var.variable_type, "nope")
     with pytest.raises(ValidationError):
-        _check_type(float_var, "nan")
+        _check_type(float_var.variable_type, "nan")
     with pytest.raises(ValidationError):
-        _check_type(str_var, 123)
+        _check_type(str_var.variable_type, 123)
+
+
+def test_check_type_unknown_type() -> None:
+    with pytest.raises(UnknownVariableTypeError):
+        _check_type("weird", "x")
 
 
 def test_validate_record_data_errors() -> None:

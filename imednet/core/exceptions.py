@@ -124,4 +124,7 @@ class ConflictError(ApiError):
 class JobTimeoutError(ImednetError, TimeoutError):
     """Raised when a background job does not finish within the timeout."""
 
+    class UnknownVariableTypeError(ValidationError):
+    """Raised when an unrecognized variable type is encountered."""
+
     pass
