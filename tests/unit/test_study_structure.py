@@ -6,7 +6,7 @@ from imednet.models.variables import Variable
 from imednet.workflows.study_structure import get_study_structure
 
 
-def test_get_study_structure_aggregates_related_data(monkeypatch) -> None:
+def test_get_study_structure_aggregates_related_data() -> None:
     sdk = MagicMock()
     interval = Interval(
         interval_id=1,
@@ -22,14 +22,6 @@ def test_get_study_structure_aggregates_related_data(monkeypatch) -> None:
     sdk.intervals.list.return_value = [interval]
     sdk.forms.list.return_value = [form]
     sdk.variables.list.return_value = [variable]
-
-    # patch model_dump to exclude forms key to avoid duplicate parameters
-    orig_dump = Interval.model_dump
-    monkeypatch.setattr(
-        Interval,
-        "model_dump",
-        lambda self: {k: v for k, v in orig_dump(self).items() if k != "forms"},
-    )
 
     structure = get_study_structure(sdk, "STUDY")
 
