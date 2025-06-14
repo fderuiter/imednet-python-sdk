@@ -101,7 +101,7 @@ class QueryManagementWorkflow:
 
         Args:
             study_key: The key identifying the study.
-            site_key: The key identifying the site.
+            site_key: The name of the site.
             additional_filter: An optional dictionary of conditions to combine with the site filter.
             **kwargs: Additional keyword arguments passed directly to `sdk.queries.list`.
 
@@ -109,7 +109,7 @@ class QueryManagementWorkflow:
             A list of Query objects for the specified site.
         """
         # Build filter dictionary
-        final_filter_dict: Dict[str, Any] = {"site_key": site_key}
+        final_filter_dict: Dict[str, Any] = {"site_name": site_key}
         if additional_filter:
             final_filter_dict.update(additional_filter)
 

@@ -95,6 +95,11 @@ def export_to_json(
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
         study_key, use_labels_as_columns=use_labels_as_columns
     )
+    # Remove duplicate columns which can occur when variable names repeat across
+    # forms or revisions. Skip if the object does not expose a pandas-like
+    # interface (e.g. unit tests using mocks).
+    if isinstance(df, pd.DataFrame):
+        df = df.loc[:, ~df.columns.duplicated()]
     df.to_json(path, index=False, **kwargs)
 
 
@@ -121,5 +126,10 @@ def export_to_sql(
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
         study_key, use_labels_as_columns=use_labels_as_columns
     )
+    # Duplicate column names cause ``to_sql`` to raise an error. Trim them here
+    # by keeping the first occurrence of each column. Skip when a mock DataFrame
+    # is supplied during unit tests.
+    if isinstance(df, pd.DataFrame):
+        df = df.loc[:, ~df.columns.duplicated()]
     engine = create_engine(conn_str)
     df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
