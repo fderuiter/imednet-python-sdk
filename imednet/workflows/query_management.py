@@ -108,8 +108,14 @@ class QueryManagementWorkflow:
         Returns:
             A list of Query objects for the specified site.
         """
-        # Build filter dictionary
-        final_filter_dict: Dict[str, Any] = {"site_name": site_key}
+        # Fetch subjects for the site and gather their subject keys
+        subjects = self._sdk.subjects.list(study_key, site_name=site_key)
+        subject_keys = [s.subject_key for s in subjects]
+        if not subject_keys:
+            return []
+
+        # Build filter dictionary using OR filter for subject keys
+        final_filter_dict: Dict[str, Any] = {"subject_key": subject_keys}
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
