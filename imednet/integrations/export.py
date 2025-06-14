@@ -29,6 +29,8 @@ def export_to_parquet(
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
         study_key, use_labels_as_columns=use_labels_as_columns
     )
+    if isinstance(df, pd.DataFrame):
+        df = df.loc[:, ~df.columns.str.lower().duplicated()]
     df.to_parquet(path, index=False, **kwargs)
 
 
