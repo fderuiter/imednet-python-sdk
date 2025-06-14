@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 from imednet.models.queries import Query, QueryComment
+from imednet.models.subjects import Subject
 from imednet.workflows.query_management import QueryManagementWorkflow
 
 
@@ -46,3 +47,27 @@ def test_get_query_state_counts_aggregates_states() -> None:
     sdk.queries.list.assert_called_once_with("STUDY")
     assert sdk.queries.list.call_args.kwargs == {}
     assert counts == {"open": 1, "closed": 1, "unknown": 1}
+
+
+def test_get_queries_by_site_filters_using_subjects() -> None:
+    sdk = MagicMock()
+    sdk.subjects.list.return_value = [Subject(subject_key="S1"), Subject(subject_key="S2")]
+    wf = QueryManagementWorkflow(sdk)
+
+    wf.get_queries_by_site("STUDY", "SITE", additional_filter={"state": "open"})
+
+    sdk.subjects.list.assert_called_once_with("STUDY", site_name="SITE")
+    sdk.queries.list.assert_called_once_with("STUDY", subject_key=["S1", "S2"], state="open")
+    assert sdk.queries.list.call_args.kwargs == {"subject_key": ["S1", "S2"], "state": "open"}
+
+
+def test_get_queries_by_site_returns_empty_if_no_subjects() -> None:
+    sdk = MagicMock()
+    sdk.subjects.list.return_value = []
+    wf = QueryManagementWorkflow(sdk)
+
+    result = wf.get_queries_by_site("STUDY", "SITE")
+
+    sdk.subjects.list.assert_called_once_with("STUDY", site_name="SITE")
+    sdk.queries.list.assert_not_called()
+    assert result == []

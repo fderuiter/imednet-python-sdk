@@ -102,14 +102,18 @@ class QueryManagementWorkflow:
         Args:
             study_key: The key identifying the study.
             site_key: The name of the site.
-            additional_filter: An optional dictionary of conditions to combine with the site filter.
+            additional_filter: Extra conditions to combine with the subject filter.
             **kwargs: Additional keyword arguments passed directly to `sdk.queries.list`.
 
         Returns:
             A list of Query objects for the specified site.
         """
-        # Build filter dictionary
-        final_filter_dict: Dict[str, Any] = {"site_name": site_key}
+        subjects = self._sdk.subjects.list(study_key, site_name=site_key)
+        subject_keys = [s.subject_key for s in subjects]
+        if not subject_keys:
+            return []
+
+        final_filter_dict: Dict[str, Any] = {"subject_key": subject_keys}
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
