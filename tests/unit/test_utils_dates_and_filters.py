@@ -82,3 +82,8 @@ def test_build_filter_string_snake_list() -> None:
 def test_build_filter_string_quotes() -> None:
     result = build_filter_string({"site_name": "My Site"})
     assert result == 'siteName=="My Site"'
+
+
+def test_build_filter_string_quote_spaces() -> None:
+    result = build_filter_string({"site_name": "A B"})
+    assert result == 'siteName=="A B"'

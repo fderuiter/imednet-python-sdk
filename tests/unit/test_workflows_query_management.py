@@ -71,3 +71,15 @@ def test_get_queries_by_site_returns_empty_if_no_subjects() -> None:
     sdk.subjects.list.assert_called_once_with("STUDY", site_name="SITE")
     sdk.queries.list.assert_not_called()
     assert result == []
+
+
+def test_get_queries_by_site_with_space_in_name() -> None:
+    sdk = MagicMock()
+    sdk.subjects.list.return_value = [Subject(subject_key="S1")]
+    wf = QueryManagementWorkflow(sdk)
+
+    wf.get_queries_by_site("STUDY", "Mock Site")
+
+    sdk.subjects.list.assert_called_once_with("STUDY", site_name="Mock Site")
+    sdk.queries.list.assert_called_once_with("STUDY", subject_key=["S1"])
+    assert sdk.queries.list.call_args.kwargs == {"subject_key": ["S1"]}

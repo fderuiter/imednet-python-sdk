@@ -5,7 +5,6 @@ This module provides functionality to construct filter query parameters
 for iMednet API endpoints based on the reference documentation.
 """
 
-import json
 import re
 from typing import Any, Dict, List, Tuple, Union
 
@@ -53,8 +52,11 @@ def build_filter_string(
     """
 
     def _format(val: Any) -> str:
-        if isinstance(val, str) and re.search(r"[^A-Za-z0-9_.-]", val):
-            return json.dumps(val)
+        if isinstance(val, str):
+            if re.search(r"[^A-Za-z0-9_.-]", val):
+                escaped = val.replace('"', r"\"")
+                return f'"{escaped}"'
+            return val
         return str(val)
 
     parts: List[str] = []
