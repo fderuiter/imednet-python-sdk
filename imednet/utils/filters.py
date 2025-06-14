@@ -24,31 +24,19 @@ def build_filter_string(
     and_connector: str = ";",
     or_connector: str = ",",
 ) -> str:
-    """
-    Build a filter string for API requests from a mapping of filters.
+    """Return a filter string constructed according to iMednet rules.
 
-    Strings are constructed according to the iMednet API filtering rules:
-    - Use '<', '<=', '>', '>=', '==', '!=', '=~' operators.
-    - Multiple conditions are joined by ';' (AND) or ',' (OR).
-    - String values containing spaces or special characters are wrapped in
-      double quotes.
+    Each key in ``filters`` is converted to camelCase. Raw values imply
+    equality, tuples allow explicit operators, and lists generate multiple
+    equality filters joined by ``or_connector``. Conditions are then joined by
+    ``and_connector``.
 
-    Args:
-        filters: A dict where:
-            - value is a raw value -> equality is assumed (==).
-            - value is a tuple (op, val) -> use provided operator.
-            - value is a list -> multiple equality filters OR-ed.
-        and_connector: String connector for AND conditions (default ';').
-        or_connector: String connector for OR conditions (default ',').
-
-    Returns:
-        A filter string suitable for use as a `filter` query parameter.
-
-    Examples:
-        >>> build_filter_string({'age': ('>', 30), 'status': 'active'})
-        'age>30;status==active'
-        >>> build_filter_string({'type': ['A', 'B']})
-        'type==A,type==B'
+    Examples
+    --------
+    >>> build_filter_string({'age': ('>', 30), 'status': 'active'})
+    'age>30;status==active'
+    >>> build_filter_string({'type': ['A', 'B']})
+    'type==A,type==B'
     """
 
     def _format(val: Any) -> str:

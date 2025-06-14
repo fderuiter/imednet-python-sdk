@@ -21,8 +21,7 @@ imednet.utils.filters module
    :show-inheritance:
 
 imednet.utils.pandas module
---------------------------
-
+---------------------------
 .. automodule:: imednet.utils.pandas
    :members:
    :undoc-members:
@@ -42,4 +41,5 @@ Module contents
 .. automodule:: imednet.utils
    :members:
    :undoc-members:
+   :exclude-members: DataFrame
    :show-inheritance:
