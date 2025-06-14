@@ -11,6 +11,7 @@ Welcome to imednet-sdk's documentation!
    cli
    airflow
    live_test_plan
+   live_tests
    modules
 
 
