@@ -5,6 +5,8 @@ This module provides functionality to construct filter query parameters
 for iMednet API endpoints based on the reference documentation.
 """
 
+import json
+import re
 from typing import Any, Dict, List, Tuple, Union
 
 
@@ -29,6 +31,8 @@ def build_filter_string(
     Strings are constructed according to the iMednet API filtering rules:
     - Use '<', '<=', '>', '>=', '==', '!=', '=~' operators.
     - Multiple conditions are joined by ';' (AND) or ',' (OR).
+    - String values containing spaces or special characters are wrapped in
+      double quotes.
 
     Args:
         filters: A dict where:
@@ -48,15 +52,20 @@ def build_filter_string(
         'type==A,type==B'
     """
 
+    def _format(val: Any) -> str:
+        if isinstance(val, str) and re.search(r"[^A-Za-z0-9_.-]", val):
+            return json.dumps(val)
+        return str(val)
+
     parts: List[str] = []
     for key, value in filters.items():
         camel_key = _snake_to_camel(key)
         if isinstance(value, tuple) and len(value) == 2:
             op, val = value
-            parts.append(f"{camel_key}{op}{val}")
+            parts.append(f"{camel_key}{op}{_format(val)}")
         elif isinstance(value, list):
-            subparts = [f"{camel_key}=={v}" for v in value]
+            subparts = [f"{camel_key}=={_format(v)}" for v in value]
             parts.append(or_connector.join(subparts))
         else:
-            parts.append(f"{camel_key}=={value}")
+            parts.append(f"{camel_key}=={_format(value)}")
     return and_connector.join(parts)

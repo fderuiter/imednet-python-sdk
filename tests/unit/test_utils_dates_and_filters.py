@@ -77,3 +77,8 @@ def test_build_filter_string_snake_to_camel() -> None:
 def test_build_filter_string_snake_list() -> None:
     result = build_filter_string({"field_name": ["A", "B"]})
     assert result == "fieldName==A,fieldName==B"
+
+
+def test_build_filter_string_quotes() -> None:
+    result = build_filter_string({"site_name": "My Site"})
+    assert result == 'siteName=="My Site"'

@@ -48,4 +48,6 @@ flag is not a general filtering option and has no effect on other endpoints.
 
 Dates must use UTC timestamps except where noted. When filtering visits by
 ``startDate``, ``dueDate``, ``endDate`` or ``visitDate``, use ``YYYY-MM-DD``.
+String values containing spaces or special characters must be wrapped in
+double quotes. For example: ``siteName=="My Site"``.
 
