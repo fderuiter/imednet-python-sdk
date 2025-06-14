@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 
 import typer
@@ -14,6 +15,13 @@ def export_parquet(
     path: Path = typer.Argument(..., help="Destination Parquet file."),
 ) -> None:
     """Export study records to a Parquet file."""
+    if importlib.util.find_spec("pyarrow") is None:
+        print(
+            "[bold red]Error:[/bold red] pyarrow is required for Parquet export. "
+            "Install with 'pip install \"imednet-sdk[pyarrow]\"'."
+        )
+        raise typer.Exit(code=1)
+
     from . import export_to_parquet, get_sdk
 
     sdk = get_sdk()
@@ -79,6 +87,13 @@ def export_sql(
     connection_string: str = typer.Argument(..., help="Database connection string."),
 ) -> None:
     """Export study records to a SQL table."""
+    if importlib.util.find_spec("sqlalchemy") is None:
+        print(
+            "[bold red]Error:[/bold red] SQLAlchemy is required for SQL export. "
+            "Install with 'pip install \"imednet-sdk[sqlalchemy]\"'."
+        )
+        raise typer.Exit(code=1)
+
     from . import export_to_sql, get_sdk
 
     sdk = get_sdk()

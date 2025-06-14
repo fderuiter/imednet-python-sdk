@@ -1,3 +1,4 @@
+import importlib.util
 import os
 from unittest.mock import MagicMock
 
@@ -184,6 +185,7 @@ def test_export_parquet_calls_helper(
 ) -> None:
     func = MagicMock()
     monkeypatch.setattr(cli, "export_to_parquet", func)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     result = runner.invoke(cli.app, ["export", "parquet", "STUDY", "out.parquet"])
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "out.parquet")
@@ -224,12 +226,44 @@ def test_export_sql_calls_helper(
 ) -> None:
     func = MagicMock()
     monkeypatch.setattr(cli, "export_to_sql", func)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     result = runner.invoke(
         cli.app,
         ["export", "sql", "STUDY", "table", "sqlite://"],
     )
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+
+
+def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    original_find_spec = importlib.util.find_spec
+
+    def fake_find_spec(name: str) -> object | None:
+        if name == "pyarrow":
+            return None
+        return original_find_spec(name)
+
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
+    result = runner.invoke(cli.app, ["export", "parquet", "STUDY", "out.parquet"])
+    assert result.exit_code == 1
+    assert "pyarrow is required" in result.stdout
+
+
+def test_export_sql_missing_sqlalchemy(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    original_find_spec = importlib.util.find_spec
+
+    def fake_find_spec(name: str) -> object | None:
+        if name == "sqlalchemy":
+            return None
+        return original_find_spec(name)
+
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "table", "sqlite://"],
+    )
+    assert result.exit_code == 1
+    assert "SQLAlchemy is required" in result.stdout
 
 
 def test_subject_data_calls_workflow(
