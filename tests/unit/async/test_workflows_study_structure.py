@@ -8,7 +8,7 @@ from imednet.workflows.study_structure import async_get_study_structure
 
 
 @pytest.mark.asyncio
-async def test_async_get_study_structure_aggregates_related_data(monkeypatch) -> None:
+async def test_async_get_study_structure_aggregates_related_data() -> None:
     sdk = MagicMock()
     interval = Interval(
         interval_id=1,
@@ -24,13 +24,6 @@ async def test_async_get_study_structure_aggregates_related_data(monkeypatch) ->
     sdk.intervals.async_list = AsyncMock(return_value=[interval])
     sdk.forms.async_list = AsyncMock(return_value=[form])
     sdk.variables.async_list = AsyncMock(return_value=[variable])
-
-    orig_dump = Interval.model_dump
-    monkeypatch.setattr(
-        Interval,
-        "model_dump",
-        lambda self: {k: v for k, v in orig_dump(self).items() if k != "forms"},
-    )
 
     structure = await async_get_study_structure(sdk, "STUDY")
 
