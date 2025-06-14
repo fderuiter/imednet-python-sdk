@@ -69,6 +69,8 @@ class CodingsEndpoint(BaseEndpoint):
         """
         Get a specific coding by ID.
 
+        The ``coding_id`` value is supplied as a filter to :meth:`list`.
+
         Args:
             study_key: Study identifier
             coding_id: Coding identifier
@@ -77,16 +79,19 @@ class CodingsEndpoint(BaseEndpoint):
             Coding object
         """
 
-        codings = self.list(study_key=study_key, refresh=True, codingId=coding_id)
+        codings = self.list(study_key=study_key, codingId=coding_id)
         if not codings:
             raise ValueError(f"Coding {coding_id} not found in study {study_key}")
         return codings[0]
 
     async def async_get(self, study_key: str, coding_id: str) -> Coding:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        This method also filters :meth:`async_list` by ``coding_id``.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        codings = await self.async_list(study_key=study_key, refresh=True, codingId=coding_id)
+        codings = await self.async_list(study_key=study_key, codingId=coding_id)
         if not codings:
             raise ValueError(f"Coding {coding_id} not found in study {study_key}")
         return codings[0]

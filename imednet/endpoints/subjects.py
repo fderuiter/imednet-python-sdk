@@ -60,6 +60,8 @@ class SubjectsEndpoint(BaseEndpoint):
         """
         Get a specific subject by key.
 
+        The ``subject_key`` is passed as a filter to :meth:`list`.
+
         Args:
             study_key: Study identifier
             subject_key: Subject identifier
@@ -67,16 +69,19 @@ class SubjectsEndpoint(BaseEndpoint):
         Returns:
             Subject object
         """
-        subjects = self.list(study_key=study_key, refresh=True, subjectKey=subject_key)
+        subjects = self.list(study_key=study_key, subjectKey=subject_key)
         if not subjects:
             raise ValueError(f"Subject {subject_key} not found in study {study_key}")
         return subjects[0]
 
     async def async_get(self, study_key: str, subject_key: str) -> Subject:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        This call also filters :meth:`async_list` by ``subject_key``.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        subjects = await self.async_list(study_key=study_key, refresh=True, subjectKey=subject_key)
+        subjects = await self.async_list(study_key=study_key, subjectKey=subject_key)
         if not subjects:
             raise ValueError(f"Subject {subject_key} not found in study {study_key}")
         return subjects[0]

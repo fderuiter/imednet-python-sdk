@@ -160,9 +160,8 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
     called = {}
 
-    async def fake_list(self, study_key=None, refresh=False, **filters):
+    async def fake_list(self, study_key=None, **filters):
         called["study_key"] = study_key
-        called["refresh"] = refresh
         called["filters"] = filters
         return [Record(record_id=1)]
 
@@ -170,7 +169,7 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
 
     rec = await ep.async_get("S1", 1)
 
-    assert called == {"study_key": "S1", "refresh": True, "filters": {"recordId": 1}}
+    assert called == {"study_key": "S1", "filters": {"recordId": 1}}
     assert isinstance(rec, Record)
 
 

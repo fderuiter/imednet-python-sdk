@@ -60,6 +60,8 @@ class QueriesEndpoint(BaseEndpoint):
         """
         Get a specific query by annotation ID.
 
+        The annotation ID filter is forwarded to :meth:`list`.
+
         Args:
             study_key: Study identifier
             annotation_id: Query annotation identifier
@@ -67,18 +69,19 @@ class QueriesEndpoint(BaseEndpoint):
         Returns:
             Query object
         """
-        queries = self.list(study_key=study_key, refresh=True, annotationId=annotation_id)
+        queries = self.list(study_key=study_key, annotationId=annotation_id)
         if not queries:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
         return queries[0]
 
     async def async_get(self, study_key: str, annotation_id: int) -> Query:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        This call filters :meth:`async_list` by ``annotation_id``.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        queries = await self.async_list(
-            study_key=study_key, refresh=True, annotationId=annotation_id
-        )
+        queries = await self.async_list(study_key=study_key, annotationId=annotation_id)
         if not queries:
             raise ValueError(f"Query {annotation_id} not found in study {study_key}")
         return queries[0]

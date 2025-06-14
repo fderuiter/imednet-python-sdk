@@ -17,6 +17,9 @@ class JobsEndpoint(BaseEndpoint):
         """
         Get a specific job by batch ID.
 
+        This method performs a direct API request using the provided
+        ``batch_id``; it does not use caching or the ``refresh`` flag.
+
         Args:
             study_key: Study identifier
             batch_id: Batch ID of the job
@@ -34,7 +37,11 @@ class JobsEndpoint(BaseEndpoint):
         return JobStatus.from_json(data)
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        Like the sync variant, it simply issues a request by ``batch_id``
+        without any caching.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         endpoint = self._build_path(study_key, "jobs", batch_id)

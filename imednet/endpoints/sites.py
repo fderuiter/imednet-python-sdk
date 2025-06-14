@@ -68,6 +68,8 @@ class SitesEndpoint(BaseEndpoint):
         """
         Get a specific site by ID.
 
+        The ``site_id`` is applied as a filter when calling :meth:`list`.
+
         Args:
             study_key: Study identifier
             site_id: Site identifier
@@ -75,16 +77,19 @@ class SitesEndpoint(BaseEndpoint):
         Returns:
             Site object
         """
-        sites = self.list(study_key=study_key, refresh=True, siteId=site_id)
+        sites = self.list(study_key=study_key, siteId=site_id)
         if not sites:
             raise ValueError(f"Site {site_id} not found in study {study_key}")
         return sites[0]
 
     async def async_get(self, study_key: str, site_id: int) -> Site:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        This method also filters :meth:`async_list` by ``site_id``.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        sites = await self.async_list(study_key=study_key, refresh=True, siteId=site_id)
+        sites = await self.async_list(study_key=study_key, siteId=site_id)
         if not sites:
             raise ValueError(f"Site {site_id} not found in study {study_key}")
         return sites[0]
