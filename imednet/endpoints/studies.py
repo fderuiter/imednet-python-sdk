@@ -73,6 +73,9 @@ class StudiesEndpoint(BaseEndpoint):
         """
         Get a specific study by key.
 
+        This endpoint maintains a local cache. ``refresh=True`` is passed to
+        :meth:`list` to ensure the latest data is fetched for the lookup.
+
         Args:
             study_key: Study identifier
 
@@ -85,7 +88,11 @@ class StudiesEndpoint(BaseEndpoint):
         return studies[0]
 
     async def async_get(self, study_key: str) -> Study:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        Like the synchronous variant, this call passes ``refresh=True`` to
+        :meth:`async_list` to bypass the cache.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         studies = await self.async_list(refresh=True, studyKey=study_key)

@@ -94,6 +94,9 @@ class IntervalsEndpoint(BaseEndpoint):
         """
         Get a specific interval by ID.
 
+        ``refresh=True`` is passed to :meth:`list` to override the cached
+        interval list when performing the lookup.
+
         Args:
             study_key: Study identifier
             interval_id: Interval identifier
@@ -107,7 +110,11 @@ class IntervalsEndpoint(BaseEndpoint):
         return intervals[0]
 
     async def async_get(self, study_key: str, interval_id: int) -> Interval:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        The asynchronous call also passes ``refresh=True`` to
+        :meth:`async_list`.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         intervals = await self.async_list(study_key=study_key, refresh=True, intervalId=interval_id)

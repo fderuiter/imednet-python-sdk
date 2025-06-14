@@ -100,6 +100,9 @@ class FormsEndpoint(BaseEndpoint):
         """
         Get a specific form by ID.
 
+        This endpoint caches form listings. ``refresh=True`` is used when
+        calling :meth:`list` so that the most recent data is returned.
+
         Args:
             study_key: Study identifier
             form_id: Form identifier
@@ -113,7 +116,11 @@ class FormsEndpoint(BaseEndpoint):
         return forms[0]
 
     async def async_get(self, study_key: str, form_id: int) -> Form:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        ``refresh=True`` is also passed to :meth:`async_list` to bypass the
+        cache.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         forms = await self.async_list(study_key=study_key, refresh=True, formId=form_id)

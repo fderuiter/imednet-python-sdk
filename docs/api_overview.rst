@@ -39,6 +39,13 @@ Endpoints accept a ``filter`` parameter that matches the syntax documented in th
 Mednet API guide. For clinical data queries, ``recordDataFilter`` can be supplied
 alongside ``filter``. See :mod:`imednet.endpoints.records` for usage examples.
 
+Some endpoints (:class:`~imednet.endpoints.studies.StudiesEndpoint`,
+:class:`~imednet.endpoints.forms.FormsEndpoint`,
+:class:`~imednet.endpoints.intervals.IntervalsEndpoint`, and
+:class:`~imednet.endpoints.variables.VariablesEndpoint`) maintain an internal
+cache. They accept a ``refresh`` argument to force a reload of cached data. This
+flag is not a general filtering option and has no effect on other endpoints.
+
 Dates must use UTC timestamps except where noted. When filtering visits by
 ``startDate``, ``dueDate``, ``endDate`` or ``visitDate``, use ``YYYY-MM-DD``.
 

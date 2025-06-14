@@ -62,6 +62,8 @@ class RecordRevisionsEndpoint(BaseEndpoint):
         """
         Get a specific record revision by ID.
 
+        The ID is forwarded to :meth:`list` as a filter; no caching is used.
+
         Args:
             study_key: Study identifier
             record_revision_id: Record revision identifier
@@ -75,7 +77,10 @@ class RecordRevisionsEndpoint(BaseEndpoint):
         return revisions[0]
 
     async def async_get(self, study_key: str, record_revision_id: int) -> RecordRevision:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        This call also filters :meth:`async_list` by ``record_revision_id``.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         revisions = await self.async_list(study_key=study_key, recordRevisionId=record_revision_id)
