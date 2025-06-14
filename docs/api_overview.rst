@@ -51,3 +51,63 @@ Dates must use UTC timestamps except where noted. When filtering visits by
 String values containing spaces or special characters must be wrapped in
 double quotes. For example: ``siteName=="My Site"``.
 
+Filter helper
+-------------
+
+Use :func:`imednet.utils.filters.build_filter_string` to construct filter
+expressions from a mapping. Values containing spaces must be wrapped in double
+quotes. Example::
+
+   build_filter_string({"site_name": "Bright Test Site"})
+   # siteName=="Bright Test Site"
+
+Error responses
+---------------
+
+When a request fails, error details are returned in the ``metadata`` section of
+the response body. Validation errors include the offending field and value.
+Example::
+
+   {
+     "metadata": {
+       "status": "BAD_REQUEST",
+       "path": "/api/v1/edc/studies",
+       "timestamp": "2018-10-18 05:46:29",
+       "error": {
+         "code": "1000",
+         "description": "Field raised validation errors",
+         "field": {
+           "attribute": "page",
+           "value": "XX"
+         }
+       }
+     }
+   }
+
+Error response fields
+~~~~~~~~~~~~~~~~~~~~~
+
+``code``
+  Error code
+
+``description``
+  Error description message
+
+``field.attribute``
+  Origination request attribute which caused the error
+
+``field.value``
+  The value of request attribute passed in the request
+
+Error codes
+~~~~~~~~~~~
+
+``1000``
+  Validation error. Request contain invalid value.
+
+``9000``
+  Unknown error. Please contact Mednet support for assistance.
+
+``9001``
+  Unauthorized error. Insufficient permission to retrieve data.
+
