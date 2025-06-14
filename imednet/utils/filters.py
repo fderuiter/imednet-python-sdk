@@ -8,6 +8,16 @@ for iMednet API endpoints based on the reference documentation.
 from typing import Any, Dict, List, Tuple, Union
 
 
+def _snake_to_camel(text: str) -> str:
+    """Convert a snake_case string to camelCase."""
+
+    if "_" not in text:
+        return text
+    parts = text.split("_")
+    first, rest = parts[0], parts[1:]
+    return first + "".join(word.capitalize() for word in rest)
+
+
 def build_filter_string(
     filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]],
     and_connector: str = ";",
@@ -40,12 +50,13 @@ def build_filter_string(
 
     parts: List[str] = []
     for key, value in filters.items():
+        camel_key = _snake_to_camel(key)
         if isinstance(value, tuple) and len(value) == 2:
             op, val = value
-            parts.append(f"{key}{op}{val}")
+            parts.append(f"{camel_key}{op}{val}")
         elif isinstance(value, list):
-            subparts = [f"{key}=={v}" for v in value]
+            subparts = [f"{camel_key}=={v}" for v in value]
             parts.append(or_connector.join(subparts))
         else:
-            parts.append(f"{key}=={value}")
+            parts.append(f"{camel_key}=={value}")
     return and_connector.join(parts)

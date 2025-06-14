@@ -48,23 +48,13 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
         interval_structures: List[IntervalStructure] = []
         for interval in intervals:
             form_structures: List[FormStructure] = []
-            # Assuming interval.forms contains summaries or just IDs/Keys
-            # We need to look up the full Form object and its variables
-            for form_summary in interval.forms:  # Assuming interval.forms exists
+            for form_summary in interval.forms:
                 full_form = forms_by_id.get(form_summary.form_id)
                 if full_form:
                     form_vars = variables_by_form_id.get(full_form.form_id, [])
-                    form_struct = FormStructure(
-                        **full_form.model_dump(),  # Pass Form fields
-                        variables=form_vars,  # Add fetched variables
-                    )
-                    form_structures.append(form_struct)
+                    form_structures.append(FormStructure.from_form(full_form, form_vars))
 
-            interval_struct = IntervalStructure(
-                **interval.model_dump(),  # Pass Interval fields
-                forms=form_structures,  # Add nested FormStructures
-            )
-            interval_structures.append(interval_struct)
+            interval_structures.append(IntervalStructure.from_interval(interval, form_structures))
 
         return StudyStructure(study_key=study_key, intervals=interval_structures)  # type: ignore[call-arg]
 
@@ -96,19 +86,9 @@ async def async_get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyS
                 full_form = forms_by_id.get(form_summary.form_id)
                 if full_form:
                     form_vars = variables_by_form_id.get(full_form.form_id, [])
-                    form_structures.append(
-                        FormStructure(
-                            **full_form.model_dump(),
-                            variables=form_vars,
-                        )
-                    )
+                    form_structures.append(FormStructure.from_form(full_form, form_vars))
 
-            interval_structures.append(
-                IntervalStructure(
-                    **interval.model_dump(),
-                    forms=form_structures,
-                )
-            )
+            interval_structures.append(IntervalStructure.from_interval(interval, form_structures))
 
         return StudyStructure(
             study_key=study_key, intervals=interval_structures
