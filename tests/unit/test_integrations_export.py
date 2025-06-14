@@ -98,3 +98,18 @@ def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
     out_db = tmp_path / "d.db"
     export_mod.export_to_sql(sdk, "S", "t", f"sqlite:///{out_db}")
     assert out_db.exists()
+
+
+def test_export_functions_handle_case_insensitive_duplicates(tmp_path, monkeypatch):
+    df = pd.DataFrame([[1, 2]], columns=["A", "a"])
+    mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
+    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    sdk = MagicMock()
+
+    out_json = tmp_path / "case.json"
+    export_mod.export_to_json(sdk, "S", str(out_json))
+    assert out_json.exists()
+
+    out_db = tmp_path / "case.db"
+    export_mod.export_to_sql(sdk, "S", "t", f"sqlite:///{out_db}")
+    assert out_db.exists()
