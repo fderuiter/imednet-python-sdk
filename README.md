@@ -163,7 +163,14 @@ export.export_to_excel(sdk, study_key, "records.xlsx")
 
 ### Using the Command Line Interface (CLI)
 
-After installing the package (`pip install imednet-sdk`) and setting the environment variables as shown above, you can use the `imednet` command:
+After installing the package (`pip install imednet-sdk`) and setting the environment variables as shown above, you can use the `imednet` command.
+Parquet and SQL exports require the optional `pyarrow` and `SQLAlchemy` dependencies:
+
+```bash
+pip install "imednet-sdk[pyarrow,sqlalchemy]"
+```
+
+Then run commands such as:
 
 ```powershell
 # List available studies
