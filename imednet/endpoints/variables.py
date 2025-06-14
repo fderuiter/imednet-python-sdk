@@ -94,6 +94,9 @@ class VariablesEndpoint(BaseEndpoint):
         """
         Get a specific variable by ID.
 
+        The variables list is cached, so ``refresh=True`` is used when
+        calling :meth:`list` to retrieve the latest data.
+
         Args:
             study_key: Study identifier
             variable_id: Variable identifier
@@ -107,7 +110,11 @@ class VariablesEndpoint(BaseEndpoint):
         return variables[0]
 
     async def async_get(self, study_key: str, variable_id: int) -> Variable:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        ``refresh=True`` is also passed to :meth:`async_list` to bypass the
+        cache.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         variables = await self.async_list(study_key=study_key, refresh=True, variableId=variable_id)

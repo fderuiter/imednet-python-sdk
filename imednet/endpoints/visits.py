@@ -60,6 +60,8 @@ class VisitsEndpoint(BaseEndpoint):
         """
         Get a specific visit by ID.
 
+        ``visit_id`` is sent as a filter to :meth:`list` for retrieval.
+
         Args:
             study_key: Study identifier
             visit_id: Visit identifier
@@ -73,7 +75,10 @@ class VisitsEndpoint(BaseEndpoint):
         return visits[0]
 
     async def async_get(self, study_key: str, visit_id: int) -> Visit:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        The asynchronous call also filters by ``visit_id``.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         visits = await self.async_list(study_key=study_key, visitId=visit_id)

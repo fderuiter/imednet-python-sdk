@@ -75,6 +75,8 @@ class RecordsEndpoint(BaseEndpoint):
         """
         Get a specific record by ID.
 
+        ``record_id`` is provided to :meth:`list` as a filter value.
+
         Args:
             study_key: Study identifier
             record_id: Record identifier (can be string or integer)
@@ -88,7 +90,10 @@ class RecordsEndpoint(BaseEndpoint):
         return records[0]
 
     async def async_get(self, study_key: str, record_id: Union[str, int]) -> Record:
-        """Asynchronous version of :meth:`get`."""
+        """Asynchronous version of :meth:`get`.
+
+        This method also filters :meth:`async_list` by ``record_id``.
+        """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         records = await self.async_list(study_key=study_key, recordId=record_id)
