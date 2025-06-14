@@ -96,10 +96,12 @@ def export_to_json(
         study_key, use_labels_as_columns=use_labels_as_columns
     )
     # Remove duplicate columns which can occur when variable names repeat across
-    # forms or revisions. Skip if the object does not expose a pandas-like
-    # interface (e.g. unit tests using mocks).
+    # forms or revisions. Columns are considered duplicates regardless of case
+    # sensitivity. Skip if the object does not expose a pandas-like interface
+    # (e.g. unit tests using mocks).
     if isinstance(df, pd.DataFrame):
-        df = df.loc[:, ~df.columns.duplicated()]
+        dup_mask = df.columns.str.lower().duplicated()
+        df = df.loc[:, ~dup_mask]
     df.to_json(path, index=False, **kwargs)
 
 
@@ -127,9 +129,10 @@ def export_to_sql(
         study_key, use_labels_as_columns=use_labels_as_columns
     )
     # Duplicate column names cause ``to_sql`` to raise an error. Trim them here
-    # by keeping the first occurrence of each column. Skip when a mock DataFrame
-    # is supplied during unit tests.
+    # by keeping the first occurrence of each column, ignoring case. Skip when a
+    # mock DataFrame is supplied during unit tests.
     if isinstance(df, pd.DataFrame):
-        df = df.loc[:, ~df.columns.duplicated()]
+        dup_mask = df.columns.str.lower().duplicated()
+        df = df.loc[:, ~dup_mask]
     engine = create_engine(conn_str)
     df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
