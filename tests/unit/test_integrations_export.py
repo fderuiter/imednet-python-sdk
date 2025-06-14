@@ -3,10 +3,20 @@ from types import ModuleType
 from unittest.mock import MagicMock
 
 import imednet.integrations.export as export_mod
+import pandas as pd
 
 
 def _setup_mapper(monkeypatch):
     df = MagicMock()
+    mapper_inst = MagicMock()
+    mapper_inst.dataframe.return_value = df
+    mapper_cls = MagicMock(return_value=mapper_inst)
+    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    return df, mapper_cls, mapper_inst
+
+
+def _setup_real_mapper(monkeypatch):
+    df = pd.DataFrame({"A": [1]})
     mapper_inst = MagicMock()
     mapper_inst.dataframe.return_value = df
     mapper_cls = MagicMock(return_value=mapper_inst)
@@ -73,3 +83,18 @@ def test_export_to_sql(monkeypatch):
     mapper_inst.dataframe.assert_called_once_with("STUDY", use_labels_as_columns=False)
     create_engine.assert_called_once_with("sqlite://")
     df.to_sql.assert_called_once_with("table", "engine", if_exists="append", index=False)
+
+
+def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
+    df = pd.DataFrame([[1, 2]], columns=["A", "A"])
+    mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
+    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    sdk = MagicMock()
+
+    out_json = tmp_path / "d.json"
+    export_mod.export_to_json(sdk, "S", str(out_json))
+    assert out_json.exists()
+
+    out_db = tmp_path / "d.db"
+    export_mod.export_to_sql(sdk, "S", "t", f"sqlite:///{out_db}")
+    assert out_db.exists()
