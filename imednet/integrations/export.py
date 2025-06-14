@@ -99,7 +99,7 @@ def export_to_json(
     # forms or revisions. Skip if the object does not expose a pandas-like
     # interface (e.g. unit tests using mocks).
     if isinstance(df, pd.DataFrame):
-        df = df.loc[:, ~df.columns.duplicated()]
+        df = df.loc[:, ~df.columns.str.lower().duplicated()]
     df.to_json(path, index=False, **kwargs)
 
 
@@ -130,6 +130,6 @@ def export_to_sql(
     # by keeping the first occurrence of each column. Skip when a mock DataFrame
     # is supplied during unit tests.
     if isinstance(df, pd.DataFrame):
-        df = df.loc[:, ~df.columns.duplicated()]
+        df = df.loc[:, ~df.columns.str.lower().duplicated()]
     engine = create_engine(conn_str)
     df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
