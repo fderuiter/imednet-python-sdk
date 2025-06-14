@@ -1,5 +1,5 @@
 Command Line Interface (CLI)
-===========================
+============================
 
 The package installs an ``imednet`` command that wraps common SDK features. The CLI
 reads authentication details from environment variables:
@@ -36,3 +36,13 @@ List subjects that are screened for a study and save their records as CSV:
    imednet records list MY_STUDY --output csv
 
 Use ``--help`` on any command to see all options.
+
+SQLite Column Limit
+-------------------
+
+The ``export sql`` command writes records to a database using
+``export_to_sql``. When the destination is SQLite, tables are limited to
+``2000`` columns. The helper checks this against
+``imednet.integrations.export.MAX_SQLITE_COLUMNS`` and raises a friendly
+error if exceeded. Use another backend if your study contains more
+variables.

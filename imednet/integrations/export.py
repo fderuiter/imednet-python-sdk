@@ -9,6 +9,8 @@ import pandas as pd
 from ..sdk import ImednetSDK
 from ..workflows.record_mapper import RecordMapper
 
+MAX_SQLITE_COLUMNS = 2000
+
 
 def export_to_parquet(
     sdk: ImednetSDK,
@@ -137,4 +139,11 @@ def export_to_sql(
         dup_mask = df.columns.str.lower().duplicated()
         df = df.loc[:, ~dup_mask]
     engine = create_engine(conn_str)
+    if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
+        raise ValueError(
+            "SQLite supports up to "
+            f"{MAX_SQLITE_COLUMNS} columns; received {len(df.columns)} columns. "
+            "Reduce variables or use another DB."
+        )
+
     df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]

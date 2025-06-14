@@ -170,6 +170,11 @@ Parquet and SQL exports require the optional `pyarrow` and `SQLAlchemy` dependen
 pip install "imednet-sdk[pyarrow,sqlalchemy]"
 ```
 
+SQLite imposes a limit of roughly 2000 columns per table. The
+`export_to_sql` helper and `imednet export sql` command will raise an error
+if this limit is exceeded. When exporting studies with many variables, use a
+different database backend or include only the required fields.
+
 Then run commands such as:
 
 ```powershell
@@ -194,6 +199,12 @@ imednet records list STUDY_KEY
 # Get help for a specific command
 imednet subjects list --help
 ```
+
+When exporting to SQLite using the CLI, keep in mind that the database
+cannot store more than ``2000`` columns in a table. The helper
+``export_to_sql`` enforces this via the constant
+``imednet.integrations.export.MAX_SQLITE_COLUMNS``. Use another
+database backend if your study contains more variables.
 
 - See the full API reference in the [HTML docs](docs/_build/html/index.html).
 - More examples can be found in the `examples/` directory.

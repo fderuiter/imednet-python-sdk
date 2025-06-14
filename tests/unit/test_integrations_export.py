@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 import imednet.integrations.export as export_mod
 import pandas as pd
+import pytest
 
 
 def _setup_mapper(monkeypatch):
@@ -73,7 +74,9 @@ def test_export_to_sql(monkeypatch):
     sdk = MagicMock()
 
     sa_module = ModuleType("sqlalchemy")
-    create_engine = MagicMock(return_value="engine")
+    engine = MagicMock()
+    engine.dialect.name = "sqlite"
+    create_engine = MagicMock(return_value=engine)
     sa_module.create_engine = create_engine
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
 
@@ -82,7 +85,7 @@ def test_export_to_sql(monkeypatch):
     mapper_cls.assert_called_once_with(sdk)
     mapper_inst.dataframe.assert_called_once_with("STUDY", use_labels_as_columns=False)
     create_engine.assert_called_once_with("sqlite://")
-    df.to_sql.assert_called_once_with("table", "engine", if_exists="append", index=False)
+    df.to_sql.assert_called_once_with("table", engine, if_exists="append", index=False)
 
 
 def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
@@ -131,3 +134,21 @@ def test_export_functions_handle_case_insensitive_duplicates(tmp_path, monkeypat
     out_parquet = tmp_path / "case.parquet"
     export_mod.export_to_parquet(sdk, "S", str(out_parquet))
     assert out_parquet.exists()
+
+
+def test_export_sql_too_many_columns(monkeypatch):
+    columns = [f"c{i}" for i in range(2001)]
+    df = pd.DataFrame([range(2001)], columns=columns)
+    monkeypatch.setattr(pd.DataFrame, "to_sql", MagicMock())
+    mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
+    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+
+    engine = MagicMock()
+    engine.dialect.name = "sqlite"
+    sa_module = ModuleType("sqlalchemy")
+    sa_module.create_engine = MagicMock(return_value=engine)
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+
+    with pytest.raises(ValueError, match="SQLite supports up to 2000 columns"):
+        export_mod.export_to_sql(MagicMock(), "STUDY", "table", "sqlite://")
+    pd.DataFrame.to_sql.assert_not_called()

@@ -1,5 +1,5 @@
 API Overview
-===========
+============
 
 This page summarizes the core concepts of the Mednet EDC REST API and how the
 SDK interacts with it.
