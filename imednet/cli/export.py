@@ -99,6 +99,9 @@ def export_sql(
     sdk = get_sdk()
     try:
         export_to_sql(sdk, study_key, table, connection_string)
+    except ValueError as exc:
+        print(f"[bold red]Error:[/bold red] {exc}")
+        raise typer.Exit(code=1)
     except Exception as exc:
         print(f"[bold red]Error:[/bold red] {exc}")
         raise typer.Exit(code=1)
