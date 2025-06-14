@@ -87,6 +87,11 @@ def test_export_to_sql(monkeypatch):
 
 def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
     df = pd.DataFrame([[1, 2]], columns=["A", "A"])
+    monkeypatch.setattr(
+        pd.DataFrame,
+        "to_parquet",
+        lambda self, path, index=False, **kwargs: open(path, "wb").close(),
+    )
     mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
     monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
     sdk = MagicMock()
@@ -99,9 +104,18 @@ def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
     export_mod.export_to_sql(sdk, "S", "t", f"sqlite:///{out_db}")
     assert out_db.exists()
 
+    out_parquet = tmp_path / "d.parquet"
+    export_mod.export_to_parquet(sdk, "S", str(out_parquet))
+    assert out_parquet.exists()
+
 
 def test_export_functions_handle_case_insensitive_duplicates(tmp_path, monkeypatch):
     df = pd.DataFrame([[1, 2]], columns=["A", "a"])
+    monkeypatch.setattr(
+        pd.DataFrame,
+        "to_parquet",
+        lambda self, path, index=False, **kwargs: open(path, "wb").close(),
+    )
     mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
     monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
     sdk = MagicMock()
@@ -113,3 +127,7 @@ def test_export_functions_handle_case_insensitive_duplicates(tmp_path, monkeypat
     out_db = tmp_path / "case.db"
     export_mod.export_to_sql(sdk, "S", "t", f"sqlite:///{out_db}")
     assert out_db.exists()
+
+    out_parquet = tmp_path / "case.parquet"
+    export_mod.export_to_parquet(sdk, "S", str(out_parquet))
+    assert out_parquet.exists()
