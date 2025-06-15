@@ -5,6 +5,9 @@ real iMedNet environment and are skipped unless the environment variable `IMEDNE
 along with valid credentials (`IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`). Each test verifies that
 the SDK behaves correctly when interacting with a running server.
 
+See :doc:`test_skip_conditions` for a summary of all variables and optional
+dependencies that control skipping.
+
 ## CLI Tests (`test_cli_live.py`)
 
 These checks invoke the CLI using `typer.testing.CliRunner` and expect a zero exit code:
@@ -68,6 +71,8 @@ create the requested file.
 - `ImednetExportOperator` and `ImednetToS3Operator` execute successfully when given minimal
 parameters.
 - `ImednetJobSensor` raises an exception when polling fails.
+- When Airflow is installed the suite also runs `test_airflow_dag.py` to execute
+  a simple DAG using these operators.
 
 ## Workflow Tests (`test_workflows_live.py`)
 

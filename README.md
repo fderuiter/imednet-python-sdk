@@ -23,10 +23,11 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
 - Pandas helpers for DataFrame conversion and CSV export
-- Optional in-memory caching for study and variable listings
+- Optional in-memory caching for study, form, interval, and variable listings
 
-Calls to `sdk.studies.list()` and `sdk.variables.list()` cache results in memory.
-Use `refresh=True` to fetch fresh data.
+Calls to `sdk.studies.list()`, `sdk.forms.list()`, `sdk.intervals.list()` and
+`sdk.variables.list()` cache results in memory. Pass `refresh=True` to bypass
+the cache. See `docs/caching.rst` for details.
 
 ## Installation
 
@@ -257,6 +258,10 @@ Use the login/password or ``extra`` JSON to provide ``api_key`` and ``security_k
 The operators fall back to ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY`` if not set.
 ``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default) to write to S3.
 
+When the ``airflow`` package is available the integration tests run
+``tests/integration/test_airflow_dag.py`` to execute a small DAG with these
+operators. Refer to ``docs/test_skip_conditions.md`` for skip conditions.
+
 
 ### JSON Logging
 
@@ -299,12 +304,18 @@ Then open `docs/_build/html/index.html` in your browser.
 - Code style: [Black](https://github.com/psf/black), [ruff](https://github.com/charliermarsh/ruff), [mypy](http://mypy-lang.org/)
 - Testing: [pytest](https://pytest.org/)
 
-Build and test:
+Build and test locally using the same commands as CI:
 
 ```bash
-poetry run pytest --cov=imednet
+./scripts/setup.sh  # run once
+poetry run ruff check --fix .
+poetry run black --check .
+poetry run mypy imednet
+poetry run pytest -q --cov=imednet --cov-report=xml
 ```
-The unit test suite covers over 90% of the codebase.
+The unit test suite covers over 90% of the codebase. When optional packages or
+environment variables are missing you should see a number of skipped tests. See
+`docs/test_skip_conditions.md` for details.
 
 ### End-to-End Tests
 
