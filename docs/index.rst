@@ -10,6 +10,9 @@ Welcome to imednet-sdk's documentation!
    architecture
    schema_validation
    cli
+   workflow_interactions
+   job_polling
+   record_mapping
    airflow
    live_test_plan
    live_tests
