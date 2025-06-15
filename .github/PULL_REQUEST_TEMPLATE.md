@@ -1,13 +1,14 @@
 ---
 name: Pull Request
-about: Describe the changes you are making
+about: Submit changes to the iMedNet SDK
 title: 'feat: '
 labels: ''
 assignees: ''
 ---
 
-**Description**
-A clear and concise description of the change.
+**Summary**
+Describe the intent of the change and which modules (CLI, SDK, workflows,
+integrations) are affected.
 
 **Related Issue**
 Closes # (issue number)
@@ -18,12 +19,19 @@ Closes # (issue number)
 - [ ] New feature
 - [ ] Documentation update
 
-**How Has This Been Tested?**
-Describe the tests that you ran to verify your changes.
+**Testing**
+Detail the commands or steps used to verify the change.
 
-**Checklist:**
+**Checklist**
 
-- [ ] My code follows the style guidelines (`black`, `ruff`, `mypy`)
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] I have added necessary documentation (if appropriate)
-- [ ] All new and existing tests pass locally with my changes
+- [ ] Title and commits follow [Conventional Commits](https://www.conventionalcommits.org)
+- [ ] `poetry run ruff check --fix .`
+- [ ] `poetry run black --check .`
+- [ ] `poetry run mypy imednet`
+- [ ] `poetry run pytest -q`
+- [ ] Tests added or updated
+- [ ] Documentation updated if needed
+- [ ] Architecture notes added when touching core modules
+
+**Architecture Notes**
+Describe any design decisions and update `docs/architecture.rst` if applicable.
