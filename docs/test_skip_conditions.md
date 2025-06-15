@@ -21,7 +21,7 @@ Several integration tests rely on optional packages:
 - `openpyxl` for Excel exports.
 - `pyarrow` for Parquet exports.
 - `sqlalchemy` for SQL exports.
-- `airflow` for Airflow operators and hooks.
+- `airflow` for Airflow operators, hooks, and DAG execution tests.
 
 If these packages are missing, the respective tests will be skipped.
 
@@ -31,4 +31,4 @@ contains no integer field or uses a pydantic root model. These are normal and do
 not indicate missing dependencies.
 
 Running the full suite without any optional variables or packages typically
-reports around 89 skipped tests, matching the CI configuration.
+reports around 90 skipped tests, matching the CI configuration.

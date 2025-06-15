@@ -258,6 +258,10 @@ Use the login/password or ``extra`` JSON to provide ``api_key`` and ``security_k
 The operators fall back to ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY`` if not set.
 ``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default) to write to S3.
 
+When the ``airflow`` package is available the integration tests run
+``tests/integration/test_airflow_dag.py`` to execute a small DAG with these
+operators. Refer to ``docs/test_skip_conditions.md`` for skip conditions.
+
 
 ### JSON Logging
 

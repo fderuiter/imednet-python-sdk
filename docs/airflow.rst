@@ -55,3 +55,21 @@ environment. The operators fall back to ``IMEDNET_API_KEY`` and
 ``IMEDNET_SECURITY_KEY`` if the connection lacks these values. The
 ``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default)
 when writing to S3.
+
+Operators and Sensors
+---------------------
+
+``ImednetExportOperator`` saves records to a local file using helpers from
+``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3
+and ``ImednetJobSensor`` waits for an export job to complete. All operators use
+``ImednetHook`` to obtain an :class:`~imednet.sdk.ImednetSDK` instance from an
+Airflow connection.
+
+Testing with Airflow
+--------------------
+
+The unit tests stub out the Airflow dependencies. When the ``airflow`` package
+is installed, ``tests/integration/test_airflow_dag.py`` runs a small DAG with
+``ImednetToS3Operator`` and ``ImednetJobSensor``. The test creates a temporary
+S3 bucket with ``moto`` and executes the tasks via ``TaskInstance.run``. It is
+skipped automatically if Airflow is missing.

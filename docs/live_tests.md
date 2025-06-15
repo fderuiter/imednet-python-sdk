@@ -71,6 +71,8 @@ create the requested file.
 - `ImednetExportOperator` and `ImednetToS3Operator` execute successfully when given minimal
 parameters.
 - `ImednetJobSensor` raises an exception when polling fails.
+- When Airflow is installed the suite also runs `test_airflow_dag.py` to execute
+  a simple DAG using these operators.
 
 ## Workflow Tests (`test_workflows_live.py`)
 
