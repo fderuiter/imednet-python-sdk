@@ -20,5 +20,10 @@ All checks must pass. The project enforces a maximum line length of 100 characte
 - `tests/` provides the pytest suite used in CI.
 - Documentation can be built locally via `make docs`.
 
-Follow the guidelines in `CONTRIBUTING.md` and use Conventional Commits for
-commit messages.
+## Commit Message Guidelines
+Follow the guidelines in `CONTRIBUTING.md` and use
+[Conventional Commits](https://www.conventionalcommits.org) for commit
+messages. Keep the subject line short (under 72 characters) and written in the
+imperative mood. Provide a body when necessary that explains what changed and
+why, wrapped at 72 characters per line. Reference related issues or pull
+requests in the footer when applicable.
