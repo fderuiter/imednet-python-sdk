@@ -14,6 +14,29 @@ reads authentication details from environment variables:
 Set these variables in your shell before invoking the command. You may also create
 an ``.env`` file so the values are loaded automatically.
 
+Command Hierarchy
+-----------------
+
+.. mermaid::
+
+   graph TD
+       A[imednet] --> B(studies)
+       A --> C(sites)
+       A --> D(subjects)
+       A --> E(records)
+       A --> F(export)
+       F --> F1(parquet)
+       F --> F2(csv)
+       F --> F3(excel)
+       F --> F4(json)
+       A --> G(jobs)
+       A --> H(queries)
+       A --> I(variables)
+       A --> J("record-revisions")
+       A --> K(workflows)
+       K --> K1("extract-records")
+       A --> L("subject-data")
+
 Available Commands
 ------------------
 

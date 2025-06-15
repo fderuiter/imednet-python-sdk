@@ -20,3 +20,23 @@ Example configuration::
    RequestsInstrumentor().instrument()
    tracer = trace.get_tracer(__name__)
    client = Client(api_key="A", security_key="B", tracer=tracer)
+
+Request Lifecycle
+-----------------
+
+The client logs each request and, when a tracer is supplied, surrounds the HTTP call
+with a span.
+
+.. mermaid::
+
+   sequenceDiagram
+       participant App
+       participant Client
+       participant HTTPX
+       App->>Client: call endpoint
+       Client->>Client: start span (optional)
+       Client->>HTTPX: send request
+       HTTPX-->>Client: response
+       Client->>Client: log JSON
+       Client->>Client: end span (optional)
+       Client-->>App: return result

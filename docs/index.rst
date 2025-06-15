@@ -8,7 +8,11 @@ Welcome to imednet-sdk's documentation!
    logging_and_tracing
    api_overview
    architecture
+   schema_validation
    cli
+   workflow_interactions
+   job_polling
+   record_mapping
    airflow
    live_test_plan
    live_tests
