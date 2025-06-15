@@ -23,10 +23,11 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Data models for requests and responses
 - Workflow utilities for data extraction and mapping
 - Pandas helpers for DataFrame conversion and CSV export
-- Optional in-memory caching for study and variable listings
+- Optional in-memory caching for study, form, interval, and variable listings
 
-Calls to `sdk.studies.list()` and `sdk.variables.list()` cache results in memory.
-Use `refresh=True` to fetch fresh data.
+Calls to `sdk.studies.list()`, `sdk.forms.list()`, `sdk.intervals.list()` and
+`sdk.variables.list()` cache results in memory. Pass `refresh=True` to bypass
+the cache. See `docs/caching.rst` for details.
 
 ## Installation
 
