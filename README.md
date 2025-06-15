@@ -299,12 +299,18 @@ Then open `docs/_build/html/index.html` in your browser.
 - Code style: [Black](https://github.com/psf/black), [ruff](https://github.com/charliermarsh/ruff), [mypy](http://mypy-lang.org/)
 - Testing: [pytest](https://pytest.org/)
 
-Build and test:
+Build and test locally using the same commands as CI:
 
 ```bash
-poetry run pytest --cov=imednet
+./scripts/setup.sh  # run once
+poetry run ruff check --fix .
+poetry run black --check .
+poetry run mypy imednet
+poetry run pytest -q --cov=imednet --cov-report=xml
 ```
-The unit test suite covers over 90% of the codebase.
+The unit test suite covers over 90% of the codebase. When optional packages or
+environment variables are missing you should see a number of skipped tests. See
+`docs/test_skip_conditions.md` for details.
 
 ### End-to-End Tests
 
