@@ -3,7 +3,14 @@ Schema Validation Flow
 
 The SDK uses :class:`~imednet.validation.schema.SchemaValidator` and
 :class:`~imednet.validation.schema.SchemaCache` to verify record data before
-submitting it to the API. The diagram below outlines the main steps.
+submitting it to the API. The validator checks that all variables exist,
+required fields are present, and that values match the expected types.
+If the variable metadata for a form is missing, ``SchemaValidator`` automatically
+loads it from the API using :class:`~imednet.endpoints.variables.VariablesEndpoint`.
+Any problems raise :class:`~imednet.core.exceptions.ValidationError` before the
+record is sent to the server.
+
+The diagram below outlines the main steps.
 
 .. mermaid::
 
