@@ -69,6 +69,7 @@ def test_cli_jobs_wait(runner: CliRunner, study_key: str) -> None:
 
 
 def test_cli_export_parquet(runner: CliRunner, study_key: str, tmp_path) -> None:
+    pytest.importorskip("pyarrow")
     out = tmp_path / "data.parquet"
     result = runner.invoke(cli.app, ["export", "parquet", study_key, str(out)])
     assert result.exit_code == 0
@@ -83,6 +84,7 @@ def test_cli_export_csv(runner: CliRunner, study_key: str, tmp_path) -> None:
 
 
 def test_cli_export_excel(runner: CliRunner, study_key: str, tmp_path) -> None:
+    pytest.importorskip("openpyxl")
     out = tmp_path / "data.xlsx"
     result = runner.invoke(cli.app, ["export", "excel", study_key, str(out)])
     assert result.exit_code == 0
@@ -97,6 +99,7 @@ def test_cli_export_json(runner: CliRunner, study_key: str, tmp_path) -> None:
 
 
 def test_cli_export_sql(runner: CliRunner, study_key: str, tmp_path) -> None:
+    pytest.importorskip("sqlalchemy")
     out_db = tmp_path / "test.db"
     result = runner.invoke(cli.app, ["export", "sql", study_key, "table", f"sqlite:///{out_db}"])
     assert result.exit_code == 0
