@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 from imednet.core import exceptions
+from imednet.core.base_client import BaseClient
 from imednet.core.client import Client
 
 
@@ -22,6 +23,10 @@ class DummyResponse:
     @property
     def is_error(self):
         return self.status_code >= 400
+
+
+def test_client_subclass() -> None:
+    assert issubclass(Client, BaseClient)
 
 
 def test_initialization_sets_defaults() -> None:

@@ -1,6 +1,11 @@
 import httpx
 import pytest
 from imednet.core.async_client import AsyncClient
+from imednet.core.base_client import BaseClient
+
+
+def test_async_client_subclass() -> None:
+    assert issubclass(AsyncClient, BaseClient)
 
 
 @pytest.mark.asyncio

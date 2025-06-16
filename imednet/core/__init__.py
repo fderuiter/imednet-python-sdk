@@ -3,6 +3,7 @@ Re-exports core components for easier access.
 """
 
 from .async_client import AsyncClient
+from .base_client import BaseClient
 from .client import Client
 from .exceptions import (
     ApiError,
@@ -22,6 +23,7 @@ from .exceptions import (
 from .paginator import AsyncPaginator, Paginator
 
 __all__ = [
+    "BaseClient",
     "Client",
     "AsyncClient",
     "Context",

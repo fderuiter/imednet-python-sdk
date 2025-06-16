@@ -12,7 +12,6 @@ This module defines the `Client` class which handles:
 from __future__ import annotations
 
 import logging
-import os
 import time
 from contextlib import nullcontext
 from types import TracebackType
@@ -25,13 +24,7 @@ except Exception:  # pragma: no cover - optional dependency
     trace = None
     Tracer = None
 import httpx
-from tenacity import (
-    RetryCallState,
-    RetryError,
-    Retrying,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import RetryError, Retrying, stop_after_attempt, wait_exponential
 
 from imednet.core.exceptions import (
     ApiError,
@@ -44,7 +37,8 @@ from imednet.core.exceptions import (
     ServerError,
     UnauthorizedError,
 )
-from imednet.utils.json_logging import configure_json_logging
+
+from .base_client import BaseClient
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +53,7 @@ STATUS_TO_ERROR: dict[int, type[ApiError]] = {
 }
 
 
-class Client:
+class Client(BaseClient):
     """
     Core HTTP client for the iMednet API.
 
@@ -70,7 +64,7 @@ class Client:
         backoff_factor: Multiplier for exponential backoff.
     """
 
-    DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
+    DEFAULT_BASE_URL = BaseClient.DEFAULT_BASE_URL
 
     def __init__(
         self,
@@ -82,60 +76,24 @@ class Client:
         backoff_factor: float = 1.0,
         log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
-    ):
-        """
-        Initialize the HTTP client.
-
-        Credentials can be supplied directly or via environment variables
-        `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. If `base_url` is not
-        provided, the `IMEDNET_BASE_URL` environment variable will be used if
-        present.
-
-        Args:
-            api_key: iMednet API key.
-            security_key: iMednet security key.
-            base_url: Base URL for API; uses default if None.
-            timeout: Request timeout in seconds or httpx.Timeout.
-            retries: Max retry attempts for transient errors.
-            backoff_factor: Factor for exponential backoff between retries.
-            log_level: Logging level or name.
-            tracer: Optional OpenTelemetry tracer to record spans.
-        """
-        api_key = (api_key or os.getenv("IMEDNET_API_KEY") or "").strip()
-        security_key = (security_key or os.getenv("IMEDNET_SECURITY_KEY") or "").strip()
-        if not api_key or not security_key:
-            raise ValueError("API key and security key are required")
-
-        self.base_url = base_url or os.getenv("IMEDNET_BASE_URL") or self.DEFAULT_BASE_URL
-        self.base_url = self.base_url.rstrip("/")
-        if self.base_url.endswith("/api"):
-            self.base_url = self.base_url[:-4]
-
-        self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
-        self.retries = retries
-        self.backoff_factor = backoff_factor
-
-        level = logging.getLevelName(log_level.upper()) if isinstance(log_level, str) else log_level
-        configure_json_logging(level)
-        logger.setLevel(level)
+    ) -> None:
+        """Initialize the HTTP client."""
+        super().__init__(
+            api_key=api_key,
+            security_key=security_key,
+            base_url=base_url,
+            timeout=timeout,
+            retries=retries,
+            backoff_factor=backoff_factor,
+            log_level=log_level,
+            tracer=tracer,
+        )
 
         self._client = httpx.Client(
             base_url=self.base_url,
-            headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "x-api-key": api_key,
-                "x-imn-security-key": security_key,
-            },
+            headers=self.headers,
             timeout=self.timeout,
         )
-
-        if tracer is not None:
-            self._tracer = tracer
-        elif trace is not None:
-            self._tracer = trace.get_tracer(__name__)
-        else:
-            self._tracer = None
 
     def __enter__(self) -> Client:
         return self
@@ -151,15 +109,6 @@ class Client:
     def close(self) -> None:
         """Close the underlying HTTP client."""
         self._client.close()
-
-    def _should_retry(self, retry_state: RetryCallState) -> bool:
-        """Determine whether to retry based on exception type and attempt count."""
-        if retry_state.outcome is None:
-            return False
-        exc = retry_state.outcome.exception()
-        if isinstance(exc, (httpx.RequestError,)):
-            return True
-        return False
 
     def _request(
         self,
