@@ -160,12 +160,12 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
     called = {}
 
-    async def fake_list(self, study_key=None, **filters):
+    async def fake_impl(self, client, paginator, *, study_key=None, **filters):
         called["study_key"] = study_key
         called["filters"] = filters
         return [Record(record_id=1)]
 
-    monkeypatch.setattr(records.RecordsEndpoint, "async_list", fake_list)
+    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
 
     rec = await ep.async_get("S1", 1)
 
@@ -177,10 +177,10 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
 async def test_async_get_record_not_found(monkeypatch, dummy_client, context, response_factory):
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
 
-    async def fake_list(self, study_key=None, refresh=False, **filters):
+    async def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(records.RecordsEndpoint, "async_list", fake_list)
+    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
 
     with pytest.raises(ValueError):
         await ep.async_get("S1", 1)
