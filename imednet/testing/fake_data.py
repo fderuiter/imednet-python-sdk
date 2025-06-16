@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from faker import Faker
+
+from imednet.validation.schema import SchemaCache
 
 faker = Faker()
 
@@ -117,8 +119,60 @@ def fake_query() -> Dict[str, Any]:
     }
 
 
-def fake_record() -> Dict[str, Any]:
-    """Return a fake record payload."""
+def _fake_value(var_type: str) -> Any:
+    """Return a fake value matching ``var_type``."""
+
+    var_type = var_type.lower()
+    if var_type in {"int", "integer", "number"}:
+        return faker.random_int(min=0, max=100)
+    if var_type in {"float", "decimal"}:
+        return faker.pyfloat(left_digits=2, right_digits=2, positive=True)
+    if var_type in {"bool", "boolean"}:
+        return faker.boolean()
+    return faker.word()
+
+
+def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
+    """Return a fake record payload.
+
+    When ``schema`` is provided variable metadata is used to generate typed
+    ``recordData`` values.
+    """
+
+    if schema and schema._form_variables:
+        form_key = faker.random_element(list(schema._form_variables))
+        variables = schema.variables_for_form(form_key)
+        first_var = next(iter(variables.values()))
+        form_id = first_var.form_id
+        record_data = {name: _fake_value(var.variable_type) for name, var in variables.items()}
+        return {
+            "studyKey": faker.bothify(text="??????"),
+            "intervalId": faker.random_int(min=1, max=10000),
+            "formId": form_id,
+            "formKey": form_key,
+            "siteId": faker.random_int(min=1, max=10000),
+            "recordId": faker.random_int(min=1, max=10000),
+            "recordOid": faker.uuid4(),
+            "recordType": "SUBJECT",
+            "recordStatus": faker.random_element(["Record Incomplete", "Record Complete"]),
+            "deleted": False,
+            "dateCreated": _timestamp(),
+            "dateModified": _timestamp(),
+            "subjectId": faker.random_int(min=1, max=10000),
+            "subjectOid": faker.uuid4(),
+            "subjectKey": f"{faker.random_int(100, 999)}-{faker.random_int(100, 999)}",
+            "visitId": faker.random_int(min=1, max=10000),
+            "parentRecordId": faker.random_int(min=1, max=10000),
+            "keywords": [
+                {
+                    "keywordName": faker.word().title(),
+                    "keywordKey": faker.lexify(text="???").upper(),
+                    "keywordId": faker.random_int(),
+                    "dateAdded": _timestamp(),
+                }
+            ],
+            "recordData": record_data,
+        }
 
     return {
         "studyKey": faker.bothify(text="??????"),
