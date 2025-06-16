@@ -97,6 +97,12 @@ The `imednet.testing.fake_data` module offers helper functions for generating
 realistic payloads using `Faker`. These payloads match the REST API examples and
 can be parsed directly by the SDK models for offline testing.
 
+`fake_forms_for_cache` and `fake_variables_for_cache` create
+`Form` and `Variable` objects that can populate a
+`SchemaCache`. Patch `FormsEndpoint.list` and `VariablesEndpoint.list`
+in your tests to return these lists before calling
+`schema.refresh()`.
+
 ## Expected Results
 
 All live tests should pass when run against a properly configured iMedNet environment. Each test

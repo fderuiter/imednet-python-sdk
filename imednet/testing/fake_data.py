@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from faker import Faker
 
+from imednet.models.forms import Form
+from imednet.models.variables import Variable
 from imednet.validation.schema import SchemaCache
 
 faker = Faker()
@@ -257,6 +259,38 @@ def fake_variable() -> Dict[str, Any]:
     }
 
 
+def fake_forms_for_cache(num_forms: int = 1, study_key: Optional[str] = None) -> List[Form]:
+    """Return a list of :class:`~imednet.models.forms.Form` objects for caching."""
+
+    forms: List[Form] = []
+    for _ in range(num_forms):
+        data = fake_form()
+        if study_key is not None:
+            data["studyKey"] = study_key
+        forms.append(Form.from_json(data))
+    return forms
+
+
+def fake_variables_for_cache(
+    forms: List[Form],
+    vars_per_form: int = 1,
+    study_key: Optional[str] = None,
+) -> List[Variable]:
+    """Return a list of :class:`~imednet.models.variables.Variable` objects."""
+
+    variables: List[Variable] = []
+    for form in forms:
+        for _ in range(vars_per_form):
+            data = fake_variable()
+            data["formId"] = form.form_id
+            data["formKey"] = form.form_key
+            data["formName"] = form.form_name
+            if study_key is not None:
+                data["studyKey"] = study_key
+            variables.append(Variable.from_json(data))
+    return variables
+
+
 def fake_visit() -> Dict[str, Any]:
     """Return a fake visit payload."""
 
@@ -392,6 +426,8 @@ __all__ = [
     "fake_record",
     "fake_form",
     "fake_variable",
+    "fake_forms_for_cache",
+    "fake_variables_for_cache",
     "fake_visit",
     "fake_coding",
     "fake_record_revision",

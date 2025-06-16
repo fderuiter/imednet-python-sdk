@@ -1,3 +1,6 @@
+from types import SimpleNamespace
+from typing import Any, cast
+
 import imednet.testing.fake_data as fake_data
 from imednet.models import (
     Coding,
@@ -106,3 +109,31 @@ def test_fake_user_parses() -> None:
     data = fake_data.fake_user()
     obj = User.from_json(data)
     assert isinstance(obj, User)
+
+
+def test_fake_forms_for_cache_returns_forms() -> None:
+    forms = fake_data.fake_forms_for_cache(2, study_key="S")
+    assert len(forms) == 2
+    assert all(isinstance(f, Form) for f in forms)
+    assert {f.study_key for f in forms} == {"S"}
+
+
+def test_fake_variables_for_cache_and_schema_refresh() -> None:
+    forms = fake_data.fake_forms_for_cache(1)
+    variables = fake_data.fake_variables_for_cache(forms, vars_per_form=1)
+
+    forms_ep = SimpleNamespace(list=lambda **_: forms)
+
+    def list_vars(*_, form_id=None, **__):
+        return [v for v in variables if form_id is None or v.form_id == form_id]
+
+    vars_ep = SimpleNamespace(list=list_vars)
+
+    cache = SchemaCache()
+    cache.refresh(cast(Any, forms_ep), cast(Any, vars_ep), study_key="X")
+
+    form = forms[0]
+    var = variables[0]
+
+    assert cache.form_key_from_id(form.form_id) == form.form_key
+    assert cache.variables_for_form(form.form_key)[var.variable_name] is var
