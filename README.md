@@ -352,7 +352,6 @@ To publish a new release:
 
 ## Governance and Roadmap
 
-This project is currently maintained by Bright Research.
 
 ## License
 
