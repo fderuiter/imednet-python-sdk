@@ -85,6 +85,11 @@ def export_sql(
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     table: str = typer.Argument(..., help="Destination table name."),
     connection_string: str = typer.Argument(..., help="Database connection string."),
+    single_table: bool = typer.Option(
+        False,
+        "--single-table",
+        help="Store all records in a single table even when using SQLite.",
+    ),
 ) -> None:
     """Export study records to a SQL table."""
     if importlib.util.find_spec("sqlalchemy") is None:
@@ -94,11 +99,17 @@ def export_sql(
         )
         raise typer.Exit(code=1)
 
-    from . import export_to_sql, get_sdk
+    from sqlalchemy import create_engine
+
+    from . import export_to_sql, export_to_sql_by_form, get_sdk
 
     sdk = get_sdk()
     try:
-        export_to_sql(sdk, study_key, table, connection_string)
+        engine = create_engine(connection_string)
+        if not single_table and engine.dialect.name == "sqlite":
+            export_to_sql_by_form(sdk, study_key, connection_string)
+        else:
+            export_to_sql(sdk, study_key, table, connection_string)
     except ValueError as exc:
         print(f"[bold red]Error:[/bold red] {exc}")
         raise typer.Exit(code=1)

@@ -1,5 +1,7 @@
 import importlib.util
 import os
+import sys
+from types import ModuleType
 from unittest.mock import MagicMock
 
 import imednet.cli as cli
@@ -221,18 +223,67 @@ def test_export_json_calls_helper(
     func.assert_called_once_with(sdk, "STUDY", "out.json")
 
 
-def test_export_sql_calls_helper(
+def test_export_sql_calls_helper_non_sqlite(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
     monkeypatch.setattr(cli, "export_to_sql", func)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", MagicMock())
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    engine = MagicMock()
+    engine.dialect.name = "postgres"
+    sa_module = ModuleType("sqlalchemy")
+    sa_module.create_engine = MagicMock(return_value=engine)
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "table", "postgresql://"],
+    )
+    assert result.exit_code == 0
+    func.assert_called_once_with(sdk, "STUDY", "table", "postgresql://")
+
+
+def test_export_sql_sqlite_uses_by_form(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    form_func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_sql_by_form", form_func)
+    monkeypatch.setattr(cli, "export_to_sql", MagicMock())
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    engine = MagicMock()
+    engine.dialect.name = "sqlite"
+    sa_module = ModuleType("sqlalchemy")
+    sa_module.create_engine = MagicMock(return_value=engine)
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
         ["export", "sql", "STUDY", "table", "sqlite://"],
     )
     assert result.exit_code == 0
-    func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+    form_func.assert_called_once_with(sdk, "STUDY", "sqlite://")
+
+
+def test_export_sql_sqlite_single_table(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    form_func = MagicMock()
+    single = ["--single-table"]
+    monkeypatch.setattr(cli, "export_to_sql_by_form", form_func)
+    sql_func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_sql", sql_func)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    engine = MagicMock()
+    engine.dialect.name = "sqlite"
+    sa_module = ModuleType("sqlalchemy")
+    sa_module.create_engine = MagicMock(return_value=engine)
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "table", "sqlite://"] + single,
+    )
+    assert result.exit_code == 0
+    sql_func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+    form_func.assert_not_called()
 
 
 def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:

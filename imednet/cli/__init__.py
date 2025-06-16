@@ -11,6 +11,7 @@ from ..integrations.export import (  # noqa: F401
     export_to_excel,  # noqa: F401
     export_to_json,  # noqa: F401
     export_to_parquet,  # noqa: F401
+    export_to_sql_by_form,  # noqa: F401
     export_to_sql,  # noqa: F401
 )  # noqa: F401
 from ..workflows.data_extraction import DataExtractionWorkflow  # noqa: F401
