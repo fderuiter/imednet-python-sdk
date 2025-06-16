@@ -7,17 +7,17 @@ call :func:`imednet.utils.configure_json_logging` in your application to apply t
 same format globally.
 
 If `opentelemetry` is installed, the client can record spans around each HTTP
-request. Installing ``opentelemetry-instrumentation-requests`` will automatically
-instrument the underlying HTTPX calls. You may also pass your own tracer to the
-client.
+request. Installing ``opentelemetry-instrumentation-httpx`` will automatically
+instrument the HTTPX requests used by the SDK. You may also pass your own
+tracer to the client.
 
 Example configuration::
 
    from opentelemetry import trace
-   from opentelemetry.instrumentation.requests import RequestsInstrumentor
+   from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
    from imednet.core.client import Client
 
-   RequestsInstrumentor().instrument()
+   HTTPXClientInstrumentor().instrument()
    tracer = trace.get_tracer(__name__)
    client = Client(api_key="A", security_key="B", tracer=tracer)
 
