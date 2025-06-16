@@ -7,6 +7,8 @@ Welcome to imednet-sdk's documentation!
 
    logging_and_tracing
    api_overview
+   rest_api_reference
+   endpoints/index
    architecture
    schema_validation
    cli
