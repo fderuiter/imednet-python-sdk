@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from faker import Faker
+
+from imednet.models.forms import Form
+from imednet.models.variables import Variable
+from imednet.validation.schema import SchemaCache
 
 faker = Faker()
 
@@ -117,8 +121,60 @@ def fake_query() -> Dict[str, Any]:
     }
 
 
-def fake_record() -> Dict[str, Any]:
-    """Return a fake record payload."""
+def _fake_value(var_type: str) -> Any:
+    """Return a fake value matching ``var_type``."""
+
+    var_type = var_type.lower()
+    if var_type in {"int", "integer", "number"}:
+        return faker.random_int(min=0, max=100)
+    if var_type in {"float", "decimal"}:
+        return faker.pyfloat(left_digits=2, right_digits=2, positive=True)
+    if var_type in {"bool", "boolean"}:
+        return faker.boolean()
+    return faker.word()
+
+
+def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
+    """Return a fake record payload.
+
+    When ``schema`` is provided variable metadata is used to generate typed
+    ``recordData`` values.
+    """
+
+    if schema and schema._form_variables:
+        form_key = faker.random_element(list(schema._form_variables))
+        variables = schema.variables_for_form(form_key)
+        first_var = next(iter(variables.values()))
+        form_id = first_var.form_id
+        record_data = {name: _fake_value(var.variable_type) for name, var in variables.items()}
+        return {
+            "studyKey": faker.bothify(text="??????"),
+            "intervalId": faker.random_int(min=1, max=10000),
+            "formId": form_id,
+            "formKey": form_key,
+            "siteId": faker.random_int(min=1, max=10000),
+            "recordId": faker.random_int(min=1, max=10000),
+            "recordOid": faker.uuid4(),
+            "recordType": "SUBJECT",
+            "recordStatus": faker.random_element(["Record Incomplete", "Record Complete"]),
+            "deleted": False,
+            "dateCreated": _timestamp(),
+            "dateModified": _timestamp(),
+            "subjectId": faker.random_int(min=1, max=10000),
+            "subjectOid": faker.uuid4(),
+            "subjectKey": f"{faker.random_int(100, 999)}-{faker.random_int(100, 999)}",
+            "visitId": faker.random_int(min=1, max=10000),
+            "parentRecordId": faker.random_int(min=1, max=10000),
+            "keywords": [
+                {
+                    "keywordName": faker.word().title(),
+                    "keywordKey": faker.lexify(text="???").upper(),
+                    "keywordId": faker.random_int(),
+                    "dateAdded": _timestamp(),
+                }
+            ],
+            "recordData": record_data,
+        }
 
     return {
         "studyKey": faker.bothify(text="??????"),
@@ -201,6 +257,38 @@ def fake_variable() -> Dict[str, Any]:
         "label": faker.word().title(),
         "blinded": faker.boolean(),
     }
+
+
+def fake_forms_for_cache(num_forms: int = 1, study_key: Optional[str] = None) -> List[Form]:
+    """Return a list of :class:`~imednet.models.forms.Form` objects for caching."""
+
+    forms: List[Form] = []
+    for _ in range(num_forms):
+        data = fake_form()
+        if study_key is not None:
+            data["studyKey"] = study_key
+        forms.append(Form.from_json(data))
+    return forms
+
+
+def fake_variables_for_cache(
+    forms: List[Form],
+    vars_per_form: int = 1,
+    study_key: Optional[str] = None,
+) -> List[Variable]:
+    """Return a list of :class:`~imednet.models.variables.Variable` objects."""
+
+    variables: List[Variable] = []
+    for form in forms:
+        for _ in range(vars_per_form):
+            data = fake_variable()
+            data["formId"] = form.form_id
+            data["formKey"] = form.form_key
+            data["formName"] = form.form_name
+            if study_key is not None:
+                data["studyKey"] = study_key
+            variables.append(Variable.from_json(data))
+    return variables
 
 
 def fake_visit() -> Dict[str, Any]:
@@ -338,6 +426,8 @@ __all__ = [
     "fake_record",
     "fake_form",
     "fake_variable",
+    "fake_forms_for_cache",
+    "fake_variables_for_cache",
     "fake_visit",
     "fake_coding",
     "fake_record_revision",
