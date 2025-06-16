@@ -91,6 +91,12 @@ records or audit entries.
 `update_scheduled_record`, `create_new_record`) start a batch job and return a job object when
 mutations are enabled.
 
+## Fake Data Utilities
+
+The `imednet.testing.fake_data` module offers helper functions for generating
+realistic payloads using `Faker`. These payloads match the REST API examples and
+can be parsed directly by the SDK models for offline testing.
+
 ## Expected Results
 
 All live tests should pass when run against a properly configured iMedNet environment. Each test
