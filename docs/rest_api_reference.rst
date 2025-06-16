@@ -26,8 +26,26 @@ should never be shared publicly. Example using ``curl``::
 
    curl -X GET https://edc.prod.imednetapi.com/api/v1/edc/studies/STUDYKEY/sites \
      -H 'x-api-key: XXXXXXXX' \
-     -H 'x-imn-security-key: XXX-XXX-XX-XXXXXX' \
-     -H 'Content-Type: application/json'
+    -H 'x-imn-security-key: XXX-XXX-XX-XXXXXX' \
+    -H 'Content-Type: application/json'
+
+Headers
+-------
+
+``Accept``
+  Supported server response media type. Must be ``application/json``.
+
+``x-api-key``
+  Valid API key.
+
+``x-imn-security-key``
+  Valid security key.
+
+``Content-Type``
+  Supported request content type. Must be ``application/json``.
+
+The response includes a ``Content-Type`` header indicating the payload
+type. It will also be ``application/json``.
 
 HTTP verbs
 ----------
@@ -136,3 +154,53 @@ Notes
 
 White space is not allowed between attribute, operator and value. Both ``filter``
 and ``recordDataFilter`` require unique attributes and are case sensitive.
+
+Error responses
+---------------
+
+When a request fails, details are returned in the ``metadata`` section of the
+response body. Validation errors include the offending field and value.
+Example::
+
+   {
+     "metadata": {
+       "status": "BAD_REQUEST",
+       "path": "/api/v1/edc/studies",
+       "timestamp": "2018-10-18 05:46:29",
+       "error": {
+         "code": "1000",
+         "description": "Field raised validation errors",
+         "field": {
+           "attribute": "page",
+           "value": "XX"
+         }
+       }
+     }
+   }
+
+Error response fields
+~~~~~~~~~~~~~~~~~~~~~
+
+``code``
+  Error code
+
+``description``
+  Error description message
+
+``field.attribute``
+  Origination request attribute which caused the error
+
+``field.value``
+  The value of request attribute passed in the request
+
+Error codes
+~~~~~~~~~~~
+
+``1000``
+  Validation error. Request contain invalid value.
+
+``9000``
+  Unknown error. Please contact Mednet support for assistance.
+
+``9001``
+  Unauthorized error. Insufficient permission to retrieve data.
