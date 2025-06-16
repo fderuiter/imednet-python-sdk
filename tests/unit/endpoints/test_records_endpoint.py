@@ -29,12 +29,12 @@ def test_get_success(monkeypatch, dummy_client, context):
     ep = records.RecordsEndpoint(dummy_client, context)
     called = {}
 
-    def fake_list(self, study_key=None, **filters):
+    def fake_impl(self, client, paginator, *, study_key=None, **filters):
         called["study_key"] = study_key
         called["filters"] = filters
         return [Record(record_id=1)]
 
-    monkeypatch.setattr(records.RecordsEndpoint, "list", fake_list)
+    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
 
     res = ep.get("S1", 1)
 
@@ -45,10 +45,10 @@ def test_get_success(monkeypatch, dummy_client, context):
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = records.RecordsEndpoint(dummy_client, context)
 
-    def fake_list(self, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(records.RecordsEndpoint, "list", fake_list)
+    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

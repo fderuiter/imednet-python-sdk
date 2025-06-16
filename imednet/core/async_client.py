@@ -3,17 +3,10 @@
 from __future__ import annotations
 
 import logging
-import os
 import time
 from contextlib import nullcontext
 from typing import Any, Dict, Optional, Union
 
-try:  # optional opentelemetry
-    from opentelemetry import trace
-    from opentelemetry.trace import Tracer
-except Exception:  # pragma: no cover - optional dependency
-    trace = None
-    Tracer = None
 import httpx
 from tenacity import (
     AsyncRetrying,
@@ -23,9 +16,7 @@ from tenacity import (
     wait_exponential,
 )
 
-from imednet.utils.json_logging import configure_json_logging
-
-from .client import Client
+from .base_client import BaseClient, Tracer
 from .exceptions import (
     ApiError,
     AuthenticationError,
@@ -40,10 +31,10 @@ from .exceptions import (
 logger = logging.getLogger(__name__)
 
 
-class AsyncClient:
+class AsyncClient(BaseClient):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
-    DEFAULT_BASE_URL = Client.DEFAULT_BASE_URL
+    DEFAULT_BASE_URL = BaseClient.DEFAULT_BASE_URL
 
     def __init__(
         self,
@@ -56,25 +47,19 @@ class AsyncClient:
         log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
     ) -> None:
-        api_key = (api_key or os.getenv("IMEDNET_API_KEY") or "").strip()
-        security_key = (security_key or os.getenv("IMEDNET_SECURITY_KEY") or "").strip()
-        if not api_key or not security_key:
-            raise ValueError("API key and security key are required")
+        super().__init__(
+            api_key=api_key,
+            security_key=security_key,
+            base_url=base_url,
+            timeout=timeout,
+            retries=retries,
+            backoff_factor=backoff_factor,
+            log_level=log_level,
+            tracer=tracer,
+        )
 
-        self.base_url = base_url or os.getenv("IMEDNET_BASE_URL") or self.DEFAULT_BASE_URL
-        self.base_url = self.base_url.rstrip("/")
-        if self.base_url.endswith("/api"):
-            self.base_url = self.base_url[:-4]
-
-        self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
-        self.retries = retries
-        self.backoff_factor = backoff_factor
-
-        level = logging.getLevelName(log_level.upper()) if isinstance(log_level, str) else log_level
-        configure_json_logging(level)
-        logger.setLevel(level)
-
-        self._client = httpx.AsyncClient(
+    def _create_client(self, api_key: str, security_key: str) -> httpx.AsyncClient:
+        return httpx.AsyncClient(
             base_url=self.base_url,
             headers={
                 "Accept": "application/json",
@@ -84,13 +69,6 @@ class AsyncClient:
             },
             timeout=self.timeout,
         )
-
-        if tracer is not None:
-            self._tracer = tracer
-        elif trace is not None:
-            self._tracer = trace.get_tracer(__name__)
-        else:
-            self._tracer = None
 
     async def __aenter__(self) -> "AsyncClient":
         return self

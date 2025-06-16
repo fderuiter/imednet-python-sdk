@@ -22,10 +22,10 @@ def test_list_builds_path_with_default(
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = subjects.SubjectsEndpoint(dummy_client, context)
 
-    def fake_list(self, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(subjects.SubjectsEndpoint, "list", fake_list)
+    monkeypatch.setattr(subjects.SubjectsEndpoint, "_list_impl", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", "X")

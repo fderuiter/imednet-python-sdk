@@ -1,5 +1,6 @@
 """Endpoint for managing forms (eCRFs) in a study."""
 
+import inspect
 from typing import Any, Dict, List, Optional
 
 from imednet.core.async_client import AsyncClient
@@ -20,6 +21,70 @@ class FormsEndpoint(BaseEndpoint):
 
     PATH = "/api/v1/edc/studies"
 
+    def _list_impl(
+        self,
+        client: Any,
+        paginator_cls: type[Any],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        **filters: Any,
+    ) -> Any:
+        filters = self._auto_filter(filters)
+        if study_key:
+            filters["studyKey"] = study_key
+
+        study = filters.pop("studyKey")
+        if not study:
+            raise ValueError("Study key must be provided or set in the context")
+        if not filters and not refresh and study in self._forms_cache:
+            return self._forms_cache[study]
+
+        params: Dict[str, Any] = {}
+        if filters:
+            params["filter"] = build_filter_string(filters)
+
+        path = self._build_path(study, "forms")
+        paginator = paginator_cls(client, path, params=params, page_size=500)
+
+        if hasattr(paginator, "__aiter__"):
+
+            async def _collect() -> List[Form]:
+                result = [Form.from_json(item) async for item in paginator]
+                if not filters:
+                    self._forms_cache[study] = result
+                return result
+
+            return _collect()
+
+        result = [Form.from_json(item) for item in paginator]
+        if not filters:
+            self._forms_cache[study] = result
+        return result
+
+    def _get_impl(self, client: Any, paginator_cls: type[Any], study_key: str, form_id: int) -> Any:
+        result = self._list_impl(
+            client,
+            paginator_cls,
+            study_key=study_key,
+            refresh=True,
+            formId=form_id,
+        )
+
+        if inspect.isawaitable(result):
+
+            async def _await() -> Form:
+                items = await result
+                if not items:
+                    raise ValueError(f"Form {form_id} not found in study {study_key}")
+                return items[0]
+
+            return _await()
+
+        if not result:
+            raise ValueError(f"Form {form_id} not found in study {study_key}")
+        return result[0]
+
     def __init__(
         self,
         client: Client,
@@ -35,36 +100,15 @@ class FormsEndpoint(BaseEndpoint):
         refresh: bool = False,
         **filters: Any,
     ) -> List[Form]:
-        """
-        List forms in a study with optional filtering.
-
-        Args:
-            study_key: Study identifier (uses default from context if not specified)
-            **filters: Additional filter parameters
-
-        Returns:
-            List of Form objects
-        """
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        study = filters.pop("studyKey")
-        if not study:
-            raise ValueError("Study key must be provided or set in the context")
-        if not filters and not refresh and study in self._forms_cache:
-            return self._forms_cache[study]
-
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(study, "forms")
-        paginator = Paginator(self._client, path, params=params, page_size=500)
-        result = [Form.from_json(item) for item in paginator]
-        if not filters:
-            self._forms_cache[study] = result
-        return result
+        """List forms in a study with optional filtering."""
+        result = self._list_impl(
+            self._client,
+            Paginator,
+            study_key=study_key,
+            refresh=refresh,
+            **filters,
+        )
+        return result  # type: ignore[return-value]
 
     async def async_list(
         self,
@@ -75,25 +119,13 @@ class FormsEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`list`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        study = filters.pop("studyKey")
-        if not study:
-            raise ValueError("Study key must be provided or set in the context")
-        if not filters and not refresh and study in self._forms_cache:
-            return self._forms_cache[study]
-
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(study, "forms")
-        paginator = AsyncPaginator(self._async_client, path, params=params, page_size=500)
-        result = [Form.from_json(item) async for item in paginator]
-        if not filters:
-            self._forms_cache[study] = result
+        result = await self._list_impl(
+            self._async_client,
+            AsyncPaginator,
+            study_key=study_key,
+            refresh=refresh,
+            **filters,
+        )
         return result
 
     def get(self, study_key: str, form_id: int) -> Form:
@@ -110,10 +142,8 @@ class FormsEndpoint(BaseEndpoint):
         Returns:
             Form object
         """
-        forms = self.list(study_key=study_key, refresh=True, formId=form_id)
-        if not forms:
-            raise ValueError(f"Form {form_id} not found in study {study_key}")
-        return forms[0]
+        result = self._get_impl(self._client, Paginator, study_key, form_id)
+        return result  # type: ignore[return-value]
 
     async def async_get(self, study_key: str, form_id: int) -> Form:
         """Asynchronous version of :meth:`get`.
@@ -123,7 +153,4 @@ class FormsEndpoint(BaseEndpoint):
         """
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        forms = await self.async_list(study_key=study_key, refresh=True, formId=form_id)
-        if not forms:
-            raise ValueError(f"Form {form_id} not found in study {study_key}")
-        return forms[0]
+        return await self._get_impl(self._async_client, AsyncPaginator, study_key, form_id)

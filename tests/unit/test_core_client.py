@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 from imednet.core import exceptions
+from imednet.core.base_client import BaseClient
 from imednet.core.client import Client
 
 
@@ -26,7 +27,7 @@ class DummyResponse:
 
 def test_initialization_sets_defaults() -> None:
     client = Client(api_key="A", security_key="B")
-    assert client.base_url == Client.DEFAULT_BASE_URL
+    assert client.base_url == BaseClient.DEFAULT_BASE_URL
     assert client._client.headers["x-api-key"] == "A"
     assert client._client.headers["x-imn-security-key"] == "B"
 

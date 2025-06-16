@@ -20,10 +20,10 @@ def test_list_builds_path_and_filters(dummy_client, context, paginator_factory, 
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = queries.QueriesEndpoint(dummy_client, context)
 
-    def fake_list(self, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(queries.QueriesEndpoint, "list", fake_list)
+    monkeypatch.setattr(queries.QueriesEndpoint, "_list_impl", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)
