@@ -33,6 +33,10 @@ The cache maps each form key to a dictionary of variables and also tracks form
 IDs. ``SchemaValidator`` looks up the form key for a record and fetches metadata
 on demand if it has not been cached yet.
 
+For offline tests, ``imednet.testing.fake_data`` includes helpers to generate
+forms, variables and records. These objects can be used with
+``SchemaCache.refresh`` to validate payloads without hitting the API.
+
 Limitations
 -----------
 

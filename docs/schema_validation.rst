@@ -36,3 +36,28 @@ submitting records::
         validator = AsyncSchemaValidator(sdk)
         await validator.validate_batch(study_key, records)
         await sdk.records.async_create(study_key, records, schema=validator.schema)
+
+Offline Example
+---------------
+
+``imednet.testing.fake_data`` provides helpers for generating form
+metadata and sample records without an API connection. Combine these
+functions with ``SchemaCache`` to validate payloads locally::
+
+    from types import SimpleNamespace
+    from imednet.testing import fake_data
+    from imednet.validation.schema import SchemaCache
+
+    forms = fake_data.fake_forms_for_cache(1, study_key="S")
+    variables = fake_data.fake_variables_for_cache(forms, vars_per_form=2,
+                                                   study_key="S")
+
+    forms_ep = SimpleNamespace(list=lambda **_: forms)
+    vars_ep = SimpleNamespace(list=lambda form_id=None, **__: [
+        v for v in variables if form_id is None or v.form_id == form_id
+    ])
+
+    schema = SchemaCache()
+    schema.refresh(forms_ep, vars_ep, study_key="S")
+
+    record = fake_data.fake_record(schema)
