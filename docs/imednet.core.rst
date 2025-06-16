@@ -34,14 +34,15 @@ request when you configure logging:
 
 If ``opentelemetry`` is installed, pass a tracer instance or rely on the global
 tracer provider. Each request is executed within a span and works with
-``opentelemetry-instrumentation-requests`` for automatic context propagation:
+``opentelemetry-instrumentation-httpx`` for automatic context propagation of the
+HTTPX requests used by the SDK:
 
 .. code-block:: python
 
     from opentelemetry import trace
-    from opentelemetry.instrumentation.requests import RequestsInstrumentor
+    from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 
-    RequestsInstrumentor().instrument()
+    HTTPXClientInstrumentor().instrument()
     tracer = trace.get_tracer("my-app")
     client = Client(api_key="...", security_key="...", tracer=tracer)
 .. automodule:: imednet.core.context
