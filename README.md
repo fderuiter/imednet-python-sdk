@@ -133,6 +133,21 @@ schema.refresh(sdk.forms, sdk.variables, study_key)
 sdk.records.create(study_key, record_data, schema=schema)
 ```
 
+When using ``AsyncImednetSDK`` the same logic applies asynchronously. Record
+payloads can be validated before submission with
+``AsyncSchemaValidator.validate_batch``:
+
+```python
+from imednet.sdk import AsyncImednetSDK
+from imednet.validation.async_schema import AsyncSchemaValidator
+
+async def submit_records_async(records):
+    async with AsyncImednetSDK() as sdk:
+        validator = AsyncSchemaValidator(sdk)
+        await validator.validate_batch(study_key, records)
+        await sdk.records.async_create(study_key, records, schema=validator.schema)
+```
+
 ### Exporting records to CSV
 
 Install the optional pandas dependency and call
