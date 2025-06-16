@@ -17,7 +17,7 @@ from imednet.models import (
     Variable,
     Visit,
 )
-from imednet.validation.schema import SchemaCache
+from imednet.validation.schema import SchemaCache, validate_record_data
 
 
 def test_fake_subject_parses() -> None:
@@ -137,3 +137,38 @@ def test_fake_variables_for_cache_and_schema_refresh() -> None:
 
     assert cache.form_key_from_id(form.form_id) == form.form_key
     assert cache.variables_for_form(form.form_key)[var.variable_name] is var
+
+
+def test_fake_forms_for_cache_from_json() -> None:
+    forms = fake_data.fake_forms_for_cache(2)
+    for form in forms:
+        parsed = Form.from_json(form.model_dump(by_alias=True))
+        assert isinstance(parsed, Form)
+
+
+def test_fake_variables_for_cache_from_json() -> None:
+    forms = fake_data.fake_forms_for_cache(1)
+    variables = fake_data.fake_variables_for_cache(forms, vars_per_form=2)
+    for var in variables:
+        parsed = Variable.from_json(var.model_dump(by_alias=True))
+        assert isinstance(parsed, Variable)
+
+
+def test_validate_record_data_with_cached_schema() -> None:
+    forms = fake_data.fake_forms_for_cache(1)
+    variables = fake_data.fake_variables_for_cache(forms, vars_per_form=1)
+    variables[0].variable_type = "integer"
+
+    forms_ep = SimpleNamespace(list=lambda **_: forms)
+
+    def list_vars(*_, form_id=None, **__):
+        return [v for v in variables if form_id is None or v.form_id == form_id]
+
+    vars_ep = SimpleNamespace(list=list_vars)
+
+    cache = SchemaCache()
+    cache.refresh(cast(Any, forms_ep), cast(Any, vars_ep), study_key="X")
+
+    record_data = fake_data.fake_record(cache)
+
+    validate_record_data(cache, record_data["formKey"], record_data["recordData"])  # type: ignore[arg-type]
