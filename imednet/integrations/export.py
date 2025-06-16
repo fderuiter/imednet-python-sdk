@@ -147,3 +147,46 @@ def export_to_sql(
         )
 
     df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+
+
+def export_to_sql_by_form(
+    sdk: ImednetSDK,
+    study_key: str,
+    conn_str: str,
+    if_exists: str = "replace",
+    *,
+    use_labels_as_columns: bool = False,
+    **kwargs: Any,
+) -> None:
+    """Export records to separate SQL tables for each form."""
+    from sqlalchemy import create_engine
+
+    mapper = RecordMapper(sdk)
+    engine = create_engine(conn_str)
+    forms = sdk.forms.list(study_key=study_key)
+    for form in forms:
+        variables = sdk.variables.list(study_key=study_key, formId=form.form_id)
+        variable_keys = [v.variable_name for v in variables]
+        label_map = {v.variable_name: v.label for v in variables}
+        record_model = mapper._build_record_model(variable_keys, label_map)
+        records = mapper._fetch_records(
+            study_key,
+            extra_filters={"formId": form.form_id},
+        )
+        rows, _ = mapper._parse_records(records, record_model)
+        df = mapper._build_dataframe(
+            rows,
+            variable_keys,
+            label_map,
+            use_labels_as_columns,
+        )
+        if isinstance(df, pd.DataFrame):
+            dup_mask = df.columns.str.lower().duplicated()
+            df = df.loc[:, ~dup_mask]
+        if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
+            raise ValueError(
+                "SQLite supports up to "
+                f"{MAX_SQLITE_COLUMNS} columns; received {len(df.columns)} columns."
+                " Reduce variables or use another DB."
+            )
+        df.to_sql(form.form_key, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]

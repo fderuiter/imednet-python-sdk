@@ -18,7 +18,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
-maintainers = ["Frederick de Ruiter <frederick.deruiter@brightresearch.com>"]
+maintainers = ["Frederick de Ruiter <fpderuiter@gmail.com>"]
 packages = [{ include = "imednet" }]
 include = [
     "README.md",

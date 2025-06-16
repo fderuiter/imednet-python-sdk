@@ -152,3 +152,38 @@ def test_export_sql_too_many_columns(monkeypatch):
     with pytest.raises(ValueError, match="SQLite supports up to 2000 columns"):
         export_mod.export_to_sql(MagicMock(), "STUDY", "table", "sqlite://")
     pd.DataFrame.to_sql.assert_not_called()
+
+
+def test_export_to_sql_by_form(monkeypatch):
+    sdk = MagicMock()
+    form1 = MagicMock(form_id=1, form_key="F1")
+    form2 = MagicMock(form_id=2, form_key="F2")
+    sdk.forms.list.return_value = [form1, form2]
+    sdk.variables.list.side_effect = [
+        [MagicMock(variable_name="A", label="A")],
+        [MagicMock(variable_name="B", label="B")],
+    ]
+
+    mapper_inst = MagicMock()
+    mapper_inst._build_record_model.return_value = object()
+    mapper_inst._fetch_records.side_effect = [MagicMock(), MagicMock()]
+    mapper_inst._parse_records.side_effect = [([], 0), ([], 0)]
+    df1 = MagicMock()
+    df2 = MagicMock()
+    mapper_inst._build_dataframe.side_effect = [df1, df2]
+    mapper_cls = MagicMock(return_value=mapper_inst)
+    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+
+    sa_module = ModuleType("sqlalchemy")
+    engine = MagicMock()
+    engine.dialect.name = "sqlite"
+    create_engine = MagicMock(return_value=engine)
+    sa_module.create_engine = create_engine
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+
+    export_mod.export_to_sql_by_form(sdk, "STUDY", "sqlite://")
+
+    mapper_cls.assert_called_once_with(sdk)
+    assert sdk.variables.list.call_count == 2
+    df1.to_sql.assert_called_once_with("F1", engine, if_exists="replace", index=False)
+    df2.to_sql.assert_called_once_with("F2", engine, if_exists="replace", index=False)

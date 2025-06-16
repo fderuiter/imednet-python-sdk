@@ -60,12 +60,10 @@ List subjects that are screened for a study and save their records as CSV:
 
 Use ``--help`` on any command to see all options.
 
-SQLite Column Limit
--------------------
+SQLite Exports
+--------------
 
-The ``export sql`` command writes records to a database using
-``export_to_sql``. When the destination is SQLite, tables are limited to
-``2000`` columns. The helper checks this against
-``imednet.integrations.export.MAX_SQLITE_COLUMNS`` and raises a friendly
-error if exceeded. Use another backend if your study contains more
-variables.
+When the connection string uses SQLite, ``export sql`` writes one table per
+form to avoid the ``2000`` column limit. Pass ``--single-table`` to disable
+this behaviour. The constant ``imednet.integrations.export.MAX_SQLITE_COLUMNS``
+still enforces the maximum columns per table.
