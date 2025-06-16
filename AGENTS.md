@@ -38,5 +38,5 @@ Following these guidelines keeps the SDK maintainable and extensible.
 - `tests/` provides the pytest suite used in CI.
 - Documentation can be built locally via `make docs`.
 
-Follow the guidelines in `CONTRIBUTING.md` and use Conventional Commits for
-commit messages.
+Follow the guidelines in `CONTRIBUTING.md` and use Conventional Commits for commit messages.
+Record your changes in `CHANGELOG.md` under the `[Unreleased]` section.
