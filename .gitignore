@@ -80,4 +80,5 @@ study_structure_output/
 
 examples/variables_output
 
-examples/register_subjects_input
+examples/register_subjects_input/*
+!examples/register_subjects_input/sample_subjects.json
