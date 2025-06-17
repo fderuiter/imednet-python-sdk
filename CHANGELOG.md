@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added unit test for `BaseClient` initialization using environment variables.
 - Reintroduced automatic documentation deployment to GitHub Pages.
 - Documented caching thread-safety and added a quick start guide.
+- Added `examples/quick_start.py` demonstrating minimal SDK usage with
+  environment variable validation.
 
 ### Fixed
 

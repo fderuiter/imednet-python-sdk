@@ -61,6 +61,8 @@ configure_json_logging()
 sdk = ImednetSDK()
 print(sdk.studies.list())
 ```
+Run `python examples/quick_start.py` for a runnable version that checks your
+environment variables.
 
 ## Usage
 
