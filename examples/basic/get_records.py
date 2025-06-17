@@ -1,6 +1,6 @@
 import os
 
-from imednet.sdk import ImednetSDK as ImednetClient
+from imednet import ImednetSDK as ImednetClient
 
 """
 Example script demonstrating basic usage of the imednet-python-sdk.

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   record POST scenarios.
 - Added workflow examples `examples/workflows/extract_audit_trail.py` and
   `examples/workflows/queries_by_site.py`.
+- Updated all examples to use package-level imports as if installed from PyPI.
 
 ### Fixed
 

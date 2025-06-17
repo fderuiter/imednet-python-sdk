@@ -2,7 +2,7 @@ import csv
 import json
 import os
 
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 from imednet.workflows.study_structure import get_study_structure
 
 """

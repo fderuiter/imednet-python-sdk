@@ -1,6 +1,6 @@
 import os
 
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 
 """Retrieve queries for a specific site using :class:`QueryManagementWorkflow`.
 

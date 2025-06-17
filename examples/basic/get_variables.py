@@ -2,7 +2,7 @@ import csv
 import json
 import os
 
-from imednet.sdk import ImednetSDK as ImednetClient
+from imednet import ImednetSDK as ImednetClient
 
 """
 A script to retrieve and save study variables from the iMedNet API.

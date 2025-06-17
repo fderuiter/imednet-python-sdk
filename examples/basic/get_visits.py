@@ -1,6 +1,6 @@
 import os
 
-from imednet.sdk import ImednetSDK as ImednetClient
+from imednet import ImednetSDK as ImednetClient
 
 """
 Example script demonstrating how to retrieve visits from the IMedNet API.

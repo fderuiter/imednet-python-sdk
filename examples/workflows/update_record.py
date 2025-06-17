@@ -1,6 +1,6 @@
 import os
 
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 from imednet.workflows import JobPoller, RecordUpdateWorkflow
 
 """Examples for all ``RecordUpdateWorkflow`` POST scenarios.

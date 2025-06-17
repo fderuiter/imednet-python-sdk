@@ -1,6 +1,6 @@
 import os
 
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 from imednet.workflows.record_mapper import RecordMapper
 
 """Example script that saves study records to CSV using RecordMapper."""
