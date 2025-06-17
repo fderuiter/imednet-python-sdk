@@ -33,7 +33,7 @@ Request parameters
     multiple ``sort`` parameters to sort by several properties.
 
 ``filter``
-    Optional filter expression. See :ref:`rest_api_reference` for syntax.
+    Optional filter expression. See :doc:`../rest_api_reference` for syntax.
 
 Response body
 -------------

@@ -14,7 +14,7 @@ The list of variables is returned via a ``GET`` request.
 Request structure
 -----------------
 
-.. code-block:: http
+.. code-block::
 
    GET /api/v1/edc/studies/PHARMADEMO/variables?page=0&size=25&sort=variableId%2CASC&
        filter=variableId%3D%3D10299 HTTP/1.1

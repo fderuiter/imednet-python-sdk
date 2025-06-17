@@ -20,9 +20,8 @@ Path parameters
 GET Requests
 ------------
 
-**GET Request structure**
+.. code-block::
 
-.. code-block:: http
 
    GET /api/v1/edc/studies/PHARMADEMO/records?page=0&size=25&sort=recordId%2CASC&filter=recordId%3D%3D5510&recordDataFilter=aeterm%3D%3DBronchitis HTTP/1.1
    Content-Type: application/json
@@ -32,19 +31,25 @@ GET Requests
 
 Request parameters are optional. Default values are used unless specified.
 
-+-------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Parameter         | Description                                                                                                                                                                                                |
-+===================+============================================================================================================================================================================================================+
-| ``page``          | Which index page to be returned. Default value is ``0``.                                                                                                                                                    |
-+-------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``size``          | Items per page to be returned. Default value is ``25``. Maximum items allowed per page is ``500``.                                                                                                          |
-+-------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``sort``          | Name of the property by which to sort the result set. To sort in a particular direction add a comma to the property name and ``asc`` or ``desc``. To sort by multiple properties add additional sort parameters. Default value is ``recordId,asc``. |
-+-------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``filter``        | Optional filter search criteria. Must follow correct syntax. Refer to :doc:`../rest_api_reference` for details.                                                                                              |
-+-------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``recordDataFilter`` | Optional record data filter search criteria. Must follow correct syntax. Refer to :doc:`../rest_api_reference` for details.                                                                                |
-+-------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+``page``
+    Which index page to be returned. Default value is ``0``.
+
+``size``
+    Items per page to be returned. Default value is ``25``. Maximum items allowed per page is ``500``.
+
+``sort``
+    Name of the property by which to sort the result set. To sort in a particular
+    direction add a comma to the property name and ``asc`` or ``desc``. To sort by
+    multiple properties add additional sort parameters. Default value is ``recordId,asc``.
+
+``filter``
+    Optional filter search criteria. Must follow correct syntax. Refer to
+    :doc:`../rest_api_reference` for details.
+
+``recordDataFilter``
+    Optional record data filter search criteria. Must follow correct syntax. Refer to
+    :doc:`../rest_api_reference` for details.
 
 **GET Response body**
 
@@ -103,70 +108,12 @@ Request parameters are optional. Default values are used unless specified.
    }
 
 **GET Response fields**
+The JSON response includes three sections:
 
-+----------------------------+---------+-------------------------------------------------------------+
-| Path                       | Type    | Description                                                 |
-+============================+=========+=============================================================+
-| ``metadata.status``        | String  | HTTP status                                                |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``metadata.method``        | String  | HTTP method                                                |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``metadata.path``          | String  | Requested URI path                                         |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``metadata.timestamp``     | String  | Timestamp when response was generated                      |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``metadata.error``         | Object  | Detail error message from request if error occur           |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``pagination.currentPage`` | Number  | Current index page                                         |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``pagination.size``        | Number  | Size per page                                              |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``pagination.totalPages``  | Number  | Total pages return from search                             |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``pagination.totalElements`` | Number | Total elements return from search                           |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``pagination.sort[].property`` | String | Sort property                                              |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``pagination.sort[].direction`` | String | Sort direction                                             |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].studyKey``        | String  | Unique study key for a given study                         |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].intervalId``      | Number  | Unique system identifier for Interval                      |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].formId``          | Number  | Form ID                                                    |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].formKey``         | String  | Form Key                                                   |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].siteId``          | Number  | Unique system identifier for site                          |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].recordId``        | Number  | Unique system identifier for record                        |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].recordOid``       | String  | Client-assigned record OID                                 |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].recordType``      | String  | Type of record                                             |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].recordStatus``    | String  | User defined record status                                 |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].subjectId``       | Number  | Mednet Subject ID                                          |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].subjectOid``      | String  | Client-assigned subject OID                                |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].subjectKey``      | String  | Protocol-assigned subject identifier                       |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].visitId``         | Number  | Unique system identifier for the subject visit instance    |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].keywords``        | Array   | All keywords currently associated with the record          |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].recordData``      | Object  | Record data detail                                         |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].deleted``         | Boolean | Record deleted flag                                        |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].parentRecordId``  | Number  | Parent Record Id                                           |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].dateCreated``     | String  | Date when this record was created                          |
-+----------------------------+---------+-------------------------------------------------------------+
-| ``data[].dateModified``    | String  | Last date modified of this record                          |
-+----------------------------+---------+-------------------------------------------------------------+
+- ``metadata`` describing the status, request path and timestamp.
+- ``pagination`` information about page numbers and sort order.
+- ``data`` containing a list of record objects.
+
 
 POST Requests
 -------------
@@ -177,7 +124,7 @@ will register a subject, update a scheduled record, or create a new record.
 
 **Request structure**
 
-.. code-block:: http
+.. code-block::
 
    POST /api/v1/edc/studies/PHARMADEMO/records HTTP/1.1
    x-email-notify: user@domain.com
@@ -189,31 +136,28 @@ will register a subject, update a scheduled record, or create a new record.
 
 **POST Request Identifiers**
 
-+---------------------+--------------------------------------+-------------------------------------------+
-| Identifier          | Name                                 | Description                               |
-+=====================+======================================+===========================================+
-| ``formKey``         | User defined form key                |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``formId``          | System generated form identifier     |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``siteName``        | User defined site name               |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``siteId``          | System generated site identifier     |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``subjectKey``      | Patient Display ID Full              |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``subjectId``       | System generated subject identifier  |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``subjectOid``      | User assigned subject OID            |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``intervalName``    | User defined interval name           |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``intervalId``      | System generated interval identifier |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``recordId``        | System generated record identifier   |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
-| ``recordOid``       | User defined record OID              |                                          |
-+---------------------+--------------------------------------+-------------------------------------------+
+``formKey``
+    User defined form key.
+``formId``
+    System generated form identifier.
+``siteName``
+    User defined site name.
+``siteId``
+    System generated site identifier.
+``subjectKey``
+    Patient Display ID Full.
+``subjectId``
+    System generated subject identifier.
+``subjectOid``
+    User assigned subject OID.
+``intervalName``
+    User defined interval name.
+``intervalId``
+    System generated interval identifier.
+``recordId``
+    System generated record identifier.
+``recordOid``
+    User defined record OID.
 
 **Field Types**
 
