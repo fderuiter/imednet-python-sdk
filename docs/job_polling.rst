@@ -15,3 +15,23 @@ a timeout occurs.
        E -- Yes --> F[raise JobTimeoutError]
        E -- No --> G[sleep interval]
        G --> B
+
+Using the SDK
+-------------
+
+``ImednetSDK`` provides a convenience method ``poll_job`` that blocks until the
+job finishes. ``AsyncImednetSDK`` exposes ``async_poll_job`` for the same
+behavior in asynchronous code.
+
+.. code-block:: python
+
+   from imednet.sdk import ImednetSDK, AsyncImednetSDK
+
+   # synchronous
+   sdk = ImednetSDK()
+   status = sdk.poll_job("STUDY", "BATCH", interval=2, timeout=60)
+
+   # asynchronous
+   async def wait_async():
+       async with AsyncImednetSDK() as sdk:
+           status = await sdk.async_poll_job("STUDY", "BATCH", interval=2, timeout=60)
