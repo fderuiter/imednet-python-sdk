@@ -69,7 +69,7 @@ Then, you can use the SDK like this:
 ```python
 import os
 import json
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 from imednet.workflows.study_structure import get_study_structure
 
 # Credentials are automatically read from the IMEDNET_API_KEY and
@@ -105,7 +105,7 @@ Use `AsyncImednetSDK` when working with asyncio:
 
 ```python
 import os
-from imednet.sdk import AsyncImednetSDK
+from imednet import AsyncImednetSDK
 
 async def main():
     study_key = os.getenv("IMEDNET_STUDY_KEY", "your_study_key_here")
@@ -138,7 +138,7 @@ payloads can be validated before submission with
 ``AsyncSchemaValidator.validate_batch``:
 
 ```python
-from imednet.sdk import AsyncImednetSDK
+from imednet import AsyncImednetSDK
 from imednet.validation.async_schema import AsyncSchemaValidator
 
 async def submit_records_async(records):
