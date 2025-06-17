@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented caching thread-safety and added a quick start guide.
 - Added `examples/quick_start.py` demonstrating minimal SDK usage with
   environment variable validation.
+- Expanded `RecordUpdateWorkflow` documentation and examples to cover all
+  record POST scenarios.
 - Added workflow examples `examples/workflows/extract_audit_trail.py` and
   `examples/workflows/queries_by_site.py`.
 

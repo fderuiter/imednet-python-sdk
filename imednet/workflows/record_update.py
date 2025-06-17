@@ -1,4 +1,15 @@
-"""Placeholder for Record Creation/Update workflows."""
+"""High level helpers for posting records to the iMedNet API.
+
+This module exposes convenience methods covering all POST scenarios for the
+``records`` endpoint:
+
+- ``register_subject`` – create a registration record for a new subject.
+- ``update_scheduled_record`` – modify a record that already exists on a scheduled visit.
+- ``create_new_record`` – add an unscheduled record for an existing subject.
+
+All helpers ultimately call ``create_or_update_records`` which performs optional
+schema validation and can poll job status until completion.
+"""
 
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union

@@ -1,4 +1,5 @@
 import types
+from typing import Any, cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -22,7 +23,6 @@ def _build_schema() -> tuple[SchemaCache, Variable]:
         return [v for v in variables if form_id is None or v.form_id == form_id]
 
     vars_ep = types.SimpleNamespace(list=list_vars)
-    from typing import Any, cast
 
     cache = SchemaCache()
     cache.refresh(cast(Any, forms_ep), cast(Any, vars_ep), study_key="S")
@@ -61,4 +61,69 @@ def test_create_or_update_records_validation() -> None:
         "S",
         [{"formKey": var.form_key, "data": {var.variable_name: 5}}],
         schema=schema,
+    )
+
+
+def test_register_subject() -> None:
+    wf = RecordUpdateWorkflow(MagicMock())
+    mock: MagicMock = MagicMock(return_value=Job(batch_id="1", state="PROCESSING"))
+    cast(Any, wf).create_or_update_records = mock
+    wf.register_subject(
+        study_key="S",
+        form_identifier="REG",
+        site_identifier="SITE",
+        data={"f": 1},
+    )
+    mock.assert_called_once_with(
+        study_key="S",
+        records_data=[{"formKey": "REG", "siteName": "SITE", "data": {"f": 1}}],
+        wait_for_completion=False,
+        timeout=300,
+        poll_interval=5,
+    )
+
+
+def test_update_scheduled_record() -> None:
+    wf = RecordUpdateWorkflow(MagicMock())
+    mock: MagicMock = MagicMock(return_value=Job(batch_id="1", state="PROCESSING"))
+    cast(Any, wf).create_or_update_records = mock
+    wf.update_scheduled_record(
+        study_key="S",
+        form_identifier="FORM",
+        subject_identifier="SUBJ",
+        interval_identifier="VISIT1",
+        data={"v": 2},
+    )
+    mock.assert_called_once_with(
+        study_key="S",
+        records_data=[
+            {
+                "formKey": "FORM",
+                "subjectKey": "SUBJ",
+                "intervalName": "VISIT1",
+                "data": {"v": 2},
+            }
+        ],
+        wait_for_completion=False,
+        timeout=300,
+        poll_interval=5,
+    )
+
+
+def test_create_new_record_method() -> None:
+    wf = RecordUpdateWorkflow(MagicMock())
+    mock: MagicMock = MagicMock(return_value=Job(batch_id="1", state="PROCESSING"))
+    cast(Any, wf).create_or_update_records = mock
+    wf.create_new_record(
+        study_key="S",
+        form_identifier="FORM",
+        subject_identifier="SUBJ",
+        data={"v": 3},
+    )
+    mock.assert_called_once_with(
+        study_key="S",
+        records_data=[{"formKey": "FORM", "subjectKey": "SUBJ", "data": {"v": 3}}],
+        wait_for_completion=False,
+        timeout=300,
+        poll_interval=5,
     )
