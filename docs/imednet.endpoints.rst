@@ -67,6 +67,10 @@ imednet.endpoints.records module
    :members:
    :undoc-members:
    :show-inheritance:
+   :noindex:
+
+Record payloads may be validated locally by passing a
+``SchemaCache`` instance to :meth:`~imednet.endpoints.records.RecordsEndpoint.create`.
 
 imednet.endpoints.sites module
 ------------------------------

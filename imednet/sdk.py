@@ -9,8 +9,13 @@ This module provides the ImednetSDK class which:
 
 from __future__ import annotations
 
-from typing import Optional
+import asyncio
+import logging
+import os
+import time
+from typing import Any, Dict, List, Optional, Union
 
+from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
 from .endpoints.codings import CodingsEndpoint
@@ -26,6 +31,19 @@ from .endpoints.subjects import SubjectsEndpoint
 from .endpoints.users import UsersEndpoint
 from .endpoints.variables import VariablesEndpoint
 from .endpoints.visits import VisitsEndpoint
+from .models.codings import Coding
+from .models.forms import Form
+from .models.intervals import Interval
+from .models.jobs import Job, JobStatus
+from .models.queries import Query
+from .models.record_revisions import RecordRevision
+from .models.records import Record
+from .models.sites import Site
+from .models.studies import Study
+from .models.subjects import Subject
+from .models.users import User
+from .models.variables import Variable
+from .models.visits import Visit
 
 # Import workflow classes
 from .workflows.data_extraction import DataExtractionWorkflow
@@ -62,65 +80,92 @@ class ImednetSDK:
 
     def __init__(
         self,
-        api_key: str,
-        security_key: str,
+        api_key: Optional[str] = None,
+        security_key: Optional[str] = None,
         base_url: Optional[str] = None,
         timeout: float = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
-    ):
-        """
-        Initialize the SDK with authentication and configuration.
+        enable_async: bool = False,
+    ) -> None:
+        """Initialize the SDK with credentials and configuration."""
 
-        Args:
-            api_key: iMednet API key.
-            security_key: iMednet security key.
-            base_url: Base URL for API; uses default if None.
-            timeout: Request timeout in seconds.
-            retries: Max retry attempts for transient errors.
-            backoff_factor: Factor for exponential backoff between retries.
-        """
-        # Initialize context for storing state
+        self._api_key = api_key or os.getenv("IMEDNET_API_KEY")
+        self._security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
+        self._base_url = base_url or os.getenv("IMEDNET_BASE_URL")
+
+        self._validate_env()
+
         self.ctx = Context()
 
-        # Initialize the HTTP client
         self._client = Client(
-            api_key=api_key,
-            security_key=security_key,
-            base_url=base_url,
+            api_key=self._api_key,
+            security_key=self._security_key,
+            base_url=self._base_url,
             timeout=timeout,
             retries=retries,
             backoff_factor=backoff_factor,
         )
+        self._async_client = (
+            AsyncClient(
+                api_key=self._api_key,
+                security_key=self._security_key,
+                base_url=self._base_url,
+                timeout=timeout,
+                retries=retries,
+                backoff_factor=backoff_factor,
+            )
+            if enable_async
+            else None
+        )
 
-        # Initialize endpoint clients
-        self.codings = CodingsEndpoint(self._client, self.ctx)
-        self.forms = FormsEndpoint(self._client, self.ctx)
-        self.intervals = IntervalsEndpoint(self._client, self.ctx)
-        self.jobs = JobsEndpoint(self._client, self.ctx)
-        self.queries = QueriesEndpoint(self._client, self.ctx)
-        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx)
-        self.records = RecordsEndpoint(self._client, self.ctx)
-        self.sites = SitesEndpoint(self._client, self.ctx)
-        self.studies = StudiesEndpoint(self._client, self.ctx)
-        self.subjects = SubjectsEndpoint(self._client, self.ctx)
-        self.users = UsersEndpoint(self._client, self.ctx)
-        self.variables = VariablesEndpoint(self._client, self.ctx)
-        self.visits = VisitsEndpoint(self._client, self.ctx)
-
-        # Initialize workflows, passing the SDK instance itself
+        self._init_endpoints()
         self.workflows = Workflows(self)
+
+    def _validate_env(self) -> None:
+        """Ensure required credentials are present."""
+        if not self._api_key or not self._security_key:
+            raise ValueError("API key and security key are required")
+
+    def _init_endpoints(self) -> None:
+        """Instantiate endpoint clients."""
+        self.codings = CodingsEndpoint(self._client, self.ctx, self._async_client)
+        self.forms = FormsEndpoint(self._client, self.ctx, self._async_client)
+        self.intervals = IntervalsEndpoint(self._client, self.ctx, self._async_client)
+        self.jobs = JobsEndpoint(self._client, self.ctx, self._async_client)
+        self.queries = QueriesEndpoint(self._client, self.ctx, self._async_client)
+        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx, self._async_client)
+        self.records = RecordsEndpoint(self._client, self.ctx, self._async_client)
+        self.sites = SitesEndpoint(self._client, self.ctx, self._async_client)
+        self.studies = StudiesEndpoint(self._client, self.ctx, self._async_client)
+        self.subjects = SubjectsEndpoint(self._client, self.ctx, self._async_client)
+        self.users = UsersEndpoint(self._client, self.ctx, self._async_client)
+        self.variables = VariablesEndpoint(self._client, self.ctx, self._async_client)
+        self.visits = VisitsEndpoint(self._client, self.ctx, self._async_client)
 
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""
+        return self
+
+    async def __aenter__(self) -> "ImednetSDK":
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """Cleanup resources when exiting context."""
         self.close()
 
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.aclose()
+
     def close(self) -> None:
         """Close the client connection and free resources."""
+        self._client.close()
+        if self._async_client is not None:
+            asyncio.run(self._async_client.aclose())
+
+    async def aclose(self) -> None:
+        if self._async_client is not None:
+            await self._async_client.aclose()
         self._client.close()
 
     def set_default_study(self, study_key: str) -> None:
@@ -135,3 +180,160 @@ class ImednetSDK:
     def clear_default_study(self) -> None:
         """Clear the default study key."""
         self.ctx.clear_default_study_key()
+
+    # ------------------------------------------------------------------
+    # Convenience wrappers around common endpoint methods
+    # ------------------------------------------------------------------
+
+    def get_studies(self, **filters: Any) -> List[Study]:
+        """Return all studies accessible by the current API key."""
+        return self.studies.list(**filters)
+
+    def get_records(
+        self,
+        study_key: str,
+        record_data_filter: Optional[str] = None,
+        **filters: Any,
+    ) -> List[Record]:
+        """Return records for the specified study."""
+        return self.records.list(
+            study_key=study_key,
+            record_data_filter=record_data_filter,
+            **filters,
+        )
+
+    def get_sites(self, study_key: str, **filters: Any) -> List[Site]:
+        """Return sites for the specified study."""
+        return self.sites.list(study_key, **filters)
+
+    def get_subjects(self, study_key: str, **filters: Any) -> List[Subject]:
+        """Return subjects for the specified study."""
+        return self.subjects.list(study_key, **filters)
+
+    def create_record(
+        self,
+        study_key: str,
+        records_data: List[Dict[str, Any]],
+        email_notify: Union[bool, str, None] = None,
+    ) -> Job:
+        """Create records in the specified study."""
+        return self.records.create(
+            study_key,
+            records_data,
+            email_notify=email_notify,
+        )
+
+    def get_forms(self, study_key: str, **filters: Any) -> List[Form]:
+        """Return forms for the specified study."""
+        return self.forms.list(study_key, **filters)
+
+    def get_intervals(self, study_key: str, **filters: Any) -> List[Interval]:
+        """Return intervals for the specified study."""
+        return self.intervals.list(study_key, **filters)
+
+    def get_variables(self, study_key: str, **filters: Any) -> List[Variable]:
+        """Return variables for the specified study."""
+        return self.variables.list(study_key, **filters)
+
+    def get_visits(self, study_key: str, **filters: Any) -> List[Visit]:
+        """Return visits for the specified study."""
+        return self.visits.list(study_key, **filters)
+
+    def get_codings(self, study_key: str, **filters: Any) -> List[Coding]:
+        """Return codings for the specified study."""
+        return self.codings.list(study_key, **filters)
+
+    def get_queries(self, study_key: str, **filters: Any) -> List[Query]:
+        """Return queries for the specified study."""
+        return self.queries.list(study_key, **filters)
+
+    def get_record_revisions(self, study_key: str, **filters: Any) -> List[RecordRevision]:
+        """Return record revisions for the specified study."""
+        return self.record_revisions.list(study_key, **filters)
+
+    def get_users(self, study_key: str, include_inactive: bool = False) -> List[User]:
+        """Return users for the specified study."""
+        return self.users.list(study_key, include_inactive)
+
+    def get_job(self, study_key: str, batch_id: str) -> JobStatus:
+        """Return job details for the specified batch."""
+        return self.jobs.get(study_key, batch_id)
+
+    def poll_job(
+        self,
+        study_key: str,
+        batch_id: str,
+        *,
+        interval: int = 5,
+        timeout: int = 300,
+    ) -> JobStatus:
+        """Poll a job until it reaches a terminal state."""
+
+        start = time.monotonic()
+        while True:
+            job = self.get_job(study_key, batch_id)
+            logging.info(
+                "Job %s state=%s progress=%s",
+                batch_id,
+                job.state,
+                getattr(job, "progress", ""),
+            )
+            if job.state.upper() in {"COMPLETED", "FAILED", "CANCELLED"}:
+                if job.state.upper() == "FAILED":
+                    raise RuntimeError(f"Job {batch_id} failed")
+                return job
+
+            if time.monotonic() - start >= timeout:
+                raise TimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+
+            time.sleep(interval)
+
+    async def async_poll_job(
+        self,
+        study_key: str,
+        batch_id: str,
+        *,
+        interval: int = 5,
+        timeout: int = 300,
+    ) -> JobStatus:
+        """Asynchronously poll a job until it reaches a terminal state."""
+
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+
+        start = time.monotonic()
+        while True:
+            job = await self.jobs.async_get(study_key, batch_id)
+            logging.info(
+                "Job %s state=%s progress=%s",
+                batch_id,
+                job.state,
+                getattr(job, "progress", ""),
+            )
+            if job.state.upper() in {"COMPLETED", "FAILED", "CANCELLED"}:
+                if job.state.upper() == "FAILED":
+                    raise RuntimeError(f"Job {batch_id} failed")
+                return job
+
+            if time.monotonic() - start >= timeout:
+                raise TimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+
+            await asyncio.sleep(interval)
+
+
+class AsyncImednetSDK(ImednetSDK):
+    """Async variant of :class:`ImednetSDK` using the async HTTP client."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover - thin wrapper
+        kwargs["enable_async"] = True
+        super().__init__(*args, **kwargs)
+
+    async def __aenter__(self) -> "AsyncImednetSDK":
+        await super().__aenter__()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await super().__aexit__(exc_type, exc_val, exc_tb)
+
+
+__all__ = ["ImednetSDK", "AsyncImednetSDK"]

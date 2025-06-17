@@ -1,8 +1,18 @@
 from importlib import metadata as _metadata
 
-from .sdk import ImednetSDK
+from .core.base_client import BaseClient
+from .sdk import AsyncImednetSDK, ImednetSDK
 
-__all__ = ["ImednetSDK", "__version__"]
+# Provide a backward-compatible alias
+ImednetClient = ImednetSDK
+
+__all__ = [
+    "ImednetSDK",
+    "AsyncImednetSDK",
+    "ImednetClient",
+    "BaseClient",
+    "__version__",
+]
 
 try:
     __version__: str = _metadata.version("imednet-sdk")

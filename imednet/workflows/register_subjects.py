@@ -4,8 +4,9 @@ This workflow is self-contained and does not borrow from record_update.py.
 It provides a simple, robust interface for registering one or more subjects.
 """
 
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
+from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 
 # Use TYPE_CHECKING to avoid circular import at runtime
@@ -29,7 +30,7 @@ class RegisterSubjectsWorkflow:
         study_key: str,
         subjects: List[RegisterSubjectRequest],
         email_notify: Optional[str] = None,
-    ) -> Any:  # Consider defining a more specific return type if possible
+    ) -> Job:
         """
         Registers multiple subjects in the specified study.
 
@@ -40,7 +41,8 @@ class RegisterSubjectsWorkflow:
             email_notify: Optional email address to notify upon completion.
 
         Returns:
-            The response from the API call (e.g., a Job object or similar).
+            A :class:`Job` object representing the background job
+            created for the registration request.
 
         Raises:
             ApiError: If the API call fails.

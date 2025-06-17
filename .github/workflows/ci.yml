@@ -34,9 +34,18 @@ jobs:
       - name: Install deps
         run: |
           poetry install --with dev
+      - name: Install pip-audit
+        run: |
+          poetry run pip install pip-audit
+      - name: Security audit
+        run: |
+          poetry run pip-audit -s osv
+      - name: Format code
+        run: |
+          poetry run black .
       - name: Lint & Type‑check
         run: |
-          poetry run ruff check .
+          poetry run ruff check --fix .
           poetry run black --check .
           poetry run mypy imednet
       - name: Unit tests

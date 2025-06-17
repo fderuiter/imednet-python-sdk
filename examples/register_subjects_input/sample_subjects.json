@@ -1,0 +1,18 @@
+[
+  {
+    "formKey": "REG",
+    "siteName": "Minneapolis",
+    "data": {
+      "textField": "First subject"
+    }
+  },
+  {
+    "formKey": "REG",
+    "siteName": "Chicago",
+    "data": {
+      "textField": "Second subject",
+      "dateField": "2024-01-01",
+      "numberField": 42
+    }
+  }
+]

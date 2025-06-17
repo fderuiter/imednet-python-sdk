@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from ..models import Query, Record, Subject, Visit
-from ..utils.filters import build_filter_string
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -48,21 +47,20 @@ class SubjectDataWorkflow:
         """
         results = SubjectComprehensiveData(subject_details=None)
         subject_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
-        subject_filter_str = build_filter_string(subject_filter_dict)
 
         # Fetch Subject Details
-        subject_list = self._sdk.subjects.list(study_key, filter=subject_filter_str)
+        subject_list = self._sdk.subjects.list(study_key, **subject_filter_dict)
         if subject_list:
             results.subject_details = subject_list[0]
 
         # Fetch Visits
-        results.visits = self._sdk.visits.list(study_key, filter=subject_filter_str)
+        results.visits = self._sdk.visits.list(study_key, **subject_filter_dict)
 
         # Fetch Records
-        results.records = self._sdk.records.list(study_key, filter=subject_filter_str)
+        results.records = self._sdk.records.list(study_key, **subject_filter_dict)
 
         # Fetch Queries
-        results.queries = self._sdk.queries.list(study_key, filter=subject_filter_str)
+        results.queries = self._sdk.queries.list(study_key, **subject_filter_dict)
 
         return results
 

@@ -28,14 +28,6 @@ imednet.workflows.record\_mapper module
    :undoc-members:
    :show-inheritance:
 
-imednet.workflows.record\_mapper\_example module
-------------------------------------------------
-
-.. automodule:: imednet.workflows.record_mapper_example
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 imednet.workflows.record\_update module
 ---------------------------------------
 
@@ -43,6 +35,9 @@ imednet.workflows.record\_update module
    :members:
    :undoc-members:
    :show-inheritance:
+
+``RecordUpdateWorkflow`` uses ``SchemaCache`` to validate record data before
+submission when provided.
 
 imednet.workflows.subject\_data module
 --------------------------------------
@@ -52,10 +47,3 @@ imednet.workflows.subject\_data module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: imednet.workflows
-   :members:
-   :undoc-members:
-   :show-inheritance:

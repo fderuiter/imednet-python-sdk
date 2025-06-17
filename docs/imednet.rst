@@ -24,10 +24,3 @@ imednet.sdk module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: imednet
-   :members:
-   :undoc-members:
-   :show-inheritance:

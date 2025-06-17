@@ -1,3 +1,4 @@
+import asyncio
 from typing import TYPE_CHECKING, Dict, List
 
 # Import potential exceptions
@@ -47,28 +48,53 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
         interval_structures: List[IntervalStructure] = []
         for interval in intervals:
             form_structures: List[FormStructure] = []
-            # Assuming interval.forms contains summaries or just IDs/Keys
-            # We need to look up the full Form object and its variables
-            for form_summary in interval.forms:  # Assuming interval.forms exists
+            for form_summary in interval.forms:
                 full_form = forms_by_id.get(form_summary.form_id)
                 if full_form:
                     form_vars = variables_by_form_id.get(full_form.form_id, [])
-                    form_struct = FormStructure(
-                        **full_form.model_dump(),  # Pass Form fields
-                        variables=form_vars,  # Add fetched variables
-                    )
-                    form_structures.append(form_struct)
+                    form_structures.append(FormStructure.from_form(full_form, form_vars))
 
-            interval_struct = IntervalStructure(
-                **interval.model_dump(),  # Pass Interval fields
-                forms=form_structures,  # Add nested FormStructures
-            )
-            interval_structures.append(interval_struct)
+            interval_structures.append(IntervalStructure.from_interval(interval, form_structures))
 
         return StudyStructure(study_key=study_key, intervals=interval_structures)  # type: ignore[call-arg]
 
     except Exception as e:
         # Catch potential API errors or processing errors
+        raise ImednetError(
+            f"Failed to retrieve or process study structure for {study_key}: {e}"
+        ) from e
+
+
+async def async_get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
+    """Asynchronous variant of :func:`get_study_structure`."""
+    try:
+        intervals, forms, variables = await asyncio.gather(
+            sdk.intervals.async_list(study_key),
+            sdk.forms.async_list(study_key),
+            sdk.variables.async_list(study_key),
+        )
+
+        forms_by_id: Dict[int, Form] = {f.form_id: f for f in forms}
+        variables_by_form_id: Dict[int, List[Variable]] = {}
+        for var in variables:
+            variables_by_form_id.setdefault(var.form_id, []).append(var)
+
+        interval_structures: List[IntervalStructure] = []
+        for interval in intervals:
+            form_structures: List[FormStructure] = []
+            for form_summary in interval.forms:
+                full_form = forms_by_id.get(form_summary.form_id)
+                if full_form:
+                    form_vars = variables_by_form_id.get(full_form.form_id, [])
+                    form_structures.append(FormStructure.from_form(full_form, form_vars))
+
+            interval_structures.append(IntervalStructure.from_interval(interval, form_structures))
+
+        return StudyStructure(
+            study_key=study_key, intervals=interval_structures
+        )  # type: ignore[call-arg]
+
+    except Exception as e:  # pragma: no cover - unexpected
         raise ImednetError(
             f"Failed to retrieve or process study structure for {study_key}: {e}"
         ) from e
