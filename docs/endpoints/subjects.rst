@@ -34,7 +34,7 @@ Request parameters
   Sort property and direction separated by a comma. Defaults to ``subjectId,asc``.
 
 ``filter``
-  Optional filter expression. See the :doc:`rest_api_reference` for syntax.
+  Optional filter expression. See the :doc:`../rest_api_reference` for syntax.
 
 Response body
 -------------

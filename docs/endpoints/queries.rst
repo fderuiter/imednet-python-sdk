@@ -44,7 +44,7 @@ Request parameters
 
 ``filter``
     Optional filter search criteria. Must follow correct syntax. Refer to
-    :doc:`rest_api_reference` for details.
+    :doc:`../rest_api_reference` for details.
 
 Response body
 -------------

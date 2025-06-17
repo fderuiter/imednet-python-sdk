@@ -2,6 +2,7 @@
 import os
 import sys
 import types
+import warnings
 from typing import Any
 
 """
@@ -26,6 +27,8 @@ Note:
 
 # Add project root directory to sys.path so `imednet` can be imported
 sys.path.insert(0, os.path.abspath(".."))
+warnings.filterwarnings("ignore", message="duplicate object description*")
+warnings.filterwarnings("ignore", message="Failed guarded type import*")
 
 # Mock heavy optional dependencies so autodoc does not require them.
 # Mock pandas to avoid heavy dependency while building docs. The stub provides
@@ -104,7 +107,7 @@ autosummary_generate = True
 # Mock heavy optional dependencies so autodoc does not import them
 autodoc_mock_imports = ["pandas", "numpy", "matplotlib", "pydantic", "airflow"]
 
-suppress_warnings = ["ref.ref", "autodoc", "autodoc.import_object"]
+suppress_warnings = ["ref.ref", "autodoc.*"]
 
 # Display type hints in the description instead of the signature to keep
 # function signatures concise in the rendered documentation.
@@ -117,6 +120,8 @@ exclude_patterns: list[str] = [
     "imednet.cli.rst",
     "imednet.integrations.rst",
     "imednet.validation.rst",
+    "imednet.integrations.airflow.rst",
+    "imednet.testing.rst",
 ]  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 

@@ -38,7 +38,7 @@ The response contains ``metadata`` and ``pagination`` objects along with a
 ``data`` array of form records. Each item can be parsed into
 :class:`~imednet.models.forms.Form`.
 
-.. code-block:: json
+.. code-block::
 
    {
      "metadata": { "status": "OK", ... },

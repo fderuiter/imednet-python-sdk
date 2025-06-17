@@ -12,7 +12,7 @@ Accessing the index
 
 A ``GET`` request is used to access the index.
 
-.. code-block:: http
+.. code-block::
 
    GET /api/v1/edc/studies/PHARMADEMO/sites?page=0&size=25&sort=siteId%2CASC \
      &filter=siteId%3D%3D48 HTTP/1.1
@@ -41,7 +41,7 @@ Request parameters are optional. Default values are used unless specified.
        ``asc`` or ``desc``. To sort by multiple properties add additional sort
        parameters. Default value is ``siteId,asc``.
 :filter: Optional filter search criteria. Must follow correct syntax. Refer to
-         :doc:`rest_api_reference` for details.
+         :doc:`../rest_api_reference` for details.
 
 Response body
 -------------
