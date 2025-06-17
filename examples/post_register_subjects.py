@@ -14,7 +14,8 @@ A copy of ``sample_subjects.json`` is included in this repository under
 The script then uses the workflow's ``register_subjects`` method to register all
 subjects defined in the JSON file for the specified study.
 The script requires API credentials (api_key, security_key) and the study_key
-to be set. The base_url can optionally be set for custom iMedNet instances.
+to be set. These default to the ``IMEDNET_*`` environment variables if present.
+The base_url can optionally be set for custom iMedNet instances.
 It prints the result of the registration process or an error message if
 the registration fails.
 Attributes:
@@ -26,10 +27,10 @@ Attributes:
     input_path (str): The file path to the JSON file containing the subject data.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "XXXXXXXXXX")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "XXXXXXXXXX")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "XXXXXXXXXX")
 
 # Path to the sample input file included with this repository
 input_path = os.path.join(

@@ -1,16 +1,19 @@
+import os
+
 from imednet.sdk import ImednetSDK
 
 """Retrieve queries for a specific site using :class:`QueryManagementWorkflow`.
 
 This example shows how to initialize the SDK, then use the workflow
 method ``get_queries_by_site`` to fetch all queries raised for subjects at
-a given site. Update the credential placeholders before running.
+a given site. Credentials default to the ``IMEDNET_*`` environment variables if
+set. Replace any remaining placeholders before running.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "XXXXXXXXXX")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "XXXXXXXXXX")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "XXXXXXXXXX")
 site_name = "SITE001"
 
 try:

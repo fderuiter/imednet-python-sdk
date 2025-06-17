@@ -30,10 +30,10 @@ to the console.
 """
 
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "XXXXXXXXXX")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "XXXXXXXXXX")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "XXXXXXXXXX")
 
 sdk = ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
 

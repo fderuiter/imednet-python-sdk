@@ -1,3 +1,5 @@
+import os
+
 from imednet.sdk import ImednetSDK
 from imednet.workflows import JobPoller, RecordUpdateWorkflow
 
@@ -10,14 +12,15 @@ The script demonstrates how to:
 3. Create an unscheduled record for an existing subject.
 
 Each step submits the record and then waits for the asynchronous job to finish
-using :class:`JobPoller`. Replace the placeholder values below with real
-credentials and identifiers before running the script.
+using :class:`JobPoller`. Credentials default to the ``IMEDNET_*`` environment
+variables if set. Replace any remaining placeholders with real identifiers
+before running the script.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "XXXXXXXXXX")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "XXXXXXXXXX")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "XXXXXXXXXX")
 form_key = "XXXXXXXXXX"  # Registration or visit form key
 site_name = "XXXXXXXXXX"  # Site for new subject registration
 interval_name = "XXXXXXXXXX"  # Interval for updating a scheduled record

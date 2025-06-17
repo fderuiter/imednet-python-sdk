@@ -1,3 +1,5 @@
+import os
+
 from imednet.sdk import ImednetSDK
 from imednet.workflows.subject_data import SubjectDataWorkflow
 
@@ -8,13 +10,14 @@ This script demonstrates how to:
 2. Use :class:`SubjectDataWorkflow` to gather subject details, visits, records, and queries.
 3. Display a summary of the returned information.
 
-Replace the ``XXXXXXXXXX`` placeholders with real values before running.
+Credentials default to the ``IMEDNET_*`` environment variables if set.
+Replace any remaining ``XXXXXXXXXX`` placeholders before running.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "XXXXXXXXXX")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "XXXXXXXXXX")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "XXXXXXXXXX")
 subject_key = "XXXXXXXXXX"
 
 try:

@@ -5,10 +5,10 @@ from imednet.workflows.record_mapper import RecordMapper
 
 """Example script that saves study records to CSV using RecordMapper."""
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "XXXXXXXXXX")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "XXXXXXXXXX")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "XXXXXXXXXX")
 
 output_path = os.path.join(os.path.dirname(__file__), "record_mapping_output", "records.csv")
 

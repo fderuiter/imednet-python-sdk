@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from imednet.sdk import AsyncImednetSDK
 
@@ -8,15 +9,15 @@ This script initializes the asynchronous client with API credentials, retrieves 
 studies, selects the first study, and then fetches and prints a few records associated with
 that study.
 
-Replace the "XXXXXXXXXX" placeholders with your API key, security key and optionally a
-specific study key. ``base_url`` can be left ``None`` to use the default iMednet endpoint or
-set to a custom URL if needed.
+Credentials default to the ``IMEDNET_*`` environment variables if set. Replace any
+remaining ``XXXXXXXXXX`` placeholders for the study key. ``base_url`` can be left
+``None`` to use the default iMednet endpoint or set to a custom URL if needed.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "XXXXXXXXXX")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "XXXXXXXXXX")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "XXXXXXXXXX")
 
 
 async def main() -> None:
