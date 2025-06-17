@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added workflow examples `examples/workflows/extract_audit_trail.py` and
   `examples/workflows/queries_by_site.py`.
 - Updated all examples to use package-level imports as if installed from PyPI.
+- `ImednetSDK` and `AsyncImednetSDK` are now imported from the package root across
+  the codebase for clearer PyPI usage.
 
 ### Fixed
 
