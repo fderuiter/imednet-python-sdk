@@ -1,10 +1,10 @@
 # imednet-python-sdk
 
 [![CI](https://img.shields.io/github/actions/workflow/status/Bright-Research/imednet-python-sdk/ci.yml?branch=main)](https://github.com/Bright-Research/imednet-python-sdk/actions/workflows/ci.yml)
-[![PyPI version](https://img.shields.io/pypi/v/imednet-sdk.svg)](https://pypi.org/project/imednet-sdk/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imednet-sdk.svg)](https://pypi.org/project/imednet-sdk/)
-[![PyPI license](https://img.shields.io/pypi/l/imednet-sdk.svg)](LICENSE)
-[![PyPI downloads](https://img.shields.io/pypi/dm/imednet-sdk.svg)](https://pypi.org/project/imednet-sdk/)
+[![PyPI version](https://img.shields.io/pypi/v/imednet.svg)](https://pypi.org/project/imednet/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imednet.svg)](https://pypi.org/project/imednet/)
+[![PyPI license](https://img.shields.io/pypi/l/imednet.svg)](LICENSE)
+[![PyPI downloads](https://img.shields.io/pypi/dm/imednet.svg)](https://pypi.org/project/imednet/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/badge/Ruff-checked-green?logo=ruff&logoColor=white)](https://github.com/astral-sh/ruff)
@@ -38,7 +38,7 @@ the cache. See `docs/caching.rst` for details.
 ## Installation
 
 ```bash
-pip install imednet-sdk
+pip install imednet
 ```
 
 Or install from source:
@@ -175,7 +175,7 @@ Install the optional pandas dependency and call
 ``export_records_csv`` to save all records for a study:
 
 ```bash
-pip install imednet-sdk[pandas]
+pip install imednet[pandas]
 ```
 
 ```python
@@ -200,11 +200,11 @@ export.export_to_excel(sdk, study_key, "records.xlsx")
 
 ### Using the Command Line Interface (CLI)
 
-After installing the package (`pip install imednet-sdk`) and setting the environment variables as shown above, you can use the `imednet` command.
+After installing the package (`pip install imednet`) and setting the environment variables as shown above, you can use the `imednet` command.
 Parquet and SQL exports require the optional `pyarrow` and `SQLAlchemy` dependencies:
 
 ```bash
-pip install "imednet-sdk[pyarrow,sqlalchemy]"
+pip install "imednet[pyarrow,sqlalchemy]"
 ```
 
 SQLite imposes a limit of roughly 2000 columns per table. To avoid this
@@ -252,7 +252,7 @@ manage the limitation.
 Custom operators and sensors integrate with Apache Airflow. Install the package with the ``airflow`` extra:
 
 ```bash
-pip install 'imednet-sdk[airflow]'
+pip install 'imednet[airflow]'
 ```
 
 Example DAG:

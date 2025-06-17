@@ -7,7 +7,7 @@ Install the package from PyPI:
 
 .. code-block:: console
 
-   pip install imednet-sdk
+   pip install imednet
 
 Set your credentials as environment variables:
 
