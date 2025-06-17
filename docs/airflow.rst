@@ -62,7 +62,7 @@ Operators and Sensors
 ``ImednetExportOperator`` saves records to a local file using helpers from
 ``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3
 and ``ImednetJobSensor`` waits for an export job to complete. All operators use
-``ImednetHook`` to obtain an :class:`~imednet.sdk.ImednetSDK` instance from an
+``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance from an
 Airflow connection.
 
 Testing with Airflow
