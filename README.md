@@ -16,6 +16,9 @@ A Python SDK for interacting with the iMedNet REST API. Provides client, endpoin
 
 See the [Changelog](CHANGELOG.md) for release history.
 
+Full API documentation is published at
+https://bright-research.github.io/imednet-python-sdk/.
+
 ## Features
 
 - Simple, consistent interface for API calls
@@ -24,6 +27,9 @@ See the [Changelog](CHANGELOG.md) for release history.
 - Workflow utilities for data extraction and mapping
 - Pandas helpers for DataFrame conversion and CSV export
 - Optional in-memory caching for study, form, interval, and variable listings
+  (not thread-safe; refresh or recreate the SDK in long running processes)
+- Structured JSON logging with optional OpenTelemetry tracing
+- Async client and CLI for common tasks
 
 Calls to `sdk.studies.list()`, `sdk.forms.list()`, `sdk.intervals.list()` and
 `sdk.variables.list()` cache results in memory. Pass `refresh=True` to bypass
@@ -41,6 +47,19 @@ Or install from source:
 git clone https://github.com/Bright-Research/imednet-python-sdk.git
 cd imednet-python-sdk
 ./scripts/setup.sh
+```
+
+## Quick Start
+
+Enable structured logging, create an SDK instance and list studies:
+
+```python
+from imednet import ImednetSDK
+from imednet.utils import configure_json_logging
+
+configure_json_logging()
+sdk = ImednetSDK()
+print(sdk.studies.list())
 ```
 
 ## Usage

@@ -1,0 +1,31 @@
+Quick Start
+===========
+
+This page walks through a minimal example of using the SDK.
+
+Install the package from PyPI:
+
+.. code-block:: console
+
+   pip install imednet-sdk
+
+Set your credentials as environment variables:
+
+.. code-block:: bash
+
+   export IMEDNET_API_KEY="your_api_key"
+   export IMEDNET_SECURITY_KEY="your_security_key"
+
+Enable structured logging and list studies:
+
+.. code-block:: python
+
+   from imednet import ImednetSDK
+   from imednet.utils import configure_json_logging
+
+   configure_json_logging()
+   sdk = ImednetSDK()
+   studies = sdk.studies.list()
+   print(studies)
+
+Cached endpoints can be refreshed with ``refresh=True``. The caches are not thread safe so long running applications should recreate the SDK when needed.

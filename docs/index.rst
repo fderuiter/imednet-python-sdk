@@ -6,6 +6,7 @@ Welcome to imednet-sdk's documentation!
    :caption: Contents:
 
    logging_and_tracing
+   quick_start
    api_overview
    rest_api_reference
    endpoints/index
