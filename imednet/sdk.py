@@ -288,6 +288,38 @@ class ImednetSDK:
 
             time.sleep(interval)
 
+    async def async_poll_job(
+        self,
+        study_key: str,
+        batch_id: str,
+        *,
+        interval: int = 5,
+        timeout: int = 300,
+    ) -> JobStatus:
+        """Asynchronously poll a job until it reaches a terminal state."""
+
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+
+        start = time.monotonic()
+        while True:
+            job = await self.jobs.async_get(study_key, batch_id)
+            logging.info(
+                "Job %s state=%s progress=%s",
+                batch_id,
+                job.state,
+                getattr(job, "progress", ""),
+            )
+            if job.state.upper() in {"COMPLETED", "FAILED", "CANCELLED"}:
+                if job.state.upper() == "FAILED":
+                    raise RuntimeError(f"Job {batch_id} failed")
+                return job
+
+            if time.monotonic() - start >= timeout:
+                raise TimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+
+            await asyncio.sleep(interval)
+
 
 class AsyncImednetSDK(ImednetSDK):
     """Async variant of :class:`ImednetSDK` using the async HTTP client."""
