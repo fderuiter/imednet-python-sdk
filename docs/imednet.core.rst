@@ -15,6 +15,14 @@ imednet.core.client module
    :undoc-members:
    :show-inheritance:
 
+imednet.core.base_client module
+-------------------------------
+
+.. automodule:: imednet.core.base_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.core.context module
 ---------------------------
 

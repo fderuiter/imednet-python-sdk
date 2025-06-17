@@ -15,9 +15,10 @@ Authentication
 --------------
 
 All requests must include ``x-api-key`` and ``x-imn-security-key`` headers. The
-:class:`~imednet.core.client.Client` and :class:`~imednet.core.async_client.AsyncClient`
-read ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY`` from the environment and
-populate these headers automatically.
+:class:`~imednet.core.base_client.BaseClient` handles shared initialization while the
+:class:`~imednet.core.client.Client` and
+:class:`~imednet.core.async_client.AsyncClient` read ``IMEDNET_API_KEY`` and
+``IMEDNET_SECURITY_KEY`` from the environment and populate these headers automatically.
 
 HTTP methods and errors
 -----------------------
