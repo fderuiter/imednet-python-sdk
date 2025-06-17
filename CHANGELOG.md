@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a comprehensive test suite ensuring over 90% coverage.
 - Exposed `BaseClient` from the package root and updated import examples.
 - Added unit test for `BaseClient` initialization using environment variables.
+- Reintroduced automatic documentation deployment to GitHub Pages.
+- Documented caching thread-safety and added a quick start guide.
 
 ### Fixed
 
@@ -21,8 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed GitHub Actions workflow for documentation generation and deployment (docs.yml). Documentation must now be built and viewed locally.
-- Removed obsolete TEST_PLAN.md file.
+ - Removed obsolete TEST_PLAN.md file.
 
 ## [0.1.0] - 2025-04-28
 

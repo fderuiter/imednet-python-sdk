@@ -1,0 +1,42 @@
+name: Build and Deploy Documentation
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: '1.8.0'
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+
+      - name: Build HTML documentation
+        run: |
+          poetry run sphinx-build -b html docs docs/_build/html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html
+          publish_branch: gh-pages
