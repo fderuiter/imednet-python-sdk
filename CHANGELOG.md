@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `pandas` to development dependencies for workflow features.
 - Added a comprehensive test suite ensuring over 90% coverage.
 - Exposed `BaseClient` from the package root and updated import examples.
+- Added unit test for `BaseClient` initialization using environment variables.
 
 ### Fixed
 
