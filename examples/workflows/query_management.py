@@ -1,4 +1,4 @@
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 
 """Example showing how to work with queries using :class:`QueryManagementWorkflow`.
 

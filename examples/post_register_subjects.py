@@ -1,7 +1,7 @@
 import json
 import os
 
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
 
 """
