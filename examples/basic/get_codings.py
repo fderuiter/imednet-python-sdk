@@ -1,4 +1,4 @@
-from imednet.sdk import ImednetSDK as ImednetClient
+from imednet import ImednetSDK as ImednetClient
 
 """
 This script demonstrates how to retrieve coding information from the iMednet API

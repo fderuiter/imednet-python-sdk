@@ -1,6 +1,6 @@
 import asyncio
 
-from imednet.sdk import AsyncImednetSDK
+from imednet import AsyncImednetSDK
 
 """Example script demonstrating basic usage of the AsyncImednetSDK.
 
