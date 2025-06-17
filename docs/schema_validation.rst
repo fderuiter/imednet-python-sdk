@@ -10,6 +10,10 @@ loads it from the API using :class:`~imednet.endpoints.variables.VariablesEndpoi
 Any problems raise :class:`~imednet.core.exceptions.ValidationError` before the
 record is sent to the server.
 
+``SchemaValidator`` and ``AsyncSchemaValidator`` share their core validation
+steps through a common mixin. The only difference is whether the cached
+metadata is refreshed using synchronous or asynchronous API calls.
+
 The diagram below outlines the main steps.
 
 .. mermaid::

@@ -8,6 +8,7 @@ from ..core.exceptions import UnknownVariableTypeError, ValidationError
 from ..endpoints.forms import FormsEndpoint
 from ..endpoints.variables import VariablesEndpoint
 from ..models.variables import Variable
+from ._base import _ValidatorMixin
 
 
 def _validate_int(value: Any) -> None:
@@ -109,7 +110,7 @@ def validate_record_data(
         _check_type(variables[name].variable_type, value)
 
 
-class SchemaValidator:
+class SchemaValidator(_ValidatorMixin):
     """Validate record payloads using variable metadata from the API."""
 
     def __init__(self, sdk: "ImednetSDK") -> None:
@@ -126,11 +127,10 @@ class SchemaValidator:
             self.schema._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
 
     def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
-        form_key = record.get("formKey") or self.schema.form_key_from_id(record.get("formId", 0))
+        form_key = self._resolve_form_key(record)
         if form_key and not self.schema.variables_for_form(form_key):
             self.refresh(study_key)
-        if form_key:
-            validate_record_data(self.schema, form_key, record.get("data", {}))
+        self._validate_cached(form_key, record.get("data", {}))
 
     def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
         for rec in records:

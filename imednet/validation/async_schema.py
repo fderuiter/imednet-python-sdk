@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from ..endpoints.forms import FormsEndpoint
 from ..endpoints.variables import VariablesEndpoint
@@ -10,7 +10,7 @@ from ..models.variables import Variable
 
 if TYPE_CHECKING:
     from ..sdk import AsyncImednetSDK
-from .schema import SchemaCache, validate_record_data
+from ._base import _ValidatorMixin
 
 
 class AsyncSchemaCache:
@@ -40,7 +40,7 @@ class AsyncSchemaCache:
         return self._form_id_to_key.get(form_id)
 
 
-class AsyncSchemaValidator:
+class AsyncSchemaValidator(_ValidatorMixin):
     """Validate records asynchronously using variable metadata."""
 
     def __init__(self, sdk: "AsyncImednetSDK") -> None:
@@ -56,11 +56,10 @@ class AsyncSchemaValidator:
             self.schema._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
 
     async def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
-        form_key = record.get("formKey") or self.schema.form_key_from_id(record.get("formId", 0))
+        form_key = self._resolve_form_key(record)
         if form_key and not self.schema.variables_for_form(form_key):
             await self.refresh(study_key)
-        if form_key:
-            validate_record_data(cast(SchemaCache, self.schema), form_key, record.get("data", {}))
+        self._validate_cached(form_key, record.get("data", {}))
 
     async def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
         for rec in records:
