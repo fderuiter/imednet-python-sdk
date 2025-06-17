@@ -1,10 +1,10 @@
 import pytest
-from imednet import sdk as sdk_mod
+from imednet import ImednetSDK
 from imednet.core.async_client import AsyncClient
 
 
-def _create_async_sdk() -> sdk_mod.ImednetSDK:
-    return sdk_mod.ImednetSDK(
+def _create_async_sdk() -> ImednetSDK:
+    return ImednetSDK(
         api_key="key",
         security_key="secret",
         base_url="https://example.com",
@@ -27,6 +27,6 @@ async def test_async_context_management(monkeypatch) -> None:
     monkeypatch.setattr(AsyncClient, "aclose", fake_aclose)
 
     async with _create_async_sdk() as sdk:
-        assert isinstance(sdk, sdk_mod.ImednetSDK)
+        assert isinstance(sdk, ImednetSDK)
 
     assert called["close"]

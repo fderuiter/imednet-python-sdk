@@ -2,7 +2,7 @@ import sys
 from types import ModuleType
 from unittest.mock import MagicMock
 
-import imednet.sdk as sdk_mod
+from imednet import ImednetSDK
 
 
 def _setup_airflow(monkeypatch):
@@ -56,7 +56,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
     hook = airflow_mod.ImednetHook()
     sdk = hook.get_conn()
 
-    assert isinstance(sdk, sdk_mod.ImednetSDK)
+    assert isinstance(sdk, ImednetSDK)
     assert sdk._client._client.headers["x-api-key"] == "KEY"
     assert sdk._client._client.headers["x-imn-security-key"] == "SEC"
     assert sdk._client.base_url == "https://example.com"

@@ -2,8 +2,8 @@ import os
 from typing import Iterator
 
 import pytest
+from imednet import ImednetSDK
 from imednet.integrations import export
-from imednet.sdk import ImednetSDK
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")

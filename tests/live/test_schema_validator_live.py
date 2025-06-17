@@ -2,8 +2,8 @@ import os
 from typing import Iterator
 
 import pytest
+from imednet import ImednetSDK
 from imednet.core.exceptions import ValidationError
-from imednet.sdk import ImednetSDK
 from imednet.validation.schema import SchemaValidator
 
 API_KEY = os.getenv("IMEDNET_API_KEY")

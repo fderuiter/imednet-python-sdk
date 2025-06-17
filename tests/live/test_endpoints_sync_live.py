@@ -2,6 +2,7 @@ import os
 from typing import Iterator
 
 import pytest
+from imednet import ImednetSDK
 from imednet.core.exceptions import ServerError
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
@@ -15,7 +16,6 @@ from imednet.models.subjects import Subject
 from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
-from imednet.sdk import ImednetSDK
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")

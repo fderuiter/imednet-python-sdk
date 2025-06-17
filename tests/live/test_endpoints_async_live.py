@@ -3,7 +3,7 @@ from typing import AsyncIterator, Iterator
 
 import pytest
 import pytest_asyncio
-from imednet.sdk import AsyncImednetSDK, ImednetSDK
+from imednet import AsyncImednetSDK, ImednetSDK
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")

@@ -11,7 +11,7 @@ from imednet.models.records import RegisterSubjectRequest
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 
 class RegisterSubjectsWorkflow:

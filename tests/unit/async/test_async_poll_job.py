@@ -2,8 +2,8 @@ import asyncio
 from unittest.mock import AsyncMock
 
 import pytest
+from imednet import AsyncImednetSDK
 from imednet.models.jobs import JobStatus
-from imednet.sdk import AsyncImednetSDK
 
 
 def _create_sdk() -> AsyncImednetSDK:

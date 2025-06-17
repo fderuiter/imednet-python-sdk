@@ -16,7 +16,7 @@ from imednet.models.variables import Variable
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 
 def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:

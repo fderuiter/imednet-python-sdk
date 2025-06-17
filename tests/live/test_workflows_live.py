@@ -2,8 +2,8 @@ import os
 from typing import Iterator
 
 import pytest
+from imednet import ImednetSDK
 from imednet.models.records import RegisterSubjectRequest
-from imednet.sdk import ImednetSDK
 from imednet.workflows import (
     RegisterSubjectsWorkflow,
     async_get_study_structure,

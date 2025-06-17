@@ -1,10 +1,10 @@
-import imednet.sdk as sdk_mod
 import pytest
+from imednet import ImednetSDK
 from imednet.models.jobs import JobStatus
 
 
-def _create_sdk() -> sdk_mod.ImednetSDK:
-    return sdk_mod.ImednetSDK(
+def _create_sdk() -> ImednetSDK:
+    return ImednetSDK(
         api_key="key",
         security_key="secret",
         base_url="https://example.com",
