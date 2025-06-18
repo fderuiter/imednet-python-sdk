@@ -140,15 +140,24 @@ def create_dataset_metadata(file_path: str) -> Any:
     try:
         data, meta = pyreadstat.read_xport(file_path)
         first_record = data.iloc[0].to_dict() if not data.empty else None
-        return SDTMDatasetMetadata(
-            name=os.path.basename(file_path).split(".")[0].upper(),
-            label=getattr(meta, "file_label", ""),
-            filename=os.path.basename(file_path),
-            full_path=file_path,
-            file_size=os.path.getsize(file_path),
-            record_count=len(data),
-            first_record=first_record,
-        )
+        kwargs = {
+            "name": os.path.basename(file_path).split(".")[0].upper(),
+            "label": getattr(meta, "file_label", ""),
+            "filename": os.path.basename(file_path),
+            "full_path": file_path,
+            "file_size": os.path.getsize(file_path),
+            "record_count": len(data),
+            "first_record": first_record,
+        }
+        try:
+            return SDTMDatasetMetadata(**kwargs)
+        except TypeError:
+            meta_obj = SDTMDatasetMetadata(
+                kwargs["name"], kwargs["label"], first_record=kwargs["first_record"]
+            )
+            for key in ["filename", "full_path", "file_size", "record_count"]:
+                setattr(meta_obj, key, kwargs[key])
+            return meta_obj
     except Exception:
         return None
 

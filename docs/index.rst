@@ -12,6 +12,7 @@ Welcome to imednet-sdk's documentation!
    endpoints/index
    architecture
    schema_validation
+   cdisc_validation
    cli
    workflow_interactions
    caching
