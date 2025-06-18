@@ -2,6 +2,7 @@ from .async_schema import AsyncSchemaCache, AsyncSchemaValidator
 from .cdisc import (
     build_library_metadata,
     create_dataset_metadata,
+    create_external_dictionaries_container,
     create_rules_engine,
     dataset_variable_from_dataframe,
     get_data_service,
@@ -28,6 +29,7 @@ __all__ = [
     "run_business_rules",
     "create_dataset_metadata",
     "get_datasets_metadata",
+    "create_external_dictionaries_container",
     "build_library_metadata",
     "get_data_service",
     "create_rules_engine",

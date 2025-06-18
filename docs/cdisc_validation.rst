@@ -279,6 +279,34 @@ Instantiate the ``RulesEngine`` for validation.
        ct_packages=["sdtmct-2021-12-17"],
    )
 
+External Dictionaries
+^^^^^^^^^^^^^^^^^^^^^
+If you maintain controlled terminology locally you can provide file paths via
+``ExternalDictionariesContainer``.
+
+.. code-block:: python
+
+   from imednet.validation import create_external_dictionaries_container
+   from cdisc_rules_engine.models.dictionaries.dictionary_types import DictionaryTypes
+
+   dictionaries = create_external_dictionaries_container(
+       {
+           DictionaryTypes.MEDDRA.value: "/path/to/meddra",
+           DictionaryTypes.WHODRUG.value: "/path/to/whodrug",
+       }
+   )
+
+   rules_engine = create_rules_engine(
+       cache=cache,
+       data_service=data_service,
+       library_metadata=library_metadata,
+       standard="sdtmig",
+       standard_version="3-4",
+       dataset_paths=paths,
+       ct_packages=["sdtmct-2021-12-17"],
+       external_dictionaries=dictionaries,
+   )
+
 Step 6: Run Validation
 ^^^^^^^^^^^^^^^^^^^^^^
 Evaluate rules against the datasets.
@@ -311,3 +339,5 @@ Check the following if you encounter errors:
 - The cache contains controlled terminology packages used for validation.
 - ``standard_version`` uses dashes instead of periods.
 - File paths for external dictionaries and ``define.xml`` are accessible.
+- On Windows call ``freeze_support()`` before invoking ``main`` when using
+  multiprocessing.

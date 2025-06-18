@@ -175,6 +175,15 @@ def get_datasets_metadata(directory: str) -> List[Any]:
     return datasets
 
 
+def create_external_dictionaries_container(dictionary_paths: dict) -> Any:
+    """Return an ``ExternalDictionariesContainer`` using ``dictionary_paths``."""
+    from cdisc_rules_engine.models.external_dictionaries_container import (
+        ExternalDictionariesContainer,
+    )
+
+    return ExternalDictionariesContainer(dictionary_path_mapping=dictionary_paths)
+
+
 def build_library_metadata(
     cache: Any,
     standard: str,
@@ -259,6 +268,7 @@ def create_rules_engine(
     validate_xml: bool = False,
     standard_substandard: str | None = None,
     max_dataset_size: int = 0,
+    external_dictionaries: Any | None = None,
 ) -> Any:
     """Instantiate a ``RulesEngine`` for validation."""
     from cdisc_rules_engine.config import config as default_config
@@ -268,7 +278,7 @@ def create_rules_engine(
         cache=cache,
         data_service=data_service,
         config_obj=default_config,
-        external_dictionaries=None,
+        external_dictionaries=external_dictionaries,
         standard=standard,
         standard_version=standard_version,
         standard_substandard=standard_substandard,
@@ -326,6 +336,7 @@ __all__ = [
     "run_business_rules",
     "create_dataset_metadata",
     "get_datasets_metadata",
+    "create_external_dictionaries_container",
     "build_library_metadata",
     "get_data_service",
     "create_rules_engine",

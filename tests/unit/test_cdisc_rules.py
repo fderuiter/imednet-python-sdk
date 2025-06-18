@@ -65,6 +65,11 @@ class FakeLibraryMetadataContainer:
         self.kwargs = kwargs
 
 
+class FakeExternalDictionariesContainer:
+    def __init__(self, dictionary_path_mapping=None):
+        self.dictionary_path_mapping = dictionary_path_mapping or {}
+
+
 class FakeDataServiceFactory:
     def __init__(self, **kwargs):
         self.kwargs = kwargs
@@ -111,6 +116,7 @@ def _setup_cdisc(monkeypatch):
     _rules_engine_mod = ModuleType("cdisc_rules_engine.rules_engine")
     _cond_mod = ModuleType("cdisc_rules_engine.models.rule_conditions")
     _result_mod = ModuleType("cdisc_rules_engine.models.rule_validation_result")
+    _ext_dict_mod = ModuleType("cdisc_rules_engine.models.external_dictionaries_container")
     _pyreadstat_mod = ModuleType("pyreadstat")
 
     _cache_mod.InMemoryCacheService = FakeInMemoryCacheService
@@ -129,6 +135,7 @@ def _setup_cdisc(monkeypatch):
     _meta_mod.SDTMDatasetMetadata = FakeMetadata
     _actions_mod.COREActions = FakeCOREActions
     _lib_meta_mod.LibraryMetadataContainer = FakeLibraryMetadataContainer
+    _ext_dict_mod.ExternalDictionariesContainer = FakeExternalDictionariesContainer
     _data_services_mod.DataServiceFactory = FakeDataServiceFactory
     _config_mod.config = {}
     _rules_engine_mod.RulesEngine = FakeRulesEngine
@@ -214,6 +221,11 @@ def _setup_cdisc(monkeypatch):
         "cdisc_rules_engine.models.rule_validation_result",
         _result_mod,
     )
+    monkeypatch.setitem(
+        sys.modules,
+        "cdisc_rules_engine.models.external_dictionaries_container",
+        _ext_dict_mod,
+    )
     monkeypatch.setitem(sys.modules, "pyreadstat", _pyreadstat_mod)
     monkeypatch.setattr(cdisc, "SyncManager", DummyManager)
 
@@ -282,6 +294,28 @@ def test_get_datasets_metadata(tmp_path, monkeypatch):
     (tmp_path / "dm.xpt").write_bytes(b"")
     metas = cdisc.get_datasets_metadata(str(tmp_path))
     assert len(metas) == 2
+
+
+def test_create_external_dictionaries_container(monkeypatch):
+    _setup_cdisc(monkeypatch)
+    paths = {"meddra": "/some/path"}
+    container = cdisc.create_external_dictionaries_container(paths)
+    assert container.dictionary_path_mapping == paths
+
+
+def test_create_rules_engine_with_external_dicts(monkeypatch):
+    _setup_cdisc(monkeypatch)
+    ext = cdisc.create_external_dictionaries_container({"meddra": "/some"})
+    engine = cdisc.create_rules_engine(
+        cache=None,
+        data_service=None,
+        library_metadata=None,
+        standard="sdtmig",
+        standard_version="3-4",
+        dataset_paths=[],
+        external_dictionaries=ext,
+    )
+    assert engine.kwargs["external_dictionaries"] == ext
 
 
 def test_validate_rules(monkeypatch):
