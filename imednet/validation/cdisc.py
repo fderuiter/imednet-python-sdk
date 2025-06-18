@@ -129,10 +129,172 @@ def run_business_rules(
     return all_results
 
 
+def dataset_metadata_from_xpt(file_path: str) -> Any:
+    """Return SDTM dataset metadata for the ``.xpt`` file at ``file_path``."""
+    import pyreadstat
+    from cdisc_rules_engine.models.sdtm_dataset_metadata import SDTMDatasetMetadata
+
+    data, meta = pyreadstat.read_xport(file_path)
+    first_record = data.iloc[0].to_dict() if not data.empty else None
+    return SDTMDatasetMetadata(
+        name=os.path.basename(file_path).split(".")[0].upper(),
+        label=getattr(meta, "file_label", ""),
+        filename=os.path.basename(file_path),
+        full_path=file_path,
+        file_size=os.path.getsize(file_path),
+        record_count=len(data),
+        first_record=first_record,
+    )
+
+
+def get_datasets_metadata(directory: str) -> List[Any]:
+    """Return metadata objects for all ``.xpt`` files in ``directory``."""
+    datasets = []
+    for fname in os.listdir(directory):
+        if fname.lower().endswith(".xpt"):
+            path = os.path.join(directory, fname)
+            try:
+                datasets.append(dataset_metadata_from_xpt(path))
+            except Exception:
+                continue
+    return datasets
+
+
+def run_rules_engine(
+    rules: List[dict],
+    datasets: List[Any],
+    cache: Any,
+    *,
+    standard: str,
+    standard_version: str,
+    ct_packages: List[str] | None = None,
+    dataset_paths: List[str] | None = None,
+    dataset_implementation: Any | None = None,
+    define_xml_path: str | None = None,
+    validate_xml: bool = False,
+) -> tuple[List[Any], float]:
+    """Validate ``datasets`` with CDISC ``rules`` using ``RulesEngine``."""
+    import itertools
+    import time
+
+    from cdisc_rules_engine.config import config as default_config
+    from cdisc_rules_engine.models.library_metadata_container import (
+        LibraryMetadataContainer,
+    )
+    from cdisc_rules_engine.models.rule_conditions import ConditionCompositeFactory
+    from cdisc_rules_engine.models.rule_validation_result import RuleValidationResult
+    from cdisc_rules_engine.rules_engine import RulesEngine
+    from cdisc_rules_engine.services.data_services import DataServiceFactory
+    from cdisc_rules_engine.utilities.utils import (
+        get_library_variables_metadata_cache_key,
+        get_model_details_cache_key_from_ig,
+        get_standard_details_cache_key,
+        get_variable_codelist_map_cache_key,
+    )
+
+    standard_details_key = get_standard_details_cache_key(
+        standard,
+        standard_version,
+        None,
+    )
+    variable_details_key = get_library_variables_metadata_cache_key(
+        standard,
+        standard_version,
+        None,
+    )
+    std_meta = cache.get(standard_details_key)
+    model_meta = {}
+    if std_meta:
+        model_key = get_model_details_cache_key_from_ig(std_meta)
+        model_meta = cache.get(model_key)
+    variable_codelist_key = get_variable_codelist_map_cache_key(
+        standard,
+        standard_version,
+        None,
+    )
+
+    ct_packages = ct_packages or []
+    ct_package_metadata = {pkg: cache.get(pkg) for pkg in ct_packages}
+
+    library_metadata = LibraryMetadataContainer(
+        standard_metadata=std_meta,
+        model_metadata=model_meta,
+        variables_metadata=cache.get(variable_details_key),
+        variable_codelist_map=cache.get(variable_codelist_key),
+        ct_package_metadata=ct_package_metadata,
+    )
+
+    max_dataset_size = 0
+    if datasets:
+        max_dataset_size = max(ds.file_size for ds in datasets)
+
+    data_service_factory = DataServiceFactory(
+        config=default_config,
+        cache_service=cache,
+        standard=standard,
+        standard_version=standard_version,
+        standard_substandard=None,
+        library_metadata=library_metadata,
+        max_dataset_size=max_dataset_size,
+    )
+
+    data_service = data_service_factory.get_data_service(dataset_paths or [])
+
+    rules_engine = RulesEngine(
+        cache=cache,
+        data_service=data_service,
+        config_obj=default_config,
+        external_dictionaries=None,
+        standard=standard,
+        standard_version=standard_version,
+        standard_substandard=None,
+        library_metadata=library_metadata,
+        max_dataset_size=max_dataset_size,
+        dataset_paths=dataset_paths or [],
+        ct_packages=ct_packages,
+        define_xml_path=define_xml_path,
+        validate_xml=validate_xml,
+    )
+
+    start_time = time.time()
+    validation_results: List[Any] = []
+    for rule in rules:
+        if isinstance(rule.get("conditions"), dict):
+            rule["conditions"] = ConditionCompositeFactory.get_condition_composite(
+                rule["conditions"]
+            )
+        results = rules_engine.validate_single_rule(rule, datasets)
+        flat = list(itertools.chain.from_iterable(results.values()))
+        validation_results.append(RuleValidationResult(rule, flat))
+    elapsed = time.time() - start_time
+    return validation_results, elapsed
+
+
+def write_validation_report(results: List[Any], output_file: str) -> None:
+    """Write ``results`` from :func:`run_rules_engine` to ``output_file``."""
+    import json
+
+    with open(output_file, "w") as f:
+        for result in results:
+            rule_id = result.rule.get("core_id", "Unknown")
+            f.write(f"Rule: {rule_id}\n")
+            if getattr(result, "violations", None):
+                f.write(f"Found {len(result.violations)} violations\n")
+                for v in result.violations:
+                    f.write(f"  - {json.dumps(v, default=str)}\n")
+            else:
+                f.write("  No violations found\n")
+            f.write("\n")
+
+
 __all__ = [
     "load_rules_cache",
     "get_rules",
     "rule_from_metadata",
     "dataset_variable_from_dataframe",
     "run_business_rules",
+    "dataset_metadata_from_xpt",
+    "get_datasets_metadata",
+    "run_rules_engine",
+    "write_validation_report",
 ]
