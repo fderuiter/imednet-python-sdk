@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   environment variable validation.
 - Added workflow examples `examples/workflows/extract_audit_trail.py` and
   `examples/workflows/queries_by_site.py`.
+- Added optional CDISC validation helpers for loading rules caches.
+- Added helpers for preparing datasets and running CDISC business rules.
+- Added convenience utilities for building datasets and running validations
+  using the CDISC ``RulesEngine`` class.
 - Updated imports in all example scripts to use the package root for `ImednetSDK`.
 
 ### Fixed
