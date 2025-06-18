@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added helpers for preparing datasets and running CDISC business rules.
 - Added convenience utilities for building datasets and running validations
   using the CDISC ``RulesEngine`` class.
+- Documented how ``SDTMDatasetMetadata`` drives the ``column_prefix_map`` when
+  constructing dataset variables for rule execution.
 - Updated imports in all example scripts to use the package root for `ImednetSDK`.
 
 ### Fixed

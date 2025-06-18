@@ -45,3 +45,61 @@ objects.
 Both approaches rely on the dataset abstraction layer.  For in-memory data use
 :class:`~cdisc_rules_engine.models.dataset.pandas_dataset.PandasDataset`.  A
 ``DaskDataset`` implementation is also available for larger files.
+
+Understanding ``DatasetMetadata``
+---------------------------------
+
+The ``column_prefix_map`` passed to
+``DatasetVariable`` typically references the dataset domain derived from
+``SDTMDatasetMetadata``.  This metadata class exposes convenient properties for
+determining the domain name and whether a supplemental qualifier dataset is
+split.  The CDISC rules engine uses this information to map shorthand variable
+names (such as ``--SEQ``) to their fully qualified column names.
+
+.. code-block:: python
+
+   from dataclasses import dataclass
+   from typing import Union
+   from cdisc_rules_engine.models.dataset_metadata import DatasetMetadata
+   from cdisc_rules_engine.constants.domains import SUPPLEMENTARY_DOMAINS
+
+   @dataclass
+   class SDTMDatasetMetadata(DatasetMetadata):
+       """Container for SDTM dataset metadata."""
+
+       @property
+       def domain(self) -> Union[str, None]:
+           return (self.first_record or {}).get("DOMAIN", None)
+
+       @property
+       def rdomain(self) -> Union[str, None]:
+           return (self.first_record or {}).get("RDOMAIN", None) if self.is_supp else None
+
+       @property
+       def is_supp(self) -> bool:
+           return self.name.startswith(SUPPLEMENTARY_DOMAINS)
+
+       @property
+       def unsplit_name(self) -> str:
+           if self.domain:
+               return self.domain
+           if self.name.startswith("SUPP"):
+               return f"SUPP{self.rdomain}"
+           if self.name.startswith("SQ"):
+               return f"SQ{self.rdomain}"
+           return self.name
+
+       @property
+       def is_split(self) -> bool:
+           return self.name != self.unsplit_name
+
+With this metadata in hand you can construct ``DatasetVariable`` objects like
+so::
+
+   dataset_variable = DatasetVariable(
+       dataset,
+       column_prefix_map={"--": dataset_metadata.domain},
+   )
+
+This dynamic mapping ensures variables are interpreted correctly based on their
+domain context.
