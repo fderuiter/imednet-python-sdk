@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented how ``SDTMDatasetMetadata`` drives the ``column_prefix_map`` when
   constructing dataset variables for rule execution.
 - Updated imports in all example scripts to use the package root for `ImednetSDK`.
+- Added an end-to-end business rules example demonstrating CDISC validation.
 
 ### Fixed
 

@@ -103,3 +103,95 @@ so::
 
 This dynamic mapping ensures variables are interpreted correctly based on their
 domain context.
+
+Complete End-to-End Example
+---------------------------
+
+The following script demonstrates loading a rules cache, reading an XPT file and
+validating AE domain rules using the low level business rules engine.
+
+.. code-block:: python
+
+   import os
+   import pathlib
+   import pickle
+   import pandas as pd
+   import pyreadstat
+   from multiprocessing import freeze_support
+   from multiprocessing.managers import SyncManager
+   from cdisc_rules_engine.services.cache import InMemoryCacheService
+   from cdisc_rules_engine.utilities.utils import get_rules_cache_key
+   from cdisc_rules_engine.models.dataset.pandas_dataset import PandasDataset
+   from cdisc_rules_engine.models.dataset_variable import DatasetVariable
+   from cdisc_rules_engine.models.sdtm_dataset_metadata import SDTMDatasetMetadata
+   from cdisc_rules_engine.models.actions import COREActions
+   from business_rules.engine import run
+
+   class CacheManager(SyncManager):
+       pass
+
+   CacheManager.register("InMemoryCacheService", InMemoryCacheService)
+
+   def load_rules_cache(path_to_rules_cache):
+       cache_path = pathlib.Path(path_to_rules_cache)
+       manager = CacheManager()
+       manager.start()
+       cache = manager.InMemoryCacheService()
+       files = next(os.walk(cache_path), (None, None, []))[2]
+       for fname in files:
+           with open(cache_path / fname, "rb") as f:
+               cache.add_all(pickle.load(f))
+       return cache
+
+   def main():
+       current_dir = os.getcwd()
+       cache_path = os.path.join(current_dir, "cache")
+       ae_file_path = os.path.join(current_dir, "ae.xpt")
+
+       cache = load_rules_cache(cache_path)
+       cache_key_prefix = get_rules_cache_key("sdtmig", "3-4")
+       rules = cache.get_all_by_prefix(cache_key_prefix)
+
+       ae_data, meta = pyreadstat.read_xport(ae_file_path)
+       pandas_dataset = PandasDataset(data=ae_data)
+       dataset_metadata = SDTMDatasetMetadata(
+           name="AE",
+           label=meta.file_label if hasattr(meta, "file_label") else "Adverse Events",
+           first_record=ae_data.iloc[0].to_dict() if not ae_data.empty else None,
+       )
+       dataset_variable = DatasetVariable(
+           pandas_dataset,
+           column_prefix_map={"--": dataset_metadata.domain},
+       )
+
+       ae_rules = [
+           rule for rule in rules
+           if "AE" in rule.get("domains", {}).get("Include", []) or
+              "ALL" in rule.get("domains", {}).get("Include", [])
+       ]
+
+       all_results = []
+       for rule in ae_rules:
+           results = []
+           core_actions = COREActions(
+               output_container=results,
+               variable=dataset_variable,
+               dataset_metadata=dataset_metadata,
+               rule=rule,
+               value_level_metadata=None,
+           )
+           triggered = run(
+               rule=rule,
+               defined_variables=dataset_variable,
+               defined_actions=core_actions,
+           )
+           if triggered and results:
+               all_results.extend(results)
+
+       print("\n===== VALIDATION SUMMARY =====")
+       print(f"Total rules checked: {len(ae_rules)}")
+       print(f"Total issues found: {len(all_results)}")
+
+   if __name__ == "__main__":
+       freeze_support()
+       main()
