@@ -18,7 +18,7 @@ def export_parquet(
     if importlib.util.find_spec("pyarrow") is None:
         print(
             "[bold red]Error:[/bold red] pyarrow is required for Parquet export. "
-            "Install with 'pip install \"imednet-sdk[pyarrow]\"'."
+            "Install with 'pip install \"imednet[pyarrow]\"'."
         )
         raise typer.Exit(code=1)
 
@@ -95,7 +95,7 @@ def export_sql(
     if importlib.util.find_spec("sqlalchemy") is None:
         print(
             "[bold red]Error:[/bold red] SQLAlchemy is required for SQL export. "
-            "Install with 'pip install \"imednet-sdk[sqlalchemy]\"'."
+            "Install with 'pip install \"imednet[sqlalchemy]\"'."
         )
         raise typer.Exit(code=1)
 

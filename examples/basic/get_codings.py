@@ -2,12 +2,12 @@ from imednet import ImednetSDK as ImednetClient
 
 """
 This script demonstrates how to retrieve coding information from the iMednet API
-using the imednet-python-sdk.
+using the imednet package.
 It initializes the ImednetClient with API credentials, lists the available studies,
 retrieves the codings for the first study found, and prints the total count
 of codings along with details for the first five codings.
 Requires:
-- imednet-python-sdk installed (`pip install imednet-python-sdk`)
+- imednet installed (`pip install imednet`)
 - Valid API key and security key (replace placeholders).
 Usage:
 1. Replace the placeholder values for `api_key` and `security_key`.

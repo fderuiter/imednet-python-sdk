@@ -32,4 +32,4 @@ If your question relates to specific code, please provide a minimal, runnable sn
 
 Add any other context relevant to your question.
 
-*Note: For general Q&A, consider using [GitHub Discussions](https://github.com/Bright-Research/imednet-python-sdk/discussions/new?category=q-a) first.*
+*Note: For general Q&A, consider using [GitHub Discussions](https://github.com/fderuiter/imednet-python-sdk/discussions/new?category=q-a) first.*

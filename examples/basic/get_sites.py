@@ -9,7 +9,7 @@ and prints the details (name and ID) of the first few sites belonging to that st
 Requires:
 - An active Imednet account with API access.
 - API Key and Security Key for authentication.
-- The `imednet-python-sdk` package installed (`pip install imednet-python-sdk`).
+- The `imednet` package installed (`pip install imednet`).
 Usage:
 1. Replace the placeholder values for `api_key`, `security_key`, and optionally `base_url`.
 2. Run the script. It will print the total number of sites for the first study found
