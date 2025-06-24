@@ -6,7 +6,7 @@ This package contains all data models used by the SDK to represent iMedNet resou
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import FormSummary, Interval
-from imednet.models.jobs import Job
+from imednet.models.jobs import Job, JobStatus
 from imednet.models.queries import Query, QueryComment
 from imednet.models.record_revisions import RecordRevision
 from imednet.models.records import (
@@ -23,8 +23,10 @@ from imednet.models.sites import Site
 from imednet.models.studies import Study
 from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
 from imednet.models.subjects import Subject, SubjectKeyword
-from imednet.models.users import User
-from imednet.models.validators import (
+from imednet.models.users import Role, User
+from imednet.models.variables import Variable
+from imednet.models.visits import Visit
+from imednet.utils.validators import (
     parse_bool,
     parse_datetime,
     parse_dict_or_default,
@@ -32,8 +34,6 @@ from imednet.models.validators import (
     parse_list_or_default,
     parse_str_or_default,
 )
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
 
 __all__: list[str] = [
     "Coding",
@@ -41,6 +41,7 @@ __all__: list[str] = [
     "FormSummary",
     "Interval",
     "Job",
+    "JobStatus",
     "Keyword",
     "Query",
     "QueryComment",

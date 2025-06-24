@@ -95,3 +95,33 @@ class ValidationError(ApiError):
     """
 
     pass
+
+
+class BadRequestError(ValidationError):
+    """Raised for HTTP 400 bad requests."""
+
+    pass
+
+
+class UnauthorizedError(AuthenticationError):
+    """Raised for HTTP 401 unauthorized errors."""
+
+    pass
+
+
+class ForbiddenError(AuthorizationError):
+    """Raised for HTTP 403 forbidden errors."""
+
+    pass
+
+
+class ConflictError(ApiError):
+    """Raised for HTTP 409 conflict errors."""
+
+    pass
+
+
+class UnknownVariableTypeError(ValidationError):
+    """Raised when an unrecognized variable type is encountered."""
+
+    pass

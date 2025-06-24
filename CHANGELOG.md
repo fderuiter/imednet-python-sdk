@@ -11,7 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added PyPI, code style (Black), linter (Ruff), and typing (Mypy) badges to `README.md`.
 - Added `pandas` to development dependencies for workflow features.
-- Created `TEST_PLAN.md` outlining steps to achieve 90% test coverage.
+- Added a comprehensive test suite ensuring over 90% coverage.
+- Exposed `BaseClient` from the package root and updated import examples.
+- Added unit test for `BaseClient` initialization using environment variables.
+- Reintroduced automatic documentation deployment to GitHub Pages.
+- Documented caching thread-safety and added a quick start guide.
+- Added `examples/quick_start.py` demonstrating minimal SDK usage with
+  environment variable validation.
+- Added workflow examples `examples/workflows/extract_audit_trail.py` and
+  `examples/workflows/queries_by_site.py`.
+- Updated imports in all example scripts to use the package root for `ImednetSDK`.
 
 ### Fixed
 
@@ -19,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed GitHub Actions workflow for documentation generation and deployment (docs.yml). Documentation must now be built and viewed locally.
+ - Removed obsolete TEST_PLAN.md file.
 
 ## [0.1.0] - 2025-04-28
 

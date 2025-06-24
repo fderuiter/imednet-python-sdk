@@ -15,6 +15,8 @@ class Context:
         default_study_key: Optional[str] - default study key for API calls.
     """
 
+    #: Default study key for API calls.
+    #: :noindex:
     default_study_key: Optional[str] = None
 
     def set_default_study_key(self, study_key: str) -> None:

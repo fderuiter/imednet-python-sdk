@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from .validators import parse_datetime, parse_str_or_default
+from imednet.utils.validators import parse_datetime, parse_str_or_default
 
 
 class Job(BaseModel):
@@ -32,4 +32,23 @@ class Job(BaseModel):
         """
         Create a Job instance from a JSON-like dict.
         """
+        return cls.model_validate(data)
+
+
+class JobStatus(Job):
+    """Extended job information returned when polling."""
+
+    progress: int = Field(0, alias="progress")
+    result_url: str = Field("", alias="resultUrl")
+
+    @field_validator("progress", mode="before")
+    def _parse_progress(cls, v: Any) -> int:
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return 0
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> "JobStatus":
+        """Create a JobStatus instance from a JSON-like dict."""
         return cls.model_validate(data)
