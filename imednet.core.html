@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>imednet.core package &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="imednet.endpoints package" href="imednet.endpoints.html" />
+    <link rel="prev" title="imednet package" href="imednet.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">imednet</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="imednet.html">imednet package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="imednet.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">imednet.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html">imednet.endpoints package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.models.html">imednet.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.utils.html">imednet.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.workflows.html">imednet.workflows package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="imednet.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imednet.html#module-imednet.sdk">imednet.sdk module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">imednet</a></li>
+          <li class="breadcrumb-item"><a href="imednet.html">imednet package</a></li>
+      <li class="breadcrumb-item active">imednet.core package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/imednet.core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="imednet-core-package">
+<h1>imednet.core package<a class="headerlink" href="#imednet-core-package" title="Permalink to this heading"></a></h1>
+<dl class="simple">
+<dt>The <a class="reference internal" href="#imednet.core.client.Client" title="imednet.core.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> emits JSON formatted logs and can record OpenTelemetry</dt><dd><p>spans when a tracer is provided. See <a class="reference internal" href="logging_and_tracing.html"><span class="doc">Logging and Tracing</span></a> for details.</p>
+</dd>
+</dl>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-imednet.core.client">
+<span id="imednet-core-client-module"></span><h2>imednet.core.client module<a class="headerlink" href="#module-imednet.core.client" title="Permalink to this heading"></a></h2>
+<p>Core HTTP client for interacting with the iMednet REST API.</p>
+<p>This module defines the <cite>Client</cite> class which handles:
+- Authentication headers (API key and security key).
+- Configuration of base URL, timeouts, and retry logic.
+- Making HTTP GET and POST requests.
+- Error mapping to custom exceptions.
+- Context-manager support for automatic cleanup.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="imednet.core.client.Client">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.client.Client" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.base_client.BaseClient" title="imednet.core.base_client.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClient</span></code></a></p>
+<p>Core HTTP client for the iMednet API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>security_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>base_url</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>httpx.Timeout</em><em>]</em>) – </p></li>
+<li><p><strong>retries</strong> (<em>int</em>) – </p></li>
+<li><p><strong>backoff_factor</strong> (<em>float</em>) – </p></li>
+<li><p><strong>log_level</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>tracer</strong> (<em>Optional</em><em>[</em><em>Tracer</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.client.Client.base_url">
+<span class="sig-name descname"><span class="pre">base_url</span></span><a class="headerlink" href="#imednet.core.client.Client.base_url" title="Permalink to this definition"></a></dt>
+<dd><p>Base URL for API requests.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.client.Client.timeout">
+<span class="sig-name descname"><span class="pre">timeout</span></span><a class="headerlink" href="#imednet.core.client.Client.timeout" title="Permalink to this definition"></a></dt>
+<dd><p>Default timeout for requests.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.client.Client.retries">
+<span class="sig-name descname"><span class="pre">retries</span></span><a class="headerlink" href="#imednet.core.client.Client.retries" title="Permalink to this definition"></a></dt>
+<dd><p>Number of retry attempts for transient errors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.client.Client.backoff_factor">
+<span class="sig-name descname"><span class="pre">backoff_factor</span></span><a class="headerlink" href="#imednet.core.client.Client.backoff_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Multiplier for exponential backoff.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="imednet.core.client.Client.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/client.html#Client.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.client.Client.close" title="Permalink to this definition"></a></dt>
+<dd><p>Close the underlying HTTP client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="imednet.core.client.Client.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/client.html#Client.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.client.Client.get" title="Permalink to this definition"></a></dt>
+<dd><p>Make a GET request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – URL path or full URL.</p></li>
+<li><p><strong>params</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Query parameters.</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="imednet.core.client.Client.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/client.html#Client.post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.client.Client.post" title="Permalink to this definition"></a></dt>
+<dd><p>Make a POST request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – URL path or full URL.</p></li>
+<li><p><strong>json</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – JSON body for the request.</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-imednet.core.base_client">
+<span id="imednet-core-base-client-module"></span><h2>imednet.core.base_client module<a class="headerlink" href="#module-imednet.core.base_client" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="imednet.core.base_client.BaseClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.base_client.</span></span><span class="sig-name descname"><span class="pre">BaseClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/base_client.html#BaseClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.base_client.BaseClient" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Common initialization logic for HTTP clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>security_key</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>base_url</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>httpx.Timeout</em><em>]</em>) – </p></li>
+<li><p><strong>retries</strong> (<em>int</em>) – </p></li>
+<li><p><strong>backoff_factor</strong> (<em>float</em>) – </p></li>
+<li><p><strong>log_level</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>tracer</strong> (<em>Optional</em><em>[</em><em>Tracer</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.base_client.BaseClient.DEFAULT_BASE_URL">
+<span class="sig-name descname"><span class="pre">DEFAULT_BASE_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://edc.prod.imednetapi.com'</span></em><a class="headerlink" href="#imednet.core.base_client.BaseClient.DEFAULT_BASE_URL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="imednet-core-context-module">
+<h2>imednet.core.context module<a class="headerlink" href="#imednet-core-context-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="logging-and-tracing">
+<h2>Logging and tracing<a class="headerlink" href="#logging-and-tracing" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference internal" href="#imednet.core.client.Client" title="imednet.core.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">imednet.core.client.Client</span></code></a> can emit JSON formatted logs of each HTTP
+request when you configure logging:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">imednet.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_json_logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">configure_json_logging</span><span class="p">()</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">security_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">opentelemetry</span></code> is installed, pass a tracer instance or rely on the global
+tracer provider. Each request is executed within a span and works with
+<code class="docutils literal notranslate"><span class="pre">opentelemetry-instrumentation-httpx</span></code> for automatic context propagation of the
+HTTPX requests used by the SDK:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">opentelemetry.instrumentation.httpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPXClientInstrumentor</span>
+
+<span class="n">HTTPXClientInstrumentor</span><span class="p">()</span><span class="o">.</span><span class="n">instrument</span><span class="p">()</span>
+<span class="n">tracer</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_tracer</span><span class="p">(</span><span class="s2">&quot;my-app&quot;</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">security_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">tracer</span><span class="o">=</span><span class="n">tracer</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="module-imednet.core.context"></span><p>Manage mutable SDK context, like default study key.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="imednet.core.context.Context">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.context.</span></span><span class="sig-name descname"><span class="pre">Context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_study_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/context.html#Context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.context.Context" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds default values for SDK calls, such as default study key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default_study_key</strong> (<em>str</em><em> | </em><em>None</em>) – </p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.context.Context.default_study_key">
+<span class="sig-name descname"><span class="pre">default_study_key</span></span><a class="headerlink" href="#imednet.core.context.Context.default_study_key" title="Permalink to this definition"></a></dt>
+<dd><p>Optional[str] - default study key for API calls.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="imednet.core.context.Context.clear_default_study_key">
+<span class="sig-name descname"><span class="pre">clear_default_study_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/context.html#Context.clear_default_study_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.context.Context.clear_default_study_key" title="Permalink to this definition"></a></dt>
+<dd><p>Clear the default study key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">default_study_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>Default study key for API calls.
+:noindex:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="imednet.core.context.Context.set_default_study_key">
+<span class="sig-name descname"><span class="pre">set_default_study_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/context.html#Context.set_default_study_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.context.Context.set_default_study_key" title="Permalink to this definition"></a></dt>
+<dd><p>Set the default study key to use for subsequent API calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>study_key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The study key string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-imednet.core.exceptions">
+<span id="imednet-core-exceptions-module"></span><h2>imednet.core.exceptions module<a class="headerlink" href="#module-imednet.core.exceptions" title="Permalink to this heading"></a></h2>
+<p>Custom exceptions for the iMednet SDK.</p>
+<p>Defines a hierarchy of exceptions corresponding to HTTP and validation errors.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ApiError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">ApiError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#ApiError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.ApiError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ImednetError" title="imednet.core.exceptions.ImednetError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImednetError</span></code></a></p>
+<p>Raised for generic API errors (non-2xx HTTP status codes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ApiError.status_code">
+<span class="sig-name descname"><span class="pre">status_code</span></span><a class="headerlink" href="#imednet.core.exceptions.ApiError.status_code" title="Permalink to this definition"></a></dt>
+<dd><p>HTTP status code returned by the API.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ApiError.response">
+<span class="sig-name descname"><span class="pre">response</span></span><a class="headerlink" href="#imednet.core.exceptions.ApiError.response" title="Permalink to this definition"></a></dt>
+<dd><p>Parsed JSON or raw text of the error response.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.AuthenticationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">AuthenticationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#AuthenticationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.AuthenticationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ApiError" title="imednet.core.exceptions.ApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApiError</span></code></a></p>
+<p>Raised when authentication to the API fails (HTTP 401).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.AuthorizationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">AuthorizationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#AuthorizationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.AuthorizationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ApiError" title="imednet.core.exceptions.ApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApiError</span></code></a></p>
+<p>Raised when access to the API is forbidden (HTTP 403).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.BadRequestError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">BadRequestError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#BadRequestError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.BadRequestError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ValidationError" title="imednet.core.exceptions.ValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationError</span></code></a></p>
+<p>Raised for HTTP 400 bad requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ConflictError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">ConflictError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#ConflictError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.ConflictError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ApiError" title="imednet.core.exceptions.ApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApiError</span></code></a></p>
+<p>Raised for HTTP 409 conflict errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ForbiddenError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">ForbiddenError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#ForbiddenError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.ForbiddenError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.AuthorizationError" title="imednet.core.exceptions.AuthorizationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthorizationError</span></code></a></p>
+<p>Raised for HTTP 403 forbidden errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ImednetError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">ImednetError</span></span><a class="reference internal" href="_modules/imednet/core/exceptions.html#ImednetError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.ImednetError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base exception for all iMednet SDK errors.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.NotFoundError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#NotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.NotFoundError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ApiError" title="imednet.core.exceptions.ApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApiError</span></code></a></p>
+<p>Raised when a requested resource is not found (HTTP 404).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.RateLimitError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">RateLimitError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#RateLimitError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.RateLimitError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ApiError" title="imednet.core.exceptions.ApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApiError</span></code></a></p>
+<p>Raised when the API rate limit is exceeded (HTTP 429).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.RequestError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">RequestError</span></span><a class="reference internal" href="_modules/imednet/core/exceptions.html#RequestError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.RequestError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ImednetError" title="imednet.core.exceptions.ImednetError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImednetError</span></code></a></p>
+<p>Raised when a network request fails after retries.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ServerError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">ServerError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#ServerError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.ServerError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ApiError" title="imednet.core.exceptions.ApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApiError</span></code></a></p>
+<p>Raised when the API returns a server error (HTTP 5xx).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.UnauthorizedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">UnauthorizedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#UnauthorizedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.UnauthorizedError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.AuthenticationError" title="imednet.core.exceptions.AuthenticationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationError</span></code></a></p>
+<p>Raised for HTTP 401 unauthorized errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.UnknownVariableTypeError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">UnknownVariableTypeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#UnknownVariableTypeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.UnknownVariableTypeError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ValidationError" title="imednet.core.exceptions.ValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationError</span></code></a></p>
+<p>Raised when an unrecognized variable type is encountered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="imednet.core.exceptions.ValidationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.exceptions.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/exceptions.html#ValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.exceptions.ValidationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.exceptions.ApiError" title="imednet.core.exceptions.ApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApiError</span></code></a></p>
+<p>Raised when a request is malformed or validation fails (HTTP 400).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>status_code</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-imednet.core.paginator">
+<span id="imednet-core-paginator-module"></span><h2>imednet.core.paginator module<a class="headerlink" href="#module-imednet.core.paginator" title="Permalink to this heading"></a></h2>
+<p>Pagination helpers for iterating through API responses.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="imednet.core.paginator.AsyncPaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.paginator.</span></span><span class="sig-name descname"><span class="pre">AsyncPaginator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'page'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'metadata'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/paginator.html#AsyncPaginator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.paginator.AsyncPaginator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.paginator.BasePaginator" title="imednet.core.paginator.BasePaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePaginator</span></code></a></p>
+<p>Asynchronous variant of <a class="reference internal" href="#imednet.core.paginator.Paginator" title="imednet.core.paginator.Paginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Paginator</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>path</strong> (<em>str</em>) – </p></li>
+<li><p><strong>params</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – </p></li>
+<li><p><strong>page_param</strong> (<em>str</em>) – </p></li>
+<li><p><strong>size_param</strong> (<em>str</em>) – </p></li>
+<li><p><strong>data_key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>metadata_key</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="imednet.core.paginator.BasePaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.paginator.</span></span><span class="sig-name descname"><span class="pre">BasePaginator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'page'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'metadata'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/paginator.html#BasePaginator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.paginator.BasePaginator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Shared paginator implementation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>path</strong> (<em>str</em>) – </p></li>
+<li><p><strong>params</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – </p></li>
+<li><p><strong>page_param</strong> (<em>str</em>) – </p></li>
+<li><p><strong>size_param</strong> (<em>str</em>) – </p></li>
+<li><p><strong>data_key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>metadata_key</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="imednet.core.paginator.Paginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.paginator.</span></span><span class="sig-name descname"><span class="pre">Paginator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'page'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'metadata'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/paginator.html#Paginator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.paginator.Paginator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imednet.core.paginator.BasePaginator" title="imednet.core.paginator.BasePaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePaginator</span></code></a></p>
+<p>Iterate synchronously over paginated API results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>Any</em>) – </p></li>
+<li><p><strong>path</strong> (<em>str</em>) – </p></li>
+<li><p><strong>params</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>page_size</strong> (<em>int</em>) – </p></li>
+<li><p><strong>page_param</strong> (<em>str</em>) – </p></li>
+<li><p><strong>size_param</strong> (<em>str</em>) – </p></li>
+<li><p><strong>data_key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>metadata_key</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="imednet.html" class="btn btn-neutral float-left" title="imednet package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="imednet.endpoints.html" class="btn btn-neutral float-right" title="imednet.endpoints package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

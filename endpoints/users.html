@@ -1,0 +1,303 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Users Endpoint &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Variables Endpoint" href="variables.html" />
+    <link rel="prev" title="Subjects Endpoint" href="subjects.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Endpoints</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="codings.html">Codings Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">Forms Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intervals.html">Intervals Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html">Jobs Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queries.html">Queries Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="record_revisions.html">Record Revisions Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="records.html">Records Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sites.html">Sites Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="studies.html">Studies Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subjects.html">Subjects Endpoint</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Users Endpoint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-index">Accessing the index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#request-structure">Request structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#path-parameters">Path parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#request-parameters">Request parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#response-body">Response body</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#response-fields">Response fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visits.html">Visits Endpoint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Endpoints</a></li>
+      <li class="breadcrumb-item active">Users Endpoint</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/endpoints/users.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="users-endpoint">
+<h1>Users Endpoint<a class="headerlink" href="#users-endpoint" title="Permalink to this heading"></a></h1>
+<p>Given a StudyKey, fetch the users.</p>
+<section id="accessing-the-index">
+<h2>Accessing the index<a class="headerlink" href="#accessing-the-index" title="Permalink to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">GET</span></code> request is used to access the index.</p>
+</section>
+<section id="request-structure">
+<h2>Request structure<a class="headerlink" href="#request-structure" title="Permalink to this heading"></a></h2>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v1/edc/studies/MOCK-STUDY/users?page=0&amp;size=25&amp;includeInactive=false&amp;sort=login%2CASC</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:8080</span>
+</pre></div>
+</div>
+</section>
+<section id="path-parameters">
+<h2>Path parameters<a class="headerlink" href="#path-parameters" title="Permalink to this heading"></a></h2>
+<p>Path parameters are required.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">studyKey</span></code></dt><dd><p>StudyKey to retrieve list of variables.</p>
+</dd>
+</dl>
+</section>
+<section id="request-parameters">
+<h2>Request parameters<a class="headerlink" href="#request-parameters" title="Permalink to this heading"></a></h2>
+<p>Request parameters are optional. Default values are used unless specified.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">page</span></code></dt><dd><p>Which index page to be returned. Default value is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">size</span></code></dt><dd><p>Items per page to be returned. Default value is <code class="docutils literal notranslate"><span class="pre">25</span></code>. Maximum items allowed per page is <code class="docutils literal notranslate"><span class="pre">500</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sort</span></code></dt><dd><p>Name of the property by which to sort the result set. To sort in a particular direction add a comma to the property name and either <code class="docutils literal notranslate"><span class="pre">asc</span></code> or <code class="docutils literal notranslate"><span class="pre">desc</span></code>. To sort by multiple properties add additional sort parameters. Default value is <code class="docutils literal notranslate"><span class="pre">login,asc</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">includeInactive</span></code></dt><dd><p>Boolean flag whether to include inactive Users. Default value is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="response-body">
+<h2>Response body<a class="headerlink" href="#response-body" title="Permalink to this heading"></a></h2>
+<p>Below is an example response payload.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/api/v1/edc/studies/MOCK-STUDY/users&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-06-05 21:12:07&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;pagination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;currentPage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;totalPages&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;totalElements&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;sort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;property&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;login&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ASC&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;userId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;685253e1-1a95-4352-a7b0-4c62d3807727&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;login&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;wsmith1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;William&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Smith&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;wsmith@mednet.com&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;userActiveInStudy&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;roles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;dateCreated&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2025</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">625000000</span><span class="p">],</span>
+<span class="w">          </span><span class="nt">&quot;dateModified&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2025</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">625000000</span><span class="p">],</span>
+<span class="w">          </span><span class="nt">&quot;roleId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6ec2a32b-143c-43d3-b562-9d902a61f884&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;communityId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Role name 1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Role description 1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Role type 1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;inactive&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;dateCreated&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2025</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">625000000</span><span class="p">],</span>
+<span class="w">          </span><span class="nt">&quot;dateModified&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2025</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">625000000</span><span class="p">],</span>
+<span class="w">          </span><span class="nt">&quot;roleId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6ec2a32b-143c-43d3-b562-9d902a61f884&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;communityId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Role name 2&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Role description 2&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Role type 2&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;inactive&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="response-fields">
+<h2>Response fields<a class="headerlink" href="#response-fields" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.status</span></code></dt><dd><p>String - HTTP status.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.method</span></code></dt><dd><p>String - HTTP method.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.path</span></code></dt><dd><p>String - Requested URI path.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.timestamp</span></code></dt><dd><p>String - Timestamp when response was generated.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.error</span></code></dt><dd><p>Object - Detail error message from request if error occur.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.currentPage</span></code></dt><dd><p>Number - Current index page.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.size</span></code></dt><dd><p>Number - Size per page.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.totalPages</span></code></dt><dd><p>Number - Total pages return from search.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.totalElements</span></code></dt><dd><p>Number - Total elements return from search.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.sort[].property</span></code></dt><dd><p>String - Sort property.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.sort[].direction</span></code></dt><dd><p>String - Sort direction.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].userId</span></code></dt><dd><p>String - User ID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].login</span></code></dt><dd><p>String - Login.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].firstName</span></code></dt><dd><p>String - First name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].lastName</span></code></dt><dd><p>String - Last name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].email</span></code></dt><dd><p>String - Email.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].userActiveInStudy</span></code></dt><dd><p>Boolean - Boolean value for if the user is active in the study.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].dateCreated</span></code></dt><dd><p>Array - Role date created.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].dateModified</span></code></dt><dd><p>Array - Role date modified.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].roleId</span></code></dt><dd><p>String - Role ID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].communityId</span></code></dt><dd><p>Number - Community ID associated with Role.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].name</span></code></dt><dd><p>String - Role name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].description</span></code></dt><dd><p>String - Role description.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].level</span></code></dt><dd><p>Number - Role level.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].type</span></code></dt><dd><p>String - Role type.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].roles[].inactive</span></code></dt><dd><p>Boolean - Inactive.</p>
+</dd>
+</dl>
+<p><a class="reference external" href="https://portal.prod.imednetapi.com/docs/users">Portal docs</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="subjects.html" class="btn btn-neutral float-left" title="Subjects Endpoint" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="variables.html" class="btn btn-neutral float-right" title="Variables Endpoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

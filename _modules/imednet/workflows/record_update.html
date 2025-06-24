@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>imednet.workflows.record_update &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
+      <script src="../../../_static/jquery.js"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/doctools.js"></script>
+      <script src="../../../_static/sphinx_highlight.js"></script>
+      <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+      <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">imednet.workflows.record_update</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for imednet.workflows.record_update</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Placeholder for Record Creation/Update workflows.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..validation.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.job_poller</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobPoller</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImednetSDK</span>
+
+
+<div class="viewcode-block" id="RecordUpdateWorkflow"><a class="viewcode-back" href="../../../imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RecordUpdateWorkflow</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides workflows for creating or updating records, including batch submission</span>
+<span class="sd">    and optional job status monitoring.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sdk: An instance of the ImednetSDK.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdk</span><span class="p">:</span> <span class="s2">&quot;ImednetSDK&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sdk</span> <span class="o">=</span> <span class="n">sdk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span> <span class="o">=</span> <span class="n">SchemaValidator</span><span class="p">(</span><span class="n">sdk</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span><span class="o">.</span><span class="n">schema</span>
+
+<div class="viewcode-block" id="RecordUpdateWorkflow.create_or_update_records"><a class="viewcode-back" href="../../../imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.create_or_update_records">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_or_update_records</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">records_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">wait_for_completion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Submit records for creation or update and optionally wait for completion.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">records_data</span><span class="p">:</span>
+            <span class="n">first_ref</span> <span class="o">=</span> <span class="n">records_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;formKey&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">form_key_from_id</span><span class="p">(</span>
+                <span class="n">records_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;formId&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">first_ref</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">variables_for_form</span><span class="p">(</span><span class="n">first_ref</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">study_key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validator</span><span class="o">.</span><span class="n">validate_batch</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">records_data</span><span class="p">)</span>
+
+        <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sdk</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">records_data</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wait_for_completion</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">job</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">job</span><span class="o">.</span><span class="n">batch_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Submission successful but no batch_id received.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">JobPoller</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sdk</span><span class="p">,</span>
+            <span class="n">study_key</span><span class="p">,</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">batch_id</span><span class="p">,</span>
+            <span class="n">timeout_s</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">poll_interval_s</span><span class="o">=</span><span class="n">poll_interval</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RecordUpdateWorkflow.submit_record_batch"><a class="viewcode-back" href="../../../imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.submit_record_batch">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submit_record_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;submit_record_batch is deprecated; use create_or_update_records&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_or_update_records</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RecordUpdateWorkflow.register_subject"><a class="viewcode-back" href="../../../imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.register_subject">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_subject</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">form_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">site_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">form_identifier_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+        <span class="n">site_identifier_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="n">wait_for_completion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Registers a new subject by submitting a single record.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            study_key: The study key.</span>
+<span class="sd">            form_identifier: The form key or ID.</span>
+<span class="sd">            site_identifier: The site name or ID.</span>
+<span class="sd">            data: The dictionary of record data (variable names and values).</span>
+<span class="sd">            form_identifier_type: Whether `form_identifier` is a &#39;key&#39; or &#39;id&#39;.</span>
+<span class="sd">            site_identifier_type: Whether `site_identifier` is a &#39;name&#39; or &#39;id&#39;.</span>
+<span class="sd">            wait_for_completion: If True, wait for the job to complete.</span>
+<span class="sd">            timeout: Timeout in seconds for waiting.</span>
+<span class="sd">            poll_interval: Polling interval in seconds.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Job status object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;formKey&quot;</span> <span class="k">if</span> <span class="n">form_identifier_type</span> <span class="o">==</span> <span class="s2">&quot;key&quot;</span> <span class="k">else</span> <span class="s2">&quot;formId&quot;</span><span class="p">:</span> <span class="n">form_identifier</span><span class="p">,</span>
+            <span class="s2">&quot;siteName&quot;</span> <span class="k">if</span> <span class="n">site_identifier_type</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span> <span class="k">else</span> <span class="s2">&quot;siteId&quot;</span><span class="p">:</span> <span class="n">site_identifier</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_or_update_records</span><span class="p">(</span>
+            <span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">,</span>
+            <span class="n">records_data</span><span class="o">=</span><span class="p">[</span><span class="n">record</span><span class="p">],</span>
+            <span class="n">wait_for_completion</span><span class="o">=</span><span class="n">wait_for_completion</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">poll_interval</span><span class="o">=</span><span class="n">poll_interval</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RecordUpdateWorkflow.update_scheduled_record"><a class="viewcode-back" href="../../../imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.update_scheduled_record">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_scheduled_record</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">form_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">subject_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">interval_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">form_identifier_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+        <span class="n">subject_identifier_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;oid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+        <span class="n">interval_identifier_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="n">wait_for_completion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates an existing scheduled record for a subject.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            study_key: The study key.</span>
+<span class="sd">            form_identifier: The form key or ID.</span>
+<span class="sd">            subject_identifier: The subject key, ID, or OID.</span>
+<span class="sd">            interval_identifier: The interval name or ID.</span>
+<span class="sd">            data: The dictionary of record data (variable names and values).</span>
+<span class="sd">            form_identifier_type: Whether `form_identifier` is a &#39;key&#39; or &#39;id&#39;.</span>
+<span class="sd">            subject_identifier_type: Whether `subject_identifier` is a &#39;key&#39;, &#39;id&#39;, or &#39;oid&#39;.</span>
+<span class="sd">            interval_identifier_type: Whether `interval_identifier` is a &#39;name&#39; or &#39;id&#39;.</span>
+<span class="sd">            wait_for_completion: If True, wait for the job to complete.</span>
+<span class="sd">            timeout: Timeout in seconds for waiting.</span>
+<span class="sd">            poll_interval: Polling interval in seconds.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Job status object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subject_id_field_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;subjectKey&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;subjectId&quot;</span><span class="p">,</span> <span class="s2">&quot;oid&quot;</span><span class="p">:</span> <span class="s2">&quot;subjectOid&quot;</span><span class="p">}</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;formKey&quot;</span> <span class="k">if</span> <span class="n">form_identifier_type</span> <span class="o">==</span> <span class="s2">&quot;key&quot;</span> <span class="k">else</span> <span class="s2">&quot;formId&quot;</span><span class="p">:</span> <span class="n">form_identifier</span><span class="p">,</span>
+            <span class="n">subject_id_field_map</span><span class="p">[</span><span class="n">subject_identifier_type</span><span class="p">]:</span> <span class="n">subject_identifier</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;intervalName&quot;</span> <span class="k">if</span> <span class="n">interval_identifier_type</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span> <span class="k">else</span> <span class="s2">&quot;intervalId&quot;</span>
+            <span class="p">):</span> <span class="n">interval_identifier</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_or_update_records</span><span class="p">(</span>
+            <span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">,</span>
+            <span class="n">records_data</span><span class="o">=</span><span class="p">[</span><span class="n">record</span><span class="p">],</span>
+            <span class="n">wait_for_completion</span><span class="o">=</span><span class="n">wait_for_completion</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">poll_interval</span><span class="o">=</span><span class="n">poll_interval</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RecordUpdateWorkflow.create_new_record"><a class="viewcode-back" href="../../../imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.create_new_record">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_new_record</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">form_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">subject_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">form_identifier_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+        <span class="n">subject_identifier_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;oid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+        <span class="n">wait_for_completion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">poll_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new (unscheduled) record for an existing subject.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            study_key: The study key.</span>
+<span class="sd">            form_identifier: The form key or ID.</span>
+<span class="sd">            subject_identifier: The subject key, ID, or OID.</span>
+<span class="sd">            data: The dictionary of record data (variable names and values).</span>
+<span class="sd">            form_identifier_type: Whether `form_identifier` is a &#39;key&#39; or &#39;id&#39;.</span>
+<span class="sd">            subject_identifier_type: Whether `subject_identifier` is a &#39;key&#39;, &#39;id&#39;, or &#39;oid&#39;.</span>
+<span class="sd">            wait_for_completion: If True, wait for the job to complete.</span>
+<span class="sd">            timeout: Timeout in seconds for waiting.</span>
+<span class="sd">            poll_interval: Polling interval in seconds.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Job status object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subject_id_field_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;subjectKey&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;subjectId&quot;</span><span class="p">,</span> <span class="s2">&quot;oid&quot;</span><span class="p">:</span> <span class="s2">&quot;subjectOid&quot;</span><span class="p">}</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;formKey&quot;</span> <span class="k">if</span> <span class="n">form_identifier_type</span> <span class="o">==</span> <span class="s2">&quot;key&quot;</span> <span class="k">else</span> <span class="s2">&quot;formId&quot;</span><span class="p">:</span> <span class="n">form_identifier</span><span class="p">,</span>
+            <span class="n">subject_id_field_map</span><span class="p">[</span><span class="n">subject_identifier_type</span><span class="p">]:</span> <span class="n">subject_identifier</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_or_update_records</span><span class="p">(</span>
+            <span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">,</span>
+            <span class="n">records_data</span><span class="o">=</span><span class="p">[</span><span class="n">record</span><span class="p">],</span>
+            <span class="n">wait_for_completion</span><span class="o">=</span><span class="n">wait_for_completion</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">poll_interval</span><span class="o">=</span><span class="n">poll_interval</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="c1"># Integration:</span>
+<span class="c1"># - Accessed via the main SDK instance</span>
+<span class="c1">#       (e.g., `sdk.workflows.record_update.create_or_update_records(...)`).</span>
+<span class="c1"># - Simplifies the process of submitting data and optionally monitoring the asynchronous job.</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

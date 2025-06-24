@@ -1,0 +1,163 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>imednet.utils.pandas &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
+      <script src="../../../_static/jquery.js"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/doctools.js"></script>
+      <script src="../../../_static/sphinx_highlight.js"></script>
+      <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+      <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">imednet.utils.pandas</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for imednet.utils.pandas</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Pandas helpers for working with iMednet models.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models.records</span><span class="w"> </span><span class="kn">import</span> <span class="n">Record</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover - only for type checking</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImednetSDK</span>
+
+
+<div class="viewcode-block" id="records_to_dataframe"><a class="viewcode-back" href="../../../imednet.utils.html#imednet.utils.pandas.records_to_dataframe">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">records_to_dataframe</span><span class="p">(</span><span class="n">records</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Record</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a list of :class:`~imednet.models.records.Record` to a DataFrame.</span>
+
+<span class="sd">    Each record is converted using :meth:`pydantic.BaseModel.model_dump` with</span>
+<span class="sd">    ``by_alias=False``. If ``flatten`` is ``True`` the ``record_data`` column is</span>
+<span class="sd">    expanded using :func:`pandas.json_normalize` so that each variable becomes a</span>
+<span class="sd">    column in the resulting DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flatten</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">record_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;record_data&quot;</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;record_data&quot;</span><span class="p">]),</span> <span class="n">record_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="export_records_csv"><a class="viewcode-back" href="../../../imednet.utils.html#imednet.utils.pandas.export_records_csv">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">export_records_csv</span><span class="p">(</span>
+    <span class="n">sdk</span><span class="p">:</span> <span class="s2">&quot;ImednetSDK&quot;</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch all records for ``study_key`` and write them to ``file_path``.</span>
+
+<span class="sd">    Parameters are passed to :func:`records_to_dataframe` and the resulting</span>
+<span class="sd">    DataFrame is written with :meth:`pandas.DataFrame.to_csv` using</span>
+<span class="sd">    ``index=False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">records</span> <span class="o">=</span> <span class="n">sdk</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">records_to_dataframe</span><span class="p">(</span><span class="n">records</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

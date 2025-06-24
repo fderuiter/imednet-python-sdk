@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Test Overview &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="imednet" href="modules.html" />
+    <link rel="prev" title="Live (End-to-End) Test Plan" href="live_test_plan.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Live Test Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cli-tests-test-cli-live-py">CLI Tests (<code class="docutils literal notranslate"><span class="pre">test_cli_live.py</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#endpoint-tests">Endpoint Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#schema-validation-test-schema-validator-live-py">Schema Validation (<code class="docutils literal notranslate"><span class="pre">test_schema_validator_live.py</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sdk-utility-helpers-test-sdk-utilities-live-py">SDK Utility Helpers (<code class="docutils literal notranslate"><span class="pre">test_sdk_utilities_live.py</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-helpers-test-integrations-live-py">Integration Helpers (<code class="docutils literal notranslate"><span class="pre">test_integrations_live.py</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflow-tests-test-workflows-live-py">Workflow Tests (<code class="docutils literal notranslate"><span class="pre">test_workflows_live.py</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fake-data-utilities">Fake Data Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#expected-results">Expected Results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Live Test Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/live_tests.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="live-test-overview">
+<h1>Live Test Overview<a class="headerlink" href="#live-test-overview" title="Permalink to this heading"></a></h1>
+<p>This document summarizes the end-to-end tests located in <code class="docutils literal notranslate"><span class="pre">tests/live</span></code>. These tests
+execute against a real iMedNet environment and are skipped unless the environment
+variable <code class="docutils literal notranslate"><span class="pre">IMEDNET_RUN_E2E=1</span></code> is set along with valid credentials (<code class="docutils literal notranslate"><span class="pre">IMEDNET_API_KEY</span></code>
+and <code class="docutils literal notranslate"><span class="pre">IMEDNET_SECURITY_KEY</span></code>). Each test verifies that the SDK behaves correctly
+when interacting with a running server.</p>
+<p>See <a class="reference internal" href="test_skip_conditions.html"><span class="doc">Test Skip Conditions</span></a> for a summary of all variables and optional
+dependencies that control skipping.</p>
+<section id="cli-tests-test-cli-live-py">
+<h2>CLI Tests (<code class="docutils literal notranslate"><span class="pre">test_cli_live.py</span></code>)<a class="headerlink" href="#cli-tests-test-cli-live-py" title="Permalink to this heading"></a></h2>
+<p>These checks invoke the CLI using <code class="docutils literal notranslate"><span class="pre">typer.testing.CliRunner</span></code> and expect a zero exit code:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">studies</span> <span class="pre">list</span></code> — Lists available studies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">sites</span> <span class="pre">list</span> <span class="pre">&lt;STUDY_KEY&gt;</span></code> — Lists sites for the chosen study.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">subjects</span> <span class="pre">list</span> <span class="pre">&lt;STUDY_KEY&gt;</span></code> — Lists subjects for the study.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">records</span> <span class="pre">list</span> <span class="pre">&lt;STUDY_KEY&gt;</span></code> — Lists records for the study.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">jobs</span> <span class="pre">status</span> <span class="pre">&lt;STUDY_KEY&gt;</span> <span class="pre">&lt;BATCH_ID&gt;</span></code> — Retrieves the status of a known job.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">jobs</span> <span class="pre">wait</span> <span class="pre">&lt;STUDY_KEY&gt;</span> <span class="pre">&lt;BATCH_ID&gt;</span></code> — Waits until the specified job completes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">export</span> <span class="pre">parquet</span> <span class="pre">&lt;STUDY_KEY&gt;</span> <span class="pre">file.parquet</span></code> — Exports records to Parquet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">export</span> <span class="pre">csv</span> <span class="pre">&lt;STUDY_KEY&gt;</span> <span class="pre">file.csv</span></code> — Exports records to CSV.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">export</span> <span class="pre">excel</span> <span class="pre">&lt;STUDY_KEY&gt;</span> <span class="pre">file.xlsx</span></code> — Exports records to Excel.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">export</span> <span class="pre">json</span> <span class="pre">&lt;STUDY_KEY&gt;</span> <span class="pre">file.json</span></code> — Exports records to JSON.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">export</span> <span class="pre">sql</span> <span class="pre">&lt;STUDY_KEY&gt;</span> <span class="pre">TABLE</span> <span class="pre">sqlite:///file.db</span></code> — Exports records to a SQL database.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imednet</span> <span class="pre">workflows</span> <span class="pre">extract-records</span> <span class="pre">&lt;STUDY_KEY&gt;</span></code> — Runs the workflow to export records.</p></li>
+</ul>
+<p>Each command should complete successfully and create the expected output file where applicable.</p>
+</section>
+<section id="endpoint-tests">
+<h2>Endpoint Tests<a class="headerlink" href="#endpoint-tests" title="Permalink to this heading"></a></h2>
+<p>### Synchronous (<code class="docutils literal notranslate"><span class="pre">test_endpoints_sync_live.py</span></code>)
+These tests verify that every REST endpoint works as expected using <code class="docutils literal notranslate"><span class="pre">ImednetSDK</span></code>:</p>
+<ul class="simple">
+<li><p>Listing endpoints (<code class="docutils literal notranslate"><span class="pre">list</span></code> methods) return a list of model objects.</p></li>
+<li><p>Individual <code class="docutils literal notranslate"><span class="pre">get</span></code> calls return an object whose key matches the input.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.create</span></code> submits a new record and <code class="docutils literal notranslate"><span class="pre">JobsEndpoint.get</span></code> retrieves the resulting job status.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JobsEndpoint.get</span></code> with a known batch ID returns the corresponding job.</p></li>
+<li><p>All endpoints tested include studies, sites, subjects, records, intervals, visits, variables, forms, queries, record revisions, users, jobs, and codings.</p></li>
+</ul>
+<p>### Asynchronous (<code class="docutils literal notranslate"><span class="pre">test_endpoints_async_live.py</span></code>)
+The asynchronous tests mirror the synchronous ones using <code class="docutils literal notranslate"><span class="pre">AsyncImednetSDK</span></code>. Each
+<code class="docutils literal notranslate"><span class="pre">async_list</span></code> and <code class="docutils literal notranslate"><span class="pre">async_get</span></code> call should behave the same as the synchronous version.</p>
+</section>
+<section id="schema-validation-test-schema-validator-live-py">
+<h2>Schema Validation (<code class="docutils literal notranslate"><span class="pre">test_schema_validator_live.py</span></code>)<a class="headerlink" href="#schema-validation-test-schema-validator-live-py" title="Permalink to this heading"></a></h2>
+<p>Uses <code class="docutils literal notranslate"><span class="pre">SchemaValidator</span></code> to ensure that invalid data raises <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> and that schemas are cached correctly:</p>
+<ul class="simple">
+<li><p>Submitting a payload with an unknown variable should raise <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code>.</p></li>
+<li><p>Submitting a payload with the wrong data type should also raise <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code>.</p></li>
+</ul>
+</section>
+<section id="sdk-utility-helpers-test-sdk-utilities-live-py">
+<h2>SDK Utility Helpers (<code class="docutils literal notranslate"><span class="pre">test_sdk_utilities_live.py</span></code>)<a class="headerlink" href="#sdk-utility-helpers-test-sdk-utilities-live-py" title="Permalink to this heading"></a></h2>
+<p>Confirms that convenience wrapper methods on <code class="docutils literal notranslate"><span class="pre">ImednetSDK</span></code> return lists or objects as expected. This includes <code class="docutils literal notranslate"><span class="pre">get_studies</span></code>, <code class="docutils literal notranslate"><span class="pre">get_records</span></code>, <code class="docutils literal notranslate"><span class="pre">get_sites</span></code>, <code class="docutils literal notranslate"><span class="pre">get_subjects</span></code>, <code class="docutils literal notranslate"><span class="pre">get_forms</span></code>, <code class="docutils literal notranslate"><span class="pre">get_intervals</span></code>, <code class="docutils literal notranslate"><span class="pre">get_variables</span></code>, <code class="docutils literal notranslate"><span class="pre">get_visits</span></code>, <code class="docutils literal notranslate"><span class="pre">get_codings</span></code>, <code class="docutils literal notranslate"><span class="pre">get_queries</span></code>, <code class="docutils literal notranslate"><span class="pre">get_record_revisions</span></code>, <code class="docutils literal notranslate"><span class="pre">get_users</span></code>, <code class="docutils literal notranslate"><span class="pre">get_job</span></code>, and <code class="docutils literal notranslate"><span class="pre">poll_job</span></code>.</p>
+</section>
+<section id="integration-helpers-test-integrations-live-py">
+<h2>Integration Helpers (<code class="docutils literal notranslate"><span class="pre">test_integrations_live.py</span></code>)<a class="headerlink" href="#integration-helpers-test-integrations-live-py" title="Permalink to this heading"></a></h2>
+<p>Verifies helper functions and Airflow operators:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">export_to_csv</span></code>, <code class="docutils literal notranslate"><span class="pre">export_to_excel</span></code>, <code class="docutils literal notranslate"><span class="pre">export_to_json</span></code>, <code class="docutils literal notranslate"><span class="pre">export_to_parquet</span></code>, and <code class="docutils literal notranslate"><span class="pre">export_to_sql</span></code> create the requested file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImednetHook</span></code> returns a valid SDK connection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImednetExportOperator</span></code> and <code class="docutils literal notranslate"><span class="pre">ImednetToS3Operator</span></code> execute successfully when given minimal parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImednetJobSensor</span></code> raises an exception when polling fails.</p></li>
+<li><p>When Airflow is installed the suite also runs <code class="docutils literal notranslate"><span class="pre">test_airflow_dag.py</span></code> to execute a simple DAG using these operators.</p></li>
+</ul>
+</section>
+<section id="workflow-tests-test-workflows-live-py">
+<h2>Workflow Tests (<code class="docutils literal notranslate"><span class="pre">test_workflows_live.py</span></code>)<a class="headerlink" href="#workflow-tests-test-workflows-live-py" title="Permalink to this heading"></a></h2>
+<p>Exercises workflow utilities with non-destructive calls:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_study_structure</span></code> and <code class="docutils literal notranslate"><span class="pre">async_get_study_structure</span></code> return the structure for the specified study.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RegisterSubjectsWorkflow.register_subjects</span></code> submits registration requests when mutations are allowed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataExtractionWorkflow.extract_records_by_criteria</span></code> and <code class="docutils literal notranslate"><span class="pre">extract_audit_trail</span></code> return lists of records or audit entries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SubjectDataWorkflow.get_all_subject_data</span></code> fetches details for a single subject.</p></li>
+<li><p>Query management helpers return lists or dictionaries of queries and counts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RecordMapper.dataframe</span></code> yields a DataFrame-like object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RecordUpdateWorkflow</span></code> methods (<code class="docutils literal notranslate"><span class="pre">create_or_update_records</span></code>, <code class="docutils literal notranslate"><span class="pre">register_subject</span></code>, <code class="docutils literal notranslate"><span class="pre">update_scheduled_record</span></code>, <code class="docutils literal notranslate"><span class="pre">create_new_record</span></code>) start a batch job and return a job object when mutations are enabled.</p></li>
+</ul>
+</section>
+<section id="fake-data-utilities">
+<h2>Fake Data Utilities<a class="headerlink" href="#fake-data-utilities" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">imednet.testing.fake_data</span></code> module offers helper functions for generating realistic payloads using <code class="docutils literal notranslate"><span class="pre">Faker</span></code>. These payloads match the REST API examples and can be parsed directly by the SDK models for offline testing.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fake_forms_for_cache</span></code> and <code class="docutils literal notranslate"><span class="pre">fake_variables_for_cache</span></code> create <code class="docutils literal notranslate"><span class="pre">Form</span></code> and <code class="docutils literal notranslate"><span class="pre">Variable</span></code> objects that can populate a <code class="docutils literal notranslate"><span class="pre">SchemaCache</span></code>. Patch <code class="docutils literal notranslate"><span class="pre">FormsEndpoint.list</span></code> and <code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.list</span></code> in your tests to return these lists before calling <code class="docutils literal notranslate"><span class="pre">schema.refresh()</span></code>. Use <code class="docutils literal notranslate"><span class="pre">fake_record</span></code> with that cache to produce typed record payloads for validation.</p>
+</section>
+<section id="expected-results">
+<h2>Expected Results<a class="headerlink" href="#expected-results" title="Permalink to this heading"></a></h2>
+<p>All live tests should pass when run against a properly configured iMedNet environment. Each test ensures that API calls succeed without raising exceptions and that any created files or returned objects match the requested parameters. Failures typically indicate connectivity issues or a mismatch between the SDK and server APIs.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="live_test_plan.html" class="btn btn-neutral float-left" title="Live (End-to-End) Test Plan" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="imednet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

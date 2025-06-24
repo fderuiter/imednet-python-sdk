@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mednet EDC REST API Reference &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Endpoints" href="endpoints/index.html" />
+    <link rel="prev" title="API Overview" href="api_overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_overview.html">API Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mednet EDC REST API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#base-url">Base URL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#security">Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#headers">Headers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#http-verbs">HTTP verbs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#status-codes">Status codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filtering">Filtering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operators">Operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connectors">Connectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dates">Dates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filter-examples">Filter examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recorddatafilter-examples">recordDataFilter examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-responses">Error responses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#error-response-fields">Error response fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-codes">Error codes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Mednet EDC REST API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rest_api_reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mednet-edc-rest-api-reference">
+<h1>Mednet EDC REST API Reference<a class="headerlink" href="#mednet-edc-rest-api-reference" title="Permalink to this heading"></a></h1>
+<p>This page summarizes the core behavior of the iMednet REST API. It expands upon
+<a class="reference internal" href="api_overview.html"><span class="doc">API Overview</span></a> and serves as a quick reference for request structure and
+filter syntax.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>The API exposes clinical study data via JSON responses. Consumers typically use
+the API to export data to reporting tools, present it in external
+applications, or compile custom audit trails.</p>
+</section>
+<section id="base-url">
+<h2>Base URL<a class="headerlink" href="#base-url" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">https://edc.prod.imednetapi.com</span></code> is the production endpoint. Append an
+endpoint route such as <code class="docutils literal notranslate"><span class="pre">/api/v1/edc/studies</span></code> to access resources.</p>
+</section>
+<section id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this heading"></a></h2>
+<p>Each request requires <code class="docutils literal notranslate"><span class="pre">x-api-key</span></code> and <code class="docutils literal notranslate"><span class="pre">x-imn-security-key</span></code> headers. Keys
+should never be shared publicly. Example using <code class="docutils literal notranslate"><span class="pre">curl</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">GET</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">edc</span><span class="o">.</span><span class="n">prod</span><span class="o">.</span><span class="n">imednetapi</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">edc</span><span class="o">/</span><span class="n">studies</span><span class="o">/</span><span class="n">STUDYKEY</span><span class="o">/</span><span class="n">sites</span> \
+  <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;x-api-key: XXXXXXXX&#39;</span> \
+ <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;x-imn-security-key: XXX-XXX-XX-XXXXXX&#39;</span> \
+ <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;Content-Type: application/json&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="headers">
+<h2>Headers<a class="headerlink" href="#headers" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Accept</span></code></dt><dd><p>Supported server response media type. Must be <code class="docutils literal notranslate"><span class="pre">application/json</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">x-api-key</span></code></dt><dd><p>Valid API key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">x-imn-security-key</span></code></dt><dd><p>Valid security key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Content-Type</span></code></dt><dd><p>Supported request content type. Must be <code class="docutils literal notranslate"><span class="pre">application/json</span></code>.</p>
+</dd>
+</dl>
+<p>The response includes a <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header indicating the payload
+type. It will also be <code class="docutils literal notranslate"><span class="pre">application/json</span></code>.</p>
+</section>
+<section id="http-verbs">
+<h2>HTTP verbs<a class="headerlink" href="#http-verbs" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GET</span></code> retrieves resources while <code class="docutils literal notranslate"><span class="pre">POST</span></code> is used to insert data.</p>
+</section>
+<section id="status-codes">
+<h2>Status codes<a class="headerlink" href="#status-codes" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">200</span></code></dt><dd><p>Request succeeded.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">400</span></code></dt><dd><p>Malformed request.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">401</span></code></dt><dd><p>Authentication failed.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">403</span></code></dt><dd><p>Authorization error such as an invalid <code class="docutils literal notranslate"><span class="pre">studyKey</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">404</span></code></dt><dd><p>Resource not found.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">429</span></code></dt><dd><p>Too many requests.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">500</span></code></dt><dd><p>Unknown server error.</p>
+</dd>
+</dl>
+</section>
+<section id="filtering">
+<h2>Filtering<a class="headerlink" href="#filtering" title="Permalink to this heading"></a></h2>
+<p>Endpoints accept a <code class="docutils literal notranslate"><span class="pre">filter</span></code> query string composed of key, operator and value
+segments. <code class="docutils literal notranslate"><span class="pre">recordDataFilter</span></code> targets dynamic question data within a record.</p>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h3>
+<p>Valid attributes vary per endpoint. Common examples include <code class="docutils literal notranslate"><span class="pre">studyKey</span></code> for
+studies, <code class="docutils literal notranslate"><span class="pre">siteId</span></code> and <code class="docutils literal notranslate"><span class="pre">siteName</span></code> for sites, <code class="docutils literal notranslate"><span class="pre">formId</span></code> and <code class="docutils literal notranslate"><span class="pre">formKey</span></code> for
+forms, and <code class="docutils literal notranslate"><span class="pre">dateCreated</span></code> or <code class="docutils literal notranslate"><span class="pre">dateModified</span></code> for most resources.</p>
+</section>
+<section id="operators">
+<h3>Operators<a class="headerlink" href="#operators" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;</span></code>  less than</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> less than or equal to</p>
+<p><code class="docutils literal notranslate"><span class="pre">&gt;</span></code>  greater than</p>
+<p><code class="docutils literal notranslate"><span class="pre">&gt;=</span></code> greater than or equal to</p>
+<p><code class="docutils literal notranslate"><span class="pre">==</span></code> equal</p>
+<p><code class="docutils literal notranslate"><span class="pre">!=</span></code> not equal</p>
+<p><code class="docutils literal notranslate"><span class="pre">=~</span></code> contains (for <code class="docutils literal notranslate"><span class="pre">recordDataFilter</span></code>)</p>
+</section>
+<section id="connectors">
+<h3>Connectors<a class="headerlink" href="#connectors" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">and</span></code> or <code class="docutils literal notranslate"><span class="pre">;</span></code>  logical AND</p>
+<p><code class="docutils literal notranslate"><span class="pre">or</span></code>  or <cite>,</cite>     logical OR</p>
+</section>
+<section id="dates">
+<h3>Dates<a class="headerlink" href="#dates" title="Permalink to this heading"></a></h3>
+<p>Dates are UTC timestamps. When filtering visits by <code class="docutils literal notranslate"><span class="pre">startDate</span></code>,
+<code class="docutils literal notranslate"><span class="pre">endDate</span></code>, <code class="docutils literal notranslate"><span class="pre">dueDate</span></code> or <code class="docutils literal notranslate"><span class="pre">visitDate</span></code> use the <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code> format.</p>
+</section>
+<section id="filter-examples">
+<h3>Filter examples<a class="headerlink" href="#filter-examples" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">formId</span> <span class="pre">&gt;</span> <span class="pre">10</span></code></dt><dd><p>Forms with an ID greater than 10.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">formType</span> <span class="pre">==</span> <span class="pre">&quot;SUBJECT&quot;</span></code></dt><dd><p>Subject related forms.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">formId</span> <span class="pre">&gt;</span> <span class="pre">10;formType</span> <span class="pre">==</span> <span class="pre">&quot;SUBJECT&quot;</span></code></dt><dd><p>Subject related forms with ID greater than 10.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">dateCreated&gt;2000-11-05T14:00:00Z</span></code></dt><dd><p>Entities created after 5 November 2000 14:00 UTC.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">visitDate&lt;2019-03-19</span></code></dt><dd><p>Visits occurring before 19 March 2019.</p>
+</dd>
+</dl>
+</section>
+<section id="recorddatafilter-examples">
+<h3>recordDataFilter examples<a class="headerlink" href="#recorddatafilter-examples" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">AESER==Serious</span></code></dt><dd><p>Serious adverse events.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AESER==Serious;GENDER==Male</span></code></dt><dd><p>Serious adverse events for male subjects.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AESER==bronch</span></code></dt><dd><p>Adverse events containing <code class="docutils literal notranslate"><span class="pre">bronch</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this heading"></a></h3>
+<p>White space is not allowed between attribute, operator and value. Both <code class="docutils literal notranslate"><span class="pre">filter</span></code>
+and <code class="docutils literal notranslate"><span class="pre">recordDataFilter</span></code> require unique attributes and are case sensitive.</p>
+</section>
+</section>
+<section id="error-responses">
+<h2>Error responses<a class="headerlink" href="#error-responses" title="Permalink to this heading"></a></h2>
+<p>When a request fails, details are returned in the <code class="docutils literal notranslate"><span class="pre">metadata</span></code> section of the
+response body. Validation errors include the offending field and value.
+Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;BAD_REQUEST&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/v1/edc/studies&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-10-18 05:46:29&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Field raised validation errors&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;XX&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="error-response-fields">
+<h3>Error response fields<a class="headerlink" href="#error-response-fields" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">code</span></code></dt><dd><p>Error code</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">description</span></code></dt><dd><p>Error description message</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">field.attribute</span></code></dt><dd><p>Origination request attribute which caused the error</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">field.value</span></code></dt><dd><p>The value of request attribute passed in the request</p>
+</dd>
+</dl>
+</section>
+<section id="error-codes">
+<h3>Error codes<a class="headerlink" href="#error-codes" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">1000</span></code></dt><dd><p>Validation error. Request contain invalid value.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">9000</span></code></dt><dd><p>Unknown error. Please contact Mednet support for assistance.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">9001</span></code></dt><dd><p>Unauthorized error. Insufficient permission to retrieve data.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_overview.html" class="btn btn-neutral float-left" title="API Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="endpoints/index.html" class="btn btn-neutral float-right" title="Endpoints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

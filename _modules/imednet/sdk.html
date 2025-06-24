@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>imednet.sdk &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+      <script src="../../_static/jquery.js"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+      <script src="../../_static/doctools.js"></script>
+      <script src="../../_static/sphinx_highlight.js"></script>
+      <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+      <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">imednet.sdk</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for imednet.sdk</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Public entry-point for the iMednet SDK.</span>
+
+<span class="sd">This module provides the ImednetSDK class which:</span>
+<span class="sd">- Manages configuration and authentication</span>
+<span class="sd">- Exposes all endpoint functionality through a unified interface</span>
+<span class="sd">- Provides context management for proper resource cleanup</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.core.async_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.core.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.codings</span><span class="w"> </span><span class="kn">import</span> <span class="n">CodingsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">FormsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.intervals</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntervalsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.queries</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueriesEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.record_revisions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordRevisionsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.records</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.sites</span><span class="w"> </span><span class="kn">import</span> <span class="n">SitesEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.studies</span><span class="w"> </span><span class="kn">import</span> <span class="n">StudiesEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.subjects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubjectsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.users</span><span class="w"> </span><span class="kn">import</span> <span class="n">UsersEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariablesEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.visits</span><span class="w"> </span><span class="kn">import</span> <span class="n">VisitsEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.codings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Coding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Form</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.intervals</span><span class="w"> </span><span class="kn">import</span> <span class="n">Interval</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">JobStatus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.queries</span><span class="w"> </span><span class="kn">import</span> <span class="n">Query</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.record_revisions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordRevision</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.records</span><span class="w"> </span><span class="kn">import</span> <span class="n">Record</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.sites</span><span class="w"> </span><span class="kn">import</span> <span class="n">Site</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.studies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Study</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.subjects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.users</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.visits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Visit</span>
+
+<span class="c1"># Import workflow classes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.data_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataExtractionWorkflow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.query_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryManagementWorkflow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.record_mapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordMapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.record_update</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordUpdateWorkflow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.subject_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubjectDataWorkflow</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Workflows</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Namespace for accessing workflow classes.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdk_instance</span><span class="p">:</span> <span class="s2">&quot;ImednetSDK&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_extraction</span> <span class="o">=</span> <span class="n">DataExtractionWorkflow</span><span class="p">(</span><span class="n">sdk_instance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_management</span> <span class="o">=</span> <span class="n">QueryManagementWorkflow</span><span class="p">(</span><span class="n">sdk_instance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">record_mapper</span> <span class="o">=</span> <span class="n">RecordMapper</span><span class="p">(</span><span class="n">sdk_instance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">record_update</span> <span class="o">=</span> <span class="n">RecordUpdateWorkflow</span><span class="p">(</span><span class="n">sdk_instance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subject_data</span> <span class="o">=</span> <span class="n">SubjectDataWorkflow</span><span class="p">(</span><span class="n">sdk_instance</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ImednetSDK"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ImednetSDK</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Public entry-point for library users.</span>
+
+<span class="sd">    Provides access to all iMednet API endpoints and maintains configuration.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ctx: Context object for storing state across SDK calls.</span>
+<span class="sd">        studies: Access to study-related endpoints.</span>
+<span class="sd">        forms: Access to form-related endpoints.</span>
+<span class="sd">        subjects: Access to subject-related endpoints.</span>
+<span class="sd">        etc...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">security_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">backoff_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">enable_async</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SDK with credentials and configuration.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;IMEDNET_API_KEY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span> <span class="o">=</span> <span class="n">security_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;IMEDNET_SECURITY_KEY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;IMEDNET_BASE_URL&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_env</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="p">,</span>
+            <span class="n">security_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span><span class="p">,</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+            <span class="n">backoff_factor</span><span class="o">=</span><span class="n">backoff_factor</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">AsyncClient</span><span class="p">(</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="p">,</span>
+                <span class="n">security_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span><span class="p">,</span>
+                <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+                <span class="n">backoff_factor</span><span class="o">=</span><span class="n">backoff_factor</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">enable_async</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_endpoints</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workflows</span> <span class="o">=</span> <span class="n">Workflows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_env</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure required credentials are present.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;API key and security key are required&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate endpoint clients.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">codings</span> <span class="o">=</span> <span class="n">CodingsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forms</span> <span class="o">=</span> <span class="n">FormsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intervals</span> <span class="o">=</span> <span class="n">IntervalsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span> <span class="o">=</span> <span class="n">JobsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queries</span> <span class="o">=</span> <span class="n">QueriesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">record_revisions</span> <span class="o">=</span> <span class="n">RecordRevisionsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">RecordsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="n">SitesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="n">StudiesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span> <span class="o">=</span> <span class="n">SubjectsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users</span> <span class="o">=</span> <span class="n">UsersEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">VariablesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visits</span> <span class="o">=</span> <span class="n">VisitsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImednetSDK</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Support for context manager protocol.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ImednetSDK&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleanup resources when exiting context.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ImednetSDK.close"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the client connection and free resources.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="o">.</span><span class="n">aclose</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.aclose"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.aclose">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aclose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.set_default_study"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.set_default_study">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_default_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the default study key for subsequent API calls.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            study_key: The study key to use as default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_default_study_key</span><span class="p">(</span><span class="n">study_key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.clear_default_study"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.clear_default_study">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clear_default_study</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the default study key.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">clear_default_study_key</span><span class="p">()</span></div>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Convenience wrappers around common endpoint methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ImednetSDK.get_studies"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_studies">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_studies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Study</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all studies accessible by the current API key.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_records"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_records">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_records</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">record_data_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Record</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return records for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">list</span><span class="p">(</span>
+            <span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">,</span>
+            <span class="n">record_data_filter</span><span class="o">=</span><span class="n">record_data_filter</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">filters</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_sites"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_sites">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Site</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return sites for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_subjects"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_subjects">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_subjects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Subject</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return subjects for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.create_record"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.create_record">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_record</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">records_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">email_notify</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create records in the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">study_key</span><span class="p">,</span>
+            <span class="n">records_data</span><span class="p">,</span>
+            <span class="n">email_notify</span><span class="o">=</span><span class="n">email_notify</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_forms"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_forms">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_forms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Form</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return forms for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_intervals"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_intervals">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Interval</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return intervals for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intervals</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_variables"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Variable</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return variables for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_visits"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_visits">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_visits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Visit</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return visits for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_codings"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_codings">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_codings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Coding</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return codings for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codings</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_queries"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_queries">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_queries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Query</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return queries for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">queries</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_record_revisions"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_record_revisions">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_record_revisions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">RecordRevision</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return record revisions for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record_revisions</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_users"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_users">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">include_inactive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return users for the specified study.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">include_inactive</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.get_job"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_job">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return job details for the specified batch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.poll_job"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.poll_job">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">poll_job</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">batch_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Poll a job until it reaches a terminal state.&quot;&quot;&quot;</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Job </span><span class="si">%s</span><span class="s2"> state=</span><span class="si">%s</span><span class="s2"> progress=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">batch_id</span><span class="p">,</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span> <span class="s2">&quot;CANCELLED&quot;</span><span class="p">}:</span>
+                <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">job</span>
+
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timeout (</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s) waiting for job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImednetSDK.async_poll_job"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.async_poll_job">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_poll_job</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">batch_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously poll a job until it reaches a terminal state.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Async client not configured&quot;</span><span class="p">)</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">async_get</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Job </span><span class="si">%s</span><span class="s2"> state=</span><span class="si">%s</span><span class="s2"> progress=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">batch_id</span><span class="p">,</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span> <span class="s2">&quot;CANCELLED&quot;</span><span class="p">}:</span>
+                <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">job</span>
+
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timeout (</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s) waiting for job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AsyncImednetSDK"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.AsyncImednetSDK">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AsyncImednetSDK</span><span class="p">(</span><span class="n">ImednetSDK</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async variant of :class:`ImednetSDK` using the async HTTP client.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover - thin wrapper</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;enable_async&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AsyncImednetSDK&quot;</span><span class="p">:</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__aexit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ImednetSDK&quot;</span><span class="p">,</span> <span class="s2">&quot;AsyncImednetSDK&quot;</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

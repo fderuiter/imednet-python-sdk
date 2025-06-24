@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Record Revisions Endpoint &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Records Endpoint" href="records.html" />
+    <link rel="prev" title="Queries Endpoint" href="queries.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Endpoints</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="codings.html">Codings Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">Forms Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intervals.html">Intervals Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html">Jobs Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queries.html">Queries Endpoint</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Record Revisions Endpoint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-index">Accessing the index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#path-parameters">Path Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#request-parameters">Request Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#response">Response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#response-fields">Response Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="records.html">Records Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sites.html">Sites Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="studies.html">Studies Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subjects.html">Subjects Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html">Users Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visits.html">Visits Endpoint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Endpoints</a></li>
+      <li class="breadcrumb-item active">Record Revisions Endpoint</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/endpoints/record_revisions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="record-revisions-endpoint">
+<h1>Record Revisions Endpoint<a class="headerlink" href="#record-revisions-endpoint" title="Permalink to this heading"></a></h1>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">StudyKey</span></code>, fetch the set of record revisions. Each revision represents a distinct state
+in the lifecycle of a record. Every time data is modified on a record or it progresses to a new
+status, a new record revision is captured.</p>
+<section id="accessing-the-index">
+<h2>Accessing the index<a class="headerlink" href="#accessing-the-index" title="Permalink to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">GET</span></code> request is used to access the index.</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v1/edc/studies/PHARMADEMO/recordRevisions?page=0&amp;size=25&amp;sort=recordRevisionId%2CASC&amp;filter=subjectKey%3D%3D270</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:8080</span>
+</pre></div>
+</div>
+</section>
+<section id="path-parameters">
+<h2>Path Parameters<a class="headerlink" href="#path-parameters" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">studyKey</span></code></dt><dd><p>Study key to retrieve list of record revisions.</p>
+</dd>
+</dl>
+</section>
+<section id="request-parameters">
+<h2>Request Parameters<a class="headerlink" href="#request-parameters" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">page</span></code></dt><dd><p>Index page to return. Default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">size</span></code></dt><dd><p>Items per page. Default is <code class="docutils literal notranslate"><span class="pre">25</span></code>. Maximum is <code class="docutils literal notranslate"><span class="pre">500</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sort</span></code></dt><dd><p>Sort property. Append <code class="docutils literal notranslate"><span class="pre">asc</span></code> or <code class="docutils literal notranslate"><span class="pre">desc</span></code> for direction. Default is <code class="docutils literal notranslate"><span class="pre">recordRevisionId,asc</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">filter</span></code></dt><dd><p>Optional filter criteria. See <span class="xref std std-ref">filter</span> for syntax details.</p>
+</dd>
+</dl>
+</section>
+<section id="response">
+<h2>Response<a class="headerlink" href="#response" title="Permalink to this heading"></a></h2>
+<p>Example response payload:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/api/v1/edc/studies/PHARMADEMO/recordRevisions&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-06-05 21:12:09&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;pagination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;currentPage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;totalPages&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;totalElements&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;sort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;property&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;recordRevisionId&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ASC&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;studyKey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PHARMADEMO&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;recordRevisionId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;recordId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;recordOid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;REC-1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;recordRevision&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;dataRevision&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;recordStatus&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Record Complete&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;subjectId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">247</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;subjectOid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OID-1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;subjectKey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;001-003&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;siteId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;formKey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;intervalId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Research Coordinator&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;jdoe&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;reasonForChange&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Data entry error&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;deleted&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;dateCreated&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-06-05 21:12:09&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="response-fields">
+<h2>Response Fields<a class="headerlink" href="#response-fields" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.status</span></code> (String)</dt><dd><p>HTTP status.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.method</span></code> (String)</dt><dd><p>HTTP method.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.path</span></code> (String)</dt><dd><p>Requested URI path.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.timestamp</span></code> (String)</dt><dd><p>Timestamp when response was generated.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.error</span></code> (Object)</dt><dd><p>Detailed error message if an error occurred.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.currentPage</span></code> (Number)</dt><dd><p>Current index page.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.size</span></code> (Number)</dt><dd><p>Size per page.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.totalPages</span></code> (Number)</dt><dd><p>Total pages returned from search.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.totalElements</span></code> (Number)</dt><dd><p>Total elements returned from search.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.sort[].property</span></code> (String)</dt><dd><p>Sort property.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.sort[].direction</span></code> (String)</dt><dd><p>Sort direction.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].studyKey</span></code> (String)</dt><dd><p>Unique study key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].recordRevisionId</span></code> (Number)</dt><dd><p>Unique system identifier for the record revision.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].recordId</span></code> (Number)</dt><dd><p>Unique system identifier for the related record.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].recordOid</span></code> (String)</dt><dd><p>Client-assigned record OID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].recordRevision</span></code> (Number)</dt><dd><p>Record revision number.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].dataRevision</span></code> (Number)</dt><dd><p>Data revision number.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].recordStatus</span></code> (String)</dt><dd><p>User defined record status.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].subjectId</span></code> (Number)</dt><dd><p>Mednet Subject ID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].subjectOid</span></code> (String)</dt><dd><p>Client-assigned subject OID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].subjectKey</span></code> (String)</dt><dd><p>Protocol-assigned subject identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].siteId</span></code> (Number)</dt><dd><p>Unique system identifier for the related site.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].formKey</span></code> (String)</dt><dd><p>Form key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].intervalId</span></code> (Number)</dt><dd><p>Unique system identifier for the interval.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].role</span></code> (String)</dt><dd><p>Role name of the user who saved the record revision.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].user</span></code> (String)</dt><dd><p>Username of the user who saved the record revision.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].reasonForChange</span></code> (String)</dt><dd><p>Record revision’s Reason For Change data.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].deleted</span></code> (Boolean)</dt><dd><p>Record deleted flag.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].dateCreated</span></code> (String)</dt><dd><p>Date when this record revision was created.</p>
+</dd>
+</dl>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading"></a></h2>
+<p><a class="reference external" href="https://portal.prod.imednetapi.com/docs/Record%20Revisions">Portal docs</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="queries.html" class="btn btn-neutral float-left" title="Queries Endpoint" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="records.html" class="btn btn-neutral float-right" title="Records Endpoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

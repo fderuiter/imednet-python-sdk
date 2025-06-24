@@ -1,0 +1,503 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Records Endpoint &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sites Endpoint" href="sites.html" />
+    <link rel="prev" title="Record Revisions Endpoint" href="record_revisions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Endpoints</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="codings.html">Codings Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">Forms Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intervals.html">Intervals Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html">Jobs Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queries.html">Queries Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="record_revisions.html">Record Revisions Endpoint</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Records Endpoint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-index">Accessing the index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#path-parameters">Path parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-requests">GET Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#post-requests">POST Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-subject">Register Subject</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-a-scheduled-record">Update a Scheduled Record</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-new-record">Create a New Record</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#response-body">Response body</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sites.html">Sites Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="studies.html">Studies Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subjects.html">Subjects Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html">Users Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visits.html">Visits Endpoint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Endpoints</a></li>
+      <li class="breadcrumb-item active">Records Endpoint</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/endpoints/records.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="records-endpoint">
+<h1>Records Endpoint<a class="headerlink" href="#records-endpoint" title="Permalink to this heading"></a></h1>
+<p>Given a <code class="docutils literal notranslate"><span class="pre">studyKey</span></code>, fetch the set of records. A record is a conduct resource that
+represents a single instance of an electronic case report form (eCRF). Each record
+contains the responses to each question on the eCRF.</p>
+<section id="accessing-the-index">
+<h2>Accessing the index<a class="headerlink" href="#accessing-the-index" title="Permalink to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">GET</span></code> request retrieves records while <code class="docutils literal notranslate"><span class="pre">POST</span></code> adds records to the iMednet
+database.</p>
+</section>
+<section id="path-parameters">
+<h2>Path parameters<a class="headerlink" href="#path-parameters" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">{studyKey}</span></code></dt><dd><p>StudyKey to retrieve list of records.</p>
+</dd>
+</dl>
+</section>
+<section id="get-requests">
+<h2>GET Requests<a class="headerlink" href="#get-requests" title="Permalink to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/v1/edc/studies/PHARMADEMO/records?page=0&amp;size=25&amp;sort=recordId%2CASC&amp;filter=recordId%3D%3D5510&amp;recordDataFilter=aeterm%3D%3DBronchitis HTTP/1.1
+Content-Type: application/json
+Host: localhost:8080
+</pre></div>
+</div>
+<p><strong>GET Request parameters</strong></p>
+<p>Request parameters are optional. Default values are used unless specified.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">page</span></code></dt><dd><p>Which index page to be returned. Default value is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">size</span></code></dt><dd><p>Items per page to be returned. Default value is <code class="docutils literal notranslate"><span class="pre">25</span></code>. Maximum items allowed per page is <code class="docutils literal notranslate"><span class="pre">500</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sort</span></code></dt><dd><p>Name of the property by which to sort the result set. To sort in a particular
+direction add a comma to the property name and <code class="docutils literal notranslate"><span class="pre">asc</span></code> or <code class="docutils literal notranslate"><span class="pre">desc</span></code>. To sort by
+multiple properties add additional sort parameters. Default value is <code class="docutils literal notranslate"><span class="pre">recordId,asc</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">filter</span></code></dt><dd><p>Optional filter search criteria. Must follow correct syntax. Refer to
+<a class="reference internal" href="../rest_api_reference.html"><span class="doc">Mednet EDC REST API Reference</span></a> for details.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">recordDataFilter</span></code></dt><dd><p>Optional record data filter search criteria. Must follow correct syntax. Refer to
+<a class="reference internal" href="../rest_api_reference.html"><span class="doc">Mednet EDC REST API Reference</span></a> for details.</p>
+</dd>
+</dl>
+<p><strong>GET Response body</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/api/v1/edc/studies/PHARMADEMO/records&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-06-05 21:12:09&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;error&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;pagination&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;currentPage&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;size&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;totalPages&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;totalElements&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;sort&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;property&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;recordId&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;direction&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ASC&quot;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;studyKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PHARMADEMO&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;intervalId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">99</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;formId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">10202</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;formKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AE&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;siteId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;recordId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;recordOid&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;REC-1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;recordType&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SUBJECT&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;recordStatus&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Record Incomplete&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;deleted&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;dateCreated&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-06-05 21:12:09&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;dateModified&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-06-05 21:12:10&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;subjectId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">326</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;subjectOid&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OID-1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;subjectKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123-456&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;visitId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;parentRecordId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;keywords&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;keywordName&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Data Entry Error&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;keywordKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;keywordId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">15362</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;dateAdded&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-06-05 21:12:09&quot;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;recordData&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;dateCreated&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2018-10-18 06:21:46&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;unvnum&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;dateModified&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2018-11-18 07:11:16&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;aeser&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;aeterm&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bronchitis&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>GET Response fields</strong>
+The JSON response includes three sections:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">metadata</span></code> describing the status, request path and timestamp.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pagination</span></code> information about page numbers and sort order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> containing a list of record objects.</p></li>
+</ul>
+</section>
+<section id="post-requests">
+<h2>POST Requests<a class="headerlink" href="#post-requests" title="Permalink to this heading"></a></h2>
+<p>Providing a <code class="docutils literal notranslate"><span class="pre">studyKey</span></code> and a request body adds a record to the iMednet database.
+The request body is an array. The contents of the body determine if the request
+will register a subject, update a scheduled record, or create a new record.</p>
+<p><strong>Request structure</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">edc</span><span class="o">/</span><span class="n">studies</span><span class="o">/</span><span class="n">PHARMADEMO</span><span class="o">/</span><span class="n">records</span> <span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span>
+<span class="n">x</span><span class="o">-</span><span class="n">email</span><span class="o">-</span><span class="n">notify</span><span class="p">:</span> <span class="n">user</span><span class="nd">@domain</span><span class="o">.</span><span class="n">com</span>
+<span class="n">Accept</span><span class="p">:</span> <span class="n">application</span><span class="o">/</span><span class="n">json</span>
+<span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="p">:</span> <span class="n">application</span><span class="o">/</span><span class="n">json</span>
+<span class="n">Host</span><span class="p">:</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span>
+
+<span class="p">[</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>POST Request Identifiers</strong></p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">formKey</span></code></dt><dd><p>User defined form key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">formId</span></code></dt><dd><p>System generated form identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">siteName</span></code></dt><dd><p>User defined site name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">siteId</span></code></dt><dd><p>System generated site identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">subjectKey</span></code></dt><dd><p>Patient Display ID Full.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">subjectId</span></code></dt><dd><p>System generated subject identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">subjectOid</span></code></dt><dd><p>User assigned subject OID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">intervalName</span></code></dt><dd><p>User defined interval name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">intervalId</span></code></dt><dd><p>System generated interval identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">recordId</span></code></dt><dd><p>System generated record identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">recordOid</span></code></dt><dd><p>User defined record OID.</p>
+</dd>
+</dl>
+<p><strong>Field Types</strong></p>
+<p>When making a POST request, use the correct type for any fields included in the
+<code class="docutils literal notranslate"><span class="pre">data</span></code> object.</p>
+<p>Sample request body containing all valid field types:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;formKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;REG&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;siteName&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minneapolis&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;textField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text data&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;dateField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2020-01-20&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;numberField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;radioField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;dropdownField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Always&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;memoField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Memo data&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;checkboxField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Valid field types:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Path</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].formKey</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Form Key</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].siteName</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Site Name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].data</span></code></p></td>
+<td><p>Object</p></td>
+<td><p>Data for specific record</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.textField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Text field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.dateField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Date field</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.numberField</span></code></p></td>
+<td><p>Number</p></td>
+<td><p>Number field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.radioField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Radio field</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.dropdownField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Dropdown field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.memoField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Memo field</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.checkboxField</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p>Checkbox field</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="register-subject">
+<h2>Register Subject<a class="headerlink" href="#register-subject" title="Permalink to this heading"></a></h2>
+<p>Request body for registering a subject:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;formKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;REG&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;siteName&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minneapolis&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;textField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text value&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Request fields:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Path</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].formKey</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Form Key</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].siteName</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Site Name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].data</span></code></p></td>
+<td><p>Object</p></td>
+<td><p>Data for specific record</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.textField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Text field</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="update-a-scheduled-record">
+<h2>Update a Scheduled Record<a class="headerlink" href="#update-a-scheduled-record" title="Permalink to this heading"></a></h2>
+<p>Request body for updating a scheduled record:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;formKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;REG&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;subjectKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;651-042&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;intervalName&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Registration&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;textField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text value&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Request fields:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Path</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].formKey</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Form Key</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].subjectKey</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Subject Key</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].intervalName</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Interval Name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].data</span></code></p></td>
+<td><p>Object</p></td>
+<td><p>Data for specific record</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.textField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Text field</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="create-a-new-record">
+<h2>Create a New Record<a class="headerlink" href="#create-a-new-record" title="Permalink to this heading"></a></h2>
+<p>Request body for creating a new record:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;formKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;REG&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;subjectKey&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123-876&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;textField&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text value&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Request fields:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Path</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].formKey</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Form Key</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].subjectKey</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Subject Key</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">[].data</span></code></p></td>
+<td><p>Object</p></td>
+<td><p>Data for specific record</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[].data.textField</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Text field</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="response-body">
+<h2>Response body<a class="headerlink" href="#response-body" title="Permalink to this heading"></a></h2>
+<p>The POST request returns a <code class="docutils literal notranslate"><span class="pre">batchId</span></code> and a <code class="docutils literal notranslate"><span class="pre">state</span></code> which can be used to check
+on the status of the record being added via <code class="docutils literal notranslate"><span class="pre">GET</span></code> requests to the jobs
+endpoint.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;jobId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;9663fe34-eec7-460a-a820-097f1eb2875e&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;batchId&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;c3q191e4-f894-72cd-a753-b37283eh0866&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;created&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://portal.prod.imednetapi.com/docs/records">Portal docs</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="record_revisions.html" class="btn btn-neutral float-left" title="Record Revisions Endpoint" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sites.html" class="btn btn-neutral float-right" title="Sites Endpoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Overview &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mednet EDC REST API Reference" href="rest_api_reference.html" />
+    <link rel="prev" title="Quick Start" href="quick_start.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#base-url">Base URL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#http-methods-and-errors">HTTP methods and errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filter-helper">Filter helper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-responses">Error responses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#error-response-fields">Error response fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-codes">Error codes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_overview.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-overview">
+<h1>API Overview<a class="headerlink" href="#api-overview" title="Permalink to this heading"></a></h1>
+<p>This page summarizes the core concepts of the Mednet EDC REST API and how the
+SDK interacts with it.</p>
+<section id="base-url">
+<h2>Base URL<a class="headerlink" href="#base-url" title="Permalink to this heading"></a></h2>
+<p>The SDK communicates with the production API at
+<code class="docutils literal notranslate"><span class="pre">https://edc.prod.imednetapi.com</span></code> by default. Override this with the
+<code class="docutils literal notranslate"><span class="pre">IMEDNET_BASE_URL</span></code> environment variable if using a private deployment.</p>
+</section>
+<section id="authentication">
+<h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this heading"></a></h2>
+<p>All requests must include <code class="docutils literal notranslate"><span class="pre">x-api-key</span></code> and <code class="docutils literal notranslate"><span class="pre">x-imn-security-key</span></code> headers. The
+<a class="reference internal" href="imednet.core.html#imednet.core.base_client.BaseClient" title="imednet.core.base_client.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClient</span></code></a> handles shared initialization while the
+<a class="reference internal" href="imednet.core.html#imednet.core.client.Client" title="imednet.core.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncClient</span></code> read <code class="docutils literal notranslate"><span class="pre">IMEDNET_API_KEY</span></code> and
+<code class="docutils literal notranslate"><span class="pre">IMEDNET_SECURITY_KEY</span></code> from the environment and populate these headers automatically.</p>
+</section>
+<section id="http-methods-and-errors">
+<h2>HTTP methods and errors<a class="headerlink" href="#http-methods-and-errors" title="Permalink to this heading"></a></h2>
+<p>The API primarily supports <code class="docutils literal notranslate"><span class="pre">GET</span></code> and <code class="docutils literal notranslate"><span class="pre">POST</span></code> requests. Non‐successful status
+codes raise typed exceptions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">400</span></code> – <a class="reference internal" href="imednet.core.html#imednet.core.exceptions.ValidationError" title="imednet.core.exceptions.ValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationError</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">401</span></code> – <a class="reference internal" href="imednet.core.html#imednet.core.exceptions.AuthenticationError" title="imednet.core.exceptions.AuthenticationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationError</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">403</span></code> – <a class="reference internal" href="imednet.core.html#imednet.core.exceptions.AuthorizationError" title="imednet.core.exceptions.AuthorizationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthorizationError</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">404</span></code> – <a class="reference internal" href="imednet.core.html#imednet.core.exceptions.NotFoundError" title="imednet.core.exceptions.NotFoundError"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">429</span></code> – <a class="reference internal" href="imednet.core.html#imednet.core.exceptions.RateLimitError" title="imednet.core.exceptions.RateLimitError"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitError</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">5xx</span></code> – <a class="reference internal" href="imednet.core.html#imednet.core.exceptions.ServerError" title="imednet.core.exceptions.ServerError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerError</span></code></a></p></li>
+</ul>
+</section>
+<section id="filtering">
+<h2>Filtering<a class="headerlink" href="#filtering" title="Permalink to this heading"></a></h2>
+<p>Endpoints accept a <code class="docutils literal notranslate"><span class="pre">filter</span></code> parameter that matches the syntax documented in the
+Mednet API guide. For clinical data queries, <code class="docutils literal notranslate"><span class="pre">recordDataFilter</span></code> can be supplied
+alongside <code class="docutils literal notranslate"><span class="pre">filter</span></code>. See <code class="xref py py-mod docutils literal notranslate"><span class="pre">imednet.endpoints.records</span></code> for usage examples.</p>
+<p>Some endpoints (<a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint" title="imednet.endpoints.studies.StudiesEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudiesEndpoint</span></code></a>,
+<a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint" title="imednet.endpoints.forms.FormsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">FormsEndpoint</span></code></a>,
+<a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint" title="imednet.endpoints.intervals.IntervalsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalsEndpoint</span></code></a>, and
+<a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint" title="imednet.endpoints.variables.VariablesEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariablesEndpoint</span></code></a>) maintain an internal
+cache. They accept a <code class="docutils literal notranslate"><span class="pre">refresh</span></code> argument to force a reload of cached data. This
+flag is not a general filtering option and has no effect on other endpoints.</p>
+<p>Dates must use UTC timestamps except where noted. When filtering visits by
+<code class="docutils literal notranslate"><span class="pre">startDate</span></code>, <code class="docutils literal notranslate"><span class="pre">dueDate</span></code>, <code class="docutils literal notranslate"><span class="pre">endDate</span></code> or <code class="docutils literal notranslate"><span class="pre">visitDate</span></code>, use <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code>.
+String values containing spaces or special characters must be wrapped in
+double quotes. For example: <code class="docutils literal notranslate"><span class="pre">siteName==&quot;My</span> <span class="pre">Site&quot;</span></code>.</p>
+</section>
+<section id="filter-helper">
+<h2>Filter helper<a class="headerlink" href="#filter-helper" title="Permalink to this heading"></a></h2>
+<p>Use <a class="reference internal" href="imednet.utils.html#imednet.utils.filters.build_filter_string" title="imednet.utils.filters.build_filter_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">imednet.utils.filters.build_filter_string()</span></code></a> to construct filter
+expressions from a mapping. Values containing spaces must be wrapped in double
+quotes. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">build_filter_string</span><span class="p">({</span><span class="s2">&quot;site_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Bright Test Site&quot;</span><span class="p">})</span>
+<span class="c1"># siteName==&quot;Bright Test Site&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="error-responses">
+<h2>Error responses<a class="headerlink" href="#error-responses" title="Permalink to this heading"></a></h2>
+<p>When a request fails, error details are returned in the <code class="docutils literal notranslate"><span class="pre">metadata</span></code> section of
+the response body. Validation errors include the offending field and value.
+Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;BAD_REQUEST&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/api/v1/edc/studies&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-10-18 05:46:29&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Field raised validation errors&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;field&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;attribute&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;XX&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="error-response-fields">
+<h3>Error response fields<a class="headerlink" href="#error-response-fields" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">code</span></code></dt><dd><p>Error code</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">description</span></code></dt><dd><p>Error description message</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">field.attribute</span></code></dt><dd><p>Origination request attribute which caused the error</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">field.value</span></code></dt><dd><p>The value of request attribute passed in the request</p>
+</dd>
+</dl>
+</section>
+<section id="error-codes">
+<h3>Error codes<a class="headerlink" href="#error-codes" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">1000</span></code></dt><dd><p>Validation error. Request contain invalid value.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">9000</span></code></dt><dd><p>Unknown error. Please contact Mednet support for assistance.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">9001</span></code></dt><dd><p>Unauthorized error. Insufficient permission to retrieve data.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quick_start.html" class="btn btn-neutral float-left" title="Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rest_api_reference.html" class="btn btn-neutral float-right" title="Mednet EDC REST API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

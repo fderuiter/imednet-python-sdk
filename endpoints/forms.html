@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forms Endpoint &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Intervals Endpoint" href="intervals.html" />
+    <link rel="prev" title="Codings Endpoint" href="codings.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Endpoints</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="codings.html">Codings Endpoint</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Forms Endpoint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#request">Request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-parameters">Query Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#response">Response</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#common-fields">Common fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intervals.html">Intervals Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html">Jobs Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queries.html">Queries Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="record_revisions.html">Record Revisions Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="records.html">Records Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sites.html">Sites Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="studies.html">Studies Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subjects.html">Subjects Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html">Users Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visits.html">Visits Endpoint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Endpoints</a></li>
+      <li class="breadcrumb-item active">Forms Endpoint</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/endpoints/forms.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="forms-endpoint">
+<h1>Forms Endpoint<a class="headerlink" href="#forms-endpoint" title="Permalink to this heading"></a></h1>
+<p>The Forms endpoint returns the design specification for electronic
+case report forms (eCRFs) within a study. Each form describes the
+questions presented to a subject when a record is created.</p>
+<section id="request">
+<h2>Request<a class="headerlink" href="#request" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/v1/edc/studies/{studyKey}/forms</span></code></p>
+</section>
+<section id="query-parameters">
+<h2>Query Parameters<a class="headerlink" href="#query-parameters" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">page</span></code></dt><dd><p>Index page to fetch (default <code class="docutils literal notranslate"><span class="pre">0</span></code>).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">size</span></code></dt><dd><p>Items per page (default <code class="docutils literal notranslate"><span class="pre">25</span></code>, maximum <code class="docutils literal notranslate"><span class="pre">500</span></code>).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sort</span></code></dt><dd><p>Field to sort by optionally followed by <code class="docutils literal notranslate"><span class="pre">asc</span></code> or <code class="docutils literal notranslate"><span class="pre">desc</span></code>.
+The default is <code class="docutils literal notranslate"><span class="pre">formId,asc</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">filter</span></code></dt><dd><p>Optional filter criteria using the syntax described in
+<a class="reference internal" href="../rest_api_reference.html"><span class="doc">Mednet EDC REST API Reference</span></a>.</p>
+</dd>
+</dl>
+<p>Example request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/v1/edc/studies/PHARMADEMO/forms?page=0&amp;size=25&amp;sort=formId%2CASC&amp;filter=formId%3D%3D10265
+</pre></div>
+</div>
+</section>
+<section id="response">
+<h2>Response<a class="headerlink" href="#response" title="Permalink to this heading"></a></h2>
+<p>The response contains <code class="docutils literal notranslate"><span class="pre">metadata</span></code> and <code class="docutils literal notranslate"><span class="pre">pagination</span></code> objects along with a
+<code class="docutils literal notranslate"><span class="pre">data</span></code> array of form records. Each item can be parsed into
+<a class="reference internal" href="../imednet.models.html#imednet.models.forms.Form" title="imednet.models.forms.Form"><code class="xref py py-class docutils literal notranslate"><span class="pre">Form</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="o">...</span> <span class="p">},</span>
+  <span class="s2">&quot;pagination&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;currentPage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s2">&quot;totalPages&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+  <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;studyKey&quot;</span><span class="p">:</span> <span class="s2">&quot;PHARMADEMO&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;formId&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">&quot;formKey&quot;</span><span class="p">:</span> <span class="s2">&quot;FORM_1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;formName&quot;</span><span class="p">:</span> <span class="s2">&quot;Mock Form 1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;formType&quot;</span><span class="p">:</span> <span class="s2">&quot;Subject&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">&quot;embeddedLog&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;enforceOwnership&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;userAgreement&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;subjectRecordReport&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;unscheduledVisit&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;otherForms&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;eproForm&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;allowCopy&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;disabled&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-06-05 21:12:09&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;dateModified&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-06-05 21:12:10&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="common-fields">
+<h3>Common fields<a class="headerlink" href="#common-fields" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">studyKey</span></code></dt><dd><p>Unique study identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">formId</span></code></dt><dd><p>Mednet form ID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">formKey</span></code></dt><dd><p>Key used when referencing the form in records.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">formName</span></code></dt><dd><p>Human readable name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">formType</span></code></dt><dd><p>eCRF type such as <code class="docutils literal notranslate"><span class="pre">Subject</span></code> or <code class="docutils literal notranslate"><span class="pre">Site</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">revision</span></code></dt><dd><p>Number of metadata revisions.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">dateCreated</span></code></dt><dd><p>Creation timestamp.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">dateModified</span></code></dt><dd><p>Last modification timestamp.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.list" title="imednet.endpoints.forms.FormsEndpoint.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a> to
+retrieve all forms in a study or <a class="reference internal" href="../imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.get" title="imednet.endpoints.forms.FormsEndpoint.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a>
+to fetch a single form.</p>
+<p><a class="reference external" href="https://portal.prod.imednetapi.com/docs/forms">Portal docs</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="codings.html" class="btn btn-neutral float-left" title="Codings Endpoint" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intervals.html" class="btn btn-neutral float-right" title="Intervals Endpoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

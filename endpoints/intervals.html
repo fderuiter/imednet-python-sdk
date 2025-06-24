@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intervals Endpoint &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Jobs Endpoint" href="jobs.html" />
+    <link rel="prev" title="Forms Endpoint" href="forms.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Endpoints</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="codings.html">Codings Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">Forms Endpoint</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Intervals Endpoint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-the-index">Accessing the index</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#path-parameters">Path parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#request-parameters">Request parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#response-body">Response body</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#response-fields">Response fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jobs.html">Jobs Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queries.html">Queries Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="record_revisions.html">Record Revisions Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="records.html">Records Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sites.html">Sites Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="studies.html">Studies Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subjects.html">Subjects Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html">Users Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visits.html">Visits Endpoint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">imednet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Endpoints</a></li>
+      <li class="breadcrumb-item active">Intervals Endpoint</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/endpoints/intervals.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="intervals-endpoint">
+<h1>Intervals Endpoint<a class="headerlink" href="#intervals-endpoint" title="Permalink to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">intervals</span></code> resource lists the scheduled intervals (or visits) for a
+study. Each interval defines a set of forms that must be completed for a
+subject. A visit is a single instance of an interval for a given subject.</p>
+<section id="accessing-the-index">
+<h2>Accessing the index<a class="headerlink" href="#accessing-the-index" title="Permalink to this heading"></a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">GET</span></code> to retrieve intervals for a study. The request supports paging,
+sorting and filtering.</p>
+<p>Example request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/v1/edc/studies/PHARMADEMO/intervals?page=0&amp;size=25&amp;sort=intervalId%2CASC&amp;filter=intervalId%3D%3D161 HTTP/1.1
+Content-Type: application/json
+Host: localhost:8080
+</pre></div>
+</div>
+<section id="path-parameters">
+<h3>Path parameters<a class="headerlink" href="#path-parameters" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">studyKey</span></code></dt><dd><p>Study key used to retrieve intervals.</p>
+</dd>
+</dl>
+</section>
+<section id="request-parameters">
+<h3>Request parameters<a class="headerlink" href="#request-parameters" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">page</span></code></dt><dd><p>Index page to return. Defaults to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">size</span></code></dt><dd><p>Items per page. Defaults to <code class="docutils literal notranslate"><span class="pre">25</span></code>. Maximum <code class="docutils literal notranslate"><span class="pre">500</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sort</span></code></dt><dd><p>Property used to sort the result set. Add <code class="docutils literal notranslate"><span class="pre">asc</span></code> or <code class="docutils literal notranslate"><span class="pre">desc</span></code> after the
+property name to specify direction. Multiple <code class="docutils literal notranslate"><span class="pre">sort</span></code> parameters are allowed.
+Default <code class="docutils literal notranslate"><span class="pre">intervalId,asc</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">filter</span></code></dt><dd><p>Optional filter criteria. See <a class="reference internal" href="../rest_api_reference.html"><span class="doc">Mednet EDC REST API Reference</span></a> for syntax.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="response-body">
+<h2>Response body<a class="headerlink" href="#response-body" title="Permalink to this heading"></a></h2>
+<p>Example payload:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;metadata&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;status&quot;</span> <span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;method&quot;</span> <span class="p">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/api/v1/edc/studies/PHARMADEMO/intervals&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;timestamp&quot;</span> <span class="p">:</span> <span class="s2">&quot;2025-06-05 21:12:08&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;error&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;pagination&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;currentPage&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;size&quot;</span> <span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">&quot;totalPages&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;totalElements&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="p">{</span>
+      <span class="s2">&quot;property&quot;</span> <span class="p">:</span> <span class="s2">&quot;intervalId&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;direction&quot;</span> <span class="p">:</span> <span class="s2">&quot;ASC&quot;</span>
+    <span class="p">}</span> <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;data&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="p">{</span>
+    <span class="s2">&quot;studyKey&quot;</span> <span class="p">:</span> <span class="s2">&quot;PHARMADEMO&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;intervalId&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;intervalName&quot;</span> <span class="p">:</span> <span class="s2">&quot;Day 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;intervalDescription&quot;</span> <span class="p">:</span> <span class="s2">&quot;Day 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;intervalSequence&quot;</span> <span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="s2">&quot;intervalGroupId&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;intervalGroupName&quot;</span> <span class="p">:</span> <span class="s2">&quot;ePRO&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disabled&quot;</span> <span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;dateCreated&quot;</span> <span class="p">:</span> <span class="s2">&quot;2025-06-05 21:12:08&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dateModified&quot;</span> <span class="p">:</span> <span class="s2">&quot;2025-06-05 21:12:09&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;timeline&quot;</span> <span class="p">:</span> <span class="s2">&quot;Start Date End Date&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;definedUsingInterval&quot;</span> <span class="p">:</span> <span class="s2">&quot;Baseline&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;windowCalculationForm&quot;</span> <span class="p">:</span> <span class="s2">&quot;Procedure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;windowCalculationDate&quot;</span> <span class="p">:</span> <span class="s2">&quot;PROCDT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;actualDateForm&quot;</span> <span class="p">:</span> <span class="s2">&quot;Follow Up&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;actualDate&quot;</span> <span class="p">:</span> <span class="s2">&quot;FUDT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dueDateWillBeIn&quot;</span> <span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s2">&quot;negativeSlack&quot;</span> <span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;positiveSlack&quot;</span> <span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;eproGracePeriod&quot;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;forms&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="p">{</span>
+      <span class="s2">&quot;formId&quot;</span> <span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+      <span class="s2">&quot;formKey&quot;</span> <span class="p">:</span> <span class="s2">&quot;MY-FORM-KEY&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;formName&quot;</span> <span class="p">:</span> <span class="s2">&quot;myFormName&quot;</span>
+    <span class="p">}</span> <span class="p">]</span>
+  <span class="p">}</span> <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="response-fields">
+<h2>Response fields<a class="headerlink" href="#response-fields" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.status</span></code></dt><dd><p>HTTP status.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.method</span></code></dt><dd><p>HTTP method.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.path</span></code></dt><dd><p>Request URI path.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.timestamp</span></code></dt><dd><p>Timestamp when the response was generated.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">metadata.error</span></code></dt><dd><p>Error details when a request fails.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.currentPage</span></code></dt><dd><p>Current index page.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.size</span></code></dt><dd><p>Page size.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.totalPages</span></code></dt><dd><p>Total pages returned.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.totalElements</span></code></dt><dd><p>Total elements returned.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.sort[].property</span></code></dt><dd><p>Sort property.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pagination.sort[].direction</span></code></dt><dd><p>Sort direction.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].studyKey</span></code></dt><dd><p>Study key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].intervalId</span></code></dt><dd><p>Unique interval identifier.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].intervalName</span></code></dt><dd><p>Interval or visit name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].intervalDescription</span></code></dt><dd><p>Interval description.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].intervalSequence</span></code></dt><dd><p>Sequence number.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].intervalGroupId</span></code></dt><dd><p>Interval group ID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].intervalGroupName</span></code></dt><dd><p>Interval group name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].timeline</span></code></dt><dd><p>Type of interval visit window.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].definedUsingInterval</span></code></dt><dd><p>Baseline interval where the calculate-from date is collected.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].windowCalculationForm</span></code></dt><dd><p>Baseline form where the calculate-from date is collected.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].windowCalculationDate</span></code></dt><dd><p>Baseline field used to calculate dates.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].actualDateForm</span></code></dt><dd><p>Actual date form for the interval.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].actualDate</span></code></dt><dd><p>Actual date field for the interval.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].dueDateWillBeIn</span></code></dt><dd><p>Number of days the actual date is due from the calculate-from date.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].negativeSlack</span></code></dt><dd><p>Allowed negative days from the due date.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].positiveSlack</span></code></dt><dd><p>Allowed positive days from the due date.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].eproGracePeriod</span></code></dt><dd><p>Allowed positive days for ePRO from the due date.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].forms[].formId</span></code></dt><dd><p>Form ID.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].forms[].formKey</span></code></dt><dd><p>Form key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].forms[].formName</span></code></dt><dd><p>Form name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].disabled</span></code></dt><dd><p>Interval soft-delete status.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].dateCreated</span></code></dt><dd><p>Date when the interval was created.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data[].dateModified</span></code></dt><dd><p>Date when the interval was last modified.</p>
+</dd>
+</dl>
+<p><a class="reference external" href="https://portal.prod.imednetapi.com/docs/intervals">Portal docs</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="forms.html" class="btn btn-neutral float-left" title="Forms Endpoint" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jobs.html" class="btn btn-neutral float-right" title="Jobs Endpoint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

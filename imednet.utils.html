@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>imednet.utils package &mdash; imednet-sdk 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="imednet.workflows package" href="imednet.workflows.html" />
+    <link rel="prev" title="imednet.models package" href="imednet.models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            imednet-sdk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="logging_and_tracing.html">Logging and Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_overview.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest_api_reference.html">Mednet EDC REST API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="endpoints/index.html">Endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_validation.html">Schema Validation Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_skip_conditions.html">Test Skip Conditions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_test_plan.html">Live (End-to-End) Test Plan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_tests.html">Live Test Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">imednet</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="imednet.html">imednet package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="imednet.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="imednet.core.html">imednet.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html">imednet.endpoints package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.models.html">imednet.models package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">imednet.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.workflows.html">imednet.workflows package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="imednet.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imednet.html#module-imednet.sdk">imednet.sdk module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">imednet-sdk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">imednet</a></li>
+          <li class="breadcrumb-item"><a href="imednet.html">imednet package</a></li>
+      <li class="breadcrumb-item active">imednet.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/imednet.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="imednet-utils-package">
+<h1>imednet.utils package<a class="headerlink" href="#imednet-utils-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-imednet.utils.dates">
+<span id="imednet-utils-dates-module"></span><h2>imednet.utils.dates module<a class="headerlink" href="#module-imednet.utils.dates" title="Permalink to this heading"></a></h2>
+<p>Utility functions for parsing and formatting ISO date/time strings.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.dates.format_iso_datetime">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.dates.</span></span><span class="sig-name descname"><span class="pre">format_iso_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/dates.html#format_iso_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.dates.format_iso_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Format a datetime object into an ISO 8601 string ending with ‘Z’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code>) – datetime object (naive or timezone-aware).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string representing the datetime in ISO 8601 format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.dates.parse_iso_datetime">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.dates.</span></span><span class="sig-name descname"><span class="pre">parse_iso_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/dates.html#parse_iso_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.dates.parse_iso_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Parse an ISO 8601 date/time string into a datetime object.</p>
+<p>Handles timestamps ending with ‘Z’ as UTC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>date_str</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ISO 8601 formatted date/time string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A timezone-aware datetime object.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the input string is not a valid ISO format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-imednet.utils.filters">
+<span id="imednet-utils-filters-module"></span><h2>imednet.utils.filters module<a class="headerlink" href="#module-imednet.utils.filters" title="Permalink to this heading"></a></h2>
+<p>Utility functions for building API filter strings.</p>
+<p>This module provides functionality to construct filter query parameters
+for iMednet API endpoints based on the reference documentation.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.filters.build_filter_string">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.filters.</span></span><span class="sig-name descname"><span class="pre">build_filter_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">and_connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">or_connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/filters.html#build_filter_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.filters.build_filter_string" title="Permalink to this definition"></a></dt>
+<dd><p>Return a filter string constructed according to iMednet rules.</p>
+<p>Each key in <code class="docutils literal notranslate"><span class="pre">filters</span></code> is converted to camelCase. Raw values imply
+equality, tuples allow explicit operators, and lists generate multiple
+equality filters joined by <code class="docutils literal notranslate"><span class="pre">or_connector</span></code>. Conditions are then joined by
+<code class="docutils literal notranslate"><span class="pre">and_connector</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filters</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em> | </em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>List</em><em>[</em><em>Any</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>and_connector</strong> (<em>str</em>) – </p></li>
+<li><p><strong>or_connector</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">build_filter_string</span><span class="p">({</span><span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;active&#39;</span><span class="p">})</span>
+<span class="go">&#39;age&gt;30;status==active&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">build_filter_string</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">]})</span>
+<span class="go">&#39;type==A,type==B&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-imednet.utils.pandas">
+<span id="imednet-utils-pandas-module"></span><h2>imednet.utils.pandas module<a class="headerlink" href="#module-imednet.utils.pandas" title="Permalink to this heading"></a></h2>
+<p>Pandas helpers for working with iMednet models.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.pandas.export_records_csv">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.pandas.</span></span><span class="sig-name descname"><span class="pre">export_records_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/pandas.html#export_records_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.pandas.export_records_csv" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch all records for <code class="docutils literal notranslate"><span class="pre">study_key</span></code> and write them to <code class="docutils literal notranslate"><span class="pre">file_path</span></code>.</p>
+<p>Parameters are passed to <a class="reference internal" href="#imednet.utils.pandas.records_to_dataframe" title="imednet.utils.pandas.records_to_dataframe"><code class="xref py py-func docutils literal notranslate"><span class="pre">records_to_dataframe()</span></code></a> and the resulting
+DataFrame is written with <code class="xref py py-meth docutils literal notranslate"><span class="pre">pandas.DataFrame.to_csv()</span></code> using
+<code class="docutils literal notranslate"><span class="pre">index=False</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>sdk</strong> (<a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK" title="imednet.sdk.ImednetSDK"><em>ImednetSDK</em></a>) – </p></li>
+<li><p><strong>study_key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>file_path</strong> (<em>str</em>) – </p></li>
+<li><p><strong>flatten</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.pandas.records_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.pandas.</span></span><span class="sig-name descname"><span class="pre">records_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/pandas.html#records_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.pandas.records_to_dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a list of <a class="reference internal" href="imednet.models.html#imednet.models.records.Record" title="imednet.models.records.Record"><code class="xref py py-class docutils literal notranslate"><span class="pre">Record</span></code></a> to a DataFrame.</p>
+<p>Each record is converted using <code class="xref py py-meth docutils literal notranslate"><span class="pre">pydantic.BaseModel.model_dump()</span></code> with
+<code class="docutils literal notranslate"><span class="pre">by_alias=False</span></code>. If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> the <code class="docutils literal notranslate"><span class="pre">record_data</span></code> column is
+expanded using <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.json_normalize()</span></code> so that each variable becomes a
+column in the resulting DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>records</strong> (<em>List</em><em>[</em><a class="reference internal" href="imednet.models.html#imednet.models.records.Record" title="imednet.models.records.Record"><em>Record</em></a><em>]</em>) – </p></li>
+<li><p><strong>flatten</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-imednet.utils.typing">
+<span id="imednet-utils-typing-module"></span><h2>imednet.utils.typing module<a class="headerlink" href="#module-imednet.utils.typing" title="Permalink to this heading"></a></h2>
+<p>Type definitions for imednet SDK utilities.</p>
+</section>
+<section id="module-imednet.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-imednet.utils" title="Permalink to this heading"></a></h2>
+<p>Re-exports utility functions for easier access.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.build_filter_string">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.</span></span><span class="sig-name descname"><span class="pre">build_filter_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">and_connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">or_connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/filters.html#build_filter_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.build_filter_string" title="Permalink to this definition"></a></dt>
+<dd><p>Return a filter string constructed according to iMednet rules.</p>
+<p>Each key in <code class="docutils literal notranslate"><span class="pre">filters</span></code> is converted to camelCase. Raw values imply
+equality, tuples allow explicit operators, and lists generate multiple
+equality filters joined by <code class="docutils literal notranslate"><span class="pre">or_connector</span></code>. Conditions are then joined by
+<code class="docutils literal notranslate"><span class="pre">and_connector</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filters</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em> | </em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>List</em><em>[</em><em>Any</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>and_connector</strong> (<em>str</em>) – </p></li>
+<li><p><strong>or_connector</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">build_filter_string</span><span class="p">({</span><span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;active&#39;</span><span class="p">})</span>
+<span class="go">&#39;age&gt;30;status==active&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">build_filter_string</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">]})</span>
+<span class="go">&#39;type==A,type==B&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.configure_json_logging">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.</span></span><span class="sig-name descname"><span class="pre">configure_json_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/json_logging.html#configure_json_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.configure_json_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Configure root logger to emit JSON formatted logs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>level</strong> (<em>int</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.format_iso_datetime">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.</span></span><span class="sig-name descname"><span class="pre">format_iso_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/dates.html#format_iso_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.format_iso_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Format a datetime object into an ISO 8601 string ending with ‘Z’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code>) – datetime object (naive or timezone-aware).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string representing the datetime in ISO 8601 format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imednet.utils.parse_iso_datetime">
+<span class="sig-prename descclassname"><span class="pre">imednet.utils.</span></span><span class="sig-name descname"><span class="pre">parse_iso_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/dates.html#parse_iso_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.utils.parse_iso_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Parse an ISO 8601 date/time string into a datetime object.</p>
+<p>Handles timestamps ending with ‘Z’ as UTC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>date_str</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ISO 8601 formatted date/time string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A timezone-aware datetime object.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the input string is not a valid ISO format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="imednet.models.html" class="btn btn-neutral float-left" title="imednet.models package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="imednet.workflows.html" class="btn btn-neutral float-right" title="imednet.workflows package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
