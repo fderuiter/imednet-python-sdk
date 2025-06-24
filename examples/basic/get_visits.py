@@ -8,7 +8,7 @@ This script showcases:
 3. Retrieving visits for the first study
 4. Displaying basic visit information
 Requirements:
-    - imednet-python-sdk
+    - imednet
     - Valid IMedNet API credentials (api_key and security_key)
 Returns:
     Prints the number of visits for the first study and displays details of up to 5 visits

@@ -10,7 +10,7 @@ Install the SDK together with Airflow and the Amazon provider:
 
 .. code-block:: bash
 
-   pip install imednet-sdk apache-airflow apache-airflow-providers-amazon
+   pip install imednet apache-airflow apache-airflow-providers-amazon
 
 Example DAG
 -----------

@@ -15,6 +15,6 @@ __all__ = [
 ]
 
 try:
-    __version__: str = _metadata.version("imednet-sdk")
+    __version__: str = _metadata.version("imednet")
 except _metadata.PackageNotFoundError:  # local editable install
     __version__ = "0.0.0"

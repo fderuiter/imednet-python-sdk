@@ -1,7 +1,7 @@
 from imednet import ImednetSDK as ImednetClient
 
 """
-Example script demonstrating basic usage of the imednet-python-sdk.
+Example script demonstrating basic usage of the imednet package.
 This script initializes the ImednetClient with API credentials,
 retrieves a list of studies associated with the account, selects the
 first study, and then fetches and prints the first few records
