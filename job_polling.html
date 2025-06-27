@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Job Polling Mechanism &mdash; imednet-sdk 0.1.0 documentation</title>
+  <title>Job Polling Mechanism &mdash; imednet 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -34,7 +34,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            imednet-sdk
+            imednet
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -74,7 +74,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">imednet-sdk</a>
+          <a href="index.html">imednet</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -111,7 +111,7 @@ a timeout occurs.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ImednetSDK</span></code> provides a convenience method <code class="docutils literal notranslate"><span class="pre">poll_job</span></code> that blocks until the
 job finishes. <code class="docutils literal notranslate"><span class="pre">AsyncImednetSDK</span></code> exposes <code class="docutils literal notranslate"><span class="pre">async_poll_job</span></code> for the same
 behavior in asynchronous code.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">imednet.sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImednetSDK</span><span class="p">,</span> <span class="n">AsyncImednetSDK</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">imednet</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImednetSDK</span><span class="p">,</span> <span class="n">AsyncImednetSDK</span>
 
 <span class="c1"># synchronous</span>
 <span class="n">sdk</span> <span class="o">=</span> <span class="n">ImednetSDK</span><span class="p">()</span>

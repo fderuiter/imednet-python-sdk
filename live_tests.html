@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Test Overview &mdash; imednet-sdk 0.1.0 documentation</title>
+  <title>Live Test Overview &mdash; imednet 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -32,7 +32,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            imednet-sdk
+            imednet
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -79,7 +79,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">imednet-sdk</a>
+          <a href="index.html">imednet</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -100,7 +100,7 @@
   <section id="live-test-overview">
 <h1>Live Test Overview<a class="headerlink" href="#live-test-overview" title="Permalink to this heading"></a></h1>
 <p>This document summarizes the end-to-end tests located in <code class="docutils literal notranslate"><span class="pre">tests/live</span></code>. These tests
-execute against a real iMedNet environment and are skipped unless the environment
+execute against a real iMednet environment and are skipped unless the environment
 variable <code class="docutils literal notranslate"><span class="pre">IMEDNET_RUN_E2E=1</span></code> is set along with valid credentials (<code class="docutils literal notranslate"><span class="pre">IMEDNET_API_KEY</span></code>
 and <code class="docutils literal notranslate"><span class="pre">IMEDNET_SECURITY_KEY</span></code>). Each test verifies that the SDK behaves correctly
 when interacting with a running server.</p>
@@ -183,7 +183,7 @@ The asynchronous tests mirror the synchronous ones using <code class="docutils l
 </section>
 <section id="expected-results">
 <h2>Expected Results<a class="headerlink" href="#expected-results" title="Permalink to this heading"></a></h2>
-<p>All live tests should pass when run against a properly configured iMedNet environment. Each test ensures that API calls succeed without raising exceptions and that any created files or returned objects match the requested parameters. Failures typically indicate connectivity issues or a mismatch between the SDK and server APIs.</p>
+<p>All live tests should pass when run against a properly configured iMednet environment. Each test ensures that API calls succeed without raising exceptions and that any created files or returned objects match the requested parameters. Failures typically indicate connectivity issues or a mismatch between the SDK and server APIs.</p>
 </section>
 </section>
 

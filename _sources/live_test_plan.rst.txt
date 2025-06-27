@@ -1,7 +1,7 @@
 Live (End-to-End) Test Plan
 ===========================
 
-These tests execute against a real iMedNet environment. They are skipped by default
+These tests execute against a real iMednet environment. They are skipped by default
 and require ``IMEDNET_RUN_E2E=1`` with valid credentials. Each item below should be
 covered by a dedicated test case so failures are easy to diagnose.
 

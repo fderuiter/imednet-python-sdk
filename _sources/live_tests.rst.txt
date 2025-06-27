@@ -2,7 +2,7 @@ Live Test Overview
 ==================
 
 This document summarizes the end-to-end tests located in ``tests/live``. These tests
-execute against a real iMedNet environment and are skipped unless the environment
+execute against a real iMednet environment and are skipped unless the environment
 variable ``IMEDNET_RUN_E2E=1`` is set along with valid credentials (``IMEDNET_API_KEY``
 and ``IMEDNET_SECURITY_KEY``). Each test verifies that the SDK behaves correctly
 when interacting with a running server.
@@ -86,4 +86,4 @@ The ``imednet.testing.fake_data`` module offers helper functions for generating 
 
 Expected Results
 ----------------
-All live tests should pass when run against a properly configured iMedNet environment. Each test ensures that API calls succeed without raising exceptions and that any created files or returned objects match the requested parameters. Failures typically indicate connectivity issues or a mismatch between the SDK and server APIs.
+All live tests should pass when run against a properly configured iMednet environment. Each test ensures that API calls succeed without raising exceptions and that any created files or returned objects match the requested parameters. Failures typically indicate connectivity issues or a mismatch between the SDK and server APIs.
