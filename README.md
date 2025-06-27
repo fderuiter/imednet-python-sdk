@@ -1,10 +1,6 @@
 # imednet-python-sdk
 
 [![CI](https://img.shields.io/github/actions/workflow/status/fderuiter/imednet-python-sdk/ci.yml?branch=main)](https://github.com/fderuiter/imednet-python-sdk/actions/workflows/ci.yml)
-[![PyPI version](https://img.shields.io/pypi/v/imednet.svg)](https://pypi.org/project/imednet/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/imednet.svg)](https://pypi.org/project/imednet/)
-[![PyPI license](https://img.shields.io/pypi/l/imednet.svg)](LICENSE)
-[![PyPI downloads](https://img.shields.io/pypi/dm/imednet.svg)](https://pypi.org/project/imednet/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/badge/Ruff-checked-green?logo=ruff&logoColor=white)](https://github.com/astral-sh/ruff)
@@ -17,7 +13,7 @@ A Python SDK for interacting with the iMednet REST API. Provides client, endpoin
 See the [Changelog](CHANGELOG.md) for release history.
 
 Full API documentation is published at
-https://fderuiter.github.io/imednet-python-sdk/.
+[https://fderuiter.github.io/imednet-python-sdk/](https://github.com/fderuiter/imednet-python-sdk/tree/gh-pages).
 
 ## Features
 
