@@ -12,7 +12,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![Last commit](https://img.shields.io/github/last-commit/fderuiter/imednet-python-sdk.svg)](https://github.com/fderuiter/imednet-python-sdk/commits/main)
 
-A Python SDK for interacting with the iMedNet REST API. Provides client, endpoint wrappers, and data models for all resources.
+A Python SDK for interacting with the iMednet REST API. Provides client, endpoint wrappers, and data models for all resources.
 
 See the [Changelog](CHANGELOG.md) for release history.
 
@@ -66,7 +66,7 @@ environment variables.
 
 ## Usage
 
-First, ensure you have set your iMedNet API credentials as environment variables.
+First, ensure you have set your iMednet API credentials as environment variables.
 Keep these keys secure and never commit them to source control:
 
 ```powershell

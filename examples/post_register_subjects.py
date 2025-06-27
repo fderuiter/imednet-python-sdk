@@ -5,7 +5,7 @@ from imednet import ImednetSDK
 from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
 
 """
-Example script demonstrating how to register multiple subjects in an iMedNet study.
+Example script demonstrating how to register multiple subjects in an iMednet study.
 This script initializes the ImednetSDK and the RegisterSubjectsWorkflow.
 It reads subject data from a JSON file (`sample_subjects.json`) located
 in the ``register_subjects_input`` subdirectory relative to the script's location.
@@ -14,14 +14,14 @@ A copy of ``sample_subjects.json`` is included in this repository under
 The script then uses the workflow's ``register_subjects`` method to register all
 subjects defined in the JSON file for the specified study.
 The script requires API credentials (api_key, security_key) and the study_key
-to be set. The base_url can optionally be set for custom iMedNet instances.
+to be set. The base_url can optionally be set for custom iMednet instances.
 It prints the result of the registration process or an error message if
 the registration fails.
 Attributes:
-    api_key (str): The API key for iMedNet authentication.
-    security_key (str): The security key for iMedNet authentication.
-    base_url (str | None): The base URL of the iMedNet instance. Defaults to None,
-        which uses the standard iMedNet production URL.
+    api_key (str): The API key for iMednet authentication.
+    security_key (str): The security key for iMednet authentication.
+    base_url (str | None): The base URL of the iMednet instance. Defaults to None,
+        which uses the standard iMednet production URL.
     study_key (str): The unique identifier for the target study.
     input_path (str): The file path to the JSON file containing the subject data.
 """
