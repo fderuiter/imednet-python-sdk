@@ -7,7 +7,7 @@ from imednet.workflows.study_structure import get_study_structure
 
 """
 This script demonstrates how to retrieve the structure of a specific study
-using the imednet-python-sdk.
+using the imednet package.
 It initializes the ImednetSDK with API and security keys, then calls the
 `get_study_structure` workflow function to fetch the study's structure,
 including intervals, forms, and variables.

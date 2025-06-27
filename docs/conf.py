@@ -3,6 +3,8 @@ import os
 import sys
 import types
 import warnings
+
+# mypy: ignore-errors
 from typing import Any
 
 """
@@ -10,7 +12,7 @@ Configuration file for the Sphinx documentation builder.
 This module contains all necessary configurations for building documentation
 using Sphinx. It sets up the project information, extensions, and theme settings.
 Attributes:
-    project (str): The name of the project ("imednet-sdk")
+    project (str): The name of the project ("imednet")
     author (str): The author's name ("Frederick de Ruiter")
     release (str): The version of the project ("0.1.0")
     extensions (list): List of Sphinx extensions to be used
@@ -88,7 +90,7 @@ if "airflow" not in sys.modules:
 
 from imednet import __version__ as imednet_version  # noqa: E402
 
-project = "imednet-sdk"
+project = "imednet"
 author = "Frederick de Ruiter"
 release = imednet_version
 

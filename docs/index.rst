@@ -1,4 +1,4 @@
-Welcome to imednet-sdk's documentation!
+Welcome to imednet's documentation!
 =======================================
 
 .. toctree::

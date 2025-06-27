@@ -25,7 +25,7 @@ behavior in asynchronous code.
 
 .. code-block:: python
 
-   from imednet.sdk import ImednetSDK, AsyncImednetSDK
+   from imednet import ImednetSDK, AsyncImednetSDK
 
    # synchronous
    sdk = ImednetSDK()

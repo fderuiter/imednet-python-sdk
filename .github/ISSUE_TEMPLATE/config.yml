@@ -1,8 +1,8 @@
 blank_issues_enabled: false # Encourage users to pick a template
 contact_links:
   - name: Ask a Question / Get Support
-    url: https://github.com/Bright-Research/imednet-python-sdk/discussions/new?category=q-a # OPTIONAL: Link to GitHub Discussions Q&A category
+    url: https://github.com/fderuiter/imednet-python-sdk/discussions/new?category=q-a # OPTIONAL: Link to GitHub Discussions Q&A category
     about: Please ask and answer usage questions here. Consider using Discussions before opening an issue.
   - name: Security Vulnerability Report
-    url: https://github.com/Bright-Research/imednet-python-sdk/security/advisories/new # Standard GitHub security advisory link
+    url: https://github.com/fderuiter/imednet-python-sdk/security/advisories/new # Standard GitHub security advisory link
     about: Please report security vulnerabilities privately here.
