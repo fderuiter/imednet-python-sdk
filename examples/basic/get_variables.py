@@ -5,11 +5,11 @@ import os
 from imednet import ImednetSDK as ImednetClient
 
 """
-A script to retrieve and save study variables from the iMedNet API.
-This script connects to the iMedNet API, retrieves a list of studies and their variables,
+A script to retrieve and save study variables from the iMednet API.
+This script connects to the iMednet API, retrieves a list of studies and their variables,
 and saves the variable information in both JSON and CSV formats.
 The script performs the following operations:
-1. Connects to iMedNet API using provided credentials
+1. Connects to iMednet API using provided credentials
 2. Retrieves list of available studies
 3. For the first study found:
     - Gets all variables for that study
@@ -17,8 +17,8 @@ The script performs the following operations:
     - Saves variables data to CSV file with flattened structure
     - Prints first 5 variables basic information
 Required Environment Variables or Constants:
-     api_key (str): iMedNet API key
-     security_key (str): iMedNet security key
+     api_key (str): iMednet API key
+     security_key (str): iMednet security key
      base_url (str, optional): Custom base URL for the API
      study_key (str): Study identifier key
 Output Files:

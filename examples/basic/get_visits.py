@@ -1,15 +1,15 @@
 from imednet import ImednetSDK as ImednetClient
 
 """
-Example script demonstrating how to retrieve visits from the IMedNet API.
+Example script demonstrating how to retrieve visits from the iMednet API.
 This script showcases:
-1. Connecting to the IMedNet API using the SDK client
+1. Connecting to the iMednet API using the SDK client
 2. Listing available studies
 3. Retrieving visits for the first study
 4. Displaying basic visit information
 Requirements:
     - imednet
-    - Valid IMedNet API credentials (api_key and security_key)
+    - Valid iMednet API credentials (api_key and security_key)
 Returns:
     Prints the number of visits for the first study and displays details of up to 5 visits
     including their visit IDs and subject keys.

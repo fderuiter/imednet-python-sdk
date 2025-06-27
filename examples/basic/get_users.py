@@ -1,9 +1,9 @@
 from imednet import ImednetSDK as ImednetClient
 
 """
-Example script demonstrating how to retrieve users from an iMedNet study using the iMedNet SDK.
+Example script demonstrating how to retrieve users from an iMednet study using the iMednet SDK.
 This script shows how to:
-1. Initialize the iMedNet SDK client with authentication credentials
+1. Initialize the iMednet SDK client with authentication credentials
 2. List available studies
 3. Get users for the first study
 4. Print basic user information for up to 5 users

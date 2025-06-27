@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added workflow examples `examples/workflows/extract_audit_trail.py` and
   `examples/workflows/queries_by_site.py`.
 - Updated imports in all example scripts to use the package root for `ImednetSDK`.
+- Updated documentation examples to import `ImednetSDK` from the package root.
 
 ### Fixed
 
@@ -36,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Initial Features
 
-- Initial release of the iMedNet Python SDK.
+- Initial release of the iMednet Python SDK.
 - Core client (`ImednetClient`) for handling API requests, authentication, and errors.
 - Endpoints for Studies, Sites, Users, Intervals, Forms, Variables, Records, Subjects, Visits, Queries, Jobs, Codings, Record Revisions.
 - Pydantic models for all API resources with validation.

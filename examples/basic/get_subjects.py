@@ -1,15 +1,15 @@
 from imednet import ImednetSDK as ImednetClient
 
 """
-Example script demonstrating how to retrieve subjects from IMedNet studies using the IMedNet SDK.
+Example script demonstrating how to retrieve subjects from iMednet studies using the iMednet SDK.
 This script:
-1. Initializes the IMedNet client with API credentials
+1. Initializes the iMednet client with API credentials
 2. Retrieves a list of available studies
 3. For the first study, retrieves and displays information about its subjects
 4. Prints the subject key and status for up to 5 subjects
 Required environment variables or configurations:
-    - api_key (str): Your IMedNet API key
-    - security_key (str): Your IMedNet security key
+    - api_key (str): Your iMednet API key
+    - security_key (str): Your iMednet security key
     - base_url (str, optional): Custom base URL for the API endpoint
     - study_key (str): The study identifier
 Returns:

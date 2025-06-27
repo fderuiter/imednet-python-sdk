@@ -1,6 +1,12 @@
 imednet package
 ===============
 
+The main SDK classes are available directly from the package root:
+
+.. code-block:: python
+
+   from imednet import ImednetSDK, AsyncImednetSDK
+
 Subpackages
 -----------
 
