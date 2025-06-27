@@ -12,8 +12,11 @@ A Python SDK for interacting with the iMednet REST API. Provides client, endpoin
 
 See the [Changelog](CHANGELOG.md) for release history.
 
-Full API documentation is published at
+Full project documentation is published at
 [https://fderuiter.github.io/imednet-python-sdk/](https://github.com/fderuiter/imednet-python-sdk/tree/gh-pages).
+
+iMednet API Documentation can be found here:
+https://portal.prod.imednetapi.com/
 
 ## Features
 
