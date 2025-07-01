@@ -8,6 +8,7 @@ from imednet.endpoints.codings import CodingsEndpoint
 from imednet.endpoints.forms import FormsEndpoint
 from imednet.endpoints.intervals import IntervalsEndpoint
 from imednet.endpoints.jobs import JobsEndpoint
+from imednet.endpoints.paged_endpoint_mixin import PagedEndpointMixin
 from imednet.endpoints.queries import QueriesEndpoint
 from imednet.endpoints.record_revisions import RecordRevisionsEndpoint
 from imednet.endpoints.records import RecordsEndpoint
@@ -23,6 +24,7 @@ __all__: list[str] = [
     "FormsEndpoint",
     "IntervalsEndpoint",
     "JobsEndpoint",
+    "PagedEndpointMixin",
     "QueriesEndpoint",
     "RecordRevisionsEndpoint",
     "RecordsEndpoint",

@@ -7,7 +7,7 @@ Endpoint Caches
 ---------------
 
 The endpoints for studies, forms, variables and intervals maintain simple in-memory
-caches. When `list()` or `async_list()` is called without any filters, the
+caches implemented by ``PagedEndpointMixin``. When `list()` or `async_list()` is called without any filters, the
 results are stored on the endpoint instance. Subsequent calls return the cached
 list instead of performing another request. Passing ``refresh=True`` bypasses the
 cache and stores the fresh response.

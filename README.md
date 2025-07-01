@@ -31,8 +31,9 @@ https://portal.prod.imednetapi.com/
 - Async client and CLI for common tasks
 
 Calls to `sdk.studies.list()`, `sdk.forms.list()`, `sdk.intervals.list()` and
-`sdk.variables.list()` cache results in memory. Pass `refresh=True` to bypass
-the cache. See `docs/caching.rst` for details.
+`sdk.variables.list()` cache results in memory via a shared
+``PagedEndpointMixin``. Pass ``refresh=True`` to bypass the cache. See
+`docs/caching.rst` for details.
 
 ## Installation
 

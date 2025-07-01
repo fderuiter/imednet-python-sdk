@@ -104,6 +104,7 @@ target-version = ["py310"]
 [tool.ruff]
 line-length = 100
 src = ["imednet"]
+extend-exclude = ["docs/**"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N"]

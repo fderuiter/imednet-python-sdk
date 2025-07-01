@@ -4,76 +4,20 @@ import inspect
 from typing import Any, Dict, List, Optional, Union
 
 from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.endpoints.base import BaseEndpoint
+from imednet.endpoints.paged_endpoint_mixin import PagedEndpointMixin
 from imednet.models.jobs import Job
 from imednet.models.records import Record
-from imednet.utils.filters import build_filter_string
 from imednet.validation.schema import SchemaCache, validate_record_data
 
 
-class RecordsEndpoint(BaseEndpoint):
-    """
-    API endpoint for interacting with records (eCRF instances) in an iMedNet study.
-
-    Provides methods to list, retrieve, and create records.
-    """
+class RecordsEndpoint(PagedEndpointMixin):
+    """API endpoint for interacting with records in an iMedNet study."""
 
     PATH = "/api/v1/edc/studies"
-
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> Any:
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-        if record_data_filter:
-            params["recordDataFilter"] = record_data_filter
-
-        path = self._build_path(filters.get("studyKey", ""), "records")
-        paginator = paginator_cls(client, path, params=params)
-
-        if hasattr(paginator, "__aiter__"):
-
-            async def _collect() -> List[Record]:
-                return [Record.from_json(item) async for item in paginator]
-
-            return _collect()
-
-        return [Record.from_json(item) for item in paginator]
-
-    def _get_impl(
-        self, client: Any, paginator_cls: type[Any], study_key: str, record_id: Union[str, int]
-    ) -> Any:
-        result = self._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            recordId=record_id,
-        )
-
-        if inspect.isawaitable(result):
-
-            async def _await() -> Record:
-                items = await result
-                if not items:
-                    raise ValueError(f"Record {record_id} not found in study {study_key}")
-                return items[0]
-
-            return _await()
-
-        if not result:
-            raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return result[0]
+    MODEL = Record
+    PATH_SUFFIX = "records"
+    ID_FILTER = "recordId"
+    INCLUDE_STUDY_IN_FILTER = True
 
     def _create_impl(
         self,
@@ -103,14 +47,18 @@ class RecordsEndpoint(BaseEndpoint):
         return Job.from_json(response.json())
 
     def list(
-        self, study_key: Optional[str] = None, record_data_filter: Optional[str] = None, **filters
+        self,
+        study_key: Optional[str] = None,
+        record_data_filter: Optional[str] = None,
+        **filters: Any,
     ) -> List[Record]:
         """List records in a study with optional filtering."""
+        if record_data_filter is not None:
+            filters["record_data_filter"] = record_data_filter
         result = self._list_impl(
             self._client,
             Paginator,
             study_key=study_key,
-            record_data_filter=record_data_filter,
             **filters,
         )
         return result  # type: ignore[return-value]
@@ -124,62 +72,38 @@ class RecordsEndpoint(BaseEndpoint):
         """Asynchronous version of :meth:`list`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
+        if record_data_filter is not None:
+            filters["record_data_filter"] = record_data_filter
         result = await self._list_impl(
             self._async_client,
             AsyncPaginator,
             study_key=study_key,
-            record_data_filter=record_data_filter,
             **filters,
         )
         return result
 
     def get(self, study_key: str, record_id: Union[str, int]) -> Record:
-        """
-        Get a specific record by ID.
-
-        ``record_id`` is provided to :meth:`list` as a filter value.
-
-        Args:
-            study_key: Study identifier
-            record_id: Record identifier (can be string or integer)
-
-        Returns:
-            Record object
-        """
-        result = self._get_impl(self._client, Paginator, study_key, record_id)
+        """Get a specific record by ID."""
+        result = self._get_impl(self._client, Paginator, record_id, study_key=study_key)
         return result  # type: ignore[return-value]
 
     async def async_get(self, study_key: str, record_id: Union[str, int]) -> Record:
-        """Asynchronous version of :meth:`get`.
-
-        This method also filters :meth:`async_list` by ``record_id``.
-        """
+        """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        return await self._get_impl(self._async_client, AsyncPaginator, study_key, record_id)
+        return await self._get_impl(
+            self._async_client, AsyncPaginator, record_id, study_key=study_key
+        )
 
     def create(
         self,
         study_key: str,
         records_data: List[Dict[str, Any]],
-        email_notify: Union[bool, str, None] = None,  # Accept bool, str (email), or None
+        email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        """
-        Create new records in a study.
-
-        Args:
-            study_key: Study identifier
-            records_data: List of record data objects to create
-            email_notify: Whether to send email notifications (True/False), or an
-                email address as a string.
-            schema: Optional :class:`SchemaCache` instance used for local
-                validation.
-
-        Returns:
-            Job object with information about the created job
-        """
+        """Create new records in a study."""
         if schema is not None:
             for rec in records_data:
                 fk = rec.get("formKey") or schema.form_key_from_id(rec.get("formId", 0))

@@ -82,14 +82,15 @@ def async_paginator_factory(monkeypatch):
 
 @pytest.fixture
 def patch_build_filter(monkeypatch):
-    def patch(module):
+    def patch(_module):
         captured = {}
 
         def fake(filters):
             captured["filters"] = filters
             return "FILTERED"
 
-        monkeypatch.setattr(module, "build_filter_string", fake)
+        monkeypatch.setattr("imednet.utils.filters.build_filter_string", fake)
+        monkeypatch.setattr("imednet.endpoints.paged_endpoint_mixin.build_filter_string", fake)
         return captured
 
     return patch
