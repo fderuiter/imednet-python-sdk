@@ -40,3 +40,16 @@ Following these guidelines keeps the SDK maintainable and extensible.
 
 Follow the guidelines in `CONTRIBUTING.md` and use Conventional Commits for commit messages.
 Record your changes in `CHANGELOG.md` under the `[Unreleased]` section.
+
+## Release Process
+To publish a new version to PyPI:
+
+1. Update `CHANGELOG.md` with the notes for the upcoming release.
+2. Run `poetry version` to bump the version number.
+3. Rebuild the docs so the new version appears: `make docs`.
+4. Commit the changes and create a tag matching the new version, e.g. `v0.1.1`.
+5. Push the commit and the tag. Pushing the tag triggers
+   `.github/workflows/release.yml`, which builds the package with `poetry build`
+   and publishes it using `pypa/gh-action-pypi-publish`.
+
+Run the required checks before tagging to ensure the release passes CI.

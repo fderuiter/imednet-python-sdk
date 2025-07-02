@@ -36,7 +36,7 @@ jobs:
           poetry-version: 'latest' # Or pin to a specific version
 
       - name: Install dependencies
-        run: poetry install --no-dev --no-interaction --no-ansi
+        run: poetry install --only main --no-interaction --no-ansi
 
       - name: Build package
         run: poetry build
