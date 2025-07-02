@@ -1,13 +1,15 @@
 """Endpoint for retrieving record revision history in a study."""
 
-from typing import Any, List, Optional
+from typing import Any
 
-from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.paginator import Paginator  # noqa: F401
+from imednet.endpoints.async_endpoint_mixin import AsyncEndpointMixin
 from imednet.endpoints.paged_endpoint_mixin import PagedEndpointMixin
+from imednet.endpoints.sync_endpoint_mixin import SyncEndpointMixin
 from imednet.models.record_revisions import RecordRevision
 
 
-class RecordRevisionsEndpoint(PagedEndpointMixin):
+class RecordRevisionsEndpoint(SyncEndpointMixin, AsyncEndpointMixin, PagedEndpointMixin):
     """API endpoint for accessing record revision history in an iMedNet study."""
 
     PATH = "/api/v1/edc/studies"
@@ -16,42 +18,10 @@ class RecordRevisionsEndpoint(PagedEndpointMixin):
     ID_FILTER = "recordRevisionId"
     INCLUDE_STUDY_IN_FILTER = True
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[RecordRevision]:
+    def list(self, study_key: str | None = None, **filters: Any) -> list[RecordRevision]:
         """List record revisions in a study with optional filtering."""
-        result = self._list_impl(
-            self._client,
-            Paginator,
-            study_key=study_key,
-            **filters,
-        )
-        return result  # type: ignore[return-value]
+        return super().list(study_key=study_key, **filters)
 
-    async def async_list(
-        self, study_key: Optional[str] = None, **filters: Any
-    ) -> List[RecordRevision]:
-        """Asynchronous version of :meth:`list`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        result = await self._list_impl(
-            self._async_client,
-            AsyncPaginator,
-            study_key=study_key,
-            **filters,
-        )
-        return result
-
-    def get(self, study_key: str, record_revision_id: int) -> RecordRevision:
+    def get(self, study_key: str, record_revision_id: int) -> RecordRevision:  # type: ignore[override]
         """Get a specific record revision by ID."""
-        result = self._get_impl(self._client, Paginator, record_revision_id, study_key=study_key)
-        return result  # type: ignore[return-value]
-
-    async def async_get(self, study_key: str, record_revision_id: int) -> RecordRevision:
-        """Asynchronous version of :meth:`get`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        return await self._get_impl(
-            self._async_client,
-            AsyncPaginator,
-            record_revision_id,
-            study_key=study_key,
-        )
+        return super().get(record_revision_id, study_key=study_key)

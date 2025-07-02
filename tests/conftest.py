@@ -50,7 +50,7 @@ def paginator_factory(monkeypatch):
             def __iter__(self):
                 yield from self._items
 
-        monkeypatch.setattr(module, "Paginator", DummyPaginator)
+        monkeypatch.setattr("imednet.endpoints.sync_endpoint_mixin.Paginator", DummyPaginator)
         return captured
 
     return factory
@@ -74,7 +74,7 @@ def async_paginator_factory(monkeypatch):
                 for item in self._items:
                     yield item
 
-        monkeypatch.setattr(module, "AsyncPaginator", DummyPaginator)
+        monkeypatch.setattr("imednet.endpoints.async_endpoint_mixin.AsyncPaginator", DummyPaginator)
         return captured
 
     return factory

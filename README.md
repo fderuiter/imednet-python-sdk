@@ -33,7 +33,9 @@ https://portal.prod.imednetapi.com/
 Calls to `sdk.studies.list()`, `sdk.forms.list()`, `sdk.intervals.list()` and
 `sdk.variables.list()` cache results in memory via a shared
 ``PagedEndpointMixin``. Pass ``refresh=True`` to bypass the cache. See
-`docs/caching.rst` for details.
+`docs/caching.rst` for details. Synchronous endpoints rely on
+``SyncEndpointMixin`` while asynchronous counterparts use
+``AsyncEndpointMixin`` to share pagination logic across modules.
 
 ## Installation
 

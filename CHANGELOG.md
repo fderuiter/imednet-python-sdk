@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `examples/workflows/queries_by_site.py`.
 - Updated imports in all example scripts to use the package root for `ImednetSDK`.
 - Updated documentation examples to import `ImednetSDK` from the package root.
+- Introduced `AsyncEndpointMixin` and refactored async endpoints to reuse
+  pagination logic and client validation.
+- Added `SyncEndpointMixin` to consolidate synchronous list/get logic across
+  endpoints.
 
 ### Fixed
 

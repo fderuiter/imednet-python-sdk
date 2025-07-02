@@ -200,3 +200,10 @@ async def test_async_create_record(dummy_client, context, response_factory, monk
         headers={"x-email-notify": "user@test"},
     )
     assert job == {"jobId": "1"}
+
+
+@pytest.mark.asyncio
+async def test_async_client_required(dummy_client, context):
+    ep = codings.CodingsEndpoint(dummy_client, context)
+    with pytest.raises(RuntimeError):
+        await ep.async_list(study_key="S1")
