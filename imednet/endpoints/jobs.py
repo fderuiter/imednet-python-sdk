@@ -14,7 +14,7 @@ class JobsEndpoint(BaseEndpoint):
     Provides a method to fetch a job by its batch ID.
     """
 
-    PATH = "/api/v1/edc/studies"
+    PATH = ""
 
     def _get_impl(self, client: Any, study_key: str, batch_id: str) -> Any:
         endpoint = self._build_path(study_key, "jobs", batch_id)

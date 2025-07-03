@@ -1,91 +1,28 @@
 """Endpoint for managing intervals (visit definitions) in a study."""
 
-import inspect
 from typing import Any, Dict, List, Optional
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.endpoints._mixins import ListGetEndpointMixin
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.intervals import Interval
-from imednet.utils.filters import build_filter_string
 
 
-class IntervalsEndpoint(BaseEndpoint):
+class IntervalsEndpoint(ListGetEndpointMixin, BaseEndpoint):
     """
     API endpoint for interacting with intervals (visit definitions) in an iMedNet study.
 
     Provides methods to list and retrieve individual intervals.
     """
 
-    PATH = "/api/v1/edc/studies"
-
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        refresh: bool = False,
-        **filters: Any,
-    ) -> Any:
-        filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-
-        study = filters.pop("studyKey")
-        if not study:
-            raise ValueError("Study key must be provided or set in the context")
-        if not filters and not refresh and study in self._intervals_cache:
-            return self._intervals_cache[study]
-
-        params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(study, "intervals")
-        paginator = paginator_cls(client, path, params=params, page_size=500)
-
-        if hasattr(paginator, "__aiter__"):
-
-            async def _collect() -> List[Interval]:
-                result = [Interval.from_json(item) async for item in paginator]
-                if not filters:
-                    self._intervals_cache[study] = result
-                return result
-
-            return _collect()
-
-        result = [Interval.from_json(item) for item in paginator]
-        if not filters:
-            self._intervals_cache[study] = result
-        return result
-
-    def _get_impl(
-        self, client: Any, paginator_cls: type[Any], study_key: str, interval_id: int
-    ) -> Any:
-        result = self._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            refresh=True,
-            intervalId=interval_id,
-        )
-
-        if inspect.isawaitable(result):
-
-            async def _await() -> Interval:
-                items = await result
-                if not items:
-                    raise ValueError(f"Interval {interval_id} not found in study {study_key}")
-                return items[0]
-
-            return _await()
-
-        if not result:
-            raise ValueError(f"Interval {interval_id} not found in study {study_key}")
-        return result[0]
+    PATH = "intervals"
+    MODEL = Interval
+    _id_param = "intervalId"
+    _cache_name = "_intervals_cache"
+    PAGE_SIZE = 500
 
     def __init__(
         self,

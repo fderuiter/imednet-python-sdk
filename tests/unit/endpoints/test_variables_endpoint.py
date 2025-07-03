@@ -10,7 +10,7 @@ def test_list_requires_study_key_page_size(
     capture = paginator_factory(variables, [{"variableId": 1}])
     patch = patch_build_filter(variables)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         ep.list()
 
     result = ep.list(study_key="S1", name="x")

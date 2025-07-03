@@ -4,6 +4,7 @@ import inspect
 from typing import Any, Dict, List, Optional, Union
 
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.endpoints._mixins import ListGetEndpointMixin
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
@@ -11,26 +12,29 @@ from imednet.utils.filters import build_filter_string
 from imednet.validation.cache import SchemaCache, validate_record_data
 
 
-class RecordsEndpoint(BaseEndpoint):
+class RecordsEndpoint(ListGetEndpointMixin, BaseEndpoint):
     """
     API endpoint for interacting with records (eCRF instances) in an iMedNet study.
 
     Provides methods to list, retrieve, and create records.
     """
 
-    PATH = "/api/v1/edc/studies"
+    PATH = "records"
+    MODEL = Record
+    _id_param = "recordId"
 
     def _list_impl(
         self,
         client: Any,
-        paginator_cls: type[Any],
+        paginator_cls: type[Paginator] | type[AsyncPaginator],
         *,
         study_key: Optional[str] = None,
         record_data_filter: Optional[str] = None,
+        refresh: bool = False,
         **filters: Any,
     ) -> Any:
         filters = self._auto_filter(filters)
-        if study_key:
+        if study_key is not None:
             filters["studyKey"] = study_key
 
         params: Dict[str, Any] = {}
@@ -39,8 +43,15 @@ class RecordsEndpoint(BaseEndpoint):
         if record_data_filter:
             params["recordDataFilter"] = record_data_filter
 
-        path = self._build_path(filters.get("studyKey", ""), "records")
-        paginator = paginator_cls(client, path, params=params)
+        study = filters.get("studyKey")
+        path = self._build_path(study, self.PATH)
+
+        paginator = paginator_cls(
+            client,
+            path,
+            params=params,
+            page_size=self.PAGE_SIZE,
+        )
 
         if hasattr(paginator, "__aiter__"):
 
@@ -51,30 +62,6 @@ class RecordsEndpoint(BaseEndpoint):
 
         return [Record.from_json(item) for item in paginator]
 
-    def _get_impl(
-        self, client: Any, paginator_cls: type[Any], study_key: str, record_id: Union[str, int]
-    ) -> Any:
-        result = self._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            recordId=record_id,
-        )
-
-        if inspect.isawaitable(result):
-
-            async def _await() -> Record:
-                items = await result
-                if not items:
-                    raise ValueError(f"Record {record_id} not found in study {study_key}")
-                return items[0]
-
-            return _await()
-
-        if not result:
-            raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return result[0]
-
     def _create_impl(
         self,
         client: Any,
@@ -83,7 +70,7 @@ class RecordsEndpoint(BaseEndpoint):
         records_data: List[Dict[str, Any]],
         email_notify: Union[bool, str, None] = None,
     ) -> Any:
-        path = self._build_path(study_key, "records")
+        path = self._build_path(study_key, self.PATH)
         headers = {}
         if email_notify is not None:
             if isinstance(email_notify, str):

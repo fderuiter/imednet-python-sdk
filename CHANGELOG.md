@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Introduced `ListGetEndpointMixin` to unify `.list()` and `.get()` logic across all endpoints.
 - Consolidated job polling logic into a reusable ``JobPoller`` supporting sync
   and async flows.
 - Updated integration tests to patch `RequestExecutor` and allow non-strict `respx` mocking.

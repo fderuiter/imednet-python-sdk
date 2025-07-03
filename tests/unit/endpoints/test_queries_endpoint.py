@@ -13,7 +13,7 @@ def test_list_builds_path_and_filters(dummy_client, context, paginator_factory, 
 
     assert capture["path"] == "/api/v1/edc/studies/S1/queries"
     assert capture["params"] == {"filter": "FILTERED"}
-    assert patch["filters"] == {"status": "new", "studyKey": "S1"}
+    assert patch["filters"] == {"status": "new"}
     assert isinstance(result[0], Query)
 
 
