@@ -23,7 +23,7 @@ The diagram below outlines the main steps.
        B --> C{formKey or formId}
        C -->|Resolve formKey| D[SchemaCache]
        D --> E{variables cached?}
-       E -- No --> F[refresh(study_key)]
+       E -- No --> F["refresh(study_key)"]
        F --> G[sdk.variables.list]
        G --> D
        E -- Yes --> H[validate_record_data]
