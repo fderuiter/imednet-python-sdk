@@ -18,7 +18,7 @@ def test_poll_job_success(monkeypatch) -> None:
         JobStatus(batch_id="1", state="COMPLETED", progress=100),
     ]
 
-    monkeypatch.setattr(sdk, "get_job", lambda s, b: states.pop(0))
+    monkeypatch.setattr(sdk.jobs, "get", lambda s, b: states.pop(0))
     monkeypatch.setattr("time.sleep", lambda *a: None)
     result = sdk.poll_job("STUDY", "1", interval=0, timeout=5)
     assert result.state == "COMPLETED"
@@ -27,7 +27,7 @@ def test_poll_job_success(monkeypatch) -> None:
 def test_poll_job_timeout(monkeypatch) -> None:
     sdk = _create_sdk()
     job = JobStatus(batch_id="1", state="PROCESSING")
-    monkeypatch.setattr(sdk, "get_job", lambda s, b: job)
+    monkeypatch.setattr(sdk.jobs, "get", lambda s, b: job)
 
     t = {"v": 0}
 
@@ -47,7 +47,7 @@ def test_poll_job_failed(monkeypatch) -> None:
         JobStatus(batch_id="1", state="PROCESSING"),
         JobStatus(batch_id="1", state="FAILED"),
     ]
-    monkeypatch.setattr(sdk, "get_job", lambda s, b: states.pop(0))
+    monkeypatch.setattr(sdk.jobs, "get", lambda s, b: states.pop(0))
     monkeypatch.setattr("time.sleep", lambda *a: None)
     with pytest.raises(RuntimeError):
         sdk.poll_job("S", "1", interval=0, timeout=5)
