@@ -7,9 +7,13 @@ from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
+from imednet.utils.filters import build_filter_string as _build_filter_string
 from imednet.validation.schema import SchemaCache, validate_record_data
 
 from ._mixins import ListGetEndpointMixin
+
+# expose for patching in tests
+build_filter_string = _build_filter_string
 
 
 class RecordsEndpoint(ListGetEndpointMixin, BaseEndpoint):
@@ -23,6 +27,7 @@ class RecordsEndpoint(ListGetEndpointMixin, BaseEndpoint):
     MODEL = Record
     ID_FIELD = "recordId"
     _param_map = {"record_data_filter": "recordDataFilter"}
+    _include_study_key_in_filter = True
 
     def _create_impl(
         self,

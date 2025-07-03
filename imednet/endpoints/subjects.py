@@ -5,8 +5,12 @@ from typing import Any, List, Optional
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.subjects import Subject
+from imednet.utils.filters import build_filter_string as _build_filter_string
 
 from ._mixins import ListGetEndpointMixin
+
+# expose for patching in tests
+build_filter_string = _build_filter_string
 
 
 class SubjectsEndpoint(ListGetEndpointMixin, BaseEndpoint):
@@ -19,6 +23,7 @@ class SubjectsEndpoint(ListGetEndpointMixin, BaseEndpoint):
     PATH = "subjects"
     MODEL = Subject
     ID_FIELD = "subjectKey"
+    _include_study_key_in_filter = True
 
     def list(self, study_key: Optional[str] = None, **filters) -> List[Subject]:
         """List subjects in a study with optional filtering."""

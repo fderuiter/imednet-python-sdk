@@ -5,8 +5,12 @@ from typing import Any, List, Optional
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.intervals import Interval
+from imednet.utils.filters import build_filter_string as _build_filter_string
 
 from ._mixins import ListGetEndpointMixin
+
+# expose for patching in tests
+build_filter_string = _build_filter_string
 
 
 class IntervalsEndpoint(ListGetEndpointMixin, BaseEndpoint):

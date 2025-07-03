@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import inspect
+import sys
 from typing import Any, Dict, List, Optional
 
-from imednet.utils.filters import build_filter_string
+from imednet.utils.filters import build_filter_string as default_build_filter_string
 
 from .base import BaseEndpoint
 
@@ -18,6 +19,7 @@ class ListGetEndpointMixin(BaseEndpoint):
     _cache_name: str | None = None
     _pop_study_key: bool = False
     _requires_study_key: bool = False
+    _include_study_key_in_filter: bool = False
     _per_study_cache: bool = True
     _page_size: int | None = None
     _param_map: Dict[str, str] = {}
@@ -67,6 +69,8 @@ class ListGetEndpointMixin(BaseEndpoint):
             study = filters.get("studyKey")
             if self._requires_study_key and not study:
                 raise ValueError("Study key must be provided or set in the context")
+            if not self._include_study_key_in_filter:
+                filters.pop("studyKey", None)
 
         cache: Any = None
         if self._cache_name:
@@ -87,7 +91,9 @@ class ListGetEndpointMixin(BaseEndpoint):
                         return cache
 
         if filters:
-            params["filter"] = build_filter_string(filters)
+            module = sys.modules[self.__class__.__module__]
+            build_filter = getattr(module, "build_filter_string", default_build_filter_string)
+            params["filter"] = build_filter(filters)
 
         paginator_kwargs: Dict[str, Any] = {"params": params}
         if self._page_size is not None:
@@ -126,13 +132,11 @@ class ListGetEndpointMixin(BaseEndpoint):
         study_key: str,
         item_id: Any,
     ) -> Any:
-        result = self._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            refresh=self._cache_name is not None,
-            **{self.ID_FIELD: item_id},
-        )
+        kwargs = {"study_key": study_key, **{self.ID_FIELD: item_id}}
+        if self._cache_name is not None:
+            kwargs["refresh"] = True
+
+        result = self._list_impl(client, paginator_cls, **kwargs)
 
         if inspect.isawaitable(result):
 
