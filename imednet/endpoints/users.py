@@ -1,75 +1,26 @@
 """Endpoint for managing users in a study."""
 
-import inspect
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.users import User
-from imednet.utils.filters import build_filter_string
+
+from ._mixins import ListGetEndpointMixin
 
 
-class UsersEndpoint(BaseEndpoint):
+class UsersEndpoint(ListGetEndpointMixin, BaseEndpoint):
     """
     API endpoint for interacting with users in an iMedNet study.
 
     Provides methods to list and retrieve user information.
     """
 
-    PATH = "/api/v1/edc/studies"
-
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        include_inactive: bool = False,
-        **filters: Any,
-    ) -> Any:
-        study_key = study_key or self._ctx.default_study_key
-        if not study_key:
-            raise ValueError("Study key must be provided or set in the context")
-
-        params: Dict[str, Any] = {"includeInactive": str(include_inactive).lower()}
-        if filters:
-            params["filter"] = build_filter_string(filters)
-
-        path = self._build_path(study_key, "users")
-        paginator = paginator_cls(client, path, params=params)
-
-        if hasattr(paginator, "__aiter__"):
-
-            async def _collect() -> List[User]:
-                return [User.from_json(item) async for item in paginator]
-
-            return _collect()
-
-        return [User.from_json(item) for item in paginator]
-
-    def _get_impl(
-        self, client: Any, paginator_cls: type[Any], study_key: str, user_id: Union[str, int]
-    ) -> Any:
-        result = self._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            userId=user_id,
-        )
-
-        if inspect.isawaitable(result):
-
-            async def _await() -> User:
-                items = await result
-                if not items:
-                    raise ValueError(f"User {user_id} not found in study {study_key}")
-                return items[0]
-
-            return _await()
-
-        if not result:
-            raise ValueError(f"User {user_id} not found in study {study_key}")
-        return result[0]
+    PATH = "users"
+    MODEL = User
+    ID_FIELD = "userId"
+    _param_map = {"include_inactive": "includeInactive"}
+    _requires_study_key = True
 
     def list(
         self, study_key: Optional[str] = None, include_inactive: bool = False, **filters: Any
@@ -113,11 +64,21 @@ class UsersEndpoint(BaseEndpoint):
         Returns:
             User object
         """
-        result = self._get_impl(self._client, Paginator, study_key, user_id)
+        result = self._get_impl(
+            self._client,
+            Paginator,
+            study_key=study_key,
+            item_id=user_id,
+        )
         return result  # type: ignore[return-value]
 
     async def async_get(self, study_key: str, user_id: Union[str, int]) -> User:
         """Asynchronous version of :meth:`get`."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
-        return await self._get_impl(self._async_client, AsyncPaginator, study_key, user_id)
+        return await self._get_impl(
+            self._async_client,
+            AsyncPaginator,
+            study_key=study_key,
+            item_id=user_id,
+        )
