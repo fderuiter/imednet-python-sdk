@@ -8,7 +8,7 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
     capture = paginator_factory(codings, [{"codingId": 1}])
     patch = patch_build_filter(codings)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         ep.list()
 
     result = ep.list(study_key="S1", status="y")

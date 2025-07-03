@@ -10,7 +10,7 @@ def test_list_requires_study_key_and_page_size(
     captured = paginator_factory(forms, [{"formId": 1}])
     filter_capture = patch_build_filter(forms)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         ep.list()
 
     context.set_default_study_key("S1")

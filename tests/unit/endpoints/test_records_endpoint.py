@@ -29,8 +29,9 @@ def test_get_success(monkeypatch, dummy_client, context):
     ep = records.RecordsEndpoint(dummy_client, context)
     called = {}
 
-    def fake_impl(self, client, paginator, *, study_key=None, **filters):
+    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         called["study_key"] = study_key
+        called["refresh"] = refresh
         called["filters"] = filters
         return [Record(record_id=1)]
 
@@ -38,7 +39,7 @@ def test_get_success(monkeypatch, dummy_client, context):
 
     res = ep.get("S1", 1)
 
-    assert called == {"study_key": "S1", "filters": {"recordId": 1}}
+    assert called == {"study_key": "S1", "refresh": True, "filters": {"recordId": 1}}
     assert isinstance(res, Record)
 
 

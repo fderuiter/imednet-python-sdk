@@ -13,7 +13,7 @@ def test_list_uses_filters(dummy_client, context, paginator_factory, patch_build
 
     assert capture["path"] == "/api/v1/edc/studies/S1/recordRevisions"
     assert capture["params"] == {"filter": "FILTERED"}
-    assert patch["filters"] == {"status": "closed", "studyKey": "S1"}
+    assert patch["filters"] == {"status": "closed"}
     assert isinstance(result[0], RecordRevision)
 
 

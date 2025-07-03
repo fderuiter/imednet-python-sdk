@@ -89,7 +89,14 @@ def patch_build_filter(monkeypatch):
             captured["filters"] = filters
             return "FILTERED"
 
-        monkeypatch.setattr(module, "build_filter_string", fake)
+        target = f"{module.__name__}.build_filter_string"
+        if hasattr(module, "build_filter_string"):
+            monkeypatch.setattr(target, fake)
+        monkeypatch.setattr(
+            "imednet.endpoints._mixins.build_filter_string",
+            fake,
+            raising=False,
+        )
         return captured
 
     return patch
