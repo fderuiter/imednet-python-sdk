@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from imednet.core.exceptions import ValidationError
 from imednet.models.variables import Variable
-from imednet.validation.schema import SchemaValidator
+from imednet.validation.cache import SchemaValidator
 
 
 def _build_sdk(variable: Variable) -> MagicMock:

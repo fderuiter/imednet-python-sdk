@@ -10,9 +10,7 @@ This module provides the ImednetSDK class which:
 from __future__ import annotations
 
 import asyncio
-import logging
 import os
-import time
 from typing import Any, Dict, List, Optional, Union
 
 from .core.async_client import AsyncClient
@@ -47,6 +45,7 @@ from .models.visits import Visit
 
 # Import workflow classes
 from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows.job_poller import JobPoller
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.record_mapper import RecordMapper
 from .workflows.record_update import RecordUpdateWorkflow
@@ -269,24 +268,7 @@ class ImednetSDK:
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
 
-        start = time.monotonic()
-        while True:
-            job = self.get_job(study_key, batch_id)
-            logging.info(
-                "Job %s state=%s progress=%s",
-                batch_id,
-                job.state,
-                getattr(job, "progress", ""),
-            )
-            if job.state.upper() in {"COMPLETED", "FAILED", "CANCELLED"}:
-                if job.state.upper() == "FAILED":
-                    raise RuntimeError(f"Job {batch_id} failed")
-                return job
-
-            if time.monotonic() - start >= timeout:
-                raise TimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
-
-            time.sleep(interval)
+        return JobPoller(self.jobs.get, False).run(study_key, batch_id, interval, timeout)
 
     async def async_poll_job(
         self,
@@ -301,24 +283,9 @@ class ImednetSDK:
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
 
-        start = time.monotonic()
-        while True:
-            job = await self.jobs.async_get(study_key, batch_id)
-            logging.info(
-                "Job %s state=%s progress=%s",
-                batch_id,
-                job.state,
-                getattr(job, "progress", ""),
-            )
-            if job.state.upper() in {"COMPLETED", "FAILED", "CANCELLED"}:
-                if job.state.upper() == "FAILED":
-                    raise RuntimeError(f"Job {batch_id} failed")
-                return job
-
-            if time.monotonic() - start >= timeout:
-                raise TimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
-
-            await asyncio.sleep(interval)
+        return await JobPoller(self.jobs.async_get, True).run_async(
+            study_key, batch_id, interval, timeout
+        )
 
 
 class AsyncImednetSDK(ImednetSDK):

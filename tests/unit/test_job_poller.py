@@ -6,18 +6,17 @@ from imednet.workflows.job_poller import JobPoller, JobTimeoutError
 
 
 def test_wait_success(monkeypatch) -> None:
-    sdk = MagicMock()
+    get_job = MagicMock()
     states = [Job(batch_id="1", state="PROCESSING"), Job(batch_id="1", state="COMPLETED")]
-    sdk.jobs.get.side_effect = lambda s, b: states.pop(0)
+    get_job.side_effect = lambda s, b: states.pop(0)
     monkeypatch.setattr("time.sleep", lambda *_: None)
-    poller = JobPoller(sdk, "ST", "1", timeout_s=5, poll_interval_s=0)
-    result = poller.wait()
+    poller = JobPoller(get_job, False)
+    result = poller.run("ST", "1", interval=0, timeout=5)
     assert result.state == "COMPLETED"
 
 
 def test_wait_timeout(monkeypatch) -> None:
-    sdk = MagicMock()
-    sdk.jobs.get.return_value = Job(batch_id="1", state="PROCESSING")
+    get_job = MagicMock(return_value=Job(batch_id="1", state="PROCESSING"))
     tick = {"v": 0}
 
     def monotonic() -> int:
@@ -26,6 +25,6 @@ def test_wait_timeout(monkeypatch) -> None:
 
     monkeypatch.setattr("time.monotonic", monotonic)
     monkeypatch.setattr("time.sleep", lambda *_: None)
-    poller = JobPoller(sdk, "ST", "1", timeout_s=1, poll_interval_s=0)
+    poller = JobPoller(get_job, False)
     with pytest.raises(JobTimeoutError):
-        poller.wait()
+        poller.run("ST", "1", interval=0, timeout=1)

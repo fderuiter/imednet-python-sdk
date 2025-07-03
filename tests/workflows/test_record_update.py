@@ -6,7 +6,7 @@ from imednet.core.exceptions import ValidationError
 from imednet.models.jobs import Job
 from imednet.models.variables import Variable
 from imednet.testing import fake_data
-from imednet.validation.schema import SchemaCache
+from imednet.validation.cache import SchemaCache
 from imednet.workflows.record_update import RecordUpdateWorkflow
 
 

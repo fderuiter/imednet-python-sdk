@@ -1,19 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import Field
 
-from imednet.utils.validators import (
-    parse_bool,
-    parse_datetime,
-    parse_int_or_default,
-    parse_str_or_default,
-)
+from imednet.models._base import JsonModel
 
 
-class Form(BaseModel):
+class Form(JsonModel):
     study_key: str = Field("", alias="studyKey")
     form_id: int = Field(0, alias="formId")
     form_key: str = Field("", alias="formKey")
@@ -31,39 +25,3 @@ class Form(BaseModel):
     disabled: bool = Field(False, alias="disabled")
     date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
     date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
-
-    model_config = ConfigDict(populate_by_name=True)
-
-    @field_validator("study_key", "form_key", "form_name", "form_type", mode="before")
-    def _fill_strs(cls, v):
-        return parse_str_or_default(v)
-
-    @field_validator("form_id", "revision", mode="before")
-    def _fill_ints(cls, v):
-        return parse_int_or_default(v)
-
-    @field_validator(
-        "embedded_log",
-        "enforce_ownership",
-        "user_agreement",
-        "subject_record_report",
-        "unscheduled_visit",
-        "other_forms",
-        "epro_form",
-        "allow_copy",
-        "disabled",
-        mode="before",
-    )
-    def _parse_bools(cls, v: Any) -> bool:
-        return parse_bool(v)
-
-    @field_validator("date_created", "date_modified", mode="before")
-    def _parse_datetimes(cls, v: Any) -> datetime:
-        return parse_datetime(v)
-
-    @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> Form:
-        """
-        Create a Form instance from JSON-like dict.
-        """
-        return cls.model_validate(data)

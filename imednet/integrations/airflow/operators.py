@@ -3,16 +3,15 @@
 from __future__ import annotations
 
 import json
-import os
 from typing import Any, Dict, Iterable, Optional
 
 from airflow.exceptions import AirflowException
-from airflow.hooks.base import BaseHook
 from airflow.models import BaseOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.sensors.base import BaseSensorOperator
 
 from ...sdk import ImednetSDK
+from .hook import ImednetHook
 
 
 class ImednetToS3Operator(BaseOperator):
@@ -42,14 +41,7 @@ class ImednetToS3Operator(BaseOperator):
         self.aws_conn_id = aws_conn_id
 
     def _get_sdk(self) -> ImednetSDK:
-        conn = BaseHook.get_connection(self.imednet_conn_id)
-        extras = conn.extra_dejson
-        api_key = extras.get("api_key") or conn.login or os.getenv("IMEDNET_API_KEY")
-        security_key = (
-            extras.get("security_key") or conn.password or os.getenv("IMEDNET_SECURITY_KEY")
-        )
-        base_url = extras.get("base_url") or os.getenv("IMEDNET_BASE_URL")
-        return ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
+        return ImednetHook(self.imednet_conn_id).get_conn()
 
     def execute(self, context: Dict[str, Any]) -> str:
         sdk = self._get_sdk()
@@ -87,14 +79,7 @@ class ImednetJobSensor(BaseSensorOperator):
         self.imednet_conn_id = imednet_conn_id
 
     def _get_sdk(self) -> ImednetSDK:
-        conn = BaseHook.get_connection(self.imednet_conn_id)
-        extras = conn.extra_dejson
-        api_key = extras.get("api_key") or conn.login or os.getenv("IMEDNET_API_KEY")
-        security_key = (
-            extras.get("security_key") or conn.password or os.getenv("IMEDNET_SECURITY_KEY")
-        )
-        base_url = extras.get("base_url") or os.getenv("IMEDNET_BASE_URL")
-        return ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
+        return ImednetHook(self.imednet_conn_id).get_conn()
 
     def poke(self, context: Dict[str, Any]) -> bool:
         sdk = self._get_sdk()

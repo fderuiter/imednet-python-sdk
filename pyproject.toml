@@ -12,7 +12,7 @@ imednet = "imednet.cli:app"
 [tool.poetry]
 name = "imednet"
 version = "0.1.1"
-description = "Official Python client for the iMednet clinical trials API"
+description = "Unofficial Python SDK for the iMednet clinical trials API"
 readme = "README.md"
 keywords = ["imednet", "clinical trials", "sdk", "api"]
 classifiers = [
