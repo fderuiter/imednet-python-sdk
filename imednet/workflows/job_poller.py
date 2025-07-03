@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
-from typing import TYPE_CHECKING
+from typing import Any, Callable, cast
 
 from ..models import JobStatus
-
-if TYPE_CHECKING:  # pragma: no cover - import for type checking only
-    from ..sdk import ImednetSDK
 
 TERMINAL_JOB_STATES = {"COMPLETED", "FAILED", "CANCELLED"}
 
@@ -22,26 +20,53 @@ class JobPoller:
 
     def __init__(
         self,
-        sdk: "ImednetSDK",
-        study_key: str,
-        job_id: str,
-        *,
-        timeout_s: int = 300,
-        poll_interval_s: int = 5,
+        get_job: Callable[[str, str], Any],
+        is_async: bool,
     ) -> None:
-        self._sdk = sdk
-        self._study_key = study_key
-        self._job_id = job_id
-        self._timeout = timeout_s
-        self._interval = poll_interval_s
+        self._get_job = get_job
+        self._async = is_async
 
-    def wait(self) -> JobStatus:
-        """Block until the job completes or raise :class:`JobTimeoutError`."""
+    def _check_complete(self, status: JobStatus, batch_id: str) -> JobStatus:
+        if status.state.upper() in TERMINAL_JOB_STATES:
+            if status.state.upper() == "FAILED":
+                raise RuntimeError(f"Job {batch_id} failed")
+            return status
+        return status
+
+    def run(
+        self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
+    ) -> JobStatus:
+        """Synchronously poll a job until completion."""
+
+        if self._async:
+            raise RuntimeError("Use run_async for asynchronous polling")
+
         start = time.monotonic()
-        status = self._sdk.jobs.get(self._study_key, self._job_id)
+        status = cast(JobStatus, self._get_job(study_key, batch_id))
+        status = self._check_complete(status, batch_id)
         while status.state.upper() not in TERMINAL_JOB_STATES:
-            if time.monotonic() - start >= self._timeout:
-                raise JobTimeoutError(f"Timeout ({self._timeout}s) waiting for job {self._job_id}")
-            time.sleep(self._interval)
-            status = self._sdk.jobs.get(self._study_key, self._job_id)
+            if time.monotonic() - start >= timeout:
+                raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+            time.sleep(interval)
+            status = cast(JobStatus, self._get_job(study_key, batch_id))
+            status = self._check_complete(status, batch_id)
+        return status
+
+    async def run_async(
+        self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
+    ) -> JobStatus:
+        """Asynchronously poll a job until completion."""
+
+        if not self._async:
+            raise RuntimeError("Use run for synchronous polling")
+
+        start = time.monotonic()
+        status = cast(JobStatus, await self._get_job(study_key, batch_id))
+        status = self._check_complete(status, batch_id)
+        while status.state.upper() not in TERMINAL_JOB_STATES:
+            if time.monotonic() - start >= timeout:
+                raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+            await asyncio.sleep(interval)
+            status = cast(JobStatus, await self._get_job(study_key, batch_id))
+            status = self._check_complete(status, batch_id)
         return status

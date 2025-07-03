@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+- Consolidated job polling logic into a reusable ``JobPoller`` supporting sync
+  and async flows.
+- Updated integration tests to patch `RequestExecutor` and allow non-strict `respx` mocking.
+
 ## [0.1.1] - 2025-07-02
 
 ### Features and Improvements

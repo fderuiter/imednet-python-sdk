@@ -18,7 +18,7 @@ def test_successful_get_sync_client():
     assert resp.json() == {"data": [1]}
 
 
-@respx.mock
+@respx.mock(assert_all_mocked=False)
 def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
     client = Client("k", "s", base_url="https://api.test", retries=3)
     calls = {"count": 0}
@@ -29,10 +29,10 @@ def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
             raise exceptions.ServerError({}, status_code=500)
         return httpx.Response(200, json={"ok": True})
 
-    monkeypatch.setattr(client._client, "request", request)
+    monkeypatch.setattr(client._executor, "send", request)
     monkeypatch.setattr(
-        client,
-        "_should_retry",
+        client._executor,
+        "should_retry",
         lambda state: isinstance(state.outcome.exception(), exceptions.ServerError),
     )
 
