@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   error handling.
 - Introduced ``JsonModel`` base class for shared parsing logic and refactored
   all models to inherit from it.
+- Updated package description to clarify this is an unofficial SDK.
 
 ### Fixed
 - Fix core package missing `Context` re-export.
