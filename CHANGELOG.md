@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Consolidated job polling logic into a reusable ``JobPoller`` supporting sync
   and async flows.
 - Updated integration tests to patch `RequestExecutor` and allow non-strict `respx` mocking.
+- Airflow operators now obtain ``ImednetSDK`` instances via ``ImednetHook``
+  instead of parsing connections directly.
 
 ## [0.1.1] - 2025-07-02
 
