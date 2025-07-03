@@ -49,13 +49,12 @@ class RecordUpdateWorkflow:
             return job
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
-        return JobPoller(
-            self._sdk,
+        return JobPoller(self._sdk.jobs.get, False).run(
             study_key,
             job.batch_id,
-            timeout_s=timeout,
-            poll_interval_s=poll_interval,
-        ).wait()
+            poll_interval,
+            timeout,
+        )
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
         warnings.warn(
