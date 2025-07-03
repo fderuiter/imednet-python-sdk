@@ -3,7 +3,7 @@ import pytest
 from imednet.core.exceptions import ValidationError
 from imednet.models.records import Record
 from imednet.models.variables import Variable
-from imednet.validation.schema import SchemaCache
+from imednet.validation.cache import SchemaCache
 
 
 def test_list_builds_path_filters_and_data_filter(
