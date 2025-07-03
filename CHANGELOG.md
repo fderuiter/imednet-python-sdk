@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ``with_sdk`` decorator for CLI commands to centralize SDK creation and
   error handling.
 
+### Fixed
+- Fix core package missing `Context` re-export.
+
 ## [0.1.1] - 2025-07-02
 
 ### Features and Improvements
