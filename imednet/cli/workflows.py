@@ -5,14 +5,17 @@ from typing import List, Optional
 import typer
 from rich import print
 
-from ..core.exceptions import ApiError
+from ..sdk import ImednetSDK
+from .decorators import with_sdk
 from .utils import parse_filter_args
 
 app = typer.Typer(name="workflows", help="Execute common data workflows.")
 
 
 @app.command("extract-records")
+@with_sdk
 def extract_records(
+    sdk: ImednetSDK,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     record_filter: Optional[List[str]] = typer.Option(
         None,
@@ -36,33 +39,24 @@ def extract_records(
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
-    from . import DataExtractionWorkflow, get_sdk
+    from . import DataExtractionWorkflow
 
-    sdk = get_sdk()
     workflow = DataExtractionWorkflow(sdk)
 
-    try:
-        parsed_record_filter = parse_filter_args(record_filter)
-        parsed_subject_filter = parse_filter_args(subject_filter)
-        parsed_visit_filter = parse_filter_args(visit_filter)
+    parsed_record_filter = parse_filter_args(record_filter)
+    parsed_subject_filter = parse_filter_args(subject_filter)
+    parsed_visit_filter = parse_filter_args(visit_filter)
 
-        print(f"Extracting records for study '{study_key}'...")
-        records = workflow.extract_records_by_criteria(
-            study_key=study_key,
-            record_filter=parsed_record_filter,
-            subject_filter=parsed_subject_filter,
-            visit_filter=parsed_visit_filter,
-        )
+    print(f"Extracting records for study '{study_key}'...")
+    records = workflow.extract_records_by_criteria(
+        study_key=study_key,
+        record_filter=parsed_record_filter,
+        subject_filter=parsed_subject_filter,
+        visit_filter=parsed_visit_filter,
+    )
 
-        if records:
-            print(f"Found {len(records)} matching records:")
-            print(records)
-        else:
-            print("No records found matching the criteria.")
-
-    except ApiError as exc:
-        print(f"[bold red]API Error:[/bold red] {exc}")
-        raise typer.Exit(code=1)
-    except Exception as exc:  # pragma: no cover - defensive
-        print(f"[bold red]An unexpected error occurred:[/bold red] {exc}")
-        raise typer.Exit(code=1)
+    if records:
+        print(f"Found {len(records)} matching records:")
+        print(records)
+    else:
+        print("No records found matching the criteria.")

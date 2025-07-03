@@ -6,11 +6,16 @@ from pathlib import Path
 import typer
 from rich import print
 
+from ..sdk import ImednetSDK
+from .decorators import with_sdk
+
 app = typer.Typer(name="export", help="Export study data to various formats.")
 
 
 @app.command("parquet")
+@with_sdk
 def export_parquet(
+    sdk: ImednetSDK,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     path: Path = typer.Argument(..., help="Destination Parquet file."),
 ) -> None:
@@ -22,66 +27,54 @@ def export_parquet(
         )
         raise typer.Exit(code=1)
 
-    from . import export_to_parquet, get_sdk
+    from . import export_to_parquet
 
-    sdk = get_sdk()
-    try:
-        export_to_parquet(sdk, study_key, str(path))
-    except Exception as exc:
-        print(f"[bold red]Error:[/bold red] {exc}")
-        raise typer.Exit(code=1)
+    export_to_parquet(sdk, study_key, str(path))
 
 
 @app.command("csv")
+@with_sdk
 def export_csv(
+    sdk: ImednetSDK,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     path: Path = typer.Argument(..., help="Destination CSV file."),
 ) -> None:
     """Export study records to a CSV file."""
-    from . import export_to_csv, get_sdk
+    from . import export_to_csv
 
-    sdk = get_sdk()
-    try:
-        export_to_csv(sdk, study_key, str(path))
-    except Exception as exc:
-        print(f"[bold red]Error:[/bold red] {exc}")
-        raise typer.Exit(code=1)
+    export_to_csv(sdk, study_key, str(path))
 
 
 @app.command("excel")
+@with_sdk
 def export_excel(
+    sdk: ImednetSDK,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     path: Path = typer.Argument(..., help="Destination Excel workbook."),
 ) -> None:
     """Export study records to an Excel workbook."""
-    from . import export_to_excel, get_sdk
+    from . import export_to_excel
 
-    sdk = get_sdk()
-    try:
-        export_to_excel(sdk, study_key, str(path))
-    except Exception as exc:
-        print(f"[bold red]Error:[/bold red] {exc}")
-        raise typer.Exit(code=1)
+    export_to_excel(sdk, study_key, str(path))
 
 
 @app.command("json")
+@with_sdk
 def export_json_cmd(
+    sdk: ImednetSDK,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     path: Path = typer.Argument(..., help="Destination JSON file."),
 ) -> None:
     """Export study records to a JSON file."""
-    from . import export_to_json, get_sdk
+    from . import export_to_json
 
-    sdk = get_sdk()
-    try:
-        export_to_json(sdk, study_key, str(path))
-    except Exception as exc:
-        print(f"[bold red]Error:[/bold red] {exc}")
-        raise typer.Exit(code=1)
+    export_to_json(sdk, study_key, str(path))
 
 
 @app.command("sql")
+@with_sdk
 def export_sql(
+    sdk: ImednetSDK,
     study_key: str = typer.Argument(..., help="The key identifying the study."),
     table: str = typer.Argument(..., help="Destination table name."),
     connection_string: str = typer.Argument(..., help="Database connection string."),
@@ -101,18 +94,10 @@ def export_sql(
 
     from sqlalchemy import create_engine
 
-    from . import export_to_sql, export_to_sql_by_form, get_sdk
+    from . import export_to_sql, export_to_sql_by_form
 
-    sdk = get_sdk()
-    try:
-        engine = create_engine(connection_string)
-        if not single_table and engine.dialect.name == "sqlite":
-            export_to_sql_by_form(sdk, study_key, connection_string)
-        else:
-            export_to_sql(sdk, study_key, table, connection_string)
-    except ValueError as exc:
-        print(f"[bold red]Error:[/bold red] {exc}")
-        raise typer.Exit(code=1)
-    except Exception as exc:
-        print(f"[bold red]Error:[/bold red] {exc}")
-        raise typer.Exit(code=1)
+    engine = create_engine(connection_string)
+    if not single_table and engine.dialect.name == "sqlite":
+        export_to_sql_by_form(sdk, study_key, connection_string)
+    else:
+        export_to_sql(sdk, study_key, table, connection_string)

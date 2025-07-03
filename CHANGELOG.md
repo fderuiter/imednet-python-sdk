@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated integration tests to patch `RequestExecutor` and allow non-strict `respx` mocking.
 - Airflow operators now obtain ``ImednetSDK`` instances via ``ImednetHook``
   instead of parsing connections directly.
+- Added ``with_sdk`` decorator for CLI commands to centralize SDK creation and
+  error handling.
 
 ## [0.1.1] - 2025-07-02
 
