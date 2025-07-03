@@ -1,10 +1,15 @@
-from .async_schema import AsyncSchemaCache, AsyncSchemaValidator
-from .schema import SchemaCache, SchemaValidator, validate_record_data
+from .cache import (
+    AsyncSchemaCache,
+    BaseSchemaCache,
+    SchemaCache,
+    SchemaValidator,
+    validate_record_data,
+)
 
 __all__ = [
+    "BaseSchemaCache",
     "SchemaCache",
+    "AsyncSchemaCache",
     "SchemaValidator",
     "validate_record_data",
-    "AsyncSchemaCache",
-    "AsyncSchemaValidator",
 ]

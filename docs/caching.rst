@@ -23,11 +23,11 @@ returned. If your application needs to clear cached data manually you may call
 Schema Cache
 ------------
 
-:class:`~imednet.validation.schema.SchemaCache` stores variable metadata by form
+:class:`~imednet.validation.cache.SchemaCache` stores variable metadata by form
 key to validate record payloads locally. It can be populated explicitly via
 ``SchemaCache.refresh()`` using the :class:`~imednet.endpoints.forms.FormsEndpoint`
 and :class:`~imednet.endpoints.variables.VariablesEndpoint` or lazily through
-:class:`~imednet.validation.schema.SchemaValidator` when validation is performed.
+:class:`~imednet.validation.cache.SchemaValidator` when validation is performed.
 
 The cache maps each form key to a dictionary of variables and also tracks form
 IDs. ``SchemaValidator`` looks up the form key for a record and fetches metadata

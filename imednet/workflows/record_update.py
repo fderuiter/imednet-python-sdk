@@ -4,7 +4,7 @@ import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from ..models import Job
-from ..validation.schema import SchemaValidator
+from ..validation.cache import SchemaCache, SchemaValidator
 from .job_poller import JobPoller
 
 if TYPE_CHECKING:
@@ -23,7 +23,9 @@ class RecordUpdateWorkflow:
     def __init__(self, sdk: "ImednetSDK"):
         self._sdk = sdk
         self._validator = SchemaValidator(sdk)
-        self._schema = self._validator.schema
+        from typing import cast
+
+        self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
     def create_or_update_records(
         self,
