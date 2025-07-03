@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of parsing connections directly.
 - Added ``with_sdk`` decorator for CLI commands to centralize SDK creation and
   error handling.
+- Introduced ``JsonModel`` base class for shared parsing logic and refactored
+  all models to inherit from it.
 
 ### Fixed
 - Fix core package missing `Context` re-export.
