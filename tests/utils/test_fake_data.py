@@ -17,7 +17,7 @@ from imednet.models import (
     Variable,
     Visit,
 )
-from imednet.validation.schema import SchemaCache, validate_record_data
+from imednet.validation.cache import SchemaCache, validate_record_data
 
 
 def test_fake_subject_parses() -> None:
