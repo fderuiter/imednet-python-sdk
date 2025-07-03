@@ -17,6 +17,7 @@ from ..integrations.export import (  # noqa: F401
 from ..workflows.data_extraction import DataExtractionWorkflow  # noqa: F401
 from ..workflows.subject_data import SubjectDataWorkflow  # noqa: F401
 from .utils import get_sdk, parse_filter_args  # noqa: F401
+from .decorators import with_sdk  # noqa: F401
 
 load_dotenv()
 
