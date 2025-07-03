@@ -8,7 +8,7 @@ from faker import Faker
 
 from imednet.models.forms import Form
 from imednet.models.variables import Variable
-from imednet.validation.schema import SchemaCache
+from imednet.validation.cache import SchemaCache
 
 faker = Faker()
 

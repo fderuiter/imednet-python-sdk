@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from imednet.core.exceptions import ValidationError
 from imednet.models.variables import Variable
-from imednet.validation.async_schema import AsyncSchemaValidator
+from imednet.validation.cache import SchemaValidator
 
 
 def _build_sdk(variable: Variable) -> MagicMock:
@@ -16,7 +16,7 @@ def _build_sdk(variable: Variable) -> MagicMock:
 async def test_validate_record_unknown_variable() -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var)
-    validator = AsyncSchemaValidator(sdk)
+    validator = SchemaValidator(sdk)
 
     with pytest.raises(ValidationError):
         await validator.validate_record("STUDY", {"formKey": "F1", "data": {"bad": 1}})
@@ -28,7 +28,7 @@ async def test_validate_record_unknown_variable() -> None:
 async def test_validate_record_wrong_type() -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var)
-    validator = AsyncSchemaValidator(sdk)
+    validator = SchemaValidator(sdk)
 
     with pytest.raises(ValidationError):
         await validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": "x"}})
@@ -40,7 +40,7 @@ async def test_validate_record_wrong_type() -> None:
 async def test_refresh_called_when_form_not_cached() -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var)
-    validator = AsyncSchemaValidator(sdk)
+    validator = SchemaValidator(sdk)
     validator.refresh = AsyncMock(wraps=validator.refresh)  # type: ignore[assignment]
 
     await validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
@@ -53,7 +53,7 @@ async def test_refresh_called_when_form_not_cached() -> None:
 async def test_validate_record_cached() -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var)
-    validator = AsyncSchemaValidator(sdk)
+    validator = SchemaValidator(sdk)
     validator.schema._form_variables["F1"] = {"age": var}
 
     await validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})

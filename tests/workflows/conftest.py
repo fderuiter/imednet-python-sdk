@@ -2,7 +2,7 @@ import types
 
 import pytest
 from imednet.testing import fake_data
-from imednet.validation.schema import SchemaCache
+from imednet.validation.cache import SchemaCache
 
 
 @pytest.fixture
