@@ -8,6 +8,7 @@ from rich import print
 
 from ..sdk import ImednetSDK
 from .decorators import with_sdk
+from .utils import STUDY_KEY_ARG
 
 app = typer.Typer(name="export", help="Export study data to various formats.")
 
@@ -16,7 +17,7 @@ app = typer.Typer(name="export", help="Export study data to various formats.")
 @with_sdk
 def export_parquet(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination Parquet file."),
 ) -> None:
     """Export study records to a Parquet file."""
@@ -36,7 +37,7 @@ def export_parquet(
 @with_sdk
 def export_csv(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination CSV file."),
 ) -> None:
     """Export study records to a CSV file."""
@@ -49,7 +50,7 @@ def export_csv(
 @with_sdk
 def export_excel(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination Excel workbook."),
 ) -> None:
     """Export study records to an Excel workbook."""
@@ -62,7 +63,7 @@ def export_excel(
 @with_sdk
 def export_json_cmd(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination JSON file."),
 ) -> None:
     """Export study records to a JSON file."""
@@ -75,7 +76,7 @@ def export_json_cmd(
 @with_sdk
 def export_sql(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     table: str = typer.Argument(..., help="Destination table name."),
     connection_string: str = typer.Argument(..., help="Database connection string."),
     single_table: bool = typer.Option(

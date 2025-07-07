@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import typer
-from rich import print
 
 from ..sdk import ImednetSDK
 from .decorators import with_sdk
+from .utils import STUDY_KEY_ARG, display_list, echo_fetch
 
 app = typer.Typer(name="sites", help="Manage sites within a study.")
 
@@ -13,12 +13,9 @@ app = typer.Typer(name="sites", help="Manage sites within a study.")
 @with_sdk
 def list_sites(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
 ) -> None:
     """List sites for a specific study."""
-    print(f"Fetching sites for study '{study_key}'...")
+    echo_fetch("sites", study_key)
     sites_list = sdk.sites.list(study_key)
-    if sites_list:
-        print(sites_list)
-    else:
-        print("No sites found for this study.")
+    display_list(sites_list, "sites", "No sites found for this study.")

@@ -5,6 +5,7 @@ from rich import print
 
 from ..sdk import ImednetSDK
 from .decorators import with_sdk
+from .utils import STUDY_KEY_ARG
 
 app = typer.Typer(name="jobs", help="Manage background jobs.")
 
@@ -13,7 +14,7 @@ app = typer.Typer(name="jobs", help="Manage background jobs.")
 @with_sdk
 def job_status(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     batch_id: str = typer.Argument(..., help="Job batch ID."),
 ) -> None:
     """Fetch a job's current status."""
@@ -25,7 +26,7 @@ def job_status(
 @with_sdk
 def job_wait(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     batch_id: str = typer.Argument(..., help="Job batch ID."),
     interval: int = typer.Option(5, help="Polling interval in seconds."),
     timeout: int = typer.Option(300, help="Maximum time to wait."),

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import typer
-from rich import print
 
 from ..sdk import ImednetSDK
 from .decorators import with_sdk
+from .utils import STUDY_KEY_ARG, display_list, echo_fetch
 
 app = typer.Typer(name="queries", help="Manage queries within a study.")
 
@@ -13,13 +13,9 @@ app = typer.Typer(name="queries", help="Manage queries within a study.")
 @with_sdk
 def list_queries(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
 ) -> None:
     """List queries for a study."""
-    print(f"Fetching queries for study '{study_key}'...")
+    echo_fetch("queries", study_key)
     queries = sdk.queries.list(study_key)
-    if queries:
-        print(f"Found {len(queries)} queries:")
-        print(queries)
-    else:
-        print("No queries found.")
+    display_list(queries, "queries")

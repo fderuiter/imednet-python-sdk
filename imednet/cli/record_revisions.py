@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import typer
-from rich import print
 
 from ..sdk import ImednetSDK
 from .decorators import with_sdk
+from .utils import STUDY_KEY_ARG, display_list, echo_fetch
 
 app = typer.Typer(name="record-revisions", help="Manage record revision history.")
 
@@ -13,13 +13,9 @@ app = typer.Typer(name="record-revisions", help="Manage record revision history.
 @with_sdk
 def list_record_revisions(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
 ) -> None:
     """List record revisions for a study."""
-    print(f"Fetching record revisions for study '{study_key}'...")
+    echo_fetch("record revisions", study_key)
     revisions = sdk.record_revisions.list(study_key)
-    if revisions:
-        print(f"Found {len(revisions)} record revisions:")
-        print(revisions)
-    else:
-        print("No record revisions found.")
+    display_list(revisions, "record revisions")
