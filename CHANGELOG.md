@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix core package missing `Context` re-export.
+- Fix Mermaid diagram syntax errors and add validation test to prevent regressions.
 
 ## [0.1.1] - 2025-07-02
 
