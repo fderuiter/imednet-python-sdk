@@ -280,9 +280,6 @@ class ImednetSDK:
     ) -> JobStatus:
         """Asynchronously poll a job until it reaches a terminal state."""
 
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-
         return await JobPoller(self.jobs.async_get, True).run_async(
             study_key, batch_id, interval, timeout
         )

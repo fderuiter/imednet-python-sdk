@@ -58,6 +58,5 @@ class JobsEndpoint(BaseEndpoint):
         Like the sync variant, it simply issues a request by ``batch_id``
         without any caching.
         """
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        return await self._get_impl(self._async_client, study_key, batch_id)
+        client = self._require_async_client()
+        return await self._get_impl(client, study_key, batch_id)

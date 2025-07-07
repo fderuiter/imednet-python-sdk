@@ -5,13 +5,12 @@ from typing import Any, Dict, List, Optional
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
-from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.endpoints._mixins import ListGetEndpointMixin
-from imednet.endpoints.base import BaseEndpoint
+from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
+from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.variables import Variable
 
 
-class VariablesEndpoint(ListGetEndpointMixin, BaseEndpoint):
+class VariablesEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with variables (data points on eCRFs) in an iMedNet study.
 
@@ -35,35 +34,31 @@ class VariablesEndpoint(ListGetEndpointMixin, BaseEndpoint):
         super().__init__(client, ctx, async_client)
         self._variables_cache: Dict[str, List[Variable]] = {}
 
-    def list(
+    def list(  # type: ignore[override]
         self, study_key: Optional[str] = None, refresh: bool = False, **filters
     ) -> List[Variable]:
         """List variables in a study with optional filtering."""
-        result = self._list_impl(
-            self._client,
-            Paginator,
+        result = self._list_common(
+            False,
             study_key=study_key,
             refresh=refresh,
             **filters,
         )
         return result  # type: ignore[return-value]
 
-    async def async_list(
+    async def async_list(  # type: ignore[override]
         self, study_key: Optional[str] = None, refresh: bool = False, **filters: Any
     ) -> List[Variable]:
         """Asynchronous version of :meth:`list`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        result = await self._list_impl(
-            self._async_client,
-            AsyncPaginator,
+        result = await self._list_common(
+            True,
             study_key=study_key,
             refresh=refresh,
             **filters,
         )
         return result
 
-    def get(self, study_key: str, variable_id: int) -> Variable:
+    def get(self, study_key: str, variable_id: int) -> Variable:  # type: ignore[override]
         """
         Get a specific variable by ID.
 
@@ -77,17 +72,13 @@ class VariablesEndpoint(ListGetEndpointMixin, BaseEndpoint):
         Returns:
             Variable object
         """
-        result = self._get_impl(self._client, Paginator, study_key=study_key, item_id=variable_id)
+        result = self._get_common(False, study_key=study_key, item_id=variable_id)
         return result  # type: ignore[return-value]
 
-    async def async_get(self, study_key: str, variable_id: int) -> Variable:
+    async def async_get(self, study_key: str, variable_id: int) -> Variable:  # type: ignore[override]
         """Asynchronous version of :meth:`get`.
 
         ``refresh=True`` is also passed to :meth:`async_list` to bypass the
         cache.
         """
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        return await self._get_impl(
-            self._async_client, AsyncPaginator, study_key=study_key, item_id=variable_id
-        )
+        return await self._get_common(True, study_key=study_key, item_id=variable_id)

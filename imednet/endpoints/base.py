@@ -61,3 +61,9 @@ class BaseEndpoint:
             if str(getattr(item, attr)) == str(item_id):
                 return item
         raise ValueError(f"{attr} {item_id} not found in study {study_key}")
+
+    def _require_async_client(self) -> AsyncClient:
+        """Return the configured async client or raise if missing."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        return self._async_client
