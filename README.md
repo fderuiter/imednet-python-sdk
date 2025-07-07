@@ -41,10 +41,16 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 
 ```python
 from imednet import ImednetSDK
+from imednet.config import load_config
 from imednet.utils import configure_json_logging
 
 configure_json_logging()
-sdk = ImednetSDK()
+cfg = load_config()
+sdk = ImednetSDK(
+    api_key=cfg.api_key,
+    security_key=cfg.security_key,
+    base_url=cfg.base_url,
+)
 print(sdk.studies.list())
 ```
 
@@ -77,6 +83,8 @@ Set the following environment variables before using the SDK or CLI:
 - `IMEDNET_API_KEY` – your API key
 - `IMEDNET_SECURITY_KEY` – your security key
 - `IMEDNET_BASE_URL` – optional base URL for private deployments
+
+Use `imednet.config.load_config()` to access these values in your code.
 
 Additional variables such as `IMEDNET_STUDY_KEY` are used in the examples and
 test suite. See `docs/test_skip_conditions.rst` for a full list.

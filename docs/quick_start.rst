@@ -21,10 +21,16 @@ Enable structured logging and list studies:
 .. code-block:: python
 
    from imednet import ImednetSDK
+   from imednet.config import load_config
    from imednet.utils import configure_json_logging
 
    configure_json_logging()
-   sdk = ImednetSDK()
+   cfg = load_config()
+   sdk = ImednetSDK(
+       api_key=cfg.api_key,
+       security_key=cfg.security_key,
+       base_url=cfg.base_url,
+   )
    studies = sdk.studies.list()
    print(studies)
 

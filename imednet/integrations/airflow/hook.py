@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import os
-
 from airflow.hooks.base import BaseHook
 
+from ...config import load_config
 from ...sdk import ImednetSDK
 
 
@@ -21,12 +20,16 @@ class ImednetHook(BaseHook):
 
         conn = BaseHook.get_connection(self.imednet_conn_id)
         extras = conn.extra_dejson
-        api_key = extras.get("api_key") or conn.login or os.getenv("IMEDNET_API_KEY")
-        security_key = (
-            extras.get("security_key") or conn.password or os.getenv("IMEDNET_SECURITY_KEY")
+        config = load_config(
+            api_key=extras.get("api_key") or conn.login,
+            security_key=extras.get("security_key") or conn.password,
+            base_url=extras.get("base_url"),
         )
-        base_url = extras.get("base_url") or os.getenv("IMEDNET_BASE_URL")
-        return ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
+        return ImednetSDK(
+            api_key=config.api_key,
+            security_key=config.security_key,
+            base_url=config.base_url,
+        )
 
 
 __all__ = ["ImednetHook"]
