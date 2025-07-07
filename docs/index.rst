@@ -15,6 +15,7 @@ Welcome to imednet's documentation!
    cli
    workflow_interactions
    caching
+   retry_policy
    job_polling
    record_mapping
    airflow

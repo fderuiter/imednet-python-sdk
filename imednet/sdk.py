@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional, Union
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
+from .core.retry import RetryPolicy
 from .endpoints.codings import CodingsEndpoint
 from .endpoints.forms import FormsEndpoint
 from .endpoints.intervals import IntervalsEndpoint
@@ -85,6 +86,7 @@ class ImednetSDK:
         timeout: float = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
+        retry_policy: RetryPolicy | None = None,
         enable_async: bool = False,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
@@ -104,6 +106,7 @@ class ImednetSDK:
             timeout=timeout,
             retries=retries,
             backoff_factor=backoff_factor,
+            retry_policy=retry_policy,
         )
         self._async_client = (
             AsyncClient(
@@ -113,6 +116,7 @@ class ImednetSDK:
                 timeout=timeout,
                 retries=retries,
                 backoff_factor=backoff_factor,
+                retry_policy=retry_policy,
             )
             if enable_async
             else None
@@ -120,6 +124,16 @@ class ImednetSDK:
 
         self._init_endpoints()
         self.workflows = Workflows(self)
+
+    @property
+    def retry_policy(self) -> RetryPolicy:
+        return self._client.retry_policy
+
+    @retry_policy.setter
+    def retry_policy(self, policy: RetryPolicy) -> None:
+        self._client.retry_policy = policy
+        if self._async_client is not None:
+            self._async_client.retry_policy = policy
 
     def _validate_env(self) -> None:
         """Ensure required credentials are present."""

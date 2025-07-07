@@ -37,3 +37,16 @@ The example script :mod:`examples.quick_start` provides a runnable version that
 validates required environment variables.
 
 Cached endpoints can be refreshed with ``refresh=True``. The caches are not thread safe so long running applications should recreate the SDK when needed.
+
+Custom retry logic can be provided via a ``RetryPolicy``:
+
+.. code-block:: python
+
+   from imednet.core.retry import RetryPolicy, RetryState
+   from imednet.core.exceptions import ServerError
+
+   class ServerRetry(RetryPolicy):
+       def should_retry(self, state: RetryState) -> bool:
+           return isinstance(state.exception, ServerError)
+
+   sdk = ImednetSDK(retry_policy=ServerRetry())

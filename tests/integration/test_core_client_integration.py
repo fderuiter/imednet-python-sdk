@@ -20,7 +20,11 @@ def test_successful_get_sync_client():
 
 @respx.mock(assert_all_mocked=False)
 def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
-    client = Client("k", "s", base_url="https://api.test", retries=3)
+    class Policy:
+        def should_retry(self, state) -> bool:
+            return isinstance(state.exception, exceptions.ServerError)
+
+    client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=Policy())
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
@@ -30,11 +34,6 @@ def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
         return httpx.Response(200, json={"ok": True})
 
     monkeypatch.setattr(client._executor, "send", request)
-    monkeypatch.setattr(
-        client._executor,
-        "should_retry",
-        lambda state: isinstance(state.outcome.exception(), exceptions.ServerError),
-    )
 
     resp = client.get("/api/v1/edc/studies")
 
