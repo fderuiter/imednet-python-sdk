@@ -38,7 +38,7 @@ def test_get_success(monkeypatch, dummy_client, context):
 
     res = ep.get("S1", 1)
 
-    assert called == {"study_key": "S1", "filters": {"recordId": 1}}
+    assert called == {"study_key": "S1", "filters": {"recordId": 1, "refresh": True}}
     assert isinstance(res, Record)
 
 

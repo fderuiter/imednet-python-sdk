@@ -261,7 +261,7 @@ class ImednetSDK:
 
     def get_users(self, study_key: str, include_inactive: bool = False) -> List[User]:
         """Return users for the specified study."""
-        return self.users.list(study_key, include_inactive)
+        return self.users.list(study_key, include_inactive=include_inactive)
 
     def get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Return job details for the specified batch."""

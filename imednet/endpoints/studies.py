@@ -1,6 +1,6 @@
 """Endpoint for managing studies in the iMedNet system."""
 
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
@@ -32,37 +32,3 @@ class StudiesEndpoint(ListGetEndpoint):
     ) -> None:
         super().__init__(client, ctx, async_client)
         self._studies_cache: Optional[List[Study]] = None
-
-    def list(self, refresh: bool = False, **filters) -> List[Study]:  # type: ignore[override]
-        """List studies with optional filtering."""
-        result = self._list_common(False, refresh=refresh, **filters)
-        return result  # type: ignore[return-value]
-
-    async def async_list(self, refresh: bool = False, **filters: Any) -> List[Study]:  # type: ignore[override]
-        """Asynchronous version of :meth:`list`."""
-        result = await self._list_common(True, refresh=refresh, **filters)
-        return result
-
-    def get(self, study_key: str) -> Study:  # type: ignore[override]
-        """
-        Get a specific study by key.
-
-        This endpoint maintains a local cache. ``refresh=True`` is passed to
-        :meth:`list` to ensure the latest data is fetched for the lookup.
-
-        Args:
-            study_key: Study identifier
-
-        Returns:
-            Study object
-        """
-        result = self._get_common(False, study_key=None, item_id=study_key)
-        return result  # type: ignore[return-value]
-
-    async def async_get(self, study_key: str) -> Study:  # type: ignore[override]
-        """Asynchronous version of :meth:`get`.
-
-        Like the synchronous variant, this call passes ``refresh=True`` to
-        :meth:`async_list` to bypass the cache.
-        """
-        return await self._get_common(True, study_key=None, item_id=study_key)

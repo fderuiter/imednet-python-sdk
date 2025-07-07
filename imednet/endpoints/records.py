@@ -49,52 +49,6 @@ class RecordsEndpoint(ListGetEndpoint):
         response = client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
 
-    def list(  # type: ignore[override]
-        self, study_key: Optional[str] = None, record_data_filter: Optional[str] = None, **filters
-    ) -> List[Record]:
-        """List records in a study with optional filtering."""
-        result = self._list_common(
-            False,
-            study_key=study_key,
-            record_data_filter=record_data_filter,
-            **filters,
-        )
-        return result  # type: ignore[return-value]
-
-    async def async_list(  # type: ignore[override]
-        self,
-        study_key: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> List[Record]:
-        """Asynchronous version of :meth:`list`."""
-        result = await self._list_common(
-            True,
-            study_key=study_key,
-            record_data_filter=record_data_filter,
-            **filters,
-        )
-        return result
-
-    def get(self, study_key: str, record_id: Union[str, int]) -> Record:  # type: ignore[override]
-        """Get a specific record by ID."""
-        result = self._list_common(False, study_key=study_key, recordId=record_id)
-        if inspect.isawaitable(result):
-            raise RuntimeError("Unexpected awaitable result")
-        if not result:
-            raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return result[0]
-
-    async def async_get(self, study_key: str, record_id: Union[str, int]) -> Record:  # type: ignore[override]
-        """Asynchronous version of :meth:`get`.
-
-        This method also filters :meth:`async_list` by ``record_id``.
-        """
-        result = await self._list_common(True, study_key=study_key, recordId=record_id)
-        if not result:
-            raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return result[0]
-
     def create(
         self,
         study_key: str,
