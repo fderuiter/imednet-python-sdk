@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
 from ..endpoints.forms import FormsEndpoint
@@ -146,7 +146,7 @@ def validate_record_data(
 class SchemaValidator(_ValidatorMixin):
     """Validate record payloads using variable metadata from the API."""
 
-    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK") -> None:
+    def __init__(self, sdk: Union["ImednetSDK", "AsyncImednetSDK"]) -> None:
         self._sdk = sdk
         import inspect
 
@@ -197,7 +197,7 @@ class SchemaValidator(_ValidatorMixin):
             return self._validate_record_async(study_key, record)
         return self._validate_record_sync(study_key, record)
 
-    def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> Any:
+    def validate_batch(self, study_key: str, records: List[Dict[str, Any]]) -> Any:
         if self._is_async:
 
             async def _run() -> None:

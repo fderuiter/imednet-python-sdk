@@ -30,7 +30,7 @@ class VariablesEndpoint(ListGetEndpointMixin, BaseEndpoint):
         self,
         client: Client,
         ctx: Context,
-        async_client: AsyncClient | None = None,
+        async_client: Optional[AsyncClient] = None,
     ) -> None:
         super().__init__(client, ctx, async_client)
         self._variables_cache: Dict[str, List[Variable]] = {}

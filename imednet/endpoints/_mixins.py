@@ -1,7 +1,17 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Protocol, Type
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Protocol,
+    Type,
+    Union,
+)
 
 from pydantic import BaseModel
 
@@ -25,10 +35,10 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
 
         def _list_impl(
             self,
-            client: Client | AsyncClient,
-            paginator_cls: type[Paginator] | type[AsyncPaginator],
+            client: Union[Client, AsyncClient],
+            paginator_cls: Union[type[Paginator], type[AsyncPaginator]],
             *,
-            study_key: Optional[str] | None = None,
+            study_key: Optional[str] = None,
             refresh: bool = False,
             extra_params: Optional[Dict[str, Any]] = None,
             **filters: Any,
@@ -56,8 +66,8 @@ class ListGetEndpointMixin:
 
     def _list_impl(
         self: Any,
-        client: Client | AsyncClient,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        client: Union[Client, AsyncClient],
+        paginator_cls: Union[type[Paginator], type[AsyncPaginator]],
         *,
         study_key: Optional[str] = None,
         refresh: bool = False,
@@ -110,7 +120,7 @@ class ListGetEndpointMixin:
 
         if hasattr(paginator, "__aiter__"):
 
-            async def _collect() -> list[BaseModel]:
+            async def _collect() -> List[BaseModel]:
                 result = [self._parse_item(item) async for item in paginator]
                 if not other_filters:
                     if self.requires_study_key and cache is not None:
@@ -131,8 +141,8 @@ class ListGetEndpointMixin:
 
     def _get_impl(
         self: Any,
-        client: Client | AsyncClient,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        client: Union[Client, AsyncClient],
+        paginator_cls: Union[type[Paginator], type[AsyncPaginator]],
         *,
         study_key: Optional[str],
         item_id: Any,

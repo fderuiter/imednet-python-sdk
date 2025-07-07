@@ -29,7 +29,7 @@ class IntervalsEndpoint(ListGetEndpointMixin, BaseEndpoint):
         self,
         client: Client,
         ctx: Context,
-        async_client: AsyncClient | None = None,
+        async_client: Optional[AsyncClient] = None,
     ) -> None:
         super().__init__(client, ctx, async_client)
         self._intervals_cache: Dict[str, List[Interval]] = {}

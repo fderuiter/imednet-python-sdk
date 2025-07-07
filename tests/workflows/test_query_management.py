@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from unittest.mock import MagicMock
 
 from imednet.models.queries import Query, QueryComment
@@ -6,7 +7,7 @@ from imednet.testing import fake_data
 from imednet.workflows.query_management import QueryManagementWorkflow
 
 
-def make_query(sequence_closed: list[tuple[int, bool]]) -> Query:
+def make_query(sequence_closed: List[Tuple[int, bool]]) -> Query:
     comments = [QueryComment(sequence=seq, closed=closed) for seq, closed in sequence_closed]
     return Query(query_comments=comments)
 

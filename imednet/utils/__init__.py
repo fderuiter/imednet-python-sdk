@@ -3,13 +3,14 @@ Re-exports utility functions for easier access.
 """
 
 from importlib import import_module
+from typing import Dict, Tuple
 
 from .dates import format_iso_datetime, parse_iso_datetime
 from .filters import build_filter_string
 from .json_logging import configure_json_logging
 from .typing import DataFrame, JsonDict
 
-_LAZY_ATTRS: dict[str, tuple[str, str]] = {
+_LAZY_ATTRS: Dict[str, Tuple[str, str]] = {
     "records_to_dataframe": ("imednet.utils.pandas", "records_to_dataframe"),
     "export_records_csv": ("imednet.utils.pandas", "export_records_csv"),
     "parse_bool": ("imednet.utils.validators", "parse_bool"),

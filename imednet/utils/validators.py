@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Callable, Dict, List, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar, Union
 
 from imednet.utils.dates import parse_iso_datetime  # Centralized date parsing
 
@@ -13,7 +13,7 @@ def _or_default(value: Any, default: Any) -> Any:
     return value if value is not None else default
 
 
-def parse_datetime(v: str | datetime) -> datetime:
+def parse_datetime(v: Union[str, datetime]) -> datetime:
     """
     Wrapper for parse_iso_datetime from utils.dates.
     Used for backwards compatibility in models.

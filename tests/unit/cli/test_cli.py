@@ -2,6 +2,7 @@ import importlib.util
 import os
 import sys
 from types import ModuleType
+from typing import Optional
 from unittest.mock import MagicMock
 
 import imednet.cli as cli
@@ -233,7 +234,7 @@ def test_export_sql_calls_helper_non_sqlite(
     engine = MagicMock()
     engine.dialect.name = "postgres"
     sa_module = ModuleType("sqlalchemy")
-    sa_module.create_engine = MagicMock(return_value=engine)
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
@@ -253,7 +254,7 @@ def test_export_sql_sqlite_uses_by_form(
     engine = MagicMock()
     engine.dialect.name = "sqlite"
     sa_module = ModuleType("sqlalchemy")
-    sa_module.create_engine = MagicMock(return_value=engine)
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
@@ -275,7 +276,7 @@ def test_export_sql_sqlite_single_table(
     engine = MagicMock()
     engine.dialect.name = "sqlite"
     sa_module = ModuleType("sqlalchemy")
-    sa_module.create_engine = MagicMock(return_value=engine)
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
@@ -289,7 +290,7 @@ def test_export_sql_sqlite_single_table(
 def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     original_find_spec = importlib.util.find_spec
 
-    def fake_find_spec(name: str) -> object | None:
+    def fake_find_spec(name: str) -> Optional[object]:
         if name == "pyarrow":
             return None
         return original_find_spec(name)
@@ -303,7 +304,7 @@ def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.M
 def test_export_sql_missing_sqlalchemy(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     original_find_spec = importlib.util.find_spec
 
-    def fake_find_spec(name: str) -> object | None:
+    def fake_find_spec(name: str) -> Optional[object]:
         if name == "sqlalchemy":
             return None
         return original_find_spec(name)

@@ -4,7 +4,7 @@ import logging
 import time
 from contextlib import nullcontext
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Coroutine, Optional, cast
+from typing import Any, Awaitable, Callable, Coroutine, Optional, Union, cast
 
 import httpx
 from tenacity import (
@@ -45,12 +45,12 @@ STATUS_TO_ERROR: dict[int, type[ApiError]] = {
 class RequestExecutor:
     """Execute HTTP requests with retry and error handling."""
 
-    send: Callable[..., Awaitable[httpx.Response] | httpx.Response]
+    send: Callable[..., Union[Awaitable[httpx.Response], httpx.Response]]
     is_async: bool
     retries: int
     backoff_factor: float
     tracer: Optional[Tracer] = None
-    should_retry: Callable[[RetryCallState], bool] | None = None
+    should_retry: Optional[Callable[[RetryCallState], bool]] = None
 
     def _default_should_retry(self, retry_state: RetryCallState) -> bool:
         if retry_state.outcome is None:
@@ -60,7 +60,7 @@ class RequestExecutor:
 
     def __call__(
         self, method: str, url: str, **kwargs: Any
-    ) -> Coroutine[Any, Any, httpx.Response] | httpx.Response:
+    ) -> Union[Coroutine[Any, Any, httpx.Response], httpx.Response]:
         if self.is_async:
             return self._async_execute(method, url, **kwargs)
         return self._sync_execute(method, url, **kwargs)

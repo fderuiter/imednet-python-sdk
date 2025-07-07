@@ -50,7 +50,7 @@ print(sdk.studies.list())
 
 ## Tech Stack
 
-- Python 3.10–3.12
+- Python 3.8–3.13
 - requests, httpx, pydantic, typer, tenacity, python-dotenv
 
 ## Project Structure

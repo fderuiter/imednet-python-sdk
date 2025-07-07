@@ -1,6 +1,6 @@
 """Pagination helpers for iterating through API responses."""
 
-from typing import Any, AsyncIterator, Dict, Iterator, Optional
+from typing import Any, AsyncIterator, Dict, Iterator, List, Optional
 
 import httpx
 
@@ -34,7 +34,7 @@ class BasePaginator:
         query[self.size_param] = self.page_size
         return query
 
-    def _extract_items(self, payload: Dict[str, Any]) -> list[Any]:
+    def _extract_items(self, payload: Dict[str, Any]) -> List[Any]:
         return payload.get(self.data_key, []) or []
 
     def _next_page(self, payload: Dict[str, Any], page: int) -> Optional[int]:

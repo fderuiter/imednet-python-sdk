@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from imednet.core.paginator import Paginator
 
@@ -8,7 +8,7 @@ class DummyClient:
         self.responses = responses
         self.calls: List[Dict[str, Any]] = []
 
-    def get(self, path: str, params: Dict[str, Any] | None = None):
+    def get(self, path: str, params: Optional[Dict[str, Any]] = None):
         self.calls.append({"path": path, "params": params})
         data = self.responses.pop(0)
         return type("Resp", (), {"json": lambda self: data})()

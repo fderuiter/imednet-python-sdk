@@ -1,6 +1,6 @@
 """Endpoint for managing users in a study."""
 
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Type, Union
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints._mixins import ListGetEndpointMixin
@@ -23,7 +23,7 @@ class UsersEndpoint(ListGetEndpointMixin, BaseEndpoint):
     def _list_impl(
         self,
         client: Any,
-        paginator_cls: type[Any],
+        paginator_cls: Type[Any],
         *,
         study_key: Optional[str] = None,
         include_inactive: bool = False,

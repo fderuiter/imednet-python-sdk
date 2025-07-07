@@ -1,7 +1,7 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
 import inspect
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints._mixins import ListGetEndpointMixin
@@ -175,7 +175,7 @@ class RecordsEndpoint(ListGetEndpointMixin, BaseEndpoint):
     def _list_impl(
         self,
         client: Any,
-        paginator_cls: type[Any],
+        paginator_cls: Type[Any],
         *,
         study_key: Optional[str] = None,
         record_data_filter: Optional[str] = None,

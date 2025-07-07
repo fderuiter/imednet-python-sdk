@@ -20,9 +20,12 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
@@ -45,7 +48,7 @@ homepage = "https://github.com/fderuiter/imednet-python-sdk"
 imednet = "imednet.cli:app"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.8,<4.0"
 requests = "2.32.4"
 h11 = "0.16.0"
 pandas = { version = ">=2.2.3,<3.0.0", optional = true }
@@ -99,7 +102,7 @@ build-backend = "poetry.core.masonry.api"
 # ------------------------
 [tool.black]
 line-length = 100
-target-version = ["py310"]
+target-version = ["py38"]
 
 [tool.ruff]
 line-length = 100
@@ -113,7 +116,7 @@ ignore = ["D", "ANN", "S101"]
 classmethod-decorators = ["field_validator", "model_validator"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.8"
 strict = false
 ignore_missing_imports = true
 plugins = ["pydantic.mypy"]

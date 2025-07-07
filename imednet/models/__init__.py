@@ -3,6 +3,8 @@
 This package contains all data models used by the SDK to represent iMedNet resources.
 """
 
+from typing import List
+
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import FormSummary, Interval
@@ -35,7 +37,7 @@ from imednet.utils.validators import (
     parse_str_or_default,
 )
 
-__all__: list[str] = [
+__all__: List[str] = [
     "Coding",
     "Form",
     "FormSummary",

@@ -4,6 +4,8 @@ Endpoints package for the iMedNet SDK.
 This package contains all API endpoint implementations for accessing iMedNet resources.
 """
 
+from typing import List
+
 from imednet.endpoints.codings import CodingsEndpoint
 from imednet.endpoints.forms import FormsEndpoint
 from imednet.endpoints.intervals import IntervalsEndpoint
@@ -18,7 +20,7 @@ from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
 
-__all__: list[str] = [
+__all__: List[str] = [
     "CodingsEndpoint",
     "FormsEndpoint",
     "IntervalsEndpoint",
