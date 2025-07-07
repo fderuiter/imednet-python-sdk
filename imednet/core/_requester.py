@@ -28,6 +28,7 @@ from .exceptions import (
     ServerError,
     UnauthorizedError,
 )
+from .retry import DefaultRetryPolicy, RetryPolicy, RetryState
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +51,28 @@ class RequestExecutor:
     retries: int
     backoff_factor: float
     tracer: Optional[Tracer] = None
-    should_retry: Callable[[RetryCallState], bool] | None = None
+    retry_policy: RetryPolicy | None = None
 
-    def _default_should_retry(self, retry_state: RetryCallState) -> bool:
-        if retry_state.outcome is None:
-            return False
-        exc = retry_state.outcome.exception()
-        return isinstance(exc, httpx.RequestError)
+    def __post_init__(self) -> None:
+        if self.retry_policy is None:
+            self.retry_policy = DefaultRetryPolicy()
+
+    def _should_retry(self, retry_state: RetryCallState) -> bool:
+        state = RetryState(
+            attempt_number=retry_state.attempt_number,
+            exception=(
+                retry_state.outcome.exception()
+                if retry_state.outcome and retry_state.outcome.failed
+                else None
+            ),
+            result=(
+                retry_state.outcome.result()
+                if retry_state.outcome and not retry_state.outcome.failed
+                else None
+            ),
+        )
+        policy = self.retry_policy or DefaultRetryPolicy()
+        return policy.should_retry(state)
 
     def __call__(
         self, method: str, url: str, **kwargs: Any
@@ -91,7 +107,7 @@ class RequestExecutor:
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self.should_retry or self._default_should_retry,
+            retry=self._should_retry,
             reraise=True,
         )
 
@@ -122,7 +138,7 @@ class RequestExecutor:
         retryer = AsyncRetrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self.should_retry or self._default_should_retry,
+            retry=self._should_retry,
             reraise=True,
         )
 

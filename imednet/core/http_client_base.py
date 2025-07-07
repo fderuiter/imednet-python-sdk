@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Awaitable, Callable, Optional, Type, Union
+from typing import Any, Awaitable, Optional, Type, Union, cast
 
 import httpx
-from tenacity import RetryCallState
 
 from ._requester import RequestExecutor
 from .base_client import BaseClient, Tracer
+from .retry import RetryPolicy
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,7 @@ class HTTPClientBase(BaseClient):
         backoff_factor: float = 1.0,
         log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
+        retry_policy: RetryPolicy | None = None,
     ) -> None:
         super().__init__(
             api_key=api_key,
@@ -45,6 +46,7 @@ class HTTPClientBase(BaseClient):
             retries=self.retries,
             backoff_factor=self.backoff_factor,
             tracer=self._tracer,
+            retry_policy=retry_policy,
         )
 
     def _create_client(self, api_key: str, security_key: str) -> httpx.Client | httpx.AsyncClient:
@@ -60,12 +62,12 @@ class HTTPClientBase(BaseClient):
         )
 
     @property
-    def _should_retry(self) -> Callable[[RetryCallState], bool]:
-        return self._executor.should_retry or self._executor._default_should_retry
+    def retry_policy(self) -> RetryPolicy:
+        return cast(RetryPolicy, self._executor.retry_policy)
 
-    @_should_retry.setter
-    def _should_retry(self, func: Callable[[RetryCallState], bool]) -> None:
-        self._executor.should_retry = func
+    @retry_policy.setter
+    def retry_policy(self, policy: RetryPolicy) -> None:
+        self._executor.retry_policy = policy
 
     def _request(
         self, method: str, path: str, **kwargs: Any
