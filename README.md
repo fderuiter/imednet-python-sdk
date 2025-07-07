@@ -104,7 +104,7 @@ python -m build
 python -m twine upload dist/*
 ```
 
-Pushing a Git tag like `v0.1.3` triggers the GitHub Actions workflow that builds
+Pushing a Git tag like `v0.1.4` triggers the GitHub Actions workflow that builds
 and publishes the package to PyPI.
 
 ## Versioning & Changelog
