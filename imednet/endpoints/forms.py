@@ -5,13 +5,12 @@ from typing import Any, Dict, List, Optional
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
-from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.endpoints._mixins import ListGetEndpointMixin
-from imednet.endpoints.base import BaseEndpoint
+from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
+from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.forms import Form
 
 
-class FormsEndpoint(ListGetEndpointMixin, BaseEndpoint):
+class FormsEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with forms (eCRFs) in an iMedNet study.
 
@@ -35,41 +34,37 @@ class FormsEndpoint(ListGetEndpointMixin, BaseEndpoint):
         super().__init__(client, ctx, async_client)
         self._forms_cache: Dict[str, List[Form]] = {}
 
-    def list(
+    def list(  # type: ignore[override]
         self,
         study_key: Optional[str] = None,
         refresh: bool = False,
         **filters: Any,
     ) -> List[Form]:
         """List forms in a study with optional filtering."""
-        result = self._list_impl(
-            self._client,
-            Paginator,
+        result = self._list_common(
+            False,
             study_key=study_key,
             refresh=refresh,
             **filters,
         )
         return result  # type: ignore[return-value]
 
-    async def async_list(
+    async def async_list(  # type: ignore[override]
         self,
         study_key: Optional[str] = None,
         refresh: bool = False,
         **filters: Any,
     ) -> List[Form]:
         """Asynchronous version of :meth:`list`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        result = await self._list_impl(
-            self._async_client,
-            AsyncPaginator,
+        result = await self._list_common(
+            True,
             study_key=study_key,
             refresh=refresh,
             **filters,
         )
         return result
 
-    def get(self, study_key: str, form_id: int) -> Form:
+    def get(self, study_key: str, form_id: int) -> Form:  # type: ignore[override]
         """
         Get a specific form by ID.
 
@@ -83,17 +78,13 @@ class FormsEndpoint(ListGetEndpointMixin, BaseEndpoint):
         Returns:
             Form object
         """
-        result = self._get_impl(self._client, Paginator, study_key=study_key, item_id=form_id)
+        result = self._get_common(False, study_key=study_key, item_id=form_id)
         return result  # type: ignore[return-value]
 
-    async def async_get(self, study_key: str, form_id: int) -> Form:
+    async def async_get(self, study_key: str, form_id: int) -> Form:  # type: ignore[override]
         """Asynchronous version of :meth:`get`.
 
         ``refresh=True`` is also passed to :meth:`async_list` to bypass the
         cache.
         """
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        return await self._get_impl(
-            self._async_client, AsyncPaginator, study_key=study_key, item_id=form_id
-        )
+        return await self._get_common(True, study_key=study_key, item_id=form_id)

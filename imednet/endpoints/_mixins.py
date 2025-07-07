@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import sys
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Protocol, Type
 
 from pydantic import BaseModel
@@ -8,6 +9,7 @@ from pydantic import BaseModel
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.endpoints.base import BaseEndpoint
 from imednet.utils.filters import build_filter_string
 
 if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
@@ -165,3 +167,49 @@ class ListGetEndpointMixin:
                 raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return result[0]
+
+
+class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
+    """Endpoint base class implementing ``list`` and ``get`` helpers."""
+
+    def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
+        client: Client | AsyncClient
+        paginator: type[Paginator] | type[AsyncPaginator]
+        module = sys.modules[self.__class__.__module__]
+        if is_async:
+            client = self._require_async_client()
+            paginator = getattr(module, "AsyncPaginator")
+        else:
+            client = self._client
+            paginator = getattr(module, "Paginator")
+        return self._list_impl(client, paginator, **kwargs)
+
+    def _get_common(
+        self,
+        is_async: bool,
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> Any:
+        client: Client | AsyncClient
+        paginator: type[Paginator] | type[AsyncPaginator]
+        module = sys.modules[self.__class__.__module__]
+        if is_async:
+            client = self._require_async_client()
+            paginator = getattr(module, "AsyncPaginator")
+        else:
+            client = self._client
+            paginator = getattr(module, "Paginator")
+        return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
+
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
+        return self._list_common(False, study_key=study_key, **filters)
+
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
+        return await self._list_common(True, study_key=study_key, **filters)
+
+    def get(self, study_key: Optional[str], item_id: Any) -> Any:
+        return self._get_common(False, study_key=study_key, item_id=item_id)
+
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> Any:
+        return await self._get_common(True, study_key=study_key, item_id=item_id)

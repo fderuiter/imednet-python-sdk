@@ -2,13 +2,12 @@
 
 from typing import Any, List, Optional, Union
 
-from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.endpoints._mixins import ListGetEndpointMixin
-from imednet.endpoints.base import BaseEndpoint
+from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
+from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
 
 
-class UsersEndpoint(ListGetEndpointMixin, BaseEndpoint):
+class UsersEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with users in an iMedNet study.
 
@@ -38,38 +37,34 @@ class UsersEndpoint(ListGetEndpointMixin, BaseEndpoint):
             **filters,
         )
 
-    def list(
+    def list(  # type: ignore[override]
         self, study_key: Optional[str] = None, include_inactive: bool = False, **filters: Any
     ) -> List[User]:
         """List users in a study with optional filtering."""
-        result = self._list_impl(
-            self._client,
-            Paginator,
+        result = self._list_common(
+            False,
             study_key=study_key,
             include_inactive=include_inactive,
             **filters,
         )
         return result  # type: ignore[return-value]
 
-    async def async_list(
+    async def async_list(  # type: ignore[override]
         self,
         study_key: Optional[str] = None,
         include_inactive: bool = False,
         **filters: Any,
     ) -> List[User]:
         """Asynchronous version of :meth:`list`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        result = await self._list_impl(
-            self._async_client,
-            AsyncPaginator,
+        result = await self._list_common(
+            True,
             study_key=study_key,
             include_inactive=include_inactive,
             **filters,
         )
         return result
 
-    def get(self, study_key: str, user_id: Union[str, int]) -> User:
+    def get(self, study_key: str, user_id: Union[str, int]) -> User:  # type: ignore[override]
         """
         Get a specific user by ID.
 
@@ -80,13 +75,9 @@ class UsersEndpoint(ListGetEndpointMixin, BaseEndpoint):
         Returns:
             User object
         """
-        result = self._get_impl(self._client, Paginator, study_key=study_key, item_id=user_id)
+        result = self._get_common(False, study_key=study_key, item_id=user_id)
         return result  # type: ignore[return-value]
 
-    async def async_get(self, study_key: str, user_id: Union[str, int]) -> User:
+    async def async_get(self, study_key: str, user_id: Union[str, int]) -> User:  # type: ignore[override]
         """Asynchronous version of :meth:`get`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        return await self._get_impl(
-            self._async_client, AsyncPaginator, study_key=study_key, item_id=user_id
-        )
+        return await self._get_common(True, study_key=study_key, item_id=user_id)
