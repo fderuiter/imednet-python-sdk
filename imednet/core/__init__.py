@@ -21,10 +21,12 @@ from .exceptions import (
     UnauthorizedError,
     ValidationError,
 )
+from .http_client_base import HTTPClientBase
 from .paginator import AsyncPaginator, Paginator
 
 __all__ = [
     "BaseClient",
+    "HTTPClientBase",
     "Client",
     "AsyncClient",
     "Context",
