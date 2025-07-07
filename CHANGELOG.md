@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Client`, `AsyncClient` and `ImednetSDK` accept a `retry_policy` parameter.
 - Workflow helpers now detect ``AsyncImednetSDK``. When used asynchronously they
   return coroutines instead of blocking.
+- CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 
 ## [0.1.4] 
 
