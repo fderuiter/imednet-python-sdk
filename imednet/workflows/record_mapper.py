@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 
@@ -8,7 +10,7 @@ from imednet.endpoints.records import Record as RecordModel  # type: ignore[attr
 from imednet.endpoints.variables import Variable as VariableModel  # type: ignore[attr-defined]
 
 if TYPE_CHECKING:
-    from ..sdk import ImednetSDK
+    from ..sdk import AsyncImednetSDK, ImednetSDK
 
 # Setup basic logging
 logger = logging.getLogger(__name__)
@@ -35,15 +37,23 @@ class RecordMapper:
         df_names = mapper.dataframe(study_key="MYSTUDY", use_labels_as_columns=False)
     """
 
-    def __init__(self, sdk: "ImednetSDK") -> None:
+    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK") -> None:
         """Initialize with an :class:`ImednetSDK` instance."""
+        from ..sdk import AsyncImednetSDK
+
         self.sdk = sdk
+        self._is_async = isinstance(sdk, AsyncImednetSDK)
 
     # ------------------------------------------------------------------
     # Helper methods
     # ------------------------------------------------------------------
-    def _fetch_variable_metadata(self, study_key: str) -> Tuple[List[str], Dict[str, str]]:
+    def _fetch_variable_metadata(self, study_key: str) -> Any:
         """Return variable names and label mapping for a study."""
+        if self._is_async:
+            return self._fetch_variable_metadata_async(study_key)
+        return self._fetch_variable_metadata_sync(study_key)
+
+    def _fetch_variable_metadata_sync(self, study_key: str) -> Tuple[List[str], Dict[str, str]]:
         variables: List[VariableModel] = self.sdk.variables.list(study_key=study_key)
         if not variables:
             logger.warning(
@@ -51,7 +61,20 @@ class RecordMapper:
                 study_key,
             )
             return [], {}
+        variable_keys = [v.variable_name for v in variables]
+        label_map = {v.variable_name: v.label for v in variables}
+        return variable_keys, label_map
 
+    async def _fetch_variable_metadata_async(
+        self, study_key: str
+    ) -> Tuple[List[str], Dict[str, str]]:
+        variables: List[VariableModel] = await self.sdk.variables.async_list(study_key=study_key)
+        if not variables:
+            logger.warning(
+                "No variables found for study '%s'. Returning empty DataFrame.",
+                study_key,
+            )
+            return [], {}
         variable_keys = [v.variable_name for v in variables]
         label_map = {v.variable_name: v.label for v in variables}
         return variable_keys, label_map
@@ -73,8 +96,18 @@ class RecordMapper:
         study_key: str,
         visit_key: Optional[str] = None,
         extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
-    ) -> List[RecordModel]:
+    ) -> Any:
         """Fetch records for a study applying optional filters."""
+        if self._is_async:
+            return self._fetch_records_async(study_key, visit_key, extra_filters)
+        return self._fetch_records_sync(study_key, visit_key, extra_filters)
+
+    def _fetch_records_sync(
+        self,
+        study_key: str,
+        visit_key: Optional[str] = None,
+        extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+    ) -> List[RecordModel]:
         filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]] = (
             dict(extra_filters) if extra_filters else {}
         )
@@ -88,6 +121,33 @@ class RecordMapper:
                 )
         try:
             return self.sdk.records.list(
+                study_key=study_key,
+                record_data_filter=None,
+                **filters,
+            )
+        except Exception as exc:  # pragma: no cover - unexpected
+            logger.error("Failed to fetch records for study '%s': %s", study_key, exc)
+            return []
+
+    async def _fetch_records_async(
+        self,
+        study_key: str,
+        visit_key: Optional[str] = None,
+        extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+    ) -> List[RecordModel]:
+        filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]] = (
+            dict(extra_filters) if extra_filters else {}
+        )
+        if visit_key is not None:
+            try:
+                filters["visitId"] = int(visit_key)
+            except ValueError:
+                logger.warning(
+                    "Invalid visit_key '%s'. Should be convertible to int. Fetching all records.",
+                    visit_key,
+                )
+        try:
+            return await self.sdk.records.async_list(
                 study_key=study_key,
                 record_data_filter=None,
                 **filters,
@@ -165,16 +225,46 @@ class RecordMapper:
         use_labels_as_columns: bool = True,
     ) -> pd.DataFrame:
         """Return a :class:`pandas.DataFrame` of records for a study."""
-        variable_keys, label_map = self._fetch_variable_metadata(study_key)
+        if self._is_async:
+            return self._dataframe_async(study_key, visit_key, use_labels_as_columns)
+        return self._dataframe_sync(study_key, visit_key, use_labels_as_columns)
+
+    def _dataframe_sync(
+        self,
+        study_key: str,
+        visit_key: Optional[str],
+        use_labels_as_columns: bool,
+    ) -> pd.DataFrame:
+        variable_keys, label_map = self._fetch_variable_metadata_sync(study_key)
         if not variable_keys:
             return pd.DataFrame()
-
         record_model = self._build_record_model(variable_keys, label_map)
-        records = self._fetch_records(study_key, visit_key)
+        records = self._fetch_records_sync(study_key, visit_key)
         rows, errors = self._parse_records(records, record_model)
         if errors:
             logger.warning("Encountered %s errors while parsing record data.", errors)
+        df = self._build_dataframe(rows, variable_keys, label_map, use_labels_as_columns)
+        if df.empty:
+            logger.info(
+                "No records processed successfully for study '%s' with the given filters.",
+                study_key,
+            )
+        return df
 
+    async def _dataframe_async(
+        self,
+        study_key: str,
+        visit_key: Optional[str],
+        use_labels_as_columns: bool,
+    ) -> pd.DataFrame:
+        variable_keys, label_map = await self._fetch_variable_metadata_async(study_key)
+        if not variable_keys:
+            return pd.DataFrame()
+        record_model = self._build_record_model(variable_keys, label_map)
+        records = await self._fetch_records_async(study_key, visit_key)
+        rows, errors = self._parse_records(records, record_model)
+        if errors:
+            logger.warning("Encountered %s errors while parsing record data.", errors)
         df = self._build_dataframe(rows, variable_keys, label_map, use_labels_as_columns)
         if df.empty:
             logger.info(

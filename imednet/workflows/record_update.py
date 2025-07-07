@@ -1,5 +1,7 @@
 """Placeholder for Record Creation/Update workflows."""
 
+from __future__ import annotations
+
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
@@ -8,7 +10,7 @@ from ..validation.cache import SchemaCache, SchemaValidator
 from .job_poller import JobPoller
 
 if TYPE_CHECKING:
-    from ..sdk import ImednetSDK
+    from ..sdk import AsyncImednetSDK, ImednetSDK
 
 
 class RecordUpdateWorkflow:
@@ -20,8 +22,11 @@ class RecordUpdateWorkflow:
         sdk: An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):
+    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK"):
+        from ..sdk import AsyncImednetSDK
+
         self._sdk = sdk
+        self._is_async = isinstance(sdk, AsyncImednetSDK)
         self._validator = SchemaValidator(sdk)
         from typing import cast
 
@@ -34,9 +39,32 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Any:
         """Submit records for creation or update and optionally wait for completion."""
+        if self._is_async:
+            return self._create_or_update_records_async(
+                study_key,
+                records_data,
+                wait_for_completion=wait_for_completion,
+                timeout=timeout,
+                poll_interval=poll_interval,
+            )
+        return self._create_or_update_records_sync(
+            study_key,
+            records_data,
+            wait_for_completion=wait_for_completion,
+            timeout=timeout,
+            poll_interval=poll_interval,
+        )
 
+    def _create_or_update_records_sync(
+        self,
+        study_key: str,
+        records_data: List[Dict[str, Any]],
+        wait_for_completion: bool = False,
+        timeout: int = 300,
+        poll_interval: int = 5,
+    ) -> Job:
         if records_data:
             first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
                 records_data[0].get("formId", 0)
@@ -58,7 +86,36 @@ class RecordUpdateWorkflow:
             timeout,
         )
 
-    def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
+    async def _create_or_update_records_async(
+        self,
+        study_key: str,
+        records_data: List[Dict[str, Any]],
+        wait_for_completion: bool = False,
+        timeout: int = 300,
+        poll_interval: int = 5,
+    ) -> Job:
+        if records_data:
+            first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
+                records_data[0].get("formId", 0)
+            )
+            if first_ref and not self._schema.variables_for_form(first_ref):
+                await self._validator.refresh(study_key)
+
+        await self._validator.validate_batch(study_key, records_data)
+
+        job = await self._sdk.records.async_create(study_key, records_data, schema=self._schema)
+        if not wait_for_completion:
+            return job
+        if not job.batch_id:
+            raise ValueError("Submission successful but no batch_id received.")
+        return await JobPoller(self._sdk.jobs.async_get, True).run_async(
+            study_key,
+            job.batch_id,
+            poll_interval,
+            timeout,
+        )
+
+    def submit_record_batch(self, *args: Any, **kwargs: Any) -> Any:  # pragma: no cover
         warnings.warn(
             "submit_record_batch is deprecated; use create_or_update_records",
             DeprecationWarning,
@@ -77,7 +134,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Any:
         """
         Registers a new subject by submitting a single record.
 
@@ -121,7 +178,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Any:
         """
         Updates an existing scheduled record for a subject.
 
@@ -169,7 +226,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Any:
         """
         Creates a new (unscheduled) record for an existing subject.
 

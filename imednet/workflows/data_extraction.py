@@ -1,11 +1,13 @@
 """Provides workflows for extracting specific datasets from iMednet studies."""
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from ..models import Record, RecordRevision
 
 if TYPE_CHECKING:
-    from ..sdk import ImednetSDK
+    from ..sdk import AsyncImednetSDK, ImednetSDK
 
 
 class DataExtractionWorkflow:
@@ -16,8 +18,11 @@ class DataExtractionWorkflow:
         sdk: An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):
+    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK"):
+        from ..sdk import AsyncImednetSDK
+
         self._sdk = sdk
+        self._is_async = isinstance(sdk, AsyncImednetSDK)
 
     def extract_records_by_criteria(
         self,
@@ -26,21 +31,33 @@ class DataExtractionWorkflow:
         subject_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         visit_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **other_filters: Any,
+    ) -> Any:
+        """Extract records based on subject, visit and record filters."""
+        if self._is_async:
+            return self._extract_records_by_criteria_async(
+                study_key,
+                record_filter,
+                subject_filter,
+                visit_filter,
+                **other_filters,
+            )
+        return self._extract_records_by_criteria_sync(
+            study_key,
+            record_filter,
+            subject_filter,
+            visit_filter,
+            **other_filters,
+        )
+
+    def _extract_records_by_criteria_sync(
+        self,
+        study_key: str,
+        record_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        subject_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        visit_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        **other_filters: Any,
     ) -> List[Record]:
-        """
-        Extracts records based on criteria spanning subjects, visits, and records.
-
-        Args:
-            study_key: The key identifying the study.
-            record_filter: Dictionary of conditions for the records endpoint.
-            subject_filter: Dictionary of conditions for the subjects endpoint.
-            visit_filter: Dictionary of conditions for the visits endpoint.
-            **other_filters: Additional keyword arguments passed as filters to the
-                             records endpoint `list` method.
-
-        Returns:
-            A list of Record objects matching all specified criteria.
-        """
+        """Synchronous implementation for :meth:`extract_records_by_criteria`."""
         matching_subject_keys: Optional[List[str]] = None
         if subject_filter:
             subjects = self._sdk.subjects.list(study_key, **subject_filter)
@@ -86,6 +103,47 @@ class DataExtractionWorkflow:
 
         return records
 
+    async def _extract_records_by_criteria_async(
+        self,
+        study_key: str,
+        record_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        subject_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        visit_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        **other_filters: Any,
+    ) -> List[Record]:
+        """Asynchronous implementation for :meth:`extract_records_by_criteria`."""
+        matching_subject_keys: Optional[List[str]] = None
+        if subject_filter:
+            subjects = await self._sdk.subjects.async_list(study_key, **subject_filter)
+            matching_subject_keys = [s.subject_key for s in subjects]
+            if not matching_subject_keys:
+                return []
+
+        matching_visit_ids: Optional[List[int]] = None
+        if visit_filter:
+            visits = await self._sdk.visits.async_list(study_key, **visit_filter)
+            if matching_subject_keys:
+                visits = [v for v in visits if v.subject_key in matching_subject_keys]
+            matching_visit_ids = [v.visit_id for v in visits]
+            if not matching_visit_ids:
+                return []
+
+        final_record_filter_dict = dict(record_filter) if record_filter else {}
+        final_record_filter_dict.update(other_filters)
+
+        records = await self._sdk.records.async_list(
+            study_key=study_key,
+            record_data_filter=None,
+            **final_record_filter_dict,
+        )
+
+        if matching_subject_keys:
+            records = [r for r in records if r.subject_key in matching_subject_keys]
+        if matching_visit_ids:
+            records = [r for r in records if r.visit_id in matching_visit_ids]
+
+        return records
+
     def extract_audit_trail(
         self,
         study_key: str,
@@ -93,20 +151,33 @@ class DataExtractionWorkflow:
         end_date: Optional[str] = None,
         user_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **filters: Any,
+    ) -> Any:
+        """Extract audit trail entries matching the provided filters."""
+        if self._is_async:
+            return self._extract_audit_trail_async(
+                study_key,
+                start_date=start_date,
+                end_date=end_date,
+                user_filter=user_filter,
+                **filters,
+            )
+        return self._extract_audit_trail_sync(
+            study_key,
+            start_date=start_date,
+            end_date=end_date,
+            user_filter=user_filter,
+            **filters,
+        )
+
+    def _extract_audit_trail_sync(
+        self,
+        study_key: str,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+        user_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        **filters: Any,
     ) -> List[RecordRevision]:
-        """
-        Extracts the audit trail (record revisions) based on specified filters.
-
-        Args:
-            study_key: The key identifying the study.
-            start_date: Optional start date filter (YYYY-MM-DD format expected by API).
-            end_date: Optional end date filter (YYYY-MM-DD format expected by API).
-            user_filter: Optional dictionary of base filter conditions.
-            **filters: Additional key-value pairs to be added as equality filters.
-
-        Returns:
-            A list of RecordRevision objects matching the criteria.
-        """
+        """Synchronous implementation for :meth:`extract_audit_trail`."""
         # Start with the user_filter dict if provided, otherwise an empty dict
         final_filter_dict = dict(user_filter) if user_filter else {}
 
@@ -122,6 +193,31 @@ class DataExtractionWorkflow:
 
         # Fetch record revisions
         revisions = self._sdk.record_revisions.list(
+            study_key,
+            **final_filter_dict,
+            **date_kwargs,
+        )
+        return revisions
+
+    async def _extract_audit_trail_async(
+        self,
+        study_key: str,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+        user_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        **filters: Any,
+    ) -> List[RecordRevision]:
+        """Asynchronous implementation for :meth:`extract_audit_trail`."""
+        final_filter_dict = dict(user_filter) if user_filter else {}
+        final_filter_dict.update(filters)
+
+        date_kwargs = {}
+        if start_date:
+            date_kwargs["start_date"] = start_date
+        if end_date:
+            date_kwargs["end_date"] = end_date
+
+        revisions = await self._sdk.record_revisions.async_list(
             study_key,
             **final_filter_dict,
             **date_kwargs,

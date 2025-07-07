@@ -72,6 +72,9 @@ non-destructive calls. Each bullet corresponds to a separate live test.
 - ``RecordUpdateWorkflow.update_scheduled_record``
 - ``RecordUpdateWorkflow.create_new_record``
 
+These helpers return coroutines when the workflows are constructed with
+``AsyncImednetSDK``.
+
 CLI Commands
 ------------
 

@@ -1,5 +1,7 @@
 """Provides a workflow to retrieve comprehensive data for a specific subject."""
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
@@ -7,7 +9,7 @@ from pydantic import BaseModel, Field
 from ..models import Query, Record, Subject, Visit
 
 if TYPE_CHECKING:
-    from ..sdk import ImednetSDK
+    from ..sdk import AsyncImednetSDK, ImednetSDK
 
 
 class SubjectComprehensiveData(BaseModel):
@@ -31,37 +33,46 @@ class SubjectDataWorkflow:
         sdk: An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):
+    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK"):
+        from ..sdk import AsyncImednetSDK
+
         self._sdk = sdk
+        self._is_async = isinstance(sdk, AsyncImednetSDK)
 
-    def get_all_subject_data(self, study_key: str, subject_key: str) -> SubjectComprehensiveData:
-        """
-        Retrieves subject details, visits, records, and queries for a specific subject.
+    def get_all_subject_data(self, study_key: str, subject_key: str) -> Any:
+        """Retrieve subject details, visits, records and queries."""
+        if self._is_async:
+            return self._get_all_subject_data_async(study_key, subject_key)
+        return self._get_all_subject_data_sync(study_key, subject_key)
 
-        Args:
-            study_key: The key identifying the study.
-            subject_key: The key identifying the subject.
-
-        Returns:
-            A SubjectComprehensiveData object containing the aggregated data.
-        """
+    def _get_all_subject_data_sync(
+        self, study_key: str, subject_key: str
+    ) -> SubjectComprehensiveData:
         results = SubjectComprehensiveData(subject_details=None)
         subject_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
 
-        # Fetch Subject Details
         subject_list = self._sdk.subjects.list(study_key, **subject_filter_dict)
         if subject_list:
             results.subject_details = subject_list[0]
 
-        # Fetch Visits
         results.visits = self._sdk.visits.list(study_key, **subject_filter_dict)
-
-        # Fetch Records
         results.records = self._sdk.records.list(study_key, **subject_filter_dict)
-
-        # Fetch Queries
         results.queries = self._sdk.queries.list(study_key, **subject_filter_dict)
+        return results
 
+    async def _get_all_subject_data_async(
+        self, study_key: str, subject_key: str
+    ) -> SubjectComprehensiveData:
+        results = SubjectComprehensiveData(subject_details=None)
+        subject_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
+
+        subject_list = await self._sdk.subjects.async_list(study_key, **subject_filter_dict)
+        if subject_list:
+            results.subject_details = subject_list[0]
+
+        results.visits = await self._sdk.visits.async_list(study_key, **subject_filter_dict)
+        results.records = await self._sdk.records.async_list(study_key, **subject_filter_dict)
+        results.queries = await self._sdk.queries.async_list(study_key, **subject_filter_dict)
         return results
 
 

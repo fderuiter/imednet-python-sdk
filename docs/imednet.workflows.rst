@@ -1,6 +1,9 @@
 imednet.workflows package
 =========================
 
+When instantiated with ``AsyncImednetSDK`` the workflow methods return
+coroutines and must be awaited.
+
 Submodules
 ----------
 

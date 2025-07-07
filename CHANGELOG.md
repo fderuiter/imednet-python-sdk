@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `imednet.config` module with `load_config` helper for reading credentials.
 - Introduced `RetryPolicy` abstraction for configuring request retries.
   `Client`, `AsyncClient` and `ImednetSDK` accept a `retry_policy` parameter.
+- Workflow helpers now detect ``AsyncImednetSDK``. When used asynchronously they
+  return coroutines instead of blocking.
 
 ## [0.1.4] 
 
