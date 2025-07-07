@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Bump project version to `0.1.4`.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
+- Added `imednet.config` module with `load_config` helper for reading credentials.
 
 ## [0.1.4] 
 

@@ -1,5 +1,6 @@
 from importlib import metadata as _metadata
 
+from .config import Config, load_config
 from .core.base_client import BaseClient
 from .sdk import AsyncImednetSDK, ImednetSDK
 
@@ -11,6 +12,8 @@ __all__ = [
     "AsyncImednetSDK",
     "ImednetClient",
     "BaseClient",
+    "Config",
+    "load_config",
     "__version__",
 ]
 

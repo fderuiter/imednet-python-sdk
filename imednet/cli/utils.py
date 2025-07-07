@@ -1,21 +1,19 @@
 from __future__ import annotations
 
-import os
 from typing import Any, Dict, List, Optional, Union
 
 import typer
 from rich import print
 
+from ..config import load_config
 from ..sdk import ImednetSDK
 
 
 def get_sdk() -> ImednetSDK:
-    """Initialize and return the SDK instance using environment variables."""
-    api_key = os.getenv("IMEDNET_API_KEY")
-    security_key = os.getenv("IMEDNET_SECURITY_KEY")
-    base_url = os.getenv("IMEDNET_BASE_URL")
-
-    if not api_key or not security_key:
+    """Initialize and return the SDK instance using :func:`load_config`."""
+    try:
+        config = load_config()
+    except ValueError:
         print(
             "[bold red]Error:[/bold red] IMEDNET_API_KEY and "
             "IMEDNET_SECURITY_KEY environment variables must be set."
@@ -23,7 +21,11 @@ def get_sdk() -> ImednetSDK:
         raise typer.Exit(code=1)
 
     try:
-        return ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url or None)
+        return ImednetSDK(
+            api_key=config.api_key,
+            security_key=config.security_key,
+            base_url=config.base_url,
+        )
     except Exception as exc:  # pragma: no cover - defensive
         print(f"[bold red]Error initializing SDK:[/bold red] {exc}")
         raise typer.Exit(code=1)
