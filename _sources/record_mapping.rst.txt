@@ -8,7 +8,7 @@ model, parses the records, and assembles the final table.
 .. mermaid::
 
    graph TD
-       A[dataframe()] --> B[_fetch_variable_metadata]
+       A["dataframe()"] --> B[_fetch_variable_metadata]
        B --> C[variables.list]
        C --> D[variable keys / labels]
        A --> E[_build_record_model]

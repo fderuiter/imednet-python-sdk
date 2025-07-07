@@ -97,7 +97,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">imednet.models.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Job</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">imednet.models.records</span><span class="w"> </span><span class="kn">import</span> <span class="n">Record</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">imednet.utils.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_filter_string</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.validation.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCache</span><span class="p">,</span> <span class="n">validate_record_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.validation.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCache</span><span class="p">,</span> <span class="n">validate_record_data</span>
 
 
 <div class="viewcode-block" id="RecordsEndpoint"><a class="viewcode-back" href="../../../imednet.endpoints.html#imednet.endpoints.records.RecordsEndpoint">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RecordsEndpoint</span><span class="p">(</span><span class="n">BaseEndpoint</span><span class="p">):</span>

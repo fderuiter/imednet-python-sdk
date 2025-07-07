@@ -90,19 +90,14 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.utils.validators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">parse_bool</span><span class="p">,</span>
-    <span class="n">parse_datetime</span><span class="p">,</span>
-    <span class="n">parse_int_or_default</span><span class="p">,</span>
-    <span class="n">parse_str_or_default</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.models._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonModel</span>
 
 
-<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.variables.Variable">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Variable</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.variables.Variable">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Variable</span><span class="p">(</span><span class="n">JsonModel</span><span class="p">):</span>
     <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;studyKey&quot;</span><span class="p">)</span>
     <span class="n">variable_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;variableId&quot;</span><span class="p">)</span>
     <span class="n">variable_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;variableType&quot;</span><span class="p">)</span>
@@ -120,40 +115,7 @@
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
     <span class="n">blinded</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;blinded&quot;</span><span class="p">)</span>
 
-    <span class="c1"># allow population by field names as well as aliases</span>
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span>
-        <span class="s2">&quot;study_key&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;variable_type&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;variable_name&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;form_key&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;form_name&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;label&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fill_strs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_str_or_default</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;variable_id&quot;</span><span class="p">,</span> <span class="s2">&quot;sequence&quot;</span><span class="p">,</span> <span class="s2">&quot;revision&quot;</span><span class="p">,</span> <span class="s2">&quot;form_id&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fill_ints</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_int_or_default</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;date_modified&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_datetimes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_datetime</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Variable.parse_bool_field"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.variables.Variable.parse_bool_field">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">,</span> <span class="s2">&quot;deleted&quot;</span><span class="p">,</span> <span class="s2">&quot;blinded&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_bool_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_bool</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Variable.from_json"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.variables.Variable.from_json">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Variable</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a Variable instance from a JSON-like dict,</span>
-<span class="sd">        honoring the same parsing logic as the original.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div></div>
+    <span class="k">pass</span></div>
 </pre></div>
 
            </div>

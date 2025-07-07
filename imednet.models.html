@@ -114,7 +114,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.codings.Coding">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.codings.</span></span><span class="sig-name descname"><span class="pre">Coding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/codings.html#Coding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.codings.Coding" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -185,20 +185,6 @@
 <span class="sig-name descname"><span class="pre">form_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.codings.Coding.form_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.codings.Coding.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/codings.html#Coding.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.codings.Coding.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Coding instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.codings.Coding" title="imednet.models.codings.Coding"><code class="xref py py-class docutils literal notranslate"><span class="pre">Coding</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.codings.Coding.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.codings.Coding.model_config" title="Permalink to this definition"></a></dt>
@@ -263,7 +249,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.forms.Form">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.forms.</span></span><span class="sig-name descname"><span class="pre">Form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/forms.html#Form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.forms.Form" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -342,20 +328,6 @@
 <span class="sig-name descname"><span class="pre">form_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.forms.Form.form_type" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.forms.Form.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/forms.html#Form.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.forms.Form.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Form instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.forms.Form" title="imednet.models.forms.Form"><code class="xref py py-class docutils literal notranslate"><span class="pre">Form</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.forms.Form.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.forms.Form.model_config" title="Permalink to this definition"></a></dt>
@@ -400,7 +372,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.intervals.FormSummary">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.intervals.</span></span><span class="sig-name descname"><span class="pre">FormSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#FormSummary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.intervals.FormSummary" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -425,20 +397,6 @@
 <span class="sig-name descname"><span class="pre">form_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.intervals.FormSummary.form_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.intervals.FormSummary.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#FormSummary.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.intervals.FormSummary.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a FormSummary instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.intervals.FormSummary" title="imednet.models.intervals.FormSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">FormSummary</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.intervals.FormSummary.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.intervals.FormSummary.model_config" title="Permalink to this definition"></a></dt>
@@ -450,7 +408,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.intervals.Interval">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.intervals.</span></span><span class="sig-name descname"><span class="pre">Interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#Interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.intervals.Interval" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -523,20 +481,6 @@
 <span class="sig-name descname"><span class="pre">forms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[FormSummary]</span></em><a class="headerlink" href="#imednet.models.intervals.Interval.forms" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.intervals.Interval.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#Interval.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.intervals.Interval.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create an Interval instance from JSON-like dict, including nested forms.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.intervals.Interval" title="imednet.models.intervals.Interval"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interval</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.intervals.Interval.interval_description">
 <span class="sig-name descname"><span class="pre">interval_description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.intervals.Interval.interval_description" title="Permalink to this definition"></a></dt>
@@ -578,19 +522,6 @@
 <span class="sig-name descname"><span class="pre">negative_slack</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.intervals.Interval.negative_slack" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.intervals.Interval.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#Interval.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.intervals.Interval.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>v</strong> (<em>Any</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.intervals.Interval.positive_slack">
 <span class="sig-name descname"><span class="pre">positive_slack</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.intervals.Interval.positive_slack" title="Permalink to this definition"></a></dt>
@@ -624,7 +555,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.jobs.Job">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.jobs.</span></span><span class="sig-name descname"><span class="pre">Job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/jobs.html#Job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.jobs.Job" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -656,20 +587,6 @@
 <dt class="sig sig-object py" id="imednet.models.jobs.Job.date_started">
 <span class="sig-name descname"><span class="pre">date_started</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.jobs.Job.date_started" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.jobs.Job.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/jobs.html#Job.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.jobs.Job.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Job instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.jobs.Job" title="imednet.models.jobs.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.jobs.Job.job_id">
@@ -708,20 +625,6 @@
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.jobs.JobStatus.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/jobs.html#JobStatus.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.jobs.JobStatus.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a JobStatus instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.jobs.JobStatus" title="imednet.models.jobs.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.jobs.JobStatus.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.jobs.JobStatus.model_config" title="Permalink to this definition"></a></dt>
@@ -746,7 +649,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.queries.Query">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.queries.</span></span><span class="sig-name descname"><span class="pre">Query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#Query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.queries.Query" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -790,20 +693,6 @@
 <dt class="sig sig-object py" id="imednet.models.queries.Query.description">
 <span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.queries.Query.description" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.queries.Query.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#Query.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.queries.Query.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Query instance from a JSON-like dict, including nested comments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.queries.Query" title="imednet.models.queries.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.queries.Query.model_config">
@@ -856,7 +745,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.queries.QueryComment">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.queries.</span></span><span class="sig-name descname"><span class="pre">QueryComment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#QueryComment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.queries.QueryComment" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -889,30 +778,11 @@
 <span class="sig-name descname"><span class="pre">date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.queries.QueryComment.date" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.queries.QueryComment.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#QueryComment.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.queries.QueryComment.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a QueryComment instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.queries.QueryComment" title="imednet.models.queries.QueryComment"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueryComment</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.queries.QueryComment.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.queries.QueryComment.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.queries.QueryComment.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#QueryComment.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.queries.QueryComment.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.queries.QueryComment.sequence">
@@ -932,7 +802,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.record_revisions.RecordRevision">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.record_revisions.</span></span><span class="sig-name descname"><span class="pre">RecordRevision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/record_revisions.html#RecordRevision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.record_revisions.RecordRevision" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -976,20 +846,6 @@
 <dt class="sig sig-object py" id="imednet.models.record_revisions.RecordRevision.form_key">
 <span class="sig-name descname"><span class="pre">form_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.record_revisions.RecordRevision.form_key" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.record_revisions.RecordRevision.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/record_revisions.html#RecordRevision.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.record_revisions.RecordRevision.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a RecordRevision instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.record_revisions.RecordRevision" title="imednet.models.record_revisions.RecordRevision"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecordRevision</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.record_revisions.RecordRevision.interval_id">
@@ -1075,7 +931,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.records.BaseRecordRequest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.records.</span></span><span class="sig-name descname"><span class="pre">BaseRecordRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#BaseRecordRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.BaseRecordRequest" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1131,7 +987,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.records.Keyword">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.records.</span></span><span class="sig-name descname"><span class="pre">Keyword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Keyword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.Keyword" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1146,19 +1002,6 @@
 <dt class="sig sig-object py" id="imednet.models.records.Keyword.date_added">
 <span class="sig-name descname"><span class="pre">date_added</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.records.Keyword.date_added" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.records.Keyword.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Keyword.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.Keyword.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.records.Keyword" title="imednet.models.records.Keyword"><code class="xref py py-class docutils literal notranslate"><span class="pre">Keyword</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.records.Keyword.keyword_id">
@@ -1186,7 +1029,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.records.Record">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.records.</span></span><span class="sig-name descname"><span class="pre">Record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.Record" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1237,19 +1080,6 @@
 <span class="sig-name descname"><span class="pre">form_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.records.Record.form_key" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.records.Record.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Record.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.Record.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.records.Record" title="imednet.models.records.Record"><code class="xref py py-class docutils literal notranslate"><span class="pre">Record</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.records.Record.interval_id">
 <span class="sig-name descname"><span class="pre">interval_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.records.Record.interval_id" title="Permalink to this definition"></a></dt>
@@ -1269,11 +1099,6 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.records.Record.parent_record_id">
 <span class="sig-name descname"><span class="pre">parent_record_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.records.Record.parent_record_id" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.records.Record.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Record.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.Record.parse_bool_field" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1353,7 +1178,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.records.RecordJobResponse">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.records.</span></span><span class="sig-name descname"><span class="pre">RecordJobResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#RecordJobResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.RecordJobResponse" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1367,19 +1192,6 @@
 <dt class="sig sig-object py" id="imednet.models.records.RecordJobResponse.batch_id">
 <span class="sig-name descname"><span class="pre">batch_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.records.RecordJobResponse.batch_id" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.records.RecordJobResponse.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#RecordJobResponse.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.records.RecordJobResponse.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.records.RecordJobResponse" title="imednet.models.records.RecordJobResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecordJobResponse</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.records.RecordJobResponse.job_id">
@@ -1463,7 +1275,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.sites.Site">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.sites.</span></span><span class="sig-name descname"><span class="pre">Site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/sites.html#Site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.sites.Site" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1485,20 +1297,6 @@
 <dt class="sig sig-object py" id="imednet.models.sites.Site.date_modified">
 <span class="sig-name descname"><span class="pre">date_modified</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.sites.Site.date_modified" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.sites.Site.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/sites.html#Site.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.sites.Site.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Site instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.sites.Site" title="imednet.models.sites.Site"><code class="xref py py-class docutils literal notranslate"><span class="pre">Site</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.sites.Site.model_config">
@@ -1534,7 +1332,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.studies.Study">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.studies.</span></span><span class="sig-name descname"><span class="pre">Study</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/studies.html#Study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.studies.Study" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1603,7 +1401,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.subjects.Subject">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.subjects.</span></span><span class="sig-name descname"><span class="pre">Subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#Subject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.subjects.Subject" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1642,19 +1440,6 @@
 <span class="sig-name descname"><span class="pre">enrollment_start_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.subjects.Subject.enrollment_start_date" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.subjects.Subject.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#Subject.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.subjects.Subject.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.subjects.Subject" title="imednet.models.subjects.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.subjects.Subject.keywords">
 <span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[SubjectKeyword]</span></em><a class="headerlink" href="#imednet.models.subjects.Subject.keywords" title="Permalink to this definition"></a></dt>
@@ -1665,11 +1450,6 @@
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.subjects.Subject.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.subjects.Subject.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#Subject.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.subjects.Subject.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.subjects.Subject.site_id">
@@ -1711,7 +1491,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.subjects.SubjectKeyword">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.subjects.</span></span><span class="sig-name descname"><span class="pre">SubjectKeyword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#SubjectKeyword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.subjects.SubjectKeyword" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1726,19 +1506,6 @@
 <dt class="sig sig-object py" id="imednet.models.subjects.SubjectKeyword.date_added">
 <span class="sig-name descname"><span class="pre">date_added</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.subjects.SubjectKeyword.date_added" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.subjects.SubjectKeyword.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#SubjectKeyword.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.subjects.SubjectKeyword.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.subjects.SubjectKeyword" title="imednet.models.subjects.SubjectKeyword"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubjectKeyword</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.subjects.SubjectKeyword.keyword_id">
@@ -1769,7 +1536,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.users.Role">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.users.</span></span><span class="sig-name descname"><span class="pre">Role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#Role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.users.Role" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1805,20 +1572,6 @@
 <span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.users.Role.description" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.users.Role.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#Role.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.users.Role.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Role from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.users.Role" title="imednet.models.users.Role"><code class="xref py py-class docutils literal notranslate"><span class="pre">Role</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.users.Role.inactive">
 <span class="sig-name descname"><span class="pre">inactive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#imednet.models.users.Role.inactive" title="Permalink to this definition"></a></dt>
@@ -1840,11 +1593,6 @@
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.users.Role.name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.users.Role.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#Role.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.users.Role.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.users.Role.role_id">
 <span class="sig-name descname"><span class="pre">role_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.users.Role.role_id" title="Permalink to this definition"></a></dt>
@@ -1860,7 +1608,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.users.User">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.users.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#User"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.users.User" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1883,20 +1631,6 @@
 <dt class="sig sig-object py" id="imednet.models.users.User.first_name">
 <span class="sig-name descname"><span class="pre">first_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.users.User.first_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.users.User.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#User.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.users.User.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a User from JSON-like dict, with nested Role parsing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.users.User" title="imednet.models.users.User"><code class="xref py py-class docutils literal notranslate"><span class="pre">User</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.users.User.last_name">
@@ -1944,7 +1678,7 @@ instead of f”{user.first_name} {user.last_name}” everywhere.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.variables.Variable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.variables.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/variables.html#Variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.variables.Variable" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2007,21 +1741,6 @@ instead of f”{user.first_name} {user.last_name}” everywhere.</p>
 <span class="sig-name descname"><span class="pre">form_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.variables.Variable.form_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.variables.Variable.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/variables.html#Variable.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.variables.Variable.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Variable instance from a JSON-like dict,
-honoring the same parsing logic as the original.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.variables.Variable" title="imednet.models.variables.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.variables.Variable.label">
 <span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.variables.Variable.label" title="Permalink to this definition"></a></dt>
@@ -2032,11 +1751,6 @@ honoring the same parsing logic as the original.</p>
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.variables.Variable.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.variables.Variable.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/variables.html#Variable.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.variables.Variable.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.variables.Variable.revision">
@@ -2081,7 +1795,7 @@ honoring the same parsing logic as the original.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.visits.Visit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.visits.</span></span><span class="sig-name descname"><span class="pre">Visit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/visits.html#Visit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.visits.Visit" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2128,21 +1842,6 @@ honoring the same parsing logic as the original.</p>
 <span class="sig-name descname"><span class="pre">end_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional[datetime]</span></em><a class="headerlink" href="#imednet.models.visits.Visit.end_date" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.visits.Visit.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/visits.html#Visit.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.visits.Visit.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Visit instance from a JSON-like dict, honoring all the same parsing rules
-as the original dataclass.from_json.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.visits.Visit" title="imednet.models.visits.Visit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Visit</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.visits.Visit.interval_id">
 <span class="sig-name descname"><span class="pre">interval_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.visits.Visit.interval_id" title="Permalink to this definition"></a></dt>
@@ -2158,11 +1857,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.visits.Visit.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.visits.Visit.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/visits.html#Visit.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.visits.Visit.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.visits.Visit.start_date">
@@ -2214,7 +1908,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.BaseRecordRequest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">BaseRecordRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#BaseRecordRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.BaseRecordRequest" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2244,7 +1938,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Coding">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Coding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/codings.html#Coding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Coding" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2314,20 +2008,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.Coding.form_name">
 <span class="sig-name descname"><span class="pre">form_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Coding.form_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Coding.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/codings.html#Coding.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Coding.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Coding instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.codings.Coding" title="imednet.models.codings.Coding"><code class="xref py py-class docutils literal notranslate"><span class="pre">Coding</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Coding.model_config">
@@ -2426,7 +2106,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Form">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/forms.html#Form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Form" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2504,20 +2184,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.Form.form_type">
 <span class="sig-name descname"><span class="pre">form_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Form.form_type" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Form.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/forms.html#Form.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Form.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Form instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.forms.Form" title="imednet.models.forms.Form"><code class="xref py py-class docutils literal notranslate"><span class="pre">Form</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Form.model_config">
@@ -2661,7 +2327,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.FormSummary">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">FormSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#FormSummary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.FormSummary" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2686,20 +2352,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">form_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.FormSummary.form_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.FormSummary.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#FormSummary.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.FormSummary.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a FormSummary instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.intervals.FormSummary" title="imednet.models.intervals.FormSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">FormSummary</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.FormSummary.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.FormSummary.model_config" title="Permalink to this definition"></a></dt>
@@ -2711,7 +2363,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Interval">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#Interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Interval" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2784,20 +2436,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">forms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[FormSummary]</span></em><a class="headerlink" href="#imednet.models.Interval.forms" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Interval.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#Interval.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Interval.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create an Interval instance from JSON-like dict, including nested forms.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.intervals.Interval" title="imednet.models.intervals.Interval"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interval</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Interval.interval_description">
 <span class="sig-name descname"><span class="pre">interval_description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Interval.interval_description" title="Permalink to this definition"></a></dt>
@@ -2838,19 +2476,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.Interval.negative_slack">
 <span class="sig-name descname"><span class="pre">negative_slack</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.Interval.negative_slack" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Interval.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/intervals.html#Interval.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Interval.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>v</strong> (<em>Any</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Interval.positive_slack">
@@ -2971,7 +2596,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Job">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/jobs.html#Job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Job" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3003,20 +2628,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.Job.date_started">
 <span class="sig-name descname"><span class="pre">date_started</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.Job.date_started" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Job.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/jobs.html#Job.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Job.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Job instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.jobs.Job" title="imednet.models.jobs.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Job.job_id">
@@ -3075,20 +2686,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">date_started</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.JobStatus.date_started" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.JobStatus.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/jobs.html#JobStatus.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.JobStatus.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a JobStatus instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.jobs.JobStatus" title="imednet.models.jobs.JobStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobStatus</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.JobStatus.job_id">
 <span class="sig-name descname"><span class="pre">job_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.JobStatus.job_id" title="Permalink to this definition"></a></dt>
@@ -3120,7 +2717,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Keyword">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Keyword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Keyword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Keyword" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3135,19 +2732,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.Keyword.date_added">
 <span class="sig-name descname"><span class="pre">date_added</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.Keyword.date_added" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Keyword.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Keyword.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Keyword.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.records.Keyword" title="imednet.models.records.Keyword"><code class="xref py py-class docutils literal notranslate"><span class="pre">Keyword</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Keyword.keyword_id">
@@ -3175,7 +2759,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Query">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#Query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Query" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3219,20 +2803,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.Query.description">
 <span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Query.description" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Query.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#Query.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Query.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Query instance from a JSON-like dict, including nested comments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.queries.Query" title="imednet.models.queries.Query"><code class="xref py py-class docutils literal notranslate"><span class="pre">Query</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Query.model_config">
@@ -3285,7 +2855,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.QueryComment">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">QueryComment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#QueryComment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.QueryComment" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3318,30 +2888,11 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.QueryComment.date" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.QueryComment.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#QueryComment.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.QueryComment.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a QueryComment instance from a JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.queries.QueryComment" title="imednet.models.queries.QueryComment"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueryComment</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.QueryComment.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.QueryComment.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.QueryComment.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/queries.html#QueryComment.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.QueryComment.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.QueryComment.sequence">
@@ -3358,7 +2909,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Record">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Record" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3409,19 +2960,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">form_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Record.form_key" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Record.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Record.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Record.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.records.Record" title="imednet.models.records.Record"><code class="xref py py-class docutils literal notranslate"><span class="pre">Record</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Record.interval_id">
 <span class="sig-name descname"><span class="pre">interval_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.Record.interval_id" title="Permalink to this definition"></a></dt>
@@ -3441,11 +2979,6 @@ as the original dataclass.from_json.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Record.parent_record_id">
 <span class="sig-name descname"><span class="pre">parent_record_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.Record.parent_record_id" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Record.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#Record.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Record.parse_bool_field" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -3530,7 +3063,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.RecordJobResponse">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">RecordJobResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#RecordJobResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.RecordJobResponse" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3544,19 +3077,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.RecordJobResponse.batch_id">
 <span class="sig-name descname"><span class="pre">batch_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.RecordJobResponse.batch_id" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.RecordJobResponse.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/records.html#RecordJobResponse.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.RecordJobResponse.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.records.RecordJobResponse" title="imednet.models.records.RecordJobResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecordJobResponse</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.RecordJobResponse.job_id">
@@ -3579,7 +3099,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.RecordRevision">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">RecordRevision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/record_revisions.html#RecordRevision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.RecordRevision" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3623,20 +3143,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.RecordRevision.form_key">
 <span class="sig-name descname"><span class="pre">form_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.RecordRevision.form_key" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.RecordRevision.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/record_revisions.html#RecordRevision.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.RecordRevision.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a RecordRevision instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.record_revisions.RecordRevision" title="imednet.models.record_revisions.RecordRevision"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecordRevision</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.RecordRevision.interval_id">
@@ -3755,7 +3261,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Role">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#Role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Role" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3791,20 +3297,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Role.description" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Role.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#Role.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Role.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Role from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.users.Role" title="imednet.models.users.Role"><code class="xref py py-class docutils literal notranslate"><span class="pre">Role</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Role.inactive">
 <span class="sig-name descname"><span class="pre">inactive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#imednet.models.Role.inactive" title="Permalink to this definition"></a></dt>
@@ -3826,11 +3318,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Role.name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Role.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#Role.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Role.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Role.role_id">
 <span class="sig-name descname"><span class="pre">role_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Role.role_id" title="Permalink to this definition"></a></dt>
@@ -3846,7 +3333,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Site">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/sites.html#Site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Site" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3868,20 +3355,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.Site.date_modified">
 <span class="sig-name descname"><span class="pre">date_modified</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.Site.date_modified" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Site.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/sites.html#Site.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Site.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Site instance from JSON-like dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.sites.Site" title="imednet.models.sites.Site"><code class="xref py py-class docutils literal notranslate"><span class="pre">Site</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Site.model_config">
@@ -3914,7 +3387,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Study">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Study</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/studies.html#Study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Study" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4010,7 +3483,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Subject">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#Subject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Subject" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4049,19 +3522,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">enrollment_start_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.Subject.enrollment_start_date" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Subject.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#Subject.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Subject.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.subjects.Subject" title="imednet.models.subjects.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Subject.keywords">
 <span class="sig-name descname"><span class="pre">keywords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List[SubjectKeyword]</span></em><a class="headerlink" href="#imednet.models.Subject.keywords" title="Permalink to this definition"></a></dt>
@@ -4072,11 +3532,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.Subject.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Subject.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#Subject.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Subject.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Subject.site_id">
@@ -4118,7 +3573,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.SubjectKeyword">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">SubjectKeyword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#SubjectKeyword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.SubjectKeyword" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4133,19 +3588,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.SubjectKeyword.date_added">
 <span class="sig-name descname"><span class="pre">date_added</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#imednet.models.SubjectKeyword.date_added" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.SubjectKeyword.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/subjects.html#SubjectKeyword.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.SubjectKeyword.from_json" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.subjects.SubjectKeyword" title="imednet.models.subjects.SubjectKeyword"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubjectKeyword</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.SubjectKeyword.keyword_id">
@@ -4215,7 +3657,7 @@ as the original dataclass.from_json.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.User">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#User"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.User" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4238,20 +3680,6 @@ as the original dataclass.from_json.</p>
 <dt class="sig sig-object py" id="imednet.models.User.first_name">
 <span class="sig-name descname"><span class="pre">first_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.User.first_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.User.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/users.html#User.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.User.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a User from JSON-like dict, with nested Role parsing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.users.User" title="imednet.models.users.User"><code class="xref py py-class docutils literal notranslate"><span class="pre">User</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.User.last_name">
@@ -4296,7 +3724,7 @@ instead of f”{user.first_name} {user.last_name}” everywhere.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Variable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/variables.html#Variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Variable" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4359,21 +3787,6 @@ instead of f”{user.first_name} {user.last_name}” everywhere.</p>
 <span class="sig-name descname"><span class="pre">form_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Variable.form_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Variable.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/variables.html#Variable.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Variable.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Variable instance from a JSON-like dict,
-honoring the same parsing logic as the original.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.variables.Variable" title="imednet.models.variables.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Variable.label">
 <span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imednet.models.Variable.label" title="Permalink to this definition"></a></dt>
@@ -4384,11 +3797,6 @@ honoring the same parsing logic as the original.</p>
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.Variable.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Variable.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/variables.html#Variable.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Variable.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Variable.revision">
@@ -4430,7 +3838,7 @@ honoring the same parsing logic as the original.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.models.Visit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">Visit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/visits.html#Visit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Visit" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonModel</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4477,21 +3885,6 @@ honoring the same parsing logic as the original.</p>
 <span class="sig-name descname"><span class="pre">end_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional[datetime]</span></em><a class="headerlink" href="#imednet.models.Visit.end_date" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Visit.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/visits.html#Visit.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Visit.from_json" title="Permalink to this definition"></a></dt>
-<dd><p>Create a Visit instance from a JSON-like dict, honoring all the same parsing rules
-as the original dataclass.from_json.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#imednet.models.visits.Visit" title="imednet.models.visits.Visit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Visit</span></code></a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Visit.interval_id">
 <span class="sig-name descname"><span class="pre">interval_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imednet.models.Visit.interval_id" title="Permalink to this definition"></a></dt>
@@ -4507,11 +3900,6 @@ as the original dataclass.from_json.</p>
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True}</span></em><a class="headerlink" href="#imednet.models.Visit.model_config" title="Permalink to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="imednet.models.Visit.parse_bool_field">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_bool_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/models/visits.html#Visit.parse_bool_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.Visit.parse_bool_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imednet.models.Visit.start_date">

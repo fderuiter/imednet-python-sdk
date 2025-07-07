@@ -90,19 +90,14 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.utils.validators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">parse_bool</span><span class="p">,</span>
-    <span class="n">parse_datetime</span><span class="p">,</span>
-    <span class="n">parse_int_or_default</span><span class="p">,</span>
-    <span class="n">parse_str_or_default</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.models._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonModel</span>
 
 
-<div class="viewcode-block" id="Visit"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.visits.Visit">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Visit</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="Visit"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.visits.Visit">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Visit</span><span class="p">(</span><span class="n">JsonModel</span><span class="p">):</span>
     <span class="n">visit_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;visitId&quot;</span><span class="p">)</span>
     <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;studyKey&quot;</span><span class="p">)</span>
     <span class="n">interval_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;intervalId&quot;</span><span class="p">)</span>
@@ -119,44 +114,19 @@
     <span class="n">date_created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dateCreated&quot;</span><span class="p">)</span>
     <span class="n">date_modified</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dateModified&quot;</span><span class="p">)</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
     <span class="nd">@field_validator</span><span class="p">(</span>
-        <span class="s2">&quot;study_key&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;interval_name&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;subject_key&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;visit_date_form&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;visit_date_question&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;start_date&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;end_date&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;due_date&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visit_date&quot;</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fill_strs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_str_or_default</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;visit_id&quot;</span><span class="p">,</span> <span class="s2">&quot;interval_id&quot;</span><span class="p">,</span> <span class="s2">&quot;subject_id&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fill_ints</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_int_or_default</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;start_date&quot;</span><span class="p">,</span> <span class="s2">&quot;end_date&quot;</span><span class="p">,</span> <span class="s2">&quot;due_date&quot;</span><span class="p">,</span> <span class="s2">&quot;visit_date&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_clean_empty_dates</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">v</span>
 
-<div class="viewcode-block" id="Visit.parse_bool_field"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.visits.Visit.parse_bool_field">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;deleted&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_bool_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_bool</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;date_modified&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_datetimes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">parse_datetime</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Visit.from_json"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.visits.Visit.from_json">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Visit</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a Visit instance from a JSON-like dict, honoring all the same parsing rules</span>
-<span class="sd">        as the original dataclass.from_json.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div></div>
+    <span class="k">pass</span></div>
 </pre></div>
 
            </div>

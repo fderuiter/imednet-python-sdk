@@ -101,45 +101,16 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">nullcontext</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TracebackType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tenacity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RetryCallState</span><span class="p">,</span>
-    <span class="n">RetryError</span><span class="p">,</span>
-    <span class="n">Retrying</span><span class="p">,</span>
-    <span class="n">stop_after_attempt</span><span class="p">,</span>
-    <span class="n">wait_exponential</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tenacity</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryCallState</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ApiError</span><span class="p">,</span>
-    <span class="n">BadRequestError</span><span class="p">,</span>
-    <span class="n">ConflictError</span><span class="p">,</span>
-    <span class="n">ForbiddenError</span><span class="p">,</span>
-    <span class="n">NotFoundError</span><span class="p">,</span>
-    <span class="n">RateLimitError</span><span class="p">,</span>
-    <span class="n">RequestError</span><span class="p">,</span>
-    <span class="n">ServerError</span><span class="p">,</span>
-    <span class="n">UnauthorizedError</span><span class="p">,</span>
-<span class="p">)</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">._requester</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestExecutor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseClient</span><span class="p">,</span> <span class="n">Tracer</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<span class="n">STATUS_TO_ERROR</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">ApiError</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="mi">400</span><span class="p">:</span> <span class="n">BadRequestError</span><span class="p">,</span>
-    <span class="mi">401</span><span class="p">:</span> <span class="n">UnauthorizedError</span><span class="p">,</span>
-    <span class="mi">403</span><span class="p">:</span> <span class="n">ForbiddenError</span><span class="p">,</span>
-    <span class="mi">404</span><span class="p">:</span> <span class="n">NotFoundError</span><span class="p">,</span>
-    <span class="mi">409</span><span class="p">:</span> <span class="n">ConflictError</span><span class="p">,</span>
-    <span class="mi">429</span><span class="p">:</span> <span class="n">RateLimitError</span><span class="p">,</span>
-<span class="p">}</span>
 
 
 <div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../../imednet.core.html#imednet.core.client.Client">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Client</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
@@ -174,6 +145,13 @@
             <span class="n">log_level</span><span class="o">=</span><span class="n">log_level</span><span class="p">,</span>
             <span class="n">tracer</span><span class="o">=</span><span class="n">tracer</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">RequestExecutor</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">),</span>
+            <span class="n">is_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">,</span>
+            <span class="n">backoff_factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backoff_factor</span><span class="p">,</span>
+            <span class="n">tracer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tracer</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">security_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span>
@@ -202,76 +180,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the underlying HTTP client.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_should_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">retry_state</span><span class="p">:</span> <span class="n">RetryCallState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether to retry based on exception type and attempt count.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">retry_state</span><span class="o">.</span><span class="n">outcome</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="n">exc</span> <span class="o">=</span> <span class="n">retry_state</span><span class="o">.</span><span class="n">outcome</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="p">(</span><span class="n">httpx</span><span class="o">.</span><span class="n">RequestError</span><span class="p">,)):</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_should_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">RetryCallState</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">should_retry</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">_default_should_retry</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_request</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Internal request with retry logic and error handling.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">retryer</span> <span class="o">=</span> <span class="n">Retrying</span><span class="p">(</span>
-            <span class="n">stop</span><span class="o">=</span><span class="n">stop_after_attempt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">),</span>
-            <span class="n">wait</span><span class="o">=</span><span class="n">wait_exponential</span><span class="p">(</span><span class="n">multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backoff_factor</span><span class="p">),</span>
-            <span class="n">retry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_should_retry</span><span class="p">,</span>
-            <span class="n">reraise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">span_cm</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span>
-                <span class="s2">&quot;http_request&quot;</span><span class="p">,</span>
-                <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;endpoint&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">},</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracer</span>
-            <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
-        <span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">span_cm</span> <span class="k">as</span> <span class="n">span</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="n">retryer</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-                <span class="n">latency</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;http_request&quot;</span><span class="p">,</span>
-                    <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
-                        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
-                        <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
-                        <span class="s2">&quot;latency&quot;</span><span class="p">:</span> <span class="n">latency</span><span class="p">,</span>
-                    <span class="p">},</span>
-                <span class="p">)</span>
-            <span class="k">except</span> <span class="n">RetryError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Request failed after retries: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">RequestError</span><span class="p">(</span><span class="s2">&quot;Network request failed after retries&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">span</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&quot;status_code&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
-
-        <span class="c1"># HTTP error handling</span>
-        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">is_error</span><span class="p">:</span>
-            <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">body</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">body</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
-            <span class="n">exc_cls</span> <span class="o">=</span> <span class="n">STATUS_TO_ERROR</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">exc_cls</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">exc_cls</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-            <span class="k">if</span> <span class="mi">500</span> <span class="o">&lt;=</span> <span class="n">status</span> <span class="o">&lt;</span> <span class="mi">600</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ServerError</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">response</span>
+    <span class="nd">@_should_retry</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_should_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">RetryCallState</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">should_retry</span> <span class="o">=</span> <span class="n">func</span>
 
 <div class="viewcode-block" id="Client.get"><a class="viewcode-back" href="../../../imednet.core.html#imednet.core.client.Client.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -286,7 +201,7 @@
 <span class="sd">            path: URL path or full URL.</span>
 <span class="sd">            params: Query parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Client.post"><a class="viewcode-back" href="../../../imednet.core.html#imednet.core.client.Client.post">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -301,7 +216,7 @@
 <span class="sd">            path: URL path or full URL.</span>
 <span class="sd">            json: JSON body for the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div></div>
 </pre></div>
 
            </div>

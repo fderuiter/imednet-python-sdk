@@ -102,9 +102,9 @@ If the variable metadata for a form is missing, <code class="docutils literal no
 loads it from the API using <a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint" title="imednet.endpoints.variables.VariablesEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariablesEndpoint</span></code></a>.
 Any problems raise <a class="reference internal" href="imednet.core.html#imednet.core.exceptions.ValidationError" title="imednet.core.exceptions.ValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationError</span></code></a> before the
 record is sent to the server.</p>
-<p><code class="docutils literal notranslate"><span class="pre">SchemaValidator</span></code> and <code class="docutils literal notranslate"><span class="pre">AsyncSchemaValidator</span></code> share their core validation
-steps through a common mixin. The only difference is whether the cached
-metadata is refreshed using synchronous or asynchronous API calls.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SchemaValidator</span></code> works with both synchronous and asynchronous SDK clients.
+It refreshes cached metadata using the appropriate API calls depending on the
+client type.</p>
 <p>The diagram below outlines the main steps.</p>
 <div class="mermaid">
             graph TD
@@ -112,7 +112,7 @@ metadata is refreshed using synchronous or asynchronous API calls.</p>
     B --&gt; C{formKey or formId}
     C --&gt;|Resolve formKey| D[SchemaCache]
     D --&gt; E{variables cached?}
-    E -- No --&gt; F[refresh(study_key)]
+    E -- No --&gt; F[&quot;refresh(study_key)&quot;]
     F --&gt; G[sdk.variables.list]
     G --&gt; D
     E -- Yes --&gt; H[validate_record_data]
@@ -121,10 +121,10 @@ metadata is refreshed using synchronous or asynchronous API calls.</p>
     I -- Yes --&gt; J[submit to RecordsEndpoint]
 I -- No --&gt; K[raise ValidationError]
         </div><p>Record payloads can also be validated asynchronously. Use
-<code class="docutils literal notranslate"><span class="pre">AsyncSchemaValidator.validate_batch</span></code> with <code class="docutils literal notranslate"><span class="pre">AsyncImednetSDK</span></code> before
+<code class="docutils literal notranslate"><span class="pre">SchemaValidator.validate_batch</span></code> with <code class="docutils literal notranslate"><span class="pre">AsyncImednetSDK</span></code> before
 submitting records:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">AsyncImednetSDK</span><span class="p">()</span> <span class="k">as</span> <span class="n">sdk</span><span class="p">:</span>
-    <span class="n">validator</span> <span class="o">=</span> <span class="n">AsyncSchemaValidator</span><span class="p">(</span><span class="n">sdk</span><span class="p">)</span>
+    <span class="n">validator</span> <span class="o">=</span> <span class="n">SchemaValidator</span><span class="p">(</span><span class="n">sdk</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_batch</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">records</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">sdk</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">async_create</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">records</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">validator</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
 </pre></div>
@@ -136,7 +136,7 @@ metadata and sample records without an API connection. Combine these
 functions with <code class="docutils literal notranslate"><span class="pre">SchemaCache</span></code> to validate payloads locally:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleNamespace</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">imednet.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">fake_data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.validation.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.validation.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaCache</span>
 
 <span class="n">forms</span> <span class="o">=</span> <span class="n">fake_data</span><span class="o">.</span><span class="n">fake_forms_for_cache</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">study_key</span><span class="o">=</span><span class="s2">&quot;S&quot;</span><span class="p">)</span>
 <span class="n">variables</span> <span class="o">=</span> <span class="n">fake_data</span><span class="o">.</span><span class="n">fake_variables_for_cache</span><span class="p">(</span><span class="n">forms</span><span class="p">,</span> <span class="n">vars_per_form</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>

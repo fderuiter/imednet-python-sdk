@@ -99,7 +99,7 @@ finish. It repeatedly checks the job status until a terminal state is reached or
 a timeout occurs.</p>
 <div class="mermaid">
             graph TD
-    A[start wait()] --&gt; B[get job status]
+    A[&quot;start run()&quot;] --&gt; B[get job status]
     B --&gt; C{terminal state?}
     C -- Yes --&gt; D[return status]
     C -- No --&gt; E{timeout exceeded?}

@@ -29,7 +29,7 @@ Record Update
        A[create_or_update_records] --> B[validate_batch]
        B --> C[records.create]
        C --> D{wait?}
-       D -- Yes --> E[JobPoller.wait]
+       D -- Yes --> E[JobPoller.run]
        D -- No --> F[return Job]
        E --> F
 

@@ -99,9 +99,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.core.async_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncClient</span>
@@ -136,6 +134,7 @@
 
 <span class="c1"># Import workflow classes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.data_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataExtractionWorkflow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.job_poller</span><span class="w"> </span><span class="kn">import</span> <span class="n">JobPoller</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.query_management</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryManagementWorkflow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.record_mapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordMapper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.workflows.record_update</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordUpdateWorkflow</span>
@@ -358,24 +357,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Poll a job until it reaches a terminal state.&quot;&quot;&quot;</span>
 
-        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="s2">&quot;Job </span><span class="si">%s</span><span class="s2"> state=</span><span class="si">%s</span><span class="s2"> progress=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">batch_id</span><span class="p">,</span>
-                <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span> <span class="s2">&quot;CANCELLED&quot;</span><span class="p">}:</span>
-                <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">job</span>
-
-            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">timeout</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timeout (</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s) waiting for job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">JobPoller</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ImednetSDK.async_poll_job"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.async_poll_job">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_poll_job</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -390,24 +372,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Async client not configured&quot;</span><span class="p">)</span>
 
-        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">job</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">async_get</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="s2">&quot;Job </span><span class="si">%s</span><span class="s2"> state=</span><span class="si">%s</span><span class="s2"> progress=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">batch_id</span><span class="p">,</span>
-                <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;COMPLETED&quot;</span><span class="p">,</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span> <span class="s2">&quot;CANCELLED&quot;</span><span class="p">}:</span>
-                <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">job</span>
-
-            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">timeout</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timeout (</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s) waiting for job </span><span class="si">{</span><span class="n">batch_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">JobPoller</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">async_get</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span>
+            <span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">timeout</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="AsyncImednetSDK"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.AsyncImednetSDK">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AsyncImednetSDK</span><span class="p">(</span><span class="n">ImednetSDK</span><span class="p">):</span>
