@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated integration tests to patch `RequestExecutor` and allow non-strict `respx` mocking.
 - Airflow operators now obtain ``ImednetSDK`` instances via ``ImednetHook``
   instead of parsing connections directly.
+- Introduced ``ListGetEndpointMixin`` to unify ``list`` and ``get`` logic across endpoints.
 - Added ``with_sdk`` decorator for CLI commands to centralize SDK creation and
   error handling.
 - Introduced ``JsonModel`` base class for shared parsing logic and refactored
