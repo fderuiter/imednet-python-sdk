@@ -140,13 +140,13 @@ async def main():
 ### Record Validation
 
 The SDK can validate record payloads locally using cached form metadata. Create
-a :class:`~imednet.validation.schema.SchemaCache` and pass it to
+a :class:`~imednet.validation.cache.SchemaCache` and pass it to
 ``RecordsEndpoint.create`` or the ``RecordUpdateWorkflow`` methods. A
 ``ValidationError`` is raised if variables are unknown or required fields are
 missing.
 
 ```python
-from imednet.validation.schema import SchemaCache
+from imednet.validation.cache import SchemaCache
 
 schema = SchemaCache()
 schema.refresh(sdk.forms, sdk.variables, study_key)
@@ -155,15 +155,15 @@ sdk.records.create(study_key, record_data, schema=schema)
 
 When using ``AsyncImednetSDK`` the same logic applies asynchronously. Record
 payloads can be validated before submission with
-``AsyncSchemaValidator.validate_batch``:
+``SchemaValidator.validate_batch``:
 
 ```python
 from imednet import AsyncImednetSDK
-from imednet.validation.async_schema import AsyncSchemaValidator
+from imednet.validation.cache import SchemaValidator
 
 async def submit_records_async(records):
     async with AsyncImednetSDK() as sdk:
-        validator = AsyncSchemaValidator(sdk)
+        validator = SchemaValidator(sdk)
         await validator.validate_batch(study_key, records)
         await sdk.records.async_create(study_key, records, schema=validator.schema)
 ```

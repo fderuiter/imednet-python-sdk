@@ -79,10 +79,12 @@ def _import_operators(monkeypatch):
     return ops
 
 
-def _patch_basehook(monkeypatch, operators, extras=None):
+def _patch_basehook(monkeypatch, extras=None):
     conn = SimpleNamespace(login=None, password=None, extra_dejson=extras or {})
+    import imednet.integrations.airflow.hook as hook_mod
+
     monkeypatch.setattr(
-        operators.BaseHook,
+        hook_mod.BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -97,11 +99,12 @@ def _patch_s3(monkeypatch, operators):
 
 def test_to_s3_operator_success(monkeypatch):
     ops = _import_operators(monkeypatch)
-    _patch_basehook(monkeypatch, ops, {"api_key": "A", "security_key": "B"})
+    _patch_basehook(monkeypatch, {"api_key": "A", "security_key": "B"})
     hook = _patch_s3(monkeypatch, ops)
     sdk = MagicMock()
     sdk.records.list.return_value = [SimpleNamespace(model_dump=lambda: {"id": 1})]
-    monkeypatch.setattr(ops, "ImednetSDK", MagicMock(return_value=sdk))
+    hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
+    monkeypatch.setattr(ops, "ImednetHook", MagicMock(return_value=hook_inst))
 
     op = ops.ImednetToS3Operator(task_id="t", study_key="S", s3_bucket="B", s3_key="k")
     result = op.execute({})
@@ -109,34 +112,42 @@ def test_to_s3_operator_success(monkeypatch):
     assert result == "k"
     sdk.records.list.assert_called_once_with("S")
     hook.load_string.assert_called_once()
+    ops.ImednetHook.assert_called_once_with("imednet_default")
+    hook_inst.get_conn.assert_called_once_with()
 
 
 def test_to_s3_operator_missing_list(monkeypatch):
     ops = _import_operators(monkeypatch)
-    _patch_basehook(monkeypatch, ops)
+    _patch_basehook(monkeypatch)
     _patch_s3(monkeypatch, ops)
     sdk = MagicMock()
     sdk.bad = object()
-    monkeypatch.setattr(ops, "ImednetSDK", MagicMock(return_value=sdk))
+    hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
+    monkeypatch.setattr(ops, "ImednetHook", MagicMock(return_value=hook_inst))
 
     op = ops.ImednetToS3Operator(
         task_id="t", study_key="S", s3_bucket="B", s3_key="k", endpoint="bad"
     )
     with pytest.raises(ops.AirflowException):
         op.execute({})
+    ops.ImednetHook.assert_called_once_with("imednet_default")
+    hook_inst.get_conn.assert_called_once_with()
 
 
 def test_job_sensor(monkeypatch):
     ops = _import_operators(monkeypatch)
-    _patch_basehook(monkeypatch, ops)
+    _patch_basehook(monkeypatch)
     sdk = MagicMock()
     job = MagicMock(state="COMPLETED")
     sdk.jobs.get.return_value = job
-    monkeypatch.setattr(ops, "ImednetSDK", MagicMock(return_value=sdk))
+    hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
+    monkeypatch.setattr(ops, "ImednetHook", MagicMock(return_value=hook_inst))
 
     sensor = ops.ImednetJobSensor(task_id="t", study_key="S", batch_id="B")
     assert sensor.poke({}) is True
     sdk.jobs.get.assert_called_once_with("S", "B")
+    ops.ImednetHook.assert_called_once_with("imednet_default")
+    hook_inst.get_conn.assert_called_once_with()
 
     job.state = "FAILED"
     with pytest.raises(ops.AirflowException):

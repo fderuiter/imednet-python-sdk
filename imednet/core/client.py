@@ -12,45 +12,16 @@ This module defines the `Client` class which handles:
 from __future__ import annotations
 
 import logging
-import time
-from contextlib import nullcontext
 from types import TracebackType
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union, cast
 
 import httpx
-from tenacity import (
-    RetryCallState,
-    RetryError,
-    Retrying,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import RetryCallState
 
-from imednet.core.exceptions import (
-    ApiError,
-    BadRequestError,
-    ConflictError,
-    ForbiddenError,
-    NotFoundError,
-    RateLimitError,
-    RequestError,
-    ServerError,
-    UnauthorizedError,
-)
-
+from ._requester import RequestExecutor
 from .base_client import BaseClient, Tracer
 
 logger = logging.getLogger(__name__)
-
-
-STATUS_TO_ERROR: dict[int, type[ApiError]] = {
-    400: BadRequestError,
-    401: UnauthorizedError,
-    403: ForbiddenError,
-    404: NotFoundError,
-    409: ConflictError,
-    429: RateLimitError,
-}
 
 
 class Client(BaseClient):
@@ -85,6 +56,13 @@ class Client(BaseClient):
             log_level=log_level,
             tracer=tracer,
         )
+        self._executor = RequestExecutor(
+            lambda *a, **kw: self._client.request(*a, **kw),
+            is_async=False,
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            tracer=self._tracer,
+        )
 
     def _create_client(self, api_key: str, security_key: str) -> httpx.Client:
         return httpx.Client(
@@ -113,76 +91,13 @@ class Client(BaseClient):
         """Close the underlying HTTP client."""
         self._client.close()
 
-    def _should_retry(self, retry_state: RetryCallState) -> bool:
-        """Determine whether to retry based on exception type and attempt count."""
-        if retry_state.outcome is None:
-            return False
-        exc = retry_state.outcome.exception()
-        if isinstance(exc, (httpx.RequestError,)):
-            return True
-        return False
+    @property
+    def _should_retry(self) -> Callable[[RetryCallState], bool]:
+        return self._executor.should_retry or self._executor._default_should_retry
 
-    def _request(
-        self,
-        method: str,
-        url: str,
-        **kwargs: Any,
-    ) -> httpx.Response:
-        """
-        Internal request with retry logic and error handling.
-        """
-        retryer = Retrying(
-            stop=stop_after_attempt(self.retries),
-            wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self._should_retry,
-            reraise=True,
-        )
-
-        span_cm = (
-            self._tracer.start_as_current_span(
-                "http_request",
-                attributes={"endpoint": url, "method": method},
-            )
-            if self._tracer
-            else nullcontext()
-        )
-
-        with span_cm as span:
-            try:
-                start = time.monotonic()
-                response = retryer(lambda: self._client.request(method, url, **kwargs))
-                latency = time.monotonic() - start
-                logger.info(
-                    "http_request",
-                    extra={
-                        "method": method,
-                        "url": url,
-                        "status_code": response.status_code,
-                        "latency": latency,
-                    },
-                )
-            except RetryError as e:
-                logger.error("Request failed after retries: %s", e)
-                raise RequestError("Network request failed after retries")
-
-            if span is not None:
-                span.set_attribute("status_code", response.status_code)
-
-        # HTTP error handling
-        if response.is_error:
-            status = response.status_code
-            try:
-                body = response.json()
-            except Exception:
-                body = response.text
-            exc_cls = STATUS_TO_ERROR.get(status)
-            if exc_cls:
-                raise exc_cls(body)
-            if 500 <= status < 600:
-                raise ServerError(body)
-            raise ApiError(body)
-
-        return response
+    @_should_retry.setter
+    def _should_retry(self, func: Callable[[RetryCallState], bool]) -> None:
+        self._executor.should_retry = func
 
     def get(
         self,
@@ -197,7 +112,7 @@ class Client(BaseClient):
             path: URL path or full URL.
             params: Query parameters.
         """
-        return self._request("GET", path, params=params, **kwargs)
+        return cast(httpx.Response, self._executor("GET", path, params=params, **kwargs))
 
     def post(
         self,
@@ -212,4 +127,4 @@ class Client(BaseClient):
             path: URL path or full URL.
             json: JSON body for the request.
         """
-        return self._request("POST", path, json=json, **kwargs)
+        return cast(httpx.Response, self._executor("POST", path, json=json, **kwargs))

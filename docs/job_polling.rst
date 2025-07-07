@@ -8,7 +8,7 @@ a timeout occurs.
 .. mermaid::
 
    graph TD
-       A[start wait()] --> B[get job status]
+       A["start run()"] --> B[get job status]
        B --> C{terminal state?}
        C -- Yes --> D[return status]
        C -- No --> E{timeout exceeded?}

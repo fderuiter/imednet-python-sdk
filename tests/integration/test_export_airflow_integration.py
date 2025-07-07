@@ -202,7 +202,8 @@ def test_to_s3_operator_uploads(monkeypatch):
 
     sdk = MagicMock()
     sdk.records.list.return_value = [SimpleNamespace(model_dump=lambda: {"id": 1})]
-    monkeypatch.setattr(ops, "ImednetSDK", MagicMock(return_value=sdk))
+    hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
+    monkeypatch.setattr(ops, "ImednetHook", MagicMock(return_value=hook_inst))
 
     op = ops.ImednetToS3Operator(task_id="t", study_key="S", s3_bucket="bucket", s3_key="k")
     result = op.execute({})
@@ -210,4 +211,6 @@ def test_to_s3_operator_uploads(monkeypatch):
     assert result == "k"
     body = s3.get_object(Bucket="bucket", Key="k")["Body"].read().decode()
     assert "id" in body
+    ops.ImednetHook.assert_called_once_with("imednet_default")
+    hook_inst.get_conn.assert_called_once_with()
     sys.modules.pop("imednet.integrations.airflow.operators", None)

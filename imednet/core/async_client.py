@@ -3,30 +3,12 @@
 from __future__ import annotations
 
 import logging
-import time
-from contextlib import nullcontext
-from typing import Any, Dict, Optional, Union
+from typing import Any, Awaitable, Dict, Optional, Union, cast
 
 import httpx
-from tenacity import (
-    AsyncRetrying,
-    RetryCallState,
-    RetryError,
-    stop_after_attempt,
-    wait_exponential,
-)
 
+from ._requester import RequestExecutor
 from .base_client import BaseClient, Tracer
-from .exceptions import (
-    ApiError,
-    AuthenticationError,
-    AuthorizationError,
-    NotFoundError,
-    RateLimitError,
-    RequestError,
-    ServerError,
-    ValidationError,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +39,13 @@ class AsyncClient(BaseClient):
             log_level=log_level,
             tracer=tracer,
         )
+        self._executor = RequestExecutor(
+            lambda *a, **kw: self._client.request(*a, **kw),
+            is_async=True,
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            tracer=self._tracer,
+        )
 
     def _create_client(self, api_key: str, security_key: str) -> httpx.AsyncClient:
         return httpx.AsyncClient(
@@ -80,87 +69,16 @@ class AsyncClient(BaseClient):
         """Close the underlying async HTTP client."""
         await self._client.aclose()
 
-    def _should_retry(self, retry_state: RetryCallState) -> bool:
-        if retry_state.outcome is None:
-            return False
-        exc = retry_state.outcome.exception()
-        if isinstance(exc, (httpx.RequestError,)):
-            return True
-        return False
-
-    async def _request(
-        self,
-        method: str,
-        url: str,
-        **kwargs: Any,
-    ) -> httpx.Response:
-        retryer = AsyncRetrying(
-            stop=stop_after_attempt(self.retries),
-            wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self._should_retry,
-            reraise=True,
-        )
-
-        span_cm = (
-            self._tracer.start_as_current_span(
-                "http_request", attributes={"endpoint": url, "method": method}
-            )
-            if self._tracer
-            else nullcontext()
-        )
-
-        async with span_cm as span:
-            try:
-                start = time.monotonic()
-                async for attempt in retryer:
-                    with attempt:
-                        response = await self._client.request(method, url, **kwargs)
-                latency = time.monotonic() - start
-                logger.info(
-                    "http_request",
-                    extra={
-                        "method": method,
-                        "url": url,
-                        "status_code": response.status_code,
-                        "latency": latency,
-                    },
-                )
-            except RetryError as e:
-                logger.error("Request failed after retries: %s", e)
-                raise RequestError("Network request failed after retries")
-
-            if span is not None:
-                span.set_attribute("status_code", response.status_code)
-
-        if response.is_error:
-            status = response.status_code
-            try:
-                body = response.json()
-            except Exception:
-                body = response.text
-            if status == 400:
-                raise ValidationError(body)
-            if status == 401:
-                raise AuthenticationError(body)
-            if status == 403:
-                raise AuthorizationError(body)
-            if status == 404:
-                raise NotFoundError(body)
-            if status == 429:
-                raise RateLimitError(body)
-            if 500 <= status < 600:
-                raise ServerError(body)
-            raise ApiError(body)
-
-        return response
-
     async def get(
         self,
         path: str,
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        return await self._request("GET", path, params=params, **kwargs)
+        return await cast(
+            Awaitable[httpx.Response],
+            self._executor("GET", path, params=params, **kwargs),
+        )
 
     async def post(
         self,
@@ -168,4 +86,7 @@ class AsyncClient(BaseClient):
         json: Optional[Any] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        return await self._request("POST", path, json=json, **kwargs)
+        return await cast(
+            Awaitable[httpx.Response],
+            self._executor("POST", path, json=json, **kwargs),
+        )

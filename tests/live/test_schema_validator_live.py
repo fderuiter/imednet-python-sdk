@@ -4,7 +4,7 @@ from typing import Iterator
 import pytest
 from imednet.core.exceptions import ValidationError
 from imednet.sdk import ImednetSDK
-from imednet.validation.schema import SchemaValidator
+from imednet.validation.cache import SchemaValidator
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
