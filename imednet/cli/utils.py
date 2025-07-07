@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import typer
 from rich import print
 
 from ..config import load_config
 from ..sdk import ImednetSDK
+
+# Shared CLI argument for specifying a study key
+STUDY_KEY_ARG = typer.Argument(..., help="The key identifying the study.")
 
 
 def get_sdk() -> ImednetSDK:
@@ -50,3 +53,18 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
         else:
             filter_dict[key.strip()] = value
     return filter_dict
+
+
+def echo_fetch(name: str, study_key: str | None = None) -> None:
+    """Print a standardized fetching message."""
+    msg = f"Fetching {name} for study '{study_key}'..." if study_key else f"Fetching {name}..."
+    print(msg)
+
+
+def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None) -> None:
+    """Print list output with a standardized format."""
+    if items:
+        print(f"Found {len(items)} {label}:")
+        print(items)
+    else:
+        print(empty_msg or f"No {label} found.")

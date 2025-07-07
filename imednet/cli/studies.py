@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import typer
-from rich import print
 
 from ..sdk import ImednetSDK
 from .decorators import with_sdk
+from .utils import display_list, echo_fetch
 
 app = typer.Typer(name="studies", help="Manage studies.")
 
@@ -13,9 +13,6 @@ app = typer.Typer(name="studies", help="Manage studies.")
 @with_sdk
 def list_studies(sdk: ImednetSDK) -> None:
     """List available studies."""
-    print("Fetching studies...")
+    echo_fetch("studies")
     studies_list = sdk.studies.list()
-    if studies_list:
-        print(studies_list)
-    else:
-        print("No studies found.")
+    display_list(studies_list, "studies")
