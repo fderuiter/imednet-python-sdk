@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-07-07
+
 ### Changed
 - Consolidated job polling logic into a reusable ``JobPoller`` supporting sync
   and async flows.
