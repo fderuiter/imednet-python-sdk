@@ -3,61 +3,22 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Awaitable, Dict, Optional, Union, cast
+from typing import Any, Awaitable, Dict, Optional, cast
 
 import httpx
 
-from ._requester import RequestExecutor
-from .base_client import BaseClient, Tracer
+from .http_client_base import HTTPClientBase
 
 logger = logging.getLogger(__name__)
 
 
-class AsyncClient(BaseClient):
+class AsyncClient(HTTPClientBase):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
-    DEFAULT_BASE_URL = BaseClient.DEFAULT_BASE_URL
+    DEFAULT_BASE_URL = HTTPClientBase.DEFAULT_BASE_URL
 
-    def __init__(
-        self,
-        api_key: Optional[str] = None,
-        security_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        timeout: Union[float, httpx.Timeout] = 30.0,
-        retries: int = 3,
-        backoff_factor: float = 1.0,
-        log_level: Union[int, str] = logging.INFO,
-        tracer: Optional[Tracer] = None,
-    ) -> None:
-        super().__init__(
-            api_key=api_key,
-            security_key=security_key,
-            base_url=base_url,
-            timeout=timeout,
-            retries=retries,
-            backoff_factor=backoff_factor,
-            log_level=log_level,
-            tracer=tracer,
-        )
-        self._executor = RequestExecutor(
-            lambda *a, **kw: self._client.request(*a, **kw),
-            is_async=True,
-            retries=self.retries,
-            backoff_factor=self.backoff_factor,
-            tracer=self._tracer,
-        )
-
-    def _create_client(self, api_key: str, security_key: str) -> httpx.AsyncClient:
-        return httpx.AsyncClient(
-            base_url=self.base_url,
-            headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "x-api-key": api_key,
-                "x-imn-security-key": security_key,
-            },
-            timeout=self.timeout,
-        )
+    HTTPX_CLIENT_CLS = httpx.AsyncClient
+    IS_ASYNC = True
 
     async def __aenter__(self) -> "AsyncClient":
         return self
@@ -77,7 +38,7 @@ class AsyncClient(BaseClient):
     ) -> httpx.Response:
         return await cast(
             Awaitable[httpx.Response],
-            self._executor("GET", path, params=params, **kwargs),
+            self._request("GET", path, params=params, **kwargs),
         )
 
     async def post(
@@ -88,5 +49,5 @@ class AsyncClient(BaseClient):
     ) -> httpx.Response:
         return await cast(
             Awaitable[httpx.Response],
-            self._executor("POST", path, json=json, **kwargs),
+            self._request("POST", path, json=json, **kwargs),
         )
