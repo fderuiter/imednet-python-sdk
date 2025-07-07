@@ -10,9 +10,9 @@ This module provides the ImednetSDK class which:
 from __future__ import annotations
 
 import asyncio
-import os
 from typing import Any, Dict, List, Optional, Union
 
+from .config import load_config
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
@@ -91,18 +91,18 @@ class ImednetSDK:
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
 
-        self._api_key = api_key or os.getenv("IMEDNET_API_KEY")
-        self._security_key = security_key or os.getenv("IMEDNET_SECURITY_KEY")
-        self._base_url = base_url or os.getenv("IMEDNET_BASE_URL")
+        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
-        self._validate_env()
+        self._api_key = config.api_key
+        self._security_key = config.security_key
+        self._base_url = config.base_url
 
         self.ctx = Context()
 
         self._client = Client(
-            api_key=self._api_key,
-            security_key=self._security_key,
-            base_url=self._base_url,
+            api_key=config.api_key,
+            security_key=config.security_key,
+            base_url=config.base_url,
             timeout=timeout,
             retries=retries,
             backoff_factor=backoff_factor,
@@ -110,9 +110,9 @@ class ImednetSDK:
         )
         self._async_client = (
             AsyncClient(
-                api_key=self._api_key,
-                security_key=self._security_key,
-                base_url=self._base_url,
+                api_key=config.api_key,
+                security_key=config.security_key,
+                base_url=config.base_url,
                 timeout=timeout,
                 retries=retries,
                 backoff_factor=backoff_factor,
@@ -134,11 +134,6 @@ class ImednetSDK:
         self._client.retry_policy = policy
         if self._async_client is not None:
             self._async_client.retry_policy = policy
-
-    def _validate_env(self) -> None:
-        """Ensure required credentials are present."""
-        if not self._api_key or not self._security_key:
-            raise ValueError("API key and security key are required")
 
     def _init_endpoints(self) -> None:
         """Instantiate endpoint clients."""
