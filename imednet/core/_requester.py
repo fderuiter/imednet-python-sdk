@@ -103,7 +103,50 @@ class RequestExecutor:
             )
         return nullcontext()
 
-    def _sync_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+    def _execute_with_retry(
+        self,
+        send_fn: Callable[[], Awaitable[httpx.Response] | httpx.Response],
+        method: str,
+        url: str,
+        *,
+        is_async: bool,
+    ) -> Coroutine[Any, Any, httpx.Response] | httpx.Response:
+        if is_async:
+
+            async def _run_async() -> httpx.Response:
+                retryer = AsyncRetrying(
+                    stop=stop_after_attempt(self.retries),
+                    wait=wait_exponential(multiplier=self.backoff_factor),
+                    retry=self._should_retry,
+                    reraise=True,
+                )
+
+                async with self._get_span_cm(method, url) as span:
+                    try:
+                        start = time.monotonic()
+                        async_send = cast(Callable[[], Awaitable[httpx.Response]], send_fn)
+                        response: httpx.Response = await retryer(async_send)
+                        latency = time.monotonic() - start
+                        logger.info(
+                            "http_request",
+                            extra={
+                                "method": method,
+                                "url": url,
+                                "status_code": response.status_code,
+                                "latency": latency,
+                            },
+                        )
+                    except RetryError as e:
+                        logger.error("Request failed after retries: %s", e)
+                        raise RequestError("Network request failed after retries")
+
+                    if span is not None:
+                        span.set_attribute("status_code", response.status_code)
+
+                return self._handle_response(response)
+
+            return _run_async()
+
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
@@ -114,7 +157,8 @@ class RequestExecutor:
         with self._get_span_cm(method, url) as span:
             try:
                 start = time.monotonic()
-                response = retryer(lambda: cast(httpx.Response, self.send(method, url, **kwargs)))
+                sync_send = cast(Callable[[], httpx.Response], send_fn)
+                response: httpx.Response = retryer(sync_send)
                 latency = time.monotonic() - start
                 logger.info(
                     "http_request",
@@ -134,38 +178,20 @@ class RequestExecutor:
 
         return self._handle_response(response)
 
-    async def _async_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
-        retryer = AsyncRetrying(
-            stop=stop_after_attempt(self.retries),
-            wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self._should_retry,
-            reraise=True,
+    def _sync_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        def send_fn() -> httpx.Response:
+            return cast(httpx.Response, self.send(method, url, **kwargs))
+
+        return cast(
+            httpx.Response,
+            self._execute_with_retry(send_fn, method, url, is_async=False),
         )
 
-        async with self._get_span_cm(method, url) as span:
-            try:
-                start = time.monotonic()
-                async for attempt in retryer:
-                    with attempt:
-                        response = await cast(
-                            Awaitable[httpx.Response],
-                            self.send(method, url, **kwargs),
-                        )
-                latency = time.monotonic() - start
-                logger.info(
-                    "http_request",
-                    extra={
-                        "method": method,
-                        "url": url,
-                        "status_code": response.status_code,
-                        "latency": latency,
-                    },
-                )
-            except RetryError as e:
-                logger.error("Request failed after retries: %s", e)
-                raise RequestError("Network request failed after retries")
+    async def _async_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        async def send_fn() -> httpx.Response:
+            return await cast(Awaitable[httpx.Response], self.send(method, url, **kwargs))
 
-            if span is not None:
-                span.set_attribute("status_code", response.status_code)
-
-        return self._handle_response(response)
+        return await cast(
+            Awaitable[httpx.Response],
+            self._execute_with_retry(send_fn, method, url, is_async=True),
+        )

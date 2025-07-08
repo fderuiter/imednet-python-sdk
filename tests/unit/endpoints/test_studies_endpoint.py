@@ -23,7 +23,7 @@ def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patc
     captured = paginator_factory(studies, [{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
 
-    res = ep.get("S1")
+    res = ep.get(None, "S1")
 
     assert captured["path"] == "/api/v1/edc/studies"
     assert captured["params"] == {"filter": "FILTERED"}
@@ -35,7 +35,7 @@ def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
     ep = studies.StudiesEndpoint(dummy_client, context)
     paginator_factory(studies, [])
     with pytest.raises(ValueError):
-        ep.get("missing")
+        ep.get(None, "missing")
 
 
 def test_list_caches_results(dummy_client, context, paginator_factory):

@@ -12,11 +12,12 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, Union
 
-from .config import load_config
+from .config import Config, load_config
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
 from .core.retry import RetryPolicy
+from .endpoints.base import BaseEndpoint
 from .endpoints.codings import CodingsEndpoint
 from .endpoints.forms import FormsEndpoint
 from .endpoints.intervals import IntervalsEndpoint
@@ -64,6 +65,24 @@ class Workflows:
         self.subject_data = SubjectDataWorkflow(sdk_instance)
 
 
+# Mapping of attribute names to their endpoint classes
+_ENDPOINT_REGISTRY: dict[str, type[BaseEndpoint]] = {
+    "codings": CodingsEndpoint,
+    "forms": FormsEndpoint,
+    "intervals": IntervalsEndpoint,
+    "jobs": JobsEndpoint,
+    "queries": QueriesEndpoint,
+    "record_revisions": RecordRevisionsEndpoint,
+    "records": RecordsEndpoint,
+    "sites": SitesEndpoint,
+    "studies": StudiesEndpoint,
+    "subjects": SubjectsEndpoint,
+    "users": UsersEndpoint,
+    "variables": VariablesEndpoint,
+    "visits": VisitsEndpoint,
+}
+
+
 class ImednetSDK:
     """
     Public entry-point for library users.
@@ -77,6 +96,21 @@ class ImednetSDK:
         subjects: Access to subject-related endpoints.
         etc...
     """
+
+    codings: CodingsEndpoint
+    forms: FormsEndpoint
+    intervals: IntervalsEndpoint
+    jobs: JobsEndpoint
+    queries: QueriesEndpoint
+    record_revisions: RecordRevisionsEndpoint
+    records: RecordsEndpoint
+    sites: SitesEndpoint
+    studies: StudiesEndpoint
+    subjects: SubjectsEndpoint
+    users: UsersEndpoint
+    variables: VariablesEndpoint
+    visits: VisitsEndpoint
+    config: Config
 
     def __init__(
         self,
@@ -93,6 +127,9 @@ class ImednetSDK:
 
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
+        self._validate_env(config)
+
+        self.config = config
         self._api_key = config.api_key
         self._security_key = config.security_key
         self._base_url = config.base_url
@@ -125,6 +162,15 @@ class ImednetSDK:
         self._init_endpoints()
         self.workflows = Workflows(self)
 
+    def _validate_env(self, config: Config) -> None:
+        """Ensure required credentials are present."""
+        if not config.api_key and not config.security_key:
+            raise ValueError("API key and security key are required")
+        elif not config.api_key:
+            raise ValueError("API key is required")
+        elif not config.security_key:
+            raise ValueError("Security key is required")
+
     @property
     def retry_policy(self) -> RetryPolicy:
         return self._client.retry_policy
@@ -137,19 +183,8 @@ class ImednetSDK:
 
     def _init_endpoints(self) -> None:
         """Instantiate endpoint clients."""
-        self.codings = CodingsEndpoint(self._client, self.ctx, self._async_client)
-        self.forms = FormsEndpoint(self._client, self.ctx, self._async_client)
-        self.intervals = IntervalsEndpoint(self._client, self.ctx, self._async_client)
-        self.jobs = JobsEndpoint(self._client, self.ctx, self._async_client)
-        self.queries = QueriesEndpoint(self._client, self.ctx, self._async_client)
-        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx, self._async_client)
-        self.records = RecordsEndpoint(self._client, self.ctx, self._async_client)
-        self.sites = SitesEndpoint(self._client, self.ctx, self._async_client)
-        self.studies = StudiesEndpoint(self._client, self.ctx, self._async_client)
-        self.subjects = SubjectsEndpoint(self._client, self.ctx, self._async_client)
-        self.users = UsersEndpoint(self._client, self.ctx, self._async_client)
-        self.variables = VariablesEndpoint(self._client, self.ctx, self._async_client)
-        self.visits = VisitsEndpoint(self._client, self.ctx, self._async_client)
+        for attr, endpoint_cls in _ENDPOINT_REGISTRY.items():
+            setattr(self, attr, endpoint_cls(self._client, self.ctx, self._async_client))
 
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""
@@ -261,7 +296,7 @@ class ImednetSDK:
 
     def get_users(self, study_key: str, include_inactive: bool = False) -> List[User]:
         """Return users for the specified study."""
-        return self.users.list(study_key, include_inactive)
+        return self.users.list(study_key, include_inactive=include_inactive)
 
     def get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Return job details for the specified batch."""
