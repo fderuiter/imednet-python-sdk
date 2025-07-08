@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Organized Airflow integration code into ``hooks``, ``operators`` and ``sensors`` subpackages.
 - Grouped CLI commands into dedicated subpackages for easier navigation.
 - Fixed ``ImednetHook`` to import configuration from the correct package.
+- Added async tests for `RecordUpdateWorkflow` to cover refresh and validation.
 
 ## [0.1.4] 
 
