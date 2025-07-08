@@ -1,5 +1,6 @@
-import imednet.endpoints.variables as variables
 import pytest
+
+import imednet.endpoints.variables as variables
 from imednet.models.variables import Variable
 
 

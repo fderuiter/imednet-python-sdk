@@ -2,6 +2,7 @@ import os
 from typing import Iterator
 
 import pytest
+
 from imednet.sdk import ImednetSDK
 
 API_KEY = os.getenv("IMEDNET_API_KEY")

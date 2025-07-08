@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from imednet.integrations.airflow import ImednetToS3Operator
-
 from airflow import DAG
+from imednet.integrations.airflow import ImednetToS3Operator
 
 """Example DAG using :class:`ImednetToS3Operator` to export data to S3.
 

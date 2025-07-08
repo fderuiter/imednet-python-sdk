@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-import typer
 from rich import print
+import typer
 
-from ..sdk import ImednetSDK
-from .decorators import with_sdk
-from .utils import STUDY_KEY_ARG, parse_filter_args
+from ...sdk import ImednetSDK
+from ..decorators import with_sdk
+from ..utils import STUDY_KEY_ARG, parse_filter_args
 
 app = typer.Typer(name="workflows", help="Execute common data workflows.")
 
@@ -39,7 +39,7 @@ def extract_records(
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
-    from . import DataExtractionWorkflow
+    from .. import DataExtractionWorkflow
 
     workflow = DataExtractionWorkflow(sdk)
 

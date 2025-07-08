@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
+import os
 from typing import Optional
 
 __all__ = ["Config", "load_config"]

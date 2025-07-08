@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Sequence, Union
 
-import typer
 from rich import print
+import typer
 
 from ..config import load_config
 from ..sdk import ImednetSDK

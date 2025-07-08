@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import httpx
+
 import imednet.core.base_client as base_client
 from imednet.core.base_client import BaseClient
 

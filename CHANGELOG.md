@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
 - Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
   record dictionary construction.
+- Renamed ``models._base`` to ``models.json_base`` to avoid import confusion.
+- Documented the sentinel return value in ``parse_datetime``.
+- Sorted imports across the repository using ``isort``.
+- Replaced placeholder description in ``workflows/record_update.py``.
+- Added docstrings to private helpers in ``core/_requester.py``.
+- Added tests covering the default sentinel date in ``parse_datetime``.
+- Organized Airflow integration code into ``hooks``, ``operators`` and ``sensors`` subpackages.
+- Grouped CLI commands into dedicated subpackages for easier navigation.
+- Fixed ``ImednetHook`` to import configuration from the correct package.
+- Added async tests for `RecordUpdateWorkflow` to cover refresh and validation.
+- Extracted `_execute_with_retry` into dedicated sync and async variants for
+  clearer retry logic.
+- Added an `isort` step to pre-commit and CI checks.
+- CI now fails if test coverage drops below 90%.
 
 ## [0.1.4] 
 

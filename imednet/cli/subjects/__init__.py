@@ -4,9 +4,9 @@ from typing import List, Optional
 
 import typer
 
-from ..sdk import ImednetSDK
-from .decorators import with_sdk
-from .utils import STUDY_KEY_ARG, display_list, echo_fetch, parse_filter_args
+from ...sdk import ImednetSDK
+from ..decorators import with_sdk
+from ..utils import STUDY_KEY_ARG, display_list, echo_fetch, parse_filter_args
 
 app = typer.Typer(name="subjects", help="Manage subjects within a study.")
 

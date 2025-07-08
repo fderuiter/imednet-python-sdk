@@ -5,7 +5,7 @@ from typing import Optional
 
 from pydantic import Field
 
-from imednet.models._base import JsonModel
+from imednet.models.json_base import JsonModel
 
 
 class Variable(JsonModel):

@@ -1,4 +1,5 @@
 import pytest
+
 from imednet.config import Config, load_config
 
 
