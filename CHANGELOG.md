@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Grouped CLI commands into dedicated subpackages for easier navigation.
 - Fixed ``ImednetHook`` to import configuration from the correct package.
 - Added async tests for `RecordUpdateWorkflow` to cover refresh and validation.
+- Extracted `_execute_with_retry` into dedicated sync and async variants for
+  clearer retry logic.
 
 ## [0.1.4] 
 
