@@ -1,11 +1,9 @@
 """Airflow hook for retrieving an :class:`ImednetSDK` instance."""
 
-from __future__ import annotations
-
 from airflow.hooks.base import BaseHook
 
-from ...config import load_config
-from ...sdk import ImednetSDK
+from ....config import load_config
+from ....sdk import ImednetSDK
 
 
 class ImednetHook(BaseHook):
@@ -16,7 +14,11 @@ class ImednetHook(BaseHook):
         self.imednet_conn_id = imednet_conn_id
 
     def get_conn(self) -> ImednetSDK:  # type: ignore[override]
-        from airflow.hooks.base import BaseHook
+        from airflow.hooks.base import BaseHook as CurrentBaseHook
+
+        global BaseHook
+        if BaseHook is not CurrentBaseHook:
+            BaseHook = CurrentBaseHook
 
         conn = BaseHook.get_connection(self.imednet_conn_id)
         extras = conn.extra_dejson

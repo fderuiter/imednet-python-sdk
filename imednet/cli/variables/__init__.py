@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import typer
 
-from ..sdk import ImednetSDK
-from .decorators import with_sdk
-from .utils import STUDY_KEY_ARG, display_list, echo_fetch
+from ...sdk import ImednetSDK
+from ..decorators import with_sdk
+from ..utils import STUDY_KEY_ARG, display_list, echo_fetch
 
 app = typer.Typer(name="variables", help="Manage variables within a study.")
 

@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import httpx
 import pytest
+
 from imednet.core import exceptions
 from imednet.core.async_client import AsyncClient
 

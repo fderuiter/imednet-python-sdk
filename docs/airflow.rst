@@ -58,6 +58,7 @@ when writing to S3.
 
 Operators and Sensors
 ---------------------
+The Airflow integration organizes hooks, operators, and sensors in dedicated subpackages for clarity.
 
 ``ImednetExportOperator`` saves records to a local file using helpers from
 ``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3

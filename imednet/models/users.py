@@ -5,7 +5,7 @@ from typing import List
 
 from pydantic import Field, computed_field
 
-from imednet.models._base import JsonModel
+from imednet.models.json_base import JsonModel
 
 
 class Role(JsonModel):

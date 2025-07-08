@@ -1,5 +1,6 @@
-import imednet.sdk as sdk_mod
 import pytest
+
+import imednet.sdk as sdk_mod
 from imednet.models.jobs import JobStatus
 
 

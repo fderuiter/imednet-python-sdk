@@ -2,6 +2,7 @@ import types
 from unittest.mock import MagicMock
 
 import pytest
+
 from imednet.core.exceptions import ValidationError
 from imednet.models.jobs import Job
 from imednet.models.variables import Variable

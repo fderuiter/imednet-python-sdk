@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from imednet.integrations.airflow import ImednetExportOperator
-
 from airflow import DAG
+from imednet.integrations.airflow import ImednetExportOperator
 
 """Example DAG showing :class:`ImednetExportOperator` to write records to a file.
 

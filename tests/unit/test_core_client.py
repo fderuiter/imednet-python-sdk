@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import httpx
 import pytest
+
 from imednet.core import exceptions
 from imednet.core.base_client import BaseClient
 from imednet.core.client import Client

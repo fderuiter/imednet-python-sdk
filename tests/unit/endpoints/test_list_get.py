@@ -1,3 +1,5 @@
+import pytest
+
 import imednet.endpoints.codings as codings
 import imednet.endpoints.forms as forms
 import imednet.endpoints.intervals as intervals
@@ -10,7 +12,6 @@ import imednet.endpoints.subjects as subjects
 import imednet.endpoints.users as users
 import imednet.endpoints.variables as variables
 import imednet.endpoints.visits as visits
-import pytest
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval

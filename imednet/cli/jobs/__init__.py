@@ -3,9 +3,9 @@ from __future__ import annotations
 import typer
 from rich import print
 
-from ..sdk import ImednetSDK
-from .decorators import with_sdk
-from .utils import STUDY_KEY_ARG
+from ...sdk import ImednetSDK
+from ..decorators import with_sdk
+from ..utils import STUDY_KEY_ARG
 
 app = typer.Typer(name="jobs", help="Manage background jobs.")
 

@@ -1,29 +1,20 @@
 imednet.integrations.airflow package
 ====================================
 
-Submodules
-----------
-
-imednet.integrations.airflow.export\_operator module
-----------------------------------------------------
-
-.. automodule:: imednet.integrations.airflow.export_operator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-imednet.integrations.airflow.hook module
-----------------------------------------
-
-.. automodule:: imednet.integrations.airflow.hook
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-imednet.integrations.airflow.operators module
----------------------------------------------
+Subpackages
+-----------
 
 .. automodule:: imednet.integrations.airflow.operators
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.integrations.airflow.sensors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: imednet.integrations.airflow.hooks
    :members:
    :undoc-members:
    :show-inheritance:
