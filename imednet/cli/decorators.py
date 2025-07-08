@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from functools import wraps
 import inspect
+from functools import wraps
 from typing import Callable, Concatenate, ParamSpec, TypeVar
 
-from rich import print
 import typer
+from rich import print
 
 from ..core.exceptions import ApiError
 from ..sdk import ImednetSDK

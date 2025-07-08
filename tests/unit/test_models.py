@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Any, Union, get_args, get_origin
 
-from pydantic import BaseModel, ValidationError
 import pytest
+from pydantic import BaseModel, ValidationError
 
 import imednet.models as models
 

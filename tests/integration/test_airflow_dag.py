@@ -3,8 +3,8 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import boto3
-from moto import mock_aws
 import pytest
+from moto import mock_aws
 
 
 @mock_aws

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from rich import print
 import typer
+from rich import print
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
