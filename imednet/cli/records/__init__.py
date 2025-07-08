@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-from rich import print
 import typer
+from rich import print
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk

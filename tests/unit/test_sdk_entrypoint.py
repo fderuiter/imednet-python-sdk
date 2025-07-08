@@ -1,3 +1,4 @@
+import imednet.sdk as sdk_mod
 from imednet.core.client import Client
 from imednet.core.context import Context
 from imednet.endpoints.codings import CodingsEndpoint
@@ -13,7 +14,6 @@ from imednet.endpoints.subjects import SubjectsEndpoint
 from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
-import imednet.sdk as sdk_mod
 from imednet.workflows.data_extraction import DataExtractionWorkflow
 from imednet.workflows.query_management import QueryManagementWorkflow
 from imednet.workflows.record_mapper import RecordMapper

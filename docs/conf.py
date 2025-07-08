@@ -2,10 +2,10 @@
 import os
 import sys
 import types
+import warnings
 
 # mypy: ignore-errors
 from typing import Any
-import warnings
 
 """
 Configuration file for the Sphinx documentation builder.

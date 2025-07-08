@@ -3,8 +3,8 @@ from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
 
 import boto3
-from moto import mock_aws
 import pandas as pd
+from moto import mock_aws
 
 from imednet.integrations import export as export_mod
 

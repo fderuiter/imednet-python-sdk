@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dotenv import load_dotenv
 import typer
+from dotenv import load_dotenv
 
 # Re-export for tests
 from ..integrations.export import export_to_csv  # noqa: F401
