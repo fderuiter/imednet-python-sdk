@@ -12,7 +12,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, Union
 
-from .config import load_config
+from .config import Config, load_config
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
@@ -110,6 +110,7 @@ class ImednetSDK:
     users: UsersEndpoint
     variables: VariablesEndpoint
     visits: VisitsEndpoint
+    config: Config
 
     def __init__(
         self,
@@ -126,6 +127,9 @@ class ImednetSDK:
 
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
+        self._validate_env(config)
+
+        self.config = config
         self._api_key = config.api_key
         self._security_key = config.security_key
         self._base_url = config.base_url
@@ -157,6 +161,11 @@ class ImednetSDK:
 
         self._init_endpoints()
         self.workflows = Workflows(self)
+
+    def _validate_env(self, config: Config) -> None:
+        """Ensure required credentials are present."""
+        if not config.api_key or not config.security_key:
+            raise ValueError("API key and security key are required")
 
     @property
     def retry_policy(self) -> RetryPolicy:
