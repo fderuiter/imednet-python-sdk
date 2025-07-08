@@ -82,6 +82,7 @@ class RequestExecutor:
         return self._sync_execute(method, url, **kwargs)
 
     def _handle_response(self, response: httpx.Response) -> httpx.Response:
+        """Return the response or raise an appropriate ``ApiError``."""
         if response.is_error:
             status = response.status_code
             try:
@@ -111,6 +112,7 @@ class RequestExecutor:
         *,
         is_async: bool,
     ) -> Coroutine[Any, Any, httpx.Response] | httpx.Response:
+        """Send a request with retry logic and tracing."""
         if is_async:
 
             async def _run_async() -> httpx.Response:

@@ -79,9 +79,17 @@ def _import_operators(monkeypatch):
     return ops
 
 
+def _import_sensors(monkeypatch):
+    _setup_airflow(monkeypatch)
+    import imednet.integrations.airflow.sensors as sensors
+
+    importlib.reload(sensors)
+    return sensors
+
+
 def _patch_basehook(monkeypatch, extras=None):
     conn = SimpleNamespace(login=None, password=None, extra_dejson=extras or {})
-    import imednet.integrations.airflow.hook as hook_mod
+    import imednet.integrations.airflow.hooks as hook_mod
 
     monkeypatch.setattr(
         hook_mod.BaseHook,
@@ -135,18 +143,19 @@ def test_to_s3_operator_missing_list(monkeypatch):
 
 
 def test_job_sensor(monkeypatch):
+    sensors = _import_sensors(monkeypatch)
     ops = _import_operators(monkeypatch)
     _patch_basehook(monkeypatch)
     sdk = MagicMock()
     job = MagicMock(state="COMPLETED")
     sdk.jobs.get.return_value = job
     hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
-    monkeypatch.setattr(ops, "ImednetHook", MagicMock(return_value=hook_inst))
+    monkeypatch.setattr(sensors, "ImednetHook", MagicMock(return_value=hook_inst))
 
-    sensor = ops.ImednetJobSensor(task_id="t", study_key="S", batch_id="B")
+    sensor = sensors.ImednetJobSensor(task_id="t", study_key="S", batch_id="B")
     assert sensor.poke({}) is True
     sdk.jobs.get.assert_called_once_with("S", "B")
-    ops.ImednetHook.assert_called_once_with("imednet_default")
+    sensors.ImednetHook.assert_called_once_with("imednet_default")
     hook_inst.get_conn.assert_called_once_with()
 
     job.state = "FAILED"

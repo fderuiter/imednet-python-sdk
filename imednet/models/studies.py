@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import Field
 
-from imednet.models._base import JsonModel
+from imednet.models.json_base import JsonModel
 
 
 class Study(JsonModel):
