@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
+- Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
+  record dictionary construction.
 
 ## [0.1.4] 
 
