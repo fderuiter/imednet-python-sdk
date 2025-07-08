@@ -8,11 +8,12 @@ Run the following commands before committing any code:
 ```bash
 poetry run ruff check --fix .
 poetry run black --check .
+poetry run isort --check --profile black .
 poetry run mypy imednet
 poetry run pytest -q
 ```
 
-All checks must pass. The project enforces a maximum line length of 100 characters.
+All checks must pass. The project enforces a maximum line length of 100 characters and CI fails if test coverage drops below 90%.
 
 ### Coding Principles
 Keep the implementation DRY and apply the SOLID principles:

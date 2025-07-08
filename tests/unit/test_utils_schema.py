@@ -4,12 +4,7 @@ import pytest
 from imednet.core.exceptions import UnknownVariableTypeError, ValidationError
 from imednet.models.forms import Form
 from imednet.models.variables import Variable
-from imednet.validation.cache import (
-    SchemaCache,
-    SchemaValidator,
-    _check_type,
-    validate_record_data,
-)
+from imednet.validation.cache import SchemaCache, SchemaValidator, _check_type, validate_record_data
 
 
 def _make_var(name: str, var_type: str = "integer") -> Variable:
