@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented the sentinel return value in ``parse_datetime``.
 - Replaced placeholder description in ``workflows/record_update.py``.
 - Added docstrings to private helpers in ``core/_requester.py``.
+- Added tests covering the default sentinel date in ``parse_datetime``.
 - Organized Airflow integration code into ``hooks``, ``operators`` and ``sensors`` subpackages.
 - Grouped CLI commands into dedicated subpackages for easier navigation.
 - Fixed ``ImednetHook`` to import configuration from the correct package.

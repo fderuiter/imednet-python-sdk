@@ -38,3 +38,17 @@ def test_parse_datetime_wrapper():
     parsed = validators.parse_datetime(iso)
     assert isinstance(parsed, datetime.datetime)
     assert validators.parse_datetime("") == datetime.datetime(1969, 4, 20, 16, 20)
+
+
+def test_parse_datetime_default_date() -> None:
+    """Return a sentinel date when given an empty or ``None`` value."""
+    sentinel = datetime.datetime(1969, 4, 20, 16, 20)
+    assert validators.parse_datetime("") == sentinel
+    assert validators.parse_datetime(None) == sentinel  # type: ignore[arg-type]
+
+
+def test_parse_datetime_parses_strings() -> None:
+    """Parse ISO formatted strings into ``datetime`` objects."""
+    iso = "2024-01-01T00:00:00Z"
+    parsed = validators.parse_datetime(iso)
+    assert parsed == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
