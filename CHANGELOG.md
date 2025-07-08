@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
 - Added `imednet.config` module with `load_config` helper for reading credentials.
 - Introduced `RetryPolicy` abstraction for configuring request retries.
+ - Documented test suite conventions in `tests/AGENTS.md`.
   `Client`, `AsyncClient` and `ImednetSDK` accept a `retry_policy` parameter.
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
