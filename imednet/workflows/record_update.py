@@ -66,6 +66,44 @@ class RecordUpdateWorkflow:
         )
         return self.create_or_update_records(*args, **kwargs)
 
+    def _build_record_payload(
+        self,
+        *,
+        form_identifier: Union[str, int],
+        form_identifier_type: Literal["key", "id"] = "key",
+        data: Dict[str, Any],
+        subject_identifier: Union[str, int, None] = None,
+        subject_identifier_type: Literal["key", "id", "oid"] = "key",
+        site_identifier: Union[str, int, None] = None,
+        site_identifier_type: Literal["name", "id"] = "name",
+        interval_identifier: Union[str, int, None] = None,
+        interval_identifier_type: Literal["name", "id"] = "name",
+    ) -> Dict[str, Any]:
+        """Return a record payload for ``create_or_update_records``."""
+
+        record: Dict[str, Any] = {
+            "formKey" if form_identifier_type == "key" else "formId": form_identifier,
+            "data": data,
+        }
+
+        if subject_identifier is not None:
+            subject_id_field_map = {
+                "key": "subjectKey",
+                "id": "subjectId",
+                "oid": "subjectOid",
+            }
+            record[subject_id_field_map[subject_identifier_type]] = subject_identifier
+
+        if site_identifier is not None:
+            record["siteName" if site_identifier_type == "name" else "siteId"] = site_identifier
+
+        if interval_identifier is not None:
+            record["intervalName" if interval_identifier_type == "name" else "intervalId"] = (
+                interval_identifier
+            )
+
+        return record
+
     def register_subject(
         self,
         study_key: str,
@@ -95,11 +133,13 @@ class RecordUpdateWorkflow:
         Returns:
             The Job status object.
         """
-        record = {
-            "formKey" if form_identifier_type == "key" else "formId": form_identifier,
-            "siteName" if site_identifier_type == "name" else "siteId": site_identifier,
-            "data": data,
-        }
+        record = self._build_record_payload(
+            form_identifier=form_identifier,
+            form_identifier_type=form_identifier_type,
+            site_identifier=site_identifier,
+            site_identifier_type=site_identifier_type,
+            data=data,
+        )
         return self.create_or_update_records(
             study_key=study_key,
             records_data=[record],
@@ -141,15 +181,15 @@ class RecordUpdateWorkflow:
         Returns:
             The Job status object.
         """
-        subject_id_field_map = {"key": "subjectKey", "id": "subjectId", "oid": "subjectOid"}
-        record = {
-            "formKey" if form_identifier_type == "key" else "formId": form_identifier,
-            subject_id_field_map[subject_identifier_type]: subject_identifier,
-            (
-                "intervalName" if interval_identifier_type == "name" else "intervalId"
-            ): interval_identifier,
-            "data": data,
-        }
+        record = self._build_record_payload(
+            form_identifier=form_identifier,
+            form_identifier_type=form_identifier_type,
+            subject_identifier=subject_identifier,
+            subject_identifier_type=subject_identifier_type,
+            interval_identifier=interval_identifier,
+            interval_identifier_type=interval_identifier_type,
+            data=data,
+        )
         return self.create_or_update_records(
             study_key=study_key,
             records_data=[record],
@@ -187,12 +227,13 @@ class RecordUpdateWorkflow:
         Returns:
             The Job status object.
         """
-        subject_id_field_map = {"key": "subjectKey", "id": "subjectId", "oid": "subjectOid"}
-        record = {
-            "formKey" if form_identifier_type == "key" else "formId": form_identifier,
-            subject_id_field_map[subject_identifier_type]: subject_identifier,
-            "data": data,
-        }
+        record = self._build_record_payload(
+            form_identifier=form_identifier,
+            form_identifier_type=form_identifier_type,
+            subject_identifier=subject_identifier,
+            subject_identifier_type=subject_identifier_type,
+            data=data,
+        )
         return self.create_or_update_records(
             study_key=study_key,
             records_data=[record],
