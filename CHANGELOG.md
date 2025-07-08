@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Client`, `AsyncClient` and `ImednetSDK` accept a `retry_policy` parameter.
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
+- Refactored endpoint initialization in `ImednetSDK` using a registry.
 
 ## [0.1.4] 
 
