@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an `isort` step to pre-commit and CI checks.
 - Fixed import order and formatting across the project.
 - CI now fails if test coverage drops below 90%.
+- Documented Sphinx conventions in new `docs/AGENTS.md`.
 
 ## [0.1.4] 
 
