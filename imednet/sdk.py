@@ -17,6 +17,7 @@ from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
 from .core.retry import RetryPolicy
+from .endpoints.base import BaseEndpoint
 from .endpoints.codings import CodingsEndpoint
 from .endpoints.forms import FormsEndpoint
 from .endpoints.intervals import IntervalsEndpoint
@@ -64,6 +65,24 @@ class Workflows:
         self.subject_data = SubjectDataWorkflow(sdk_instance)
 
 
+# Mapping of attribute names to their endpoint classes
+_ENDPOINT_REGISTRY: dict[str, type[BaseEndpoint]] = {
+    "codings": CodingsEndpoint,
+    "forms": FormsEndpoint,
+    "intervals": IntervalsEndpoint,
+    "jobs": JobsEndpoint,
+    "queries": QueriesEndpoint,
+    "record_revisions": RecordRevisionsEndpoint,
+    "records": RecordsEndpoint,
+    "sites": SitesEndpoint,
+    "studies": StudiesEndpoint,
+    "subjects": SubjectsEndpoint,
+    "users": UsersEndpoint,
+    "variables": VariablesEndpoint,
+    "visits": VisitsEndpoint,
+}
+
+
 class ImednetSDK:
     """
     Public entry-point for library users.
@@ -77,6 +96,20 @@ class ImednetSDK:
         subjects: Access to subject-related endpoints.
         etc...
     """
+
+    codings: CodingsEndpoint
+    forms: FormsEndpoint
+    intervals: IntervalsEndpoint
+    jobs: JobsEndpoint
+    queries: QueriesEndpoint
+    record_revisions: RecordRevisionsEndpoint
+    records: RecordsEndpoint
+    sites: SitesEndpoint
+    studies: StudiesEndpoint
+    subjects: SubjectsEndpoint
+    users: UsersEndpoint
+    variables: VariablesEndpoint
+    visits: VisitsEndpoint
 
     def __init__(
         self,
@@ -137,19 +170,8 @@ class ImednetSDK:
 
     def _init_endpoints(self) -> None:
         """Instantiate endpoint clients."""
-        self.codings = CodingsEndpoint(self._client, self.ctx, self._async_client)
-        self.forms = FormsEndpoint(self._client, self.ctx, self._async_client)
-        self.intervals = IntervalsEndpoint(self._client, self.ctx, self._async_client)
-        self.jobs = JobsEndpoint(self._client, self.ctx, self._async_client)
-        self.queries = QueriesEndpoint(self._client, self.ctx, self._async_client)
-        self.record_revisions = RecordRevisionsEndpoint(self._client, self.ctx, self._async_client)
-        self.records = RecordsEndpoint(self._client, self.ctx, self._async_client)
-        self.sites = SitesEndpoint(self._client, self.ctx, self._async_client)
-        self.studies = StudiesEndpoint(self._client, self.ctx, self._async_client)
-        self.subjects = SubjectsEndpoint(self._client, self.ctx, self._async_client)
-        self.users = UsersEndpoint(self._client, self.ctx, self._async_client)
-        self.variables = VariablesEndpoint(self._client, self.ctx, self._async_client)
-        self.visits = VisitsEndpoint(self._client, self.ctx, self._async_client)
+        for attr, endpoint_cls in _ENDPOINT_REGISTRY.items():
+            setattr(self, attr, endpoint_cls(self._client, self.ctx, self._async_client))
 
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""
