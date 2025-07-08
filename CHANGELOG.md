@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an `isort` step to pre-commit and CI checks.
 - Fixed import order and formatting across the project.
 - CI now fails if test coverage drops below 90%.
+- Centralized DataFrame creation in export helpers with new ``_records_df``
+  to ensure duplicate columns are removed consistently.
 
 ## [0.1.4] 
 
