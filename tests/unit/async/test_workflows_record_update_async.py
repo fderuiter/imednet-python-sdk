@@ -2,6 +2,7 @@ import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+
 from imednet.models.jobs import Job
 from imednet.models.variables import Variable
 from imednet.workflows.record_update import RecordUpdateWorkflow

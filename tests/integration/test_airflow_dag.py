@@ -3,17 +3,16 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import boto3
-import pytest
 from moto import mock_aws
+import pytest
 
 
 @mock_aws
 def test_dag_runs(monkeypatch):
     pytest.importorskip("airflow")
-    from imednet.integrations.airflow import ImednetJobSensor, ImednetToS3Operator
-
     from airflow.models import DAG, TaskInstance
     from airflow.utils.state import State
+    from imednet.integrations.airflow import ImednetJobSensor, ImednetToS3Operator
 
     s3 = boto3.client("s3", region_name="us-east-1")
     s3.create_bucket(Bucket="bucket")

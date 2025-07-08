@@ -4,10 +4,11 @@ import sys
 from types import ModuleType
 from unittest.mock import MagicMock
 
-import imednet.cli as cli
 import pytest
-from imednet.core.exceptions import ApiError
 from typer.testing import CliRunner
+
+import imednet.cli as cli
+from imednet.core.exceptions import ApiError
 
 
 @pytest.fixture(autouse=True)

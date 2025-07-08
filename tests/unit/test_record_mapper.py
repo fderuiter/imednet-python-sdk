@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import Any
 from unittest.mock import MagicMock
 
+from pydantic import BaseModel, ValidationError
+
 from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet.workflows.record_mapper import RecordMapper
-from pydantic import BaseModel, ValidationError
 
 
 def test_dataframe_builds_expected_structure() -> None:

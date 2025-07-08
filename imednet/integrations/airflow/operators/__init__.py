@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import sys
 from importlib import reload
+import sys
 
 if "imednet.integrations.airflow.operators.export" in sys.modules:
     reload(sys.modules["imednet.integrations.airflow.operators.export"])

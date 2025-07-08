@@ -1,5 +1,5 @@
-import re
 from pathlib import Path
+import re
 
 
 def get_mermaid_lines(path: Path):

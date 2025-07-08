@@ -3,6 +3,7 @@ import contextlib
 import httpx
 import pytest
 import respx
+
 from imednet.core import exceptions
 from imednet.core.client import Client
 

@@ -3,8 +3,8 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-import typer
 from rich import print
+import typer
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk

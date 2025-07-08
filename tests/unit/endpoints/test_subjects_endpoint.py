@@ -1,5 +1,6 @@
-import imednet.endpoints.subjects as subjects
 import pytest
+
+import imednet.endpoints.subjects as subjects
 from imednet.models.subjects import Subject
 
 

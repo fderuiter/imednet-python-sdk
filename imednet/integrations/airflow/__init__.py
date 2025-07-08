@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import sys
 from importlib import reload
+import sys
 
 from .. import export
 

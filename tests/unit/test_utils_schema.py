@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
+
 from imednet.core.exceptions import UnknownVariableTypeError, ValidationError
 from imednet.models.forms import Form
 from imednet.models.variables import Variable

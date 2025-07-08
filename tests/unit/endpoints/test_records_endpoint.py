@@ -1,6 +1,7 @@
-import imednet.endpoints.records as records
 import pytest
+
 from imednet.core.exceptions import ValidationError
+import imednet.endpoints.records as records
 from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache

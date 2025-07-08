@@ -3,9 +3,10 @@ from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
 
 import boto3
-import pandas as pd
-from imednet.integrations import export as export_mod
 from moto import mock_aws
+import pandas as pd
+
+from imednet.integrations import export as export_mod
 
 
 def test_export_to_csv(tmp_path, monkeypatch):

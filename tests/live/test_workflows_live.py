@@ -2,6 +2,7 @@ import os
 from typing import Iterator
 
 import pytest
+
 from imednet.models.records import RegisterSubjectRequest
 from imednet.sdk import ImednetSDK
 from imednet.workflows import (

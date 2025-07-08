@@ -1,5 +1,6 @@
-import imednet.endpoints.codings as codings
 import pytest
+
+import imednet.endpoints.codings as codings
 from imednet.models.codings import Coding
 
 

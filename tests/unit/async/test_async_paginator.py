@@ -1,4 +1,5 @@
 import pytest
+
 from imednet.core.paginator import AsyncPaginator
 
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import logging
-import time
 from contextlib import nullcontext
 from dataclasses import dataclass
+import logging
+import time
 from typing import Any, Awaitable, Callable, Coroutine, Optional, cast
 
 import httpx

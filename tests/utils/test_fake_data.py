@@ -1,7 +1,6 @@
 from types import SimpleNamespace
 from typing import Any, cast
 
-import imednet.testing.fake_data as fake_data
 from imednet.models import (
     Coding,
     Form,
@@ -17,6 +16,7 @@ from imednet.models import (
     Variable,
     Visit,
 )
+import imednet.testing.fake_data as fake_data
 from imednet.validation.cache import SchemaCache, validate_record_data
 
 
