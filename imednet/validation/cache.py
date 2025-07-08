@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
 from ..endpoints.forms import FormsEndpoint
@@ -157,39 +157,45 @@ class SchemaValidator(_ValidatorMixin):
         else:
             self.schema = SchemaCache()
 
-    async def _refresh_async(self, study_key: str) -> None:
+    def _refresh_common(self, variables: Iterable[Variable]) -> None:
         self.schema._form_variables.clear()
         self.schema._form_id_to_key.clear()
-        variables = await self._sdk.variables.async_list(study_key=study_key, refresh=True)
         for var in variables:
             self.schema._form_id_to_key[var.form_id] = var.form_key
             self.schema._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
 
+    async def _refresh_async(self, study_key: str) -> None:
+        variables = await self._sdk.variables.async_list(study_key=study_key, refresh=True)
+        self._refresh_common(variables)
+
     def _refresh_sync(self, study_key: str) -> None:
-        self.schema._form_variables.clear()
-        self.schema._form_id_to_key.clear()
         variables = self._sdk.variables.list(study_key=study_key, refresh=True)
-        for var in variables:
-            self.schema._form_id_to_key[var.form_id] = var.form_key
-            self.schema._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
+        self._refresh_common(variables)
 
     def refresh(self, study_key: str) -> Any:
         if self._is_async:
             return self._refresh_async(study_key)
         return self._refresh_sync(study_key)
 
-    async def _validate_record_async(self, study_key: str, record: Dict[str, Any]) -> None:
+    def _validate_record_common(
+        self, study_key: str, record: Dict[str, Any]
+    ) -> tuple[Optional[str], Any]:
         form_key = self._resolve_form_key(record)
+        refresh_result: Any = None
         if form_key and not self.schema.variables_for_form(form_key):
-            result = await self.refresh(study_key)
+            refresh_result = self.refresh(study_key)
+        return form_key, refresh_result
+
+    async def _validate_record_async(self, study_key: str, record: Dict[str, Any]) -> None:
+        form_key, result = self._validate_record_common(study_key, record)
+        if inspect.isawaitable(result):
+            result = await result
             if inspect.isawaitable(result):
                 await result
         self._validate_cached(form_key, record.get("data", {}))
 
     def _validate_record_sync(self, study_key: str, record: Dict[str, Any]) -> None:
-        form_key = self._resolve_form_key(record)
-        if form_key and not self.schema.variables_for_form(form_key):
-            self.refresh(study_key)
+        form_key, _ = self._validate_record_common(study_key, record)
         self._validate_cached(form_key, record.get("data", {}))
 
     def validate_record(self, study_key: str, record: Dict[str, Any]) -> Any:
