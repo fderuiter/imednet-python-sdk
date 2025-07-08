@@ -164,8 +164,12 @@ class ImednetSDK:
 
     def _validate_env(self, config: Config) -> None:
         """Ensure required credentials are present."""
-        if not config.api_key or not config.security_key:
+        if not config.api_key and not config.security_key:
             raise ValueError("API key and security key are required")
+        elif not config.api_key:
+            raise ValueError("API key is required")
+        elif not config.security_key:
+            raise ValueError("Security key is required")
 
     @property
     def retry_policy(self) -> RetryPolicy:
