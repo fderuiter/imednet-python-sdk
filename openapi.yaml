@@ -1,0 +1,821 @@
+openapi: 3.0.3
+info:
+  title: iMednet EDC API
+  version: "1.0.0"
+  description: |
+    Swagger specification for the iMednet EDC REST API derived from
+    the SDK documentation. The API exposes clinical study resources
+    via JSON. Requests require `x-api-key` and `x-imn-security-key`
+    headers for authentication.
+servers:
+  - url: https://edc.prod.imednetapi.com/api/v1/edc
+paths:
+  /studies:
+    get:
+      summary: List studies
+      operationId: listStudies
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 25
+            maximum: 500
+        - in: query
+          name: sort
+          schema:
+            type: string
+            default: studyKey,asc
+        - in: query
+          name: filter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of studies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudyList'
+  /studies/{studyKey}:
+    get:
+      summary: Retrieve a study
+      operationId: getStudy
+      parameters:
+        - in: path
+          name: studyKey
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Study information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Study'
+  /studies/{studyKey}/forms:
+    get:
+      summary: List forms
+      operationId: listForms
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: List of forms
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFormList'
+  /studies/{studyKey}/variables:
+    get:
+      summary: List variables
+      operationId: listVariables
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Variable list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVariableList'
+  /studies/{studyKey}/intervals:
+    get:
+      summary: List intervals
+      operationId: listIntervals
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Interval list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIntervalList'
+  /studies/{studyKey}/sites:
+    get:
+      summary: List sites
+      operationId: listSites
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Site list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSiteList'
+  /studies/{studyKey}/subjects:
+    get:
+      summary: List subjects
+      operationId: listSubjects
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Subject list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubjectList'
+  /studies/{studyKey}/records:
+    get:
+      summary: List records
+      operationId: listRecords
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+        - in: query
+          name: recordDataFilter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Record list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRecordList'
+    post:
+      summary: Create records
+      operationId: createRecords
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordRequest'
+      responses:
+        '202':
+          description: Job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+  /studies/{studyKey}/recordRevisions:
+    get:
+      summary: List record revisions
+      operationId: listRecordRevisions
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Record revision list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRecordRevisionList'
+  /studies/{studyKey}/codings:
+    get:
+      summary: List codings
+      operationId: listCodings
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Coding list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCodingList'
+  /studies/{studyKey}/queries:
+    get:
+      summary: List queries
+      operationId: listQueries
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Query list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQueryList'
+  /studies/{studyKey}/visits:
+    get:
+      summary: List visits
+      operationId: listVisits
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filterParam'
+      responses:
+        '200':
+          description: Visit list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVisitList'
+  /studies/{studyKey}/users:
+    get:
+      summary: List users
+      operationId: listUsers
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - in: query
+          name: includeInactive
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: User list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+  /studies/{studyKey}/jobs/{batchId}:
+    get:
+      summary: Retrieve job status
+      operationId: getJob
+      parameters:
+        - $ref: '#/components/parameters/studyKey'
+        - in: path
+          name: batchId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+components:
+  parameters:
+    studyKey:
+      in: path
+      name: studyKey
+      required: true
+      schema:
+        type: string
+    pageParam:
+      in: query
+      name: page
+      schema:
+        type: integer
+        default: 0
+    sizeParam:
+      in: query
+      name: size
+      schema:
+        type: integer
+        default: 25
+        maximum: 500
+    sortParam:
+      in: query
+      name: sort
+      schema:
+        type: string
+    filterParam:
+      in: query
+      name: filter
+      schema:
+        type: string
+  schemas:
+    Metadata:
+      type: object
+      properties:
+        status:
+          type: string
+        method:
+          type: string
+        path:
+          type: string
+        timestamp:
+          type: string
+        error:
+          type: object
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        size:
+          type: integer
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
+        sort:
+          type: array
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+              direction:
+                type: string
+    Study:
+      type: object
+      properties:
+        sponsorKey:
+          type: string
+        studyKey:
+          type: string
+        studyId:
+          type: integer
+        studyName:
+          type: string
+        studyDescription:
+          type: string
+        studyType:
+          type: string
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+    Form:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        formId:
+          type: integer
+        formKey:
+          type: string
+        formName:
+          type: string
+        formType:
+          type: string
+        revision:
+          type: integer
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+    Variable:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        variableId:
+          type: integer
+        variableType:
+          type: string
+        variableName:
+          type: string
+        sequence:
+          type: integer
+        revision:
+          type: integer
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+        formId:
+          type: integer
+        formKey:
+          type: string
+        formName:
+          type: string
+    Interval:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        intervalId:
+          type: integer
+        intervalName:
+          type: string
+        intervalDescription:
+          type: string
+        intervalSequence:
+          type: integer
+        intervalGroupId:
+          type: integer
+        intervalGroupName:
+          type: string
+        disabled:
+          type: boolean
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+    Site:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        siteId:
+          type: integer
+        siteName:
+          type: string
+        siteEnrollmentStatus:
+          type: string
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+    Subject:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        subjectId:
+          type: integer
+        subjectKey:
+          type: string
+        subjectStatus:
+          type: string
+        siteId:
+          type: integer
+        siteName:
+          type: string
+        deleted:
+          type: boolean
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+    Record:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        intervalId:
+          type: integer
+        formId:
+          type: integer
+        formKey:
+          type: string
+        siteId:
+          type: integer
+        recordId:
+          type: integer
+        recordOid:
+          type: string
+        recordType:
+          type: string
+        recordStatus:
+          type: string
+        deleted:
+          type: boolean
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+        subjectId:
+          type: integer
+        subjectOid:
+          type: string
+        subjectKey:
+          type: string
+        visitId:
+          type: integer
+        parentRecordId:
+          type: integer
+        recordData:
+          type: object
+    RecordRevision:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        recordRevisionId:
+          type: integer
+        recordId:
+          type: integer
+        recordRevision:
+          type: integer
+        dataRevision:
+          type: integer
+        recordStatus:
+          type: string
+        subjectId:
+          type: integer
+        subjectKey:
+          type: string
+        siteId:
+          type: integer
+        formKey:
+          type: string
+        intervalId:
+          type: integer
+        deleted:
+          type: boolean
+        dateCreated:
+          type: string
+    Coding:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        siteName:
+          type: string
+        siteId:
+          type: integer
+        subjectId:
+          type: integer
+        subjectKey:
+          type: string
+        formId:
+          type: integer
+        formName:
+          type: string
+        formKey:
+          type: string
+        recordId:
+          type: integer
+        variable:
+          type: string
+        value:
+          type: string
+        codingId:
+          type: integer
+        code:
+          type: string
+        codedBy:
+          type: string
+        dictionaryName:
+          type: string
+        dictionaryVersion:
+          type: string
+        dateCoded:
+          type: string
+    Query:
+      type: object
+      properties:
+        studyKey:
+          type: string
+        subjectId:
+          type: integer
+        annotationId:
+          type: integer
+        description:
+          type: string
+        recordId:
+          type: integer
+        variable:
+          type: string
+        subjectKey:
+          type: string
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+    Visit:
+      type: object
+      properties:
+        visitId:
+          type: integer
+        studyKey:
+          type: string
+        intervalId:
+          type: integer
+        intervalName:
+          type: string
+        subjectId:
+          type: integer
+        subjectKey:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        dueDate:
+          type: string
+          nullable: true
+        visitDate:
+          type: string
+        deleted:
+          type: boolean
+        dateCreated:
+          type: string
+        dateModified:
+          type: string
+    User:
+      type: object
+      properties:
+        userId:
+          type: string
+        login:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        userActiveInStudy:
+          type: boolean
+    JobResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        batchId:
+          type: string
+        state:
+          type: string
+    JobStatus:
+      allOf:
+        - $ref: '#/components/schemas/JobResponse'
+        - type: object
+          properties:
+            dateCreated:
+              type: string
+            dateStarted:
+              type: string
+            dateFinished:
+              type: string
+            progress:
+              type: integer
+            resultUrl:
+              type: string
+    RecordRequest:
+      type: object
+      properties:
+        formKey:
+          type: string
+        subjectKey:
+          type: string
+        siteName:
+          type: string
+        intervalName:
+          type: string
+        data:
+          type: object
+    PaginatedStudyList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Study'
+    PaginatedFormList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Form'
+    PaginatedVariableList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variable'
+    PaginatedIntervalList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interval'
+    PaginatedSiteList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Site'
+    PaginatedSubjectList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+    PaginatedRecordList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Record'
+    PaginatedRecordRevisionList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecordRevision'
+    PaginatedCodingList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+    PaginatedQueryList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Query'
+    PaginatedVisitList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Visit'
+    PaginatedUserList:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
