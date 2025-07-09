@@ -3,15 +3,14 @@
 import inspect
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.endpoints._mixins import ListGetEndpointMixin
-from imednet.endpoints.base import BaseEndpoint
+from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
+from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache, validate_record_data
 
 
-class RecordsEndpoint(ListGetEndpointMixin, BaseEndpoint):
+class RecordsEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with records (eCRF instances) in an iMedNet study.
 
@@ -49,68 +48,6 @@ class RecordsEndpoint(ListGetEndpointMixin, BaseEndpoint):
 
         response = client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
-
-    def list(
-        self, study_key: Optional[str] = None, record_data_filter: Optional[str] = None, **filters
-    ) -> List[Record]:
-        """List records in a study with optional filtering."""
-        result = self._list_impl(
-            self._client,
-            Paginator,
-            study_key=study_key,
-            record_data_filter=record_data_filter,
-            **filters,
-        )
-        return result  # type: ignore[return-value]
-
-    async def async_list(
-        self,
-        study_key: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> List[Record]:
-        """Asynchronous version of :meth:`list`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        result = await self._list_impl(
-            self._async_client,
-            AsyncPaginator,
-            study_key=study_key,
-            record_data_filter=record_data_filter,
-            **filters,
-        )
-        return result
-
-    def get(self, study_key: str, record_id: Union[str, int]) -> Record:
-        """Get a specific record by ID."""
-        result = self._list_impl(
-            self._client,
-            Paginator,
-            study_key=study_key,
-            recordId=record_id,
-        )
-        if inspect.isawaitable(result):
-            raise RuntimeError("Unexpected awaitable result")
-        if not result:
-            raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return result[0]
-
-    async def async_get(self, study_key: str, record_id: Union[str, int]) -> Record:
-        """Asynchronous version of :meth:`get`.
-
-        This method also filters :meth:`async_list` by ``record_id``.
-        """
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        result = await self._list_impl(
-            self._async_client,
-            AsyncPaginator,
-            study_key=study_key,
-            recordId=record_id,
-        )
-        if not result:
-            raise ValueError(f"Record {record_id} not found in study {study_key}")
-        return result[0]
 
     def create(
         self,
@@ -157,8 +94,7 @@ class RecordsEndpoint(ListGetEndpointMixin, BaseEndpoint):
         schema: Optional[SchemaCache] = None,
     ) -> Job:
         """Asynchronous version of :meth:`create`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
+        self._require_async_client()
         if schema is not None:
             for rec in records_data:
                 fk = rec.get("formKey") or schema.form_key_from_id(rec.get("formId", 0))

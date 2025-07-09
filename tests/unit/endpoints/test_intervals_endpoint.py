@@ -1,5 +1,6 @@
-import imednet.endpoints.intervals as intervals
 import pytest
+
+import imednet.endpoints.intervals as intervals
 from imednet.models.intervals import Interval
 
 

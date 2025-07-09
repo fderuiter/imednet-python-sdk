@@ -8,6 +8,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Bump project version to `0.1.4`.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
+- Added `imednet.config` module with `load_config` helper for reading credentials.
+- Introduced `RetryPolicy` abstraction for configuring request retries.
+ - Documented test suite conventions in `tests/AGENTS.md`.
+  `Client`, `AsyncClient` and `ImednetSDK` accept a `retry_policy` parameter.
+- CLI commands now use shared helpers for study arguments and list output to reduce duplication.
+- Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
+- Refactored endpoint initialization in `ImednetSDK` using a registry.
+- Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
+  record dictionary construction.
+- Renamed ``models._base`` to ``models.json_base`` to avoid import confusion.
+- Documented the sentinel return value in ``parse_datetime``.
+- Replaced placeholder description in ``workflows/record_update.py``.
+- Added docstrings to private helpers in ``core/_requester.py``.
+- Added tests covering the default sentinel date in ``parse_datetime``.
+- Organized Airflow integration code into ``hooks``, ``operators`` and ``sensors`` subpackages.
+- Grouped CLI commands into dedicated subpackages for easier navigation.
+- Fixed ``ImednetHook`` to import configuration from the correct package.
+- Unified sync and async `RecordUpdateWorkflow` tests using parametrized fixtures.
+- Extracted `_execute_with_retry` into dedicated sync and async variants for
+  clearer retry logic.
+- Added an `isort` step to pre-commit and CI checks.
+- Fixed import order and formatting across the project.
+- CI now fails if test coverage drops below 90%.
+- Centralized DataFrame creation in export helpers with new ``_records_df``
+  to ensure duplicate columns are removed consistently.
+- Consolidated polling loops in ``JobPoller`` with shared ``_run_common`` helper.
+- Refactored ``RecordUpdateWorkflow`` with private ``_create_or_update_common``
+  to share validation and polling between sync and async methods.
+- Added ``register_list_command`` helper to DRY up CLI ``list`` commands.
+- Unified sync and async ``poll_job`` tests with parametrized fixtures.
+- Consolidated ``JobPoller`` tests by parametrizing over sync and async modes.
+- Unified ``SchemaValidator`` tests for both sync and async validators.
+- Unified study-structure workflow tests across sync and async implementations.
+- Documented Sphinx conventions in new `docs/AGENTS.md`.
 
 ## [0.1.4] 
 

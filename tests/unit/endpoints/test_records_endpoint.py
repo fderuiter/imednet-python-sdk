@@ -1,5 +1,6 @@
-import imednet.endpoints.records as records
 import pytest
+
+import imednet.endpoints.records as records
 from imednet.core.exceptions import ValidationError
 from imednet.models.records import Record
 from imednet.models.variables import Variable
@@ -38,7 +39,7 @@ def test_get_success(monkeypatch, dummy_client, context):
 
     res = ep.get("S1", 1)
 
-    assert called == {"study_key": "S1", "filters": {"recordId": 1}}
+    assert called == {"study_key": "S1", "filters": {"recordId": 1, "refresh": True}}
     assert isinstance(res, Record)
 
 

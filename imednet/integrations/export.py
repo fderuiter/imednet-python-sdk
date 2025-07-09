@@ -12,6 +12,18 @@ from ..workflows.record_mapper import RecordMapper
 MAX_SQLITE_COLUMNS = 2000
 
 
+def _records_df(
+    sdk: ImednetSDK, study_key: str, *, use_labels_as_columns: bool = False
+) -> pd.DataFrame:
+    """Return a DataFrame of study records with duplicate columns removed."""
+    df: pd.DataFrame = RecordMapper(sdk).dataframe(
+        study_key, use_labels_as_columns=use_labels_as_columns
+    )
+    if isinstance(df, pd.DataFrame):
+        df = df.loc[:, ~df.columns.str.lower().duplicated()]
+    return df
+
+
 def export_to_parquet(
     sdk: ImednetSDK,
     study_key: str,
@@ -28,11 +40,11 @@ def export_to_parquet(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df: pd.DataFrame = RecordMapper(sdk).dataframe(
-        study_key, use_labels_as_columns=use_labels_as_columns
+    df = _records_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
     )
-    if isinstance(df, pd.DataFrame):
-        df = df.loc[:, ~df.columns.str.lower().duplicated()]
     df.to_parquet(path, index=False, **kwargs)
 
 
@@ -52,8 +64,10 @@ def export_to_csv(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df: pd.DataFrame = RecordMapper(sdk).dataframe(
-        study_key, use_labels_as_columns=use_labels_as_columns
+    df = _records_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
     )
     df.to_csv(path, index=False, **kwargs)
 
@@ -74,8 +88,10 @@ def export_to_excel(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df: pd.DataFrame = RecordMapper(sdk).dataframe(
-        study_key, use_labels_as_columns=use_labels_as_columns
+    df = _records_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
     )
     df.to_excel(path, index=False, **kwargs)
 
@@ -96,16 +112,11 @@ def export_to_json(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df: pd.DataFrame = RecordMapper(sdk).dataframe(
-        study_key, use_labels_as_columns=use_labels_as_columns
+    df = _records_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
     )
-    # Remove duplicate columns which can occur when variable names repeat across
-    # forms or revisions. Columns are considered duplicates regardless of case
-    # sensitivity. Skip if the object does not expose a pandas-like interface
-    # (e.g. unit tests using mocks).
-    if isinstance(df, pd.DataFrame):
-        dup_mask = df.columns.str.lower().duplicated()
-        df = df.loc[:, ~dup_mask]
     df.to_json(path, index=False, **kwargs)
 
 
@@ -129,15 +140,11 @@ def export_to_sql(
     """
     from sqlalchemy import create_engine
 
-    df: pd.DataFrame = RecordMapper(sdk).dataframe(
-        study_key, use_labels_as_columns=use_labels_as_columns
+    df = _records_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
     )
-    # Duplicate column names cause ``to_sql`` to raise an error. Trim them here
-    # by keeping the first occurrence of each column, ignoring case. Skip when a
-    # mock DataFrame is supplied during unit tests.
-    if isinstance(df, pd.DataFrame):
-        dup_mask = df.columns.str.lower().duplicated()
-        df = df.loc[:, ~dup_mask]
     engine = create_engine(conn_str)
     if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
         raise ValueError(

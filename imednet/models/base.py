@@ -7,7 +7,7 @@ from typing import Any, Dict, Generic, List, Optional, TypeVar
 
 from pydantic import Field
 
-from imednet.models._base import JsonModel
+from imednet.models.json_base import JsonModel
 
 
 class SortField(JsonModel):

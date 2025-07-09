@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import Any, Optional, Union
 
 try:
@@ -14,6 +13,8 @@ except Exception:  # pragma: no cover - optional dependency
     Tracer = None
 import httpx
 
+from imednet.config import load_config
+from imednet.utils import sanitize_base_url
 from imednet.utils.json_logging import configure_json_logging
 
 logger = logging.getLogger(__name__)
@@ -35,15 +36,9 @@ class BaseClient:
         log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
     ) -> None:
-        api_key = (api_key or os.getenv("IMEDNET_API_KEY") or "").strip()
-        security_key = (security_key or os.getenv("IMEDNET_SECURITY_KEY") or "").strip()
-        if not api_key or not security_key:
-            raise ValueError("API key and security key are required")
+        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
-        self.base_url = base_url or os.getenv("IMEDNET_BASE_URL") or self.DEFAULT_BASE_URL
-        self.base_url = self.base_url.rstrip("/")
-        if self.base_url.endswith("/api"):
-            self.base_url = self.base_url[:-4]
+        self.base_url = sanitize_base_url(config.base_url or self.DEFAULT_BASE_URL)
 
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
@@ -53,7 +48,7 @@ class BaseClient:
         configure_json_logging(level)
         logger.setLevel(level)
 
-        self._client = self._create_client(api_key, security_key)
+        self._client = self._create_client(config.api_key, config.security_key)
 
         if tracer is not None:
             self._tracer = tracer

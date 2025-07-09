@@ -1,5 +1,6 @@
-import imednet.endpoints.sites as sites
 import pytest
+
+import imednet.endpoints.sites as sites
 from imednet.models.sites import Site
 
 

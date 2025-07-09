@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 
 from pydantic import Field, RootModel
 
-from imednet.models._base import JsonModel
+from imednet.models.json_base import JsonModel
 
 
 class Keyword(JsonModel):

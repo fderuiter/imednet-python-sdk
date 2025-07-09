@@ -2,7 +2,7 @@
 Base endpoint mix-in for all API resource endpoints.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
@@ -29,6 +29,12 @@ class BaseEndpoint:
         self._client = client
         self._async_client = async_client
         self._ctx = ctx
+        cache_name: Optional[str] = getattr(self, "_cache_name", None)
+        if cache_name:
+            if getattr(self, "requires_study_key", True):
+                setattr(self, cache_name, {})
+            else:
+                setattr(self, cache_name, None)
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         # inject default studyKey if missing
@@ -61,3 +67,9 @@ class BaseEndpoint:
             if str(getattr(item, attr)) == str(item_id):
                 return item
         raise ValueError(f"{attr} {item_id} not found in study {study_key}")
+
+    def _require_async_client(self) -> AsyncClient:
+        """Return the configured async client or raise if missing."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        return self._async_client

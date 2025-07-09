@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pandas as pd
+
 from imednet.models.records import Record
 from imednet.utils.pandas import export_records_csv, records_to_dataframe
 

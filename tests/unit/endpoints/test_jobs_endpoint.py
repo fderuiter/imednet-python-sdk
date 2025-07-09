@@ -1,5 +1,6 @@
-import imednet.endpoints.jobs as jobs
 import pytest
+
+import imednet.endpoints.jobs as jobs
 from imednet.models.jobs import JobStatus
 
 

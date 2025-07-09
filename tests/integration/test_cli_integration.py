@@ -1,9 +1,10 @@
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import imednet.cli as cli
 import pytest
 from typer.testing import CliRunner
+
+import imednet.cli as cli
 
 
 def test_cli_rejects_missing_credentials(monkeypatch: pytest.MonkeyPatch) -> None:

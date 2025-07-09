@@ -3,11 +3,10 @@ from __future__ import annotations
 from typing import List, Optional
 
 import typer
-from rich import print
 
-from ..sdk import ImednetSDK
-from .decorators import with_sdk
-from .utils import parse_filter_args
+from ...sdk import ImednetSDK
+from ..decorators import with_sdk
+from ..utils import STUDY_KEY_ARG, display_list, echo_fetch, parse_filter_args
 
 app = typer.Typer(name="subjects", help="Manage subjects within a study.")
 
@@ -16,7 +15,7 @@ app = typer.Typer(name="subjects", help="Manage subjects within a study.")
 @with_sdk
 def list_subjects(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     subject_filter: Optional[List[str]] = typer.Option(
         None,
         "--filter",
@@ -27,10 +26,6 @@ def list_subjects(
     """List subjects for a specific study."""
     parsed_filter = parse_filter_args(subject_filter)
 
-    print(f"Fetching subjects for study '{study_key}'...")
+    echo_fetch("subjects", study_key)
     subjects_list = sdk.subjects.list(study_key, **(parsed_filter or {}))
-    if subjects_list:
-        print(f"Found {len(subjects_list)} subjects:")
-        print(subjects_list)
-    else:
-        print("No subjects found matching the criteria.")
+    display_list(subjects_list, "subjects", "No subjects found matching the criteria.")

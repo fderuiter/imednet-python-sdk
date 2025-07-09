@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 import pytest_asyncio
+
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context

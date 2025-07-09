@@ -2,6 +2,7 @@ import os
 from typing import Iterator
 
 import pytest
+
 from imednet.core.exceptions import ServerError
 from imednet.models.codings import Coding
 from imednet.models.forms import Form

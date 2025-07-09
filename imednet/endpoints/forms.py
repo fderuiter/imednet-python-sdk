@@ -1,17 +1,11 @@
 """Endpoint for managing forms (eCRFs) in a study."""
 
-from typing import Any, Dict, List, Optional
-
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
-from imednet.core.context import Context
-from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.endpoints._mixins import ListGetEndpointMixin
-from imednet.endpoints.base import BaseEndpoint
+from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
+from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.forms import Form
 
 
-class FormsEndpoint(ListGetEndpointMixin, BaseEndpoint):
+class FormsEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with forms (eCRFs) in an iMedNet study.
 
@@ -25,75 +19,3 @@ class FormsEndpoint(ListGetEndpointMixin, BaseEndpoint):
     PAGE_SIZE = 500
     _pop_study_filter = True
     _missing_study_exception = KeyError
-
-    def __init__(
-        self,
-        client: Client,
-        ctx: Context,
-        async_client: AsyncClient | None = None,
-    ) -> None:
-        super().__init__(client, ctx, async_client)
-        self._forms_cache: Dict[str, List[Form]] = {}
-
-    def list(
-        self,
-        study_key: Optional[str] = None,
-        refresh: bool = False,
-        **filters: Any,
-    ) -> List[Form]:
-        """List forms in a study with optional filtering."""
-        result = self._list_impl(
-            self._client,
-            Paginator,
-            study_key=study_key,
-            refresh=refresh,
-            **filters,
-        )
-        return result  # type: ignore[return-value]
-
-    async def async_list(
-        self,
-        study_key: Optional[str] = None,
-        refresh: bool = False,
-        **filters: Any,
-    ) -> List[Form]:
-        """Asynchronous version of :meth:`list`."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        result = await self._list_impl(
-            self._async_client,
-            AsyncPaginator,
-            study_key=study_key,
-            refresh=refresh,
-            **filters,
-        )
-        return result
-
-    def get(self, study_key: str, form_id: int) -> Form:
-        """
-        Get a specific form by ID.
-
-        This endpoint caches form listings. ``refresh=True`` is used when
-        calling :meth:`list` so that the most recent data is returned.
-
-        Args:
-            study_key: Study identifier
-            form_id: Form identifier
-
-        Returns:
-            Form object
-        """
-        result = self._get_impl(self._client, Paginator, study_key=study_key, item_id=form_id)
-        return result  # type: ignore[return-value]
-
-    async def async_get(self, study_key: str, form_id: int) -> Form:
-        """Asynchronous version of :meth:`get`.
-
-        ``refresh=True`` is also passed to :meth:`async_list` to bypass the
-        cache.
-        """
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        return await self._get_impl(
-            self._async_client, AsyncPaginator, study_key=study_key, item_id=form_id
-        )

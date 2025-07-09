@@ -1,5 +1,6 @@
-import imednet.endpoints.studies as studies
 import pytest
+
+import imednet.endpoints.studies as studies
 from imednet.models.studies import Study
 
 

@@ -23,6 +23,7 @@ from .exceptions import (
 )
 from .http_client_base import HTTPClientBase
 from .paginator import AsyncPaginator, Paginator
+from .retry import DefaultRetryPolicy, RetryPolicy, RetryState
 
 __all__ = [
     "BaseClient",
@@ -45,4 +46,7 @@ __all__ = [
     "ValidationError",
     "Paginator",
     "AsyncPaginator",
+    "RetryPolicy",
+    "RetryState",
+    "DefaultRetryPolicy",
 ]

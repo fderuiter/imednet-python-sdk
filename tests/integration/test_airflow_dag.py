@@ -10,10 +10,9 @@ from moto import mock_aws
 @mock_aws
 def test_dag_runs(monkeypatch):
     pytest.importorskip("airflow")
-    from imednet.integrations.airflow import ImednetJobSensor, ImednetToS3Operator
-
     from airflow.models import DAG, TaskInstance
     from airflow.utils.state import State
+    from imednet.integrations.airflow import ImednetJobSensor, ImednetToS3Operator
 
     s3 = boto3.client("s3", region_name="us-east-1")
     s3.create_bucket(Bucket="bucket")

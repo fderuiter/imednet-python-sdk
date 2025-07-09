@@ -5,12 +5,13 @@ from rich import print
 
 from ..sdk import ImednetSDK
 from .decorators import with_sdk
+from .utils import STUDY_KEY_ARG
 
 
 @with_sdk
 def subject_data(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     subject_key: str = typer.Argument(..., help="The key identifying the subject."),
 ) -> None:
     """Retrieve all data for a single subject."""

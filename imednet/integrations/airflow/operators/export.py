@@ -32,7 +32,7 @@ class ImednetExportOperator(BaseOperator):
         self.imednet_conn_id = imednet_conn_id
 
     def execute(self, context: Dict[str, Any]) -> str:
-        from . import ImednetHook
+        from .. import ImednetHook
 
         hook = ImednetHook(self.imednet_conn_id)
         sdk = hook.get_conn()

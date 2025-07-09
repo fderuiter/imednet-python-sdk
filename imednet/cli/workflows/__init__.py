@@ -5,9 +5,9 @@ from typing import List, Optional
 import typer
 from rich import print
 
-from ..sdk import ImednetSDK
-from .decorators import with_sdk
-from .utils import parse_filter_args
+from ...sdk import ImednetSDK
+from ..decorators import with_sdk
+from ..utils import STUDY_KEY_ARG, parse_filter_args
 
 app = typer.Typer(name="workflows", help="Execute common data workflows.")
 
@@ -16,7 +16,7 @@ app = typer.Typer(name="workflows", help="Execute common data workflows.")
 @with_sdk
 def extract_records(
     sdk: ImednetSDK,
-    study_key: str = typer.Argument(..., help="The key identifying the study."),
+    study_key: str = STUDY_KEY_ARG,
     record_filter: Optional[List[str]] = typer.Option(
         None,
         "--record-filter",
@@ -39,7 +39,7 @@ def extract_records(
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
-    from . import DataExtractionWorkflow
+    from .. import DataExtractionWorkflow
 
     workflow = DataExtractionWorkflow(sdk)
 
