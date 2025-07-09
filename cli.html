@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Command Line Interface (CLI) &mdash; imednet 0.1.3 documentation</title>
+  <title>Command Line Interface (CLI) &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -62,6 +62,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
@@ -108,7 +109,8 @@ reads authentication details from environment variables:</p>
 </dd>
 </dl>
 <p>Set these variables in your shell before invoking the command. You may also create
-an <code class="docutils literal notranslate"><span class="pre">.env</span></code> file so the values are loaded automatically.</p>
+an <code class="docutils literal notranslate"><span class="pre">.env</span></code> file so the values are loaded automatically.
+The CLI calls <code class="xref py py-func docutils literal notranslate"><span class="pre">imednet.config.load_config()</span></code> under the hood to read them.</p>
 <section id="command-hierarchy">
 <h2>Command Hierarchy<a class="headerlink" href="#command-hierarchy" title="Permalink to this heading"></a></h2>
 <div class="mermaid">

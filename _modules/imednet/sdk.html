@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet.sdk &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet.sdk &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
 
@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../airflow.html">Airflow Integration</a></li>
@@ -99,12 +100,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">load_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.core.async_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.core.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.core.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryPolicy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEndpoint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.codings</span><span class="w"> </span><span class="kn">import</span> <span class="n">CodingsEndpoint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">FormsEndpoint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.endpoints.intervals</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntervalsEndpoint</span>
@@ -152,6 +155,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">subject_data</span> <span class="o">=</span> <span class="n">SubjectDataWorkflow</span><span class="p">(</span><span class="n">sdk_instance</span><span class="p">)</span>
 
 
+<span class="c1"># Mapping of attribute names to their endpoint classes</span>
+<span class="n">_ENDPOINT_REGISTRY</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseEndpoint</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;codings&quot;</span><span class="p">:</span> <span class="n">CodingsEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;forms&quot;</span><span class="p">:</span> <span class="n">FormsEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;intervals&quot;</span><span class="p">:</span> <span class="n">IntervalsEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;jobs&quot;</span><span class="p">:</span> <span class="n">JobsEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;queries&quot;</span><span class="p">:</span> <span class="n">QueriesEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;record_revisions&quot;</span><span class="p">:</span> <span class="n">RecordRevisionsEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;records&quot;</span><span class="p">:</span> <span class="n">RecordsEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;sites&quot;</span><span class="p">:</span> <span class="n">SitesEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;studies&quot;</span><span class="p">:</span> <span class="n">StudiesEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;subjects&quot;</span><span class="p">:</span> <span class="n">SubjectsEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="n">UsersEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="n">VariablesEndpoint</span><span class="p">,</span>
+    <span class="s2">&quot;visits&quot;</span><span class="p">:</span> <span class="n">VisitsEndpoint</span><span class="p">,</span>
+<span class="p">}</span>
+
+
 <div class="viewcode-block" id="ImednetSDK"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ImednetSDK</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Public entry-point for library users.</span>
@@ -166,6 +187,21 @@
 <span class="sd">        etc...</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">codings</span><span class="p">:</span> <span class="n">CodingsEndpoint</span>
+    <span class="n">forms</span><span class="p">:</span> <span class="n">FormsEndpoint</span>
+    <span class="n">intervals</span><span class="p">:</span> <span class="n">IntervalsEndpoint</span>
+    <span class="n">jobs</span><span class="p">:</span> <span class="n">JobsEndpoint</span>
+    <span class="n">queries</span><span class="p">:</span> <span class="n">QueriesEndpoint</span>
+    <span class="n">record_revisions</span><span class="p">:</span> <span class="n">RecordRevisionsEndpoint</span>
+    <span class="n">records</span><span class="p">:</span> <span class="n">RecordsEndpoint</span>
+    <span class="n">sites</span><span class="p">:</span> <span class="n">SitesEndpoint</span>
+    <span class="n">studies</span><span class="p">:</span> <span class="n">StudiesEndpoint</span>
+    <span class="n">subjects</span><span class="p">:</span> <span class="n">SubjectsEndpoint</span>
+    <span class="n">users</span><span class="p">:</span> <span class="n">UsersEndpoint</span>
+    <span class="n">variables</span><span class="p">:</span> <span class="n">VariablesEndpoint</span>
+    <span class="n">visits</span><span class="p">:</span> <span class="n">VisitsEndpoint</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -174,34 +210,40 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
         <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">backoff_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">retry_policy</span><span class="p">:</span> <span class="n">RetryPolicy</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">enable_async</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SDK with credentials and configuration.&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;IMEDNET_API_KEY&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span> <span class="o">=</span> <span class="n">security_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;IMEDNET_SECURITY_KEY&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;IMEDNET_BASE_URL&quot;</span><span class="p">)</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">security_key</span><span class="o">=</span><span class="n">security_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_env</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_env</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">security_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">base_url</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
-            <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="p">,</span>
-            <span class="n">security_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span><span class="p">,</span>
-            <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">security_key</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">security_key</span><span class="p">,</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
             <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
             <span class="n">backoff_factor</span><span class="o">=</span><span class="n">backoff_factor</span><span class="p">,</span>
+            <span class="n">retry_policy</span><span class="o">=</span><span class="n">retry_policy</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">AsyncClient</span><span class="p">(</span>
-                <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span><span class="p">,</span>
-                <span class="n">security_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span><span class="p">,</span>
-                <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">security_key</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">security_key</span><span class="p">,</span>
+                <span class="n">base_url</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span>
                 <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                 <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
                 <span class="n">backoff_factor</span><span class="o">=</span><span class="n">backoff_factor</span><span class="p">,</span>
+                <span class="n">retry_policy</span><span class="o">=</span><span class="n">retry_policy</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">enable_async</span>
             <span class="k">else</span> <span class="kc">None</span>
@@ -210,26 +252,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_endpoints</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workflows</span> <span class="o">=</span> <span class="n">Workflows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_env</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure required credentials are present.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_security_key</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">api_key</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">security_key</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;API key and security key are required&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">api_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;API key is required&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">security_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Security key is required&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retry_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetryPolicy</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">retry_policy</span>
+
+    <span class="nd">@retry_policy</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retry_policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">RetryPolicy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">retry_policy</span> <span class="o">=</span> <span class="n">policy</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="o">.</span><span class="n">retry_policy</span> <span class="o">=</span> <span class="n">policy</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate endpoint clients.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">codings</span> <span class="o">=</span> <span class="n">CodingsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">forms</span> <span class="o">=</span> <span class="n">FormsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">intervals</span> <span class="o">=</span> <span class="n">IntervalsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span> <span class="o">=</span> <span class="n">JobsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">queries</span> <span class="o">=</span> <span class="n">QueriesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">record_revisions</span> <span class="o">=</span> <span class="n">RecordRevisionsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">RecordsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="n">SitesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">studies</span> <span class="o">=</span> <span class="n">StudiesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span> <span class="o">=</span> <span class="n">SubjectsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">users</span> <span class="o">=</span> <span class="n">UsersEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">VariablesEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">visits</span> <span class="o">=</span> <span class="n">VisitsEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">endpoint_cls</span> <span class="ow">in</span> <span class="n">_ENDPOINT_REGISTRY</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">endpoint_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImednetSDK</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Support for context manager protocol.&quot;&quot;&quot;</span>
@@ -341,7 +386,7 @@
 
 <div class="viewcode-block" id="ImednetSDK.get_users"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_users">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">include_inactive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return users for the specified study.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">include_inactive</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">study_key</span><span class="p">,</span> <span class="n">include_inactive</span><span class="o">=</span><span class="n">include_inactive</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ImednetSDK.get_job"><a class="viewcode-back" href="../../imednet.html#imednet.sdk.ImednetSDK.get_job">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return job details for the specified batch.&quot;&quot;&quot;</span>
@@ -368,9 +413,6 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously poll a job until it reaches a terminal state.&quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Async client not configured&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="k">await</span> <span class="n">JobPoller</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">async_get</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span>
             <span class="n">study_key</span><span class="p">,</span> <span class="n">batch_id</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">timeout</span>

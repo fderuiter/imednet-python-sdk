@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet.core package &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet.core package &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
@@ -124,8 +125,8 @@
 - Context-manager support for automatic cleanup.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.core.client.Client">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.client.Client" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#imednet.core.base_client.BaseClient" title="imednet.core.base_client.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClient</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.core.client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/core/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.core.client.Client" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPClientBase</span></code></p>
 <p>Core HTTP client for the iMednet API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -138,6 +139,7 @@
 <li><p><strong>backoff_factor</strong> (<em>float</em>) – </p></li>
 <li><p><strong>log_level</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em>) – </p></li>
 <li><p><strong>tracer</strong> (<em>Optional</em><em>[</em><em>Tracer</em><em>]</em>) – </p></li>
+<li><p><strong>retry_policy</strong> (<em>RetryPolicy</em><em> | </em><em>None</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -164,6 +166,17 @@
 <span class="sig-name descname"><span class="pre">backoff_factor</span></span><a class="headerlink" href="#imednet.core.client.Client.backoff_factor" title="Permalink to this definition"></a></dt>
 <dd><p>Multiplier for exponential backoff.</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.client.Client.HTTPX_CLIENT_CLS">
+<span class="sig-name descname"><span class="pre">HTTPX_CLIENT_CLS</span></span><a class="headerlink" href="#imednet.core.client.Client.HTTPX_CLIENT_CLS" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.core.client.Client.IS_ASYNC">
+<span class="sig-name descname"><span class="pre">IS_ASYNC</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#imednet.core.client.Client.IS_ASYNC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="imednet.core.client.Client.close">
@@ -635,6 +648,24 @@ HTTPX requests used by the SDK:</p>
 </dl>
 </dd></dl>
 
+</section>
+<section id="retry-policy">
+<h2>Retry policy<a class="headerlink" href="#retry-policy" title="Permalink to this heading"></a></h2>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">RetryPolicy</span></code> interface controls if failed
+requests should be retried. The SDK uses
+<code class="docutils literal notranslate"><span class="pre">DefaultRetryPolicy</span></code> which retries when <code class="docutils literal notranslate"><span class="pre">httpx</span></code> raises a
+<code class="docutils literal notranslate"><span class="pre">RequestError</span></code>. Provide your own policy to customize this behaviour.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">imednet.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.core.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryPolicy</span><span class="p">,</span> <span class="n">RetryState</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerError</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ServerRetry</span><span class="p">(</span><span class="n">RetryPolicy</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">RetryState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">exception</span><span class="p">,</span> <span class="n">ServerError</span><span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">retry_policy</span><span class="o">=</span><span class="n">ServerRetry</span><span class="p">())</span>
+</pre></div>
+</div>
 </section>
 </section>
 

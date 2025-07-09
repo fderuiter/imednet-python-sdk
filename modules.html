@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
@@ -104,6 +105,7 @@
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#logging-and-tracing">Logging and tracing</a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#module-imednet.core.exceptions">imednet.core.exceptions module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#module-imednet.core.paginator">imednet.core.paginator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.core.html#retry-policy">Retry policy</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html">imednet.endpoints package</a><ul>
@@ -175,7 +177,10 @@
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.async_poll_job"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.async_poll_job()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.clear_default_study"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.clear_default_study()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.close"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.codings"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.codings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.config"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.config</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.create_record"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.create_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#id0"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.forms</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.get_codings"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.get_codings()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.get_forms"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.get_forms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.get_intervals"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.get_intervals()</span></code></a></li>
@@ -189,8 +194,20 @@
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.get_users"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.get_users()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.get_variables"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.get_variables()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.get_visits"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.get_visits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.intervals"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.intervals</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.jobs"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.jobs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.poll_job"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.poll_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.queries"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.queries</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.record_revisions"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.record_revisions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.records"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.records</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.retry_policy"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.retry_policy</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.set_default_study"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.set_default_study()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.sites"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.sites</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#id1"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.studies</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#id2"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.subjects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.users"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.users</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.variables"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.variables</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK.visits"><code class="docutils literal notranslate"><span class="pre">ImednetSDK.visits</span></code></a></li>
 </ul>
 </li>
 </ul>

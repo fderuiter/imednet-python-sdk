@@ -9,7 +9,8 @@ Base URL
 
 The SDK communicates with the production API at
 ``https://edc.prod.imednetapi.com`` by default. Override this with the
-``IMEDNET_BASE_URL`` environment variable if using a private deployment.
+``IMEDNET_BASE_URL`` environment variable or pass ``base_url`` when calling
+``load_config`` for a private deployment.
 
 Authentication
 --------------
@@ -17,7 +18,8 @@ Authentication
 All requests must include ``x-api-key`` and ``x-imn-security-key`` headers. The
 :class:`~imednet.core.base_client.BaseClient` handles shared initialization while the
 :class:`~imednet.core.client.Client` and
-:class:`~imednet.core.async_client.AsyncClient` read ``IMEDNET_API_KEY`` and
+:class:`~imednet.core.async_client.AsyncClient` relies on
+:func:`imednet.config.load_config` to read ``IMEDNET_API_KEY`` and
 ``IMEDNET_SECURITY_KEY`` from the environment and populate these headers automatically.
 
 HTTP methods and errors

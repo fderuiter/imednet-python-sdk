@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; imednet 0.1.3 documentation</title>
+  <title>Index &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
@@ -96,6 +97,7 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
  | <a href="#K"><strong>K</strong></a>
@@ -150,6 +152,8 @@
         <li><a href="imednet.models.html#imednet.models.QueryComment.annotation_status">(imednet.models.QueryComment attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imednet.models.html#imednet.models.queries.Query.annotation_type">annotation_type (imednet.models.queries.Query attribute)</a>
 
       <ul>
@@ -160,106 +164,12 @@
 </li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.async_create">async_create() (imednet.endpoints.RecordsEndpoint method)</a>
 </li>
-      <li><a href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.async_get">async_get() (imednet.endpoints.codings.CodingsEndpoint method)</a>
+      <li><a href="imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.async_create_or_update_records">async_create_or_update_records() (imednet.workflows.record_update.RecordUpdateWorkflow method)</a>
+</li>
+      <li><a href="imednet.endpoints.html#imednet.endpoints.jobs.JobsEndpoint.async_get">async_get() (imednet.endpoints.jobs.JobsEndpoint method)</a>
 
       <ul>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.async_get">(imednet.endpoints.CodingsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.async_get">(imednet.endpoints.forms.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.async_get">(imednet.endpoints.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.async_get">(imednet.endpoints.intervals.IntervalsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.async_get">(imednet.endpoints.IntervalsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.jobs.JobsEndpoint.async_get">(imednet.endpoints.jobs.JobsEndpoint method)</a>
-</li>
         <li><a href="imednet.endpoints.html#imednet.endpoints.JobsEndpoint.async_get">(imednet.endpoints.JobsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.async_get">(imednet.endpoints.queries.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.async_get">(imednet.endpoints.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.async_get">(imednet.endpoints.record_revisions.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.async_get">(imednet.endpoints.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.async_get">(imednet.endpoints.RecordsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.async_get">(imednet.endpoints.sites.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.async_get">(imednet.endpoints.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.async_get">(imednet.endpoints.studies.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.async_get">(imednet.endpoints.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.async_get">(imednet.endpoints.subjects.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.async_get">(imednet.endpoints.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.async_get">(imednet.endpoints.users.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.async_get">(imednet.endpoints.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.async_get">(imednet.endpoints.variables.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.async_get">(imednet.endpoints.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.async_get">(imednet.endpoints.visits.VisitsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.async_get">(imednet.endpoints.VisitsEndpoint method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.async_list">async_list() (imednet.endpoints.codings.CodingsEndpoint method)</a>
-
-      <ul>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.async_list">(imednet.endpoints.CodingsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.async_list">(imednet.endpoints.forms.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.async_list">(imednet.endpoints.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.async_list">(imednet.endpoints.intervals.IntervalsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.async_list">(imednet.endpoints.IntervalsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.async_list">(imednet.endpoints.queries.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.async_list">(imednet.endpoints.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.async_list">(imednet.endpoints.record_revisions.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.async_list">(imednet.endpoints.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.async_list">(imednet.endpoints.RecordsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.async_list">(imednet.endpoints.sites.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.async_list">(imednet.endpoints.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.async_list">(imednet.endpoints.studies.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.async_list">(imednet.endpoints.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.async_list">(imednet.endpoints.subjects.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.async_list">(imednet.endpoints.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.async_list">(imednet.endpoints.users.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.async_list">(imednet.endpoints.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.async_list">(imednet.endpoints.variables.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.async_list">(imednet.endpoints.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.async_list">(imednet.endpoints.visits.VisitsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.async_list">(imednet.endpoints.VisitsEndpoint method)</a>
 </li>
       </ul></li>
       <li><a href="imednet.html#imednet.sdk.ImednetSDK.async_poll_job">async_poll_job() (imednet.sdk.ImednetSDK method)</a>
@@ -281,6 +191,8 @@
       <li><a href="imednet.core.html#imednet.core.client.Client.backoff_factor">backoff_factor (imednet.core.client.Client attribute)</a>
 </li>
       <li><a href="imednet.core.html#imednet.core.exceptions.BadRequestError">BadRequestError</a>
+</li>
+      <li><a href="imednet.endpoints.html#imednet.endpoints.base.BaseEndpoint.BASE_PATH">BASE_PATH (imednet.endpoints.base.BaseEndpoint attribute)</a>
 </li>
       <li><a href="imednet.core.html#imednet.core.client.Client.base_url">base_url (imednet.core.client.Client attribute)</a>
 </li>
@@ -370,6 +282,8 @@
         <li><a href="imednet.models.html#imednet.models.codings.Coding.coding_id">(imednet.models.codings.Coding attribute)</a>
 </li>
       </ul></li>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.codings">codings (imednet.sdk.ImednetSDK attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint">CodingsEndpoint (class in imednet.endpoints)</a>
@@ -390,6 +304,8 @@
         <li><a href="imednet.models.html#imednet.models.users.Role.community_id">(imednet.models.users.Role attribute)</a>
 </li>
       </ul></li>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.config">config (imednet.sdk.ImednetSDK attribute)</a>
+</li>
       <li><a href="imednet.utils.html#imednet.utils.configure_json_logging">configure_json_logging() (in module imednet.utils)</a>
 </li>
       <li><a href="imednet.core.html#imednet.core.exceptions.ConflictError">ConflictError</a>
@@ -849,7 +765,7 @@
 </li>
         <li><a href="imednet.models.html#imednet.models.IntervalStructure.forms">(imednet.models.IntervalStructure attribute)</a>
 </li>
-        <li><a href="imednet.html#imednet.sdk.ImednetSDK.forms">(imednet.sdk.ImednetSDK attribute)</a>
+        <li><a href="imednet.html#id0">(imednet.sdk.ImednetSDK attribute)</a>, <a href="imednet.html#imednet.sdk.ImednetSDK.forms">[1]</a>
 </li>
       </ul></li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint">FormsEndpoint (class in imednet.endpoints)</a>
@@ -879,59 +795,11 @@
       <li><a href="imednet.core.html#imednet.core.client.Client.get">get() (imednet.core.client.Client method)</a>
 
       <ul>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.get">(imednet.endpoints.codings.CodingsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.get">(imednet.endpoints.CodingsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.get">(imednet.endpoints.forms.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.get">(imednet.endpoints.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.get">(imednet.endpoints.intervals.IntervalsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.get">(imednet.endpoints.IntervalsEndpoint method)</a>
-</li>
         <li><a href="imednet.endpoints.html#imednet.endpoints.jobs.JobsEndpoint.get">(imednet.endpoints.jobs.JobsEndpoint method)</a>
 </li>
         <li><a href="imednet.endpoints.html#imednet.endpoints.JobsEndpoint.get">(imednet.endpoints.JobsEndpoint method)</a>
 </li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.get">(imednet.endpoints.queries.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.get">(imednet.endpoints.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.get">(imednet.endpoints.record_revisions.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.get">(imednet.endpoints.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.get">(imednet.endpoints.RecordsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.get">(imednet.endpoints.sites.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.get">(imednet.endpoints.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.get">(imednet.endpoints.studies.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.get">(imednet.endpoints.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.get">(imednet.endpoints.subjects.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.get">(imednet.endpoints.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.get">(imednet.endpoints.users.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.get">(imednet.endpoints.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.get">(imednet.endpoints.variables.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.get">(imednet.endpoints.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.get">(imednet.endpoints.visits.VisitsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.get">(imednet.endpoints.VisitsEndpoint method)</a>
-</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imednet.workflows.html#imednet.workflows.subject_data.SubjectDataWorkflow.get_all_subject_data">get_all_subject_data() (imednet.workflows.subject_data.SubjectDataWorkflow method)</a>
 </li>
       <li><a href="imednet.html#imednet.sdk.ImednetSDK.get_codings">get_codings() (imednet.sdk.ImednetSDK method)</a>
@@ -946,6 +814,8 @@
 </li>
       <li><a href="imednet.html#imednet.sdk.ImednetSDK.get_queries">get_queries() (imednet.sdk.ImednetSDK method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imednet.workflows.html#imednet.workflows.query_management.QueryManagementWorkflow.get_queries_by_site">get_queries_by_site() (imednet.workflows.query_management.QueryManagementWorkflow method)</a>
 </li>
       <li><a href="imednet.workflows.html#imednet.workflows.query_management.QueryManagementWorkflow.get_queries_for_subject">get_queries_for_subject() (imednet.workflows.query_management.QueryManagementWorkflow method)</a>
@@ -967,6 +837,14 @@
       <li><a href="imednet.html#imednet.sdk.ImednetSDK.get_variables">get_variables() (imednet.sdk.ImednetSDK method)</a>
 </li>
       <li><a href="imednet.html#imednet.sdk.ImednetSDK.get_visits">get_visits() (imednet.sdk.ImednetSDK method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imednet.core.html#imednet.core.client.Client.HTTPX_CLIENT_CLS">HTTPX_CLIENT_CLS (imednet.core.client.Client attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1191,8 +1069,6 @@
         <li><a href="imednet.models.html#module-imednet.models.users">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     imednet.models.variables
 
@@ -1200,6 +1076,8 @@
         <li><a href="imednet.models.html#module-imednet.models.variables">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     imednet.models.visits
 
@@ -1367,7 +1245,11 @@
 </li>
       </ul></li>
       <li><a href="imednet.models.html#imednet.models.StudyStructure.intervals">intervals (imednet.models.StudyStructure attribute)</a>
+
+      <ul>
+        <li><a href="imednet.html#imednet.sdk.ImednetSDK.intervals">(imednet.sdk.ImednetSDK attribute)</a>
 </li>
+      </ul></li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint">IntervalsEndpoint (class in imednet.endpoints)</a>
 
       <ul>
@@ -1375,6 +1257,8 @@
 </li>
       </ul></li>
       <li><a href="imednet.models.html#imednet.models.IntervalStructure">IntervalStructure (class in imednet.models)</a>
+</li>
+      <li><a href="imednet.core.html#imednet.core.client.Client.IS_ASYNC">IS_ASYNC (imednet.core.client.Client attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1402,6 +1286,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.jobs">jobs (imednet.sdk.ImednetSDK attribute)</a>
+</li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.JobsEndpoint">JobsEndpoint (class in imednet.endpoints)</a>
 
       <ul>
@@ -1486,62 +1372,14 @@
         <li><a href="imednet.models.html#imednet.models.users.User.last_name">(imednet.models.users.User attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imednet.models.html#imednet.models.Role.level">level (imednet.models.Role attribute)</a>
 
       <ul>
         <li><a href="imednet.models.html#imednet.models.users.Role.level">(imednet.models.users.Role attribute)</a>
 </li>
       </ul></li>
-      <li><a href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.list">list() (imednet.endpoints.codings.CodingsEndpoint method)</a>
-
-      <ul>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.list">(imednet.endpoints.CodingsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.list">(imednet.endpoints.forms.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.list">(imednet.endpoints.FormsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.list">(imednet.endpoints.intervals.IntervalsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.list">(imednet.endpoints.IntervalsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.list">(imednet.endpoints.queries.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.list">(imednet.endpoints.QueriesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.list">(imednet.endpoints.record_revisions.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.list">(imednet.endpoints.RecordRevisionsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.list">(imednet.endpoints.RecordsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.list">(imednet.endpoints.sites.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.list">(imednet.endpoints.SitesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.list">(imednet.endpoints.studies.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.list">(imednet.endpoints.StudiesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.list">(imednet.endpoints.subjects.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.list">(imednet.endpoints.SubjectsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.list">(imednet.endpoints.users.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.list">(imednet.endpoints.UsersEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.list">(imednet.endpoints.variables.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.list">(imednet.endpoints.VariablesEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.list">(imednet.endpoints.visits.VisitsEndpoint method)</a>
-</li>
-        <li><a href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.list">(imednet.endpoints.VisitsEndpoint method)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imednet.models.html#imednet.models.User.login">login (imednet.models.User attribute)</a>
 
       <ul>
@@ -1554,6 +1392,54 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.MODEL">MODEL (imednet.endpoints.codings.CodingsEndpoint attribute)</a>
+
+      <ul>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.MODEL">(imednet.endpoints.CodingsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.MODEL">(imednet.endpoints.forms.FormsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.MODEL">(imednet.endpoints.FormsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.MODEL">(imednet.endpoints.intervals.IntervalsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.MODEL">(imednet.endpoints.IntervalsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.MODEL">(imednet.endpoints.queries.QueriesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.MODEL">(imednet.endpoints.QueriesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.MODEL">(imednet.endpoints.record_revisions.RecordRevisionsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.MODEL">(imednet.endpoints.RecordRevisionsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.MODEL">(imednet.endpoints.RecordsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.MODEL">(imednet.endpoints.sites.SitesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.MODEL">(imednet.endpoints.SitesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.MODEL">(imednet.endpoints.studies.StudiesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.MODEL">(imednet.endpoints.StudiesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.MODEL">(imednet.endpoints.subjects.SubjectsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.MODEL">(imednet.endpoints.SubjectsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.MODEL">(imednet.endpoints.users.UsersEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.MODEL">(imednet.endpoints.UsersEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.MODEL">(imednet.endpoints.variables.VariablesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.MODEL">(imednet.endpoints.VariablesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.MODEL">(imednet.endpoints.visits.VisitsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.MODEL">(imednet.endpoints.VisitsEndpoint attribute)</a>
+</li>
+      </ul></li>
       <li><a href="imednet.models.html#imednet.models.BaseRecordRequest.model_config">model_config (imednet.models.BaseRecordRequest attribute)</a>
 
       <ul>
@@ -1803,6 +1689,20 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.PAGE_SIZE">PAGE_SIZE (imednet.endpoints.forms.FormsEndpoint attribute)</a>
+
+      <ul>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.PAGE_SIZE">(imednet.endpoints.FormsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.PAGE_SIZE">(imednet.endpoints.intervals.IntervalsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.PAGE_SIZE">(imednet.endpoints.IntervalsEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.PAGE_SIZE">(imednet.endpoints.variables.VariablesEndpoint attribute)</a>
+</li>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.PAGE_SIZE">(imednet.endpoints.VariablesEndpoint attribute)</a>
+</li>
+      </ul></li>
       <li><a href="imednet.core.html#imednet.core.paginator.Paginator">Paginator (class in imednet.core.paginator)</a>
 </li>
       <li><a href="imednet.models.html#imednet.models.Record.parent_record_id">parent_record_id (imednet.models.Record attribute)</a>
@@ -1907,8 +1807,12 @@
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="imednet.workflows.html#imednet.workflows.subject_data.SubjectComprehensiveData.queries">queries (imednet.workflows.subject_data.SubjectComprehensiveData attribute)</a>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.queries">queries (imednet.sdk.ImednetSDK attribute)</a>
+
+      <ul>
+        <li><a href="imednet.workflows.html#imednet.workflows.subject_data.SubjectComprehensiveData.queries">(imednet.workflows.subject_data.SubjectComprehensiveData attribute)</a>
 </li>
+      </ul></li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint">QueriesEndpoint (class in imednet.endpoints)</a>
 
       <ul>
@@ -2009,6 +1913,8 @@
         <li><a href="imednet.models.html#imednet.models.RecordRevision.record_revision_id">(imednet.models.RecordRevision attribute)</a>
 </li>
       </ul></li>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.record_revisions">record_revisions (imednet.sdk.ImednetSDK attribute)</a>
+</li>
       <li><a href="imednet.models.html#imednet.models.Record.record_status">record_status (imednet.models.Record attribute)</a>
 
       <ul>
@@ -2053,8 +1959,12 @@
         <li><a href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint">(class in imednet.endpoints.record_revisions)</a>
 </li>
       </ul></li>
-      <li><a href="imednet.workflows.html#imednet.workflows.subject_data.SubjectComprehensiveData.records">records (imednet.workflows.subject_data.SubjectComprehensiveData attribute)</a>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.records">records (imednet.sdk.ImednetSDK attribute)</a>
+
+      <ul>
+        <li><a href="imednet.workflows.html#imednet.workflows.subject_data.SubjectComprehensiveData.records">(imednet.workflows.subject_data.SubjectComprehensiveData attribute)</a>
 </li>
+      </ul></li>
       <li><a href="imednet.utils.html#imednet.utils.pandas.records_to_dataframe">records_to_dataframe() (in module imednet.utils.pandas)</a>
 </li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint">RecordsEndpoint (class in imednet.endpoints)</a>
@@ -2071,6 +1981,12 @@
       </ul></li>
       <li><a href="imednet.core.html#imednet.core.exceptions.RequestError">RequestError</a>
 </li>
+      <li><a href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.requires_study_key">requires_study_key (imednet.endpoints.studies.StudiesEndpoint attribute)</a>
+
+      <ul>
+        <li><a href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.requires_study_key">(imednet.endpoints.StudiesEndpoint attribute)</a>
+</li>
+      </ul></li>
       <li><a href="imednet.core.html#imednet.core.exceptions.ApiError.response">response (imednet.core.exceptions.ApiError attribute)</a>
 </li>
       <li><a href="imednet.models.html#imednet.models.jobs.JobStatus.result_url">result_url (imednet.models.jobs.JobStatus attribute)</a>
@@ -2080,6 +1996,8 @@
 </li>
       </ul></li>
       <li><a href="imednet.core.html#imednet.core.client.Client.retries">retries (imednet.core.client.Client attribute)</a>
+</li>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.retry_policy">retry_policy (imednet.sdk.ImednetSDK property)</a>
 </li>
       <li><a href="imednet.models.html#imednet.models.Coding.revision">revision (imednet.models.Coding attribute)</a>
 
@@ -2129,6 +2047,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imednet.utils.html#imednet.utils.sanitize_base_url">sanitize_base_url() (in module imednet.utils)</a>
+</li>
       <li><a href="imednet.models.html#imednet.models.queries.QueryComment.sequence">sequence (imednet.models.queries.QueryComment attribute)</a>
 
       <ul>
@@ -2197,6 +2117,8 @@
         <li><a href="imednet.models.html#imednet.models.subjects.Subject.site_name">(imednet.models.subjects.Subject attribute)</a>
 </li>
       </ul></li>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.sites">sites (imednet.sdk.ImednetSDK attribute)</a>
+</li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint">SitesEndpoint (class in imednet.endpoints)</a>
 
       <ul>
@@ -2229,7 +2151,7 @@
       </ul></li>
       <li><a href="imednet.core.html#imednet.core.exceptions.ApiError.status_code">status_code (imednet.core.exceptions.ApiError attribute)</a>
 </li>
-      <li><a href="imednet.html#imednet.sdk.ImednetSDK.studies">studies (imednet.sdk.ImednetSDK attribute)</a>
+      <li><a href="imednet.html#id1">studies (imednet.sdk.ImednetSDK attribute)</a>, <a href="imednet.html#imednet.sdk.ImednetSDK.studies">[1]</a>
 </li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint">StudiesEndpoint (class in imednet.endpoints)</a>
 
@@ -2427,7 +2349,7 @@
         <li><a href="imednet.models.html#imednet.models.subjects.SubjectKeyword">(class in imednet.models.subjects)</a>
 </li>
       </ul></li>
-      <li><a href="imednet.html#imednet.sdk.ImednetSDK.subjects">subjects (imednet.sdk.ImednetSDK attribute)</a>
+      <li><a href="imednet.html#id2">subjects (imednet.sdk.ImednetSDK attribute)</a>, <a href="imednet.html#imednet.sdk.ImednetSDK.subjects">[1]</a>
 </li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint">SubjectsEndpoint (class in imednet.endpoints)</a>
 
@@ -2523,6 +2445,8 @@
         <li><a href="imednet.models.html#imednet.models.users.User.user_id">(imednet.models.users.User attribute)</a>
 </li>
       </ul></li>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.users">users (imednet.sdk.ImednetSDK attribute)</a>
+</li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint">UsersEndpoint (class in imednet.endpoints)</a>
 
       <ul>
@@ -2583,10 +2507,14 @@
         <li><a href="imednet.models.html#imednet.models.variables.Variable.variable_type">(imednet.models.variables.Variable attribute)</a>
 </li>
       </ul></li>
+      <li><a href="imednet.models.html#imednet.models.FormStructure.variables">variables (imednet.models.FormStructure attribute)</a>
+
+      <ul>
+        <li><a href="imednet.html#imednet.sdk.ImednetSDK.variables">(imednet.sdk.ImednetSDK attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="imednet.models.html#imednet.models.FormStructure.variables">variables (imednet.models.FormStructure attribute)</a>
-</li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint">VariablesEndpoint (class in imednet.endpoints)</a>
 
       <ul>
@@ -2627,8 +2555,12 @@
         <li><a href="imednet.models.html#imednet.models.visits.Visit.visit_id">(imednet.models.visits.Visit attribute)</a>
 </li>
       </ul></li>
-      <li><a href="imednet.workflows.html#imednet.workflows.subject_data.SubjectComprehensiveData.visits">visits (imednet.workflows.subject_data.SubjectComprehensiveData attribute)</a>
+      <li><a href="imednet.html#imednet.sdk.ImednetSDK.visits">visits (imednet.sdk.ImednetSDK attribute)</a>
+
+      <ul>
+        <li><a href="imednet.workflows.html#imednet.workflows.subject_data.SubjectComprehensiveData.visits">(imednet.workflows.subject_data.SubjectComprehensiveData attribute)</a>
 </li>
+      </ul></li>
       <li><a href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint">VisitsEndpoint (class in imednet.endpoints)</a>
 
       <ul>

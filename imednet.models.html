@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet.models package &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet.models package &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
@@ -3961,8 +3962,10 @@ Accepts bool, str, int, float and returns a bool.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="imednet.models.parse_datetime">
 <span class="sig-prename descclassname"><span class="pre">imednet.models.</span></span><span class="sig-name descname"><span class="pre">parse_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/utils/validators.html#parse_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.models.parse_datetime" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for parse_iso_datetime from utils.dates.
-Used for backwards compatibility in models.</p>
+<dd><p>Parse an ISO datetime string or return a sentinel value.</p>
+<p>The SDK historically returns <code class="docutils literal notranslate"><span class="pre">datetime(1969,</span> <span class="pre">4,</span> <span class="pre">20,</span> <span class="pre">16,</span> <span class="pre">20)</span></code> when a
+timestamp field is empty. This helper mirrors that behaviour for backward
+compatibility.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></p>

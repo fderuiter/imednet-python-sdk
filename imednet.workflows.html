@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet.workflows package &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet.workflows package &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
@@ -336,7 +337,7 @@ df_names = mapper.dataframe(study_key=”MYSTUDY”, use_labels_as_columns=False
 </section>
 <section id="module-imednet.workflows.record_update">
 <span id="imednet-workflows-record-update-module"></span><h2>imednet.workflows.record_update module<a class="headerlink" href="#module-imednet.workflows.record_update" title="Permalink to this heading"></a></h2>
-<p>Placeholder for Record Creation/Update workflows.</p>
+<p>Utilities for submitting and updating records in iMedNet studies.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.workflows.record_update.RecordUpdateWorkflow">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.workflows.record_update.</span></span><span class="sig-name descname"><span class="pre">RecordUpdateWorkflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/workflows/record_update.html#RecordUpdateWorkflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.workflows.record_update.RecordUpdateWorkflow" title="Permalink to this definition"></a></dt>
@@ -348,6 +349,26 @@ and optional job status monitoring.</p>
 <dd class="field-odd"><p><strong>sdk</strong> (<a class="reference internal" href="imednet.html#imednet.sdk.ImednetSDK" title="imednet.sdk.ImednetSDK"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImednetSDK</span></code></a>) – An instance of the ImednetSDK.</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="imednet.workflows.record_update.RecordUpdateWorkflow.async_create_or_update_records">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_create_or_update_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">records_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_completion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poll_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/workflows/record_update.html#RecordUpdateWorkflow.async_create_or_update_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.workflows.record_update.RecordUpdateWorkflow.async_create_or_update_records" title="Permalink to this definition"></a></dt>
+<dd><p>Asynchronous variant of <a class="reference internal" href="#imednet.workflows.record_update.RecordUpdateWorkflow.create_or_update_records" title="imednet.workflows.record_update.RecordUpdateWorkflow.create_or_update_records"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_or_update_records()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="imednet.models.html#imednet.models.jobs.Job" title="imednet.models.jobs.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>study_key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>records_data</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>wait_for_completion</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – </p></li>
+<li><p><strong>poll_interval</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="imednet.workflows.record_update.RecordUpdateWorkflow.create_new_record">
 <span class="sig-name descname"><span class="pre">create_new_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">form_identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">form_identifier_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'key'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_identifier_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'key'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_completion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poll_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/workflows/record_update.html#RecordUpdateWorkflow.create_new_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.workflows.record_update.RecordUpdateWorkflow.create_new_record" title="Permalink to this definition"></a></dt>

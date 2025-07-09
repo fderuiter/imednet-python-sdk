@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet package &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet package &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="airflow.html">Airflow Integration</a></li>
@@ -125,6 +126,8 @@
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.timeout"><code class="docutils literal notranslate"><span class="pre">Client.timeout</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.retries"><code class="docutils literal notranslate"><span class="pre">Client.retries</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.backoff_factor"><code class="docutils literal notranslate"><span class="pre">Client.backoff_factor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.HTTPX_CLIENT_CLS"><code class="docutils literal notranslate"><span class="pre">Client.HTTPX_CLIENT_CLS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.IS_ASYNC"><code class="docutils literal notranslate"><span class="pre">Client.IS_ASYNC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.close"><code class="docutils literal notranslate"><span class="pre">Client.close()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.get"><code class="docutils literal notranslate"><span class="pre">Client.get()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.core.html#imednet.core.client.Client.post"><code class="docutils literal notranslate"><span class="pre">Client.post()</span></code></a></li>
@@ -177,12 +180,14 @@
 <li class="toctree-l3"><a class="reference internal" href="imednet.core.html#imednet.core.paginator.Paginator"><code class="docutils literal notranslate"><span class="pre">Paginator</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="imednet.core.html#retry-policy">Retry policy</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="imednet.endpoints.html">imednet.endpoints package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.base">imednet.endpoints.base module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.base.BaseEndpoint"><code class="docutils literal notranslate"><span class="pre">BaseEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.base.BaseEndpoint.BASE_PATH"><code class="docutils literal notranslate"><span class="pre">BaseEndpoint.BASE_PATH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.base.BaseEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">BaseEndpoint.PATH</span></code></a></li>
 </ul>
 </li>
@@ -190,33 +195,26 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.codings">imednet.endpoints.codings module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.forms">imednet.endpoints.forms module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.PAGE_SIZE"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.PAGE_SIZE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.intervals">imednet.endpoints.intervals module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.PAGE_SIZE"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.PAGE_SIZE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -232,22 +230,16 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.queries">imednet.endpoints.queries module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.record_revisions">imednet.endpoints.record_revisions module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -255,93 +247,70 @@
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#imednet-endpoints-records-module">imednet.endpoints.records module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.sites">imednet.endpoints.sites module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.studies">imednet.endpoints.studies module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint.requires_study_key"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.requires_study_key</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.subjects">imednet.endpoints.subjects module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.users">imednet.endpoints.users module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.get"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint.list"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.variables">imednet.endpoints.variables module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.PAGE_SIZE"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.PAGE_SIZE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints.visits">imednet.endpoints.visits module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.endpoints.html#module-imednet.endpoints">Module contents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.CodingsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">CodingsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.PAGE_SIZE"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.PAGE_SIZE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.FormsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">FormsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.PAGE_SIZE"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.PAGE_SIZE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.IntervalsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">IntervalsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.JobsEndpoint"><code class="docutils literal notranslate"><span class="pre">JobsEndpoint</span></code></a><ul>
@@ -351,77 +320,52 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.QueriesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">QueriesEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordRevisionsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.PATH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.async_create"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.async_create()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.async_list()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.create"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.create()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">RecordsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SitesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">SitesEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.StudiesEndpoint.requires_study_key"><code class="docutils literal notranslate"><span class="pre">StudiesEndpoint.requires_study_key</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.SubjectsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">SubjectsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.get"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.UsersEndpoint.list"><code class="docutils literal notranslate"><span class="pre">UsersEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.PAGE_SIZE"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.PAGE_SIZE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.get"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VariablesEndpoint.list"><code class="docutils literal notranslate"><span class="pre">VariablesEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.MODEL"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.MODEL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.PATH"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.PATH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.async_get"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.async_get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.async_list"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.async_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.get"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.VisitsEndpoint.list"><code class="docutils literal notranslate"><span class="pre">VisitsEndpoint.list()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1181,6 +1125,7 @@
 <li class="toctree-l3"><a class="reference internal" href="imednet.utils.html#imednet.utils.configure_json_logging"><code class="docutils literal notranslate"><span class="pre">configure_json_logging()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.utils.html#imednet.utils.format_iso_datetime"><code class="docutils literal notranslate"><span class="pre">format_iso_datetime()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="imednet.utils.html#imednet.utils.parse_iso_datetime"><code class="docutils literal notranslate"><span class="pre">parse_iso_datetime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="imednet.utils.html#imednet.utils.sanitize_base_url"><code class="docutils literal notranslate"><span class="pre">sanitize_base_url()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1214,6 +1159,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="imednet.workflows.html#module-imednet.workflows.record_update">imednet.workflows.record_update module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow"><code class="docutils literal notranslate"><span class="pre">RecordUpdateWorkflow</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.async_create_or_update_records"><code class="docutils literal notranslate"><span class="pre">RecordUpdateWorkflow.async_create_or_update_records()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.create_new_record"><code class="docutils literal notranslate"><span class="pre">RecordUpdateWorkflow.create_new_record()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.create_or_update_records"><code class="docutils literal notranslate"><span class="pre">RecordUpdateWorkflow.create_or_update_records()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="imednet.workflows.html#imednet.workflows.record_update.RecordUpdateWorkflow.register_subject"><code class="docutils literal notranslate"><span class="pre">RecordUpdateWorkflow.register_subject()</span></code></a></li>
@@ -1270,7 +1216,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="imednet.sdk.ImednetSDK">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.sdk.</span></span><span class="sig-name descname"><span class="pre">ImednetSDK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_async</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/sdk.html#ImednetSDK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.sdk.ImednetSDK" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imednet.sdk.</span></span><span class="sig-name descname"><span class="pre">ImednetSDK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backoff_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_async</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/sdk.html#ImednetSDK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.sdk.ImednetSDK" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Public entry-point for library users.</p>
 <p>Provides access to all iMednet API endpoints and maintains configuration.</p>
@@ -1283,6 +1229,7 @@
 <li><p><strong>timeout</strong> (<em>float</em>) – </p></li>
 <li><p><strong>retries</strong> (<em>int</em>) – </p></li>
 <li><p><strong>backoff_factor</strong> (<em>float</em>) – </p></li>
+<li><p><strong>retry_policy</strong> (<em>RetryPolicy</em><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>enable_async</strong> (<em>bool</em>) – </p></li>
 </ul>
 </dd>
@@ -1367,6 +1314,16 @@
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.codings">
+<span class="sig-name descname"><span class="pre">codings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.codings.CodingsEndpoint" title="imednet.endpoints.codings.CodingsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodingsEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.codings" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.config">
+<span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.config" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.create_record">
 <span class="sig-name descname"><span class="pre">create_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">records_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email_notify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/sdk.html#ImednetSDK.create_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.sdk.ImednetSDK.create_record" title="Permalink to this definition"></a></dt>
@@ -1384,6 +1341,11 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">forms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.forms.FormsEndpoint" title="imednet.endpoints.forms.FormsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">FormsEndpoint</span></code></a></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.get_codings">
@@ -1604,6 +1566,16 @@
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.intervals">
+<span class="sig-name descname"><span class="pre">intervals</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.intervals.IntervalsEndpoint" title="imednet.endpoints.intervals.IntervalsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalsEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.intervals" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.jobs">
+<span class="sig-name descname"><span class="pre">jobs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.jobs.JobsEndpoint" title="imednet.endpoints.jobs.JobsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobsEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.jobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.poll_job">
 <span class="sig-name descname"><span class="pre">poll_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/sdk.html#ImednetSDK.poll_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.sdk.ImednetSDK.poll_job" title="Permalink to this definition"></a></dt>
@@ -1623,6 +1595,26 @@
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.queries">
+<span class="sig-name descname"><span class="pre">queries</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.queries.QueriesEndpoint" title="imednet.endpoints.queries.QueriesEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueriesEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.queries" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.record_revisions">
+<span class="sig-name descname"><span class="pre">record_revisions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.record_revisions.RecordRevisionsEndpoint" title="imednet.endpoints.record_revisions.RecordRevisionsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecordRevisionsEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.record_revisions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.records">
+<span class="sig-name descname"><span class="pre">records</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.RecordsEndpoint" title="imednet.endpoints.records.RecordsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecordsEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.records" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.retry_policy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retry_policy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RetryPolicy</span></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.retry_policy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.set_default_study">
 <span class="sig-name descname"><span class="pre">set_default_study</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imednet/sdk.html#ImednetSDK.set_default_study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imednet.sdk.ImednetSDK.set_default_study" title="Permalink to this definition"></a></dt>
@@ -1636,6 +1628,36 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.sites">
+<span class="sig-name descname"><span class="pre">sites</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.sites.SitesEndpoint" title="imednet.endpoints.sites.SitesEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.sites" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">studies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.studies.StudiesEndpoint" title="imednet.endpoints.studies.StudiesEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudiesEndpoint</span></code></a></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">subjects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint" title="imednet.endpoints.subjects.SubjectsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubjectsEndpoint</span></code></a></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.users">
+<span class="sig-name descname"><span class="pre">users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.users.UsersEndpoint" title="imednet.endpoints.users.UsersEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">UsersEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.users" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.variables">
+<span class="sig-name descname"><span class="pre">variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.variables.VariablesEndpoint" title="imednet.endpoints.variables.VariablesEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariablesEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.variables" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imednet.sdk.ImednetSDK.visits">
+<span class="sig-name descname"><span class="pre">visits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="imednet.endpoints.html#imednet.endpoints.visits.VisitsEndpoint" title="imednet.endpoints.visits.VisitsEndpoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisitsEndpoint</span></code></a></em><a class="headerlink" href="#imednet.sdk.ImednetSDK.visits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

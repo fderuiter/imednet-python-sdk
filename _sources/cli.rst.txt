@@ -13,6 +13,7 @@ reads authentication details from environment variables:
 
 Set these variables in your shell before invoking the command. You may also create
 an ``.env`` file so the values are loaded automatically.
+The CLI calls :func:`imednet.config.load_config` under the hood to read them.
 
 Command Hierarchy
 -----------------

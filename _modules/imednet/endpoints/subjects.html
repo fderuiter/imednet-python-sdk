@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet.endpoints.subjects &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet.endpoints.subjects &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
 
@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../airflow.html">Airflow Integration</a></li>
@@ -89,127 +90,21 @@
   <h1>Source code for imednet.endpoints.subjects</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Endpoint for managing subjects in a study.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.core.paginator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncPaginator</span><span class="p">,</span> <span class="n">Paginator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.endpoints.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEndpoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.core.paginator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncPaginator</span><span class="p">,</span> <span class="n">Paginator</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.endpoints._mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListGetEndpoint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">imednet.models.subjects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Subject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">imednet.utils.filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_filter_string</span>
 
 
-<div class="viewcode-block" id="SubjectsEndpoint"><a class="viewcode-back" href="../../../imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SubjectsEndpoint</span><span class="p">(</span><span class="n">BaseEndpoint</span><span class="p">):</span>
+<div class="viewcode-block" id="SubjectsEndpoint"><a class="viewcode-back" href="../../../imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SubjectsEndpoint</span><span class="p">(</span><span class="n">ListGetEndpoint</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    API endpoint for interacting with subjects in an iMedNet study.</span>
 
 <span class="sd">    Provides methods to list and retrieve individual subjects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">PATH</span> <span class="o">=</span> <span class="s2">&quot;/api/v1/edc/studies&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_list_impl</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">client</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-        <span class="n">paginator_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">study_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_filter</span><span class="p">(</span><span class="n">filters</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">study_key</span><span class="p">:</span>
-            <span class="n">filters</span><span class="p">[</span><span class="s2">&quot;studyKey&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">study_key</span>
-
-        <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">filters</span><span class="p">:</span>
-            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;filter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">build_filter_string</span><span class="p">(</span><span class="n">filters</span><span class="p">)</span>
-
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_path</span><span class="p">(</span><span class="n">filters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;studyKey&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="s2">&quot;subjects&quot;</span><span class="p">)</span>
-        <span class="n">paginator</span> <span class="o">=</span> <span class="n">paginator_cls</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">paginator</span><span class="p">,</span> <span class="s2">&quot;__aiter__&quot;</span><span class="p">):</span>
-
-            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_collect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Subject</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">Subject</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">async</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">paginator</span><span class="p">]</span>
-
-            <span class="k">return</span> <span class="n">_collect</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="p">[</span><span class="n">Subject</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">paginator</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_impl</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">paginator_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject_key</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_impl</span><span class="p">(</span>
-            <span class="n">client</span><span class="p">,</span>
-            <span class="n">paginator_cls</span><span class="p">,</span>
-            <span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">,</span>
-            <span class="n">subjectKey</span><span class="o">=</span><span class="n">subject_key</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isawaitable</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-
-            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_await</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Subject</span><span class="p">:</span>
-                <span class="n">items</span> <span class="o">=</span> <span class="k">await</span> <span class="n">result</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Subject </span><span class="si">{</span><span class="n">subject_key</span><span class="si">}</span><span class="s2"> not found in study </span><span class="si">{</span><span class="n">study_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-            <span class="k">return</span> <span class="n">_await</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Subject </span><span class="si">{</span><span class="n">subject_key</span><span class="si">}</span><span class="s2"> not found in study </span><span class="si">{</span><span class="n">study_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-<div class="viewcode-block" id="SubjectsEndpoint.list"><a class="viewcode-back" href="../../../imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.list">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Subject</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List subjects in a study with optional filtering.&quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_impl</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
-            <span class="n">Paginator</span><span class="p">,</span>
-            <span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">filters</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore[return-value]</span></div>
-
-<div class="viewcode-block" id="SubjectsEndpoint.async_list"><a class="viewcode-back" href="../../../imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.async_list">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Subject</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronous version of :meth:`list`.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Async client not configured&quot;</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_impl</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">,</span>
-            <span class="n">AsyncPaginator</span><span class="p">,</span>
-            <span class="n">study_key</span><span class="o">=</span><span class="n">study_key</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">filters</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span></div>
-
-<div class="viewcode-block" id="SubjectsEndpoint.get"><a class="viewcode-back" href="../../../imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Subject</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a specific subject by key.</span>
-
-<span class="sd">        The ``subject_key`` is passed as a filter to :meth:`list`.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            study_key: Study identifier</span>
-<span class="sd">            subject_key: Subject identifier</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Subject object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">Paginator</span><span class="p">,</span> <span class="n">study_key</span><span class="p">,</span> <span class="n">subject_key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore[return-value]</span></div>
-
-<div class="viewcode-block" id="SubjectsEndpoint.async_get"><a class="viewcode-back" href="../../../imednet.endpoints.html#imednet.endpoints.subjects.SubjectsEndpoint.async_get">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Subject</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronous version of :meth:`get`.</span>
-
-<span class="sd">        This call also filters :meth:`async_list` by ``subject_key``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Async client not configured&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_impl</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_async_client</span><span class="p">,</span>
-            <span class="n">AsyncPaginator</span><span class="p">,</span>
-            <span class="n">study_key</span><span class="p">,</span>
-            <span class="n">subject_key</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+    <span class="n">PATH</span> <span class="o">=</span> <span class="s2">&quot;subjects&quot;</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="n">Subject</span>
+    <span class="n">_id_param</span> <span class="o">=</span> <span class="s2">&quot;subjectKey&quot;</span></div>
 </pre></div>
 
            </div>

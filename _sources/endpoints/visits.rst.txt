@@ -117,7 +117,7 @@ Response fields
      - Timestamp when response was generated
    * - ``metadata.error``
      - Object
-     - Detailed error message from request if an error occured
+     - Detailed error message from request if an error occurred
    * - ``pagination.currentPage``
      - Number
      - Current index page
@@ -150,7 +150,7 @@ Response fields
      - Unique system identifier for the subject visit instance
    * - ``data[].intervalId``
      - Number
-     - Unique system indentifier for the related interval
+     - Unique system identifier for the related interval
    * - ``data[].intervalName``
      - String
      - User defined identifier for the related interval

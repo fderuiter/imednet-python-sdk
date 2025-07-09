@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imednet.utils.validators &mdash; imednet 0.1.3 documentation</title>
+  <title>imednet.utils.validators &mdash; imednet 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
 
@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Interface (CLI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../workflow_interactions.html">Workflow Interactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../caching.html">Caching Behavior</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../retry_policy.html">Retry Policy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../job_polling.html">Job Polling Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../record_mapping.html">Record Mapping Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../airflow.html">Airflow Integration</a></li>
@@ -103,9 +104,11 @@
 
 
 <div class="viewcode-block" id="parse_datetime"><a class="viewcode-back" href="../../../imednet.models.html#imednet.models.parse_datetime">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_datetime</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrapper for parse_iso_datetime from utils.dates.</span>
-<span class="sd">    Used for backwards compatibility in models.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse an ISO datetime string or return a sentinel value.</span>
+
+<span class="sd">    The SDK historically returns ``datetime(1969, 4, 20, 16, 20)`` when a</span>
+<span class="sd">    timestamp field is empty. This helper mirrors that behaviour for backward</span>
+<span class="sd">    compatibility.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1969</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
