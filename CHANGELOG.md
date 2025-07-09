@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed ``ImednetHook`` to import configuration from the correct package.
 - Unified sync and async `RecordUpdateWorkflow` tests using parametrized fixtures.
 - Added example Panel UI generator script in ``examples/panel_ui.py``.
+- Panel example now prints debug info, shows a loading spinner and displays a
+  message when no functions are found.
 - Extracted `_execute_with_retry` into dedicated sync and async variants for
   clearer retry logic.
 - Added an `isort` step to pre-commit and CI checks.

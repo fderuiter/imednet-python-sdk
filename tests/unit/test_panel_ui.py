@@ -18,3 +18,12 @@ def test_create_app(monkeypatch) -> None:
     monkeypatch.setenv("IMEDNET_BASE_URL", "https://example.com")
     app = create_app()
     assert isinstance(app, pn.Column)
+
+
+def test_create_app_no_functions(monkeypatch) -> None:
+    monkeypatch.setenv("IMEDNET_API_KEY", "x")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "y")
+    monkeypatch.setenv("IMEDNET_BASE_URL", "https://example.com")
+    monkeypatch.setattr("examples.panel_ui._collect_functions", lambda _: {})
+    app = create_app()
+    assert isinstance(app, pn.pane.Markdown)

@@ -49,11 +49,20 @@ def _widgets_for_function(func: Callable[..., Any]) -> list[pn.widgets.Widget]:
     return widgets
 
 
-def create_app() -> pn.Column:
+def create_app() -> pn.Column | pn.pane.Markdown:
     """Return a Panel app for interacting with SDK functions."""
+    print("Initializing ImednetSDK...")
     configure_json_logging()
     sdk = ImednetSDK()
+    print("Collecting functions...")
     functions = _collect_functions(sdk)
+    print(f"Collected {len(functions)} functions")
+    if not functions:
+        return pn.pane.Markdown("**No functions found in ImednetSDK.**")
+
+    loading = pn.indicators.LoadingSpinner(value=True)
+    layout = pn.Column(loading)
+
     select = pn.widgets.Select(name="Function", options=sorted(functions))
     params = pn.Column()
     result = pn.pane.JSON(width=800)
@@ -89,7 +98,11 @@ def create_app() -> pn.Column:
         result.object = outcome
 
     run.on_click(execute)
-    return pn.Column(select, params, run, result)
+
+    layout[:] = [select, params, run, result]
+    loading.value = False
+    print("UI ready")
+    return layout
 
 
 if __name__ == "__main__":
