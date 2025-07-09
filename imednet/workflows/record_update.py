@@ -2,8 +2,9 @@
 
 import asyncio
 import inspect
+import time
 import warnings
-from typing import TYPE_CHECKING, Any, Coroutine, Dict, List, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Literal, Union, cast
 
 from ..models import Job
 from ..validation.cache import SchemaCache, SchemaValidator
@@ -27,7 +28,6 @@ class RecordUpdateWorkflow:
         self._validator = SchemaValidator(sdk)
         if getattr(sdk, "_async_client", None) is None:
             self._validator._is_async = False
-        from typing import cast
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
@@ -41,29 +41,15 @@ class RecordUpdateWorkflow:
     ) -> Job:
         """Submit records for creation or update and optionally wait for completion."""
 
-        if records_data:
-            first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
-                records_data[0].get("formId", 0)
+        return asyncio.run(
+            self._create_or_update_common(
+                study_key,
+                records_data,
+                wait_for_completion,
+                timeout,
+                poll_interval,
+                is_async=False,
             )
-            if first_ref and not self._schema.variables_for_form(first_ref):
-                result = self._validator.refresh(study_key)
-                if inspect.isawaitable(result):
-                    asyncio.run(cast(Coroutine[Any, Any, Any], result))
-
-        result = self._validator.validate_batch(study_key, records_data)
-        if inspect.isawaitable(result):
-            asyncio.run(cast(Coroutine[Any, Any, Any], result))
-
-        job = self._sdk.records.create(study_key, records_data, schema=self._schema)
-        if not wait_for_completion:
-            return job
-        if not job.batch_id:
-            raise ValueError("Submission successful but no batch_id received.")
-        return JobPoller(self._sdk.jobs.get, False).run(
-            study_key,
-            job.batch_id,
-            poll_interval,
-            timeout,
         )
 
     async def async_create_or_update_records(
@@ -76,27 +62,57 @@ class RecordUpdateWorkflow:
     ) -> Job:
         """Asynchronous variant of :meth:`create_or_update_records`."""
 
+        return await self._create_or_update_common(
+            study_key,
+            records_data,
+            wait_for_completion,
+            timeout,
+            poll_interval,
+            is_async=True,
+        )
+
+    async def _create_or_update_common(
+        self,
+        study_key: str,
+        records_data: List[Dict[str, Any]],
+        wait_for_completion: bool,
+        timeout: int,
+        poll_interval: int,
+        *,
+        is_async: bool,
+    ) -> Job:
+        """Shared logic for submitting records synchronously or asynchronously."""
+
         if records_data:
             first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
                 records_data[0].get("formId", 0)
             )
             if first_ref and not self._schema.variables_for_form(first_ref):
-                await self._validator.refresh(study_key)
+                result = self._validator.refresh(study_key)
+                if inspect.isawaitable(result):
+                    await result
 
-        await self._validator.validate_batch(study_key, records_data)
+        result = self._validator.validate_batch(study_key, records_data)
+        if inspect.isawaitable(result):
+            await result
 
-        job = await self._sdk.records.async_create(
-            study_key,
-            records_data,
-            schema=self._schema,
-        )
+        if is_async:
+            job = await self._sdk.records.async_create(study_key, records_data, schema=self._schema)
+        else:
+            job = self._sdk.records.create(study_key, records_data, schema=self._schema)
+
         if not wait_for_completion:
             return job
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
-        return await JobPoller(self._sdk.jobs.async_get, True).run_async(
+
+        poller = JobPoller(self._sdk.jobs.async_get if is_async else self._sdk.jobs.get, is_async)
+        sleep_fn = asyncio.sleep if is_async else time.sleep
+        return await poller._run_common(
             study_key,
             job.batch_id,
+            poller._get_job,
+            cast(Callable[[float], Any], sleep_fn),
             poll_interval,
             timeout,
         )

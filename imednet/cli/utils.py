@@ -68,3 +68,38 @@ def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None)
         print(items)
     else:
         print(empty_msg or f"No {label} found.")
+
+
+def register_list_command(
+    app: typer.Typer,
+    attr: str,
+    name: str,
+    *,
+    requires_study_key: bool = True,
+    empty_msg: str | None = None,
+) -> None:
+    """Attach a standard ``list`` command to ``app``."""
+
+    from .decorators import with_sdk  # imported lazily to avoid circular import
+
+    if requires_study_key:
+
+        @app.command("list")
+        @with_sdk
+        def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
+            echo_fetch(name, study_key)
+            items = getattr(sdk, attr).list(study_key)
+            display_list(items, name, empty_msg)
+
+        return
+
+    else:
+
+        @app.command("list")
+        @with_sdk
+        def list_cmd_no_study(sdk: ImednetSDK) -> None:
+            echo_fetch(name)
+            items = getattr(sdk, attr).list()
+            display_list(items, name, empty_msg)
+
+        return

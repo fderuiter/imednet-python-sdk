@@ -1,5 +1,6 @@
+import asyncio
 import types
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -30,36 +31,191 @@ def _build_schema() -> tuple[SchemaCache, Variable]:
     return cache, var
 
 
-def test_create_or_update_records_no_wait(schema: SchemaCache) -> None:
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_create_or_update_records_no_wait(schema: SchemaCache, async_mode: bool) -> None:
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
-    sdk.records.create.return_value = job
+    if async_mode:
+        sdk._async_client = object()
+        sdk.records.async_create = AsyncMock(return_value=job)
+    else:
+        sdk.records.create = MagicMock(return_value=job)
 
     wf = RecordUpdateWorkflow(sdk)
     wf._validator.schema = schema
     wf._schema = schema
     record = fake_data.fake_record(schema)
-    result = wf.create_or_update_records("S", [record])
 
-    sdk.records.create.assert_called_once_with("S", [record], schema=schema)
+    if async_mode:
+        result = asyncio.run(wf.async_create_or_update_records("S", [record]))
+        sdk.records.async_create.assert_awaited_once_with("S", [record], schema=schema)
+    else:
+        result = wf.create_or_update_records("S", [record])
+        sdk.records.create.assert_called_once_with("S", [record], schema=schema)
     assert result == job
 
 
-def test_create_or_update_records_validation() -> None:
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_create_or_update_records_validation(async_mode: bool) -> None:
     schema, var = _build_schema()
     sdk = MagicMock()
+    if async_mode:
+        sdk._async_client = object()
+        sdk.records.async_create = AsyncMock(return_value=Job(batch_id="1", state="PROCESSING"))
+    else:
+        sdk.records.create = MagicMock(return_value=Job(batch_id="1", state="PROCESSING"))
+
     wf = RecordUpdateWorkflow(sdk)
     wf._validator.schema = schema
     wf._schema = schema
 
     with pytest.raises(ValidationError):
-        wf.create_or_update_records("S", [{"formKey": var.form_key, "data": {}}])
-    sdk.records.create.assert_not_called()
+        if async_mode:
+            asyncio.run(
+                wf.async_create_or_update_records("S", [{"formKey": var.form_key, "data": {}}])
+            )
+        else:
+            wf.create_or_update_records("S", [{"formKey": var.form_key, "data": {}}])
+    if async_mode:
+        sdk.records.async_create.assert_not_awaited()
+    else:
+        sdk.records.create.assert_not_called()
 
-    sdk.records.create.return_value = Job(batch_id="1", state="PROCESSING")
-    wf.create_or_update_records("S", [{"formKey": var.form_key, "data": {var.variable_name: 5}}])
-    sdk.records.create.assert_called_once_with(
-        "S",
-        [{"formKey": var.form_key, "data": {var.variable_name: 5}}],
-        schema=schema,
-    )
+    if async_mode:
+        asyncio.run(
+            wf.async_create_or_update_records(
+                "S", [{"formKey": var.form_key, "data": {var.variable_name: 5}}]
+            )
+        )
+        sdk.records.async_create.assert_awaited_once_with(
+            "S",
+            [{"formKey": var.form_key, "data": {var.variable_name: 5}}],
+            schema=schema,
+        )
+    else:
+        wf.create_or_update_records(
+            "S", [{"formKey": var.form_key, "data": {var.variable_name: 5}}]
+        )
+        sdk.records.create.assert_called_once_with(
+            "S",
+            [{"formKey": var.form_key, "data": {var.variable_name: 5}}],
+            schema=schema,
+        )
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None:
+    sdk = MagicMock()
+    job = Job(batch_id="1", state="PROCESSING")
+    if async_mode:
+        sdk._async_client = object()
+        sdk.records.async_create = AsyncMock(return_value=job)
+        sdk.variables.async_list = AsyncMock(
+            return_value=[
+                Variable(
+                    variable_name="age",
+                    variable_type="integer",
+                    form_id=1,
+                    form_key="F1",
+                )
+            ]
+        )
+    else:
+        sdk.records.create = MagicMock(return_value=job)
+        sdk.variables.list = MagicMock(
+            return_value=[
+                Variable(
+                    variable_name="age",
+                    variable_type="integer",
+                    form_id=1,
+                    form_key="F1",
+                )
+            ]
+        )
+
+    wf = RecordUpdateWorkflow(sdk)
+    if async_mode:
+        wf._validator.refresh = AsyncMock()  # type: ignore[method-assign]
+        wf._validator.validate_batch = AsyncMock()  # type: ignore[method-assign]
+        asyncio.run(
+            wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
+        )
+        wf._validator.refresh.assert_awaited_once_with("STUDY")
+        wf._validator.validate_batch.assert_awaited_once_with(
+            "STUDY",
+            [{"formKey": "F1", "data": {"age": 5}}],
+        )
+        sdk.records.async_create.assert_awaited_once_with(
+            "STUDY",
+            [{"formKey": "F1", "data": {"age": 5}}],
+            schema=wf._schema,
+        )
+    else:
+        wf._validator.refresh = MagicMock()  # type: ignore[method-assign]
+        wf._validator.validate_batch = MagicMock()  # type: ignore[method-assign]
+        wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
+        wf._validator.refresh.assert_called_once_with("STUDY")
+        wf._validator.validate_batch.assert_called_once_with(
+            "STUDY",
+            [{"formKey": "F1", "data": {"age": 5}}],
+        )
+        sdk.records.create.assert_called_once_with(
+            "STUDY",
+            [{"formKey": "F1", "data": {"age": 5}}],
+            schema=wf._schema,
+        )
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_create_or_update_records_wait_for_completion(
+    async_mode: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    sdk = MagicMock()
+    initial_job = Job(batch_id="1", state="PROCESSING")
+    completed_job = Job(batch_id="1", state="COMPLETED")
+    if async_mode:
+        sdk._async_client = object()
+        sdk.records.async_create = AsyncMock(return_value=initial_job)
+        sdk.jobs.async_get = AsyncMock(side_effect=[initial_job, completed_job])
+        sdk.variables.async_list = AsyncMock(return_value=[])
+        wf = RecordUpdateWorkflow(sdk)
+        wf._validator.refresh = AsyncMock()  # type: ignore[method-assign]
+        wf._validator.validate_batch = AsyncMock()  # type: ignore[method-assign]
+        monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+        result = asyncio.run(
+            wf.async_create_or_update_records(
+                "STUDY",
+                [{"formKey": "F1", "data": {}}],
+                wait_for_completion=True,
+                poll_interval=0,
+                timeout=5,
+            )
+        )
+        sdk.records.async_create.assert_awaited_once_with(
+            "STUDY",
+            [{"formKey": "F1", "data": {}}],
+            schema=wf._schema,
+        )
+        sdk.jobs.async_get.assert_awaited_with("STUDY", "1")
+    else:
+        sdk.records.create = MagicMock(return_value=initial_job)
+        sdk.jobs.get = MagicMock(side_effect=[initial_job, completed_job])
+        sdk.variables.list = MagicMock(return_value=[])
+        wf = RecordUpdateWorkflow(sdk)
+        wf._validator.refresh = MagicMock()  # type: ignore[method-assign]
+        wf._validator.validate_batch = MagicMock()  # type: ignore[method-assign]
+        monkeypatch.setattr("time.sleep", lambda *_: None)
+        result = wf.create_or_update_records(
+            "STUDY",
+            [{"formKey": "F1", "data": {}}],
+            wait_for_completion=True,
+            poll_interval=0,
+            timeout=5,
+        )
+        sdk.records.create.assert_called_once_with(
+            "STUDY",
+            [{"formKey": "F1", "data": {}}],
+            schema=wf._schema,
+        )
+        sdk.jobs.get.assert_called_with("STUDY", "1")
+    assert result.state == "COMPLETED"
