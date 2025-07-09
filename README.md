@@ -76,6 +76,15 @@ Full documentation is available at
 <https://fderuiter.github.io/imednet-python-sdk/>.
 The official iMednet API documentation is at <https://portal.prod.imednetapi.com/>.
 
+## Postman Collection
+
+The repository includes a ready-to-import Postman collection generated from
+[`openapi.yaml`](openapi.yaml). Download
+[`imednet.postman_collection.json`](imednet.postman_collection.json) and import it
+into Postman to explore and test the API endpoints. The collection uses the
+`{{baseUrl}}` variable for the API host; set this alongside your `x-api-key` and
+`x-imn-security-key` headers in a Postman environment before sending requests.
+
 ## Configuration
 
 Set the following environment variables before using the SDK or CLI:
