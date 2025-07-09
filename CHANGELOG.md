@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI now fails if test coverage drops below 90%.
 - Centralized DataFrame creation in export helpers with new ``_records_df``
   to ensure duplicate columns are removed consistently.
+- Refactored ``JobPoller`` to share a ``_run_common`` loop between sync and async polling.
 
 ## [0.1.4] 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Any, Callable, cast
+from typing import Any, Awaitable, Callable, cast
 
 from ..models import JobStatus
 
@@ -33,6 +33,28 @@ class JobPoller:
             return status
         return status
 
+    async def _run_common(
+        self,
+        study_key: str,
+        batch_id: str,
+        fetch_job: Callable[[], Awaitable[JobStatus]],
+        sleep_fn: Callable[[int], Awaitable[Any]],
+        interval: int,
+        timeout: int,
+    ) -> JobStatus:
+        """Poll using provided callables until the job completes."""
+
+        start = time.monotonic()
+        status = await fetch_job()
+        status = self._check_complete(status, batch_id)
+        while status.state.upper() not in TERMINAL_JOB_STATES:
+            if time.monotonic() - start >= timeout:
+                raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+            await sleep_fn(interval)
+            status = await fetch_job()
+            status = self._check_complete(status, batch_id)
+        return status
+
     def run(
         self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
     ) -> JobStatus:
@@ -41,16 +63,22 @@ class JobPoller:
         if self._async:
             raise RuntimeError("Use run_async for asynchronous polling")
 
-        start = time.monotonic()
-        status = cast(JobStatus, self._get_job(study_key, batch_id))
-        status = self._check_complete(status, batch_id)
-        while status.state.upper() not in TERMINAL_JOB_STATES:
-            if time.monotonic() - start >= timeout:
-                raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
-            time.sleep(interval)
-            status = cast(JobStatus, self._get_job(study_key, batch_id))
-            status = self._check_complete(status, batch_id)
-        return status
+        async def fetch_job() -> JobStatus:
+            return cast(JobStatus, self._get_job(study_key, batch_id))
+
+        async def sleep_fn(seconds: int) -> None:
+            await asyncio.to_thread(time.sleep, seconds)
+
+        return asyncio.run(
+            self._run_common(
+                study_key,
+                batch_id,
+                fetch_job,
+                sleep_fn,
+                interval,
+                timeout,
+            )
+        )
 
     async def run_async(
         self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
@@ -60,13 +88,17 @@ class JobPoller:
         if not self._async:
             raise RuntimeError("Use run for synchronous polling")
 
-        start = time.monotonic()
-        status = cast(JobStatus, await self._get_job(study_key, batch_id))
-        status = self._check_complete(status, batch_id)
-        while status.state.upper() not in TERMINAL_JOB_STATES:
-            if time.monotonic() - start >= timeout:
-                raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
-            await asyncio.sleep(interval)
-            status = cast(JobStatus, await self._get_job(study_key, batch_id))
-            status = self._check_complete(status, batch_id)
-        return status
+        async def fetch_job() -> JobStatus:
+            return cast(JobStatus, await self._get_job(study_key, batch_id))
+
+        async def sleep_fn(seconds: int) -> None:
+            await asyncio.sleep(seconds)
+
+        return await self._run_common(
+            study_key,
+            batch_id,
+            fetch_job,
+            sleep_fn,
+            interval,
+            timeout,
+        )
