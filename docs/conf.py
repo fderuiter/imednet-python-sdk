@@ -118,7 +118,9 @@ templates_path: list[str] = ["_templates"]
 exclude_patterns: list[str] = [
     "imednet.airflow.rst",
     "imednet.cli.rst",
+    "imednet.cli.*.rst",
     "imednet.integrations.rst",
+    "imednet.integrations.*.rst",
     "imednet.validation.rst",
     "imednet.integrations.airflow.rst",
     "imednet.testing.rst",

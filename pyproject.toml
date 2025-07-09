@@ -89,6 +89,8 @@ moto = "^5.0"
 sqlalchemy = "^2.0"
 openpyxl = "^3.1"
 sphinxcontrib-mermaid = "^0.9.2"
+doc8 = "^2.0.0"
+codespell = "^2.4.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -120,6 +122,10 @@ profile = "black"
 line_length = 100
 known_first_party = ["imednet"]
 src_paths = ["imednet", "tests"]
+
+[tool.doc8]
+max_line_length = 400
+ignore_path = ["docs/_build"]
 
 [tool.mypy]
 python_version = "3.10"
