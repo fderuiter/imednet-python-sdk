@@ -71,7 +71,6 @@ if "airflow" not in sys.modules:
     airflow_stub.hooks.base = _DummyModule("airflow.hooks.base")
     airflow_stub.hooks.base.BaseHook = object
     airflow_stub.operators = _DummyModule("airflow.operators")
-    airflow_stub.export_operator = _DummyModule("airflow.export_operator")
     airflow_stub.exceptions = _DummyModule("airflow.exceptions")
     airflow_stub.exceptions.AirflowException = Exception
     airflow_stub.providers = _DummyModule("airflow.providers")
@@ -82,7 +81,6 @@ if "airflow" not in sys.modules:
             "airflow.hooks": airflow_stub.hooks,
             "airflow.hooks.base": airflow_stub.hooks.base,
             "airflow.operators": airflow_stub.operators,
-            "airflow.export_operator": airflow_stub.export_operator,
             "airflow.exceptions": airflow_stub.exceptions,
             "airflow.providers": airflow_stub.providers,
         }
@@ -120,7 +118,9 @@ templates_path: list[str] = ["_templates"]
 exclude_patterns: list[str] = [
     "imednet.airflow.rst",
     "imednet.cli.rst",
+    "imednet.cli.*.rst",
     "imednet.integrations.rst",
+    "imednet.integrations.*.rst",
     "imednet.validation.rst",
     "imednet.integrations.airflow.rst",
     "imednet.testing.rst",

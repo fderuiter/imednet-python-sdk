@@ -2,7 +2,7 @@
 Base endpoint mix-in for all API resource endpoints.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
@@ -16,6 +16,8 @@ class BaseEndpoint:
     Handles context injection and filtering.
     """
 
+    BASE_PATH = "/api/v1/edc/studies"
+
     PATH: str  # to be set in subclasses
 
     def __init__(
@@ -27,6 +29,12 @@ class BaseEndpoint:
         self._client = client
         self._async_client = async_client
         self._ctx = ctx
+        cache_name: Optional[str] = getattr(self, "_cache_name", None)
+        if cache_name:
+            if getattr(self, "requires_study_key", True):
+                setattr(self, cache_name, {})
+            else:
+                setattr(self, cache_name, None)
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         # inject default studyKey if missing
@@ -34,10 +42,15 @@ class BaseEndpoint:
             filters["studyKey"] = self._ctx.default_study_key
         return filters
 
-    def _build_path(self, *args: Any) -> str:
-        # join path segments after base path
-        segments = [self.PATH.strip("/")] + [str(a).strip("/") for a in args]
-        return "/" + "/".join(segments)
+    def _build_path(self, *segments: Any) -> str:
+        """Return an API path joined with :data:`BASE_PATH`."""
+
+        parts = [self.BASE_PATH.strip("/")]
+        for seg in segments:
+            text = str(seg).strip("/")
+            if text:
+                parts.append(text)
+        return "/" + "/".join(parts)
 
     # ------------------------------------------------------------------
     # Helper methods
@@ -54,3 +67,9 @@ class BaseEndpoint:
             if str(getattr(item, attr)) == str(item_id):
                 return item
         raise ValueError(f"{attr} {item_id} not found in study {study_key}")
+
+    def _require_async_client(self) -> AsyncClient:
+        """Return the configured async client or raise if missing."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        return self._async_client

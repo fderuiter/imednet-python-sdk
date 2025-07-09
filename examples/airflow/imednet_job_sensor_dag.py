@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from imednet.integrations.airflow import ImednetJobSensor
-
 from airflow import DAG
+from imednet.integrations.airflow import ImednetJobSensor
 
 """Example DAG demonstrating :class:`ImednetJobSensor` to monitor an iMednet job.
 

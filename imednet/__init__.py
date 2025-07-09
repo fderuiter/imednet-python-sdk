@@ -1,6 +1,8 @@
 from importlib import metadata as _metadata
 
+from .config import Config, load_config
 from .core.base_client import BaseClient
+from .core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 from .sdk import AsyncImednetSDK, ImednetSDK
 
 # Provide a backward-compatible alias
@@ -11,6 +13,11 @@ __all__ = [
     "AsyncImednetSDK",
     "ImednetClient",
     "BaseClient",
+    "RetryPolicy",
+    "RetryState",
+    "DefaultRetryPolicy",
+    "Config",
+    "load_config",
     "__version__",
 ]
 

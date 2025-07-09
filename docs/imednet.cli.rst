@@ -1,6 +1,9 @@
 imednet.cli package
 ===================
 
+Command modules live in subpackages (e.g., ``imednet.cli.records``) to keep the
+package organized.
+
 Submodules
 ----------
 

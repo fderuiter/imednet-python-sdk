@@ -28,6 +28,7 @@ from .exceptions import (
     ServerError,
     UnauthorizedError,
 )
+from .retry import DefaultRetryPolicy, RetryPolicy, RetryState
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +51,28 @@ class RequestExecutor:
     retries: int
     backoff_factor: float
     tracer: Optional[Tracer] = None
-    should_retry: Callable[[RetryCallState], bool] | None = None
+    retry_policy: RetryPolicy | None = None
 
-    def _default_should_retry(self, retry_state: RetryCallState) -> bool:
-        if retry_state.outcome is None:
-            return False
-        exc = retry_state.outcome.exception()
-        return isinstance(exc, httpx.RequestError)
+    def __post_init__(self) -> None:
+        if self.retry_policy is None:
+            self.retry_policy = DefaultRetryPolicy()
+
+    def _should_retry(self, retry_state: RetryCallState) -> bool:
+        state = RetryState(
+            attempt_number=retry_state.attempt_number,
+            exception=(
+                retry_state.outcome.exception()
+                if retry_state.outcome and retry_state.outcome.failed
+                else None
+            ),
+            result=(
+                retry_state.outcome.result()
+                if retry_state.outcome and not retry_state.outcome.failed
+                else None
+            ),
+        )
+        policy = self.retry_policy or DefaultRetryPolicy()
+        return policy.should_retry(state)
 
     def __call__(
         self, method: str, url: str, **kwargs: Any
@@ -66,6 +82,7 @@ class RequestExecutor:
         return self._sync_execute(method, url, **kwargs)
 
     def _handle_response(self, response: httpx.Response) -> httpx.Response:
+        """Return the response or raise an appropriate ``ApiError``."""
         if response.is_error:
             status = response.status_code
             try:
@@ -87,18 +104,24 @@ class RequestExecutor:
             )
         return nullcontext()
 
-    def _sync_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+    def _execute_with_retry_sync(
+        self,
+        send_fn: Callable[[], httpx.Response],
+        method: str,
+        url: str,
+    ) -> httpx.Response:
+        """Send a request with retry logic and tracing."""
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self.should_retry or self._default_should_retry,
+            retry=self._should_retry,
             reraise=True,
         )
 
         with self._get_span_cm(method, url) as span:
             try:
                 start = time.monotonic()
-                response = retryer(lambda: cast(httpx.Response, self.send(method, url, **kwargs)))
+                response: httpx.Response = retryer(send_fn)
                 latency = time.monotonic() - start
                 logger.info(
                     "http_request",
@@ -118,23 +141,24 @@ class RequestExecutor:
 
         return self._handle_response(response)
 
-    async def _async_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+    async def _execute_with_retry_async(
+        self,
+        send_fn: Callable[[], Awaitable[httpx.Response]],
+        method: str,
+        url: str,
+    ) -> httpx.Response:
+        """Send a request with retry logic and tracing asynchronously."""
         retryer = AsyncRetrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self.should_retry or self._default_should_retry,
+            retry=self._should_retry,
             reraise=True,
         )
 
         async with self._get_span_cm(method, url) as span:
             try:
                 start = time.monotonic()
-                async for attempt in retryer:
-                    with attempt:
-                        response = await cast(
-                            Awaitable[httpx.Response],
-                            self.send(method, url, **kwargs),
-                        )
+                response: httpx.Response = await retryer(send_fn)
                 latency = time.monotonic() - start
                 logger.info(
                     "http_request",
@@ -153,3 +177,21 @@ class RequestExecutor:
                 span.set_attribute("status_code", response.status_code)
 
         return self._handle_response(response)
+
+    def _sync_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        def send_fn() -> httpx.Response:
+            return cast(httpx.Response, self.send(method, url, **kwargs))
+
+        return cast(
+            httpx.Response,
+            self._execute_with_retry_sync(send_fn, method, url),
+        )
+
+    async def _async_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        async def send_fn() -> httpx.Response:
+            return await cast(Awaitable[httpx.Response], self.send(method, url, **kwargs))
+
+        return await cast(
+            Awaitable[httpx.Response],
+            self._execute_with_retry_async(send_fn, method, url),
+        )

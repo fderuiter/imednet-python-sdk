@@ -1,9 +1,10 @@
 import os
 
 import pytest
+from typer.testing import CliRunner
+
 from imednet import cli
 from imednet.sdk import ImednetSDK
-from typer.testing import CliRunner
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")

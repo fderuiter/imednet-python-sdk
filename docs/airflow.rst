@@ -51,13 +51,14 @@ Connections
 Create an Airflow connection ``imednet_default`` or override ``imednet_conn_id``.
 Provide ``api_key`` and ``security_key`` via the login/password fields or in the
 ``extra`` JSON. ``base_url`` may be added in ``extra`` for a non-standard
-environment. The operators fall back to ``IMEDNET_API_KEY`` and
-``IMEDNET_SECURITY_KEY`` if the connection lacks these values. The
+environment. The hook merges these settings with values from
+``imednet.config.load_config`` so environment variables still apply. The
 ``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default)
 when writing to S3.
 
 Operators and Sensors
 ---------------------
+The Airflow integration organizes hooks, operators, and sensors in dedicated subpackages for clarity.
 
 ``ImednetExportOperator`` saves records to a local file using helpers from
 ``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3

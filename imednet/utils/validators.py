@@ -14,9 +14,11 @@ def _or_default(value: Any, default: Any) -> Any:
 
 
 def parse_datetime(v: str | datetime) -> datetime:
-    """
-    Wrapper for parse_iso_datetime from utils.dates.
-    Used for backwards compatibility in models.
+    """Parse an ISO datetime string or return a sentinel value.
+
+    The SDK historically returns ``datetime(1969, 4, 20, 16, 20)`` when a
+    timestamp field is empty. This helper mirrors that behaviour for backward
+    compatibility.
     """
     if not v:
         return datetime(1969, 4, 20, 16, 20)

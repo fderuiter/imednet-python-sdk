@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 import pytest_asyncio
+
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
@@ -89,7 +90,12 @@ def patch_build_filter(monkeypatch):
             captured["filters"] = filters
             return "FILTERED"
 
-        monkeypatch.setattr(module, "build_filter_string", fake)
+        if hasattr(module, "build_filter_string"):
+            monkeypatch.setattr(module, "build_filter_string", fake)
+        else:
+            import imednet.endpoints._mixins as mixins
+
+            monkeypatch.setattr(mixins, "build_filter_string", fake)
         return captured
 
     return patch

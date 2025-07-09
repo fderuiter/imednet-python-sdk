@@ -2,9 +2,10 @@ import sys
 from types import ModuleType
 from unittest.mock import MagicMock
 
-import imednet.integrations.export as export_mod
 import pandas as pd
 import pytest
+
+import imednet.integrations.export as export_mod
 
 
 def _setup_mapper(monkeypatch):

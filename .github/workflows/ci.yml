@@ -43,11 +43,13 @@ jobs:
       - name: Format code
         run: |
           poetry run black .
+          poetry run isort .
       - name: Lint & Type‑check
         run: |
           poetry run ruff check --fix .
           poetry run black --check .
+          poetry run isort --check --profile black .
           poetry run mypy imednet
       - name: Unit tests
         run: |
-          poetry run pytest -q --cov=imednet --cov-report=xml
+          poetry run pytest -q --cov=imednet --cov-report=xml --cov-fail-under=90

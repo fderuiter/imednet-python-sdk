@@ -1,5 +1,6 @@
-import imednet.endpoints.visits as visits
 import pytest
+
+import imednet.endpoints.visits as visits
 from imednet.models.visits import Visit
 
 
