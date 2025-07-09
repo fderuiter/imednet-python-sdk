@@ -22,4 +22,6 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: ["pandas-stubs", "types-requests", "pydantic"]
-        args: ["--ignore-missing-imports", "--no-strict-optional"]
+        args:
+          ["--config-file", "pyproject.toml", "--exclude", "examples/", "--ignore-missing-imports", "--no-strict-optional"]
+        files: ^(imednet|tests)/
