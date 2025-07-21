@@ -12,6 +12,16 @@ from ..workflows.record_mapper import RecordMapper
 MAX_SQLITE_COLUMNS = 2000
 
 
+def _assert_within_column_limit(df: pd.DataFrame, engine: Any) -> None:
+    """Raise if the SQLite column limit would be exceeded."""
+    if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
+        raise ValueError(
+            "SQLite supports up to "
+            f"{MAX_SQLITE_COLUMNS} columns; received {len(df.columns)} columns."
+            " Reduce variables or use another DB."
+        )
+
+
 def _records_df(
     sdk: ImednetSDK,
     study_key: str,
@@ -158,12 +168,7 @@ def export_to_sql(
         form_whitelist=form_whitelist,
     )
     engine = create_engine(conn_str)
-    if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
-        raise ValueError(
-            "SQLite supports up to "
-            f"{MAX_SQLITE_COLUMNS} columns; received {len(df.columns)} columns. "
-            "Reduce variables or use another DB."
-        )
+    _assert_within_column_limit(df, engine)
 
     df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
 
@@ -215,10 +220,5 @@ def export_to_sql_by_form(
         if isinstance(df, pd.DataFrame):
             dup_mask = df.columns.str.lower().duplicated()
             df = df.loc[:, ~dup_mask]
-        if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
-            raise ValueError(
-                "SQLite supports up to "
-                f"{MAX_SQLITE_COLUMNS} columns; received {len(df.columns)} columns."
-                " Reduce variables or use another DB."
-            )
+        _assert_within_column_limit(df, engine)
         df.to_sql(form.form_key, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]

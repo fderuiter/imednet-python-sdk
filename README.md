@@ -110,6 +110,12 @@ Example of exporting a subset of variables:
 imednet export sql MY_STUDY table sqlite:///data.db --vars AGE,SEX --forms 10,20
 ```
 
+### SQLite exports
+
+When the connection string uses SQLite, the command splits the output into one
+table per form to avoid the 2000 column limit. Pass ``--single-table`` to
+disable this behaviour. See ``docs/cli.rst`` for full examples.
+
 ## Testing & Development
 
 ```bash
