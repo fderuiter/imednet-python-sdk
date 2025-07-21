@@ -25,4 +25,4 @@ jobs:
           IMEDNET_SECURITY_KEY: ${{ secrets.SECURITYKEY }}
           IMEDNET_RUN_E2E: "1"
         run: |
-          poetry run pytest -q tests/live
+          poetry run pytest -q -rs tests/live
