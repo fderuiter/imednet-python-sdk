@@ -143,3 +143,15 @@ async def test_async_codings(async_sdk: AsyncImednetSDK, study_key: str) -> None
     if codings:
         coding = await async_sdk.codings.async_get(study_key, str(codings[0].coding_id))
         assert coding.coding_id == codings[0].coding_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_create_and_poll(
+    async_sdk: AsyncImednetSDK,
+    study_key: str,
+    first_form_key: str,
+) -> None:
+    record = {"formKey": first_form_key, "data": {}}
+    job = await async_sdk.records.async_create(study_key, [record])
+    polled = await async_sdk.jobs.async_get(study_key, job.batch_id)
+    assert polled.batch_id == job.batch_id

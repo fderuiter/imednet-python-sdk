@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
 - Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
   record dictionary construction.
+- Live tests now discover the first form key automatically and create a job to
+  obtain a batch ID, removing the need for `IMEDNET_FORM_KEY` and
+  `IMEDNET_BATCH_ID` secrets.
 - Renamed ``models._base`` to ``models.json_base`` to avoid import confusion.
 - Documented the sentinel return value in ``parse_datetime``.
 - Replaced placeholder description in ``workflows/record_update.py``.

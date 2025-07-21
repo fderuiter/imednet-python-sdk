@@ -53,19 +53,19 @@ def test_cli_records_list(runner: CliRunner, study_key: str) -> None:
     assert result.exit_code == 0
 
 
-def test_cli_jobs_status(runner: CliRunner, study_key: str) -> None:
-    batch_id = os.getenv("IMEDNET_BATCH_ID")
-    if not batch_id:
-        pytest.skip("IMEDNET_BATCH_ID not set")
-    result = runner.invoke(cli.app, ["jobs", "status", study_key, batch_id])
+def test_cli_jobs_status(runner: CliRunner, study_key: str, generated_batch_id: str) -> None:
+    result = runner.invoke(
+        cli.app,
+        ["jobs", "status", study_key, generated_batch_id],
+    )
     assert result.exit_code == 0
 
 
-def test_cli_jobs_wait(runner: CliRunner, study_key: str) -> None:
-    batch_id = os.getenv("IMEDNET_BATCH_ID")
-    if not batch_id:
-        pytest.skip("IMEDNET_BATCH_ID not set")
-    result = runner.invoke(cli.app, ["jobs", "wait", study_key, batch_id])
+def test_cli_jobs_wait(runner: CliRunner, study_key: str, generated_batch_id: str) -> None:
+    result = runner.invoke(
+        cli.app,
+        ["jobs", "wait", study_key, generated_batch_id],
+    )
     assert result.exit_code == 0
 
 

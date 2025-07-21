@@ -91,17 +91,11 @@ def test_get_users(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(users, list)
 
 
-def test_get_job(sdk: ImednetSDK, study_key: str) -> None:
-    batch_id = os.getenv("IMEDNET_BATCH_ID")
-    if not batch_id:
-        pytest.skip("IMEDNET_BATCH_ID not set")
-    job = sdk.get_job(study_key, batch_id)
-    assert job.batch_id == batch_id
+def test_get_job(sdk: ImednetSDK, study_key: str, generated_batch_id: str) -> None:
+    job = sdk.get_job(study_key, generated_batch_id)
+    assert job.batch_id == generated_batch_id
 
 
-def test_poll_job(sdk: ImednetSDK, study_key: str) -> None:
-    batch_id = os.getenv("IMEDNET_BATCH_ID")
-    if not batch_id:
-        pytest.skip("IMEDNET_BATCH_ID not set")
-    job = sdk.poll_job(study_key, batch_id, interval=1, timeout=5)
-    assert job.batch_id == batch_id
+def test_poll_job(sdk: ImednetSDK, study_key: str, generated_batch_id: str) -> None:
+    job = sdk.poll_job(study_key, generated_batch_id, interval=1, timeout=5)
+    assert job.batch_id == generated_batch_id
