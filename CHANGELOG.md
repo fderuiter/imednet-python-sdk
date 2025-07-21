@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented Sphinx conventions in new `docs/AGENTS.md`.
 - Added smoke workflow for live API tests.
 - Documented optional `smoke.yml` workflow which uses `APIKEY` and `SECURITYKEY` to run `tests/live`.
+- Restricted smoke workflow to manual dispatch by the repository owner.
 
 ## [0.1.4] 
 
