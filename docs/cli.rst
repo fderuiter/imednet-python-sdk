@@ -81,6 +81,17 @@ Use ``--single-table`` to combine everything into one table instead:
 The constant ``imednet.integrations.export.MAX_SQLITE_COLUMNS`` still enforces
 the maximum columns for any individual table.
 
+Long-format export
+------------------
+
+Use ``--long-format`` to normalize the records into a single table with one
+row per variable value. This option overrides ``--single-table`` and may
+require more time to insert large datasets.
+
+.. code-block:: console
+
+   imednet export sql MY_STUDY table sqlite:///data.db --long-format
+
 Variable Filters
 ----------------
 
