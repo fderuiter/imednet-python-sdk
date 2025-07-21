@@ -234,7 +234,7 @@ def test_export_sql_calls_helper_non_sqlite(
     engine = MagicMock()
     engine.dialect.name = "postgres"
     sa_module = ModuleType("sqlalchemy")
-    sa_module.create_engine = MagicMock(return_value=engine)
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
@@ -271,7 +271,7 @@ def test_export_sql_sqlite_uses_by_form(
     engine = MagicMock()
     engine.dialect.name = "sqlite"
     sa_module = ModuleType("sqlalchemy")
-    sa_module.create_engine = MagicMock(return_value=engine)
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
@@ -309,7 +309,7 @@ def test_export_sql_sqlite_single_table(
     engine = MagicMock()
     engine.dialect.name = "sqlite"
     sa_module = ModuleType("sqlalchemy")
-    sa_module.create_engine = MagicMock(return_value=engine)
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
@@ -336,6 +336,60 @@ def test_export_sql_sqlite_single_table(
         form_whitelist=["5"],
     )
     form_func.assert_not_called()
+
+
+def test_export_sql_long_format(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    long_func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_long_sql", long_func)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", MagicMock())
+    monkeypatch.setattr(cli, "export_to_sql", MagicMock())
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    engine = MagicMock()
+    engine.dialect.name = "sqlite"
+    sa_module = ModuleType("sqlalchemy")
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "table", "sqlite://", "--long-format"],
+    )
+    assert result.exit_code == 0
+    long_func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+    cli.export_to_sql.assert_not_called()  # type: ignore[attr-defined]
+    cli.export_to_sql_by_form.assert_not_called()  # type: ignore[attr-defined]
+
+
+def test_export_sql_long_format_overrides_single(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    long_func = MagicMock()
+    monkeypatch.setattr(cli, "export_to_long_sql", long_func)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", MagicMock())
+    monkeypatch.setattr(cli, "export_to_sql", MagicMock())
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    engine = MagicMock()
+    engine.dialect.name = "postgres"
+    sa_module = ModuleType("sqlalchemy")
+    sa_module.create_engine = MagicMock(return_value=engine)  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+    result = runner.invoke(
+        cli.app,
+        [
+            "export",
+            "sql",
+            "STUDY",
+            "tbl",
+            "postgresql://",
+            "--single-table",
+            "--long-format",
+        ],
+    )
+    assert result.exit_code == 0
+    long_func.assert_called_once_with(sdk, "STUDY", "tbl", "postgresql://")
+    cli.export_to_sql.assert_not_called()  # type: ignore[attr-defined]
+    cli.export_to_sql_by_form.assert_not_called()  # type: ignore[attr-defined]
 
 
 def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
