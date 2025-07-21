@@ -33,7 +33,12 @@ def test_export_to_csv(monkeypatch):
     export_mod.export_to_csv(sdk, "STUDY", "out.csv", sep=";")
 
     mapper_cls.assert_called_once_with(sdk)
-    mapper_inst.dataframe.assert_called_once_with("STUDY", use_labels_as_columns=False)
+    mapper_inst.dataframe.assert_called_once_with(
+        "STUDY",
+        use_labels_as_columns=False,
+        variable_whitelist=None,
+        form_whitelist=None,
+    )
     df.to_csv.assert_called_once_with("out.csv", index=False, sep=";")
 
 
@@ -44,7 +49,12 @@ def test_export_to_excel(monkeypatch):
     export_mod.export_to_excel(sdk, "STUDY", "out.xlsx")
 
     mapper_cls.assert_called_once_with(sdk)
-    mapper_inst.dataframe.assert_called_once_with("STUDY", use_labels_as_columns=False)
+    mapper_inst.dataframe.assert_called_once_with(
+        "STUDY",
+        use_labels_as_columns=False,
+        variable_whitelist=None,
+        form_whitelist=None,
+    )
     df.to_excel.assert_called_once_with("out.xlsx", index=False)
 
 
@@ -55,7 +65,12 @@ def test_export_to_json(monkeypatch):
     export_mod.export_to_json(sdk, "STUDY", "out.json", orient="records")
 
     mapper_cls.assert_called_once_with(sdk)
-    mapper_inst.dataframe.assert_called_once_with("STUDY", use_labels_as_columns=False)
+    mapper_inst.dataframe.assert_called_once_with(
+        "STUDY",
+        use_labels_as_columns=False,
+        variable_whitelist=None,
+        form_whitelist=None,
+    )
     df.to_json.assert_called_once_with("out.json", orient="records", index=False)
 
 
@@ -66,7 +81,12 @@ def test_export_to_parquet(monkeypatch):
     export_mod.export_to_parquet(sdk, "STUDY", "out.parquet", compression="snappy")
 
     mapper_cls.assert_called_once_with(sdk)
-    mapper_inst.dataframe.assert_called_once_with("STUDY", use_labels_as_columns=False)
+    mapper_inst.dataframe.assert_called_once_with(
+        "STUDY",
+        use_labels_as_columns=False,
+        variable_whitelist=None,
+        form_whitelist=None,
+    )
     df.to_parquet.assert_called_once_with("out.parquet", index=False, compression="snappy")
 
 
@@ -84,7 +104,12 @@ def test_export_to_sql(monkeypatch):
     export_mod.export_to_sql(sdk, "STUDY", "table", "sqlite://", if_exists="append")
 
     mapper_cls.assert_called_once_with(sdk)
-    mapper_inst.dataframe.assert_called_once_with("STUDY", use_labels_as_columns=False)
+    mapper_inst.dataframe.assert_called_once_with(
+        "STUDY",
+        use_labels_as_columns=False,
+        variable_whitelist=None,
+        form_whitelist=None,
+    )
     create_engine.assert_called_once_with("sqlite://")
     df.to_sql.assert_called_once_with("table", engine, if_exists="append", index=False)
 

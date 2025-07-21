@@ -238,10 +238,27 @@ def test_export_sql_calls_helper_non_sqlite(
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
-        ["export", "sql", "STUDY", "table", "postgresql://"],
+        [
+            "export",
+            "sql",
+            "STUDY",
+            "table",
+            "postgresql://",
+            "--vars",
+            "A,B",
+            "--forms",
+            "1,2",
+        ],
     )
     assert result.exit_code == 0
-    func.assert_called_once_with(sdk, "STUDY", "table", "postgresql://")
+    func.assert_called_once_with(
+        sdk,
+        "STUDY",
+        "table",
+        "postgresql://",
+        variable_whitelist=["A", "B"],
+        form_whitelist=["1", "2"],
+    )
 
 
 def test_export_sql_sqlite_uses_by_form(
@@ -258,10 +275,26 @@ def test_export_sql_sqlite_uses_by_form(
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
-        ["export", "sql", "STUDY", "table", "sqlite://"],
+        [
+            "export",
+            "sql",
+            "STUDY",
+            "table",
+            "sqlite://",
+            "--vars",
+            "A",
+            "--forms",
+            "10",
+        ],
     )
     assert result.exit_code == 0
-    form_func.assert_called_once_with(sdk, "STUDY", "sqlite://")
+    form_func.assert_called_once_with(
+        sdk,
+        "STUDY",
+        "sqlite://",
+        variable_whitelist=["A"],
+        form_whitelist=["10"],
+    )
 
 
 def test_export_sql_sqlite_single_table(
@@ -280,10 +313,28 @@ def test_export_sql_sqlite_single_table(
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
-        ["export", "sql", "STUDY", "table", "sqlite://"] + single,
+        [
+            "export",
+            "sql",
+            "STUDY",
+            "table",
+            "sqlite://",
+            "--vars",
+            "V1",
+            "--forms",
+            "5",
+        ]
+        + single,
     )
     assert result.exit_code == 0
-    sql_func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+    sql_func.assert_called_once_with(
+        sdk,
+        "STUDY",
+        "table",
+        "sqlite://",
+        variable_whitelist=["V1"],
+        form_whitelist=["5"],
+    )
     form_func.assert_not_called()
 
 

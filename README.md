@@ -104,6 +104,12 @@ The package installs an `imednet` command with subcommands for studies, sites,
 subjects, records, jobs, queries and more. Use `imednet --help` to explore all
 options.
 
+Example of exporting a subset of variables:
+
+```bash
+imednet export sql MY_STUDY table sqlite:///data.db --vars AGE,SEX --forms 10,20
+```
+
 ## Testing & Development
 
 ```bash
