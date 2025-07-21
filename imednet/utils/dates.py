@@ -2,6 +2,9 @@
 Utility functions for parsing and formatting ISO date/time strings.
 """
 
+from __future__ import annotations
+
+import re
 from datetime import datetime, timezone
 
 
@@ -22,6 +25,18 @@ def parse_iso_datetime(date_str: str) -> datetime:
     """
     if date_str.endswith("Z"):
         date_str = date_str[:-1] + "+00:00"
+
+    match = re.search(r"\.(\d+)(?=[+-]\d{2}:\d{2}|$)", date_str)
+    if match:
+        frac = match.group(1)
+        if len(frac) in {1, 2}:
+            padded = frac.ljust(3, "0")
+        elif len(frac) in {4, 5}:
+            padded = frac.ljust(6, "0")
+        else:
+            padded = frac
+        date_str = date_str.replace("." + frac, "." + padded)
+
     return datetime.fromisoformat(date_str)
 
 
