@@ -50,7 +50,7 @@ def test_list_studies(sdk: ImednetSDK) -> None:
     assert isinstance(studies, list)
     assert studies, "No studies returned from server"
     assert isinstance(studies[0], Study)
-    study = sdk.studies.get(studies[0].study_key)
+    study = sdk.studies.get(None, studies[0].study_key)
     assert study.study_key == studies[0].study_key
 
 
@@ -65,7 +65,7 @@ def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
 
 def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
     try:
-        study = sdk.studies.get(study_key)
+        study = sdk.studies.get(None, study_key)
     except ServerError as exc:
         pytest.fail(f"Server error retrieving study {study_key}: {exc.response}")
     else:
