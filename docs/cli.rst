@@ -68,3 +68,13 @@ When the connection string uses SQLite, ``export sql`` writes one table per
 form to avoid the ``2000`` column limit. Pass ``--single-table`` to disable
 this behaviour. The constant ``imednet.integrations.export.MAX_SQLITE_COLUMNS``
 still enforces the maximum columns per table.
+
+Variable Filters
+----------------
+
+Use ``--vars`` and ``--forms`` with ``export sql`` to limit the columns fetched
+from iMednet. Both options accept comma-separated values.
+
+.. code-block:: console
+
+   imednet export sql MY_STUDY table sqlite:///test.db --vars AGE,SEX --forms 10,20

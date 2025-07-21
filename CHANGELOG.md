@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI now fails if test coverage drops below 90%.
 - Centralized DataFrame creation in export helpers with new ``_records_df``
   to ensure duplicate columns are removed consistently.
+- Added variable and form whitelist options to ``export_to_sql`` and CLI
+  ``export sql`` command.
 - Consolidated polling loops in ``JobPoller`` with shared ``_run_common`` helper.
 - Refactored ``RecordUpdateWorkflow`` with private ``_create_or_update_common``
   to share validation and polling between sync and async methods.
