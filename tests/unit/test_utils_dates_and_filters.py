@@ -24,6 +24,16 @@ def test_parse_iso_datetime_naive() -> None:
     assert dt.year == 2024
 
 
+def test_parse_iso_datetime_millis_padding() -> None:
+    dt = parse_iso_datetime("2021-12-09T08:23:21.99Z")
+    assert dt == datetime(2021, 12, 9, 8, 23, 21, 990000, tzinfo=timezone.utc)
+
+
+def test_parse_iso_datetime_micro_padding() -> None:
+    dt = parse_iso_datetime("2025-06-30T21:40:44.98268")
+    assert dt.microsecond == 982680
+
+
 def test_parse_iso_datetime_invalid() -> None:
     with pytest.raises(ValueError):
         parse_iso_datetime("not-a-date")
