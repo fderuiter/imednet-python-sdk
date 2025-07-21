@@ -114,6 +114,12 @@ poetry run mypy imednet
 poetry run pytest -q
 ```
 
+### Smoke-test workflow
+
+The optional [smoke.yml](.github/workflows/smoke.yml) action runs the `tests/live` suite.
+It relies on repository secrets `APIKEY` and `SECURITYKEY` and sets `IMEDNET_RUN_E2E`.
+Use the workflow to confirm real API access on demand or via its nightly schedule.
+
 ## Building & Publishing
 
 ```bash
