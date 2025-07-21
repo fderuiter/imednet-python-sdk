@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unified ``SchemaValidator`` tests for both sync and async validators.
 - Unified study-structure workflow tests across sync and async implementations.
 - Documented Sphinx conventions in new `docs/AGENTS.md`.
+- Added smoke workflow for live API tests.
 
 ## [0.1.4] 
 
