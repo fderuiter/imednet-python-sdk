@@ -33,7 +33,9 @@ Endpoint Tests
 --------------
 
 ### Synchronous (``test_endpoints_sync_live.py``)
-These tests verify that every REST endpoint works as expected using ``ImednetSDK``:
+These tests verify that every REST endpoint works as expected using ``ImednetSDK``.
+When creating records, the first available form in the study is used
+automatically so ``IMEDNET_FORM_KEY`` does not need to be set:
 
 - Listing endpoints (``list`` methods) return a list of model objects.
 - Individual ``get`` calls return an object whose key matches the input.
@@ -42,8 +44,9 @@ These tests verify that every REST endpoint works as expected using ``ImednetSDK
 - All endpoints tested include studies, sites, subjects, records, intervals, visits, variables, forms, queries, record revisions, users, jobs, and codings.
 
 ### Asynchronous (``test_endpoints_async_live.py``)
-The asynchronous tests mirror the synchronous ones using ``AsyncImednetSDK``. Each
-``async_list`` and ``async_get`` call should behave the same as the synchronous version.
+The asynchronous tests mirror the synchronous ones using ``AsyncImednetSDK``.
+Every ``async_list`` and ``async_get`` call behaves the same as the synchronous
+version, and an additional check creates a record and polls the resulting job.
 
 Schema Validation (``test_schema_validator_live.py``)
 -----------------------------------------------------
