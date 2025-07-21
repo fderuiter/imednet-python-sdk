@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 from types import ModuleType
 from unittest.mock import MagicMock
 
@@ -213,3 +214,44 @@ def test_export_to_sql_by_form(monkeypatch):
     assert sdk.variables.list.call_count == 2
     df1.to_sql.assert_called_once_with("F1", engine, if_exists="replace", index=False)
     df2.to_sql.assert_called_once_with("F2", engine, if_exists="replace", index=False)
+
+
+def test_export_to_long_sql(monkeypatch):
+    sdk = MagicMock()
+    dt1 = datetime(2023, 1, 1)
+    dt2 = datetime(2023, 1, 2)
+    dt3 = datetime(2023, 1, 3)
+    records = [
+        MagicMock(record_id=1, form_id=10, record_data={"A": 1, "B": 2}, date_modified=dt1),
+        MagicMock(record_id=2, form_id=11, record_data={"C": 3}, date_modified=dt2),
+        MagicMock(record_id=3, form_id=12, record_data={"D": 4}, date_modified=dt3),
+    ]
+    mapper_inst = MagicMock(_fetch_records=MagicMock(return_value=records))
+    mapper_cls = MagicMock(return_value=mapper_inst)
+    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+
+    sa_module = ModuleType("sqlalchemy")
+    engine = MagicMock()
+    sa_module.create_engine = MagicMock(return_value=engine)
+    monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+
+    captured = []
+
+    def fake_to_sql(self, table, engine_arg, if_exists, index=False):
+        captured.append((self.copy(), if_exists))
+
+    monkeypatch.setattr(pd.DataFrame, "to_sql", fake_to_sql)
+
+    export_mod.export_to_long_sql(sdk, "STUDY", "tbl", "sqlite://", chunk_size=2)
+
+    assert len(captured) == 2
+    assert list(captured[0][0].to_dict("records")) == [
+        {"record_id": 1, "form_id": 10, "variable_name": "A", "value": 1, "timestamp": dt1},
+        {"record_id": 1, "form_id": 10, "variable_name": "B", "value": 2, "timestamp": dt1},
+    ]
+    assert captured[0][1] == "replace"
+    assert list(captured[1][0].to_dict("records")) == [
+        {"record_id": 2, "form_id": 11, "variable_name": "C", "value": 3, "timestamp": dt2},
+        {"record_id": 3, "form_id": 12, "variable_name": "D", "value": 4, "timestamp": dt3},
+    ]
+    assert captured[1][1] == "append"

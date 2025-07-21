@@ -6,6 +6,7 @@ from typing import Any, List, Optional
 
 import pandas as pd
 
+from .. import ImednetClient
 from ..sdk import ImednetSDK
 from ..workflows.record_mapper import RecordMapper
 
@@ -222,3 +223,52 @@ def export_to_sql_by_form(
             df = df.loc[:, ~dup_mask]
         _assert_within_column_limit(df, engine)
         df.to_sql(form.form_key, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+
+
+def export_to_long_sql(
+    sdk: ImednetClient,
+    study_key: str,
+    table_name: str,
+    conn_str: str,
+    *,
+    chunk_size: int = 1000,
+) -> None:
+    """Export records to a normalized long-format SQL table."""
+    from sqlalchemy import create_engine
+
+    engine = create_engine(conn_str)
+    mapper = RecordMapper(sdk)
+    records = mapper._fetch_records(study_key)
+
+    rows: List[dict[str, Any]] = []
+    first = True
+    for rec in records:
+        timestamp = rec.date_modified
+        for name, value in (rec.record_data or {}).items():
+            rows.append(
+                {
+                    "record_id": rec.record_id,
+                    "form_id": rec.form_id,
+                    "variable_name": name,
+                    "value": value,
+                    "timestamp": timestamp,
+                }
+            )
+            if len(rows) >= chunk_size:
+                df = pd.DataFrame(rows)
+                df.to_sql(
+                    table_name,
+                    engine,
+                    if_exists="replace" if first else "append",
+                    index=False,
+                )
+                rows = []
+                first = False
+    if rows:
+        df = pd.DataFrame(rows)
+        df.to_sql(
+            table_name,
+            engine,
+            if_exists="replace" if first else "append",
+            index=False,
+        )

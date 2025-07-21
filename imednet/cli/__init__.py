@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from ..integrations.export import export_to_csv  # noqa: F401
 from ..integrations.export import export_to_excel  # noqa: F401
 from ..integrations.export import export_to_json  # noqa: F401
+from ..integrations.export import export_to_long_sql  # noqa: F401
 from ..integrations.export import export_to_parquet  # noqa: F401
 from ..integrations.export import export_to_sql  # noqa: F401
 from ..integrations.export import export_to_sql_by_form  # noqa: F401
