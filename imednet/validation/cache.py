@@ -182,6 +182,13 @@ class SchemaValidator(_ValidatorMixin):
         self._refresh_common(variables)
 
     def refresh(self, study_key: str) -> Any:
+        """Populate the schema cache for ``study_key`` from the Variables endpoint.
+
+        Returns ``None`` when used with a synchronous validator or a coroutine for
+        an asynchronous validator. This method never raises
+        :class:`~imednet.core.exceptions.ValidationError`; any API errors bubble up
+        as :class:`~imednet.core.exceptions.ApiError`.
+        """
         if self._is_async:
             return self._refresh_async(study_key)
         return self._refresh_sync(study_key)
