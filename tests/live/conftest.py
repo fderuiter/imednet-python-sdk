@@ -31,7 +31,10 @@ async def async_sdk() -> AsyncIterator[AsyncImednetSDK]:
     try:
         yield client
     finally:
-        await client.aclose()
+        try:
+            await client.aclose()
+        except RuntimeError as exc:  # pragma: no cover - cleanup safeguard
+            pytest.fail(f"Async SDK teardown failed: {exc}")
 
 
 @pytest.fixture(scope="session")
