@@ -20,13 +20,13 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
     studies = sdk.studies.list()
     if not studies:
@@ -51,6 +51,7 @@ def _wrong_value(var_type: str):
 def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
+    validator.refresh(study_key)
 
     with pytest.raises(ValidationError):
         validator.validate_record(
@@ -63,6 +64,7 @@ def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
 def test_validator_wrong_type(sdk: ImednetSDK, study_key: str) -> None:
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
+    validator.refresh(study_key)
 
     with pytest.raises(ValidationError):
         validator.validate_record(

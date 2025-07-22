@@ -257,7 +257,7 @@ def test_export_sql_calls_helper_non_sqlite(
         "table",
         "postgresql://",
         variable_whitelist=["A", "B"],
-        form_whitelist=["1", "2"],
+        form_whitelist=[1, 2],
     )
 
 
@@ -293,7 +293,7 @@ def test_export_sql_sqlite_uses_by_form(
         "STUDY",
         "sqlite://",
         variable_whitelist=["A"],
-        form_whitelist=["10"],
+        form_whitelist=[10],
     )
 
 
@@ -333,7 +333,7 @@ def test_export_sql_sqlite_single_table(
         "table",
         "sqlite://",
         variable_whitelist=["V1"],
-        form_whitelist=["5"],
+        form_whitelist=[5],
     )
     form_func.assert_not_called()
 

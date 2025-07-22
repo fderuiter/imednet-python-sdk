@@ -114,7 +114,7 @@ def export_sql(
 
     engine = create_engine(connection_string)
     var_list = [v.strip() for v in vars_.split(",")] if vars_ else None
-    form_list = [f.strip() for f in forms.split(",")] if forms else None
+    form_list = [int(f.strip()) for f in forms.split(",")] if forms else None
     if long_format:
         export_to_long_sql(sdk, study_key, table, connection_string)
         return

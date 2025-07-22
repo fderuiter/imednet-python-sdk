@@ -46,13 +46,18 @@ class RecordMapper:
         self,
         study_key: str,
         variable_whitelist: Optional[List[str]] = None,
-        form_whitelist: Optional[List[str]] = None,
+        form_whitelist: Optional[List[int]] = None,
     ) -> Tuple[List[str], Dict[str, str]]:
         """Return variable names and label mapping for a study."""
+        filters: Dict[str, Any] = {}
+        if variable_whitelist is not None:
+            filters["variableNames"] = variable_whitelist
+        if form_whitelist is not None:
+            filters["formIds"] = form_whitelist
+
         variables: List[VariableModel] = self.sdk.variables.list(
             study_key=study_key,
-            variableNames=variable_whitelist,
-            formIds=form_whitelist,
+            **filters,
         )
         if not variables:
             logger.warning(
@@ -173,7 +178,7 @@ class RecordMapper:
         visit_key: Optional[str] = None,
         use_labels_as_columns: bool = True,
         variable_whitelist: Optional[List[str]] = None,
-        form_whitelist: Optional[List[str]] = None,
+        form_whitelist: Optional[List[int]] = None,
     ) -> pd.DataFrame:
         """Return a :class:`pandas.DataFrame` of records for a study."""
         variable_keys, label_map = self._fetch_variable_metadata(
