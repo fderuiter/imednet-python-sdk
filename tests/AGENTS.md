@@ -15,7 +15,7 @@ Provide ground rules for creating and maintaining **pytest** tests so that every
 ## Test style & tools
 - Use **pytest** with strictly-typed assertions (`assert isinstance(result, MyType)`).
 - Prefer **pytest-asyncio** for async code; mark async tests with `@pytest.mark.asyncio`.
-- Mock HTTP traffic with **respx** or **responses** – **NEVER** hit the live iMednet API.  The examples under `tests/live/` require `IMEDNET_RUN_E2E=1` and valid credentials and are skipped otherwise.
+- Mock HTTP traffic with **respx** or **responses** when testing offline. It's OK to hit the live iMednet API if you set `IMEDNET_RUN_E2E=1` with valid credentials and want to run the examples under `tests/live/`.
 - Keep helpers that are shared across modules in `tests/conftest.py` or `tests/utils/`.
 
 ---
