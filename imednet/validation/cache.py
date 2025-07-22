@@ -150,7 +150,16 @@ class SchemaValidator(_ValidatorMixin):
         self._sdk = sdk
         import inspect
 
-        self._is_async = inspect.iscoroutinefunction(getattr(sdk.variables, "async_list", None))
+        # Determine async mode. Prefer the presence of an async client attribute
+        # but fall back to inspecting the variables endpoint so tests can supply
+        # a lightweight mock that only defines ``async_list``.
+        has_async_client = (
+            "_async_client" in getattr(sdk, "__dict__", {})
+            and getattr(sdk, "_async_client") is not None
+        )
+        self._is_async = has_async_client or inspect.iscoroutinefunction(
+            getattr(sdk.variables, "async_list", None)
+        )
         self.schema: BaseSchemaCache[Any]
         if self._is_async:
             self.schema = AsyncSchemaCache()
