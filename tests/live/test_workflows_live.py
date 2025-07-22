@@ -26,8 +26,14 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
-    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
+    client = ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+    try:
         yield client
+    finally:
+        try:
+            client.close()
+        except Exception as exc:  # pragma: no cover - defensive cleanup
+            pytest.fail(f"SDK teardown failed: {exc}")
 
 
 @pytest.fixture(scope="session")
