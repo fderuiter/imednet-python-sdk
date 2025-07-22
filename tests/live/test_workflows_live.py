@@ -32,6 +32,9 @@ def sdk() -> Iterator[ImednetSDK]:
     finally:
         try:
             client.close()
+        except RuntimeError as exc:  # pragma: no cover - defensive cleanup
+            if "closed" not in str(exc):
+                pytest.fail(f"SDK teardown failed: {exc}")
         except Exception as exc:  # pragma: no cover - defensive cleanup
             pytest.fail(f"SDK teardown failed: {exc}")
 

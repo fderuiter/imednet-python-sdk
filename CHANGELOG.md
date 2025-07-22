@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added long-format SQL export via `export_to_long_sql` and the `--long-format` CLI option.
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
+- Fixed teardown errors in live tests by handling closed event loops during SDK
+  cleanup.
 - Updated `tests/AGENTS.md` to permit hitting the live iMednet API when running the `tests/live` suite.
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
 - Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
