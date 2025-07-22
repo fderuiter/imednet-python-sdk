@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added smoke workflow for live API tests.
 - Documented optional `smoke.yml` workflow which uses `APIKEY` and `SECURITYKEY` to run `tests/live`.
 - Restricted smoke workflow to manual dispatch by the repository owner.
+- Ensured live schema validation tests verify the schema is populated to avoid
+  false negatives when the server returns an empty schema.
 
 ## [0.1.4] 
 
