@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import types
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
@@ -157,8 +158,10 @@ class SchemaValidator(_ValidatorMixin):
             "_async_client" in getattr(sdk, "__dict__", {})
             and getattr(sdk, "_async_client") is not None
         )
-        self._is_async = has_async_client or inspect.iscoroutinefunction(
-            getattr(sdk.variables, "async_list", None)
+        async_attr = getattr(sdk.variables, "async_list", None)
+        is_bound_method = isinstance(async_attr, types.MethodType)
+        self._is_async = has_async_client or (
+            inspect.iscoroutinefunction(async_attr) and not is_bound_method
         )
         self.schema: BaseSchemaCache[Any]
         if self._is_async:
