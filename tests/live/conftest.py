@@ -1,5 +1,6 @@
+import asyncio
 import os
-from typing import AsyncIterator, Iterator
+from typing import AsyncIterator, Generator, Iterator
 
 import pytest
 
@@ -57,3 +58,11 @@ def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> 
     record = {"formKey": first_form_key, "data": {}}
     job = sdk.records.create(study_key, [record])
     return job.batch_id
+
+
+@pytest.fixture(scope="session")
+def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
+    """Create an asyncio event loop for session-scoped async fixtures."""
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
