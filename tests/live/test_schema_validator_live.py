@@ -53,12 +53,14 @@ def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
     validator = SchemaValidator(sdk)
     validator.refresh(study_key)
 
+    # Ensure schema contains variables for the form; an empty schema would cause
+    # false negatives when validating.
+    assert validator.schema.variables_for_form(var.form_key)
+
     with pytest.raises(ValidationError):
         validator.validate_record(
             study_key, {"formKey": var.form_key, "data": {var.variable_name + "_x": 1}}
         )
-
-    assert validator.schema.variables_for_form(var.form_key)
 
 
 def test_validator_wrong_type(sdk: ImednetSDK, study_key: str) -> None:
@@ -66,10 +68,12 @@ def test_validator_wrong_type(sdk: ImednetSDK, study_key: str) -> None:
     validator = SchemaValidator(sdk)
     validator.refresh(study_key)
 
+    # The validator requires a populated schema; without this check the test
+    # could pass incorrectly if the form variables are missing.
+    assert validator.schema.variables_for_form(var.form_key)
+
     with pytest.raises(ValidationError):
         validator.validate_record(
             study_key,
             {"formKey": var.form_key, "data": {var.variable_name: _wrong_value(var.variable_type)}},
         )
-
-    assert validator.schema.variables_for_form(var.form_key)
