@@ -24,7 +24,7 @@ def test_dataframe_builds_expected_structure() -> None:
                 "formIds": [10],
             }
             return [variables[0]]
-        assert kwargs == {"study_key": "STUDY", "variableNames": None, "formIds": None}
+        assert kwargs == {"study_key": "STUDY"}
         return variables
 
     sdk.variables.list.side_effect = var_list
@@ -44,11 +44,7 @@ def test_dataframe_builds_expected_structure() -> None:
     mapper = RecordMapper(sdk)
     df = mapper.dataframe("STUDY", visit_key="1")
 
-    sdk.variables.list.assert_called_once_with(
-        study_key="STUDY",
-        variableNames=None,
-        formIds=None,
-    )
+    sdk.variables.list.assert_called_once_with(study_key="STUDY")
     sdk.records.list.assert_called_once_with(
         study_key="STUDY",
         record_data_filter=None,

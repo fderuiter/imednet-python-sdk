@@ -24,13 +24,13 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
     studies = sdk.get_studies()
     if not studies:
@@ -38,7 +38,7 @@ def study_key(sdk: ImednetSDK) -> str:
     return studies[0].study_key
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
     subs = sdk.get_subjects(study_key)
     if not subs:

@@ -29,7 +29,7 @@ def _records_df(
     *,
     use_labels_as_columns: bool = False,
     variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
 ) -> pd.DataFrame:
     """Return a DataFrame of study records with duplicate columns removed."""
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
@@ -148,7 +148,7 @@ def export_to_sql(
     *,
     use_labels_as_columns: bool = False,
     variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
     **kwargs: Any,
 ) -> None:
     """Export study records to a SQL table.
@@ -182,7 +182,7 @@ def export_to_sql_by_form(
     *,
     use_labels_as_columns: bool = False,
     variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
     **kwargs: Any,
 ) -> None:
     """Export records to separate SQL tables for each form."""
