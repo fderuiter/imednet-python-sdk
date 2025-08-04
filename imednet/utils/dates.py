@@ -29,13 +29,8 @@ def parse_iso_datetime(date_str: str) -> datetime:
     match = re.search(r"\.(\d+)(?=[+-]\d{2}:\d{2}|$)", date_str)
     if match:
         frac = match.group(1)
-        if len(frac) in {1, 2}:
-            padded = frac.ljust(3, "0")
-        elif len(frac) in {4, 5}:
-            padded = frac.ljust(6, "0")
-        else:
-            padded = frac
-        date_str = date_str.replace("." + frac, "." + padded)
+        if 1 <= len(frac) <= 5:
+            date_str = date_str.replace("." + frac, "." + frac.ljust(6, "0"))
 
     return datetime.fromisoformat(date_str)
 
