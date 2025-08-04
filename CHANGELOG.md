@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensured live schema validation tests verify the schema is populated to avoid
   false negatives when the server returns an empty schema.
 - ``validate_record_data`` now raises ``ValidationError`` when provided an unknown form key.
+- Record update workflow now raises ``ValueError`` when a form key is missing from the schema.
 
 ## [0.1.4] 
 

@@ -91,6 +91,8 @@ class RecordUpdateWorkflow:
                 result = self._validator.refresh(study_key)
                 if inspect.isawaitable(result):
                     await result
+                if first_ref not in self._schema.forms:
+                    raise ValueError(f"Form key '{first_ref}' not found in study schema")
 
         result = self._validator.validate_batch(study_key, records_data)
         if inspect.isawaitable(result):

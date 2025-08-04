@@ -66,6 +66,11 @@ class BaseSchemaCache(Generic[_TClient]):
     def form_key_from_id(self, form_id: int) -> Optional[str]:
         return self._form_id_to_key.get(form_id)
 
+    @property
+    def forms(self) -> Dict[str, Dict[str, Variable]]:
+        """Return the cached mapping of form keys to their variables."""
+        return self._form_variables
+
 
 class SchemaCache(BaseSchemaCache["ImednetSDK"]):
     def __init__(self) -> None:
