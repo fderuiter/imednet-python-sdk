@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Bump project version to `0.1.4`.
-- Relaxed ISO datetime parser to handle fractional seconds with fewer than
-  three or six digits.
+ - ISO datetime parser now pads fractional seconds shorter than six digits to
+   microsecond precision.
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
 - Added `imednet.config` module with `load_config` helper for reading credentials.
