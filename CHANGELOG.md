@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Bump project version to `0.1.4`.
- - ISO datetime parser now pads fractional seconds shorter than six digits to
+- Added tests for unknown form validation errors.
+- ISO datetime parser now pads fractional seconds shorter than six digits to
    microsecond precision.
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
