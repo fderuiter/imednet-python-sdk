@@ -125,8 +125,17 @@ def validate_record_data(
     form_key: str,
     data: Dict[str, Any],
 ) -> None:
+    """Validate ``data`` for ``form_key`` using the provided schema cache.
+
+    Raises:
+        ValidationError: If the form key is not present in the schema or the data
+            fails validation checks.
+    """
+
     variables = schema.variables_for_form(form_key)
     if not variables:
+        # The cache has no variables for the given form key, so treat it as an
+        # unknown form and fail fast.
         raise ValidationError(f"Unknown form {form_key}")
     unknown = [k for k in data if k not in variables]
     if unknown:
