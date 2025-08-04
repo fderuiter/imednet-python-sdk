@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restricted smoke workflow to manual dispatch by the repository owner.
 - Ensured live schema validation tests verify the schema is populated to avoid
   false negatives when the server returns an empty schema.
+- ``validate_record_data`` now raises ``ValidationError`` when provided an unknown form key.
 
 ## [0.1.4] 
 

@@ -127,7 +127,7 @@ def validate_record_data(
 ) -> None:
     variables = schema.variables_for_form(form_key)
     if not variables:
-        return
+        raise ValidationError(f"Unknown form {form_key}")
     unknown = [k for k in data if k not in variables]
     if unknown:
         raise ValidationError(f"Unknown variables for form {form_key}: {', '.join(unknown)}")

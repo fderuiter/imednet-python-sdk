@@ -54,6 +54,24 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
+def test_validate_record_unknown_form(async_mode: bool) -> None:
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    sdk = _build_sdk(var, async_mode)
+    validator = SchemaValidator(sdk)
+
+    with pytest.raises(ValidationError, match="Unknown form BAD"):
+        if async_mode:
+            asyncio.run(validator.validate_record("STUDY", {"formKey": "BAD", "data": {}}))
+        else:
+            validator.validate_record("STUDY", {"formKey": "BAD", "data": {}})
+
+    if async_mode:
+        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
+    else:
+        sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
 def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
