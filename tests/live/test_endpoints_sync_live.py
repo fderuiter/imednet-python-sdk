@@ -31,13 +31,13 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
     studies = sdk.studies.list()
     if not studies:
@@ -50,7 +50,7 @@ def test_list_studies(sdk: ImednetSDK) -> None:
     assert isinstance(studies, list)
     assert studies, "No studies returned from server"
     assert isinstance(studies[0], Study)
-    study = sdk.studies.get(studies[0].study_key)
+    study = sdk.studies.get(None, studies[0].study_key)
     assert study.study_key == studies[0].study_key
 
 
@@ -65,7 +65,7 @@ def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
 
 def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
     try:
-        study = sdk.studies.get(study_key)
+        study = sdk.studies.get(None, study_key)
     except ServerError as exc:
         pytest.fail(f"Server error retrieving study {study_key}: {exc.response}")
     else:
@@ -153,19 +153,13 @@ def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
         assert revision.record_revision_id == revisions[0].record_revision_id
 
 
-def test_job_get_known_batch(sdk: ImednetSDK, study_key: str) -> None:
-    batch_id = os.getenv("IMEDNET_BATCH_ID")
-    if not batch_id:
-        pytest.skip("IMEDNET_BATCH_ID not set")
-    job = sdk.jobs.get(study_key, batch_id)
-    assert job.batch_id == batch_id
+def test_job_get_known_batch(sdk: ImednetSDK, study_key: str, generated_batch_id: str) -> None:
+    job = sdk.jobs.get(study_key, generated_batch_id)
+    assert job.batch_id == generated_batch_id
 
 
-def test_create_record_and_poll_job(sdk: ImednetSDK, study_key: str) -> None:
-    form_key = os.getenv("IMEDNET_FORM_KEY")
-    if not form_key:
-        pytest.skip("IMEDNET_FORM_KEY not set for record creation")
-    record = {"formKey": form_key, "data": {}}
+def test_create_record_and_poll_job(sdk: ImednetSDK, study_key: str, first_form_key: str) -> None:
+    record = {"formKey": first_form_key, "data": {}}
     job = sdk.records.create(study_key, [record])
     assert job.batch_id
     polled = sdk.jobs.get(study_key, job.batch_id)

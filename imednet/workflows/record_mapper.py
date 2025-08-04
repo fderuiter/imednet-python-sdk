@@ -42,9 +42,23 @@ class RecordMapper:
     # ------------------------------------------------------------------
     # Helper methods
     # ------------------------------------------------------------------
-    def _fetch_variable_metadata(self, study_key: str) -> Tuple[List[str], Dict[str, str]]:
+    def _fetch_variable_metadata(
+        self,
+        study_key: str,
+        variable_whitelist: Optional[List[str]] = None,
+        form_whitelist: Optional[List[int]] = None,
+    ) -> Tuple[List[str], Dict[str, str]]:
         """Return variable names and label mapping for a study."""
-        variables: List[VariableModel] = self.sdk.variables.list(study_key=study_key)
+        filters: Dict[str, Any] = {}
+        if variable_whitelist is not None:
+            filters["variableNames"] = variable_whitelist
+        if form_whitelist is not None:
+            filters["formIds"] = form_whitelist
+
+        variables: List[VariableModel] = self.sdk.variables.list(
+            study_key=study_key,
+            **filters,
+        )
         if not variables:
             logger.warning(
                 "No variables found for study '%s'. Returning empty DataFrame.",
@@ -163,14 +177,30 @@ class RecordMapper:
         study_key: str,
         visit_key: Optional[str] = None,
         use_labels_as_columns: bool = True,
+        variable_whitelist: Optional[List[str]] = None,
+        form_whitelist: Optional[List[int]] = None,
     ) -> pd.DataFrame:
         """Return a :class:`pandas.DataFrame` of records for a study."""
-        variable_keys, label_map = self._fetch_variable_metadata(study_key)
+        variable_keys, label_map = self._fetch_variable_metadata(
+            study_key,
+            variable_whitelist=variable_whitelist,
+            form_whitelist=form_whitelist,
+        )
         if not variable_keys:
             return pd.DataFrame()
 
         record_model = self._build_record_model(variable_keys, label_map)
-        records = self._fetch_records(study_key, visit_key)
+        extra_filters: Dict[str, Any] = {}
+        if variable_whitelist is not None:
+            extra_filters["variableNames"] = variable_whitelist
+        if form_whitelist is not None:
+            extra_filters["formIds"] = form_whitelist
+
+        records = self._fetch_records(
+            study_key,
+            visit_key,
+            extra_filters=extra_filters or None,
+        )
         rows, errors = self._parse_records(records, record_model)
         if errors:
             logger.warning("Encountered %s errors while parsing record data.", errors)

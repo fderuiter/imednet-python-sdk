@@ -84,6 +84,21 @@ def export_sql(
         "--single-table",
         help="Store all records in a single table even when using SQLite.",
     ),
+    long_format: bool = typer.Option(
+        False,
+        "--long-format",
+        help="Export normalized long-format table.",
+    ),
+    vars_: str = typer.Option(
+        None,
+        "--vars",
+        help="Comma-separated list of variable names to include.",
+    ),
+    forms: str = typer.Option(
+        None,
+        "--forms",
+        help="Comma-separated list of form IDs to include.",
+    ),
 ) -> None:
     """Export study records to a SQL table."""
     if importlib.util.find_spec("sqlalchemy") is None:
@@ -95,10 +110,28 @@ def export_sql(
 
     from sqlalchemy import create_engine
 
-    from .. import export_to_sql, export_to_sql_by_form
+    from .. import export_to_long_sql, export_to_sql, export_to_sql_by_form
 
     engine = create_engine(connection_string)
+    var_list = [v.strip() for v in vars_.split(",")] if vars_ else None
+    form_list = [int(f.strip()) for f in forms.split(",")] if forms else None
+    if long_format:
+        export_to_long_sql(sdk, study_key, table, connection_string)
+        return
     if not single_table and engine.dialect.name == "sqlite":
-        export_to_sql_by_form(sdk, study_key, connection_string)
+        export_to_sql_by_form(
+            sdk,
+            study_key,
+            connection_string,
+            variable_whitelist=var_list,
+            form_whitelist=form_list,
+        )
     else:
-        export_to_sql(sdk, study_key, table, connection_string)
+        export_to_sql(
+            sdk,
+            study_key,
+            table,
+            connection_string,
+            variable_whitelist=var_list,
+            form_whitelist=form_list,
+        )

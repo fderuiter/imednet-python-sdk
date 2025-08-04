@@ -7,21 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Bump project version to `0.1.4`.
+- Relaxed ISO datetime parser to handle fractional seconds with fewer than
+  three or six digits.
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
 - Added `imednet.config` module with `load_config` helper for reading credentials.
 - Introduced `RetryPolicy` abstraction for configuring request retries.
- - Documented test suite conventions in `tests/AGENTS.md`.
+- Documented test suite conventions in `tests/AGENTS.md`.
   `Client`, `AsyncClient` and `ImednetSDK` accept a `retry_policy` parameter.
+- Added long-format SQL export via `export_to_long_sql` and the `--long-format` CLI option.
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
+- Fixed teardown errors in live tests by handling closed event loops during SDK
+  cleanup.
+- Updated `tests/AGENTS.md` to permit hitting the live iMednet API when running the `tests/live` suite.
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
 - Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
   record dictionary construction.
+- Live tests now discover the first form key automatically and create a job to
+  obtain a batch ID, removing the need for `IMEDNET_FORM_KEY` and
+  `IMEDNET_BATCH_ID` secrets.
 - Renamed ``models._base`` to ``models.json_base`` to avoid import confusion.
 - Documented the sentinel return value in ``parse_datetime``.
 - Replaced placeholder description in ``workflows/record_update.py``.
 - Added docstrings to private helpers in ``core/_requester.py``.
+- Documented ``SchemaValidator.refresh`` behavior.
 - Added tests covering the default sentinel date in ``parse_datetime``.
 - Organized Airflow integration code into ``hooks``, ``operators`` and ``sensors`` subpackages.
 - Grouped CLI commands into dedicated subpackages for easier navigation.
@@ -34,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI now fails if test coverage drops below 90%.
 - Centralized DataFrame creation in export helpers with new ``_records_df``
   to ensure duplicate columns are removed consistently.
+- Added variable and form whitelist options to ``export_to_sql`` and CLI
+  ``export sql`` command.
 - Consolidated polling loops in ``JobPoller`` with shared ``_run_common`` helper.
 - Refactored ``RecordUpdateWorkflow`` with private ``_create_or_update_common``
   to share validation and polling between sync and async methods.
@@ -45,17 +57,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented Sphinx conventions in new `docs/AGENTS.md`.
 - Added smoke workflow for live API tests.
 - Documented optional `smoke.yml` workflow which uses `APIKEY` and `SECURITYKEY` to run `tests/live`.
-
-## [0.1.4] 
-
-## [Released]
-
-## [0.1.3] - 2025-07-07
-- Bump project version to `0.1.3` to fix PyPI upload.
-### Changed
-- Updated Chanagelog.md with 0.1.3 changes.
-  
-## [0.1.2] - 2025-07-07
+- Restricted smoke workflow to manual dispatch by the repository owner.
+- Ensured live schema validation tests verify the schema is populated to avoid
+  false negatives when the server returns an empty schema.
 
 ## [0.1.4] 
 

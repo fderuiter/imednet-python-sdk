@@ -204,7 +204,16 @@ class ImednetSDK:
         """Close the client connection and free resources."""
         self._client.close()
         if self._async_client is not None:
-            asyncio.run(self._async_client.aclose())
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                # No running loop, safe to use asyncio.run
+                asyncio.run(self._async_client.aclose())
+            else:
+                if loop.is_closed():
+                    asyncio.run(self._async_client.aclose())
+                else:
+                    loop.run_until_complete(self._async_client.aclose())
 
     async def aclose(self) -> None:
         if self._async_client is not None:

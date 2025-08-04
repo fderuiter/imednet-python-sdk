@@ -24,13 +24,22 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
-    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
+    client = ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+    try:
         yield client
+    finally:
+        try:
+            client.close()
+        except RuntimeError as exc:  # pragma: no cover - defensive cleanup
+            if "closed" not in str(exc):
+                pytest.fail(f"SDK teardown failed: {exc}")
+        except Exception as exc:  # pragma: no cover - defensive cleanup
+            pytest.fail(f"SDK teardown failed: {exc}")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
     studies = sdk.get_studies()
     if not studies:
@@ -38,7 +47,7 @@ def study_key(sdk: ImednetSDK) -> str:
     return studies[0].study_key
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
     subs = sdk.get_subjects(study_key)
     if not subs:

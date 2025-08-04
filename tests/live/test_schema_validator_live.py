@@ -20,13 +20,13 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
     studies = sdk.studies.list()
     if not studies:
@@ -51,23 +51,29 @@ def _wrong_value(var_type: str):
 def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
+    validator.refresh(study_key)
+
+    # Ensure schema contains variables for the form; an empty schema would cause
+    # false negatives when validating.
+    assert validator.schema.variables_for_form(var.form_key)
 
     with pytest.raises(ValidationError):
         validator.validate_record(
             study_key, {"formKey": var.form_key, "data": {var.variable_name + "_x": 1}}
         )
 
-    assert validator.schema.variables_for_form(var.form_key)
-
 
 def test_validator_wrong_type(sdk: ImednetSDK, study_key: str) -> None:
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
+    validator.refresh(study_key)
+
+    # The validator requires a populated schema; without this check the test
+    # could pass incorrectly if the form variables are missing.
+    assert validator.schema.variables_for_form(var.form_key)
 
     with pytest.raises(ValidationError):
         validator.validate_record(
             study_key,
             {"formKey": var.form_key, "data": {var.variable_name: _wrong_value(var.variable_type)}},
         )
-
-    assert validator.schema.variables_for_form(var.form_key)

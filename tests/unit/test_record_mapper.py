@@ -15,7 +15,19 @@ def test_dataframe_builds_expected_structure() -> None:
         Variable(variable_name="VAR1", label="Label1", form_id=10),
         Variable(variable_name="VAR2", label="Label2", form_id=10),
     ]
-    sdk.variables.list.return_value = variables
+
+    def var_list(**kwargs):
+        if kwargs.get("variableNames"):
+            assert kwargs == {
+                "study_key": "STUDY",
+                "variableNames": ["VAR1"],
+                "formIds": [10],
+            }
+            return [variables[0]]
+        assert kwargs == {"study_key": "STUDY"}
+        return variables
+
+    sdk.variables.list.side_effect = var_list
     records = [
         Record(
             record_id=1,
@@ -33,7 +45,11 @@ def test_dataframe_builds_expected_structure() -> None:
     df = mapper.dataframe("STUDY", visit_key="1")
 
     sdk.variables.list.assert_called_once_with(study_key="STUDY")
-    sdk.records.list.assert_called_once_with(study_key="STUDY", record_data_filter=None, visitId=1)
+    sdk.records.list.assert_called_once_with(
+        study_key="STUDY",
+        record_data_filter=None,
+        visitId=1,
+    )
 
     expected_columns = [
         "recordId",
@@ -48,6 +64,74 @@ def test_dataframe_builds_expected_structure() -> None:
     assert list(df.columns) == expected_columns
     assert df.iloc[0]["Label1"] == "a"
     assert df.iloc[0]["Label2"] == "b"
+
+
+def test_dataframe_whitelists_variables_and_forms() -> None:
+    sdk = MagicMock()
+    variables = [
+        Variable(variable_name="VAR1", label="Label1", form_id=10),
+        Variable(variable_name="VAR2", label="Label2", form_id=20),
+    ]
+
+    def var_list(**kwargs):
+        assert kwargs == {
+            "study_key": "STUDY",
+            "variableNames": ["VAR1"],
+            "formIds": [10],
+        }
+        return [variables[0]]
+
+    sdk.variables.list.side_effect = var_list
+    record = Record(
+        record_id=1,
+        subject_key="S1",
+        visit_id=1,
+        form_id=10,
+        record_status="Complete",
+        date_created=datetime(2021, 1, 1),
+        record_data={"VAR1": "a", "VAR2": "b"},
+    )
+
+    def rec_list(**kwargs):
+        if kwargs.get("variableNames"):
+            assert kwargs == {
+                "study_key": "STUDY",
+                "record_data_filter": None,
+                "variableNames": ["VAR1"],
+                "formIds": [10],
+            }
+            return [record]
+        assert kwargs == {
+            "study_key": "STUDY",
+            "record_data_filter": None,
+        }
+        return [record]
+
+    sdk.records.list.side_effect = rec_list
+
+    mapper = RecordMapper(sdk)
+    df = mapper.dataframe("STUDY", variable_whitelist=["VAR1"], form_whitelist=[10])
+
+    sdk.variables.list.assert_called_once_with(
+        study_key="STUDY",
+        variableNames=["VAR1"],
+        formIds=[10],
+    )
+    sdk.records.list.assert_called_once_with(
+        study_key="STUDY",
+        record_data_filter=None,
+        variableNames=["VAR1"],
+        formIds=[10],
+    )
+    assert list(df.columns) == [
+        "recordId",
+        "subjectKey",
+        "visitId",
+        "formId",
+        "recordStatus",
+        "dateCreated",
+        "Label1",
+    ]
 
 
 def test_dataframe_empty_when_no_variables() -> None:

@@ -19,13 +19,13 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="session")
 async def async_sdk() -> AsyncIterator[AsyncImednetSDK]:
     client = AsyncImednetSDK(
         api_key=API_KEY,
@@ -35,10 +35,14 @@ async def async_sdk() -> AsyncIterator[AsyncImednetSDK]:
     try:
         yield client
     finally:
-        await client.aclose()
+        try:
+            await client.aclose()
+        except RuntimeError as exc:
+            if "closed" not in str(exc):
+                pytest.fail(f"Async SDK teardown failed: {exc}")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
     studies = sdk.studies.list()
     if not studies:
@@ -143,3 +147,15 @@ async def test_async_codings(async_sdk: AsyncImednetSDK, study_key: str) -> None
     if codings:
         coding = await async_sdk.codings.async_get(study_key, str(codings[0].coding_id))
         assert coding.coding_id == codings[0].coding_id
+
+
+@pytest.mark.asyncio(scope="module")
+async def test_async_create_and_poll(
+    async_sdk: AsyncImednetSDK,
+    study_key: str,
+    first_form_key: str,
+) -> None:
+    record = {"formKey": first_form_key, "data": {}}
+    job = await async_sdk.records.async_create(study_key, [record])
+    polled = await async_sdk.jobs.async_get(study_key, job.batch_id)
+    assert polled.batch_id == job.batch_id

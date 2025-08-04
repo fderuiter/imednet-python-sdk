@@ -14,8 +14,10 @@ credentials are supplied via ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY``
 
 Additional variables may be required:
 
-- ``IMEDNET_BATCH_ID`` — required for job polling tests.
-- ``IMEDNET_FORM_KEY`` — required for record creation tests.
+- ``IMEDNET_BATCH_ID`` — used for job polling tests. When unset, the suite
+  creates a record to generate a batch ID automatically.
+- ``IMEDNET_FORM_KEY`` — optional override for record creation. If not
+  supplied, the first form returned by the API is used.
 - ``IMEDNET_ALLOW_MUTATION=1`` — enables workflow tests that submit data.
 
 Several integration tests rely on optional packages:

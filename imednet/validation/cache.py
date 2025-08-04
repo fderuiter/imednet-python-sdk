@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import types
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
@@ -150,7 +151,18 @@ class SchemaValidator(_ValidatorMixin):
         self._sdk = sdk
         import inspect
 
-        self._is_async = inspect.iscoroutinefunction(getattr(sdk.variables, "async_list", None))
+        # Determine async mode. Prefer the presence of an async client attribute
+        # but fall back to inspecting the variables endpoint so tests can supply
+        # a lightweight mock that only defines ``async_list``.
+        has_async_client = (
+            "_async_client" in getattr(sdk, "__dict__", {})
+            and getattr(sdk, "_async_client") is not None
+        )
+        async_attr = getattr(sdk.variables, "async_list", None)
+        is_bound_method = isinstance(async_attr, types.MethodType)
+        self._is_async = has_async_client or (
+            inspect.iscoroutinefunction(async_attr) and not is_bound_method
+        )
         self.schema: BaseSchemaCache[Any]
         if self._is_async:
             self.schema = AsyncSchemaCache()
@@ -173,6 +185,13 @@ class SchemaValidator(_ValidatorMixin):
         self._refresh_common(variables)
 
     def refresh(self, study_key: str) -> Any:
+        """Populate the schema cache for ``study_key`` from the Variables endpoint.
+
+        Returns ``None`` when used with a synchronous validator or a coroutine for
+        an asynchronous validator. This method never raises
+        :class:`~imednet.core.exceptions.ValidationError`; any API errors bubble up
+        as :class:`~imednet.core.exceptions.ApiError`.
+        """
         if self._is_async:
             return self._refresh_async(study_key)
         return self._refresh_sync(study_key)

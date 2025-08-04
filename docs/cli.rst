@@ -64,7 +64,40 @@ Use ``--help`` on any command to see all options.
 SQLite Exports
 --------------
 
-When the connection string uses SQLite, ``export sql`` writes one table per
-form to avoid the ``2000`` column limit. Pass ``--single-table`` to disable
-this behaviour. The constant ``imednet.integrations.export.MAX_SQLITE_COLUMNS``
-still enforces the maximum columns per table.
+SQLite only allows ``2000`` columns per table. When the connection string
+targets SQLite, ``export sql`` therefore creates a table for **each form** by
+default:
+
+.. code-block:: console
+
+   imednet export sql MY_STUDY sqlite:///data.db
+
+Use ``--single-table`` to combine everything into one table instead:
+
+.. code-block:: console
+
+   imednet export sql MY_STUDY table sqlite:///data.db --single-table
+
+The constant ``imednet.integrations.export.MAX_SQLITE_COLUMNS`` still enforces
+the maximum columns for any individual table.
+
+Long-format export
+------------------
+
+Use ``--long-format`` to normalize the records into a single table with one
+row per variable value. This option overrides ``--single-table`` and may
+require more time to insert large datasets.
+
+.. code-block:: console
+
+   imednet export sql MY_STUDY table sqlite:///data.db --long-format
+
+Variable Filters
+----------------
+
+Use ``--vars`` and ``--forms`` with ``export sql`` to limit the columns fetched
+from iMednet. Both options accept comma-separated values.
+
+.. code-block:: console
+
+   imednet export sql MY_STUDY table sqlite:///test.db --vars AGE,SEX --forms 10,20
