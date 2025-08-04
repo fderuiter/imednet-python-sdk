@@ -85,8 +85,12 @@ def test_create_validates_data(dummy_client, context, response_factory):
     schema._form_id_to_key = {1: "F1"}
 
     dummy_client.post.return_value = response_factory({"jobId": "1"})
+    # unknown form key
+    with pytest.raises(ValidationError):
+        ep.create("S1", [{"formKey": "BAD", "data": {}}], schema=schema)
+    dummy_client.post.assert_not_called()
 
-    # invalid key
+    # invalid variable key
     with pytest.raises(ValidationError):
         ep.create("S1", [{"formKey": "F1", "data": {"bad": 1}}], schema=schema)
     dummy_client.post.assert_not_called()
