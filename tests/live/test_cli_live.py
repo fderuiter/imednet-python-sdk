@@ -40,7 +40,7 @@ def test_cli_jobs_status(runner: CliRunner, study_key: str, generated_batch_id: 
 def test_cli_jobs_wait(runner: CliRunner, study_key: str, generated_batch_id: str) -> None:
     result = runner.invoke(
         cli.app,
-        ["jobs", "wait", study_key, generated_batch_id],
+        ["jobs", "wait", study_key, generated_batch_id, "--interval", "1", "--timeout", "60"],
     )
     assert result.exit_code == 0
 
