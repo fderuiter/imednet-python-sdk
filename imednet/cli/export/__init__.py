@@ -110,6 +110,7 @@ def export_sql(
 
     from sqlalchemy import create_engine
 
+    from ...integrations.export import MAX_SQLITE_COLUMNS
     from .. import export_to_long_sql, export_to_sql, export_to_sql_by_form
 
     engine = create_engine(connection_string)
@@ -118,20 +119,34 @@ def export_sql(
     if long_format:
         export_to_long_sql(sdk, study_key, table, connection_string)
         return
-    if not single_table and engine.dialect.name == "sqlite":
-        export_to_sql_by_form(
-            sdk,
-            study_key,
-            connection_string,
-            variable_whitelist=var_list,
-            form_whitelist=form_list,
+
+    try:
+        if not single_table and engine.dialect.name == "sqlite":
+            export_to_sql_by_form(
+                sdk,
+                study_key,
+                connection_string,
+                variable_whitelist=var_list,
+                form_whitelist=form_list,
+            )
+        else:
+            export_to_sql(
+                sdk,
+                study_key,
+                table,
+                connection_string,
+                variable_whitelist=var_list,
+                form_whitelist=form_list,
+            )
+    except ValueError as exc:
+        if "SQLite supports up to" not in str(exc):
+            raise
+        msg = (
+            f"[bold yellow]SQLite supports up to {MAX_SQLITE_COLUMNS} columns. "
+            "Use --long-format next time.[/bold yellow]"
         )
-    else:
-        export_to_sql(
-            sdk,
-            study_key,
-            table,
-            connection_string,
-            variable_whitelist=var_list,
-            form_whitelist=form_list,
-        )
+        if single_table:
+            print(msg)
+            raise typer.Exit(code=1)
+        print(msg + " Falling back to --long-format export.")
+        export_to_long_sql(sdk, study_key, table, connection_string)

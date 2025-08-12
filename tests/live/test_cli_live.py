@@ -75,12 +75,38 @@ def test_cli_export_json(runner: CliRunner, study_key: str, tmp_path) -> None:
     assert out.exists()
 
 
-def test_cli_export_sql(runner: CliRunner, study_key: str, tmp_path) -> None:
+def test_cli_export_sql(
+    runner: CliRunner,
+    study_key: str,
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     pytest.importorskip("sqlalchemy")
     out_db = tmp_path / "test.db"
-    result = runner.invoke(cli.app, ["export", "sql", study_key, "table", f"sqlite:///{out_db}"])
+
+    def fail(*_: object, **__: object) -> None:
+        raise ValueError(
+            "SQLite supports up to 2000 columns; received 2001 columns. "
+            "Reduce variables or use another DB."
+        )
+
+    called = {"long": False}
+
+    def fake_long(*args: object, **kwargs: object) -> None:
+        out_db.touch()
+        called["long"] = True
+
+    monkeypatch.setattr("imednet.cli.export.export_to_sql_by_form", fail)
+    monkeypatch.setattr("imednet.cli.export.export_to_long_sql", fake_long)
+
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", study_key, "table", f"sqlite:///{out_db}"],
+    )
     assert result.exit_code == 0
     assert out_db.exists()
+    assert called["long"]
+    assert "long-format" in result.stdout
 
 
 def test_cli_workflows_extract(runner: CliRunner, study_key: str) -> None:
