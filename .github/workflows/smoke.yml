@@ -18,6 +18,12 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --with dev
+      - name: Post smoke record
+        env:
+          IMEDNET_API_KEY: ${{ secrets.APIKEY }}
+          IMEDNET_SECURITY_KEY: ${{ secrets.SECURITYKEY }}
+          IMEDNET_BASE_URL: ${{ vars.BASE_URL }}
+        run: poetry run python scripts/post_smoke_record.py
       - name: Run live tests
         env:
           IMEDNET_API_KEY: ${{ secrets.APIKEY }}
