@@ -29,15 +29,12 @@ def sdk() -> Iterator[ImednetSDK]:
 
 
 @pytest.fixture(scope="session")
-async def async_sdk() -> AsyncIterator[AsyncImednetSDK]:
+async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[AsyncImednetSDK]:
     client = AsyncImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
     try:
         yield client
     finally:
-        try:
-            await client.aclose()
-        except RuntimeError as exc:  # pragma: no cover - cleanup safeguard
-            pytest.fail(f"Async SDK teardown failed: {exc}")
+        await client.aclose()
 
 
 @pytest.fixture(scope="session")

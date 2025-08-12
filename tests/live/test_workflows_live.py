@@ -24,7 +24,7 @@ def test_get_study_structure(sdk: ImednetSDK, study_key: str) -> None:
     assert structure.study_key == study_key
 
 
-@pytest.mark.asyncio(scope="module")
+@pytest.mark.asyncio(scope="session")
 async def test_async_get_study_structure(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     struct = await async_get_study_structure(async_sdk, study_key)
     assert struct.study_key == study_key
