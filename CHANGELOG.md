@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Added helpers for live tests and smoke script to auto-discover study and form
+  keys, removing the `IMEDNET_FORM_KEY` override.
+- Decoupled live-data discovery from pytest internals and skip the smoke script
+  gracefully when no studies or forms are available.
 - Bump project version to `0.1.4`.
 - Added tests for unknown form validation errors.
 - ISO datetime parser now pads fractional seconds shorter than six digits to
@@ -19,8 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added long-format SQL export via `export_to_long_sql` and the `--long-format` CLI option.
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
-- Fixed teardown errors in live tests by handling closed event loops during SDK
-  cleanup.
+- Fixed teardown errors in live tests by using the session event loop for
+  `async_sdk` teardown.
 - Updated `tests/AGENTS.md` to permit hitting the live iMednet API when running the `tests/live` suite.
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
 - Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
@@ -64,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ``validate_record_data`` now raises ``ValidationError`` when provided an unknown form key.
 - Record submission now checks form existence after schema refresh and raises
   ``ValueError`` for unknown form keys.
+- Added ``DataDictionaryLoader`` for loading data dictionaries from CSV files or ZIP archives.
 
 ## [0.1.4] 
 

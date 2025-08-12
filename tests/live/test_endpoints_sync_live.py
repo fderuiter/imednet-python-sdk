@@ -1,6 +1,3 @@
-import os
-from typing import Iterator
-
 import pytest
 
 from imednet.core.exceptions import ServerError
@@ -17,32 +14,6 @@ from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
 from imednet.sdk import ImednetSDK
-
-API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
-BASE_URL = os.getenv("IMEDNET_BASE_URL")
-RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
-
-pytestmark = pytest.mark.skipif(
-    not RUN_E2E or not (API_KEY and SECURITY_KEY),
-    reason=(
-        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run live tests"
-    ),
-)
-
-
-@pytest.fixture(scope="session")
-def sdk() -> Iterator[ImednetSDK]:
-    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
-        yield client
-
-
-@pytest.fixture(scope="session")
-def study_key(sdk: ImednetSDK) -> str:
-    studies = sdk.studies.list()
-    if not studies:
-        pytest.skip("No studies available for live tests")
-    return studies[0].study_key
 
 
 def test_list_studies(sdk: ImednetSDK) -> None:

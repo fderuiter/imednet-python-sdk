@@ -1,50 +1,14 @@
 import os
-from typing import Iterator
 
 import pytest
 
 from imednet.models.records import RegisterSubjectRequest
-from imednet.sdk import ImednetSDK
+from imednet.sdk import AsyncImednetSDK, ImednetSDK
 from imednet.workflows import (
     RegisterSubjectsWorkflow,
     async_get_study_structure,
     get_study_structure,
 )
-
-API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
-BASE_URL = os.getenv("IMEDNET_BASE_URL")
-RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
-
-pytestmark = pytest.mark.skipif(
-    not RUN_E2E or not (API_KEY and SECURITY_KEY),
-    reason=(
-        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run live tests"
-    ),
-)
-
-
-@pytest.fixture(scope="session")
-def sdk() -> Iterator[ImednetSDK]:
-    client = ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
-    try:
-        yield client
-    finally:
-        try:
-            client.close()
-        except RuntimeError as exc:  # pragma: no cover - defensive cleanup
-            if "closed" not in str(exc):
-                pytest.fail(f"SDK teardown failed: {exc}")
-        except Exception as exc:  # pragma: no cover - defensive cleanup
-            pytest.fail(f"SDK teardown failed: {exc}")
-
-
-@pytest.fixture(scope="session")
-def study_key(sdk: ImednetSDK) -> str:
-    studies = sdk.get_studies()
-    if not studies:
-        pytest.skip("No studies available for live tests")
-    return studies[0].study_key
 
 
 @pytest.fixture(scope="session")
@@ -60,16 +24,10 @@ def test_get_study_structure(sdk: ImednetSDK, study_key: str) -> None:
     assert structure.study_key == study_key
 
 
-@pytest.mark.asyncio(scope="module")
-async def test_async_get_study_structure(study_key: str) -> None:
-    async with ImednetSDK(
-        api_key=API_KEY,
-        security_key=SECURITY_KEY,
-        base_url=BASE_URL,
-        enable_async=True,
-    ) as sdk_async:
-        struct = await async_get_study_structure(sdk_async, study_key)
-        assert struct.study_key == study_key
+@pytest.mark.asyncio(scope="session")
+async def test_async_get_study_structure(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+    struct = await async_get_study_structure(async_sdk, study_key)
+    assert struct.study_key == study_key
 
 
 def test_register_subjects_workflow(sdk: ImednetSDK, study_key: str) -> None:
