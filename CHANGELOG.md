@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Added helpers for live tests and smoke script to auto-discover study and form
+  keys, removing the `IMEDNET_FORM_KEY` override.
 - Bump project version to `0.1.4`.
 - Added tests for unknown form validation errors.
 - ISO datetime parser now pads fractional seconds shorter than six digits to
