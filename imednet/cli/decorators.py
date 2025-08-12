@@ -35,6 +35,10 @@ def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
         except Exception as exc:  # pragma: no cover - defensive
             print(f"[bold red]Unexpected error:[/bold red] {exc}")
             raise typer.Exit(code=1)
+        finally:
+            close = getattr(sdk, "close", None)
+            if callable(close):
+                close()
 
     wrapper.__signature__ = sig.replace(parameters=wrapper_params)  # type: ignore[attr-defined]
 
