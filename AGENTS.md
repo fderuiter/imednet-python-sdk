@@ -1,9 +1,17 @@
-# Development Guide
+# AGENTS.md — Contributor Guide
 
-This repository uses `poetry` for dependency management and `pre-commit` for formatting and linting.
-Run `./scripts/setup.sh` once to install the development packages and set up the pre-commit hooks.
-## Required Checks
-Run the following commands before committing any code:
+## Where to work
+`imednet/`, `imednet/workflows/`, `tests/`, `docs/`, `examples/`, `scripts/`, `.github/`.
+
+## Style
+DRY + SOLID. Line length 100. Conventional Commits. Update `[Unreleased]` in `CHANGELOG.md`.
+
+## One-time
+```bash
+./scripts/setup.sh
+```
+
+## Validate before commit
 
 ```bash
 poetry run ruff check --fix .
@@ -13,44 +21,19 @@ poetry run mypy imednet
 poetry run pytest -q
 ```
 
-All checks must pass. The project enforces a maximum line length of 100 characters and CI fails if test coverage drops below 90%.
+Coverage ≥ 90%.
 
-### Coding Principles
-Keep the implementation DRY and apply the SOLID principles:
+## How agents should work
 
-- **DRY** – eliminate repetition by refactoring shared logic into reusable
-  functions or classes.
-- **Single Responsibility** – each module or class should focus on one thing
-  and do it well.
-- **Open/Closed** – extend behavior with new components instead of modifying
-  existing ones.
-- **Liskov Substitution** – design abstractions so derived types can replace
-  their base without side effects.
-- **Interface Segregation** – expose small, focused interfaces over large
-  monolithic ones.
-- **Dependency Inversion** – depend on abstractions rather than concrete
-  implementations to encourage loose coupling.
+* Read nearby code, tests, and docs first.
+* Add or update tests with any code change.
+* Update docs and an example for any public API or CLI change.
+* In PR, include paths changed and validation output.
 
-Following these guidelines keeps the SDK maintainable and extensible.
+## Release
 
-## Codebase Overview
-- `imednet/` contains the SDK modules, CLI entry point, and async client.
-- `imednet/workflows/` holds higher level workflow utilities.
-- `tests/` provides the pytest suite used in CI.
-- Documentation can be built locally via `make docs`.
-
-Follow the guidelines in `CONTRIBUTING.md` and use Conventional Commits for commit messages.
-Record your changes in `CHANGELOG.md` under the `[Unreleased]` section.
-
-## Release Process
-To publish a new version to PyPI:
-
-1. Update `CHANGELOG.md` with the notes for the upcoming release.
-2. Run `poetry version` to bump the version number.
-3. Rebuild the docs so the new version appears: `make docs`.
-4. Commit the changes and create a tag matching the new version, e.g. `v0.1.1`.
-5. Push the commit and the tag. Pushing the tag triggers
-   `.github/workflows/release.yml`, which builds the package with `poetry build`
-   and publishes it using `pypa/gh-action-pypi-publish`.
-
-Run the required checks before tagging to ensure the release passes CI.
+1. Update CHANGELOG.
+2. `poetry version <bump>`
+3. `make docs`
+4. Commit + tag `vX.Y.Z`
+5. Push branch + tag to publish.
