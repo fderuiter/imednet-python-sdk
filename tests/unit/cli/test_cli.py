@@ -54,6 +54,21 @@ def test_studies_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
     assert "API Error" in result.stdout
 
 
+def test_sdk_closed_after_command(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.studies.list.return_value = []
+    result = runner.invoke(cli.app, ["studies", "list"])
+    assert result.exit_code == 0
+    sdk.close.assert_called_once()
+
+
+def test_multiple_invocations_close_sdk(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.studies.list.return_value = []
+    first = runner.invoke(cli.app, ["studies", "list"])
+    second = runner.invoke(cli.app, ["studies", "list"])
+    assert first.exit_code == 0 and second.exit_code == 0
+    assert sdk.close.call_count == 2
+
+
 def test_sites_list_success(runner: CliRunner, sdk: MagicMock) -> None:
     sdk.sites.list.return_value = ["site1"]
     result = runner.invoke(cli.app, ["sites", "list", "STUDY"])

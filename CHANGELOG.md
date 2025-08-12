@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Expanded AGENTS contributor guides with scoped templates across packages and tooling.
+- CLI now closes the SDK after each command to free resources and avoid
+  interrupt-driven exit codes in repeated invocations.
 - Fixed generated batch fixture in live tests to submit valid record data by
     populating required variables, ensuring CLI job polling succeeds.
 - Split wide SQLite exports across multiple tables to avoid the 2000-column limit.
