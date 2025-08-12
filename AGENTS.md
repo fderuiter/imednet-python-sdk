@@ -1,10 +1,26 @@
-# Development Guide
+# AGENTS.md — Contributor Guide
 
-This repository uses `poetry` for dependency management and `pre-commit` for formatting and linting.
-Run `./scripts/setup.sh` once to install the development packages and set up the pre-commit hooks.
-## Required Checks
-Run the following commands before committing any code:
+## Scope and map
+Work mainly in:
+- `imednet/` — SDK modules, CLI entry point, async client
+- `imednet/workflows/` — higher-level workflow utilities
+- `tests/` — pytest suite and fixtures
+- `docs/` — Sphinx docs site
+- `examples/` — runnable usage samples
 
+## Style and contribution rules
+- Follow DRY and SOLID. Prefer small, focused abstractions.
+- Max line length: 100 chars.
+- Use Conventional Commits.
+- Update `CHANGELOG.md` under `[Unreleased]` for every change.
+
+## Dev environment
+- One-time setup: `./scripts/setup.sh`
+- Python 3.10–3.12 supported.
+- Use Poetry for deps. Use pre-commit hooks.
+
+## How to validate changes
+Run before any commit:
 ```bash
 poetry run ruff check --fix .
 poetry run black --check .
@@ -13,44 +29,40 @@ poetry run mypy imednet
 poetry run pytest -q
 ```
 
-All checks must pass. The project enforces a maximum line length of 100 characters and CI fails if test coverage drops below 90%.
+All checks must pass. Coverage target ≥ 90%.
 
-### Coding Principles
-Keep the implementation DRY and apply the SOLID principles:
+## How to work as an “agent”
 
-- **DRY** – eliminate repetition by refactoring shared logic into reusable
-  functions or classes.
-- **Single Responsibility** – each module or class should focus on one thing
-  and do it well.
-- **Open/Closed** – extend behavior with new components instead of modifying
-  existing ones.
-- **Liskov Substitution** – design abstractions so derived types can replace
-  their base without side effects.
-- **Interface Segregation** – expose small, focused interfaces over large
-  monolithic ones.
-- **Dependency Inversion** – depend on abstractions rather than concrete
-  implementations to encourage loose coupling.
+When adding or changing code:
 
-Following these guidelines keeps the SDK maintainable and extensible.
+1. Read related modules under `imednet/` and any sibling workflow or model files.
+2. Scan `tests/` for existing cases and fixtures; add or update tests with your change.
+3. If the public API or CLI changes, update `docs/` and an example under `examples/`.
+4. Produce a PR with:
 
-## Codebase Overview
-- `imednet/` contains the SDK modules, CLI entry point, and async client.
-- `imednet/workflows/` holds higher level workflow utilities.
-- `tests/` provides the pytest suite used in CI.
-- Documentation can be built locally via `make docs`.
+   * Title: `[imednet] <short change>` or `[workflows] <short change>`
+   * Summary: what changed and why
+   * Affected paths
+   * Validation: paste local check outputs (ruff/black/mypy/pytest) and coverage
+   * Changelog entry
 
-Follow the guidelines in `CONTRIBUTING.md` and use Conventional Commits for commit messages.
-Record your changes in `CHANGELOG.md` under the `[Unreleased]` section.
+## Docs
 
-## Release Process
-To publish a new version to PyPI:
+* Build locally: `make docs`
+* Ensure new public APIs have minimal docstrings and a docs page or section.
 
-1. Update `CHANGELOG.md` with the notes for the upcoming release.
-2. Run `poetry version` to bump the version number.
-3. Rebuild the docs so the new version appears: `make docs`.
-4. Commit the changes and create a tag matching the new version, e.g. `v0.1.1`.
-5. Push the commit and the tag. Pushing the tag triggers
-   `.github/workflows/release.yml`, which builds the package with `poetry build`
-   and publishes it using `pypa/gh-action-pypi-publish`.
+## Release process
 
-Run the required checks before tagging to ensure the release passes CI.
+1. Update `CHANGELOG.md`.
+2. `poetry version <bump>`
+3. `make docs`
+4. Commit + tag `vX.Y.Z`
+5. Push branch and tag to trigger release workflow to PyPI.
+
+## Where to look for context
+
+* `README.md` for project overview and commands
+* `CONTRIBUTING.md` for broader guidelines
+* `tests/` for usage and behaviors
+* `docs/` for CLI and API docs
+
