@@ -1,18 +1,18 @@
 # AGENTS.md — docs/
 
-## Build
+## Scope
+Sphinx docs.
+
+## Validate
 ```bash
 make docs
 ```
+No warnings.
 
-Docs must build clean with no warnings.
-
-## Content rules
-
-* Each public API: purpose, params, return, example.
-* CLI: commands, flags, examples.
-* Keep README quickstart in sync.
+## Content
+- Each public API: purpose, params, return, example.
+- CLI: commands, flags, examples.
+- Keep README quickstart in sync.
 
 ## PR
-
-Link to updated pages. Include one runnable snippet per new feature.
+Link to updated pages and include one runnable snippet per new feature.
