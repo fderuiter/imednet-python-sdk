@@ -4,8 +4,9 @@
 Runnable scripts that mirror docs and tests.
 
 ## Rules
-- Keep inputs configurable via env vars.
-- Keep output paths explicit and relative to a temp or `./data`.
+- Configure via env vars.
+- No hidden state; explicit input/output paths.
+- Keep examples minimal and copy-pasteable.
 
-## Validation
-- Each example must run without modification once required env vars are set.
+## Validate
+Manually run each example before merging.

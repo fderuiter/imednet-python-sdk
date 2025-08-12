@@ -1,15 +1,17 @@
 # AGENTS.md — imednet/workflows/
 
 ## Purpose
-Opinionated, higher-level flows for export, mapping, caching, or multi-step jobs.
+Higher-level orchestration over SDK: batching, pagination, retries, transforms.
 
-## Guardrails
-- Do not hide API errors; wrap with clear error types and preserve context.
-- Keep I/O pluggable (CSV, SQLite, etc.). Avoid hard-coded paths.
+## Rules
+- Fail loud with clear custom errors; preserve server payloads.
+- Keep I/O pluggable via interfaces; avoid hard-coded paths.
+- No hidden network calls; accept an injected client.
 
-## Validation
-- Unit tests for each workflow path, including failure cases.
-- Include at least one realistic example under `examples/`.
+## Validate
+- Unit tests for success and error paths.
+- Example script under `examples/`.
+- Same root checks as core.
 
 ## Docs
-- Short “How-to” snippets in `docs/` for each workflow with CLI or Python usage.
+Add a short how-to page with minimal runnable snippet.

@@ -1,21 +1,31 @@
 # AGENTS.md — imednet/ (SDK core)
 
 ## Purpose
-Core HTTP clients, models, and CLI entry points. Keep the public surface stable.
+Core client, models, and CLI. Keep public API stable.
 
-## What to change
-- Add endpoints as new client methods with typed params and returns.
-- Keep side effects minimal; prefer pure helpers.
-- Maintain backward compatibility; gate breaking changes behind a major bump.
+## Edit here
+- New endpoints → typed client methods + small helpers.
+- Shared logic → utilities, not copy-paste.
+- Breaking changes → major bump only.
 
-## Required checks (run from repo root)
-See root AGENTS.md “How to validate changes”. Add or update unit tests in `tests/`.
+## Required checks (run at repo root)
+```bash
+poetry run ruff check --fix .
+poetry run black --check .
+poetry run isort --check --profile black .
+poetry run mypy imednet
+poetry run pytest -q
+```
 
-## Patterns
-- Input/output models: Pydantic.
-- Retries/timeouts: centralize in client config.
-- Pagination helpers: reuse shared utilities.
-- Logging: structured JSON; preserve request IDs if present.
+Coverage ≥ 90%. Max line length 100.
 
-## When docs are required
-- New public method or CLI flag → docstring + docs page section + example.
+## Context to read first
+
+`README.md`, `CONTRIBUTING.md`, `tests/`, `docs/`.
+
+## PR checklist
+
+* Scope: `[imednet] ...`
+* API surface documented (docstrings + docs page).
+* Tests added/updated.
+* Changelog updated under `[Unreleased]`.
