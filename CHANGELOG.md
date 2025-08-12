@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Fixed generated batch fixture in live tests to submit valid record data by
+    populating required variables, ensuring CLI job polling succeeds.
 - Split wide SQLite exports across multiple tables to avoid the 2000-column limit.
 - Added helpers for live tests and smoke script to auto-discover study and form
   keys, removing the `IMEDNET_FORM_KEY` override.
