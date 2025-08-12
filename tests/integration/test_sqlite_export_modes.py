@@ -45,13 +45,15 @@ def _setup_per_form_mapper(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(pd.DataFrame, "to_sql", MagicMock())
 
 
-def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> None:
+def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     columns = [f"c{i}" for i in range(2100)]
     df = pd.DataFrame([range(2100)], columns=columns)
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
     monkeypatch.setattr(export_mod, "RecordMapper", MagicMock(return_value=mapper_inst))
     monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=MagicMock()))
-    monkeypatch.setattr(pd.DataFrame, "to_sql", MagicMock())
+    mock_to_sql = MagicMock()
+    monkeypatch.setattr(pd.DataFrame, "to_sql", mock_to_sql)
+    return mock_to_sql
 
 
 def test_default_sqlite_mode_splits_by_form(sqlite_env, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -65,13 +67,16 @@ def test_default_sqlite_mode_splits_by_form(sqlite_env, monkeypatch: pytest.Monk
     assert result.exit_code == 0
 
 
-def test_single_table_mode_raises(sqlite_env, monkeypatch: pytest.MonkeyPatch) -> None:
-    _setup_single_table_mapper(monkeypatch)
+def test_single_table_mode_chunks(sqlite_env, monkeypatch: pytest.MonkeyPatch) -> None:
+    mock_to_sql = _setup_single_table_mapper(monkeypatch)
     runner = CliRunner()
     with runner.isolated_filesystem():
         result = runner.invoke(
             cli.app,
             ["export", "sql", "STUDY", "table", "sqlite:///db.sqlite", "--single-table"],
         )
-    assert result.exit_code != 0
-    assert "SQLite supports up to" in result.stdout
+    assert result.exit_code == 0
+    assert mock_to_sql.call_count == 2
+    calls = mock_to_sql.call_args_list
+    assert calls[0].args[0] == "table_part1"
+    assert calls[1].args[0] == "table_part2"

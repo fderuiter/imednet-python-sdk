@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Fixed generated batch fixture in live tests to submit valid record data by
     populating required variables, ensuring CLI job polling succeeds.
+- Split wide SQLite exports across multiple tables to avoid the 2000-column limit.
 - Added helpers for live tests and smoke script to auto-discover study and form
   keys, removing the `IMEDNET_FORM_KEY` override.
 - Decoupled live-data discovery from pytest internals and skip the smoke script
@@ -40,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added docstrings to private helpers in ``core/_requester.py``.
 - Documented ``SchemaValidator.refresh`` behavior.
 - Added tests covering the default sentinel date in ``parse_datetime``.
+- Increased timeout in live ``poll_job`` tests to reduce flakiness.
 - Organized Airflow integration code into ``hooks``, ``operators`` and ``sensors`` subpackages.
 - Grouped CLI commands into dedicated subpackages for easier navigation.
 - Fixed ``ImednetHook`` to import configuration from the correct package.
