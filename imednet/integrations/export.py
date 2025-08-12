@@ -13,14 +13,32 @@ from ..workflows.record_mapper import RecordMapper
 MAX_SQLITE_COLUMNS = 2000
 
 
-def _assert_within_column_limit(df: pd.DataFrame, engine: Any) -> None:
-    """Raise if the SQLite column limit would be exceeded."""
+def _to_sql_with_chunking(
+    df: pd.DataFrame,
+    table: str,
+    engine: Any,
+    *,
+    if_exists: str,
+    **kwargs: Any,
+) -> None:
+    """Write ``df`` to ``table`` splitting columns when using SQLite.
+
+    SQLite limits tables to ``MAX_SQLITE_COLUMNS`` columns. When the DataFrame
+    exceeds this, the data is written to multiple tables suffixed with
+    ``_part1``, ``_part2`` and so on.
+    """
     if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
-        raise ValueError(
-            "SQLite supports up to "
-            f"{MAX_SQLITE_COLUMNS} columns; received {len(df.columns)} columns."
-            " Reduce variables or use another DB."
-        )
+        for i, start in enumerate(range(0, len(df.columns), MAX_SQLITE_COLUMNS), start=1):
+            chunk = df.iloc[:, start : start + MAX_SQLITE_COLUMNS]
+            chunk.to_sql(
+                f"{table}_part{i}",
+                engine,
+                if_exists=if_exists,  # type: ignore[arg-type]
+                index=False,
+                **kwargs,
+            )
+    else:
+        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
 
 
 def _records_df(
@@ -169,9 +187,13 @@ def export_to_sql(
         form_whitelist=form_whitelist,
     )
     engine = create_engine(conn_str)
-    _assert_within_column_limit(df, engine)
-
-    df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+    _to_sql_with_chunking(
+        df,
+        table,
+        engine,
+        if_exists=if_exists,
+        **kwargs,
+    )  # type: ignore[arg-type]
 
 
 def export_to_sql_by_form(
@@ -221,8 +243,13 @@ def export_to_sql_by_form(
         if isinstance(df, pd.DataFrame):
             dup_mask = df.columns.str.lower().duplicated()
             df = df.loc[:, ~dup_mask]
-        _assert_within_column_limit(df, engine)
-        df.to_sql(form.form_key, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+        _to_sql_with_chunking(
+            df,
+            form.form_key,
+            engine,
+            if_exists=if_exists,
+            **kwargs,
+        )  # type: ignore[arg-type]
 
 
 def export_to_long_sql(
