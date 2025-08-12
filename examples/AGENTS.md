@@ -1,6 +1,6 @@
 # AGENTS.md — examples/
 
-## Goal
+## Scope
 Runnable scripts that mirror docs and tests.
 
 ## Rules
