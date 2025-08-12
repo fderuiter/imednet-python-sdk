@@ -6,9 +6,8 @@ import os
 import sys
 from typing import Any, Dict, Tuple
 
-import pytest
+from imednet.discovery import NoLiveDataError, discover_form_key, discover_study_key
 from imednet.sdk import ImednetSDK
-from tests.live.helpers import get_form_key, get_study_key
 
 
 def authenticate() -> ImednetSDK:
@@ -21,8 +20,8 @@ def authenticate() -> ImednetSDK:
 
 def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
     """Return the first available study and form keys."""
-    study_key = get_study_key(sdk)
-    form_key = get_form_key(sdk, study_key)
+    study_key = discover_study_key(sdk)
+    form_key = discover_form_key(sdk, study_key)
     return study_key, form_key
 
 
@@ -50,8 +49,8 @@ def main() -> int:
             study_key, form_key = discover_keys(sdk)
             record = build_record(sdk, study_key, form_key)
             submit_record(sdk, study_key, record)
-    except pytest.skip.Exception as exc:  # type: ignore[attr-defined]
-        print(f"Skipping smoke record: {exc}")
+    except NoLiveDataError as exc:
+        print(f"::notice:: Smoke record skipped – {exc}")
         return 0
     except Exception as exc:  # pragma: no cover - runtime safeguard
         print(f"Smoke record failed: {exc}", file=sys.stderr)

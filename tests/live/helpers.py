@@ -1,27 +1,29 @@
 """Helpers for discovering study and form keys during live tests."""
 
+from typing import NoReturn
+
 import pytest
 
+from imednet.discovery import NoLiveDataError
+from imednet.discovery import discover_form_key as _discover_form_key
+from imednet.discovery import discover_study_key as _discover_study_key
 from imednet.sdk import ImednetSDK
 
 
-def get_study_key(sdk: ImednetSDK) -> str:
-    """Return the first study key available for the provided SDK.
+def _skip(msg: str) -> NoReturn:
+    pytest.skip(msg)
+    raise AssertionError("unreachable")
 
-    Raises a pytest skip exception if no studies are available.
-    """
-    studies = sdk.studies.list()
-    if not studies:
-        raise pytest.skip.Exception("No studies available for live tests")
-    return studies[0].study_key
+
+def get_study_key(sdk: ImednetSDK) -> str:
+    try:
+        return _discover_study_key(sdk)
+    except NoLiveDataError as exc:
+        _skip(str(exc))
 
 
 def get_form_key(sdk: ImednetSDK, study_key: str) -> str:
-    """Return the first form key for ``study_key``.
-
-    Raises a pytest skip exception if no forms are available.
-    """
-    forms = sdk.forms.list(study_key=study_key)
-    if not forms:
-        raise pytest.skip.Exception("No forms available for record creation")
-    return forms[0].form_key
+    try:
+        return _discover_form_key(sdk, study_key)
+    except NoLiveDataError as exc:
+        _skip(str(exc))

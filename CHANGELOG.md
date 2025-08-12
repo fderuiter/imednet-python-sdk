@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Added helpers for live tests and smoke script to auto-discover study and form
   keys, removing the `IMEDNET_FORM_KEY` override.
+- Decoupled live-data discovery from pytest internals and skip the smoke script
+  gracefully when no studies or forms are available.
 - Bump project version to `0.1.4`.
 - Added tests for unknown form validation errors.
 - ISO datetime parser now pads fractional seconds shorter than six digits to
