@@ -10,6 +10,9 @@ from imednet.discovery import NoLiveDataError, discover_form_key, discover_study
 from imednet.sdk import ImednetSDK
 
 
+POLL_TIMEOUT = 90
+
+
 def authenticate() -> ImednetSDK:
     """Build an ``ImednetSDK`` using environment credentials."""
     api_key = os.environ["IMEDNET_API_KEY"]
@@ -37,7 +40,7 @@ def build_record(sdk: ImednetSDK, study_key: str, form_key: str) -> Dict[str, An
 def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any]) -> str:
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
-    status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=30)
+    status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=POLL_TIMEOUT)
     if status.state != "COMPLETED":
         raise RuntimeError(f"Record creation failed: {status.state}")
     return status.batch_id
