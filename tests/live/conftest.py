@@ -30,6 +30,11 @@ def sdk() -> Iterator[ImednetSDK]:
 
 @pytest.fixture(scope="session")
 async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[AsyncImednetSDK]:
+    """
+    Provides a session-scoped asynchronous ImednetSDK client.
+    The `event_loop` parameter is required to ensure proper async fixture teardown and SDK cleanup,
+    as pytest needs an explicit event loop for session-scoped async fixtures.
+    """
     client = AsyncImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
     try:
         yield client
