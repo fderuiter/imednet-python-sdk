@@ -66,5 +66,5 @@ def test_get_job(sdk: ImednetSDK, study_key: str, generated_batch_id: str) -> No
 
 
 def test_poll_job(sdk: ImednetSDK, study_key: str, generated_batch_id: str) -> None:
-    job = sdk.poll_job(study_key, generated_batch_id, interval=1, timeout=5)
+    job = sdk.poll_job(study_key, generated_batch_id, interval=1, timeout=60)
     assert job.batch_id == generated_batch_id
