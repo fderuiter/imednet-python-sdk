@@ -1,6 +1,6 @@
 import asyncio
 import os
-from typing import AsyncIterator, Generator, Iterator
+from typing import Any, AsyncIterator, Generator, Iterator
 
 import pytest
 
@@ -11,6 +11,17 @@ API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
+
+
+def _minimal_value(var_type: str) -> Any:
+    var_type = var_type.lower()
+    if var_type in {"int", "integer", "number"}:
+        return 0
+    if var_type in {"float", "decimal"}:
+        return 0.0
+    if var_type in {"bool", "boolean"}:
+        return False
+    return ""
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -54,7 +65,22 @@ def first_form_key(sdk: ImednetSDK, study_key: str) -> str:
 
 @pytest.fixture(scope="session")
 def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> str:
-    record = {"formKey": first_form_key, "data": {}}
+    variables = sdk.variables.list(study_key=study_key, formKey=first_form_key)
+    if not variables:
+        pytest.skip(f"No variables available for form {first_form_key}")
+
+    data: dict[str, Any] = {}
+    for var in variables:
+        required = any(
+            getattr(var, attr, False) for attr in ("is_required", "required", "mandatory")
+        )
+        if required:
+            data[var.variable_name] = _minimal_value(var.variable_type)
+    if not data:
+        var = variables[0]
+        data[var.variable_name] = _minimal_value(var.variable_type)
+
+    record = {"formKey": first_form_key, "data": data}
     job = sdk.records.create(study_key, [record])
     return job.batch_id
 
