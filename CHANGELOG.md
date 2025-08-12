@@ -68,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ``validate_record_data`` now raises ``ValidationError`` when provided an unknown form key.
 - Record submission now checks form existence after schema refresh and raises
   ``ValueError`` for unknown form keys.
+- Added ``DataDictionaryLoader`` for loading data dictionaries from CSV files or ZIP archives.
 
 ## [0.1.4] 
 
