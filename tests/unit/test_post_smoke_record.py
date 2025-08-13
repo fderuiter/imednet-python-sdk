@@ -36,7 +36,7 @@ def _var(name: str, var_type: str) -> Variable:
     return Variable(variable_name=name, variable_type=var_type, form_id=1, form_key="F1")
 
 
-def test_build_record_populates_typed_values() -> None:
+def test_build_record_returns_typed_values() -> None:
     sdk = Mock()
     sdk.variables.list.return_value = [
         _var("text", "text"),
@@ -49,9 +49,7 @@ def test_build_record_populates_typed_values() -> None:
         _var("extra", "text"),
     ]
 
-    record = smoke.build_record(
-        sdk, "ST", "F1", site_name="S", subject_key="SUB", interval_name="INT"
-    )
+    record = smoke.build_record(sdk, "ST", "F1")
 
     expected = {
         "text": typed_values.value_for("text"),
@@ -65,8 +63,35 @@ def test_build_record_populates_typed_values() -> None:
     assert record == {
         "formKey": "F1",
         "data": expected,
-        "siteName": "S",
-        "subjectKey": "SUB",
-        "intervalName": "INT",
     }
+    sdk.variables.list.assert_called_once_with(study_key="ST", formKey="F1")
+
+
+@pytest.mark.parametrize(
+    "kwargs, extra",
+    [
+        ({"site_name": "S"}, {"siteName": "S"}),
+        ({"subject_key": "SUB"}, {"subjectKey": "SUB"}),
+        ({"interval_name": "INT"}, {"intervalName": "INT"}),
+        (
+            {
+                "site_name": "S",
+                "subject_key": "SUB",
+                "interval_name": "INT",
+            },
+            {
+                "siteName": "S",
+                "subjectKey": "SUB",
+                "intervalName": "INT",
+            },
+        ),
+    ],
+)
+def test_build_record_optional_identifiers(kwargs: dict[str, str], extra: dict[str, str]) -> None:
+    sdk = Mock()
+    sdk.variables.list.return_value = []
+
+    record = smoke.build_record(sdk, "ST", "F1", **kwargs)
+
+    assert record == {"formKey": "F1", "data": {}} | extra
     sdk.variables.list.assert_called_once_with(study_key="ST", formKey="F1")
