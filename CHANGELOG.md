@@ -87,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ``typed_values`` helper for deterministic example values and expanded
   smoke record builder to populate one variable per type and accept optional
   identifiers.
+- Live tests now reuse ``typed_values`` to submit well-typed record data across
+  date, radio/dropdown, memo, and checkbox fields.
 
 ## [0.1.4] 
 

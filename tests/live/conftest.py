@@ -5,6 +5,7 @@ from typing import Any, AsyncIterator, Generator, Iterator
 import pytest
 
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
+from imednet.testing import typed_values
 from tests.live.helpers import get_form_key, get_study_key
 
 API_KEY = os.getenv("IMEDNET_API_KEY")
@@ -13,15 +14,10 @@ BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
 
 
-def _minimal_value(var_type: str) -> Any:
-    var_type = var_type.lower()
-    if var_type in {"int", "integer", "number"}:
-        return 0
-    if var_type in {"float", "decimal"}:
-        return 0.0
-    if var_type in {"bool", "boolean"}:
-        return False
-    return ""
+def _typed_value(var_type: str) -> Any:
+    """Return a deterministic example value for ``var_type``."""
+
+    return typed_values.value_for(var_type) or ""
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -75,10 +71,10 @@ def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> 
             getattr(var, attr, False) for attr in ("is_required", "required", "mandatory")
         )
         if required:
-            data[var.variable_name] = _minimal_value(var.variable_type)
+            data[var.variable_name] = _typed_value(var.variable_type)
     if not data:
         var = variables[0]
-        data[var.variable_name] = _minimal_value(var.variable_type)
+        data[var.variable_name] = _typed_value(var.variable_type)
 
     record = {"formKey": first_form_key, "data": data}
     job = sdk.records.create(study_key, [record])
