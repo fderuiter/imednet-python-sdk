@@ -84,6 +84,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Record submission now checks form existence after schema refresh and raises
   ``ValueError`` for unknown form keys.
 - Added ``DataDictionaryLoader`` for loading data dictionaries from CSV files or ZIP archives.
+- Added ``typed_values`` helper for deterministic example values and expanded
+  smoke record builder to populate one variable per type and accept optional
+  identifiers.
 
 ## [0.1.4] 
 
