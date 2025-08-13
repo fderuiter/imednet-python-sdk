@@ -91,6 +91,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   date, radio/dropdown, memo, and checkbox fields.
 - Endpoint smoke tests now post typed records for subject registration,
   scheduled updates, and new record creation.
+- Added unit tests for the smoke record builder to verify typed values and
+  optional identifiers.
 
 ## [0.1.4] 
 
