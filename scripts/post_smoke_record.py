@@ -16,7 +16,9 @@ import sys
 from typing import Any, Dict, Tuple
 
 from imednet.discovery import NoLiveDataError, discover_form_key, discover_study_key
+from imednet.models.variables import Variable
 from imednet.sdk import ImednetSDK
+from imednet.testing.typed_values import canonical_type, value_for
 
 
 POLL_TIMEOUT = 90
@@ -37,13 +39,48 @@ def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
     return study_key, form_key
 
 
-def build_record(sdk: ImednetSDK, study_key: str, form_key: str) -> Dict[str, Any]:
-    """Construct a minimal record payload for ``form_key``."""
+def _select_variables(variables: list[Variable]) -> Dict[str, Variable]:
+    """Return one variable per supported type."""
+
+    selected: Dict[str, Variable] = {}
+    for var in variables:
+        var_type = canonical_type(var.variable_type)
+        if var_type and var_type not in selected:
+            selected[var_type] = var
+    return selected
+
+
+def _build_data(variables: Dict[str, Variable]) -> Dict[str, Any]:
+    """Map variables to deterministic example values."""
+
+    return {var.variable_name: value_for(var.variable_type) for var in variables.values()}
+
+
+def build_record(
+    sdk: ImednetSDK,
+    study_key: str,
+    form_key: str,
+    *,
+    site_name: str | None = None,
+    subject_key: str | None = None,
+    interval_name: str | None = None,
+) -> Dict[str, Any]:
+    """Construct a record payload for ``form_key``.
+
+    Populates one variable per supported type and includes optional identifiers for
+    subject registration or scheduled updates.
+    """
+
     variables = sdk.variables.list(study_key=study_key, formKey=form_key)
-    data: Dict[str, Any] = {}
-    if variables:
-        data[variables[0].variable_name] = ""
-    return {"formKey": form_key, "data": data}
+    data = _build_data(_select_variables(variables))
+    record: Dict[str, Any] = {"formKey": form_key, "data": data}
+    if site_name is not None:
+        record["siteName"] = site_name
+    if subject_key is not None:
+        record["subjectKey"] = subject_key
+    if interval_name is not None:
+        record["intervalName"] = interval_name
+    return record
 
 
 def _extract_error(sdk: ImednetSDK, status: Any) -> str:
