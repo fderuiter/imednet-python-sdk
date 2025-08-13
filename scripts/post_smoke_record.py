@@ -1,7 +1,16 @@
 # isort: skip_file
 # ruff: noqa: E402, I001
-"""Create a minimal record via the live API for smoke testing."""
+# mypy: ignore-errors
+"""Create a minimal record via the live API for smoke testing.
 
+Usage:
+    poetry run python scripts/post_smoke_record.py [--timeout SECONDS]
+
+``--timeout`` controls how long to wait for the record creation job to
+finish before giving up. The default is 90 seconds.
+"""
+
+import argparse
 import os
 import sys
 from typing import Any, Dict, Tuple
@@ -37,21 +46,46 @@ def build_record(sdk: ImednetSDK, study_key: str, form_key: str) -> Dict[str, An
     return {"formKey": form_key, "data": data}
 
 
-def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any]) -> str:
+def _extract_error(sdk: ImednetSDK, status: Any) -> str:
+    """Return job failure details if available."""
+    if getattr(status, "result_url", ""):
+        try:
+            response = sdk._client.get(status.result_url)  # type: ignore[attr-defined]
+            try:
+                data = response.json()
+            except Exception:  # pragma: no cover - best effort
+                data = response.text
+            return f"{status.state}: {data}".strip()
+        except Exception:  # pragma: no cover - network failures
+            return f"{status.state} (see {status.result_url})"
+    return status.state
+
+
+def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, timeout: int) -> str:
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
-    status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=POLL_TIMEOUT)
+    status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=timeout)
     if status.state != "COMPLETED":
-        raise RuntimeError(f"Record creation failed: {status.state}")
+        detail = _extract_error(sdk, status)
+        raise RuntimeError(f"Record creation failed: {detail}")
     return status.batch_id
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=POLL_TIMEOUT,
+        help="Seconds to wait for job completion",
+    )
+    args = parser.parse_args(argv)
+
     try:
         with authenticate() as sdk:
             study_key, form_key = discover_keys(sdk)
             record = build_record(sdk, study_key, form_key)
-            submit_record(sdk, study_key, record)
+            submit_record(sdk, study_key, record, timeout=args.timeout)
     except NoLiveDataError as exc:
         print(f"::notice:: Smoke record skipped – {exc}")
         return 0
