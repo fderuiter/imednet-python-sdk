@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Split wide SQLite exports across multiple tables to avoid the 2000-column limit.
 - Added helpers for live tests and smoke script to auto-discover study and form
   keys, removing the `IMEDNET_FORM_KEY` override.
+- Form discovery now skips disabled and non-subject forms to avoid invalid form
+  key errors during record creation.
 - Decoupled live-data discovery from pytest internals and skip the smoke script
   gracefully when no studies or forms are available.
 - Bump project version to `0.1.4`.
