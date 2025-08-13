@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from imednet.sdk import AsyncImednetSDK
@@ -103,12 +105,16 @@ async def test_async_codings(async_sdk: AsyncImednetSDK, study_key: str) -> None
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.parametrize(
+    "record_payload",
+    ["register", "scheduled", "new"],
+    indirect=True,
+)
 async def test_async_create_and_poll(
     async_sdk: AsyncImednetSDK,
     study_key: str,
-    first_form_key: str,
+    record_payload: dict[str, Any],
 ) -> None:
-    record = {"formKey": first_form_key, "data": {}}
-    job = await async_sdk.records.async_create(study_key, [record])
+    job = await async_sdk.records.async_create(study_key, [record_payload])
     polled = await async_sdk.jobs.async_get(study_key, job.batch_id)
     assert polled.batch_id == job.batch_id

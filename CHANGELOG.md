@@ -89,6 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   identifiers.
 - Live tests now reuse ``typed_values`` to submit well-typed record data across
   date, radio/dropdown, memo, and checkbox fields.
+- Endpoint smoke tests now post typed records for subject registration,
+  scheduled updates, and new record creation.
 
 ## [0.1.4] 
 
