@@ -16,8 +16,9 @@ def discover_study_key(sdk: ImednetSDK) -> str:
 
 
 def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
-    """Return the first form key for ``study_key``."""
+    """Return the first subject record form key for ``study_key``."""
     forms = sdk.forms.list(study_key=study_key)
-    if not forms:
-        raise NoLiveDataError("No forms available for record creation")
-    return forms[0].form_key
+    for form in forms:
+        if form.subject_record_report and not form.disabled:
+            return form.form_key
+    raise NoLiveDataError("No forms available for record creation")
