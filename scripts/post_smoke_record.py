@@ -21,6 +21,23 @@ from imednet.sdk import ImednetSDK
 
 POLL_TIMEOUT = 90
 
+# Mapping of variable types to example values for smoke testing. The values aim to
+# satisfy type requirements from the Records API while remaining simple.
+EXAMPLE_VALUES: Dict[str, Any] = {
+    "int": 11,
+    "integer": 11,
+    "number": 11,
+    "float": 1.23,
+    "decimal": 1.23,
+    "bool": True,
+    "boolean": True,
+    "date": "2020-01-20",
+    "datetime": "2020-01-20 10:00:00",
+    "time": "10:00:00",
+    "text": "example",
+    "string": "example",
+}
+
 
 def authenticate() -> ImednetSDK:
     """Build an ``ImednetSDK`` using environment credentials."""
@@ -38,10 +55,20 @@ def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
 
 
 def build_record(sdk: ImednetSDK, study_key: str, form_key: str) -> Dict[str, Any]:
-    """Construct a minimal record payload for ``form_key``."""
+    """Construct a record payload exercising each variable type."""
     variables = sdk.variables.list(study_key=study_key, formKey=form_key)
     data: Dict[str, Any] = {}
-    if variables:
+    seen: set[str] = set()
+    for var in variables:
+        var_type = var.variable_type.lower()
+        if var_type in seen:
+            continue
+        example = EXAMPLE_VALUES.get(var_type)
+        if example is None:
+            continue
+        data[var.variable_name] = example
+        seen.add(var_type)
+    if not data and variables:
         data[variables[0].variable_name] = ""
     return {"formKey": form_key, "data": data}
 

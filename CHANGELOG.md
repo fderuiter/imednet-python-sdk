@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   obtain a batch ID, removing the need for `IMEDNET_FORM_KEY` and
   `IMEDNET_BATCH_ID` secrets.
 - Extended smoke test job polling timeout to 90 seconds.
+- Smoke script now populates record data using typed examples to exercise API validation.
 - Renamed ``models._base`` to ``models.json_base`` to avoid import confusion.
 - Documented the sentinel return value in ``parse_datetime``.
 - Replaced placeholder description in ``workflows/record_update.py``.
