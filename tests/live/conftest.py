@@ -1,6 +1,6 @@
 import asyncio
 import os
-from typing import Any, AsyncIterator, Generator, Iterator
+from typing import Any, AsyncIterator, Callable, Generator, Iterator
 
 import pytest
 
@@ -60,6 +60,30 @@ def first_form_key(sdk: ImednetSDK, study_key: str) -> str:
 
 
 @pytest.fixture(scope="session")
+def first_site_name(sdk: ImednetSDK, study_key: str) -> str:
+    sites = sdk.sites.list(study_key=study_key)
+    if not sites:
+        pytest.skip(f"No sites available for study {study_key}")
+    return sites[0].site_name
+
+
+@pytest.fixture(scope="session")
+def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
+    subjects = sdk.subjects.list(study_key=study_key)
+    if not subjects:
+        pytest.skip(f"No subjects available for study {study_key}")
+    return subjects[0].subject_key
+
+
+@pytest.fixture(scope="session")
+def first_interval_name(sdk: ImednetSDK, study_key: str) -> str:
+    intervals = sdk.intervals.list(study_key=study_key)
+    if not intervals:
+        pytest.skip(f"No intervals available for study {study_key}")
+    return intervals[0].interval_name
+
+
+@pytest.fixture(scope="session")
 def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> str:
     variables = sdk.variables.list(study_key=study_key, formKey=first_form_key)
     if not variables:
@@ -79,6 +103,62 @@ def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> 
     record = {"formKey": first_form_key, "data": data}
     job = sdk.records.create(study_key, [record])
     return job.batch_id
+
+
+@pytest.fixture(scope="session")
+def typed_record(
+    sdk: ImednetSDK,
+    study_key: str,
+    first_form_key: str,
+) -> Callable[..., dict[str, Any]]:
+    variables = sdk.variables.list(study_key=study_key, formKey=first_form_key)
+    if not variables:
+        pytest.skip(f"No variables available for form {first_form_key}")
+
+    selected: dict[str, Any] = {}
+    for var in variables:
+        var_type = typed_values.canonical_type(var.variable_type)
+        if var_type and var_type not in selected:
+            selected[var_type] = var
+
+    data = {
+        var.variable_name: typed_values.value_for(var.variable_type) for var in selected.values()
+    }
+
+    def build(
+        *,
+        site_name: str | None = None,
+        subject_key: str | None = None,
+        interval_name: str | None = None,
+    ) -> dict[str, Any]:
+        record: dict[str, Any] = {"formKey": first_form_key, "data": data}
+        if site_name is not None:
+            record["siteName"] = site_name
+        if subject_key is not None:
+            record["subjectKey"] = subject_key
+        if interval_name is not None:
+            record["intervalName"] = interval_name
+        return record
+
+    return build
+
+
+@pytest.fixture
+def record_payload(
+    request: pytest.FixtureRequest,
+    typed_record: Callable[..., dict[str, Any]],
+    first_site_name: str,
+    first_subject_key: str,
+    first_interval_name: str,
+) -> dict[str, Any]:
+    scenario = request.param
+    if scenario == "register":
+        return typed_record(site_name=first_site_name)
+    if scenario == "scheduled":
+        return typed_record(subject_key=first_subject_key, interval_name=first_interval_name)
+    if scenario == "new":
+        return typed_record(subject_key=first_subject_key)
+    raise ValueError(f"Unknown record scenario: {scenario}")
 
 
 @pytest.fixture(scope="session")
