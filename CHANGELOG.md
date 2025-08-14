@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   gracefully when no studies or forms are available.
 - Bump project version to `0.1.4`.
 - Added tests for unknown form validation errors.
+- Added async schema validation tests covering cache refresh and batch validation.
 - ISO datetime parser now pads fractional seconds shorter than six digits to
    microsecond precision.
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
@@ -106,6 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and interval lookups.
 - Added unit tests for `sanitize_base_url` to ensure trailing slash and `/api`
   removal.
+- Added tests for JSON logging configuration covering formatter import paths.
 
 ## [0.1.4]
 
