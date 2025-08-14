@@ -1,7 +1,13 @@
 # isort: skip_file
 # ruff: noqa: E402, I001
 # mypy: ignore-errors
-"""Create a minimal record via the live API for smoke testing.
+"""Create minimal records via the live API for smoke testing.
+
+Posts one record for each supported scenario:
+
+* subject registration
+* new record for an existing subject
+* scheduled visit update
 
 Usage:
     poetry run python scripts/post_smoke_record.py [--timeout SECONDS]
@@ -15,7 +21,14 @@ import os
 import sys
 from typing import Any, Dict, Tuple
 
-from imednet.discovery import NoLiveDataError, discover_form_key, discover_study_key
+from imednet.discovery import (
+    NoLiveDataError,
+    discover_form_key,
+    discover_interval_name,
+    discover_site_name,
+    discover_study_key,
+    discover_subject_key,
+)
 from imednet.models.variables import Variable
 from imednet.sdk import ImednetSDK
 from imednet.testing.typed_values import canonical_type, value_for
@@ -37,6 +50,14 @@ def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
     study_key = discover_study_key(sdk)
     form_key = discover_form_key(sdk, study_key)
     return study_key, form_key
+
+
+def discover_identifiers(sdk: ImednetSDK, study_key: str) -> Tuple[str, str, str]:
+    """Return the first site, subject, and interval identifiers."""
+    site_name = discover_site_name(sdk, study_key)
+    subject_key = discover_subject_key(sdk, study_key)
+    interval_name = discover_interval_name(sdk, study_key)
+    return site_name, subject_key, interval_name
 
 
 def _select_variables(variables: list[Variable]) -> Dict[str, Variable]:
@@ -121,8 +142,15 @@ def main(argv: list[str] | None = None) -> int:
     try:
         with authenticate() as sdk:
             study_key, form_key = discover_keys(sdk)
-            record = build_record(sdk, study_key, form_key)
-            submit_record(sdk, study_key, record, timeout=args.timeout)
+            site_name, subject_key, interval_name = discover_identifiers(sdk, study_key)
+            scenarios = [
+                {"site_name": site_name},
+                {"subject_key": subject_key},
+                {"subject_key": subject_key, "interval_name": interval_name},
+            ]
+            for extra in scenarios:
+                record = build_record(sdk, study_key, form_key, **extra)
+                submit_record(sdk, study_key, record, timeout=args.timeout)
     except NoLiveDataError as exc:
         print(f"::notice:: Smoke record skipped – {exc}")
         return 0
