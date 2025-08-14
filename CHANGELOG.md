@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Expanded AGENTS contributor guides with scoped templates across packages and tooling.
+- Added negative-path test for `SubjectDataWorkflow.get_all_subject_data` handling empty responses.
 - Smoke workflow now uploads verbose script logs and runs live tests with full output.
 - Refined contributor guides: mapped project scope, Python 3.10–3.12 support, and
   unified validation for ruff, black, isort, mypy, and pytest across docs,
