@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
 - Added `imednet.config` module with `load_config` helper for reading credentials.
+- Documented long-format SQL export and added example script.
 - Introduced `RetryPolicy` abstraction for configuring request retries.
 - Added tests for retry policy handling of response results and non-RequestError exceptions.
 - Documented test suite conventions in `tests/AGENTS.md`.
