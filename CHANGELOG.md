@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Added test for initial SDK retry policy propagation to sync and async clients.
+- Added tests for ImednetSDK credential validation.
+- Added tests for `records_to_dataframe` and `export_records_csv` covering
+  non-flattened and empty inputs.
+- Narrowed subject existence validation in `RegisterSubjectsWorkflow` to catch only `ApiError` and `ValueError`.
 - Updated smoke workflow to use `actions/upload-artifact@v4`.
 - Added tests for JsonModel type normalization.
+- Added tests for deprecated `imednet.airflow` shim ensuring warning and re-exports.
 - Expanded AGENTS contributor guides with scoped templates across packages and tooling.
 - Added negative-path test for `SubjectDataWorkflow.get_all_subject_data` handling empty responses.
 - Smoke workflow now uploads verbose script logs and runs live tests with full output.
