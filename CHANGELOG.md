@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
 - Added verbose logging to smoke record script with new `-v/--verbose` flag.
+- Smoke-test workflow now streams INFO-level logs for easier debugging.
 - Fixed teardown errors in live tests by using the session event loop for
   `async_sdk` teardown.
 - Added subject and site validation to `RegisterSubjectsWorkflow` and support for
