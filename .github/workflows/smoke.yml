@@ -27,7 +27,7 @@ jobs:
           poetry run python scripts/post_smoke_record.py --verbose 2>&1 | tee smoke.log
       - name: Upload smoke log
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: smoke-log
           path: smoke.log
