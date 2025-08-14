@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added tests for ImednetSDK credential validation.
 - Added tests for `records_to_dataframe` and `export_records_csv` covering
   non-flattened and empty inputs.
+- Fixed export helpers to cast DataFrame column names to strings before
+  case-insensitive de-duplication.
 - Narrowed subject existence validation in `RegisterSubjectsWorkflow` to catch only `ApiError` and `ValueError`.
 - Updated smoke workflow to use `actions/upload-artifact@v4`.
 - Added tests for JsonModel type normalization.
