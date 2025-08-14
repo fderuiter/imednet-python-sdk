@@ -104,8 +104,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   optional identifiers.
 - Added unit tests for discovery helpers covering study, form, site, subject,
   and interval lookups.
+- Added unit tests for `sanitize_base_url` to ensure trailing slash and `/api`
+  removal.
 
-## [0.1.4] 
+## [0.1.4]
 
 ## [Released]
 
