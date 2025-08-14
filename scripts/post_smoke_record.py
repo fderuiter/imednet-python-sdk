@@ -17,6 +17,7 @@ finish before giving up. The default is 90 seconds.
 """
 
 import argparse
+import logging
 import os
 import sys
 from typing import Any, Dict, Tuple
@@ -32,6 +33,9 @@ from imednet.discovery import (
 from imednet.models.variables import Variable
 from imednet.sdk import ImednetSDK
 from imednet.testing.typed_values import canonical_type, value_for
+
+
+logger = logging.getLogger(__name__)
 
 
 POLL_TIMEOUT = 90
@@ -96,6 +100,15 @@ def _build_data(variables: Dict[str, Variable]) -> Dict[str, Any]:
     return {var.variable_name: value_for(var.variable_type) for var in variables.values()}
 
 
+def _redact(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Return ``record`` with sensitive fields redacted."""
+
+    redacted = record.copy()
+    if "data" in redacted:
+        redacted["data"] = "***"
+    return redacted
+
+
 def build_record(
     sdk: ImednetSDK,
     study_key: str,
@@ -141,7 +154,9 @@ def _extract_error(sdk: ImednetSDK, status: Any) -> str:
 def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, timeout: int) -> str:
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
+    logger.info("Polling batch %s", job.batch_id)
     status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=timeout)
+    logger.info("Batch %s %s", status.batch_id, status.state)
     if status.state != "COMPLETED":
         detail = _extract_error(sdk, status)
         raise RuntimeError(f"Record creation failed: {detail}")
@@ -156,11 +171,23 @@ def main(argv: list[str] | None = None) -> int:
         default=POLL_TIMEOUT,
         help="Seconds to wait for job completion",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable debug logging",
+    )
     args = parser.parse_args(argv)
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(levelname)s:%(message)s",
+    )
 
     try:
         with authenticate() as sdk:
             study_key, form_key = discover_keys(sdk)
+            logger.info("Discovered study_key=%s form_key=%s", study_key, form_key)
             site_name, subject_key, interval_name = discover_identifiers(sdk, study_key)
             scenarios: list[dict[str, str]] = []
             if site_name:
@@ -172,8 +199,10 @@ def main(argv: list[str] | None = None) -> int:
             if not scenarios:
                 print("::notice:: Smoke record skipped – no identifiers available")
                 return 0
+            logger.info("Scenarios: %s", scenarios)
             for extra in scenarios:
                 record = build_record(sdk, study_key, form_key, **extra)
+                logger.debug("Record payload: %s", _redact(record))
                 submit_record(sdk, study_key, record, timeout=args.timeout)
     except NoLiveDataError as exc:
         print(f"::notice:: Smoke record skipped – {exc}")
