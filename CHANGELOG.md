@@ -104,6 +104,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   optional identifiers.
 - Added unit tests for discovery helpers covering study, form, site, subject,
   and interval lookups.
+- Added tests for JSON logging configuration covering formatter import paths.
 
 ## [0.1.4] 
 
