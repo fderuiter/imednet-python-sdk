@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Narrowed subject existence validation in `RegisterSubjectsWorkflow` to catch only `ApiError` and `ValueError`.
+- Updated smoke workflow to use `actions/upload-artifact@v4`.
 - Added tests for JsonModel type normalization.
 - Expanded AGENTS contributor guides with scoped templates across packages and tooling.
 - Added negative-path test for `SubjectDataWorkflow.get_all_subject_data` handling empty responses.
