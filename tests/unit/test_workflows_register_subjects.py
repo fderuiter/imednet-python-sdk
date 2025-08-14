@@ -1,7 +1,11 @@
 from unittest.mock import MagicMock
 
+import pytest
+
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
+from imednet.models.sites import Site
+from imednet.models.subjects import Subject
 from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
 
 
@@ -9,14 +13,39 @@ def test_register_subjects_passes_records_correctly() -> None:
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
     sdk.records.create.return_value = job
+    sdk.sites.list.return_value = [Site(site_name="SITE")]
+    sdk.subjects.get.return_value = Subject(subject_key="SUBJ", site_name="SITE")
     wf = RegisterSubjectsWorkflow(sdk)
-    req = RegisterSubjectRequest(form_key="F", site_name="SITE")
+    req = RegisterSubjectRequest(form_key="F", site_name="SITE", subject_key="SUBJ")
 
     result = wf.register_subjects("STUDY", [req], email_notify="test@example.com")
 
+    sdk.sites.list.assert_called_once_with(study_key="STUDY")
+    sdk.subjects.get.assert_called_once_with("STUDY", "SUBJ")
     sdk.records.create.assert_called_once_with(
         study_key="STUDY",
         records_data=[req.model_dump(by_alias=True)],
         email_notify="test@example.com",
     )
     assert result == job
+
+
+def test_register_subjects_missing_site() -> None:
+    sdk = MagicMock()
+    sdk.sites.list.return_value = []
+    wf = RegisterSubjectsWorkflow(sdk)
+    req = RegisterSubjectRequest(form_key="F", site_name="SITE", subject_key="SUBJ")
+
+    with pytest.raises(ValueError, match="site 'SITE' not found"):
+        wf.register_subjects("STUDY", [req])
+
+
+def test_register_subjects_missing_subject() -> None:
+    sdk = MagicMock()
+    sdk.sites.list.return_value = [Site(site_name="SITE")]
+    sdk.subjects.get.side_effect = ValueError("not found")
+    wf = RegisterSubjectsWorkflow(sdk)
+    req = RegisterSubjectRequest(form_key="F", site_name="SITE", subject_key="SUBJ")
+
+    with pytest.raises(ValueError, match="subject with subjectKey SUBJ not found"):
+        wf.register_subjects("STUDY", [req])
