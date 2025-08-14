@@ -131,6 +131,8 @@ poetry run pytest -q
 The optional [smoke.yml](.github/workflows/smoke.yml) action runs the `tests/live` suite.
 It relies on repository secrets `APIKEY` and `SECURITYKEY` and sets `IMEDNET_RUN_E2E`.
 Use the workflow to confirm real API access on demand or via its nightly schedule.
+INFO-level log messages stream to the terminal during these runs, making it easier to
+debug failures.
 
 ## Building & Publishing
 

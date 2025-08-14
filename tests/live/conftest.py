@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from typing import Any, AsyncIterator, Callable, Generator, Iterator
 
@@ -12,6 +13,8 @@ API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
+
+logger = logging.getLogger(__name__)
 
 
 def _typed_value(var_type: str) -> Any:
@@ -27,6 +30,7 @@ def _check_live_env() -> None:
             "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY "
             "to run live tests"
         )
+    logger.info("Live test environment configured")
 
 
 @pytest.fixture(scope="session")
