@@ -18,7 +18,8 @@ def test_default_policy_request_error():
 def test_default_policy_non_retryable_response_and_exception():
     policy = DefaultRetryPolicy()
     assert not policy.should_retry(RetryState(1, result=httpx.Response(500)))
-    assert not policy.should_retry(RetryState(1, exception=RuntimeError("boom")))
+    assert not policy.should_retry(RetryState(1, exception=Exception("boom")))
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(200), exception=None))
 
 
 def test_default_policy_non_request_exception(monkeypatch):
