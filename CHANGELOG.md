@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   keys, removing the `IMEDNET_FORM_KEY` override.
 - Added helpers to discover active site, subject, and interval identifiers and
   updated the smoke record script to use them.
+- Smoke record script now validates site and subject availability before posting
+  records.
 - Form discovery now skips disabled and non-subject forms to avoid invalid form
   key errors during record creation.
 - Decoupled live-data discovery from pytest internals and skip the smoke script
