@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Added tests for JsonModel type normalization.
 - Expanded AGENTS contributor guides with scoped templates across packages and tooling.
 - Smoke workflow now uploads verbose script logs and runs live tests with full output.
 - Refined contributor guides: mapped project scope, Python 3.10–3.12 support, and
@@ -110,6 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   removal.
 - Added tests for JSON logging configuration covering formatter import paths.
 - Added unit test for `HTTPClientBase.retry_policy` accessor to ensure executor updates.
+- Added test verifying `ImednetSDK.retry_policy` updates sync and async clients.
 
 ## [0.1.4]
 
