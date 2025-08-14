@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Added tests for `records_to_dataframe` and `export_records_csv` covering
   non-flattened and empty inputs.
+- Narrowed subject existence validation in `RegisterSubjectsWorkflow` to catch only `ApiError` and `ValueError`.
 - Updated smoke workflow to use `actions/upload-artifact@v4`.
 - Added tests for JsonModel type normalization.
 - Expanded AGENTS contributor guides with scoped templates across packages and tooling.
