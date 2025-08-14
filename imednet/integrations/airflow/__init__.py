@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from importlib import reload
 
-from .. import export
+from . import export
 
 if "imednet.integrations.airflow.hooks" in sys.modules:
     reload(sys.modules["imednet.integrations.airflow.hooks"])
