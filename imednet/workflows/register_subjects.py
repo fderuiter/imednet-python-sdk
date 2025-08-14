@@ -6,6 +6,7 @@ It provides a simple, robust interface for registering one or more subjects.
 
 from typing import TYPE_CHECKING, List, Optional
 
+from imednet.core.exceptions import ApiError
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 
@@ -61,7 +62,7 @@ class RegisterSubjectsWorkflow:
             else:
                 try:
                     self._sdk.subjects.get(study_key, subj.subject_key)
-                except Exception:
+                except (ApiError, ValueError):
                     errors.append(
                         f"Index {idx}: subject with subjectKey {subj.subject_key} not found"
                     )

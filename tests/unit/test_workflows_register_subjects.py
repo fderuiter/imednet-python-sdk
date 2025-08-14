@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from imednet.core.exceptions import ApiError
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 from imednet.models.sites import Site
@@ -48,4 +49,26 @@ def test_register_subjects_missing_subject() -> None:
     req = RegisterSubjectRequest(form_key="F", site_name="SITE", subject_key="SUBJ")
 
     with pytest.raises(ValueError, match="subject with subjectKey SUBJ not found"):
+        wf.register_subjects("STUDY", [req])
+
+
+def test_register_subjects_missing_subject_api_error() -> None:
+    sdk = MagicMock()
+    sdk.sites.list.return_value = [Site(site_name="SITE")]
+    sdk.subjects.get.side_effect = ApiError("oops")
+    wf = RegisterSubjectsWorkflow(sdk)
+    req = RegisterSubjectRequest(form_key="F", site_name="SITE", subject_key="SUBJ")
+
+    with pytest.raises(ValueError, match="subject with subjectKey SUBJ not found"):
+        wf.register_subjects("STUDY", [req])
+
+
+def test_register_subjects_unexpected_error_propagates() -> None:
+    sdk = MagicMock()
+    sdk.sites.list.return_value = [Site(site_name="SITE")]
+    sdk.subjects.get.side_effect = RuntimeError("boom")
+    wf = RegisterSubjectsWorkflow(sdk)
+    req = RegisterSubjectRequest(form_key="F", site_name="SITE", subject_key="SUBJ")
+
+    with pytest.raises(RuntimeError, match="boom"):
         wf.register_subjects("STUDY", [req])
