@@ -22,6 +22,21 @@ def sdk() -> ImednetSDK:
     )
 
 
+def test_initial_retry_policy_propagates_to_clients() -> None:
+    policy = NamedPolicy("init")
+    sdk = ImednetSDK(
+        api_key="key",
+        security_key="secret",
+        base_url="https://example.com",
+        enable_async=True,
+        retry_policy=policy,
+    )
+
+    assert sdk._client.retry_policy is policy
+    assert sdk._async_client is not None
+    assert sdk._async_client.retry_policy is policy
+
+
 def test_retry_policy_propagates_to_clients(sdk: ImednetSDK) -> None:
     assert sdk._async_client is not None
 
