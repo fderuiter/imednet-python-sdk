@@ -52,11 +52,30 @@ def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
     return study_key, form_key
 
 
-def discover_identifiers(sdk: ImednetSDK, study_key: str) -> Tuple[str, str, str]:
-    """Return the first site, subject, and interval identifiers."""
-    site_name = discover_site_name(sdk, study_key)
-    subject_key = discover_subject_key(sdk, study_key)
-    interval_name = discover_interval_name(sdk, study_key)
+def discover_identifiers(
+    sdk: ImednetSDK, study_key: str
+) -> Tuple[str | None, str | None, str | None]:
+    """Return first site, subject, and interval identifiers if available."""
+
+    site_name: str | None = None
+    subject_key: str | None = None
+    interval_name: str | None = None
+
+    try:
+        site_name = discover_site_name(sdk, study_key)
+    except NoLiveDataError as exc:
+        print(f"::notice:: {exc}")
+
+    try:
+        subject_key = discover_subject_key(sdk, study_key)
+    except NoLiveDataError as exc:
+        print(f"::notice:: {exc}")
+
+    try:
+        interval_name = discover_interval_name(sdk, study_key)
+    except NoLiveDataError as exc:
+        print(f"::notice:: {exc}")
+
     return site_name, subject_key, interval_name
 
 
@@ -143,11 +162,16 @@ def main(argv: list[str] | None = None) -> int:
         with authenticate() as sdk:
             study_key, form_key = discover_keys(sdk)
             site_name, subject_key, interval_name = discover_identifiers(sdk, study_key)
-            scenarios = [
-                {"site_name": site_name},
-                {"subject_key": subject_key},
-                {"subject_key": subject_key, "interval_name": interval_name},
-            ]
+            scenarios: list[dict[str, str]] = []
+            if site_name:
+                scenarios.append({"site_name": site_name})
+            if subject_key:
+                scenarios.append({"subject_key": subject_key})
+                if interval_name:
+                    scenarios.append({"subject_key": subject_key, "interval_name": interval_name})
+            if not scenarios:
+                print("::notice:: Smoke record skipped – no identifiers available")
+                return 0
             for extra in scenarios:
                 record = build_record(sdk, study_key, form_key, **extra)
                 submit_record(sdk, study_key, record, timeout=args.timeout)

@@ -116,3 +116,23 @@ def test_discover_identifiers_returns_all() -> None:
     sdk.sites.list.assert_called_once_with(study_key="S")
     sdk.subjects.list.assert_called_once_with(study_key="S")
     sdk.intervals.list.assert_called_once_with(study_key="S")
+
+
+def test_discover_identifiers_reports_missing(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        smoke, "discover_site_name", Mock(side_effect=smoke.NoLiveDataError("no site"))
+    )
+    monkeypatch.setattr(
+        smoke, "discover_subject_key", Mock(side_effect=smoke.NoLiveDataError("no subject"))
+    )
+    monkeypatch.setattr(
+        smoke, "discover_interval_name", Mock(side_effect=smoke.NoLiveDataError("no int"))
+    )
+
+    identifiers = smoke.discover_identifiers(Mock(), "S")
+
+    assert identifiers == (None, None, None)
+    out = capsys.readouterr().out
+    assert "no site" in out
+    assert "no subject" in out
+    assert "no int" in out
