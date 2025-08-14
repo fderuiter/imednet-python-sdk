@@ -6,6 +6,7 @@ import pytest
 from imednet.core import exceptions
 from imednet.core.base_client import BaseClient
 from imednet.core.client import Client
+from imednet.core.retry import RetryPolicy
 
 
 class DummyResponse:
@@ -92,3 +93,13 @@ def test_tracer_records_span(monkeypatch) -> None:
 def test_base_url_sanitized() -> None:
     client = Client(api_key="A", security_key="B", base_url="https://host/api/")
     assert client.base_url == "https://host"
+
+
+def test_retry_policy_accessor_updates_executor() -> None:
+    client = Client(api_key="A", security_key="B")
+    policy = MagicMock(spec=RetryPolicy)
+
+    client.retry_policy = policy
+
+    assert client.retry_policy is policy
+    assert client._executor.retry_policy is policy
