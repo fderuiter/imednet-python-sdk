@@ -23,11 +23,18 @@ jobs:
           IMEDNET_API_KEY: ${{ secrets.APIKEY }}
           IMEDNET_SECURITY_KEY: ${{ secrets.SECURITYKEY }}
           IMEDNET_BASE_URL: ${{ vars.BASE_URL }}
-        run: poetry run python scripts/post_smoke_record.py
+        run: |
+          poetry run python scripts/post_smoke_record.py --verbose 2>&1 | tee smoke.log
+      - name: Upload smoke log
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: smoke-log
+          path: smoke.log
       - name: Run live tests
         env:
           IMEDNET_API_KEY: ${{ secrets.APIKEY }}
           IMEDNET_SECURITY_KEY: ${{ secrets.SECURITYKEY }}
           IMEDNET_RUN_E2E: "1"
         run: |
-          poetry run pytest -q -rs tests/live
+          poetry run pytest -vv -s --log-cli-level=INFO tests/live
