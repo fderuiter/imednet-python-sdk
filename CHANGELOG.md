@@ -109,6 +109,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added unit tests for `sanitize_base_url` to ensure trailing slash and `/api`
   removal.
 - Added tests for JSON logging configuration covering formatter import paths.
+- Added unit test for `HTTPClientBase.retry_policy` accessor to ensure executor updates.
 
 ## [0.1.4]
 
