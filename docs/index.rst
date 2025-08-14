@@ -14,6 +14,7 @@ Welcome to imednet's documentation!
    schema_validation
    cli
    workflow_interactions
+   register_subjects
    caching
    retry_policy
    job_polling

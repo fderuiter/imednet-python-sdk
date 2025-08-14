@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
 - Fixed teardown errors in live tests by using the session event loop for
   `async_sdk` teardown.
+- Added subject and site validation to `RegisterSubjectsWorkflow` and support for
+  ``subjectKey`` in ``RegisterSubjectRequest``.
 - Updated `tests/AGENTS.md` to permit hitting the live iMednet API when running the `tests/live` suite.
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
 - Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
