@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import Mock
 
 import pytest
@@ -136,3 +137,28 @@ def test_discover_identifiers_reports_missing(monkeypatch, capsys) -> None:
     assert "no site" in out
     assert "no subject" in out
     assert "no int" in out
+
+
+def test_main_verbose_logs(monkeypatch, caplog) -> None:
+    sdk = Mock()
+    sdk.__enter__ = Mock(return_value=sdk)
+    sdk.__exit__ = Mock(return_value=False)
+    sdk.records.create.return_value = Mock(batch_id="B1")
+    sdk.poll_job.return_value = Mock(state="COMPLETED", batch_id="B1")
+    monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
+    monkeypatch.setattr(smoke, "discover_keys", Mock(return_value=("ST", "F1")))
+    monkeypatch.setattr(smoke, "discover_identifiers", Mock(return_value=(None, "SUB", None)))
+    monkeypatch.setattr(
+        smoke,
+        "build_record",
+        Mock(return_value={"formKey": "F1", "data": {"x": 1}, "subjectKey": "SUB"}),
+    )
+
+    with caplog.at_level(logging.DEBUG):
+        smoke.main(["-v"])
+
+    logs = "\n".join(caplog.messages)
+    assert "study_key=ST" in logs
+    assert "Scenarios: [{'subject_key': 'SUB'}]" in logs
+    assert "'data': '***'" in logs
+    assert "Batch B1 COMPLETED" in logs
