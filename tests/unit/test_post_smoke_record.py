@@ -3,6 +3,9 @@ from unittest.mock import Mock
 import pytest
 import scripts.post_smoke_record as smoke
 
+from imednet.models.intervals import Interval
+from imednet.models.sites import Site
+from imednet.models.subjects import Subject
 from imednet.models.variables import Variable
 from imednet.testing import typed_values
 
@@ -95,3 +98,21 @@ def test_build_record_optional_identifiers(kwargs: dict[str, str], extra: dict[s
 
     assert record == {"formKey": "F1", "data": {}} | extra
     sdk.variables.list.assert_called_once_with(study_key="ST", formKey="F1")
+
+
+def test_discover_identifiers_returns_all() -> None:
+    sdk = Mock()
+    sdk.sites.list.return_value = [
+        Site(study_key="S", site_name="SITE", site_enrollment_status="Active")
+    ]
+    sdk.subjects.list.return_value = [
+        Subject(study_key="S", subject_key="SUB", subject_status="Active")
+    ]
+    sdk.intervals.list.return_value = [Interval(study_key="S", interval_name="INT", disabled=False)]
+
+    identifiers = smoke.discover_identifiers(sdk, "S")
+
+    assert identifiers == ("SITE", "SUB", "INT")
+    sdk.sites.list.assert_called_once_with(study_key="S")
+    sdk.subjects.list.assert_called_once_with(study_key="S")
+    sdk.intervals.list.assert_called_once_with(study_key="S")
