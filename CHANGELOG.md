@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   non-flattened and empty inputs.
 - Fixed export helpers to cast DataFrame column names to strings before
   case-insensitive de-duplication.
+- Imported Airflow hooks at runtime in export operator to simplify mocking.
 - Narrowed subject existence validation in `RegisterSubjectsWorkflow` to catch only `ApiError` and `ValueError`.
 - Updated smoke workflow to use `actions/upload-artifact@v4`.
 - Added tests for JsonModel type normalization.
