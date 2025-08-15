@@ -123,6 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added tests for JSON logging configuration covering formatter import paths.
 - Added unit test for `HTTPClientBase.retry_policy` accessor to ensure executor updates.
 - Added test verifying `ImednetSDK.retry_policy` updates sync and async clients.
+- Documented error handling and custom retry strategies with a runnable example
+  and cross-links from overview guides.
 
 ## [0.1.4]
 

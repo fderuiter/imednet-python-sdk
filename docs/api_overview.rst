@@ -35,6 +35,9 @@ codes raise typed exceptions:
 * ``429`` – :class:`~imednet.core.exceptions.RateLimitError`
 * ``5xx`` – :class:`~imednet.core.exceptions.ServerError`
 
+See :doc:`retry_policy` for examples of handling these errors and configuring
+custom retry logic.
+
 Filtering
 ---------
 
