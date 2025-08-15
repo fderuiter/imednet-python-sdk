@@ -13,9 +13,13 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   imednet.auth
    imednet.core
    imednet.endpoints
+   imednet.errors
+   imednet.http
    imednet.models
+   imednet.pagination
    imednet.utils
    imednet.workflows
 

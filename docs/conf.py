@@ -124,6 +124,10 @@ exclude_patterns: list[str] = [
     "imednet.validation.rst",
     "imednet.integrations.airflow.rst",
     "imednet.testing.rst",
+    "imednet.auth.rst",
+    "imednet.errors.rst",
+    "imednet.http.rst",
+    "imednet.pagination.rst",
 ]  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 

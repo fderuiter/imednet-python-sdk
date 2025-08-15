@@ -2,8 +2,9 @@ Live (End-to-End) Test Plan
 ===========================
 
 These tests execute against a real iMednet environment. They are skipped by default
-and require ``IMEDNET_RUN_E2E=1`` with valid credentials. Each item below should be
-covered by a dedicated test case so failures are easy to diagnose.
+and require ``IMEDNET_RUN_E2E=1`` with valid credentials (see
+:doc:`configuration`). Each item below should be covered by a dedicated test case
+so failures are easy to diagnose.
 
 Endpoints
 ---------
