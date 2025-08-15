@@ -1,24 +1,17 @@
 from __future__ import annotations
 
-import sys
-from importlib import reload
+from importlib import import_module
 
 from . import export
-
-if "imednet.integrations.airflow.hooks" in sys.modules:
-    reload(sys.modules["imednet.integrations.airflow.hooks"])
-if "imednet.integrations.airflow.operators" in sys.modules:
-    reload(sys.modules["imednet.integrations.airflow.operators"])
-if "imednet.integrations.airflow.sensors" in sys.modules:
-    reload(sys.modules["imednet.integrations.airflow.sensors"])
-
 from .hooks import ImednetHook
 from .operators import ImednetExportOperator, ImednetToS3Operator
 
 try:  # pragma: no cover - optional Airflow dependencies may be missing
-    from .sensors import ImednetJobSensor
+    sensors = import_module("imednet.integrations.airflow.sensors")
+    ImednetJobSensor = sensors.ImednetJobSensor
 except Exception:  # pragma: no cover - sensor requires Airflow extras
     ImednetJobSensor = None  # type: ignore
+    sensors = None  # type: ignore
 
 __all__ = [
     "ImednetHook",
