@@ -16,9 +16,11 @@ from .hooks import ImednetHook
 from .operators import ImednetExportOperator, ImednetToS3Operator
 
 try:  # pragma: no cover - optional Airflow dependencies may be missing
+    from . import sensors  # ensure module is available for reloading
     from .sensors import ImednetJobSensor
 except Exception:  # pragma: no cover - sensor requires Airflow extras
     ImednetJobSensor = None  # type: ignore
+    sensors = None  # type: ignore
 
 __all__ = [
     "ImednetHook",
