@@ -38,6 +38,13 @@ Available Commands
    imednet sites list <STUDY_KEY>
    imednet subjects list <STUDY_KEY> [--filter key=value ...]
    imednet records list <STUDY_KEY> [--output csv|json]
+   imednet variables list <STUDY_KEY>
+   imednet queries list <STUDY_KEY>
+   imednet record-revisions list <STUDY_KEY>
+   imednet jobs status <STUDY_KEY> <BATCH_ID>
+   imednet jobs wait <STUDY_KEY> <BATCH_ID> [--interval N] [--timeout N]
+   imednet subject-data <STUDY_KEY> <SUBJECT_KEY>
+   imednet export sql <STUDY_KEY> table sqlite:///data.db [options]
    imednet workflows extract-records <STUDY_KEY> [options]
 
 Examples
@@ -95,3 +102,67 @@ from iMednet. Both options accept comma-separated values.
 .. code-block:: console
 
    imednet export sql MY_STUDY table sqlite:///test.db --vars AGE,SEX --forms 10,20
+
+Jobs
+----
+
+Use ``jobs`` to monitor background tasks created by the API. ``jobs status`` fetches the
+current state of a job batch, while ``jobs wait`` polls until the job reaches a terminal
+state.
+
+.. code-block:: console
+
+   imednet jobs status MY_STUDY 12345
+   imednet jobs wait MY_STUDY 12345 --interval 10 --timeout 600
+
+``status`` prints the job's JSON payload. ``wait`` repeats the check every ``--interval``
+seconds until completion or until ``--timeout`` is reached. A typical workflow is to
+start an export job and then wait for completion before downloading results.
+
+Queries
+-------
+
+``queries list`` shows all queries for a study.
+
+.. code-block:: console
+
+   imednet queries list MY_STUDY
+
+Each query is printed as JSON, allowing teams to review outstanding data issues.
+
+Variables
+---------
+
+``variables list`` returns the variable definitions for a study.
+
+.. code-block:: console
+
+   imednet variables list MY_STUDY
+
+The output includes keys, labels, and data types, which is useful when constructing
+record payloads.
+
+Record Revisions
+----------------
+
+``record-revisions list`` displays the revision history for a study's records.
+
+.. code-block:: console
+
+   imednet record-revisions list MY_STUDY
+
+Entries show the record key, revision number, and timestamp so you can audit changes
+over time.
+
+Subject Data
+------------
+
+``subject-data`` retrieves all forms and variables for a single subject.
+
+.. code-block:: console
+
+   imednet subject-data MY_STUDY SUBJ001
+
+The command prints a nested JSON structure containing the subject's visits, forms, and
+variable values. This is helpful for debugging or exporting an individual subject's
+dataset.
