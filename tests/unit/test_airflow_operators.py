@@ -1,4 +1,3 @@
-import importlib
 import sys
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
@@ -144,6 +143,7 @@ def test_job_sensor(monkeypatch):
     _setup_airflow(monkeypatch)
     import imednet.integrations.airflow.operators as ops
     import imednet.integrations.airflow.sensors as sensors
+
     _patch_basehook(monkeypatch)
     sdk = MagicMock()
     job = MagicMock(state="COMPLETED")
