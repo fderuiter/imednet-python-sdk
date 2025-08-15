@@ -73,7 +73,7 @@ Data Flow
        Workflows --> |call| Endpoints
        Endpoints --> |delegate| Client
        Client --> |talks to| API
-       Client --> |uses| Cache[Caches]
+       Client --> |uses| Cache(["Caches"])
 
 Extension Points
 ----------------

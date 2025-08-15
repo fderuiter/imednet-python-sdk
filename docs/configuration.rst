@@ -17,7 +17,8 @@ Environment Variables
     Security key used for authentication.
 
 ``IMEDNET_BASE_URL``
-    Optional base URL for private deployments.
+    Optional base URL for private deployments. Sanitize with
+    :func:`imednet.utils.url.sanitize_base_url`.
 
 ``IMEDNET_STUDY_KEY``
     Study identifier used by examples and some tests.
@@ -45,3 +46,38 @@ Create a ``.env`` file in the project root to store the variables above::
 
 The CLI loads this file automatically. Other scripts can call
 ``dotenv.load_dotenv()`` to mimic this behaviour.
+
+Parsing Values
+--------------
+
+When reading environment variables or other untyped values, use helpers from
+:mod:`imednet.utils.validators` such as
+:func:`imednet.utils.validators.parse_bool`,
+:func:`imednet.utils.validators.parse_datetime`,
+:func:`imednet.utils.validators.parse_int_or_default`,
+:func:`imednet.utils.validators.parse_str_or_default`,
+:func:`imednet.utils.validators.parse_list_or_default`, and
+:func:`imednet.utils.validators.parse_dict_or_default`.
+
+.. code-block:: python
+
+   >>> from imednet.utils.validators import (
+   ...     parse_bool,
+   ...     parse_datetime,
+   ...     parse_int_or_default,
+   ...     parse_str_or_default,
+   ...     parse_list_or_default,
+   ...     parse_dict_or_default,
+   ... )
+   >>> parse_bool("yes")
+   True
+   >>> parse_datetime("2020-01-01T00:00:00Z").year
+   2020
+   >>> parse_int_or_default("bad", default=5)
+   5
+   >>> parse_str_or_default(1.23)
+   '1.23'
+   >>> parse_list_or_default("x")
+   ['x']
+   >>> parse_dict_or_default(None)
+   {}
