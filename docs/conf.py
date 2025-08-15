@@ -107,8 +107,7 @@ autosummary_generate = True
 # Mock heavy optional dependencies so autodoc does not import them
 autodoc_mock_imports = ["pandas", "numpy", "matplotlib", "pydantic", "airflow"]
 
-# Silence Sphinx warnings for excluded docs and autodoc duplicates/imports.
-suppress_warnings = ["ref.ref", "toc.excluded", "autodoc", "autodoc.import"]
+suppress_warnings = ["ref.ref", "toc.excluded", "autodoc.import", "autodoc", "sphinx_autodoc_typehints"]
 
 # Ignore noisy pydantic schema generation warnings.
 warnings.filterwarnings("ignore", message="Failed guarded type import", category=UserWarning)
