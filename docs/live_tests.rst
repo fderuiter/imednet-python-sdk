@@ -2,10 +2,10 @@ Live Test Overview
 ==================
 
 This document summarizes the end-to-end tests located in ``tests/live``. These tests
-execute against a real iMednet environment and are skipped unless the environment
-variable ``IMEDNET_RUN_E2E=1`` is set along with valid credentials (``IMEDNET_API_KEY``
-and ``IMEDNET_SECURITY_KEY``). Each test verifies that the SDK behaves correctly
-when interacting with a running server.
+execute against a real iMednet environment and are skipped unless
+``IMEDNET_RUN_E2E=1`` is set along with valid credentials (see
+:doc:`configuration`). Each test verifies that the SDK behaves correctly when
+interacting with a running server.
 
 See :doc:`test_skip_conditions` for a summary of all variables and optional
 dependencies that control skipping.

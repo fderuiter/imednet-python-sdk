@@ -61,7 +61,12 @@ class BaseRecordRequest(JsonModel):
 
 
 class RegisterSubjectRequest(BaseRecordRequest):
-    site_name: str = Field("", alias="siteName")
+    site_name: str = Field(
+        "", alias="siteName", description="Name of the site where the subject is enrolled"
+    )
+    subject_key: str = Field(
+        "", alias="subjectKey", description="Unique identifier for the subject"
+    )
 
     pass
 

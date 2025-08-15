@@ -6,7 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Documented contributor setup and process in docs and README.
+- Expanded architecture overview with component descriptions and new diagrams.
+- Added configuration guide summarizing environment variables and `.env` support.
+- Added test for initial SDK retry policy propagation to sync and async clients.
+- Added tests for ImednetSDK credential validation.
+- Added tests for `records_to_dataframe` and `export_records_csv` covering
+  non-flattened and empty inputs.
+- Fixed export helpers to cast DataFrame column names to strings before
+  case-insensitive de-duplication.
+  - Resolved monkeypatching issues in Airflow export operator by using existing package from `sys.modules`.
+  - Hardened Airflow hook against non-string connection data and simplified package init so the sensors module stays reloadable.
+- Narrowed subject existence validation in `RegisterSubjectsWorkflow` to catch only `ApiError` and `ValueError`.
+- Updated smoke workflow to use `actions/upload-artifact@v4`.
+- Added tests for JsonModel type normalization.
+- Added tests for deprecated `imednet.airflow` shim ensuring warning and re-exports.
 - Expanded AGENTS contributor guides with scoped templates across packages and tooling.
+- Added negative-path test for `SubjectDataWorkflow.get_all_subject_data` handling empty responses.
+- Smoke workflow now uploads verbose script logs and runs live tests with full output.
 - Refined contributor guides: mapped project scope, Python 3.10–3.12 support, and
   unified validation for ruff, black, isort, mypy, and pytest across docs,
   tests, examples, and workflows.
@@ -17,25 +34,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Split wide SQLite exports across multiple tables to avoid the 2000-column limit.
 - Added helpers for live tests and smoke script to auto-discover study and form
   keys, removing the `IMEDNET_FORM_KEY` override.
+- Added helpers to discover active site, subject, and interval identifiers and
+  updated the smoke record script to use them.
+- Smoke record script now validates site and subject availability before posting
+  records.
 - Form discovery now skips disabled and non-subject forms to avoid invalid form
   key errors during record creation.
 - Decoupled live-data discovery from pytest internals and skip the smoke script
   gracefully when no studies or forms are available.
 - Bump project version to `0.1.4`.
 - Added tests for unknown form validation errors.
+- Added async schema validation tests covering cache refresh and batch validation.
+- Exposed export helpers in `imednet.integrations.airflow.export` and consolidated job sensor into a module for easier Airflow imports.
+- Added unit tests for CLI output helpers `echo_fetch` and `display_list`.
 - ISO datetime parser now pads fractional seconds shorter than six digits to
    microsecond precision.
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
 - Added `imednet.config` module with `load_config` helper for reading credentials.
+- Documented long-format SQL export and added example script.
 - Introduced `RetryPolicy` abstraction for configuring request retries.
+- Added tests for retry policy handling of response results and non-RequestError exceptions.
 - Documented test suite conventions in `tests/AGENTS.md`.
   `Client`, `AsyncClient` and `ImednetSDK` accept a `retry_policy` parameter.
 - Added long-format SQL export via `export_to_long_sql` and the `--long-format` CLI option.
 - CLI commands now use shared helpers for study arguments and list output to reduce duplication.
 - Deduplicated refresh and validation logic in `SchemaValidator` with helper methods.
+- Added verbose logging to smoke record script with new `-v/--verbose` flag.
+- Smoke-test workflow now streams INFO-level logs for easier debugging.
 - Fixed teardown errors in live tests by using the session event loop for
   `async_sdk` teardown.
+- Added subject and site validation to `RegisterSubjectsWorkflow` and support for
+  ``subjectKey`` in ``RegisterSubjectRequest``.
 - Updated `tests/AGENTS.md` to permit hitting the live iMednet API when running the `tests/live` suite.
 - Refactored endpoint initialization in `ImednetSDK` using a registry.
 - Added `_build_record_payload` helper to `RecordUpdateWorkflow` to deduplicate
@@ -84,8 +114,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Record submission now checks form existence after schema refresh and raises
   ``ValueError`` for unknown form keys.
 - Added ``DataDictionaryLoader`` for loading data dictionaries from CSV files or ZIP archives.
+- Added ``typed_values`` helper for deterministic example values and expanded
+  smoke record builder to populate one variable per type and accept optional
+  identifiers.
+- Live tests now reuse ``typed_values`` to submit well-typed record data across
+  date, radio/dropdown, memo, and checkbox fields.
+- Endpoint smoke tests now post typed records for subject registration,
+  scheduled updates, and new record creation.
+- Added unit tests for the smoke record builder to verify typed values and
+  optional identifiers.
+- Added unit tests for discovery helpers covering study, form, site, subject,
+  and interval lookups.
+- Added unit tests for `sanitize_base_url` to ensure trailing slash and `/api`
+  removal.
+- Added tests for JSON logging configuration covering formatter import paths.
+- Added unit test for `HTTPClientBase.retry_policy` accessor to ensure executor updates.
+- Added test verifying `ImednetSDK.retry_policy` updates sync and async clients.
+- Documented error handling and custom retry strategies with a runnable example
+  and cross-links from overview guides.
+- Added async quick start guide, example script, and README references.
 
-## [0.1.4] 
+## [0.1.4]
 
 ## [Released]
 

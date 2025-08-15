@@ -30,14 +30,21 @@ async def test_async_get_study_structure(async_sdk: AsyncImednetSDK, study_key: 
     assert struct.study_key == study_key
 
 
-def test_register_subjects_workflow(sdk: ImednetSDK, study_key: str) -> None:
+def test_register_subjects_workflow(
+    sdk: ImednetSDK, study_key: str, first_subject_key: str
+) -> None:
     if os.getenv("IMEDNET_ALLOW_MUTATION") != "1":
         pytest.skip("Mutating tests are disabled")
     forms = sdk.get_forms(study_key)
     sites = sdk.get_sites(study_key)
     if not forms or not sites:
         pytest.skip("No forms/sites for subject registration")
-    req = RegisterSubjectRequest(form_key=forms[0].form_key, site_name=sites[0].site_name, data={})
+    req = RegisterSubjectRequest(
+        form_key=forms[0].form_key,
+        site_name=sites[0].site_name,
+        subject_key=first_subject_key,
+        data={},
+    )
     wf = RegisterSubjectsWorkflow(sdk)
     job = wf.register_subjects(study_key, [req])
     assert job.batch_id

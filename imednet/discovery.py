@@ -22,3 +22,30 @@ def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
         if form.subject_record_report and not form.disabled:
             return form.form_key
     raise NoLiveDataError("No forms available for record creation")
+
+
+def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
+    """Return the first active site name for ``study_key``."""
+    sites = sdk.sites.list(study_key=study_key)
+    for site in sites:
+        if getattr(site, "site_enrollment_status", "").lower() == "active":
+            return site.site_name
+    raise NoLiveDataError("No active sites available for live tests")
+
+
+def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
+    """Return the first active subject key for ``study_key``."""
+    subjects = sdk.subjects.list(study_key=study_key)
+    for subject in subjects:
+        if getattr(subject, "subject_status", "").lower() == "active":
+            return subject.subject_key
+    raise NoLiveDataError("No active subjects available for live tests")
+
+
+def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
+    """Return the first non-disabled interval name for ``study_key``."""
+    intervals = sdk.intervals.list(study_key=study_key)
+    for interval in intervals:
+        if not getattr(interval, "disabled", False):
+            return interval.interval_name
+    raise NoLiveDataError("No active intervals available for live tests")

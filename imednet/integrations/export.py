@@ -57,6 +57,7 @@ def _records_df(
         form_whitelist=form_whitelist,
     )
     if isinstance(df, pd.DataFrame):
+        df.columns = df.columns.astype(str)
         df = df.loc[:, ~df.columns.str.lower().duplicated()]
     return df
 

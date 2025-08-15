@@ -2,18 +2,9 @@ Command Line Interface (CLI)
 ============================
 
 The package installs an ``imednet`` command that wraps common SDK features. The CLI
-reads authentication details from environment variables:
-
-``IMEDNET_API_KEY``
-    Your API key.
-``IMEDNET_SECURITY_KEY``
-    Your security key.
-``IMEDNET_BASE_URL``
-    Optional base URL if not using the default cloud service.
-
-Set these variables in your shell before invoking the command. You may also create
-an ``.env`` file so the values are loaded automatically.
-The CLI calls :func:`imednet.config.load_config` under the hood to read them.
+reads authentication details from environment variables. See :doc:`configuration`
+for the full list and details on using an ``.env`` file. The CLI calls
+:func:`imednet.config.load_config` under the hood to read these values.
 
 Command Hierarchy
 -----------------
@@ -91,6 +82,9 @@ require more time to insert large datasets.
 .. code-block:: console
 
    imednet export sql MY_STUDY table sqlite:///data.db --long-format
+
+See the example script :mod:`examples.export_long_sql` for invoking this option
+via the SDK.
 
 Variable Filters
 ----------------

@@ -2,6 +2,7 @@ import json
 import os
 
 from imednet import ImednetSDK
+from imednet.models.records import RegisterSubjectRequest
 from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
 
 """
@@ -26,10 +27,10 @@ Attributes:
     input_path (str): The file path to the JSON file containing the subject data.
 """
 
-api_key = "XXXXXXXXXX"
-security_key = "XXXXXXXXXX"
-base_url = None  # Or set to your custom base URL if needed
-study_key = "XXXXXXXXXX"
+api_key = os.getenv("IMEDNET_API_KEY", "")
+security_key = os.getenv("IMEDNET_SECURITY_KEY", "")
+base_url = os.getenv("IMEDNET_BASE_URL")
+study_key = os.getenv("IMEDNET_STUDY_KEY", "")
 
 # Path to the sample input file included with this repository
 input_path = os.path.join(
@@ -41,7 +42,9 @@ try:
     workflow = RegisterSubjectsWorkflow(sdk)
 
     with open(input_path, "r", encoding="utf-8") as f:
-        subjects = json.load(f)
+        raw_subjects = json.load(f)
+
+    subjects = [RegisterSubjectRequest(**s) for s in raw_subjects]
 
     # Register all subjects at once
     result = workflow.register_subjects(study_key=study_key, subjects=subjects)
