@@ -8,6 +8,7 @@ Welcome to imednet's documentation!
    logging_and_tracing
    quick_start
    configuration
+   async_quick_start
    api_overview
    rest_api_reference
    endpoints/index
