@@ -151,8 +151,9 @@ This project follows [Semantic Versioning](https://semver.org). See
 
 ## Contributing
 
-Contributions are welcome! Please read
-[CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! See the
+[contributing guide](docs/contributing.rst) and
+[CONTRIBUTING.md](CONTRIBUTING.md) for full details.
 
 ## License
 
