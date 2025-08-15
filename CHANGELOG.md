@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Documented json logging, URL, and validator helpers with examples and cross references.
 - Documented pagination utilities to fix missing toctree reference.
 - Fixed broken ``filter`` cross-reference in record revisions docs.
 - Fixed unresolved example script references in documentation.
