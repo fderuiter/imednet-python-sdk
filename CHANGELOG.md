@@ -137,6 +137,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented error handling and custom retry strategies with a runnable example
   and cross-links from overview guides.
 - Added async quick start guide, example script, and README references.
+- Expanded CLI guide with usage for jobs, queries, variables, record revisions,
+  and subject data commands.
 
 ## [0.1.4]
 
