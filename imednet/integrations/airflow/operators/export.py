@@ -33,7 +33,11 @@ class ImednetExportOperator(BaseOperator):
         self.imednet_conn_id = imednet_conn_id
 
     def execute(self, context: Dict[str, Any]) -> str:
-        airflow_mod = import_module("imednet.integrations.airflow")
+        import sys
+
+        airflow_mod = sys.modules.get("imednet.integrations.airflow")
+        if airflow_mod is None:  # pragma: no cover - module should already be loaded
+            airflow_mod = import_module("imednet.integrations.airflow")
         hook = airflow_mod.ImednetHook(self.imednet_conn_id)
         sdk = hook.get_conn()
         export_callable = getattr(export, self.export_func)
