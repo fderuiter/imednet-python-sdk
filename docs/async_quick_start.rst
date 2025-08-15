@@ -39,6 +39,6 @@ List studies asynchronously and poll a job:
 
    asyncio.run(main())
 
-The example script :mod:`examples.async_quick_start` provides a runnable version that
+The example script :doc:`examples/async_quick_start` provides a runnable version that
 validates required environment variables and optionally polls a job when
 ``IMEDNET_JOB_STUDY_KEY`` and ``IMEDNET_BATCH_ID`` are set.

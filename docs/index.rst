@@ -25,6 +25,7 @@ Welcome to imednet's documentation!
    test_skip_conditions
    live_test_plan
    live_tests
+   examples/index
    contributing
    modules
 
