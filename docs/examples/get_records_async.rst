@@ -1,5 +1,5 @@
-Quick Start Script
-==================
+List Records Asynchronously
+===========================
 
 Prerequisites
 -------------
@@ -19,7 +19,7 @@ Environment variables
 Description
 -----------
 
-Minimal example listing studies.
+Demonstrate asynchronous record retrieval.
 
-.. literalinclude:: ../../examples/quick_start.py
+.. literalinclude:: ../../examples/async/get_records_async.py
    :language: python
