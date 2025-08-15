@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   non-flattened and empty inputs.
 - Fixed export helpers to cast DataFrame column names to strings before
   case-insensitive de-duplication.
-- Imported Airflow hooks at runtime in export operator to simplify mocking.
-- Guarded Airflow hook against non-string connection extras and ensured sensors module is importable for reloading.
+  - Resolved monkeypatching issues in Airflow export operator by using existing package from `sys.modules`.
+  - Hardened Airflow hook against non-string connection data and simplified package init so the sensors module stays reloadable.
 - Narrowed subject existence validation in `RegisterSubjectsWorkflow` to catch only `ApiError` and `ValueError`.
 - Updated smoke workflow to use `actions/upload-artifact@v4`.
 - Added tests for JsonModel type normalization.

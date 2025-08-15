@@ -27,9 +27,15 @@ class ImednetHook(BaseHook):
         base_url = extras.get("base_url")
         if base_url is not None:
             base_url = str(base_url)
+        login = getattr(conn, "login", None)
+        if not isinstance(login, str):
+            login = None
+        password = getattr(conn, "password", None)
+        if not isinstance(password, str):
+            password = None
         config = load_config(
-            api_key=extras.get("api_key") or conn.login,
-            security_key=extras.get("security_key") or conn.password,
+            api_key=extras.get("api_key") or login,
+            security_key=extras.get("security_key") or password,
             base_url=base_url,
         )
         return ImednetSDK(
