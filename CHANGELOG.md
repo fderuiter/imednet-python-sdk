@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Expanded architecture overview with component descriptions and new diagrams.
+- Added configuration guide summarizing environment variables and `.env` support.
 - Added test for initial SDK retry policy propagation to sync and async clients.
 - Added tests for ImednetSDK credential validation.
 - Added tests for `records_to_dataframe` and `export_records_csv` covering
@@ -124,6 +125,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added tests for JSON logging configuration covering formatter import paths.
 - Added unit test for `HTTPClientBase.retry_policy` accessor to ensure executor updates.
 - Added test verifying `ImednetSDK.retry_policy` updates sync and async clients.
+- Documented error handling and custom retry strategies with a runnable example
+  and cross-links from overview guides.
+- Added async quick start guide, example script, and README references.
 
 ## [0.1.4]
 
