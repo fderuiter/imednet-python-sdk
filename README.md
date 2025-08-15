@@ -87,16 +87,11 @@ into Postman to explore and test the API endpoints. The collection uses the
 
 ## Configuration
 
-Set the following environment variables before using the SDK or CLI:
-
-- `IMEDNET_API_KEY` – your API key
-- `IMEDNET_SECURITY_KEY` – your security key
-- `IMEDNET_BASE_URL` – optional base URL for private deployments
-
-Use `imednet.config.load_config()` to access these values in your code.
-
-Additional variables such as `IMEDNET_STUDY_KEY` are used in the examples and
-test suite. See `docs/test_skip_conditions.rst` for a full list.
+The SDK and CLI read credentials from environment variables such as
+`IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. See
+[configuration](docs/configuration.rst) for the complete list, optional
+settings, and `.env` support. Use `imednet.config.load_config()` to access these
+values in your code.
 
 ## CLI Entry Points
 

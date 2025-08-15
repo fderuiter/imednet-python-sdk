@@ -9,7 +9,7 @@ Install the package from PyPI:
 
    pip install imednet
 
-Set your credentials as environment variables:
+Set your credentials as environment variables (see :doc:`configuration` for details):
 
 .. code-block:: bash
 
