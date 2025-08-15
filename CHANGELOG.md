@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Documented pagination utilities to fix missing toctree reference.
+- Documented runtime discovery utilities and linked them from the live test guide.
 - Fixed broken ``filter`` cross-reference in record revisions docs.
 - Fixed unresolved example script references in documentation.
 - Documented contributor setup and process in docs and README.
