@@ -61,7 +61,7 @@ the wait times are 0.5 s, 1 s, 2 s, 4 s, and 8 s.
 Example script
 --------------
 
-The :mod:`examples.custom_retry` script demonstrates these concepts using a mock
+The :doc:`examples/custom_retry` script demonstrates these concepts using a mock
 transport:
 
 .. code-block:: console

@@ -33,7 +33,7 @@ Enable structured logging and list studies:
    studies = sdk.studies.list()
    print(studies)
 
-The example script :mod:`examples.quick_start` provides a runnable version that
+The example script :doc:`examples/quick_start` provides a runnable version that
 validates required environment variables.
 
 Cached endpoints can be refreshed with ``refresh=True``. The caches are not thread safe so long running applications should recreate the SDK when needed.

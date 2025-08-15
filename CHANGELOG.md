@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Fixed broken ``filter`` cross-reference in record revisions docs.
+- Fixed unresolved example script references in documentation.
 - Documented contributor setup and process in docs and README.
 - Expanded architecture overview with component descriptions and new diagrams.
 - Added configuration guide summarizing environment variables and `.env` support.
@@ -39,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   updated the smoke record script to use them.
 - Smoke record script now validates site and subject availability before posting
   records.
+- Removed `imednet.errors` from package docs to avoid build warning.
 - Form discovery now skips disabled and non-subject forms to avoid invalid form
   key errors during record creation.
 - Decoupled live-data discovery from pytest internals and skip the smoke script

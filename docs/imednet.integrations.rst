@@ -29,7 +29,7 @@ Parameters:
     sdk = ImednetSDK()
     export_to_long_sql(sdk, "STUDY", "records", "sqlite:///records.db")
 
-The example script :mod:`examples.export_long_sql` provides a runnable
+The example script :doc:`examples/export_long_sql` provides a runnable
 demonstration.
 
 Subpackages
