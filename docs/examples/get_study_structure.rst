@@ -1,5 +1,5 @@
-Quick Start Script
-==================
+Get Study Structure
+===================
 
 Prerequisites
 -------------
@@ -14,12 +14,13 @@ Environment variables
 
    export IMEDNET_API_KEY
    export IMEDNET_SECURITY_KEY
+   export IMEDNET_STUDY_KEY
    export IMEDNET_BASE_URL (optional)
 
 Description
 -----------
 
-Minimal example listing studies.
+Export study structure to JSON and CSV.
 
-.. literalinclude:: ../../examples/quick_start.py
+.. literalinclude:: ../../examples/get_study_structure.py
    :language: python

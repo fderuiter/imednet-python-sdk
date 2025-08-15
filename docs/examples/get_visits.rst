@@ -1,5 +1,5 @@
-Quick Start Script
-==================
+List Visits
+===========
 
 Prerequisites
 -------------
@@ -14,12 +14,13 @@ Environment variables
 
    export IMEDNET_API_KEY
    export IMEDNET_SECURITY_KEY
+   export IMEDNET_STUDY_KEY
    export IMEDNET_BASE_URL (optional)
 
 Description
 -----------
 
-Minimal example listing studies.
+Retrieve visits for a study.
 
-.. literalinclude:: ../../examples/quick_start.py
+.. literalinclude:: ../../examples/basic/get_visits.py
    :language: python
