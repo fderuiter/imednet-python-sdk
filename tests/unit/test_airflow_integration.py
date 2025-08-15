@@ -63,6 +63,9 @@ def test_imednet_hook_returns_sdk(monkeypatch):
 
 
 def test_export_operator_calls_helper(monkeypatch):
+    if "imednet.integrations.airflow" in sys.modules:
+        del sys.modules["imednet.integrations.airflow"]
+
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
