@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Fixed broken ``filter`` cross-reference in record revisions docs.
 - Documented contributor setup and process in docs and README.
 - Expanded architecture overview with component descriptions and new diagrams.
 - Added configuration guide summarizing environment variables and `.env` support.
