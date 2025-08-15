@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from imednet.core.exceptions import ServerError
@@ -129,9 +131,17 @@ def test_job_get_known_batch(sdk: ImednetSDK, study_key: str, generated_batch_id
     assert job.batch_id == generated_batch_id
 
 
-def test_create_record_and_poll_job(sdk: ImednetSDK, study_key: str, first_form_key: str) -> None:
-    record = {"formKey": first_form_key, "data": {}}
-    job = sdk.records.create(study_key, [record])
+@pytest.mark.parametrize(
+    "record_payload",
+    ["register", "scheduled", "new"],
+    indirect=True,
+)
+def test_create_record_and_poll_job(
+    sdk: ImednetSDK,
+    study_key: str,
+    record_payload: dict[str, Any],
+) -> None:
+    job = sdk.records.create(study_key, [record_payload])
     assert job.batch_id
     polled = sdk.jobs.get(study_key, job.batch_id)
     assert polled.batch_id == job.batch_id

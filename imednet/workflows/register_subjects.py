@@ -6,6 +6,7 @@ It provides a simple, robust interface for registering one or more subjects.
 
 from typing import TYPE_CHECKING, List, Optional
 
+from imednet.core.exceptions import ApiError
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 
@@ -33,6 +34,7 @@ class RegisterSubjectsWorkflow:
     ) -> Job:
         """
         Registers multiple subjects in the specified study.
+        Sites and subject identifiers are validated before submission.
 
         Args:
             study_key: The key identifying the study.
@@ -47,10 +49,29 @@ class RegisterSubjectsWorkflow:
         Raises:
             ApiError: If the API call fails.
         """
-        # Convert Pydantic models to dictionaries for the API call
+        # Validate sites and subjects before posting
+        sites = {s.site_name for s in self._sdk.sites.list(study_key=study_key)}
+        errors: list[str] = []
+        for idx, subj in enumerate(subjects):
+            if not subj.site_name:
+                errors.append(f"Index {idx}: siteName is required")
+            elif subj.site_name not in sites:
+                errors.append(f"Index {idx}: site '{subj.site_name}' not found")
+            if not subj.subject_key:
+                errors.append(f"Index {idx}: subjectKey is required")
+            else:
+                try:
+                    self._sdk.subjects.get(study_key, subj.subject_key)
+                except (ApiError, ValueError):
+                    errors.append(
+                        f"Index {idx}: subject with subjectKey {subj.subject_key} not found"
+                    )
+
+        if errors:
+            raise ValueError("; ".join(errors))
+
         subjects_data = [s.model_dump(by_alias=True) for s in subjects]
 
-        # Call the SDK's records endpoint to create (register) the subjects
         response = self._sdk.records.create(
             study_key=study_key, records_data=subjects_data, email_notify=email_notify
         )

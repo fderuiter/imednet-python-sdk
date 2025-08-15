@@ -9,7 +9,7 @@ Install the package from PyPI:
 
    pip install imednet
 
-Set your credentials as environment variables:
+Set your credentials as environment variables (see :doc:`configuration` for details):
 
 .. code-block:: bash
 
@@ -50,3 +50,6 @@ Custom retry logic can be provided via a ``RetryPolicy``:
            return isinstance(state.exception, ServerError)
 
    sdk = ImednetSDK(retry_policy=ServerRetry())
+
+See :doc:`retry_policy` for more guidance on error handling and exponential
+backoff.
