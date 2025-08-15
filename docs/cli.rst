@@ -83,7 +83,7 @@ require more time to insert large datasets.
 
    imednet export sql MY_STUDY table sqlite:///data.db --long-format
 
-See the example script :mod:`examples.export_long_sql` for invoking this option
+See the example script :doc:`examples/export_long_sql` for invoking this option
 via the SDK.
 
 Variable Filters
