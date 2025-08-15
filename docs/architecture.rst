@@ -13,7 +13,7 @@ Components
    graph TD
        CLI[CLI] --> |invokes| Workflows
        Workflows --> |coordinate| Endpoints
-       Endpoints --> |use| Client(["HTTP Client"])
+       Endpoints --> |use| Client[HTTP Client]
        Client --> |requests| API
 
 Core Client
