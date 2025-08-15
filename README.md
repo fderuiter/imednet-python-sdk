@@ -54,6 +54,31 @@ sdk = ImednetSDK(
 print(sdk.studies.list())
 ```
 
+## Asynchronous Example
+
+```python
+import asyncio
+from imednet import AsyncImednetSDK
+from imednet.config import load_config
+from imednet.utils import configure_json_logging
+
+
+async def main() -> None:
+    configure_json_logging()
+    cfg = load_config()
+    async with AsyncImednetSDK(
+        api_key=cfg.api_key,
+        security_key=cfg.security_key,
+        base_url=cfg.base_url,
+    ) as sdk:
+        print(await sdk.studies.async_list())
+
+
+asyncio.run(main())
+```
+
+See [docs/async_quick_start.rst](docs/async_quick_start.rst) for more details.
+
 ## Tech Stack
 
 - Python 3.10–3.12
