@@ -50,3 +50,6 @@ Custom retry logic can be provided via a ``RetryPolicy``:
            return isinstance(state.exception, ServerError)
 
    sdk = ImednetSDK(retry_policy=ServerRetry())
+
+See :doc:`retry_policy` for more guidance on error handling and exponential
+backoff.
