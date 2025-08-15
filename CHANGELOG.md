@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Documented json logging, URL, and validator helpers with examples and cross references.
 - Documented pagination utilities to fix missing toctree reference.
+- Documented runtime discovery utilities and linked them from the live test guide.
 - Fixed broken ``filter`` cross-reference in record revisions docs.
 - Fixed unresolved example script references in documentation.
 - Documented contributor setup and process in docs and README.
@@ -56,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
 - Added `imednet.config` module with `load_config` helper for reading credentials.
+- Documented `imednet.config` module with `Config` dataclass and `load_config` function.
 - Documented long-format SQL export and added example script.
 - Introduced `RetryPolicy` abstraction for configuring request retries.
 - Added tests for retry policy handling of response results and non-RequestError exceptions.
@@ -138,6 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and cross-links from overview guides.
 - Added async quick start guide, example script, and README references.
 - Expanded examples documentation with pages for all scripts and updated index.
+- Expanded CLI guide with usage for jobs, queries, variables, record revisions,
+  and subject data commands.
 
 ## [0.1.4]
 

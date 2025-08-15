@@ -15,6 +15,7 @@ Subpackages
 
    imednet.auth
    imednet.core
+   imednet.discovery
    imednet.endpoints
    imednet.http
    imednet.models
