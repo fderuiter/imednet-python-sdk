@@ -34,3 +34,18 @@ imednet.sdk module
    :undoc-members:
    :show-inheritance:
 
+imednet.async_sdk module
+------------------------
+
+.. automodule:: imednet.async_sdk
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+imednet.discovery module
+------------------------
+
+.. automodule:: imednet.discovery
+   :members:
+   :undoc-members:
+   :show-inheritance:
