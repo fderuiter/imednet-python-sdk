@@ -12,6 +12,38 @@ from ..sdk import ImednetSDK
 STUDY_KEY_ARG = typer.Argument(..., help="The key identifying the study.")
 
 
+def FilterOption(
+    name: str,
+    help_example: str,
+    option_name: Optional[str] = None,
+    short_name: Optional[str] = None,
+) -> Any:
+    """Factory for creating a reusable Typer Option for filtering.
+
+    Args:
+        name: The name of the entity being filtered (e.g., "subject").
+        help_example: An example to show in the help text (e.g., 'status=active').
+        option_name: The long-form option name (e.g., "--subject-filter").
+                     Defaults to f"--{name}-filter".
+        short_name: The short-form option name (e.g., "-f").
+
+    Returns:
+        A Typer Option instance.
+    """
+    args = [option_name or f"--{name}-filter"]
+    if short_name:
+        args.append(short_name)
+
+    return typer.Option(
+        None,
+        *args,
+        help=(
+            f"{name.capitalize()} filter criteria (e.g., '{help_example}'). "
+            "Repeat for multiple filters."
+        ),
+    )
+
+
 def get_sdk() -> ImednetSDK:
     """Initialize and return the SDK instance using :func:`load_config`."""
     try:
@@ -77,29 +109,64 @@ def register_list_command(
     *,
     requires_study_key: bool = True,
     empty_msg: str | None = None,
+    with_filter: bool = False,
+    filter_help_example: str = "key=value",
 ) -> None:
     """Attach a standard ``list`` command to ``app``."""
 
     from .decorators import with_sdk  # imported lazily to avoid circular import
 
     if requires_study_key:
+        if with_filter:
 
-        @app.command("list")
-        @with_sdk
-        def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
-            echo_fetch(name, study_key)
-            items = getattr(sdk, attr).list(study_key)
-            display_list(items, name, empty_msg)
+            @app.command("list")
+            @with_sdk
+            def list_cmd_with_filter(
+                sdk: ImednetSDK,
+                study_key: str = STUDY_KEY_ARG,
+                filter: Optional[List[str]] = FilterOption(
+                    name, filter_help_example, option_name="--filter", short_name="-f"
+                ),
+            ) -> None:
+                echo_fetch(name, study_key)
+                parsed_filter = parse_filter_args(filter)
+                items = getattr(sdk, attr).list(study_key, **(parsed_filter or {}))
+                display_list(items, name, empty_msg)
+
+        else:
+
+            @app.command("list")
+            @with_sdk
+            def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
+                echo_fetch(name, study_key)
+                items = getattr(sdk, attr).list(study_key)
+                display_list(items, name, empty_msg)
 
         return
 
     else:
+        if with_filter:
 
-        @app.command("list")
-        @with_sdk
-        def list_cmd_no_study(sdk: ImednetSDK) -> None:
-            echo_fetch(name)
-            items = getattr(sdk, attr).list()
-            display_list(items, name, empty_msg)
+            @app.command("list")
+            @with_sdk
+            def list_cmd_no_study_with_filter(
+                sdk: ImednetSDK,
+                filter: Optional[List[str]] = FilterOption(
+                    name, filter_help_example, option_name="--filter", short_name="-f"
+                ),
+            ) -> None:
+                echo_fetch(name)
+                parsed_filter = parse_filter_args(filter)
+                items = getattr(sdk, attr).list(**(parsed_filter or {}))
+                display_list(items, name, empty_msg)
+
+        else:
+
+            @app.command("list")
+            @with_sdk
+            def list_cmd_no_study(sdk: ImednetSDK) -> None:
+                echo_fetch(name)
+                items = getattr(sdk, attr).list()
+                display_list(items, name, empty_msg)
 
         return

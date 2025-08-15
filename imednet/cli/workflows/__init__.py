@@ -7,7 +7,7 @@ from rich import print
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
-from ..utils import STUDY_KEY_ARG, parse_filter_args
+from ..utils import STUDY_KEY_ARG, FilterOption, parse_filter_args
 
 app = typer.Typer(name="workflows", help="Execute common data workflows.")
 
@@ -17,26 +17,9 @@ app = typer.Typer(name="workflows", help="Execute common data workflows.")
 def extract_records(
     sdk: ImednetSDK,
     study_key: str = STUDY_KEY_ARG,
-    record_filter: Optional[List[str]] = typer.Option(
-        None,
-        "--record-filter",
-        help=("Record filter criteria (e.g., 'form_key=DEMOG'). " "Repeat for multiple filters."),
-    ),
-    subject_filter: Optional[List[str]] = typer.Option(
-        None,
-        "--subject-filter",
-        help=(
-            "Subject filter criteria (e.g., 'subject_status=Screened'). "
-            "Repeat for multiple filters."
-        ),
-    ),
-    visit_filter: Optional[List[str]] = typer.Option(
-        None,
-        "--visit-filter",
-        help=(
-            "Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters."
-        ),
-    ),
+    record_filter: Optional[List[str]] = FilterOption("record", "form_key=DEMOG"),
+    subject_filter: Optional[List[str]] = FilterOption("subject", "subject_status=Screened"),
+    visit_filter: Optional[List[str]] = FilterOption("visit", "visit_key=SCREENING"),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
     from .. import DataExtractionWorkflow
