@@ -20,6 +20,7 @@ Subpackages
    imednet.models
    imednet.pagination
    imednet.utils
+   imednet.validation
    imednet.workflows
 
 Submodules

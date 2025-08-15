@@ -57,6 +57,7 @@ HTTPX requests used by the SDK:
    :members:
    :undoc-members:
    :show-inheritance:
+   :noindex:
 
 imednet.core.exceptions module
 ------------------------------
