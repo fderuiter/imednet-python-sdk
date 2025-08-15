@@ -3,7 +3,9 @@ Configuration
 
 The SDK and CLI read settings from environment variables. They can be set in the
 shell or stored in a ``.env`` file that the CLI loads automatically via
-:func:`dotenv.load_dotenv`.
+:func:`dotenv.load_dotenv`. Load these values into a typed
+:class:`~imednet.config.Config` with :func:`~imednet.config.load_config`—see
+:doc:`imednet.config` for details.
 
 Environment Variables
 ---------------------
