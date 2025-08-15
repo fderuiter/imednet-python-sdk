@@ -21,11 +21,16 @@ class ImednetHook(BaseHook):
             BaseHook = CurrentBaseHook
 
         conn = BaseHook.get_connection(self.imednet_conn_id)
-        extras = conn.extra_dejson
+        extras = getattr(conn, "extra_dejson", {}) or {}
+        if not isinstance(extras, dict):
+            extras = {}
+        base_url = extras.get("base_url")
+        if base_url is not None:
+            base_url = str(base_url)
         config = load_config(
             api_key=extras.get("api_key") or conn.login,
             security_key=extras.get("security_key") or conn.password,
-            base_url=extras.get("base_url"),
+            base_url=base_url,
         )
         return ImednetSDK(
             api_key=config.api_key,
