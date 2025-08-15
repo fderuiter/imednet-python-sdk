@@ -107,7 +107,10 @@ autosummary_generate = True
 # Mock heavy optional dependencies so autodoc does not import them
 autodoc_mock_imports = ["pandas", "numpy", "matplotlib", "pydantic", "airflow"]
 
-suppress_warnings = ["ref.ref", "autodoc", "sphinx_autodoc_typehints"]
+suppress_warnings = ["ref.ref", "toc.excluded", "autodoc.import", "autodoc", "sphinx_autodoc_typehints"]
+
+# Ignore noisy pydantic schema generation warnings.
+warnings.filterwarnings("ignore", message="Failed guarded type import", category=UserWarning)
 
 # Display type hints in the description instead of the signature to keep
 # function signatures concise in the rendered documentation.
@@ -121,9 +124,9 @@ exclude_patterns: list[str] = [
     "imednet.cli.*.rst",
     "imednet.integrations.rst",
     "imednet.integrations.*.rst",
-    "imednet.validation.rst",
     "imednet.integrations.airflow.rst",
     "imednet.testing.rst",
+    "imednet.errors.rst",
 ]  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 
