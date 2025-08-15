@@ -1,5 +1,4 @@
-import os
-from typing import Iterator
+from typing import Any
 
 import pytest
 
@@ -17,32 +16,6 @@ from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
 from imednet.sdk import ImednetSDK
-
-API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
-BASE_URL = os.getenv("IMEDNET_BASE_URL")
-RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
-
-pytestmark = pytest.mark.skipif(
-    not RUN_E2E or not (API_KEY and SECURITY_KEY),
-    reason=(
-        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run live tests"
-    ),
-)
-
-
-@pytest.fixture(scope="session")
-def sdk() -> Iterator[ImednetSDK]:
-    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
-        yield client
-
-
-@pytest.fixture(scope="session")
-def study_key(sdk: ImednetSDK) -> str:
-    studies = sdk.studies.list()
-    if not studies:
-        pytest.skip("No studies available for live tests")
-    return studies[0].study_key
 
 
 def test_list_studies(sdk: ImednetSDK) -> None:
@@ -158,9 +131,17 @@ def test_job_get_known_batch(sdk: ImednetSDK, study_key: str, generated_batch_id
     assert job.batch_id == generated_batch_id
 
 
-def test_create_record_and_poll_job(sdk: ImednetSDK, study_key: str, first_form_key: str) -> None:
-    record = {"formKey": first_form_key, "data": {}}
-    job = sdk.records.create(study_key, [record])
+@pytest.mark.parametrize(
+    "record_payload",
+    ["register", "scheduled", "new"],
+    indirect=True,
+)
+def test_create_record_and_poll_job(
+    sdk: ImednetSDK,
+    study_key: str,
+    record_payload: dict[str, Any],
+) -> None:
+    job = sdk.records.create(study_key, [record_payload])
     assert job.batch_id
     polled = sdk.jobs.get(study_key, job.batch_id)
     assert polled.batch_id == job.batch_id

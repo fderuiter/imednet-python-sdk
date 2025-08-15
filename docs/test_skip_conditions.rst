@@ -8,11 +8,10 @@ runs match the behaviour seen in CI.
 End-to-End Tests
 ----------------
 The files under ``tests/live`` exercise the SDK against a real iMednet
-environment. All of these tests are skipped unless ``IMEDNET_RUN_E2E=1`` and valid
-credentials are supplied via ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY``
-(optionally ``IMEDNET_BASE_URL``).
+environment. All of these tests are skipped unless ``IMEDNET_RUN_E2E=1`` and
+valid credentials are supplied (see :doc:`configuration`).
 
-Additional variables may be required:
+Additional variables may be required (see :doc:`configuration` for a full list):
 
 - ``IMEDNET_BATCH_ID`` — used for job polling tests. When unset, the suite
   creates a record to generate a batch ID automatically.

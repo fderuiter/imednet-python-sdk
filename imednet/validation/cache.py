@@ -66,6 +66,11 @@ class BaseSchemaCache(Generic[_TClient]):
     def form_key_from_id(self, form_id: int) -> Optional[str]:
         return self._form_id_to_key.get(form_id)
 
+    @property
+    def forms(self) -> Dict[str, Dict[str, Variable]]:
+        """Return cached variables grouped by form key."""
+        return self._form_variables
+
 
 class SchemaCache(BaseSchemaCache["ImednetSDK"]):
     def __init__(self) -> None:
@@ -125,9 +130,18 @@ def validate_record_data(
     form_key: str,
     data: Dict[str, Any],
 ) -> None:
+    """Validate ``data`` for ``form_key`` using the provided schema cache.
+
+    Raises:
+        ValidationError: If the form key is not present in the schema or the data
+            fails validation checks.
+    """
+
     variables = schema.variables_for_form(form_key)
     if not variables:
-        return
+        # The cache has no variables for the given form key, so treat it as an
+        # unknown form and fail fast.
+        raise ValidationError(f"Unknown form {form_key}")
     unknown = [k for k in data if k not in variables]
     if unknown:
         raise ValidationError(f"Unknown variables for form {form_key}: {', '.join(unknown)}")

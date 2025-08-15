@@ -46,7 +46,9 @@ def test_data_extraction_filters():
 def test_record_update_submit_and_wait(monkeypatch: pytest.MonkeyPatch):
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get(re.compile("https://api.test/api/v1/edc/studies/ST/variables.*")).respond(
-        json={"data": []}
+        json={
+            "data": [{"variableName": "x", "variableType": "integer", "formId": 1, "formKey": "F1"}]
+        }
     )
     respx.post("https://api.test/api/v1/edc/studies/ST/records").respond(
         json={"batchId": "B1", "state": "PROCESSING"}
@@ -138,7 +140,9 @@ def test_data_extraction_no_matching_subjects() -> None:
 def test_record_update_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get(re.compile("https://api.test/api/v1/edc/studies/ST/variables.*")).respond(
-        json={"data": []}
+        json={
+            "data": [{"variableName": "x", "variableType": "integer", "formId": 1, "formKey": "F1"}]
+        }
     )
     respx.post("https://api.test/api/v1/edc/studies/ST/records").respond(
         json={"batchId": "B1", "state": "PROCESSING"}

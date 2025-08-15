@@ -65,6 +65,15 @@ def test_imednet_hook_returns_sdk(monkeypatch):
 def test_export_operator_calls_helper(monkeypatch):
     _setup_airflow(monkeypatch)
 
+    conn = MagicMock()
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
     sdk = MagicMock()
     hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
 

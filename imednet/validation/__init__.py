@@ -5,6 +5,7 @@ from .cache import (
     SchemaValidator,
     validate_record_data,
 )
+from .data_dictionary import DataDictionary, DataDictionaryLoader
 
 __all__ = [
     "BaseSchemaCache",
@@ -12,4 +13,6 @@ __all__ = [
     "AsyncSchemaCache",
     "SchemaValidator",
     "validate_record_data",
+    "DataDictionary",
+    "DataDictionaryLoader",
 ]

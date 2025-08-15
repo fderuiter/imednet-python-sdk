@@ -1,0 +1,4 @@
+Form,Variable Type,Variable Name,Label
+AE,Date/Time Precision,AESTDAT,Date of event onset:
+AE,Date/Time Precision,AEENDAT,Date of resolution or death:
+AE,Number,AENUM,AE number:

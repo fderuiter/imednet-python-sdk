@@ -104,6 +104,38 @@ def test_create_or_update_records_validation(async_mode: bool) -> None:
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
+def test_create_or_update_records_unknown_form_key(async_mode: bool) -> None:
+    sdk = MagicMock()
+    if async_mode:
+        sdk._async_client = object()
+        sdk.records.async_create = AsyncMock()
+    else:
+        sdk.records.create = MagicMock()
+
+    wf = RecordUpdateWorkflow(sdk)
+    schema = SchemaCache()
+    wf._validator.schema = schema
+    wf._schema = schema
+
+    if async_mode:
+        wf._validator.refresh = AsyncMock()  # type: ignore[method-assign]
+        wf._validator.validate_batch = AsyncMock()  # type: ignore[method-assign]
+        with pytest.raises(ValueError, match="Form key 'F1' not found"):
+            asyncio.run(wf.async_create_or_update_records("S", [{"formKey": "F1", "data": {}}]))
+        wf._validator.refresh.assert_awaited_once_with("S")
+        wf._validator.validate_batch.assert_not_called()
+        sdk.records.async_create.assert_not_awaited()
+    else:
+        wf._validator.refresh = MagicMock()  # type: ignore[method-assign]
+        wf._validator.validate_batch = MagicMock()  # type: ignore[method-assign]
+        with pytest.raises(ValueError, match="Form key 'F1' not found"):
+            wf.create_or_update_records("S", [{"formKey": "F1", "data": {}}])
+        wf._validator.refresh.assert_called_once_with("S")
+        wf._validator.validate_batch.assert_not_called()
+        sdk.records.create.assert_not_called()
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
 def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None:
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
@@ -135,12 +167,11 @@ def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None
 
     wf = RecordUpdateWorkflow(sdk)
     if async_mode:
-        wf._validator.refresh = AsyncMock()  # type: ignore[method-assign]
         wf._validator.validate_batch = AsyncMock()  # type: ignore[method-assign]
         asyncio.run(
             wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
         )
-        wf._validator.refresh.assert_awaited_once_with("STUDY")
+        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
         wf._validator.validate_batch.assert_awaited_once_with(
             "STUDY",
             [{"formKey": "F1", "data": {"age": 5}}],
@@ -151,10 +182,9 @@ def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None
             schema=wf._schema,
         )
     else:
-        wf._validator.refresh = MagicMock()  # type: ignore[method-assign]
         wf._validator.validate_batch = MagicMock()  # type: ignore[method-assign]
         wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
-        wf._validator.refresh.assert_called_once_with("STUDY")
+        sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
         wf._validator.validate_batch.assert_called_once_with(
             "STUDY",
             [{"formKey": "F1", "data": {"age": 5}}],
@@ -177,9 +207,17 @@ def test_create_or_update_records_wait_for_completion(
         sdk._async_client = object()
         sdk.records.async_create = AsyncMock(return_value=initial_job)
         sdk.jobs.async_get = AsyncMock(side_effect=[initial_job, completed_job])
-        sdk.variables.async_list = AsyncMock(return_value=[])
+        sdk.variables.async_list = AsyncMock(
+            return_value=[
+                Variable(
+                    variable_name="age",
+                    variable_type="integer",
+                    form_id=1,
+                    form_key="F1",
+                )
+            ]
+        )
         wf = RecordUpdateWorkflow(sdk)
-        wf._validator.refresh = AsyncMock()  # type: ignore[method-assign]
         wf._validator.validate_batch = AsyncMock()  # type: ignore[method-assign]
         monkeypatch.setattr(asyncio, "sleep", AsyncMock())
         result = asyncio.run(
@@ -200,9 +238,17 @@ def test_create_or_update_records_wait_for_completion(
     else:
         sdk.records.create = MagicMock(return_value=initial_job)
         sdk.jobs.get = MagicMock(side_effect=[initial_job, completed_job])
-        sdk.variables.list = MagicMock(return_value=[])
+        sdk.variables.list = MagicMock(
+            return_value=[
+                Variable(
+                    variable_name="age",
+                    variable_type="integer",
+                    form_id=1,
+                    form_key="F1",
+                )
+            ]
+        )
         wf = RecordUpdateWorkflow(sdk)
-        wf._validator.refresh = MagicMock()  # type: ignore[method-assign]
         wf._validator.validate_batch = MagicMock()  # type: ignore[method-assign]
         monkeypatch.setattr("time.sleep", lambda *_: None)
         result = wf.create_or_update_records(

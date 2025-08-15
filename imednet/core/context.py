@@ -8,12 +8,7 @@ from typing import Optional
 
 @dataclass
 class Context:
-    """
-    Holds default values for SDK calls, such as default study key.
-
-    Attributes:
-        default_study_key: Optional[str] - default study key for API calls.
-    """
+    """Holds default values for SDK calls, such as default study key."""
 
     #: Default study key for API calls.
     #: :noindex:

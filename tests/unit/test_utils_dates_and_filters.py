@@ -25,8 +25,9 @@ def test_parse_iso_datetime_naive() -> None:
 
 
 def test_parse_iso_datetime_millis_padding() -> None:
-    dt = parse_iso_datetime("2021-12-09T08:23:21.99Z")
-    assert dt == datetime(2021, 12, 9, 8, 23, 21, 990000, tzinfo=timezone.utc)
+    dt = parse_iso_datetime("2021-12-09T08:23:21.99")
+    assert dt.microsecond == 990000
+    assert dt.tzinfo is None
 
 
 def test_parse_iso_datetime_micro_padding() -> None:

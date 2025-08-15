@@ -91,9 +91,6 @@ class ImednetSDK:
 
     Attributes:
         ctx: Context object for storing state across SDK calls.
-        studies: Access to study-related endpoints.
-        forms: Access to form-related endpoints.
-        subjects: Access to subject-related endpoints.
         etc...
     """
 

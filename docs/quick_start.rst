@@ -9,7 +9,7 @@ Install the package from PyPI:
 
    pip install imednet
 
-Set your credentials as environment variables:
+Set your credentials as environment variables (see :doc:`configuration` for details):
 
 .. code-block:: bash
 
@@ -33,7 +33,7 @@ Enable structured logging and list studies:
    studies = sdk.studies.list()
    print(studies)
 
-The example script :mod:`examples.quick_start` provides a runnable version that
+The example script :doc:`examples/quick_start` provides a runnable version that
 validates required environment variables.
 
 Cached endpoints can be refreshed with ``refresh=True``. The caches are not thread safe so long running applications should recreate the SDK when needed.
@@ -50,3 +50,6 @@ Custom retry logic can be provided via a ``RetryPolicy``:
            return isinstance(state.exception, ServerError)
 
    sdk = ImednetSDK(retry_policy=ServerRetry())
+
+See :doc:`retry_policy` for more guidance on error handling and exponential
+backoff.

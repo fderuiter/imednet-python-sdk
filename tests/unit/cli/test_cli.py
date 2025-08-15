@@ -9,6 +9,7 @@ from typer.testing import CliRunner
 
 import imednet.cli as cli
 from imednet.core.exceptions import ApiError
+from imednet.integrations import export as export_mod
 
 
 @pytest.fixture(autouse=True)
@@ -52,6 +53,21 @@ def test_studies_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
+
+
+def test_sdk_closed_after_command(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.studies.list.return_value = []
+    result = runner.invoke(cli.app, ["studies", "list"])
+    assert result.exit_code == 0
+    sdk.close.assert_called_once()
+
+
+def test_multiple_invocations_close_sdk(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.studies.list.return_value = []
+    first = runner.invoke(cli.app, ["studies", "list"])
+    second = runner.invoke(cli.app, ["studies", "list"])
+    assert first.exit_code == 0 and second.exit_code == 0
+    assert sdk.close.call_count == 2
 
 
 def test_sites_list_success(runner: CliRunner, sdk: MagicMock) -> None:
@@ -187,7 +203,8 @@ def test_export_parquet_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_parquet", func)
+    monkeypatch.setattr(export_mod, "export_to_parquet", func)
+    monkeypatch.setattr(cli, "export_to_parquet", export_mod.export_to_parquet)
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     result = runner.invoke(cli.app, ["export", "parquet", "STUDY", "out.parquet"])
     assert result.exit_code == 0
@@ -198,7 +215,8 @@ def test_export_csv_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_csv", func)
+    monkeypatch.setattr(export_mod, "export_to_csv", func)
+    monkeypatch.setattr(cli, "export_to_csv", export_mod.export_to_csv)
     result = runner.invoke(cli.app, ["export", "csv", "STUDY", "out.csv"])
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "out.csv")
@@ -208,7 +226,8 @@ def test_export_excel_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_excel", func)
+    monkeypatch.setattr(export_mod, "export_to_excel", func)
+    monkeypatch.setattr(cli, "export_to_excel", export_mod.export_to_excel)
     result = runner.invoke(cli.app, ["export", "excel", "STUDY", "out.xlsx"])
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "out.xlsx")
@@ -218,7 +237,8 @@ def test_export_json_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_json", func)
+    monkeypatch.setattr(export_mod, "export_to_json", func)
+    monkeypatch.setattr(cli, "export_to_json", export_mod.export_to_json)
     result = runner.invoke(cli.app, ["export", "json", "STUDY", "out.json"])
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "out.json")
@@ -228,8 +248,11 @@ def test_export_sql_calls_helper_non_sqlite(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_sql", func)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", MagicMock())
+    form_func = MagicMock()
+    monkeypatch.setattr(export_mod, "export_to_sql", func)
+    monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
+    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "postgres"
@@ -265,8 +288,11 @@ def test_export_sql_sqlite_uses_by_form(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     form_func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_sql_by_form", form_func)
-    monkeypatch.setattr(cli, "export_to_sql", MagicMock())
+    sql_func = MagicMock()
+    monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
+    monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
+    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "sqlite"
@@ -302,9 +328,11 @@ def test_export_sql_sqlite_single_table(
 ) -> None:
     form_func = MagicMock()
     single = ["--single-table"]
-    monkeypatch.setattr(cli, "export_to_sql_by_form", form_func)
     sql_func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_sql", sql_func)
+    monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
+    monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
+    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "sqlite"
@@ -342,9 +370,14 @@ def test_export_sql_long_format(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     long_func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_long_sql", long_func)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", MagicMock())
-    monkeypatch.setattr(cli, "export_to_sql", MagicMock())
+    form_func = MagicMock()
+    sql_func = MagicMock()
+    monkeypatch.setattr(export_mod, "export_to_long_sql", long_func)
+    monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
+    monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
+    monkeypatch.setattr(cli, "export_to_long_sql", export_mod.export_to_long_sql)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
+    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "sqlite"
@@ -357,17 +390,22 @@ def test_export_sql_long_format(
     )
     assert result.exit_code == 0
     long_func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
-    cli.export_to_sql.assert_not_called()  # type: ignore[attr-defined]
-    cli.export_to_sql_by_form.assert_not_called()  # type: ignore[attr-defined]
+    sql_func.assert_not_called()
+    form_func.assert_not_called()
 
 
 def test_export_sql_long_format_overrides_single(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     long_func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_long_sql", long_func)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", MagicMock())
-    monkeypatch.setattr(cli, "export_to_sql", MagicMock())
+    form_func = MagicMock()
+    sql_func = MagicMock()
+    monkeypatch.setattr(export_mod, "export_to_long_sql", long_func)
+    monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
+    monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
+    monkeypatch.setattr(cli, "export_to_long_sql", export_mod.export_to_long_sql)
+    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
+    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "postgres"
@@ -388,8 +426,8 @@ def test_export_sql_long_format_overrides_single(
     )
     assert result.exit_code == 0
     long_func.assert_called_once_with(sdk, "STUDY", "tbl", "postgresql://")
-    cli.export_to_sql.assert_not_called()  # type: ignore[attr-defined]
-    cli.export_to_sql_by_form.assert_not_called()  # type: ignore[attr-defined]
+    sql_func.assert_not_called()
+    form_func.assert_not_called()
 
 
 def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:

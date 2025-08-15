@@ -73,6 +73,12 @@ def test_validate_record_data_errors() -> None:
         validate_record_data(cache, "F1", {"age": "x"})
 
 
+def test_validate_record_data_unknown_form() -> None:
+    cache = SchemaCache()
+    with pytest.raises(ValidationError, match="Unknown form BAD"):
+        validate_record_data(cache, "BAD", {})
+
+
 def test_schema_validator_batch_calls_validate_record() -> None:
     sdk = MagicMock()
     validator = SchemaValidator(sdk)

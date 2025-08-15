@@ -39,6 +39,14 @@ imednet.workflows.record\_update module
 ``RecordUpdateWorkflow`` uses ``SchemaCache`` to validate record data before
 submission when provided.
 
+imednet.workflows.register_subjects module
+-------------------------------------------
+
+.. automodule:: imednet.workflows.register_subjects
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 imednet.workflows.subject\_data module
 --------------------------------------
 

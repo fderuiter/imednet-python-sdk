@@ -1,36 +1,8 @@
-import os
-from typing import Iterator
-
+import pandas as pd
 import pytest
 
 from imednet.integrations import export
 from imednet.sdk import ImednetSDK
-
-API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
-BASE_URL = os.getenv("IMEDNET_BASE_URL")
-RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
-
-pytestmark = pytest.mark.skipif(
-    not RUN_E2E or not (API_KEY and SECURITY_KEY),
-    reason=(
-        "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY to run live tests"
-    ),
-)
-
-
-@pytest.fixture(scope="session")
-def sdk() -> Iterator[ImednetSDK]:
-    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
-        yield client
-
-
-@pytest.fixture(scope="session")
-def study_key(sdk: ImednetSDK) -> str:
-    studies = sdk.get_studies()
-    if not studies:
-        pytest.skip("No studies available for integration tests")
-    return studies[0].study_key
 
 
 def test_export_to_csv(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
@@ -59,11 +31,27 @@ def test_export_to_parquet(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
     assert p.exists()
 
 
-def test_export_to_sql(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
+def test_export_to_sql_handles_column_limit(
+    sdk: ImednetSDK, study_key: str, tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     pytest.importorskip("sqlalchemy")
+    from sqlalchemy import create_engine, inspect, text
+
     p = tmp_path / "db.sqlite"
+    columns = [f"c{i}" for i in range(export.MAX_SQLITE_COLUMNS + 1)]
+    df = pd.DataFrame({c: [i] for i, c in enumerate(columns)})
+    monkeypatch.setattr(export, "_records_df", lambda *a, **k: df)
     export.export_to_sql(sdk, study_key, "table", f"sqlite:///{p}")
     assert p.exists()
+    engine = create_engine(f"sqlite:///{p}")
+    inspector = inspect(engine)
+    table_names = inspector.get_table_names()
+    assert "table_part1" in table_names
+    assert "table_part2" in table_names
+    with engine.connect() as conn:
+        for t in ("table_part1", "table_part2"):
+            count = conn.execute(text(f"SELECT COUNT(*) FROM {t}")).scalar()
+            assert count == 1
 
 
 def test_imednet_hook() -> None:

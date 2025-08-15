@@ -4,7 +4,6 @@ from types import ModuleType
 from unittest.mock import MagicMock
 
 import pandas as pd
-import pytest
 
 import imednet.integrations.export as export_mod
 
@@ -164,9 +163,13 @@ def test_export_functions_handle_case_insensitive_duplicates(tmp_path, monkeypat
 
 
 def test_export_sql_too_many_columns(monkeypatch):
-    columns = [f"c{i}" for i in range(2001)]
-    df = pd.DataFrame([range(2001)], columns=columns)
-    monkeypatch.setattr(pd.DataFrame, "to_sql", MagicMock())
+    columns = [f"c{i}" for i in range(export_mod.MAX_SQLITE_COLUMNS + 1)]
+    df = pd.DataFrame(
+        [range(export_mod.MAX_SQLITE_COLUMNS + 1)],
+        columns=columns,
+    )
+    mock_to_sql = MagicMock()
+    monkeypatch.setattr(pd.DataFrame, "to_sql", mock_to_sql)
     mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
     monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
 
@@ -176,9 +179,11 @@ def test_export_sql_too_many_columns(monkeypatch):
     sa_module.create_engine = MagicMock(return_value=engine)
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
 
-    with pytest.raises(ValueError, match="SQLite supports up to 2000 columns"):
-        export_mod.export_to_sql(MagicMock(), "STUDY", "table", "sqlite://")
-    pd.DataFrame.to_sql.assert_not_called()
+    export_mod.export_to_sql(MagicMock(), "STUDY", "table", "sqlite://")
+    assert mock_to_sql.call_count == 2
+    calls = mock_to_sql.call_args_list
+    assert calls[0].args[0] == "table_part1"
+    assert calls[1].args[0] == "table_part2"
 
 
 def test_export_to_sql_by_form(monkeypatch):

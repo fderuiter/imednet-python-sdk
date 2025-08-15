@@ -1,3 +1,5 @@
+"""Airflow sensors for iMednet operations."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, Iterable
@@ -15,7 +17,8 @@ except Exception:  # pragma: no cover - placeholder fallback
             pass
 
 
-from ....sdk import ImednetSDK
+from ...sdk import ImednetSDK
+from .hooks import ImednetHook
 
 TERMINAL_STATES = {"COMPLETED", "FAILED", "CANCELLED"}
 
@@ -40,8 +43,6 @@ class ImednetJobSensor(BaseSensorOperator):
         self.imednet_conn_id = imednet_conn_id
 
     def _get_sdk(self) -> ImednetSDK:
-        from . import ImednetHook
-
         return ImednetHook(self.imednet_conn_id).get_conn()
 
     def poke(self, context: Dict[str, Any]) -> bool:
@@ -50,11 +51,11 @@ class ImednetJobSensor(BaseSensorOperator):
         state = job.state.upper()
         if state in TERMINAL_STATES:
             if state != "COMPLETED":
-                from ..operators import AirflowException
+                from .operators import AirflowException
 
                 raise AirflowException(f"Job {self.batch_id} ended in state {state}")
             return True
         return False
 
 
-__all__ = ["ImednetJobSensor"]
+__all__ = ["ImednetJobSensor", "ImednetHook"]

@@ -8,19 +8,20 @@ Base URL
 --------
 
 The SDK communicates with the production API at
-``https://edc.prod.imednetapi.com`` by default. Override this with the
-``IMEDNET_BASE_URL`` environment variable or pass ``base_url`` when calling
-``load_config`` for a private deployment.
+``https://edc.prod.imednetapi.com`` by default. Override this with
+``IMEDNET_BASE_URL`` or the ``base_url`` argument to ``load_config`` for a
+private deployment. See :doc:`configuration` for details.
 
 Authentication
 --------------
 
 All requests must include ``x-api-key`` and ``x-imn-security-key`` headers. The
-:class:`~imednet.core.base_client.BaseClient` handles shared initialization while the
-:class:`~imednet.core.client.Client` and
-:class:`~imednet.core.async_client.AsyncClient` relies on
+:class:`~imednet.core.base_client.BaseClient` handles shared initialization
+while the :class:`~imednet.core.client.Client` and
+:class:`~imednet.core.async_client.AsyncClient` rely on
 :func:`imednet.config.load_config` to read ``IMEDNET_API_KEY`` and
-``IMEDNET_SECURITY_KEY`` from the environment and populate these headers automatically.
+``IMEDNET_SECURITY_KEY`` from the environment and populate these headers
+automatically. See :doc:`configuration` for more information.
 
 HTTP methods and errors
 -----------------------
@@ -34,6 +35,9 @@ codes raise typed exceptions:
 * ``404`` – :class:`~imednet.core.exceptions.NotFoundError`
 * ``429`` – :class:`~imednet.core.exceptions.RateLimitError`
 * ``5xx`` – :class:`~imednet.core.exceptions.ServerError`
+
+See :doc:`retry_policy` for examples of handling these errors and configuring
+custom retry logic.
 
 Filtering
 ---------

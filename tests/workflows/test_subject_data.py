@@ -5,7 +5,7 @@ from imednet.models.records import Record
 from imednet.models.subjects import Subject
 from imednet.models.visits import Visit
 from imednet.testing import fake_data
-from imednet.workflows.subject_data import SubjectDataWorkflow
+from imednet.workflows.subject_data import SubjectComprehensiveData, SubjectDataWorkflow
 
 
 def test_get_all_subject_data_aggregates_across_endpoints(schema) -> None:
@@ -43,3 +43,29 @@ def test_get_all_subject_data_aggregates_across_endpoints(schema) -> None:
     assert result.visits == [visit]
     assert result.records == [record]
     assert result.queries == [query]
+
+
+def test_get_all_subject_data_returns_empty_results() -> None:
+    sdk = MagicMock()
+    sdk.subjects.list.return_value = []
+    sdk.visits.list.return_value = []
+    sdk.records.list.return_value = []
+    sdk.queries.list.return_value = []
+
+    wf = SubjectDataWorkflow(sdk)
+    result = wf.get_all_subject_data("STUDY", "S2")
+
+    sdk.subjects.list.assert_called_once_with("STUDY", subject_key="S2")
+    assert sdk.subjects.list.call_args.kwargs == {"subject_key": "S2"}
+    sdk.visits.list.assert_called_once_with("STUDY", subject_key="S2")
+    assert sdk.visits.list.call_args.kwargs == {"subject_key": "S2"}
+    sdk.records.list.assert_called_once_with("STUDY", subject_key="S2")
+    assert sdk.records.list.call_args.kwargs == {"subject_key": "S2"}
+    sdk.queries.list.assert_called_once_with("STUDY", subject_key="S2")
+    assert sdk.queries.list.call_args.kwargs == {"subject_key": "S2"}
+
+    assert isinstance(result, SubjectComprehensiveData)
+    assert result.subject_details is None
+    assert result.visits == []
+    assert result.records == []
+    assert result.queries == []

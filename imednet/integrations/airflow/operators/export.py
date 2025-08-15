@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from typing import Any, Dict, Iterable, Optional
 
 from airflow.models import BaseOperator
@@ -32,9 +33,12 @@ class ImednetExportOperator(BaseOperator):
         self.imednet_conn_id = imednet_conn_id
 
     def execute(self, context: Dict[str, Any]) -> str:
-        from .. import ImednetHook
+        import sys
 
-        hook = ImednetHook(self.imednet_conn_id)
+        airflow_mod = sys.modules.get("imednet.integrations.airflow")
+        if airflow_mod is None:  # pragma: no cover - module should already be loaded
+            airflow_mod = import_module("imednet.integrations.airflow")
+        hook = airflow_mod.ImednetHook(self.imednet_conn_id)
         sdk = hook.get_conn()
         export_callable = getattr(export, self.export_func)
         export_callable(sdk, self.study_key, self.output_path, **self.export_kwargs)
