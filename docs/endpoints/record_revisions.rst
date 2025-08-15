@@ -32,7 +32,7 @@ Request Parameters
 ``sort``
     Sort property. Append ``asc`` or ``desc`` for direction. Default is ``recordRevisionId,asc``.
 ``filter``
-    Optional filter criteria. See :ref:`filter` for syntax details.
+    Optional filter criteria. See :ref:`filter_syntax` for syntax details.
 
 Response
 --------

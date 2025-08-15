@@ -76,6 +76,8 @@ Status codes
 ``500``
   Unknown server error.
 
+.. _filter_syntax:
+
 Filtering
 ---------
 
