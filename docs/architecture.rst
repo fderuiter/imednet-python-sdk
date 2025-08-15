@@ -13,7 +13,7 @@ Components
    graph TD
        CLI[CLI] --> |invokes| Workflows
        Workflows --> |coordinate| Endpoints
-       Endpoints --> |use| Client[(HTTP Client)]
+       Endpoints --> |use| Client["(HTTP Client)"]
        Client --> |requests| API
 
 Core Client
@@ -73,7 +73,7 @@ Data Flow
        Workflows --> |call| Endpoints
        Endpoints --> |delegate| Client
        Client --> |talks to| API
-       Client --> |uses| Cache[(Caches)]
+       Client --> |uses| Cache["(Caches)"]
 
 Extension Points
 ----------------

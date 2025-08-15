@@ -75,7 +75,6 @@ def _import_operators(monkeypatch):
     _setup_airflow(monkeypatch)
     import imednet.integrations.airflow.operators as ops
 
-    importlib.reload(ops)
     return ops
 
 
@@ -83,7 +82,6 @@ def _import_sensors(monkeypatch):
     _setup_airflow(monkeypatch)
     import imednet.integrations.airflow.sensors as sensors
 
-    importlib.reload(sensors)
     return sensors
 
 
@@ -145,11 +143,7 @@ def test_to_s3_operator_missing_list(monkeypatch):
 def test_job_sensor(monkeypatch):
     _setup_airflow(monkeypatch)
     import imednet.integrations.airflow.operators as ops
-
-    importlib.reload(ops)
     import imednet.integrations.airflow.sensors as sensors
-
-    importlib.reload(sensors)
     _patch_basehook(monkeypatch)
     sdk = MagicMock()
     job = MagicMock(state="COMPLETED")
