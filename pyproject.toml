@@ -1,6 +1,6 @@
 [project]
 name = "imednet"
-version = "0.1.4"
+version = "0.2.0"
 description = ""
 authors = [{name = "Frederick de Ruiter", email = "127706008+fderuiter@users.noreply.github.com"}]
 readme = "README.md"
@@ -11,7 +11,7 @@ imednet = "imednet.cli:app"
 
 [tool.poetry]
 name = "imednet"
-version = "0.1.4"
+version = "0.2.0"
 description = "Unofficial Python SDK for the iMednet clinical trials API"
 readme = "README.md"
 keywords = ["imednet", "clinical trials", "sdk", "api"]
