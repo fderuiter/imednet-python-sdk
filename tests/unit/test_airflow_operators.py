@@ -1,3 +1,4 @@
+import importlib
 import sys
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
