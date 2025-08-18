@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.2.0] - 2025-08-18
 - Documented pagination utilities to fix missing toctree reference.
 - Documented json logging, URL, and validator helpers with examples and cross references.
 - Documented pagination utilities to fix missing toctree reference.
@@ -104,13 +106,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to ensure duplicate columns are removed consistently.
 - Added variable and form whitelist options to ``export_to_sql`` and CLI
   ``export sql`` command.
-- Consolidated polling loops in ``JobPoller`` with shared ``_run_common`` helper.
-- Refactored ``RecordUpdateWorkflow`` with private ``_create_or_update_common``
+- Consolidated polling loops in ``JobPoller` with shared `_run_common` helper.
+- Refactored `RecordUpdateWorkflow` with private `_create_or_update_common`
   to share validation and polling between sync and async methods.
-- Added ``register_list_command`` helper to DRY up CLI ``list`` commands.
-- Unified sync and async ``poll_job`` tests with parametrized fixtures.
-- Consolidated ``JobPoller`` tests by parametrizing over sync and async modes.
-- Unified ``SchemaValidator`` tests for both sync and async validators.
+- Added `register_list_command` helper to DRY up CLI `list` commands.
+- Unified sync and async `poll_job` tests with parametrized fixtures.
+- Consolidated `JobPoller` tests by parametrizing over sync and async modes.
+- Unified `SchemaValidator` tests for both sync and async validators.
 - Unified study-structure workflow tests across sync and async implementations.
 - Documented Sphinx conventions in new `docs/AGENTS.md`.
 - Added smoke workflow for live API tests.
@@ -118,14 +120,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restricted smoke workflow to manual dispatch by the repository owner.
 - Ensured live schema validation tests verify the schema is populated to avoid
   false negatives when the server returns an empty schema.
-- ``validate_record_data`` now raises ``ValidationError`` when provided an unknown form key.
+- `validate_record_data` now raises `ValidationError` when provided an unknown form key.
 - Record submission now checks form existence after schema refresh and raises
-  ``ValueError`` for unknown form keys.
-- Added ``DataDictionaryLoader`` for loading data dictionaries from CSV files or ZIP archives.
-- Added ``typed_values`` helper for deterministic example values and expanded
+  `ValueError` for unknown form keys.
+- Added `DataDictionaryLoader` for loading data dictionaries from CSV files or ZIP archives.
+- Added `typed_values` helper for deterministic example values and expanded
   smoke record builder to populate one variable per type and accept optional
   identifiers.
-- Live tests now reuse ``typed_values`` to submit well-typed record data across
+- Live tests now reuse `typed_values` to submit well-typed record data across
   date, radio/dropdown, memo, and checkbox fields.
 - Endpoint smoke tests now post typed records for subject registration,
   scheduled updates, and new record creation.
@@ -157,15 +159,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.2] - 2025-07-07
 
 ### Changed
-- Consolidated job polling logic into a reusable ``JobPoller`` supporting sync
+- Consolidated job polling logic into a reusable `JobPoller` supporting sync
   and async flows.
 - Updated integration tests to patch `RequestExecutor` and allow non-strict `respx` mocking.
-- Airflow operators now obtain ``ImednetSDK`` instances via ``ImednetHook``
+- Airflow operators now obtain `ImednetSDK` instances via `ImednetHook`
   instead of parsing connections directly.
-- Introduced ``ListGetEndpointMixin`` to unify ``list`` and ``get`` logic across endpoints.
-- Added ``with_sdk`` decorator for CLI commands to centralize SDK creation and
+- Introduced `ListGetEndpointMixin` to unify `list` and `get` logic across endpoints.
+- Added `with_sdk` decorator for CLI commands to centralize SDK creation and
   error handling.
-- Introduced ``JsonModel`` base class for shared parsing logic and refactored
+- Introduced `JsonModel` base class for shared parsing logic and refactored
   all models to inherit from it.
 - Updated package description to clarify this is an unofficial SDK.
 
