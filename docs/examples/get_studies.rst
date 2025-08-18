@@ -1,5 +1,5 @@
-Quick Start Script
-==================
+List Studies
+============
 
 Prerequisites
 -------------
@@ -19,7 +19,7 @@ Environment variables
 Description
 -----------
 
-Minimal example listing studies.
+List studies available to your account.
 
-.. literalinclude:: ../../examples/quick_start.py
+.. literalinclude:: ../../examples/basic/get_studies.py
    :language: python

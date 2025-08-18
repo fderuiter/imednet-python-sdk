@@ -1,5 +1,5 @@
-Quick Start Script
-==================
+List Sites
+==========
 
 Prerequisites
 -------------
@@ -14,12 +14,13 @@ Environment variables
 
    export IMEDNET_API_KEY
    export IMEDNET_SECURITY_KEY
+   export IMEDNET_STUDY_KEY
    export IMEDNET_BASE_URL (optional)
 
 Description
 -----------
 
-Minimal example listing studies.
+Fetch sites for a study.
 
-.. literalinclude:: ../../examples/quick_start.py
+.. literalinclude:: ../../examples/basic/get_sites.py
    :language: python

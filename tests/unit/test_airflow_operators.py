@@ -144,6 +144,7 @@ def test_job_sensor(monkeypatch):
     import imednet.integrations.airflow.operators as ops
     import imednet.integrations.airflow.sensors as sensors
 
+    importlib.reload(sensors)
     _patch_basehook(monkeypatch)
     sdk = MagicMock()
     job = MagicMock(state="COMPLETED")
