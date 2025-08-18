@@ -8,8 +8,8 @@ app = typer.Typer(name="subjects", help="Manage subjects within a study.")
 
 register_list_command(
     app,
-    attr="subjects",
-    name="subjects",
+    "subjects",
+    "subjects",
     with_filter=True,
     filter_help_example="subject_status=Screened",
     empty_msg="No subjects found matching the criteria.",
