@@ -117,7 +117,6 @@ suppress_warnings = [
 
 # Ignore noisy pydantic schema generation warnings.
 warnings.filterwarnings("ignore", message="Failed guarded type import", category=UserWarning)
-warnings.filterwarnings("ignore", message="Failed guarded type import", category=ImportWarning)
 
 # Display type hints in the description instead of the signature to keep
 # function signatures concise in the rendered documentation.

@@ -3,9 +3,7 @@ Configuration
 
 The SDK and CLI read settings from environment variables. They can be set in the
 shell or stored in a ``.env`` file that the CLI loads automatically via
-:func:`dotenv.load_dotenv`. Load these values into a typed
-:class:`~imednet.config.Config` with :func:`~imednet.config.load_config`—see
-:doc:`imednet.config` for details.
+:func:`dotenv.load_dotenv`.
 
 Environment Variables
 ---------------------
@@ -17,8 +15,7 @@ Environment Variables
     Security key used for authentication.
 
 ``IMEDNET_BASE_URL``
-    Optional base URL for private deployments. Sanitize with
-    :func:`imednet.utils.url.sanitize_base_url`.
+    Optional base URL for private deployments.
 
 ``IMEDNET_STUDY_KEY``
     Study identifier used by examples and some tests.
