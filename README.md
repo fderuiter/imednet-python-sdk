@@ -1,6 +1,16 @@
 # imednet
 
-Unofficial Python SDK for the iMednet clinical trials API.
+<div align="center">
+  <img src="docs/_static/logo.png" alt="imednet logo" width="200" height="200">
+</div>
+
+<div align="center">
+
+**Unofficial Python SDK for the iMednet clinical trials API.**
+
+</div>
+
+<div align="center">
 
 [![PyPI](https://img.shields.io/pypi/v/imednet.svg)](https://pypi.org/project/imednet/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/imednet.svg)](https://pypi.org/project/imednet/)
@@ -10,7 +20,7 @@ Unofficial Python SDK for the iMednet clinical trials API.
 [![CI](https://img.shields.io/github/actions/workflow/status/fderuiter/imednet-python-sdk/ci.yml?branch=main)](https://github.com/fderuiter/imednet-python-sdk/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](https://github.com/fderuiter/imednet-python-sdk)
 
-## Purpose
+</div>
 
 This package simplifies integration with the iMednet REST API for clinical trial
 management. It provides typed endpoint wrappers, helper workflows and a CLI so
@@ -28,7 +38,25 @@ reimplementing HTTP logic.
 - Structured JSON logging and OpenTelemetry tracing
 - Async client and command line interface
 
-## Quickstart Installation
+---
+
+## Architecture
+
+The SDK is organized around a core HTTP client layer, endpoint wrappers that model
+the iMednet API, workflow helpers that combine multiple endpoint calls, and a CLI
+built on top of those pieces.
+
+```mermaid
+graph TD
+    CLI[CLI] --> |invokes| Workflows
+    Workflows --> |coordinate| Endpoints
+    Endpoints --> |use| Client["(HTTP Client)"]
+    Client --> |requests| API
+```
+
+---
+
+## Installation
 
 ```bash
 # PyPI release
@@ -37,7 +65,11 @@ pip install imednet
 pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 ```
 
-## Minimal Example
+---
+
+## Quick Start
+
+### Synchronous Example
 
 ```python
 from imednet import ImednetSDK
@@ -54,7 +86,7 @@ sdk = ImednetSDK(
 print(sdk.studies.list())
 ```
 
-## Asynchronous Example
+### Asynchronous Example
 
 ```python
 import asyncio
@@ -79,35 +111,7 @@ asyncio.run(main())
 
 See [docs/async_quick_start.rst](docs/async_quick_start.rst) for more details.
 
-## Tech Stack
-
-- Python 3.10–3.12
-- requests, httpx, pydantic, typer, tenacity, python-dotenv
-
-## Project Structure
-
-```
-.
-├── docs/       - Sphinx documentation
-├── examples/   - Usage samples
-├── imednet/    - SDK package
-├── scripts/    - Helper scripts
-└── tests/      - Unit and integration tests
-```
-
-## API Documentation
-
-Full documentation is available at
-<https://fderuiter.github.io/imednet-python-sdk/>.
-The official iMednet API documentation is at <https://portal.prod.imednetapi.com/>.
-
-## Postman Collection
-
-The repository includes a ready-to-import Postman collection. Download
-[`imednet.postman_collection.json`](imednet.postman_collection.json) and import it
-into Postman to explore and test the API endpoints. The collection uses the
-`{{baseUrl}}` variable for the API host; set this alongside your `x-api-key` and
-`x-imn-security-key` headers in a Postman environment before sending requests.
+---
 
 ## Configuration
 
@@ -117,7 +121,9 @@ The SDK and CLI read credentials from environment variables such as
 settings, and `.env` support. Use `imednet.config.load_config()` to access these
 values in your code.
 
-## CLI Entry Points
+---
+
+## CLI Usage
 
 The package installs an `imednet` command with subcommands for studies, sites,
 subjects, records, jobs, queries and more. Use `imednet --help` to explore all
@@ -129,13 +135,42 @@ Example of exporting a subset of variables:
 imednet export sql MY_STUDY table sqlite:///data.db --vars AGE,SEX --forms 10,20
 ```
 
-### SQLite exports
-
 When the connection string uses SQLite, the command splits the output into one
 table per form to avoid the 2000 column limit. Pass ``--single-table`` to
 disable this behaviour. See ``docs/cli.rst`` for full examples.
 
-## Testing & Development
+---
+
+## Documentation & Resources
+
+- **API Documentation**: Full documentation is available at
+  <https://fderuiter.github.io/imednet-python-sdk/>.
+- **Official iMednet API Docs**: <https://portal.prod.imednetapi.com/>.
+- **Postman Collection**: Download
+  [`imednet.postman_collection.json`](imednet.postman_collection.json) and import it
+  into Postman to explore and test the API endpoints.
+
+---
+
+## Development & Contributing
+
+### Tech Stack
+
+- Python 3.10–3.12
+- requests, httpx, pydantic, typer, tenacity, python-dotenv
+
+### Project Structure
+
+```
+.
+├── docs/       - Sphinx documentation
+├── examples/   - Usage samples
+├── imednet/    - SDK package
+├── scripts/    - Helper scripts
+└── tests/      - Unit and integration tests
+```
+
+### Testing & Development
 
 ```bash
 ./scripts/setup.sh  # once
@@ -153,7 +188,7 @@ Use the workflow to confirm real API access on demand or via its nightly schedul
 INFO-level log messages stream to the terminal during these runs, making it easier to
 debug failures.
 
-## Building & Publishing
+### Building & Publishing
 
 ```bash
 python -m build
@@ -163,21 +198,25 @@ python -m twine upload dist/*
 Pushing a Git tag like `v0.1.4` triggers the GitHub Actions workflow that builds
 and publishes the package to PyPI.
 
-## Versioning & Changelog
+### Versioning & Changelog
 
 This project follows [Semantic Versioning](https://semver.org). See
 [CHANGELOG.md](CHANGELOG.md) for release history.
 
-## Contributing
+### Contributing
 
 Contributions are welcome! See the
 [contributing guide](docs/contributing.rst) and
 [CONTRIBUTING.md](CONTRIBUTING.md) for full details.
 
+---
+
 ## License
 
 This project is licensed under the MIT license. See [LICENSE](LICENSE) for
 details.
+
+---
 
 ## Acknowledgements
 
