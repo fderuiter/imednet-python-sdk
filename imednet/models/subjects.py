@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class SubjectKeyword(JsonModel):
+    """A keyword or tag associated with a subject."""
+
     keyword_name: str = Field("", alias="keywordName")
     keyword_key: str = Field("", alias="keywordKey")
     keyword_id: int = Field(0, alias="keywordId")
@@ -18,6 +20,8 @@ class SubjectKeyword(JsonModel):
 
 
 class Subject(JsonModel):
+    """A subject (participant) in a study, with status and site info."""
+
     study_key: str = Field("", alias="studyKey")
     subject_id: int = Field(0, alias="subjectId")
     subject_oid: str = Field("", alias="subjectOid")

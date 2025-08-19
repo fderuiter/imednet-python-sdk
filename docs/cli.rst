@@ -7,6 +7,22 @@ for the full list and details on using an ``.env`` file. The CLI calls
 :func:`imednet.config.load_config` under the hood to read these values.
 
 Command Hierarchy
+
+Global Options
+--------------
+
+The CLI supports several global flags and behaviors:
+
+- ``--help``: Show help for any command or subcommand.
+- ``--version``: Print the CLI version and exit.
+- ``.env`` loading: If a ``.env`` file is present in the working directory, environment variables are loaded automatically.
+
+Example:
+
+.. code-block:: console
+
+   $ imednet --version
+   imednet, version X.Y.Z
 -----------------
 
 .. mermaid::

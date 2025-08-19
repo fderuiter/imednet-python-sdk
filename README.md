@@ -6,7 +6,10 @@
 
 <div align="center">
 
+
 **Unofficial Python SDK for the iMednet clinical trials API.**
+
+Full documentation: <https://fderuiter.github.io/imednet-python-sdk/>
 
 </div>
 
@@ -72,8 +75,7 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 ### Synchronous Example
 
 ```python
-from imednet import ImednetSDK
-from imednet.config import load_config
+from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
 configure_json_logging()
@@ -90,8 +92,7 @@ print(sdk.studies.list())
 
 ```python
 import asyncio
-from imednet import AsyncImednetSDK
-from imednet.config import load_config
+from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
 
@@ -176,9 +177,18 @@ disable this behaviour. See ``docs/cli.rst`` for full examples.
 ./scripts/setup.sh  # once
 poetry run ruff check --fix .
 poetry run black --check .
+poetry run isort --check --profile black .
 poetry run mypy imednet
 poetry run pytest -q
 ```
+
+After running tests, validate documentation builds cleanly (no warnings):
+
+```bash
+make docs
+```
+
+See [docs/AGENTS.md](docs/AGENTS.md) for full documentation guidelines.
 
 ### Smoke-test workflow
 

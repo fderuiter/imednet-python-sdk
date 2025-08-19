@@ -36,6 +36,9 @@ Enable structured logging and list studies:
 The example script :doc:`examples/quick_start` provides a runnable version that
 validates required environment variables.
 
+
+For asynchronous usage, see :doc:`async_quick_start`.
+
 Cached endpoints can be refreshed with ``refresh=True``. The caches are not thread safe so long running applications should recreate the SDK when needed.
 
 Custom retry logic can be provided via a ``RetryPolicy``:

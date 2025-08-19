@@ -37,7 +37,10 @@ List studies asynchronously and poll a job:
            status = await sdk.async_poll_job("STUDY", "BATCH", interval=2, timeout=60)
            print(status)
 
+
    asyncio.run(main())
+
+For synchronous usage, see :doc:`quick_start`.
 
 The example script :doc:`examples/async_quick_start` provides a runnable version that
 validates required environment variables and optionally polls a job when
