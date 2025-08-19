@@ -147,7 +147,7 @@ disable this behaviour. See ``docs/cli.rst`` for full examples.
   <https://fderuiter.github.io/imednet-python-sdk/>.
 - **Official iMednet API Docs**: <https://portal.prod.imednetapi.com/>.
 - **Postman Collection**: Download
-  [`imednet.postman_collection.json`](imednet.postman_collection.json) and import it
+  [`imednet.postman_collection.json`](resources/imednet.postman_collection.json) and import it
   into Postman to explore and test the API endpoints.
 
 ---
