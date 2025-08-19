@@ -1,3 +1,7 @@
+
+.. note::
+   This SDK is unofficial and not affiliated with the vendor. Use at your own risk.
+
 Welcome to imednet's documentation!
 =======================================
 

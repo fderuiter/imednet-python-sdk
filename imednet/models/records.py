@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class Keyword(JsonModel):
+    """A keyword or tag associated with a record."""
+
     keyword_name: str = Field("", alias="keywordName")
     keyword_key: str = Field("", alias="keywordKey")
     keyword_id: int = Field(0, alias="keywordId")
@@ -18,6 +20,8 @@ class Keyword(JsonModel):
 
 
 class Record(JsonModel):
+    """A data record for a subject, form, and visit."""
+
     study_key: str = Field("", alias="studyKey")
     interval_id: int = Field(0, alias="intervalId")
     form_id: int = Field(0, alias="formId")
@@ -42,6 +46,8 @@ class Record(JsonModel):
 
 
 class RecordJobResponse(JsonModel):
+    """Response for a record-related job (batch operations, etc)."""
+
     job_id: str = Field("", alias="jobId")
     batch_id: str = Field("", alias="batchId")
     state: str = Field("", alias="state")
@@ -50,10 +56,14 @@ class RecordJobResponse(JsonModel):
 
 
 class RecordData(RootModel[Dict[str, Any]]):
+    """Arbitrary record data as a dictionary."""
+
     pass
 
 
 class BaseRecordRequest(JsonModel):
+    """Base class for record creation/update requests."""
+
     form_key: str = Field("", alias="formKey")
     data: RecordData = Field(default_factory=lambda: RecordData({}), alias="data")
 
