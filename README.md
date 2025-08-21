@@ -157,7 +157,7 @@ disable this behaviour. See ``docs/cli.rst`` for full examples.
 
 ### Tech Stack
 
-- Python 3.10–3.12
+- Python 3.11–3.12
 - requests, httpx, pydantic, typer, tenacity, python-dotenv
 
 ### Project Structure
