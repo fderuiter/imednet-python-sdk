@@ -1,7 +1,6 @@
-import asyncio
 import logging
 import os
-from typing import Any, AsyncIterator, Callable, Generator, Iterator
+from typing import Any, AsyncIterator, Callable, Iterator
 
 import pytest
 
@@ -40,17 +39,13 @@ def sdk() -> Iterator[ImednetSDK]:
 
 
 @pytest.fixture(scope="session")
-async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[AsyncImednetSDK]:
+async def async_sdk() -> AsyncIterator[AsyncImednetSDK]:
     """
     Provides a session-scoped asynchronous ImednetSDK client.
-    The `event_loop` parameter is required to ensure proper async fixture teardown and SDK cleanup,
-    as pytest needs an explicit event loop for session-scoped async fixtures.
     """
     client = AsyncImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
-    try:
-        yield client
-    finally:
-        await client.aclose()
+    yield client
+    await client.aclose()
 
 
 @pytest.fixture(scope="session")
@@ -163,11 +158,3 @@ def record_payload(
     if scenario == "new":
         return typed_record(subject_key=first_subject_key)
     raise ValueError(f"Unknown record scenario: {scenario}")
-
-
-@pytest.fixture(scope="session")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
-    """Create an asyncio event loop for session-scoped async fixtures."""
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
