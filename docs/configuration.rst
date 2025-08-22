@@ -10,7 +10,6 @@ Environment Variables
 
 .. list-table::
      :header-rows: 1
-     :widths: 25 50 15
 
      * - Variable
          - Description

@@ -23,7 +23,6 @@ Example:
 
    $ imednet --version
    imednet, version X.Y.Z
------------------
 
 .. mermaid::
 
@@ -44,6 +43,7 @@ Example:
        A --> K(workflows)
        K --> K1("extract-records")
        A --> L("subject-data")
+
 
 Available Commands
 ------------------

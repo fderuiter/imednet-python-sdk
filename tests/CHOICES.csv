@@ -1,0 +1,1412 @@
+Form,"Variable Type","Variable Name","Choice Text","Choice Value",Position
+AE,Radio,AESEV,"Grade 1",1,1
+AE,Radio,AESEV,"Grade 2",2,2
+AE,Radio,AESEV,"Grade 3",3,3
+AE,Radio,AESEV,"Grade 4",4,4
+AE,Radio,AESEV,"Grade 5",5,5
+AE,Radio,OUTCOME,Death,1,1
+AE,Radio,OUTCOME,Ongoing,2,2
+AE,Radio,OUTCOME,"Ongoing at study completion",3,3
+AE,Radio,OUTCOME,Resolved,4,4
+AE,Radio,OUTCOME,"Resolved with sequelae",5,5
+AE,Radio,RELDEV,Definitely,1,1
+AE,Radio,RELDEV,Probably,2,2
+AE,Radio,RELDEV,Possibly,3,3
+AE,Radio,RELDEV,Unlikely,4,4
+AE,Radio,RELDEV,"Not related",5,5
+AE,Radio,RELPROC,Definitely,1,1
+AE,Radio,RELPROC,Probably,2,2
+AE,Radio,RELPROC,Possibly,3,3
+AE,Radio,RELPROC,Unlikely,4,4
+AE,Radio,RELPROC,"Not related",5,5
+AE,Radio,SAE,No,0,1
+AE,Radio,SAE,Yes,1,2
+AE,Radio,UADE,No,0,1
+AE,Radio,UADE,Yes,1,2
+AEACTEL,Dropdown,ACTN,"Blood transfusion",1,1
+AEACTEL,Dropdown,ACTN,Diagnostics,2,2
+AEACTEL,Dropdown,ACTN,Medication,3,3
+AEACTEL,Dropdown,ACTN,"Minimally invasive intervention",4,4
+AEACTEL,Dropdown,ACTN,"Target lesion revascularization (TLR)",5,5
+AEACTEL,Dropdown,ACTN,"Other surgical intervention",6,6
+BSL,Radio,ANYMEDS,No,0,1
+BSL,Radio,ANYMEDS,Yes,1,2
+BSL,Radio,CAD,No,0,1
+BSL,Radio,CAD,Yes,1,2
+BSL,Radio,CHD,No,0,1
+BSL,Radio,CHD,Yes,1,2
+BSL,Radio,CHF,No,0,1
+BSL,Radio,CHF,Yes,1,2
+BSL,Radio,CKD,No,0,1
+BSL,Radio,CKD,Yes,1,2
+BSL,Radio,CKDX,"Stage 1",1,1
+BSL,Radio,CKDX,"Stage 2",2,2
+BSL,Radio,CKDX,"Stage 3",3,3
+BSL,Radio,CKDX,"Stage 4 or higher",4,4
+BSL,Radio,COPD,No,0,1
+BSL,Radio,COPD,Yes,1,2
+BSL,Radio,DIABETES,None,0,1
+BSL,Radio,DIABETES,"Type 1",1,2
+BSL,Radio,DIABETES,"Type 2",2,3
+BSL,Radio,DLP,No,0,1
+BSL,Radio,DLP,Yes,1,2
+BSL,Radio,DVT,No,0,1
+BSL,Radio,DVT,Yes,1,2
+BSL,Radio,ETHNIC,"Hispanic or Latino/a",1,1
+BSL,Radio,ETHNIC,"Not Hispanic or Latino/a",2,2
+BSL,Radio,ETHNIC,"Subject chose not to disclose",3,3
+BSL,Radio,FMHXIHD,No,0,1
+BSL,Radio,FMHXIHD,Yes,1,2
+BSL,Radio,FMHXSTK,No,0,1
+BSL,Radio,FMHXSTK,Yes,1,2
+BSL,Radio,HTN,No,0,1
+BSL,Radio,HTN,Yes,1,2
+BSL,Radio,INSULIN,No,0,1
+BSL,Radio,INSULIN,Yes,1,2
+BSL,Radio,INTVTNHX,No,0,1
+BSL,Radio,INTVTNHX,Yes,1,2
+BSL,Radio,MI,No,0,1
+BSL,Radio,MI,Yes,1,2
+BSL,Radio,OTH,No,0,1
+BSL,Radio,OTH,Yes,1,2
+BSL,Radio,PE,No,0,1
+BSL,Radio,PE,Yes,1,2
+BSL,Radio,PREG,No,0,1
+BSL,Radio,PREG,Yes,1,2
+BSL,Radio,PREG,"N/A, female of non-childbearing potential",96,3
+BSL,Radio,PREGRSLT,Negative,1,1
+BSL,Radio,PREGRSLT,Positive,2,2
+BSL,Radio,PREGTYP,Urine,1,1
+BSL,Radio,PREGTYP,Serum,2,2
+BSL,Radio,PVD,No,0,1
+BSL,Radio,PVD,Yes,1,2
+BSL,Radio,SEX,Female,1,1
+BSL,Radio,SEX,Male,2,2
+BSL,Radio,SMOKE,Smoking,1,1
+BSL,Radio,SMOKE,Smokeless,2,2
+BSL,Radio,SMOKE,None,3,3
+BSL,Radio,SMOKEX,"Current (within last 30 days)",1,1
+BSL,Radio,SMOKEX,"Quit > 1 moth to < 6 months ago",2,2
+BSL,Radio,SMOKEX,"Quit ≥ 6 months ago",3,3
+BSL,Radio,TIA,No,0,1
+BSL,Radio,TIA,Yes,1,2
+CECADJUD,Radio,ADJ_CMPLT,No,0,1
+CECADJUD,Radio,ADJ_CMPLT,Yes,1,2
+CECADJUD,Radio,CEC_ACTN,No,0,1
+CECADJUD,Radio,CEC_ACTN,Yes,1,2
+CECADJUD,Radio,CEC_AESEV,"Grade 1",1,1
+CECADJUD,Radio,CEC_AESEV,"Grade 2",2,2
+CECADJUD,Radio,CEC_AESEV,"Grade 3",3,3
+CECADJUD,Radio,CEC_AESEV,"Grade 4",4,4
+CECADJUD,Radio,CEC_AESEV,"Grade 5",5,5
+CECADJUD,Radio,CEC_FNDLX,Agree,1,1
+CECADJUD,Radio,CEC_FNDLX,Disagree,2,2
+CECADJUD,Radio,CEC_RELDEV,Definitely,1,1
+CECADJUD,Radio,CEC_RELDEV,Probably,2,2
+CECADJUD,Radio,CEC_RELDEV,Possibly,3,3
+CECADJUD,Radio,CEC_RELDEV,Unlikely,4,4
+CECADJUD,Radio,CEC_RELDEV,"Not related",5,5
+CECADJUD,Radio,CEC_RELPROC,Definitely,1,1
+CECADJUD,Radio,CEC_RELPROC,Probably,2,2
+CECADJUD,Radio,CEC_RELPROC,Possibly,3,3
+CECADJUD,Radio,CEC_RELPROC,Unlikely,4,4
+CECADJUD,Radio,CEC_RELPROC,"Not related",5,5
+CECADJUD,Radio,CEC_SAE,No,0,1
+CECADJUD,Radio,CEC_SAE,Yes,1,2
+CECADJUD,Radio,CEC_SFTY,No,0,1
+CECADJUD,Radio,CEC_SFTY,Yes,1,2
+CECADJUD,Radio,CEC_SFTY,"N/A (final diagnosis ≠ broader version of safety endpoint",96,3
+CECADJUD,Radio,CMTE_CMPLT,No,0,1
+CECADJUD,Radio,CMTE_CMPLT,Yes,1,2
+CECADJUD,Dropdown,CMTEMBR,"Member 1",1,1
+CECADJUD,Dropdown,CMTEMBR,"Member 2",2,2
+CECADJUD,Dropdown,CMTEMBR,"Member 3",3,3
+CECADJUD,Radio,UADE,No,0,1
+CECADJUD,Radio,UADE,Yes,1,2
+CECAIEL,Radio,actionassigned,"CEC Moderator",,1
+CECAIEL,Radio,actionassigned,Monitor,,2
+CECAIEL,Radio,actionassigned,Sponsor,,3
+CECAIEL,Dropdown,category,"Deleting or combining AEs",,1
+CECAIEL,Dropdown,category,"Endpoint-related adjudication",,2
+CECAIEL,Dropdown,category,"Final diagnosis",,3
+CECAIEL,Dropdown,category,Relatedness,,4
+CECAIEL,Dropdown,category,Seriousness,,5
+CECAIEL,Dropdown,category,"Source documentation",,6
+CECAIEL,Dropdown,category,Other,,7
+CECAIEL,Dropdown,MAICRTBY,"Jean Gettis",,1
+CECAIEL,Dropdown,MAICRTBY,"Danielle Kerr",,2
+CECAIEL,Dropdown,MAICRTBY,"Michele Herzog",,3
+CECAIEL,Radio,MAIVISIT,No,,1
+CECAIEL,Radio,MAIVISIT,Yes,,2
+CECAIEL,Dropdown,recordstate,Open,,1
+CECAIEL,Dropdown,recordstate,Resolved,,2
+CECMMR,Radio,MMRDONE,No,2,1
+CECMMR,Radio,MMRDONE,Yes,1,2
+CECSDC,Radio,SDCDONE,No,2,1
+CECSDC,Radio,SDCDONE,Yes,1,2
+CECSDV,Radio,SDREV,Yes,1,1
+CECSDV,Radio,SDREV,No,2,2
+CECSDV,Dropdown,SDTYPE,"Admit Health and Physical Exam",,1
+CECSDV,Dropdown,SDTYPE,"Cath lab reports and logs",,2
+CECSDV,Dropdown,SDTYPE,"Clinic visit note",,3
+CECSDV,Dropdown,SDTYPE,"Discharge summary",,4
+CECSDV,Dropdown,SDTYPE,"Imaging reports",,5
+CECSDV,Dropdown,SDTYPE,"Subject summary",,6
+CECSDV,Dropdown,SDTYPE,Other,,7
+CLAIEL,Radio,actionassigned,"Core Lab",,1
+CLAIEL,Radio,actionassigned,Monitor,,2
+CLAIEL,Radio,actionassigned,Site,,3
+CLAIEL,Radio,actionassigned,Sponsor,,4
+CLAIEL,Dropdown,category,"Imaging missing/incomplete",,1
+CLAIEL,Dropdown,category,"Procedure report missing/incomplete",,2
+CLAIEL,Dropdown,category,"No images uploaded",,3
+CLAIEL,Dropdown,category,Other,,4
+CLAIEL,Radio,MAIVISIT,No,,1
+CLAIEL,Radio,MAIVISIT,Yes,,2
+CLAIEL,Dropdown,recordstate,Open,,1
+CLAIEL,Dropdown,recordstate,Resolved,,2
+CLCHK,Radio,ae01,Yes,,1
+CLCHK,Radio,ae01,No,,2
+CLCHK,Radio,ae01,NA,,3
+CLCHK,Radio,ae02,Yes,,1
+CLCHK,Radio,ae02,No,,2
+CLCHK,Radio,ae02,NA,,3
+CLCHK,Radio,ae03,Yes,,1
+CLCHK,Radio,ae03,No,,2
+CLCHK,Radio,ae03,NA,,3
+CLCHK,Radio,dat01,Yes,,1
+CLCHK,Radio,dat01,No,,2
+CLCHK,Radio,dat01,NA,,3
+CLCHK,Radio,dat02,Yes,,1
+CLCHK,Radio,dat02,No,,2
+CLCHK,Radio,dat02,NA,,3
+CLCHK,Radio,dat03,Yes,,1
+CLCHK,Radio,dat03,No,,2
+CLCHK,Radio,dat03,NA,,3
+CLCHK,Radio,dat04,Yes,,1
+CLCHK,Radio,dat04,No,,2
+CLCHK,Radio,dat04,NA,,3
+CLCHK,Radio,dat05,Yes,,1
+CLCHK,Radio,dat05,No,,2
+CLCHK,Radio,dat05,NA,,3
+CLCHK,Radio,dat06,Yes,,1
+CLCHK,Radio,dat06,No,,2
+CLCHK,Radio,dat06,NA,,3
+CLCHK,Radio,dat07,Yes,,1
+CLCHK,Radio,dat07,No,,2
+CLCHK,Radio,dat07,NA,,3
+CLCHK,Radio,dat08,Yes,,1
+CLCHK,Radio,dat08,No,,2
+CLCHK,Radio,dat08,NA,,3
+CLCHK,Radio,dat09,Yes,,1
+CLCHK,Radio,dat09,No,,2
+CLCHK,Radio,dat09,NA,,3
+CLCHK,Radio,doc01,Collected,,1
+CLCHK,Radio,doc01,"Not Collected",,2
+CLCHK,Radio,doc02,Collected,,1
+CLCHK,Radio,doc02,"Not Collected",,2
+CLCHK,Radio,doc03,Collected,,1
+CLCHK,Radio,doc03,"Not Collected",,2
+CLCHK,Radio,doc04,Collected,,1
+CLCHK,Radio,doc04,"Not Collected",,2
+CLCHK,Radio,doc05,Collected,,1
+CLCHK,Radio,doc05,"Not Collected",,2
+CLCHK,Radio,esdoc01,Yes,,1
+CLCHK,Radio,esdoc01,No,,2
+CLCHK,Radio,esdoc01,NA,,3
+CLCHK,Radio,esdoc02,Yes,,1
+CLCHK,Radio,esdoc02,No,,2
+CLCHK,Radio,esdoc02,NA,,3
+CLCHK,Radio,esdoc03,Yes,,1
+CLCHK,Radio,esdoc03,No,,2
+CLCHK,Radio,esdoc03,NA,,3
+CLCHK,Radio,esdoc04,Yes,,1
+CLCHK,Radio,esdoc04,No,,2
+CLCHK,Radio,esdoc04,NA,,3
+CLCHK,Radio,esdoc05,Yes,,1
+CLCHK,Radio,esdoc05,No,,2
+CLCHK,Radio,esdoc05,NA,,3
+CLCHK,Radio,esdoc06,Yes,,1
+CLCHK,Radio,esdoc06,No,,2
+CLCHK,Radio,esdoc06,NA,,3
+CLCHK,Radio,esdoc07,Yes,,1
+CLCHK,Radio,esdoc07,No,,2
+CLCHK,Radio,esdoc07,NA,,3
+CLCHK,Radio,esdoc08,Yes,,1
+CLCHK,Radio,esdoc08,No,,2
+CLCHK,Radio,esdoc08,NA,,3
+CLCHK,Radio,hum01,Yes,,1
+CLCHK,Radio,hum01,No,,2
+CLCHK,Radio,hum01,NA,,3
+CLCHK,Radio,hum02,Yes,,1
+CLCHK,Radio,hum02,No,,2
+CLCHK,Radio,hum02,NA,,3
+CLCHK,Radio,hum03,Yes,,1
+CLCHK,Radio,hum03,No,,2
+CLCHK,Radio,hum03,NA,,3
+CLCHK,Radio,hum04,Yes,,1
+CLCHK,Radio,hum04,No,,2
+CLCHK,Radio,hum04,NA,,3
+CLCHK,Radio,hum05,Yes,,1
+CLCHK,Radio,hum05,No,,2
+CLCHK,Radio,hum05,NA,,3
+CLCHK,Radio,hum06,Yes,,1
+CLCHK,Radio,hum06,No,,2
+CLCHK,Radio,hum06,NA,,3
+CLCHK,Radio,hum07,Yes,,1
+CLCHK,Radio,hum07,No,,2
+CLCHK,Radio,hum07,NA,,3
+CLCHK,Radio,hum08,Yes,,1
+CLCHK,Radio,hum08,No,,2
+CLCHK,Radio,hum08,NA,,3
+CLCHK,Radio,irb01,Local,1,1
+CLCHK,Radio,irb01,"WCG IRB",2,2
+CLCHK,Radio,irb01,"Other (specify in comments)",3,3
+CLCHK,Radio,irb02a,Yes,,1
+CLCHK,Radio,irb02a,No,,2
+CLCHK,Radio,irb02a,NA,,3
+CLCHK,Radio,irb02b,Yes,,1
+CLCHK,Radio,irb02b,No,,2
+CLCHK,Radio,irb02b,NA,,3
+CLCHK,Radio,irb02c,Yes,,1
+CLCHK,Radio,irb02c,No,,2
+CLCHK,Radio,irb02c,NA,,3
+CLCHK,Radio,irb02d,Yes,,1
+CLCHK,Radio,irb02d,No,,2
+CLCHK,Radio,irb02d,NA,,3
+CLCHK,Radio,irb02e,Yes,,1
+CLCHK,Radio,irb02e,No,,2
+CLCHK,Radio,irb02e,NA,,3
+CLCHK,Radio,irb03,Yes,,1
+CLCHK,Radio,irb03,No,,2
+CLCHK,Radio,irb03,NA,,3
+CLCHK,Radio,irb04,Yes,,1
+CLCHK,Radio,irb04,No,,2
+CLCHK,Radio,irb04,NA,,3
+CLCHK,Radio,irb05a,Yes,,1
+CLCHK,Radio,irb05a,No,,2
+CLCHK,Radio,irb05a,NA,,3
+CLCHK,Radio,irb05b,Yes,,1
+CLCHK,Radio,irb05b,No,,2
+CLCHK,Radio,irb05b,NA,,3
+CLCHK,Radio,irb05c,Yes,,1
+CLCHK,Radio,irb05c,No,,2
+CLCHK,Radio,irb05c,NA,,3
+CLCHK,Radio,irb05d,Yes,,1
+CLCHK,Radio,irb05d,No,,2
+CLCHK,Radio,irb05d,NA,,3
+CLCHK,Radio,irb05e,Yes,,1
+CLCHK,Radio,irb05e,No,,2
+CLCHK,Radio,irb05e,NA,,3
+CLCHK,Radio,irb06,Yes,,1
+CLCHK,Radio,irb06,No,,2
+CLCHK,Radio,irb06,NA,,3
+CLCHK,Radio,irb07,Yes,,1
+CLCHK,Radio,irb07,No,,2
+CLCHK,Radio,irb07,NA,,3
+CLCHK,Radio,irb08,Yes,,1
+CLCHK,Radio,irb08,No,,2
+CLCHK,Radio,irb08,NA,,3
+CLCHK,Radio,irb09,Yes,,1
+CLCHK,Radio,irb09,No,,2
+CLCHK,Radio,irb09,NA,,3
+CLCHK,Radio,mtg01,Yes,,1
+CLCHK,Radio,mtg01,No,,2
+CLCHK,Radio,mtg01,NA,,3
+CLCHK,Radio,mtg02,Yes,,1
+CLCHK,Radio,mtg02,No,,2
+CLCHK,Radio,mtg02,NA,,3
+CLCHK,Radio,mtg03,Yes,,1
+CLCHK,Radio,mtg03,No,,2
+CLCHK,Radio,mtg03,NA,,3
+CLCHK,Radio,mtg04,Yes,,1
+CLCHK,Radio,mtg04,No,,2
+CLCHK,Radio,mtg04,NA,,3
+CLCHK,Radio,mtg05,Yes,,1
+CLCHK,Radio,mtg05,No,,2
+CLCHK,Radio,mtg05,NA,,3
+CLCHK,Radio,mtg06,Yes,,1
+CLCHK,Radio,mtg06,No,,2
+CLCHK,Radio,mtg06,NA,,3
+CLCHK,Radio,mtg07,Yes,,1
+CLCHK,Radio,mtg07,No,,2
+CLCHK,Radio,mtg07,NA,,3
+CLCHK,Radio,mtg08,Yes,,1
+CLCHK,Radio,mtg08,No,,2
+CLCHK,Radio,mtg08,NA,,3
+CLCHK,Radio,mtg09,Yes,,1
+CLCHK,Radio,mtg09,No,,2
+CLCHK,Radio,mtg09,NA,,3
+CLCHK,Radio,prod01,Yes,,1
+CLCHK,Radio,prod01,No,,2
+CLCHK,Radio,prod01,NA,,3
+CLCHK,Radio,prod02,Yes,,1
+CLCHK,Radio,prod02,No,,2
+CLCHK,Radio,prod02,NA,,3
+CLCHK,Radio,prod03,Yes,,1
+CLCHK,Radio,prod03,No,,2
+CLCHK,Radio,prod03,NA,,3
+CLCHK,Radio,SUBJDATAMON,"No, all subject data monitoring was completed at the last IMV",1,1
+CLCHK,Radio,SUBJDATAMON,"Yes (complete Appendix A to record monitoring results)",2,2
+CLCHK,Radio,visitrsn,"Study completed",,1
+CLCHK,Radio,visitrsn,"Early site closure",,2
+CLCHK,Radio,visitrsn,"Study stopped by sponsor",,3
+CLCHK,Radio,visitrsn,Other,,4
+CLCHK,Radio,visit_type,Remote,1,1
+CLCHK,Radio,visit_type,"On-site (complete Site Visit Log)",2,2
+CLCHK,Radio,visit_type,Both,3,3
+COLACHK,Radio,comp01a,Yes,,1
+COLACHK,Radio,comp01a,No,,2
+COLACHK,Radio,comp01a,NA,,3
+COLACHK,Radio,comp01b,Yes,,1
+COLACHK,Radio,comp01b,No,,2
+COLACHK,Radio,comp01b,NA,,3
+COLACHK,Radio,comp01c,Yes,,1
+COLACHK,Radio,comp01c,No,,2
+COLACHK,Radio,comp01c,NA,,3
+COLACHK,Radio,comp01d,Yes,,1
+COLACHK,Radio,comp01d,No,,2
+COLACHK,Radio,comp01d,NA,,3
+COLACHK,Radio,comp02,Yes,,1
+COLACHK,Radio,comp02,No,,2
+COLACHK,Radio,comp02,NA,,3
+COLACHK,Radio,dat01,Yes,,1
+COLACHK,Radio,dat01,No,,2
+COLACHK,Radio,dat01,NA,,3
+COLACHK,Radio,dat02,Yes,,1
+COLACHK,Radio,dat02,No,,2
+COLACHK,Radio,dat02,NA,,3
+COLACHK,Radio,dat03,Yes,,1
+COLACHK,Radio,dat03,No,,2
+COLACHK,Radio,dat03,NA,,3
+COLACHK,Radio,dat04,Yes,,1
+COLACHK,Radio,dat04,No,,2
+COLACHK,Radio,dat04,NA,,3
+COLACHK,Radio,emtf04a,Yes,,1
+COLACHK,Radio,emtf04a,No,,2
+COLACHK,Radio,emtf04a,NA,,3
+COLACHK,Radio,emtf04b,Yes,,1
+COLACHK,Radio,emtf04b,No,,2
+COLACHK,Radio,emtf04b,NA,,3
+COLACHK,Radio,etmf01,Yes,,1
+COLACHK,Radio,etmf01,No,,2
+COLACHK,Radio,etmf01,NA,,3
+COLACHK,Radio,etmf02,Yes,,1
+COLACHK,Radio,etmf02,No,,2
+COLACHK,Radio,etmf02,NA,,3
+COLACHK,Radio,etmf03,Yes,,1
+COLACHK,Radio,etmf03,No,,2
+COLACHK,Radio,etmf03,NA,,3
+COLACHK,Radio,mtg01,Yes,,1
+COLACHK,Radio,mtg01,No,,2
+COLACHK,Radio,mtg01,NA,,3
+COLACHK,Radio,mtg02,Yes,,1
+COLACHK,Radio,mtg02,No,,2
+COLACHK,Radio,mtg02,NA,,3
+COLACHK,Radio,mtg03,Yes,,1
+COLACHK,Radio,mtg03,No,,2
+COLACHK,Radio,mtg03,NA,,3
+COLACHK,Radio,mtg04,Yes,,1
+COLACHK,Radio,mtg04,No,,2
+COLACHK,Radio,mtg04,NA,,3
+COLACHK,Radio,pers01,Yes,,1
+COLACHK,Radio,pers01,No,,2
+COLACHK,Radio,pers01,NA,,3
+COLACHK,Radio,pers02,Yes,,1
+COLACHK,Radio,pers02,No,,2
+COLACHK,Radio,pers02,NA,,3
+COLACHK,Radio,pers03,Yes,,1
+COLACHK,Radio,pers03,No,,2
+COLACHK,Radio,pers03,NA,,3
+CONMEDS,Dropdown,CMDOSEFRQ,"QD (once a day)",1,1
+CONMEDS,Dropdown,CMDOSEFRQ,"BID (twice a day)",2,2
+CONMEDS,Dropdown,CMDOSEFRQ,"TID (three times a day)",3,3
+CONMEDS,Dropdown,CMDOSEFRQ,"QID (four times a day)",4,4
+CONMEDS,Dropdown,CMDOSEFRQ,"QOD (every other day)",5,5
+CONMEDS,Dropdown,CMDOSEFRQ,"QM (every month)",6,6
+CONMEDS,Dropdown,CMDOSEFRQ,"QOM (every other mo)",7,7
+CONMEDS,Dropdown,CMDOSEFRQ,"QH (every hour)",8,8
+CONMEDS,Dropdown,CMDOSEFRQ,"AC (before meals)",9,9
+CONMEDS,Dropdown,CMDOSEFRQ,"PC (after meals)",10,10
+CONMEDS,Dropdown,CMDOSEFRQ,"PRN (as needed)",11,11
+CONMEDS,Dropdown,CMDOSEFRQ,Other,12,12
+CONMEDS,Dropdown,CMDOSU,g,1,1
+CONMEDS,Dropdown,CMDOSU,mg,2,2
+CONMEDS,Dropdown,CMDOSU,µg,3,3
+CONMEDS,Dropdown,CMDOSU,L,4,4
+CONMEDS,Dropdown,CMDOSU,mL,5,5
+CONMEDS,Dropdown,CMDOSU,IU,6,6
+CONMEDS,Dropdown,CMDOSU,Other,7,7
+DC,Radio,ANYAE,No,0,1
+DC,Radio,ANYAE,Yes,1,2
+DEVDEF,Radio,DDAE,No,0,1
+DEVDEF,Radio,DDAE,Yes,1,2
+DEVDEF,Radio,DDSAE,No,0,1
+DEVDEF,Radio,DDSAE,Yes,1,2
+DEVDEF,Radio,RTRN,No,0,1
+DEVDEF,Radio,RTRN,Yes,1,2
+DEVINFO,Dropdown,DEVICENO,"Study device 1",1,1
+DEVINFO,Dropdown,DEVICENO,"Study device 2",2,2
+DEVINFO,Dropdown,DEVICENO,"Study device 3",3,3
+DEVINFO,Dropdown,DEVICENO,"Study device 4",4,4
+DEVINFO,Dropdown,DEVICENO,"Study device 5",5,5
+DEVINFO,Dropdown,DEVICENO,"Study device 6",6,6
+DEVINFO,Dropdown,DSPN,Used,1,1
+DEVINFO,Dropdown,DSPN,"Used and returned",2,2
+DEVINFO,Dropdown,DSPN,"Not used and returned",3,3
+DEVINFO,Dropdown,DSPN,"Not used and discarded",4,4
+DEVINFO,Dropdown,TL,"Target lesion 1",1,1
+DEVINFO,Dropdown,TL,"Target lesion 2",2,2
+DS,Radio,CMPLT,No,0,1
+DS,Radio,CMPLT,Yes,1,2
+DS,Radio,CMPLTNO,"Adverse event",1,1
+DS,Radio,CMPLTNO,"Investigator decision",2,2
+DS,Radio,CMPLTNO,"Subject death",3,3
+DS,Radio,CMPLTNO,"Subject lost to follow-up",4,4
+DS,Radio,CMPLTNO,"Subject relocated to another geographic region",5,5
+DS,Radio,CMPLTNO,"Subject requested withdrawal from study",6,6
+DS,Radio,CMPLTNO,Other,7,7
+DS,Radio,ESCOMP,No,,1
+DS,Radio,ESCOMP,Yes,,2
+DV,Radio,APVL,No,0,1
+DV,Radio,APVL,Yes,1,2
+DV,Radio,CNSNTTYP,"Initial consent",1,1
+DV,Radio,CNSNTTYP,Re-consent,2,2
+DV,Radio,EVALDEV,"Evaluation or assessment (all or part) completed outside of window",1,1
+DV,Radio,EVALDEV,"Evaluation or assessment not completed in its entirety per protocol",2,2
+DV,Radio,EVALDEV,"Evaluation or assessment not done",3,3
+DV,Radio,EVALX,"Adverse event assessment",1,1
+DV,Radio,EVALX,"Concomitant medication review",2,2
+DV,Radio,EVALX,"CT/MRI/Angiographic imaging",3,3
+DV,Radio,EVALX,"Demographics & medical history",4,4
+DV,Radio,EVALX,"Device deficiency assessment",5,5
+DV,Radio,EVALX,Electrocardiogram,6,6
+DV,Radio,EVALX,"Laboratory tests",7,7
+DV,Radio,EVALX,"Pregnancy test",8,8
+DV,Radio,EVALX,Other,99,9
+DV,Radio,INTVLDEV,"Entire visit completed outside of window",1,1
+DV,Radio,INTVLDEV,"Missed visit",2,2
+DV,Radio,PDRSN,"Concomitant health issue(s)",1,1
+DV,Radio,PDRSN,"Required to protect the life or the physical well-being of the subject in an emergent situation",2,2
+DV,Radio,PDRSN,"Site omission/oversight",3,3
+DV,Radio,PDRSN,"Subject noncompliance",4,4
+DV,Radio,PDRSN,Other,99,5
+DV,Radio,PDTYPE,"Informed consent not properly obtained",1,1
+DV,Radio,PDTYPE,"Inclusion/exclusion criteria not met",2,2
+DV,Radio,PDTYPE,"Interval-related deviation (interval specified in Section A)",3,3
+DV,Radio,PDTYPE,"Evaluation or assessment related deviation",4,4
+DV,Radio,PDTYPE,Other,99,5
+DV,Radio,PDVISIT,Screening/Baseline,1,1
+DV,Radio,PDVISIT,Procedure,2,2
+DV,Radio,PDVISIT,Post-Procedure/Discharge,3,3
+DV,Radio,SOUND,No,0,1
+DV,Radio,SOUND,Yes,1,2
+EOSCDM,Radio,ESCOMP,Yes,,1
+EOSCDM,Radio,ESCOMP,No,,2
+EQ5D5L,Radio,ANXDEP,"I am not anxious or depressed",1,1
+EQ5D5L,Radio,ANXDEP,"I am slightly anxious or depressed",2,2
+EQ5D5L,Radio,ANXDEP,"I am moderately anxious or depressed",3,3
+EQ5D5L,Radio,ANXDEP,"I am severely anxious or depressed",4,4
+EQ5D5L,Radio,ANXDEP,"I am extremely anxious or depressed",5,5
+EQ5D5L,Radio,ANXDEP,"Missing value",9,6
+EQ5D5L,Radio,CMPLTYN,No,2,1
+EQ5D5L,Radio,CMPLTYN,Yes,1,2
+EQ5D5L,Radio,MBLTY,"I have no problems walking",1,1
+EQ5D5L,Radio,MBLTY,"I have slight problems walking",2,2
+EQ5D5L,Radio,MBLTY,"I have moderate problems walking",3,3
+EQ5D5L,Radio,MBLTY,"I have severe problems walking",4,4
+EQ5D5L,Radio,MBLTY,"I am unable to walk",5,5
+EQ5D5L,Radio,MBLTY,"Missing value",9,6
+EQ5D5L,Radio,PNDSC,"I have no pain or discomfort",1,1
+EQ5D5L,Radio,PNDSC,"I have slight pain or discomfort",2,2
+EQ5D5L,Radio,PNDSC,"I have moderate pain or discomfort",3,3
+EQ5D5L,Radio,PNDSC,"I have severe pain or discomfort",4,4
+EQ5D5L,Radio,PNDSC,"I have extreme pain or discomfort",5,5
+EQ5D5L,Radio,PNDSC,"Missing value",9,6
+EQ5D5L,Radio,SLFCR,"I have no problems washing or dressing myself",1,1
+EQ5D5L,Radio,SLFCR,"I have slight problems washing or dressing myself",2,2
+EQ5D5L,Radio,SLFCR,"I have moderate problems washing or dressing myself",3,3
+EQ5D5L,Radio,SLFCR,"I have severe problems washing or dressing myself",4,4
+EQ5D5L,Radio,SLFCR,"I am unable to wash or dress myself",5,5
+EQ5D5L,Radio,SLFCR,"Missing value",9,6
+EQ5D5L,Radio,USLACTS,"I have no problems doing my usual activities",1,1
+EQ5D5L,Radio,USLACTS,"I have slight problems doing my usual activities",2,2
+EQ5D5L,Radio,USLACTS,"I have moderate problems doing my usual activities",3,3
+EQ5D5L,Radio,USLACTS,"I have severe problems doing my usual activities",4,4
+EQ5D5L,Radio,USLACTS,"I am unable to do my usual activities",5,5
+EQ5D5L,Radio,USLACTS,"Missing value",9,6
+FUP,Radio,ANYAE,"Assessed, new/worsening events to report",3,1
+FUP,Radio,ANYAE,"Assessed, no new/worsening events to report",1,2
+FUP,Radio,ANYAE,"Not assessed",2,3
+FUP,Radio,ANYMEDS,"Assessed, medication changes",1,1
+FUP,Radio,ANYMEDS,"Assessed, no medication changes",2,2
+FUP,Radio,ANYMEDS,"Not assessed",3,3
+ICFEL,Dropdown,icfdoc,ICF,,1
+ICFEL,Dropdown,icfdoc,HIPAA,,2
+ICFEL,Dropdown,icfdoc,Combined,,3
+ICFEL,Dropdown,icfdoc,"Other (specify in comments)",,4
+IE,Radio,EC01,No,0,1
+IE,Radio,EC01,Yes,1,2
+IE,Radio,EC02,No,0,1
+IE,Radio,EC02,Yes,1,2
+IE,Radio,EC03,"N/A, male or female of non-childbearing potential",96,1
+IE,Radio,EC03,No,0,2
+IE,Radio,EC03,Yes,1,3
+IE,Radio,EC04,No,0,1
+IE,Radio,EC04,Yes,1,2
+IE,Radio,EC05,No,0,1
+IE,Radio,EC05,Yes,1,2
+IE,Radio,EC06,No,0,1
+IE,Radio,EC06,Yes,1,2
+IE,Radio,EC07,No,0,1
+IE,Radio,EC07,Yes,1,2
+IE,Radio,EC08,No,0,1
+IE,Radio,EC08,Yes,1,2
+IE,Radio,EC09,No,0,1
+IE,Radio,EC09,Yes,1,2
+IE,Radio,EC10,No,0,1
+IE,Radio,EC10,Yes,1,2
+IE,Radio,ELIGIBLE,No,0,1
+IE,Radio,ELIGIBLE,Yes,1,2
+IE,Radio,IC01,No,0,1
+IE,Radio,IC01,Yes,1,2
+IE,Radio,IC02,No,0,1
+IE,Radio,IC02,Yes,1,2
+IE,Radio,IC03,No,0,1
+IE,Radio,IC03,Yes,1,2
+IE,Radio,IC04,No,0,1
+IE,Radio,IC04,Yes,1,2
+IE,Radio,IC05,No,0,1
+IE,Radio,IC05,Yes,1,2
+IE,Radio,IC06,No,0,1
+IE,Radio,IC06,Yes,1,2
+IE,Radio,IC07,No,0,1
+IE,Radio,IC07,Yes,1,2
+IE,Radio,IC08,No,0,1
+IE,Radio,IC08,Yes,1,2
+IE,Radio,IC09,No,0,1
+IE,Radio,IC09,Yes,1,2
+IE,Radio,IC10,"N/A, no non-target lesion",96,1
+IE,Radio,IC10,No,0,2
+IE,Radio,IC10,Yes,1,3
+IE,Dropdown,PVERSN,"Revision A",1,1
+IMVCHK,Radio,ae01,Yes,,1
+IMVCHK,Radio,ae01,No,,2
+IMVCHK,Radio,ae01,NA,,3
+IMVCHK,Radio,ae02,Yes,,1
+IMVCHK,Radio,ae02,No,,2
+IMVCHK,Radio,ae02,NA,,3
+IMVCHK,Radio,ae03,Yes,,1
+IMVCHK,Radio,ae03,No,,2
+IMVCHK,Radio,ae03,NA,,3
+IMVCHK,Radio,B06,No,,1
+IMVCHK,Radio,B06,Yes,,2
+IMVCHK,Radio,di01,Yes,,1
+IMVCHK,Radio,di01,No,,2
+IMVCHK,Radio,di01,NA,,3
+IMVCHK,Radio,di02,Yes,,1
+IMVCHK,Radio,di02,No,,2
+IMVCHK,Radio,di02,NA,,3
+IMVCHK,Radio,di03,Yes,,1
+IMVCHK,Radio,di03,No,,2
+IMVCHK,Radio,di03,NA,,3
+IMVCHK,Radio,di04,Yes,,1
+IMVCHK,Radio,di04,No,,2
+IMVCHK,Radio,di04,NA,,3
+IMVCHK,Radio,di05,Yes,,1
+IMVCHK,Radio,di05,No,,2
+IMVCHK,Radio,di05,N/A,,3
+IMVCHK,Radio,di06,Yes,,1
+IMVCHK,Radio,di06,No,,2
+IMVCHK,Radio,di06,NA,,3
+IMVCHK,Radio,di07,Yes,,1
+IMVCHK,Radio,di07,No,,2
+IMVCHK,Radio,di07,NA,,3
+IMVCHK,Radio,di08,Yes,,1
+IMVCHK,Radio,di08,No,,2
+IMVCHK,Radio,di08,NA,,3
+IMVCHK,Radio,di09,Yes,,1
+IMVCHK,Radio,di09,No,,2
+IMVCHK,Radio,di09,NA,,3
+IMVCHK,Radio,etmf01,Yes,,1
+IMVCHK,Radio,etmf01,No,,2
+IMVCHK,Radio,etmf01,NA,,3
+IMVCHK,Radio,etmf03,Yes,,1
+IMVCHK,Radio,etmf03,No,,2
+IMVCHK,Radio,etmf03,NA,,3
+IMVCHK,Radio,etmf04,Yes,,1
+IMVCHK,Radio,etmf04,No,,2
+IMVCHK,Radio,etmf04,NA,,3
+IMVCHK,Radio,etmf05a,Yes,,1
+IMVCHK,Radio,etmf05a,No,,2
+IMVCHK,Radio,etmf05a,NA,,3
+IMVCHK,Radio,etmf05b,Yes,,1
+IMVCHK,Radio,etmf05b,No,,2
+IMVCHK,Radio,etmf05b,NA,,3
+IMVCHK,Radio,fac01,Yes,,1
+IMVCHK,Radio,fac01,No,,2
+IMVCHK,Radio,fac01,NA,,3
+IMVCHK,Radio,fac02,Yes,,1
+IMVCHK,Radio,fac02,No,,2
+IMVCHK,Radio,fac02,NA,,3
+IMVCHK,Radio,irb01a,Yes,,1
+IMVCHK,Radio,irb01a,No,,2
+IMVCHK,Radio,irb01a,NA,,3
+IMVCHK,Radio,irb01b,Yes,,1
+IMVCHK,Radio,irb01b,No,,2
+IMVCHK,Radio,irb01b,NA,,3
+IMVCHK,Radio,irb01c,Yes,,1
+IMVCHK,Radio,irb01c,No,,2
+IMVCHK,Radio,irb01c,NA,,3
+IMVCHK,Radio,irb01d,Yes,,1
+IMVCHK,Radio,irb01d,No,,2
+IMVCHK,Radio,irb01d,NA,,3
+IMVCHK,Radio,irb01e,Yes,,1
+IMVCHK,Radio,irb01e,No,,2
+IMVCHK,Radio,irb01e,NA,,3
+IMVCHK,Radio,irb02,Yes,,1
+IMVCHK,Radio,irb02,No,,2
+IMVCHK,Radio,irb02,NA,,3
+IMVCHK,Radio,irb03,Yes,,1
+IMVCHK,Radio,irb03,No,,2
+IMVCHK,Radio,irb03,NA,,3
+IMVCHK,Radio,irb04a,Yes,,1
+IMVCHK,Radio,irb04a,No,,2
+IMVCHK,Radio,irb04a,NA,,3
+IMVCHK,Radio,irb04b,Yes,,1
+IMVCHK,Radio,irb04b,No,,2
+IMVCHK,Radio,irb04b,NA,,3
+IMVCHK,Radio,irb04c,Yes,,1
+IMVCHK,Radio,irb04c,No,,2
+IMVCHK,Radio,irb04c,NA,,3
+IMVCHK,Radio,irb04d,Yes,,1
+IMVCHK,Radio,irb04d,No,,2
+IMVCHK,Radio,irb04d,NA,,3
+IMVCHK,Radio,irb04e,Yes,,1
+IMVCHK,Radio,irb04e,No,,2
+IMVCHK,Radio,irb04e,NA,,3
+IMVCHK,Radio,irb05,Yes,,1
+IMVCHK,Radio,irb05,No,,2
+IMVCHK,Radio,irb05,NA,,3
+IMVCHK,Radio,irb06,Yes,,1
+IMVCHK,Radio,irb06,No,,2
+IMVCHK,Radio,irb06,NA,,3
+IMVCHK,Radio,pers01,Yes,,1
+IMVCHK,Radio,pers01,No,,2
+IMVCHK,Radio,pers01,NA,,3
+IMVCHK,Radio,pers02,Yes,,1
+IMVCHK,Radio,pers02,No,,2
+IMVCHK,Radio,pers02,NA,,3
+IMVCHK,Radio,pers03,Yes,,1
+IMVCHK,Radio,pers03,No,,2
+IMVCHK,Radio,pers03,NA,,3
+IMVCHK,Radio,pers04,Yes,,1
+IMVCHK,Radio,pers04,No,,2
+IMVCHK,Radio,pers04,NA,,3
+IMVCHK,Radio,pers05,Yes,,1
+IMVCHK,Radio,pers05,No,,2
+IMVCHK,Radio,pers05,NA,,3
+IMVCHK,Radio,pers06,Yes,,1
+IMVCHK,Radio,pers06,No,,2
+IMVCHK,Radio,pers06,NA,,3
+IMVCHK,Radio,prod01,Yes,,1
+IMVCHK,Radio,prod01,No,,2
+IMVCHK,Radio,prod01,NA,,3
+IMVCHK,Radio,prod02,Yes,,1
+IMVCHK,Radio,prod02,No,,2
+IMVCHK,Radio,prod02,NA,,3
+IMVCHK,Radio,prtn01,Yes,,1
+IMVCHK,Radio,prtn01,No,,2
+IMVCHK,Radio,prtn01,NA,,3
+IMVCHK,Radio,prtn02,Yes,,1
+IMVCHK,Radio,prtn02,No,,2
+IMVCHK,Radio,prtn02,NA,,3
+IMVCHK,Radio,prtn03,Yes,,1
+IMVCHK,Radio,prtn03,No,,2
+IMVCHK,Radio,prtn03,NA,,3
+IMVCHK,Radio,prtn04,Yes,,1
+IMVCHK,Radio,prtn04,No,,2
+IMVCHK,Radio,prtn04,NA,,3
+IMVCHK,Radio,prtn05,Yes,,1
+IMVCHK,Radio,prtn05,No,,2
+IMVCHK,Radio,prtn05,NA,,3
+IMVCHK,Radio,prtn06,Yes,,1
+IMVCHK,Radio,prtn06,No,,2
+IMVCHK,Radio,prtn06,NA,,3
+IMVCHK,Radio,prtn07,Yes,,1
+IMVCHK,Radio,prtn07,No,,2
+IMVCHK,Radio,prtn07,NA,,3
+IMVCHK,Radio,prtn08,Yes,,1
+IMVCHK,Radio,prtn08,No,,2
+IMVCHK,Radio,prtn08,NA,,3
+IMVCHK,Radio,rct01,Yes,,1
+IMVCHK,Radio,rct01,No,,2
+IMVCHK,Radio,rct01,NA,,3
+IMVCHK,Radio,rct02,Yes,,1
+IMVCHK,Radio,rct02,No,,2
+IMVCHK,Radio,rct02,NA,,3
+IMVCHK,Radio,visitrsn,"Routine IMV",,1
+IMVCHK,Radio,visitrsn,"BIMO/Audit Prep",,2
+IMVCHK,Radio,visitrsn,"Site Management/CAPA",,3
+IMVCHK,Radio,visitrsn,Other,,4
+IMVCHK,Radio,visittype,Remote,,1
+IMVCHK,Radio,visittype,"On-site (complete Site Visit Log)",,2
+IMVCHK,Radio,visittype,Both,,3
+IMVCHK,Radio,vo01,Yes,,1
+IMVCHK,Radio,vo01,No,,2
+IMVCHK,Radio,vo01,NA,,3
+IMVCHK,Radio,vo02,Yes,,1
+IMVCHK,Radio,vo02,No,,2
+IMVCHK,Radio,vo02,NA,,3
+IMVCHK,Radio,vo03,Yes,,1
+IMVCHK,Radio,vo03,No,,2
+IMVCHK,Radio,vo03,NA,,3
+IMVEL,Dropdown,VISITTYPE,Interim,,1
+IMVEL,Dropdown,VISITTYPE,Initiation,,2
+IMVEL,Dropdown,VISITTYPE,"Core Lab",,3
+IMVEL,Dropdown,VISITTYPE,"Close out",,4
+LAB,Radio,AFPCS,Yes,1,1
+LAB,Radio,AFPCS,No,2,2
+LAB,Radio,ALBCS,Yes,1,1
+LAB,Radio,ALBCS,No,2,2
+LAB,Radio,ALPCS,Yes,1,1
+LAB,Radio,ALPCS,No,2,2
+LAB,Radio,ALTCS,Yes,1,1
+LAB,Radio,ALTCS,No,2,2
+LAB,Radio,ASTCS,Yes,1,1
+LAB,Radio,ASTCS,No,2,2
+LAB,Radio,BASOCS,Yes,1,1
+LAB,Radio,BASOCS,No,2,2
+LAB,Dropdown,BASOU,K/ul,,1
+LAB,Dropdown,BASOU,K/CMM,,2
+LAB,Dropdown,BASOU,10^3/uL,,3
+LAB,Radio,CACS,Yes,1,1
+LAB,Radio,CACS,No,2,2
+LAB,Radio,CLCS,Yes,1,1
+LAB,Radio,CLCS,No,2,2
+LAB,Dropdown,CLU,mEq/L,,1
+LAB,Dropdown,CLU,mmol/L,,2
+LAB,Radio,DBILICS,Yes,1,1
+LAB,Radio,DBILICS,No,2,2
+LAB,Radio,EGFR,"≥51 mL/min/1.73m^2",1,1
+LAB,Radio,EGFR,"15-50 mL/min/1.73 m^2",2,2
+LAB,Radio,EOSCS,Yes,1,1
+LAB,Radio,EOSCS,No,2,2
+LAB,Dropdown,EOSU,K/ul,,1
+LAB,Dropdown,EOSU,K/CMM,,2
+LAB,Dropdown,EOSU,10^3/uL,,3
+LAB,Radio,GLUCS,Yes,1,1
+LAB,Radio,GLUCS,No,2,2
+LAB,Radio,HCO3CS,Yes,1,1
+LAB,Radio,HCO3CS,No,2,2
+LAB,Radio,HCTCS,Yes,1,1
+LAB,Radio,HCTCS,No,2,2
+LAB,Radio,HGBCS,Yes,1,1
+LAB,Radio,HGBCS,No,2,2
+LAB,Radio,IBILICS,Yes,1,1
+LAB,Radio,IBILICS,No,2,2
+LAB,Radio,INRCS,Yes,1,1
+LAB,Radio,INRCS,No,2,2
+LAB,Radio,LYMPHCS,Yes,1,1
+LAB,Radio,LYMPHCS,No,2,2
+LAB,Dropdown,LYMPHU,K/ul,,1
+LAB,Dropdown,LYMPHU,K/CMM,,2
+LAB,Dropdown,LYMPHU,10^3/uL,,3
+LAB,Radio,MONOCS,Yes,1,1
+LAB,Radio,MONOCS,No,2,2
+LAB,Dropdown,MONOU,K/ul,,1
+LAB,Dropdown,MONOU,K/CMM,,2
+LAB,Dropdown,MONOU,10^3/uL,,3
+LAB,Radio,NACS,Yes,1,1
+LAB,Radio,NACS,No,2,2
+LAB,Dropdown,NAU,mEq/L,,1
+LAB,Dropdown,NAU,mmol/L,,2
+LAB,Radio,NEUTCS,Yes,1,1
+LAB,Radio,NEUTCS,No,2,2
+LAB,Dropdown,NEUTU,K/ul,,1
+LAB,Dropdown,NEUTU,K/CMM,,2
+LAB,Dropdown,NEUTU,10^3/uL,,3
+LAB,Radio,PLTCS,Yes,1,1
+LAB,Radio,PLTCS,No,2,2
+LAB,Dropdown,PLTU,K/ul,,1
+LAB,Dropdown,PLTU,K/CMM,,2
+LAB,Dropdown,PLTU,10^3/uL,,3
+LAB,Radio,PO4CS,Yes,1,1
+LAB,Radio,PO4CS,No,2,2
+LAB,Radio,POTASCS,Yes,1,1
+LAB,Radio,POTASCS,No,2,2
+LAB,Dropdown,POTASU,mEq/L,,1
+LAB,Dropdown,POTASU,mmol/L,,2
+LAB,Radio,PTCS,Yes,1,1
+LAB,Radio,PTCS,No,2,2
+LAB,Radio,PTTCS,Yes,1,1
+LAB,Radio,PTTCS,No,2,2
+LAB,Radio,RBCCS,Yes,1,1
+LAB,Radio,RBCCS,No,2,2
+LAB,Dropdown,RBCU,M/ul,,1
+LAB,Dropdown,RBCU,M/CMM,,2
+LAB,Dropdown,RBCU,10^6/uL,,3
+LAB,Radio,SCRCS,Yes,1,1
+LAB,Radio,SCRCS,No,2,2
+LAB,Radio,TBILICS,Yes,1,1
+LAB,Radio,TBILICS,No,2,2
+LAB,Radio,TPCS,Yes,1,1
+LAB,Radio,TPCS,No,2,2
+LAB,Radio,UREACS,Yes,1,1
+LAB,Radio,UREACS,No,2,2
+LAB,Radio,URICCS,Yes,1,1
+LAB,Radio,URICCS,No,2,2
+LAB,Radio,WBCCS,Yes,1,1
+LAB,Radio,WBCCS,No,2,2
+LAB,Dropdown,WBCU,K/ul,,1
+LAB,Dropdown,WBCU,K/CMM,,2
+LAB,Dropdown,WBCU,10^3/uL,,3
+LTFU,Radio,LTFTYPE,Phone,1,1
+LTFU,Radio,LTFTYPE,"Certified Mail",2,2
+LTFU,Radio,LTFTYPE,E-mail,3,3
+MAI,Radio,actionassigned,Monitor,,1
+MAI,Radio,actionassigned,Site,,2
+MAI,Radio,actionassigned,Sponsor,,3
+MAI,Dropdown,category,"Adverse Event",,1
+MAI,Dropdown,category,Documentation,,2
+MAI,Dropdown,category,"Case report form",,3
+MAI,Dropdown,category,Safety,,4
+MAI,Dropdown,category,"Investigational Product and Clinical Supplies",,5
+MAI,Dropdown,category,"Informed consent",,6
+MAI,Dropdown,category,"Regulatory and IRB",,7
+MAI,Dropdown,category,IRB/EC,,8
+MAI,Dropdown,category,"Protocol deviation",,9
+MAI,Dropdown,category,"Study Conduct and Protocol Compliance",,10
+MAI,Dropdown,category,"Study Staff and Facilities",,11
+MAI,Dropdown,category,"Product accountability",,12
+MAI,Dropdown,category,"Regulatory file",,13
+MAI,Dropdown,category,"Source document",,14
+MAI,Radio,MAIVISIT,No,,1
+MAI,Radio,MAIVISIT,Yes,,2
+MAI,Dropdown,recordstate,Open,,1
+MAI,Dropdown,recordstate,Resolved,,2
+MAI,Radio,RSLVRMT,No,,1
+MAI,Radio,RSLVRMT,Yes,,2
+MSLEL,Dropdown,SRC,"EMR (monitor access)",,1
+MSLEL,Dropdown,SRC,"EMR (certified copy)",,2
+MSLEL,Dropdown,SRC,"CRF worksheet",,3
+MSLEL,Dropdown,SRC,"eCRF is source",,4
+MSLEL,Dropdown,SRC,"Other, specify in comments",,5
+MSLEL,Dropdown,SRCPARAM,ICF,,1
+MSLEL,Dropdown,SRCPARAM,"ICF Process",,2
+MSLEL,Dropdown,SRCPARAM,Eligibility,,3
+MSLEL,Dropdown,SRCPARAM,Demographics,,4
+MSLEL,Dropdown,SRCPARAM,"Medical history",,5
+MSLEL,Dropdown,SRCPARAM,"Physical exam",,6
+MSLEL,Dropdown,SRCPARAM,Meds,,7
+MSLEL,Dropdown,SRCPARAM,Labs,,8
+MSLEL,Dropdown,SRCPARAM,Imaging,,9
+MSLEL,Dropdown,SRCPARAM,"Subject assessment / questionnaire",,10
+MSLEL,Dropdown,SRCPARAM,"Enrollment date",,11
+MSLEL,Dropdown,SRCPARAM,"Screen failure date and reason",,12
+MSLEL,Dropdown,SRCPARAM,"Randomization assigment and investigation product received",,13
+MSLEL,Dropdown,SRCPARAM,"Investigational product procedure data",,14
+MSLEL,Dropdown,SRCPARAM,"Investigational product identification",,15
+MSLEL,Dropdown,SRCPARAM,"Adverse event",,16
+MSLEL,Dropdown,SRCPARAM,"Device deficiency",,17
+MSLEL,Dropdown,SRCPARAM,"Protocol deviation",,18
+MSLEL,Dropdown,SRCPARAM,"Study completion",,19
+MSLEL,Dropdown,SRCPARAM,"Other (specify)",,20
+NIHSS,Radio,CMPLTYN,No,2,1
+NIHSS,Radio,CMPLTYN,Yes,1,2
+PROC,Radio,ANYAE,"Assessed, new/worsening events to report",1,1
+PROC,Radio,ANYAE,"Assessed, no new/worsening events to report",2,2
+PROC,Radio,ANYAE,"Not assessed",3,3
+PROC,Radio,ANYMEDS,"Assessed, medication changes",1,1
+PROC,Radio,ANYMEDS,"Assessed, no medication changes",2,2
+PROC,Radio,ANYMEDS,"Not assessed",3,3
+RANKIN,Radio,MRS,"0 - No symptoms at all",0,1
+RANKIN,Radio,MRS,"1 - No significant disability: despite symptoms, able to carry out all usual duties and activities",1,2
+RANKIN,Radio,MRS,"2 - Slight disability: unable to perform all previous activities but able to look after own affairs without assistance",2,3
+RANKIN,Radio,MRS,"3 - Moderate disability: requiring some help but able to walk without assistance",3,4
+RANKIN,Radio,MRS,"4 - Moderately severe disability: unable to walk without assistance and unable to attend to own bodily needs without assistance",4,5
+RANKIN,Radio,MRS,"5 - Severe disability: bedridden, incontinent and requiring constant nursing care and attention",5,6
+RANKIN,Radio,MRS,"6 - Death",6,7
+RANKIN,Radio,MRSD90,No,2,1
+RANKIN,Radio,MRSD90,Yes,1,2
+RANKIN,Radio,MRSYN,No,2,1
+RANKIN,Radio,MRSYN,Yes,1,2
+REG,Dropdown,sitelab,"Site - Lab A",,1
+REG,Dropdown,sitelab,"Site - Lab B",,2
+REG,Dropdown,sitelab,"Site - Lab C",,3
+REG,Dropdown,sitelab,"Site - Lab D",,4
+REG,Dropdown,sitelab,"Site - Lab E",,5
+REG,Radio,UPLOAD,No,0,1
+REG,Radio,UPLOAD,Yes,1,2
+SED,Dropdown,COUNTRY,"United States",USA,1
+SED,Dropdown,COUNTRY,Afghanistan,AFG,2
+SED,Dropdown,COUNTRY,"Aland Islands",ALA,3
+SED,Dropdown,COUNTRY,Albania,ALB,4
+SED,Dropdown,COUNTRY,Algeria,DZA,5
+SED,Dropdown,COUNTRY,"American Samoa",ASM,6
+SED,Dropdown,COUNTRY,Andorra,AND,7
+SED,Dropdown,COUNTRY,Angola,AGO,8
+SED,Dropdown,COUNTRY,Anguilla,AIA,9
+SED,Dropdown,COUNTRY,Antarctica,ATA,10
+SED,Dropdown,COUNTRY,"Antigua and Barbuda",ATG,11
+SED,Dropdown,COUNTRY,Argentina,ARG,12
+SED,Dropdown,COUNTRY,Armenia,ARM,13
+SED,Dropdown,COUNTRY,Aruba,ABW,14
+SED,Dropdown,COUNTRY,Australia,AUS,15
+SED,Dropdown,COUNTRY,Austria,AUT,16
+SED,Dropdown,COUNTRY,Azerbaijan,AZE,17
+SED,Dropdown,COUNTRY,Bahamas,BHS,18
+SED,Dropdown,COUNTRY,Bahrain,BHR,19
+SED,Dropdown,COUNTRY,Bangladesh,BGD,20
+SED,Dropdown,COUNTRY,Barbados,BRB,21
+SED,Dropdown,COUNTRY,Belarus,BLR,22
+SED,Dropdown,COUNTRY,Belgium,BEL,23
+SED,Dropdown,COUNTRY,Belize,BLZ,24
+SED,Dropdown,COUNTRY,Benin,BEN,25
+SED,Dropdown,COUNTRY,Bermuda,BMU,26
+SED,Dropdown,COUNTRY,Bhutan,BTN,27
+SED,Dropdown,COUNTRY,"Bolivia, Plurinational State of",BOL,28
+SED,Dropdown,COUNTRY,"Bonaire, Sint Eustatius and Saba",BES,29
+SED,Dropdown,COUNTRY,"Bosnia and Herzegovina",BIH,30
+SED,Dropdown,COUNTRY,Botswana,BWA,31
+SED,Dropdown,COUNTRY,"Bouvet Island",BVT,32
+SED,Dropdown,COUNTRY,Brazil,BRA,33
+SED,Dropdown,COUNTRY,"British Indian Ocean Territory",IOT,34
+SED,Dropdown,COUNTRY,"Brunei Darussalam",BRN,35
+SED,Dropdown,COUNTRY,Bulgaria,BGR,36
+SED,Dropdown,COUNTRY,"Burkina Faso",BFA,37
+SED,Dropdown,COUNTRY,Burundi,BDI,38
+SED,Dropdown,COUNTRY,Cambodia,KHM,39
+SED,Dropdown,COUNTRY,Cameroon,CMR,40
+SED,Dropdown,COUNTRY,Canada,CAN,41
+SED,Dropdown,COUNTRY,"Cape Verde",CPV,42
+SED,Dropdown,COUNTRY,"Cayman Islands",CYM,43
+SED,Dropdown,COUNTRY,"Central African Republic",CAF,44
+SED,Dropdown,COUNTRY,Chad,TCD,45
+SED,Dropdown,COUNTRY,Chile,CHL,46
+SED,Dropdown,COUNTRY,China,CHN,47
+SED,Dropdown,COUNTRY,"Christmas Island",CXR,48
+SED,Dropdown,COUNTRY,"Cocos (Keeling) Islands",CCK,49
+SED,Dropdown,COUNTRY,Colombia,COL,50
+SED,Dropdown,COUNTRY,Comoros,COM,51
+SED,Dropdown,COUNTRY,Congo,COG,52
+SED,Dropdown,COUNTRY,"Congo, the Democratic Republic of the",COD,53
+SED,Dropdown,COUNTRY,"Cook Islands",COK,54
+SED,Dropdown,COUNTRY,"Costa Rica",CRI,55
+SED,Dropdown,COUNTRY,"Cote d'Ivoire",CIV,56
+SED,Dropdown,COUNTRY,Croatia,HRV,57
+SED,Dropdown,COUNTRY,Cuba,CUB,58
+SED,Dropdown,COUNTRY,Curacao,CUW,59
+SED,Dropdown,COUNTRY,Cyprus,CYP,60
+SED,Dropdown,COUNTRY,"Czech Republic",CZE,61
+SED,Dropdown,COUNTRY,Denmark,DNK,62
+SED,Dropdown,COUNTRY,Djibouti,DJI,63
+SED,Dropdown,COUNTRY,Dominica,DMA,64
+SED,Dropdown,COUNTRY,"Dominican Republic",DOM,65
+SED,Dropdown,COUNTRY,Ecuador,ECU,66
+SED,Dropdown,COUNTRY,Egypt,EGY,67
+SED,Dropdown,COUNTRY,"El Salvador",SLV,68
+SED,Dropdown,COUNTRY,"Equatorial Guinea",GNQ,69
+SED,Dropdown,COUNTRY,Eritrea,ERI,70
+SED,Dropdown,COUNTRY,Estonia,EST,71
+SED,Dropdown,COUNTRY,Ethiopia,ETH,72
+SED,Dropdown,COUNTRY,"Falkland Islands (Malvinas)",FLK,73
+SED,Dropdown,COUNTRY,"Faroe Islands",FRO,74
+SED,Dropdown,COUNTRY,Fiji,FJI,75
+SED,Dropdown,COUNTRY,Finland,FIN,76
+SED,Dropdown,COUNTRY,France,FRA,77
+SED,Dropdown,COUNTRY,"French Guiana",GUF,78
+SED,Dropdown,COUNTRY,"French Polynesia",PYF,79
+SED,Dropdown,COUNTRY,"French Southern Territories",ATF,80
+SED,Dropdown,COUNTRY,Gabon,GAB,81
+SED,Dropdown,COUNTRY,Gambia,GMB,82
+SED,Dropdown,COUNTRY,Georgia,GEO,83
+SED,Dropdown,COUNTRY,Germany,DEU,84
+SED,Dropdown,COUNTRY,Ghana,GHA,85
+SED,Dropdown,COUNTRY,Gibraltar,GIB,86
+SED,Dropdown,COUNTRY,Greece,GRC,87
+SED,Dropdown,COUNTRY,Greenland,GRL,88
+SED,Dropdown,COUNTRY,Grenada,GRD,89
+SED,Dropdown,COUNTRY,Guadeloupe,GLP,90
+SED,Dropdown,COUNTRY,Guam,GUM,91
+SED,Dropdown,COUNTRY,Guatemala,GTM,92
+SED,Dropdown,COUNTRY,Guernsey,GGY,93
+SED,Dropdown,COUNTRY,Guinea,GIN,94
+SED,Dropdown,COUNTRY,Guinea-Bissau,GNB,95
+SED,Dropdown,COUNTRY,Guyana,GUY,96
+SED,Dropdown,COUNTRY,Haiti,HTI,97
+SED,Dropdown,COUNTRY,"Heard Island and McDonald Islands",HMD,98
+SED,Dropdown,COUNTRY,"Holy See (Vatican City State)",VAT,99
+SED,Dropdown,COUNTRY,Honduras,HND,100
+SED,Dropdown,COUNTRY,"Hong Kong",HKG,101
+SED,Dropdown,COUNTRY,Hungary,HUN,102
+SED,Dropdown,COUNTRY,Iceland,ISL,103
+SED,Dropdown,COUNTRY,India,IND,104
+SED,Dropdown,COUNTRY,Indonesia,IDN,105
+SED,Dropdown,COUNTRY,"Iran, Islamic Republic of",IRN,106
+SED,Dropdown,COUNTRY,Iraq,IRQ,107
+SED,Dropdown,COUNTRY,Ireland,IRL,108
+SED,Dropdown,COUNTRY,"Isle of Man",IMN,109
+SED,Dropdown,COUNTRY,Israel,ISR,110
+SED,Dropdown,COUNTRY,Italy,ITA,111
+SED,Dropdown,COUNTRY,Jamaica,JAM,112
+SED,Dropdown,COUNTRY,Japan,JPN,113
+SED,Dropdown,COUNTRY,Jersey,JEY,114
+SED,Dropdown,COUNTRY,Jordan,JOR,115
+SED,Dropdown,COUNTRY,Kazakhstan,KAZ,116
+SED,Dropdown,COUNTRY,Kenya,KEN,117
+SED,Dropdown,COUNTRY,Kiribati,KIR,118
+SED,Dropdown,COUNTRY,"Korea, Democratic People's Republic of",PRK,119
+SED,Dropdown,COUNTRY,"Korea, Republic of",KOR,120
+SED,Dropdown,COUNTRY,Kuwait,KWT,121
+SED,Dropdown,COUNTRY,Kyrgyzstan,KGZ,122
+SED,Dropdown,COUNTRY,"Lao People's Democratic Republic",LAO,123
+SED,Dropdown,COUNTRY,Latvia,LVA,124
+SED,Dropdown,COUNTRY,Lebanon,LBN,125
+SED,Dropdown,COUNTRY,Lesotho,LSO,126
+SED,Dropdown,COUNTRY,Liberia,LBR,127
+SED,Dropdown,COUNTRY,Libya,LBY,128
+SED,Dropdown,COUNTRY,Liechtenstein,LIE,129
+SED,Dropdown,COUNTRY,Lithuania,LTU,130
+SED,Dropdown,COUNTRY,Luxembourg,LUX,131
+SED,Dropdown,COUNTRY,Macao,MAC,132
+SED,Dropdown,COUNTRY,"Macedonia, the Former Yugoslav Republic of",MKD,133
+SED,Dropdown,COUNTRY,Madagascar,MDG,134
+SED,Dropdown,COUNTRY,Malawi,MWI,135
+SED,Dropdown,COUNTRY,Malaysia,MYS,136
+SED,Dropdown,COUNTRY,Maldives,MDV,137
+SED,Dropdown,COUNTRY,Mali,MLI,138
+SED,Dropdown,COUNTRY,Malta,MLT,139
+SED,Dropdown,COUNTRY,"Marshall Islands",MHL,140
+SED,Dropdown,COUNTRY,Martinique,MTQ,141
+SED,Dropdown,COUNTRY,Mauritania,MRT,142
+SED,Dropdown,COUNTRY,Mauritius,MUS,143
+SED,Dropdown,COUNTRY,Mayotte,MYT,144
+SED,Dropdown,COUNTRY,Mexico,MEX,145
+SED,Dropdown,COUNTRY,"Micronesia, Federated States of",FSM,146
+SED,Dropdown,COUNTRY,"Moldova, Republic of",MDA,147
+SED,Dropdown,COUNTRY,Monaco,MCO,148
+SED,Dropdown,COUNTRY,Mongolia,MNG,149
+SED,Dropdown,COUNTRY,Montenegro,MNE,150
+SED,Dropdown,COUNTRY,Montserrat,MSR,151
+SED,Dropdown,COUNTRY,Morocco,MAR,152
+SED,Dropdown,COUNTRY,Mozambique,MOZ,153
+SED,Dropdown,COUNTRY,Myanmar,MMR,154
+SED,Dropdown,COUNTRY,Namibia,NAM,155
+SED,Dropdown,COUNTRY,Nauru,NRU,156
+SED,Dropdown,COUNTRY,Nepal,NPL,157
+SED,Dropdown,COUNTRY,Netherlands,NLD,158
+SED,Dropdown,COUNTRY,"New Caledonia",NCL,159
+SED,Dropdown,COUNTRY,"New Zealand",NZL,160
+SED,Dropdown,COUNTRY,Nicaragua,NIC,161
+SED,Dropdown,COUNTRY,Niger,NER,162
+SED,Dropdown,COUNTRY,Nigeria,NGA,163
+SED,Dropdown,COUNTRY,Niue,NIU,164
+SED,Dropdown,COUNTRY,"Norfolk Island",NFK,165
+SED,Dropdown,COUNTRY,"Northern Mariana Islands",MNP,166
+SED,Dropdown,COUNTRY,Norway,NOR,167
+SED,Dropdown,COUNTRY,Oman,OMN,168
+SED,Dropdown,COUNTRY,Pakistan,PAK,169
+SED,Dropdown,COUNTRY,Palau,PLW,170
+SED,Dropdown,COUNTRY,"Palestinian Territory, Occupied",PSE,171
+SED,Dropdown,COUNTRY,Panama,PAN,172
+SED,Dropdown,COUNTRY,"Papua New Guinea",PNG,173
+SED,Dropdown,COUNTRY,Paraguay,PRY,174
+SED,Dropdown,COUNTRY,Peru,PER,175
+SED,Dropdown,COUNTRY,Philippines,PHL,176
+SED,Dropdown,COUNTRY,Pitcairn,PCN,177
+SED,Dropdown,COUNTRY,Poland,POL,178
+SED,Dropdown,COUNTRY,Portugal,PRT,179
+SED,Dropdown,COUNTRY,"Puerto Rico",PRI,180
+SED,Dropdown,COUNTRY,Qatar,QAT,181
+SED,Dropdown,COUNTRY,Reunion,REU,182
+SED,Dropdown,COUNTRY,Romania,ROU,183
+SED,Dropdown,COUNTRY,"Russian Federation",RUS,184
+SED,Dropdown,COUNTRY,Rwanda,RWA,185
+SED,Dropdown,COUNTRY,"Saint Barthelemy",BLM,186
+SED,Dropdown,COUNTRY,"Saint Helena, Ascension and Tristan da Cunha",SHN,187
+SED,Dropdown,COUNTRY,"Saint Kitts and Nevis",KNA,188
+SED,Dropdown,COUNTRY,"Saint Lucia",LCA,189
+SED,Dropdown,COUNTRY,"Saint Martin (French Part)",MAF,190
+SED,Dropdown,COUNTRY,"Saint Pierre and Miquelon",SPM,191
+SED,Dropdown,COUNTRY,"Saint Vincent and the Grenadines",VCT,192
+SED,Dropdown,COUNTRY,Samoa,WSM,193
+SED,Dropdown,COUNTRY,"San Marino",SMR,194
+SED,Dropdown,COUNTRY,"Sao Tome and Principe",STP,195
+SED,Dropdown,COUNTRY,"Saudi Arabia",SAU,196
+SED,Dropdown,COUNTRY,Senegal,SEN,197
+SED,Dropdown,COUNTRY,Serbia,SRB,198
+SED,Dropdown,COUNTRY,Seychelles,SYC,199
+SED,Dropdown,COUNTRY,"Sierra Leone",SLE,200
+SED,Dropdown,COUNTRY,Singapore,SGP,201
+SED,Dropdown,COUNTRY,"Sint Maarten (Dutch Part)",SXM,202
+SED,Dropdown,COUNTRY,Slovakia,SVK,203
+SED,Dropdown,COUNTRY,Slovenia,SVN,204
+SED,Dropdown,COUNTRY,"Solomon Islands",SLB,205
+SED,Dropdown,COUNTRY,Somalia,SOM,206
+SED,Dropdown,COUNTRY,"South Africa",ZAF,207
+SED,Dropdown,COUNTRY,"South Georgia and the South Sandwich Islands",SGS,208
+SED,Dropdown,COUNTRY,"South Sudan",SSD,209
+SED,Dropdown,COUNTRY,Spain,ESP,210
+SED,Dropdown,COUNTRY,"Sri Lanka",LKA,211
+SED,Dropdown,COUNTRY,Sudan,SDN,212
+SED,Dropdown,COUNTRY,Suriname,SUR,213
+SED,Dropdown,COUNTRY,"Svalbard and Jan Mayen",SJM,214
+SED,Dropdown,COUNTRY,Swaziland,SWZ,215
+SED,Dropdown,COUNTRY,Sweden,SWE,216
+SED,Dropdown,COUNTRY,Switzerland,CHE,217
+SED,Dropdown,COUNTRY,"Syrian Arab Republic",SYR,218
+SED,Dropdown,COUNTRY,"Taiwan, Province of China",TWN,219
+SED,Dropdown,COUNTRY,Tajikistan,TJK,220
+SED,Dropdown,COUNTRY,"Tanzania, United Republic of",TZA,221
+SED,Dropdown,COUNTRY,Thailand,THA,222
+SED,Dropdown,COUNTRY,Timor-Leste,TLS,223
+SED,Dropdown,COUNTRY,Togo,TGO,224
+SED,Dropdown,COUNTRY,Tokelau,TKL,225
+SED,Dropdown,COUNTRY,Tonga,TON,226
+SED,Dropdown,COUNTRY,"Trinidad and Tobago",TTO,227
+SED,Dropdown,COUNTRY,Tunisia,TUN,228
+SED,Dropdown,COUNTRY,Turkey,TUR,229
+SED,Dropdown,COUNTRY,Turkmenistan,TKM,230
+SED,Dropdown,COUNTRY,"Turks and Caicos Islands",TCA,231
+SED,Dropdown,COUNTRY,Tuvalu,TUV,232
+SED,Dropdown,COUNTRY,Uganda,UGA,233
+SED,Dropdown,COUNTRY,Ukraine,UKR,234
+SED,Dropdown,COUNTRY,"United Arab Emirates",ARE,235
+SED,Dropdown,COUNTRY,"United Kingdom",GBR,236
+SED,Dropdown,COUNTRY,"United States Minor Outlying Islands",UMI,237
+SED,Dropdown,COUNTRY,Uruguay,URY,238
+SED,Dropdown,COUNTRY,Uzbekistan,UZB,239
+SED,Dropdown,COUNTRY,Vanuatu,VUT,240
+SED,Dropdown,COUNTRY,"Venezuela, Bolivian Republic of",VEN,241
+SED,Dropdown,COUNTRY,"Viet Nam",VNM,242
+SED,Dropdown,COUNTRY,"Virgin Islands, British",VGB,243
+SED,Dropdown,COUNTRY,"Virgin Islands, U.S.",VIR,244
+SED,Dropdown,COUNTRY,"Wallis and Futuna",WLF,245
+SED,Dropdown,COUNTRY,"Western Sahara",ESH,246
+SED,Dropdown,COUNTRY,Yemen,YEM,247
+SED,Dropdown,COUNTRY,Zambia,ZMB,248
+SED,Dropdown,COUNTRY,Zimbabwe,ZWE,249
+SED,Dropdown,rand_site_id,101,,1
+SED,Dropdown,rand_site_id,102,,2
+SED,Dropdown,rand_site_id,103,,3
+SED,Dropdown,rand_site_id,104,,4
+SED,Dropdown,rand_site_id,105,,5
+SED,Dropdown,rand_site_id,106,,6
+SED,Dropdown,rand_site_id,107,,7
+SED,Dropdown,rand_site_id,108,,8
+SED,Dropdown,rand_site_id,109,,9
+SED,Dropdown,rand_site_id,110,,10
+SED,Dropdown,rand_site_id,111,,11
+SED,Dropdown,rand_site_id,112,,12
+SED,Dropdown,rand_site_id,113,,13
+SED,Dropdown,rand_site_id,114,,14
+SED,Dropdown,rand_site_id,115,,15
+SED,Dropdown,rand_site_id,116,,16
+SED,Dropdown,rand_site_id,117,,17
+SED,Dropdown,rand_site_id,118,,18
+SED,Dropdown,rand_site_id,119,,19
+SED,Dropdown,rand_site_id,120,,20
+SED,Dropdown,rand_site_id,121,,21
+SED,Dropdown,rand_site_id,122,,22
+SED,Dropdown,rand_site_id,123,,23
+SED,Dropdown,rand_site_id,124,,24
+SED,Dropdown,rand_site_id,125,,25
+SED,Dropdown,rand_site_id,126,,26
+SED,Dropdown,rand_site_id,127,,27
+SED,Dropdown,rand_site_id,128,,28
+SED,Dropdown,rand_site_id,129,,29
+SED,Dropdown,rand_site_id,130,,30
+SED,Dropdown,rand_site_id,131,,31
+SED,Dropdown,rand_site_id,132,,32
+SED,Dropdown,rand_site_id,133,,33
+SED,Dropdown,rand_site_id,134,,34
+SED,Dropdown,rand_site_id,135,,35
+SED,Dropdown,rand_site_id,136,,36
+SED,Dropdown,rand_site_id,137,,37
+SED,Dropdown,rand_site_id,138,,38
+SED,Dropdown,rand_site_id,139,,39
+SED,Dropdown,rand_site_id,140,,40
+SED,Dropdown,rand_site_id,141,,41
+SED,Dropdown,rand_site_id,142,,42
+SED,Dropdown,rand_site_id,143,,43
+SED,Dropdown,rand_site_id,144,,44
+SED,Dropdown,rand_site_id,145,,45
+SED,Dropdown,rand_site_id,146,,46
+SED,Dropdown,rand_site_id,147,,47
+SED,Dropdown,rand_site_id,148,,48
+SED,Dropdown,rand_site_id,149,,49
+SED,Dropdown,rand_site_id,150,,50
+SED,Dropdown,rand_site_id,151,,51
+SED,Dropdown,rand_site_id,152,,52
+SED,Dropdown,rand_site_id,153,,53
+SED,Dropdown,rand_site_id,154,,54
+SED,Dropdown,rand_site_id,155,,55
+SED,Dropdown,rand_site_id,156,,56
+SED,Dropdown,rand_site_id,157,,57
+SED,Dropdown,rand_site_id,158,,58
+SED,Dropdown,rand_site_id,159,,59
+SED,Dropdown,rand_site_id,160,,60
+SED,Dropdown,rand_site_id,161,,61
+SED,Dropdown,rand_site_id,162,,62
+SED,Dropdown,rand_site_id,163,,63
+SED,Dropdown,rand_site_id,164,,64
+SED,Dropdown,rand_site_id,165,,65
+SED,Dropdown,rand_site_id,166,,66
+SED,Dropdown,rand_site_id,167,,67
+SED,Dropdown,rand_site_id,168,,68
+SED,Dropdown,rand_site_id,169,,69
+SED,Dropdown,rand_site_id,170,,70
+SED,Dropdown,rand_site_id,171,,71
+SED,Dropdown,rand_site_id,172,,72
+SED,Dropdown,rand_site_id,173,,73
+SED,Dropdown,rand_site_id,174,,74
+SED,Dropdown,rand_site_id,175,,75
+SED,Dropdown,rand_site_id,176,,76
+SED,Dropdown,rand_site_id,177,,77
+SED,Dropdown,rand_site_id,178,,78
+SED,Dropdown,rand_site_id,179,,79
+SED,Dropdown,rand_site_id,180,,80
+SED,Dropdown,rand_site_id,181,,81
+SED,Dropdown,rand_site_id,182,,82
+SED,Dropdown,rand_site_id,183,,83
+SED,Dropdown,rand_site_id,184,,84
+SED,Dropdown,rand_site_id,185,,85
+SED,Dropdown,rand_site_id,186,,86
+SED,Dropdown,rand_site_id,187,,87
+SED,Dropdown,rand_site_id,188,,88
+SED,Dropdown,rand_site_id,189,,89
+SED,Dropdown,rand_site_id,190,,90
+SED,Dropdown,rand_site_id,191,,91
+SED,Dropdown,rand_site_id,192,,92
+SED,Dropdown,rand_site_id,193,,93
+SED,Dropdown,rand_site_id,194,,94
+SED,Dropdown,rand_site_id,195,,95
+SED,Dropdown,rand_site_id,196,,96
+SED,Dropdown,rand_site_id,197,,97
+SED,Dropdown,rand_site_id,198,,98
+SED,Dropdown,rand_site_id,199,,99
+SED,Dropdown,sitelab,"Site - Lab A",,1
+SED,Dropdown,sitelab,"Site - Lab B",,2
+SED,Dropdown,sitelab,"Site - Lab C",,3
+SED,Dropdown,sitelab,"Site - Lab D",,4
+SED,Dropdown,sitelab,"Site - Lab E",,5
+SICHK,Radio,dev01,Yes,,1
+SICHK,Radio,dev01,No,,2
+SICHK,Radio,dev02,Yes,,1
+SICHK,Radio,dev02,No,,2
+SICHK,Radio,dev03,Yes,,1
+SICHK,Radio,dev03,No,,2
+SICHK,Radio,doc01,Yes,,1
+SICHK,Radio,doc01,No,,2
+SICHK,Radio,doc02,Yes,,1
+SICHK,Radio,doc02,No,,2
+SICHK,Radio,doc03,Yes,,1
+SICHK,Radio,doc03,No,,2
+SICHK,Radio,doc04,Yes,,1
+SICHK,Radio,doc04,No,,2
+SICHK,Radio,doc05,Yes,,1
+SICHK,Radio,doc05,No,,2
+SICHK,Radio,doc06,Yes,,1
+SICHK,Radio,doc06,No,,2
+SICHK,Radio,doc07,Yes,,1
+SICHK,Radio,doc07,No,,2
+SICHK,Radio,doc08,Yes,,1
+SICHK,Radio,doc08,No,,2
+SICHK,Radio,doc09,Yes,,1
+SICHK,Radio,doc09,No,,2
+SICHK,Radio,ecpt01,Yes,,1
+SICHK,Radio,ecpt01,No,,2
+SICHK,Radio,ecpt02,Yes,,1
+SICHK,Radio,ecpt02,No,,2
+SICHK,Radio,ecpt03,Yes,,1
+SICHK,Radio,ecpt03,No,,2
+SICHK,Radio,ecpt04,Yes,,1
+SICHK,Radio,ecpt04,No,,2
+SICHK,Radio,ecpt05,Yes,,1
+SICHK,Radio,ecpt05,No,,2
+SICHK,Radio,ecpt06,Yes,,1
+SICHK,Radio,ecpt06,No,,2
+SICHK,Radio,ecpt07,Yes,,1
+SICHK,Radio,ecpt07,No,,2
+SICHK,Radio,ecpt08,Yes,,1
+SICHK,Radio,ecpt08,No,,2
+SICHK,Radio,ecpt09,Yes,,1
+SICHK,Radio,ecpt09,No,,2
+SICHK,Radio,ecpt10,Yes,1,1
+SICHK,Radio,ecpt10,No,2,2
+SICHK,Radio,ecpt11,Yes,,1
+SICHK,Radio,ecpt11,No,,2
+SICHK,Radio,reg01,Yes,,1
+SICHK,Radio,reg01,No,,2
+SICHK,Radio,reg02,Yes,,1
+SICHK,Radio,reg02,No,,2
+SICHK,Radio,reg03,Yes,,1
+SICHK,Radio,reg03,No,,2
+SICHK,Radio,safe01,Yes,,1
+SICHK,Radio,safe01,No,,2
+SICHK,Radio,safe02,Yes,,1
+SICHK,Radio,safe02,No,,2
+SICHK,Radio,spf01,Yes,,1
+SICHK,Radio,spf01,No,,2
+SICHK,Radio,spf02,Yes,,1
+SICHK,Radio,spf02,No,,2
+SICHK,Radio,spf03,Yes,,1
+SICHK,Radio,spf03,No,,2
+SICHK,Radio,spf04,Yes,,1
+SICHK,Radio,spf04,No,,2
+SICHK,Radio,spf05,Yes,,1
+SICHK,Radio,spf05,No,,2
+SICHK,Radio,spf06,Yes,,1
+SICHK,Radio,spf06,No,,2
+SICHK,Radio,spf07,Yes,,1
+SICHK,Radio,spf07,No,,2
+SICHK,Radio,spf08,Yes,,1
+SICHK,Radio,spf08,No,,2
+SICHK,Radio,spf09,Yes,,1
+SICHK,Radio,spf09,No,,2
+SICHK,Radio,spf10,Yes,,1
+SICHK,Radio,spf10,No,,2
+SICHK,Radio,visit_type,Remote,,1
+SICHK,Radio,visit_type,"On-site (complete Site Visit Log)",,2
+SICHK,Radio,visit_type,Both,,3
+SIGNEL,Dropdown,SDLROLE,"Data Manager",1,1
+SIGNEL,Dropdown,SDLROLE,Monitor,2,2
+SIGNEL,Dropdown,SDLROLE,"Research Coordinator",3,3
+SIGNEL,Dropdown,SDLROLE,Regulatory,4,4
+SIGNEL,Dropdown,SDLROLE,"Sponsor Admin",5,5
+SIGNEL,Dropdown,SDLROLE,Sub-Investigator,6,6
+SIGNEL,Dropdown,SDLROLE,Other,99,7
+SIGNLOG,Radio,FNLSIGN,No,0,1
+SIGNLOG,Radio,FNLSIGN,Yes,1,2
+SITESTAT,Dropdown,sitestatus,"Start Up/Initiation",,1
+SITESTAT,Dropdown,sitestatus,"Enrolling and Follow-up",,2
+SITESTAT,Dropdown,sitestatus,"Enrollment Hold",,3
+SITESTAT,Dropdown,sitestatus,"Follow-up Only",,4
+SITESTAT,Dropdown,sitestatus,"Data Frozen",,5
+SITESTAT,Dropdown,sitestatus,"Data Locked",,6
+SPNRPERS,Dropdown,spnsrroles,"Clinical Operations",,1
+SPNRPERS,Dropdown,spnsrroles,"Clinical Study Lead",,2
+SPNRPERS,Dropdown,spnsrroles,"Data Management",,3
+SPNRPERS,Dropdown,spnsrroles,Monitor,,4
+SPNRPERS,Dropdown,spnsrroles,"Project Management",,5
+SPNRPERS,Dropdown,spnsrroles,Sponsor,,6
+SPNRPERS,Dropdown,spnsrroles,Statistician,,7
+STDYPERS,Dropdown,ssproles,"Core Lab Director",,1
+STDYPERS,Dropdown,ssproles,"Core Lab Personnel",,2
+STDYPERS,Dropdown,ssproles,"Data Coordinator",,3
+STDYPERS,Dropdown,ssproles,Pharmacist,,4
+STDYPERS,Dropdown,ssproles,"Principal Investigator",,5
+STDYPERS,Dropdown,ssproles,Regulatory,,6
+STDYPERS,Dropdown,ssproles,"Research Coordinator",,7
+STDYPERS,Dropdown,ssproles,"Research Manager",,8
+STDYPERS,Dropdown,ssproles,"Research Nurse",,9
+STDYPERS,Dropdown,ssproles,Sub-Investigator,,10
+SUBJECON,Radio,CNSNTYN,No,2,1
+SUBJECON,Radio,CNSNTYN,Yes,1,2
+TEMPLATE,Dropdown,sitelab,"Univ Texas MD Anderson Cancer Center",,1
+TEMPLATE,Dropdown,sitelab,"Site - Lab A",,2
+TEMPLATE,Dropdown,sitelab,"Site - Lab B",,3
+TEMPLATE,Dropdown,sitelab,"Site - Lab C",,4
+TEMPLATE,Dropdown,sitelab,"Site - Lab D",,5
+TEMPLATE,Dropdown,sitelab,"Site - Lab E",,6

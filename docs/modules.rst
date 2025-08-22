@@ -6,3 +6,4 @@ imednet
 
    imednet
    imednet.config
+   imednet.tlf
