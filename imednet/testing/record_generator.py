@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict
 
 from faker import Faker
 
@@ -14,8 +14,8 @@ from imednet.testing.logic_parser import (
 from imednet.workflows.record_update import RecordUpdateWorkflow
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
     from imednet.models import Job
+    from imednet.sdk import ImednetSDK
     from imednet.validation import DataDictionary
 
 

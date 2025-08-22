@@ -3,10 +3,10 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
+from tests.unit.test_data_dictionary import FIXTURES
 
 from imednet.testing.record_generator import RecordGenerator
 from imednet.validation import DataDictionary, DataDictionaryLoader
-from tests.unit.test_data_dictionary import FIXTURES
 
 
 @pytest.fixture
