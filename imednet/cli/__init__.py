@@ -42,6 +42,7 @@ from .subject_data import subject_data  # noqa: E402
 from .subjects import app as subjects_app  # noqa: E402
 from .variables import app as variables_app  # noqa: E402
 from .workflows import app as workflows_app  # noqa: E402
+from .tlf import app as tlf_app # noqa: E402
 
 app.add_typer(studies_app)
 app.add_typer(queries_app)
@@ -53,6 +54,7 @@ app.add_typer(subjects_app)
 app.add_typer(jobs_app)
 app.add_typer(records_app)
 app.add_typer(workflows_app)
+app.add_typer(tlf_app, name="tlf")
 app.command("subject-data")(subject_data)
 
 if __name__ == "__main__":  # pragma: no cover - manual invocation
