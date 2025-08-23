@@ -8,7 +8,7 @@ from rich import print
 
 from imednet.sdk import ImednetSDK
 from imednet.testing.record_generator import RecordGenerator
-from imednet.validation import DataDictionaryLoader
+from imednet.validation import DataDictionary, DataDictionaryLoader
 
 app = typer.Typer(help="Data dictionary commands.")
 
@@ -19,7 +19,7 @@ def _load_dd_from_options(
     choices_file: Optional[Path],
     forms_file: Optional[Path],
     questions_file: Optional[Path],
-) -> DataDictionaryLoader:
+) -> DataDictionary:
     if zip_file:
         return DataDictionaryLoader.from_zip(zip_file)
     if all([business_logic_file, choices_file, forms_file, questions_file]):
@@ -98,7 +98,9 @@ def load_data_dictionary(
 @app.command("generate-records")
 def generate_records(
     ctx: typer.Context,
-    form_key: str = typer.Option(..., "--form", help="The key of the form to generate records for."),
+    form_key: str = typer.Option(
+        ..., "--form", help="The key of the form to generate records for."
+    ),
     study_key: str = typer.Option(..., "--study", help="The key of the study to submit to."),
     subject_key: str = typer.Option(..., "--subject", help="The key of the subject to submit for."),
     zip_file: Optional[Path] = typer.Option(
