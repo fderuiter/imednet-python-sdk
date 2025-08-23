@@ -1,0 +1,53 @@
+"Form ID","Form Key","Form Type","Form Name",Title,Description,"Embedded Log","Fixed Interval","Unscheduled Visits","Other Forms","Patient Record Report","User Agreement","Enforce Ownership",ePRO,"Allow Copy"
+10202,AE,Patient,"Adverse Event","Adverse Event","Adverse Event",,,,,1,,,,1
+10265,AEACTEL,Patient,"Adverse Event Action EL","Adverse Event Action(s) Taken","Adverse Event Action(s) Taken",1,,,,,,,,1
+10305,AESDC,Patient,"Adverse Event SDC","Adverse Event Source Document Collection","Adverse Event Source Document Collection",1,,,,,,,,1
+10251,BSL,Patient,Baseline,Baseline,Baseline,,,,,,,,,1
+10318,CECAI,Site,"CEC Action Items","CEC Action Items","CEC Action Items",,,,,,,,,1
+10319,CECAIEL,Site,"CEC Action Items EL","CEC Action Items EL","CEC Action Items EL",1,,,,,,,,1
+10253,CECADJUD,Patient,"CEC Adjudication","CEC Adjudication","CEC Adjudication",,,,,,1,,,1
+10291,CECMMR,Patient,"CEC Medical Monitor Review","CEC Medical Monitor Review","CEC Medical Monitor Review",,,,,,,,,1
+10289,CECSDC,Patient,"CEC Source Document Collection","CEC Source Document Collection","CEC Source Document Collection",,,,,,,,,1
+10295,CLCHK,Site,"Close Out Visit","Close Out Visit Form","Close Out Visit Form",,,,,,,,,1
+10290,CECSDV,Patient,"Combined Source Documents","Combined Source Documents","CEC Source Document Log",1,,,,,,,,1
+10213,contact,"Contact Us","Contact Us","Contact Us","Contact Us",,,,,,,,,
+10320,CLAI,Site,"Core Lab Action Items","Core Lab Action Items","Core Lab Action Items",,,,,,,,,1
+10321,CLAIEL,Site,"Core Lab Action Items EL","Core Lab Action Items EL","Core Lab Action Items EL",1,,,,,,,,1
+10311,COLACHK,Site,"Core Lab Monitoring Visit","Core Lab Monitoring Visit","Core Lab Monitoring Visit Form",,,,,,,,,1
+10254,DEVDEF,Patient,"Device Deficiency","Device Deficiency","Device Deficiency or Device Issue",,,,,1,,,,1
+10258,DEVINFO,Patient,"Device Information CEL","Device Information CEL","Device Information CEL",1,,,,,,,,1
+10255,DC,Patient,Discharge,Discharge,Discharge,,,,,,,,,1
+10333,EQ5D5L,Patient,EQ-5D-5L,EQ-5D-5L,"EQ-5D-5L Quality of Life",,,,1,,,,,1
+10324,FUP,Patient,Follow-Up,Follow-Up,Follow-Up,,,,,,,,,
+10296,ICFEL,Site,"ICF Verification EL","ICF Verification","ICF Verification",1,,,,,,,,1
+10292,IMVCHK,Site,"Interim Monitoring Visit","Interim Monitoring Visit","Interim Monitoring Visit",,,,,,,,,1
+10233,INVCAT,Catalog,"Inventory Catalog","Inventory Catalog","Inventory Catalog",,,,,,,,,
+10323,LAB,Patient,"Laboratory Tests","Laboratory Tests","Laboratory Tests",,,,,,,,,
+10325,LTFU,Patient,"Lost to Follow-up EL","Lost to Follow-up EL","Subform Study Completion Form",1,,,,,,,,
+10322,CONMEDS,Patient,"Medication Log","Medication Log","Medication Log",,,,,1,,,,
+10330,RANKIN,Patient,"Modified Rankin Scale","Modified Rankin Scale","Modified Rankin Scale",,,,,,,,,
+10297,MAI,Site,"Monitoring Action Items EL","Monitoring Action Items EL","Monitoring Action Items EL",1,,,,,,,,1
+10304,MSLEL,Site,"Monitoring Source Location EL","Monitoring Source Location EL","Monitoring Source Location EL",1,,,,,,,,1
+10303,MONTRV,Site,"Monitoring Visits","Monitoring Visits","Monitoring Visits",,,,,,,,,1
+10298,IMVEL,Site,"Monitoring Visits EL","Monitoring Visits EL","Embedded Log - Used to record / trigger visit checklists",1,,,,,,,,1
+10329,NIHSS,Patient,"NIH Stroke Scale","NIH Stroke Scale (NIHSS)","NIH Stroke Scale (NIHSS)",,,,,,,,,
+10256,PROC,Patient,Procedure,Procedure,Procedure,,,,,,,,,1
+10207,DV,Patient,"Protocol Deviation","Protocol Deviation","Protocol Deviation",,,,,1,,,,1
+10128,REG,Patient,Registration,Registration,Registration,,1,,,,,,,1
+10269,SFLOGEL,Site,"Screen Failure EL","Screen Failure EL","Screen Failure EL",1,,,,,,,,1
+10268,SFLOG,Site,"Screen Failure Log","Screen Failure Log","Screen Failure Log",,,,,,,,,1
+10334,SCACEL,Site,"Screening Activity EL","Screening Activity EL","Screening Activity EL",1,,,,,,,,1
+10335,SCACLOG,Site,"Screening Activity Log","Screening Activity Log","Screening Activity Log",1,,,,,,,,1
+10306,SIGNLOG,Site,"Signature / Delegation Log","Signature / Delegation Log","Signature / Delegation Log",,,,,,,,,1
+10307,SIGNEL,Site,"Signature / Delegation Log EL","Signature / Delegation Log","Signature / Delegation Log",1,,,,,,,,1
+10220,SICHK,Site,"Site Initiation Visit","Site Initiation Visit","Monitor Trip - Site Initiation Visit",,,,,,,,,1
+10222,SITESTAT,Site,"Site Status","Site Status","Site Status - EL",1,,,,,,,,1
+10270,STDYPERS,Site,"Site Study Personnel","Site Study Personnel","Site Study Personnel Name(s) (with role) Attending the Visit",1,,,,,,,,1
+10271,SPNRPERS,Site,"Sponsor / CRO Personnel","Sponsor/CRO Representative Personnel","Sponsor/CRO Representative Name(s) (with role) Attending the Visit",1,,,,,,,,1
+10201,DS,Patient,"Study Completion","Study Completion","Study Completion",,,,,,,,,1
+10309,EOSCDM,Patient,"Study Completion CDM","Study Completion CDM","Clinical Data Manager 'locks' study grid when data entry is complete.",,,,,,,,,1
+10257,IE,Patient,"Study Eligibility","Study Eligibility","Study Eligibility",,,,,,,,,1
+10024,SED,Site,"Study Essential Documents","Study Essential Documents","This is the Study Essential Documents Page",,,,,,,,,1
+10016,spd,User,"Study Personnel Documents","Study Personnel Documents","This is the page where all study related documents are collected.",1,,,,,,,,
+10327,SUBJECON,eConsent,"Subject eConsent","Subject eConsent","Subject eConsent",,,,,,,,,
+10230,TEMPLATE,Patient,"xxx-Template Form","Template Form","Template Form",,1,,,,,,,1

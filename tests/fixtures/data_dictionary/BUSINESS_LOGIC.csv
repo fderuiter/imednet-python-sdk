@@ -1,4 +1,2 @@
-Type,Name,Status,ID,Form
-Form,Auto-Sequence AENUM,Active,101712,AE
-Form,Remove DEE KW,Active,101891,AE
-Form,Disable AENUM,Active,101713,AE
+Form,Logic
+AE,"<BusinessLogic><Conditions><and><checked><question>IRBDATCB</question></checked></and></Conditions><Actions><disable_and_clear_field><question>IRBDAT</question></disable_and_clear_field></Actions></BusinessLogic>"

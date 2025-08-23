@@ -1,7 +1,7 @@
 # AGENTS.md — Contributor Guide
 
 ## Scope
-Python 3.10–3.12. Work in `imednet/`, `imednet/workflows/`, `tests/`, `docs/`,
+Python 3.11–3.12. Work in `imednet/`, `imednet/workflows/`, `tests/`, `docs/`,
 `examples/`, `scripts/`, `.github/`.
 
 ## Validate

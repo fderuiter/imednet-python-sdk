@@ -5,7 +5,7 @@ import pytest
 from imednet.sdk import AsyncImednetSDK
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_sites(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     sites = await async_sdk.sites.async_list(study_key)
     assert isinstance(sites, list)
@@ -14,7 +14,7 @@ async def test_async_sites(async_sdk: AsyncImednetSDK, study_key: str) -> None:
         assert site.site_id == sites[0].site_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_subjects(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     subjects = await async_sdk.subjects.async_list(study_key)
     assert isinstance(subjects, list)
@@ -23,7 +23,7 @@ async def test_async_subjects(async_sdk: AsyncImednetSDK, study_key: str) -> Non
         assert subject.subject_key == subjects[0].subject_key
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_records(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     records = await async_sdk.records.async_list(study_key)
     assert isinstance(records, list)
@@ -32,7 +32,7 @@ async def test_async_records(async_sdk: AsyncImednetSDK, study_key: str) -> None
         assert record.record_id == records[0].record_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_intervals(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     intervals = await async_sdk.intervals.async_list(study_key)
     assert isinstance(intervals, list)
@@ -41,7 +41,7 @@ async def test_async_intervals(async_sdk: AsyncImednetSDK, study_key: str) -> No
         assert interval.interval_id == intervals[0].interval_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_visits(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     visits = await async_sdk.visits.async_list(study_key)
     assert isinstance(visits, list)
@@ -50,7 +50,7 @@ async def test_async_visits(async_sdk: AsyncImednetSDK, study_key: str) -> None:
         assert visit.visit_id == visits[0].visit_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_variables(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     variables = await async_sdk.variables.async_list(study_key)
     assert isinstance(variables, list)
@@ -59,7 +59,7 @@ async def test_async_variables(async_sdk: AsyncImednetSDK, study_key: str) -> No
         assert variable.variable_id == variables[0].variable_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_forms(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     forms = await async_sdk.forms.async_list(study_key)
     assert isinstance(forms, list)
@@ -68,7 +68,7 @@ async def test_async_forms(async_sdk: AsyncImednetSDK, study_key: str) -> None:
         assert form.form_id == forms[0].form_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_queries(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     queries = await async_sdk.queries.async_list(study_key)
     assert isinstance(queries, list)
@@ -77,7 +77,7 @@ async def test_async_queries(async_sdk: AsyncImednetSDK, study_key: str) -> None
         assert query.annotation_id == queries[0].annotation_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_record_revisions(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     revisions = await async_sdk.record_revisions.async_list(study_key)
     assert isinstance(revisions, list)
@@ -86,7 +86,7 @@ async def test_async_record_revisions(async_sdk: AsyncImednetSDK, study_key: str
         assert rev.record_revision_id == revisions[0].record_revision_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_users(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     users = await async_sdk.users.async_list(study_key)
     assert isinstance(users, list)
@@ -95,7 +95,7 @@ async def test_async_users(async_sdk: AsyncImednetSDK, study_key: str) -> None:
         assert user.user_id == users[0].user_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 async def test_async_codings(async_sdk: AsyncImednetSDK, study_key: str) -> None:
     codings = await async_sdk.codings.async_list(study_key)
     assert isinstance(codings, list)
@@ -104,7 +104,7 @@ async def test_async_codings(async_sdk: AsyncImednetSDK, study_key: str) -> None
         assert coding.coding_id == codings[0].coding_id
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio(loop_scope="session")
 @pytest.mark.parametrize(
     "record_payload",
     ["register", "scheduled", "new"],

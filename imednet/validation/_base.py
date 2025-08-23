@@ -13,6 +13,6 @@ class _ValidatorMixin:
 
     def _validate_cached(self, form_key: Optional[str], data: Dict[str, Any]) -> None:
         if form_key:
-            from .schema import validate_record_data
+            from .cache import validate_record_data
 
             validate_record_data(self.schema, form_key, data)
