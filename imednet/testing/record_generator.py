@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 from faker import Faker
 
 from imednet.testing.logic_engine import LogicEngine
 from imednet.testing.logic_parser import (
+    BusinessRule,
     DisableAndClearField,
     HideAndClearField,
     LogicParser,
@@ -32,17 +33,17 @@ class RecordGenerator:
         self.sdk = sdk
         self.data_dictionary = data_dictionary
         self.faker = Faker()
-        self.forms = {form["Form Key"]: form for form in data_dictionary.forms}
-        self.questions = {}
+        self.forms: Dict[str, dict] = {
+            form["Form Key"]: form for form in data_dictionary.forms
+        }
+        self.questions: Dict[str, List[Dict[str, str]]] = {}
         for question in data_dictionary.questions:
             self.questions.setdefault(question["Form"], []).append(question)
-        self.choices = {}
+        self.choices: Dict[Tuple[str, str], List[Dict[str, str]]] = {}
         for choice in data_dictionary.choices:
-            self.choices.setdefault((choice["Form"], choice["Variable Name"]), []).append(
-                choice
-            )
+            self.choices.setdefault((choice["Form"], choice["Variable Name"]), []).append(choice)
 
-        self.business_rules = {}
+        self.business_rules: Dict[str, List[BusinessRule]] = {}
         parser = LogicParser()
         for rule in data_dictionary.business_logic:
             logic = rule.get("Logic")
@@ -111,9 +112,7 @@ class RecordGenerator:
 
         return record_data
 
-    def _apply_business_logic(
-        self, form_key: str, record_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _apply_business_logic(self, form_key: str, record_data: Dict[str, Any]) -> Dict[str, Any]:
         """Applies business logic to a dictionary of record data."""
         form_rules = self.business_rules.get(form_key, [])
         if not form_rules:

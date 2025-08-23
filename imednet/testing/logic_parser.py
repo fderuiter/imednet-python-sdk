@@ -14,24 +14,28 @@ class Condition:
 @dataclass
 class And(Condition):
     """Represents a logical AND of multiple conditions."""
+
     conditions: List[Condition]
 
 
 @dataclass
 class Or(Condition):
     """Represents a logical OR of multiple conditions."""
+
     conditions: List[Condition]
 
 
 @dataclass
 class Not(Condition):
     """Represents a logical NOT of a single condition."""
+
     condition: Condition
 
 
 @dataclass
 class Equals(Condition):
     """Represents an equality condition."""
+
     question: str
     value: str
 
@@ -39,6 +43,7 @@ class Equals(Condition):
 @dataclass
 class Checked(Condition):
     """Represents a condition where a checkbox is checked."""
+
     question: str
 
 
@@ -50,6 +55,7 @@ class TrueCondition(Condition):
 @dataclass
 class GreaterThan(Condition):
     """Represents a greater than condition."""
+
     question: str
     value: str
 
@@ -57,6 +63,7 @@ class GreaterThan(Condition):
 @dataclass
 class LessThan(Condition):
     """Represents a less than condition."""
+
     question: str
     value: str
 
@@ -64,6 +71,7 @@ class LessThan(Condition):
 @dataclass
 class IsBlank(Condition):
     """Represents a condition where a field is blank."""
+
     question: str
 
 
@@ -76,30 +84,35 @@ class Action:
 @dataclass
 class DisableField(Action):
     """Represents an action to disable a field."""
+
     question: str
 
 
 @dataclass
 class DisableAndClearField(Action):
     """Represents an action to disable and clear a field."""
+
     question: str
 
 
 @dataclass
 class HideField(Action):
     """Represents an action to hide a field."""
+
     question: str
 
 
 @dataclass
 class HideAndClearField(Action):
     """Represents an action to hide and clear a field."""
+
     question: str
 
 
 @dataclass
 class BusinessRule:
     """Represents a single business logic rule."""
+
     conditions: Condition
     actions: List[Action]
 

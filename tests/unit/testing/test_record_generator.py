@@ -70,9 +70,7 @@ def test_generate_and_submit_form(mock_sdk: MagicMock, data_dictionary: DataDict
         assert job is mock_job
 
 
-def test_apply_business_logic(
-    mock_sdk: MagicMock, data_dictionary: DataDictionary
-) -> None:
+def test_apply_business_logic(mock_sdk: MagicMock, data_dictionary: DataDictionary) -> None:
     """Test that the business logic is applied correctly."""
     generator = RecordGenerator(mock_sdk, data_dictionary)
 
