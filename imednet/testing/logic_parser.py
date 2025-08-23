@@ -47,6 +47,26 @@ class TrueCondition(Condition):
     """Represents a condition that is always true."""
 
 
+@dataclass
+class GreaterThan(Condition):
+    """Represents a greater than condition."""
+    question: str
+    value: str
+
+
+@dataclass
+class LessThan(Condition):
+    """Represents a less than condition."""
+    question: str
+    value: str
+
+
+@dataclass
+class IsBlank(Condition):
+    """Represents a condition where a field is blank."""
+    question: str
+
+
 # --- Action data classes ---
 @dataclass
 class Action:
@@ -118,12 +138,23 @@ class LogicParser:
             return Or([self._parse_condition(child) for child in element])
         if tag == "not":
             return Not(self._parse_condition(next(iter(element))))
+
+        def get_text(el_name: str) -> str:
+            child_el = element.find(el_name)
+            if child_el is None or child_el.text is None:
+                raise ValueError(f"<{tag}> condition is missing a <{el_name}> tag.")
+            return child_el.text
+
         if tag == "equals":
-            question = element.find("question").text
-            value = element.find("value").text
-            return Equals(question=question, value=value)
+            return Equals(question=get_text("question"), value=get_text("value"))
+        if tag == "gt":
+            return GreaterThan(question=get_text("question"), value=get_text("value"))
+        if tag == "lt":
+            return LessThan(question=get_text("question"), value=get_text("value"))
+        if tag == "blank":
+            return IsBlank(question=get_text("question"))
         if tag == "checked":
-            return Checked(question=element.find("question").text)
+            return Checked(question=get_text("question"))
         if tag == "true":
             return TrueCondition()
 
@@ -133,7 +164,10 @@ class LogicParser:
         """Parses an action element."""
         tag = element.tag
         question_tag = element.find("question")
-        question = question_tag.text if question_tag is not None else None
+
+        if question_tag is None or question_tag.text is None:
+            raise ValueError(f"Invalid <{tag}> action: missing question.")
+        question = question_tag.text
 
         if tag == "disable_field":
             return DisableField(question=question)
