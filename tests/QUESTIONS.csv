@@ -1,0 +1,1892 @@
+Form,"Variable Type","Variable Name",Label,Suffix,"SAS Label","Default Value",Sequence,"Blinded Roles","Required Field","Trigger Form","SDV Required",Page,Comments,Width,Length,Catalog,"Special: Password","Special: Email","Special: Patient ID","Special: Hidden","Special: Timezone","Special: Country","Whole Numbers Only",Height,"Date Control","Time Control","Seconds Control","Time Suffix","Key Date","Comparison Date","Precision Time","Precision Seconds","Allow Future Dates","Allow Partial DD","Allow Partial MMM","Allow Partial YYYY","Partial DD Text","Partial MMM Text","Partial YYYY Text","Impute DD","Impute MMM","Impute YYYY","Is Expiration","Radio Orientation","Report Text: Checked","Report Text: Unchecked","Maximum # Files","Maximum File Size","Slider Orientation","Minimum Value","Maximum Value","Value Step","Minor Tick Step","Major Tick Step"
+AE,"Date/Time Precision",AESTDAT,"Date of event onset:",,"Date of event onset",,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,Yes,Yes,No,No,No,Yes,No,No,UK,,,First,,,No,,,,,,,,,,,
+AE,"Date/Time Precision",AEENDAT,"Date of resolution or death:",,"Date of resolution or death",,250,,"Auto Query",,No,1,,,,,,,,,,,,,,,,,No,Yes,No,No,No,Yes,No,No,UK,,,First,,,No,,,,,,,,,,,
+AE,Number,AENUM,"AE number:",,"AE number",,10,,"Auto Query",,Yes,1,,5,2,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,"Date/Time Precision",KNLDGDAT,"Date of site knowledge of event:",,"Date of site knowledge of event",,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+AE,"Date/Time Precision",IRBDAT,"Date reported to IRB (if applicable):
+
+(if reported during annual review, select N/A)",,"Date reported to IRB (if applicable)",,60,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+AE,Checkbox,IRBDATCB,N/A,,NA,,70,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Number,DAYBTW1,"Number of days between 
+
+index procedure and event onset:",<p>days</p>,,,40,,Optional,,No,1,,5,5,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Memo,AE_SGN_SMPT,"Adverse event signs and symptoms:",,"Adverse event signs and symptoms",,80,,"Auto Query",,Yes,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Radio,SAE,"Did the event meet the definition of being serious?",,"Did the event meet the definition of being serious?",,100,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+AE,Checkbox,SAEDTH,"Led to death",,"Led to death",,110,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Checkbox,SAELIFE,"Was a life-threatening illness or injury",,"Was a life-threatening illness or injury",,190,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Checkbox,SAEHOSP_PRLNG,"Resulted in prolongation of existing hospitalization",,"Resulted in prolongation of existing hospitalization",,140,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Checkbox,SAEHOSP_NEW,"Resulted in in-patient hospitalization",,"Resulted in in-patient hospitalization",,150,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,"Date/Time Precision",SAEADMDAT,"Admission date:",,"Admission date",,160,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,Yes,No,No,UK,,,First,,,No,,,,,,,,,,,
+AE,Checkbox,SAECNGL,"Led to fetal distress, fetal death, a congenital abnormality or &nbsp;
+birth defect including physical or mental impairment",,"Led to fetal distress, fetal death, a congenital abnormality or   birth defect including physical or mental impairment",,120,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Checkbox,SAEINTVN,"Required medical or surgical intervention to prevent &nbsp;
+life threatening illness or injury or permanent impairment to a &nbsp;
+body structure or a body function",,"Required medical or surgical intervention to prevent   life threatening illness or injury or permanent impairment to a   body structure or a body function",,130,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,"Date/Time Precision",SAEDCDAT,"Discharge date:",,"Discharge date",,170,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,Yes,No,No,UK,,,First,,,No,,,,,,,,,,,
+AE,Checkbox,SAEIMPR,"Resulted in permanent impairment of a body structure or &nbsp;
+function including chronic diseases",,"Resulted in permanent impairment of a body structure or   function including chronic diseases",,180,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Radio,UADE,"Is the SAE considered a UADE?
+(see protocol for UADE definition)",,"Is the SAE considered a UADE?",,200,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+AE,Radio,RELPROC,"Relationship of the adverse event to the study/index procedure:
+(select only one; see protocol for definitions)",,"Relationship of the adverse event to the study/index procedure",,210,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+AE,Radio,RELDEV,"Relationship of the adverse event to the study device:
+(select only one; see protocol for definitions)",,"Relationship of the adverse event to the study device",,220,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+AE,Radio,OUTCOME,"Outcome of event:",,"Outcome of event",,240,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+AE,Text,CAUSEDTH,"Primary cause of death:",,"Primary cause of death",,260,,"Auto Query",,Yes,1,,100,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Text,SEQUELAE,"Specify sequelae:",,"Specify sequelae",,270,,"Auto Query",,Yes,1,,100,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Checkbox,ACTNONE,None,,None,,280,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Checkbox,AESTUNK,"Check box if day of onset is unknown",,"Check box if day of onset is unknown",,30,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AE,Radio,AESEV,"Severity of the event:",,"Severity of the event",,230,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+AE,Text,FNLDX,"Final diagnosis:",,"Final diagnosis",,90,,"Auto Query",,Yes,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AEACTEL,"Date/Time Precision",ACTNDT,"Date of Action/Intervention",,"Date of Action/Intervention",,10,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,Yes,No,No,UK,,,First,,,No,,,,,,,,,,,
+AEACTEL,Dropdown,ACTN,Action/Intervention,,Action/Intervention,,20,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AEACTEL,Memo,ACTNDSCR,Describe,,Describe,,30,,"Auto Query",,Yes,1,,50,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AESDC,"File Upload",SDCUPL,"Upload Source Document",,"Upload Source Document",,10,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,"20 Megabytes",,,,,,
+AESDC,Text,SDCBDD,"Brief Document Description",,"Brief Document Description",,20,,"Auto Query",,Yes,1,,40,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Text,current_visit,"Current Visit:",,"Current visit",,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,"Date/Time Precision",EVALDT,"Date of evaluation:",,"Date of evaluation",,20,,Hard,,Yes,1,,,,,,,,,,,,,,,,,Yes,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+BSL,Number,AGE,"Age at time of initial consent",,"Age at time of initial consent",,30,,"Auto Query",,Yes,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Radio,SEX,"Sex at birth:",,"Sex at birth",,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Checkbox,RACE_NTV,"American Indian or Alaska Native",,"American Indian or Alaska Native",,70,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Checkbox,RACE_ASN,Asian,,Asian,,80,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Checkbox,RACE_BLCK,"Black or African American",,"Black or African American",,90,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Checkbox,RACE_PAC,"Native Hawaiian or Other Pacific Islander",,"Native Hawaiian or Other Pacific Islander",,100,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Checkbox,RACE_WHT,White,,White,,110,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Checkbox,RACE_OTH,Other,,Other,,130,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Checkbox,RACE_ND,"Subject chose not to disclose",,"Subject chose not to disclose",,120,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Text,RACE_X,Specify:,,"race specify",,140,,"Auto Query",,Yes,1,,50,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Radio,ETHNIC,Ethnicity:,,Ethnicity,,150,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,"Date/Time Precision",PREGDT,"Date of pregnancy test:",,"Date of pregnancy test",,400,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+BSL,Radio,PREGRSLT,"Pregnancy test result:",,"Pregnancy test result",,420,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,PREG,"Pregnancy test completed:",,"Pregnancy test completed",,390,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,SMOKE,"Tobacco/nicotine use:",,"Tobacco/nicotine use",,330,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,DIABETES,"Diabetes mellitus:",,"Diabetes mellitus",,290,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,DLP,Dyslipidemia:,,Dyslipidemia,,170,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,HTN,"Hypertension:
+
+(RoPE Score: If no = 1)",,Hypertension,,180,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,MI,"Previous myocardial infarction(s):",,"Previous myocardial infarction(s)",,350,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Number,HTCM,Height:,<p>cm</p>,Height,,50,,"Auto Query",,Yes,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Number,WTKG,Weight:,<p>kg</p>,Weiht,,60,,"Auto Query",,Yes,1,,10,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Radio,CHD,"Congenital heart disease (other than PFO):",,"Congenital heart disease (other than PFO)",,160,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,CAD,"Coronary artery disease:",,"Coronary artery disease",,190,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,CHF,"Congestive heart failure:",,"Congestive heart failure",,200,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,COPD,"Chronic obstructive pulmonary disease:",,"Chronic obstructive pulmonary disease",,210,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,DVT,"Deep vein thrombosis:",,"Deep vein thrombosis",,220,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,PE,"Pulmonary embolism:",,"Pulmonary embolism",,230,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,PVD,"Peripheral vascular disease:",,"Peripheral vascular disease",,240,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,INTVTNHX,"Previous cardiac intervention(s):",,"Previous cardiac intervention(s)",,250,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Memo,INTVTNHXX,"Specify type(s) of interventions:",,"Specify type(s) of interventions:",,260,,"Auto Query",,Yes,1,,50,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Radio,OTH,"Other cardiac and non-cardiac abnormalities:",,"Other cardiac and non-cardiac abnormalities",,270,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Memo,OTHX,Specify:,,specify,,280,,"Auto Query",,Yes,1,,50,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+BSL,Radio,INSULIN,"Insulin required:",,"Insulin required",,300,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,CKD,"Chronic kidney disease:",,"Chronic kidney disease",,310,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,CKDX,"Specify stage:",,"Specify stage",,320,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,SMOKEX,Specify:,,Specify,,340,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,TIA,"Previous transient ischemic attack(s):",,"Previous transient ischemic attack(s)",,360,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,FMHXSTK,"Family history of stroke:",,"Family history of stroke",,370,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,FMHXIHD,"Family history of ischemic heart disease:",,"Family history of ischemic heart disease",,380,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,ANYMEDS,"Is the subject taking any concomitant medications at baseline?",,"Is the subject taking any concomitant medications at baseline",,430,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+BSL,Radio,PREGTYP,"Type of pregnancy test:",,"Type of pregnancy test",,410,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CECADJUD,"Date/Time Precision",CEC_ADJDT,"Date of adjudication:
+(date adjudication is complete)",,"Date of adjudication",,10,,Hard,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+CECADJUD,Radio,CEC_SAE,"Did the event meet the definition of being serious?",,"Did the event meet the definition of being serious?",,100,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CECADJUD,Checkbox,CEC_SAEDTH,"Led to death",,"Led to death",,110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_SAECNGL,"Led to fetal distress, fetal death, a congenital abnormality or &nbsp;
+birth defect including physical or mental impairment",,"Led to fetal distress, fetal death, a congenital abnormality or   birth defect including physical or mental impairment",,120,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_SAEINTVN,"Required medical or surgical intervention to prevent
+
+permanent
+
+life threatening illness or injury or permanent impairment to a &nbsp;
+body structure or a body function",,"Required medical or surgical intervention to prevent  permanent  life threatening illness or injury or permanent impairment to a   body structure or a body function",,130,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_SAEHOSP_NEW,"Resulted in new hospitalization (&gt;24 hours)",,"Resulted in new hospitalization (>24 hours)",,140,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_SAEHOSP_PRLNG,"Resulted in prolongation of existing hospitalization",,"Resulted in prolongation of existing hospitalization",,160,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_SAEIMPR,"Resulted in permanent impairment of a body structure or &nbsp;
+function including chronic diseases",,"Resulted in permanent impairment of a body structure or   function including chronic diseases",,150,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_SAELIFE,"Was a life threatening illness or injury",,"Was a life threatening illness or injury",,170,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Radio,CEC_RELPROC,"Relatedness of the adverse event to the study/index procedure:
+(select only one; see protocol for&nbsp;definitions)",,"Relatedness of the adverse event to the study/index procedure",,70,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CECADJUD,Radio,CEC_RELDEV,"Relatedness of the adverse event to the study device:
+(select only one; see protocol for&nbsp;definitions)",,"Relatedness of the adverse event to the study device",,80,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CECADJUD,Radio,ADJ_CMPLT,"Is your adjudication complete?",,"Is your adjudication complete?",,200,,Hard,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECADJUD,Dropdown,CMTEMBR,"Committee member:",,"Committee member",,190,,"Auto Query",,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Radio,CEC_FNDLX,"Agree/disagree with site&rsquo;s final diagnosis and associated LLT MedDRA code:
+
+(MedDRA code is on the subject summary reports)",,"Agree/disagree with site’s final diagnosis and associated LLT MedDRA code",,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CECADJUD,Text,CEC_FNLDX_OTH,"What is your final diagnosis?",,"What is your final diagnosis?",,50,,"Auto Query",,Yes,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Radio,CEC_AESEV,"CEC severity:",,"CEC severity",,90,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CECADJUD,Text,ADDLINFO,"Additional information (e.g., source documents) required:",,"Additional information (e.g., source documents) required:",,210,,"Auto Query",,No,1,,60,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Radio,UADE,"Is the SAE considered a UADE?
+(see protocol for UADE definition)",,"Is the SAE considered a UADE?",,180,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECADJUD,Number,AENUM,"AE number:",,"AE number",,20,,Optional,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Text,SITE_FNLDX,"Final diagnosis:",,"Final diagnosis",,40,,Optional,,No,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Radio,CEC_ACTN,"Are additional actions required?",,"Are additional actions required?",,220,,"Auto Query",,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECADJUD,Checkbox,CEC_ACTN_NOAE,"Event not reportable (does not meet protocol AE definition)",,"Event not reportable (does not meet protocol AE definition)",,230,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_ACTN_CMBND,"Event to be combined with another event",,,,240,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Event to be combined with another event",,,,,,,,,
+CECADJUD,Number,CEC_ACTN_AENO,"specify AE form ID","<p>and notify site</p>","specify AE form ID",,250,,"Auto Query",,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_ACTN_NEWAE,"Report new event, notify site",,"Report new event, notify site",,260,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Checkbox,CEC_ACTN_OTH,Other,,Other,,270,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Text,CEC_ACTN_OTHX,specify:,,specify,,280,,"Auto Query",,No,1,,60,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECADJUD,Radio,CEC_SFTY,"Was adverse event confirmed as a safety endpoint?
+
+(see protocol for definitions)",,"Was adverse event confirmed as a safety endpoint?",,60,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CECADJUD,Radio,CMTE_CMPLT,"Is committee adjudication complete?",,"Is committee adjudication complete?",,290,,Hard,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECADJUD,Text,ADDLINFO1,"Additional information (e.g., source documents) required:",,"Additional information (e.g., source documents) required:",,300,,"Auto Query",,No,1,,60,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,Number,MAINO,"Issue Number:",,,,10,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,"Date/Time Precision",OPENDAT,"Date action item created:",,,,20,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,Yes,No,No,No,,,,,,,No,,,,,,,,,,,
+CECAIEL,Text,MAICRTDBY,"Created by:",,,,30,,Optional,,No,1,,50,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,Radio,MAIVISIT,"Identified during CEC Meeting?",,,,40,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECAIEL,Dropdown,category,"Action item category:",,,,50,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,Memo,observation,Issue/Observation:,,,,60,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,Memo,actionrequested,"Action requested:",,,,70,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,Radio,actionassigned,"Assigned to:",,,,80,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECAIEL,Memo,actiontaken,Resolution/Progress:,,,,90,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,Dropdown,recordstate,"Action item status:",,,,100,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,"Date/Time Precision",CLOSDAT,"Date of resolution:",,,,110,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+CECAIEL,Number,ETCLOSED,"Elapsed between date AI created and date of resolution:
+
+Action Item Status = Resolved",<p>days</p>,,,120,,Optional,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECAIEL,Dropdown,MAICRTBY,"Created by:",,,,130,,Optional,,No,1,"<p><em>Retired 02DEC21</em></p>",,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECMMR,Radio,MMRDONE,"Is Medical Monitor review complete?",,,,10,,Hard,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECSDC,Radio,SDCDONE,"Is source document collection complete?",,,,10,,Hard,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECSDC,Memo,SDCDONEX,Specify:,,,,20,,"Auto Query",,No,1,,50,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECSDV,"File Upload",SDUPL,"Source document Uploads",,,,10,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"5 Megabytes",,,,,,
+CECSDV,Dropdown,SDTYPE,"Source Document Description",,,,20,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CECSDV,Radio,SDREV,"Reviewed and sufficient for CEC?",,,,40,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CECSDV,Text,SDTYPEX,Specify:,,,,30,,"Auto Query",,No,1,,50,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Number,MAINO,"Issue Number:",,,,10,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,"Date/Time Precision",OPENDAT,"Date action item created:",,,,20,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,Yes,No,No,No,,,,,,,No,,,,,,,,,,,
+CLAIEL,Text,MAICRTDBY,"Created by:",,,,30,,Optional,,No,1,,50,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Radio,MAIVISIT,"Identified during Core Lab Meeting?",,,,40,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLAIEL,Dropdown,category,"Action item category:",,,,70,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Memo,observation,Issue/Observation:,,,,80,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Memo,actionrequested,"Action requested:",,,,90,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Radio,actionassigned,"Assigned to:",,,,100,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLAIEL,Memo,actiontaken,Resolution/Progress:,,,,110,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Dropdown,recordstate,"Action item status:",,,,120,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,"Date/Time Precision",CLOSDAT,"Date of resolution:",,,,130,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+CLAIEL,Number,ETCLOSED,"Elapsed between date AI created and date of resolution:
+
+Action Item Status = Resolved",<p>days</p>,,,140,,Optional,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Text,SITE,"Site number:",,,,50,,Optional,,Yes,1,,10,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLAIEL,Text,SUBJ,"Subject number:",,,,60,,Optional,,Yes,1,,10,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,"Date/Time Precision",SOV,"Start Date",,,,50,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+CLCHK,"Date/Time Precision",EOV,"End Date",,,,60,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+CLCHK,Radio,visit_type,"Visit Type",,,,70,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CLCHK,Text,piname,"Principal Investigator Name",,,,90,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,visitrsn,"Reason for Visit",,,,30,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CLCHK,Number,stat01,"Number of screen failures",,,,110,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,stat02,"Number of subjects enrolled",,,,120,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,stat03,"Number of subjects withdrawn early
+
+(e.g., subject withdrawal of consent)",,,,130,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,stat04,"Number of subjects who have completed the study",,,,140,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,statcmt,Comments,,,,150,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,statcmtx,None,,,,160,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb02a,"a. Protocol amendments",,,,660,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb02amai,"&nbsp;
+
+MAI",,,,670,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb02acmt,irb02acmt,,,,690,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb02b,"b. Updated informed consent
+
+(Note: Indicate in comments if a separate HIPAA authorization was required 
+
+and approved by the IRB)",,,,700,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb02bmai,"&nbsp;
+
+MAI",,,,710,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb02bcmt,irb02bcmt,,,,730,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb02c,"c. Updated recruitment materials",,,,740,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb02cmai,"&nbsp;
+
+MAI",,,,750,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb2ccmt,irb02ccmt,,,,770,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb02d,"d. Updated subject questionnaires",,,,780,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb02dmai,"&nbsp;
+
+MAI",,,,790,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb02dcmt,irb02dcmt,,,,810,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb02e,"e. Other",,,,820,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb02emai,"&nbsp;
+
+MAI",,,,830,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb02ecmt,irb02ecmt,,,,850,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb03,"Site progress reports required for IRB renewal were submitted and approved
+
+prior to expiration of IRB approval",,,,860,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb03mai,"&nbsp;
+
+MAI",,,,870,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb03cmt,irb03cmt,,,,890,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb04,"Sponsor progress reports were submitted and acknowledged per IRB 
+
+requirements",,,,900,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb04mai,"&nbsp;
+
+MAI",,,,910,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb04cmt,irb04cmt,,,,930,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb05a,"a. Failure to obtain or properly obtain informed consent, or other 
+
+informed consent form (ICF) issues",,,,940,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb05amai,"&nbsp;
+
+MAI",,,,950,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb05acmt,irb05acmt,,,,970,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb05b,"b. Protocol deviations",,,,980,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb05bmai,"&nbsp;
+
+MAI",,,,990,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb05bcmt,irb05bcmt,,,,1010,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb05c,"c. Adverse events",,,,1020,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb05cmai,"&nbsp;
+
+MAI",,,,1030,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb05ccmt,irb05ccmt,,,,1050,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irbcmt,Comments,,,,1300,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,irbcmtx,None,,,,1310,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,esdoc01,"All site essential documents present within eTMF",,,,170,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc01mai,"&nbsp;
+
+MAI",,,,180,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,esdoc02,"Site granted appropriate post-study access to the eTMF",,,,210,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc02mai,"&nbsp;
+
+MAI",,,,220,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,esdoc03,"Signature/Delegation Log up-to-date, final, and a copy collected",,,,250,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc03mai,"&nbsp;
+
+MAI",,,,260,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,esdoc04,"eCRFs approved by appropriate staff per Signature/Delegation Log",,,,290,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc04mai,"&nbsp;
+
+MAI",,,,300,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,esdoc05,"All ICFs present",,,,330,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc05mai,"&nbsp;
+
+MAI",,,,340,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,esdoc06,"All data queries closed",,,,370,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc06mai,"&nbsp;
+
+MAI",,,,380,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoccmt,Comments,,,,490,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,esdoccmtx,None,,,,500,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,prod01,"Investigational product accountability/tracking records up-to-date and accurate
+
+(includes shipment, receipt, and return records)",,,,510,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,prod01mai,"&nbsp;
+
+MAI",,,,520,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,prod01cmt,prod01cmt,,,,540,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,prod02,"All remaining investigational product properly dispositioned
+
+(i.e., returned to sponsor or destroyed)",,,,550,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,prod02mai,"&nbsp;
+
+MAI",,,,560,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,prod02cmt,prod02cmt,,,,580,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,prod03,"Accountability Log up-to-date, final, and a copy collected (if applicable)",,,,590,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,prod03mai,"&nbsp;
+
+MAI",,,,600,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,prod03cmt,prod03cmt,,,,620,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,prodcmt,Comments,,,,630,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,prodcmtx,None,,,,640,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg01,"Study-related record retention, transfer, and continued access criteria 
+
+(per terms of the study agreements); if records are moved, the site is 
+
+obligated to notify the sponsor of their new location",,,,1320,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg01mai,"&nbsp;
+
+MAI",,,,1330,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg01cmt,mtg01cmt,,,,1350,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg02,"Requirement for PI to notify sponsor if leaving the institution",,,,1360,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg02mai,"&nbsp;
+
+MAI",,,,1370,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg02cmt,mtg02cmt,,,,1390,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg03,"Requirement to provide adequate medical care to a subject during and after a 
+
+subject&#39;s participation, as described in the informed consent",,,,1400,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg03mai,"&nbsp;
+
+MAI",,,,1410,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg03cmt,mtg03cmt,,,,1430,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg04,"Requirement to notify sponsor of financial disclosure changes up to one year 
+
+after study completion",,,,1440,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg04mai,"&nbsp;
+
+MAI",,,,1450,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg04cmt,mtg04cmt,,,,1470,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg05,"Publication policy (as described in study agreements)",,,,1480,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg05mai,"&nbsp;
+
+MAI",,,,1490,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg05cmt,mtg05cmt,,,,1510,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg06,"Requirement to send site close-out notification/final report to IRB and CRO/sponsor
+
+and to submit the IRB acknowledgement to the CRO/sponsor",,,,1520,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg06mai,"&nbsp;
+
+MAI",,,,1530,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg06cmt,mtg06cmt,,,,1550,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg07,"Timeline for submission of final invoices 
+
+(in accordance with the terms of study agreements)",,,,1560,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg07mai,"&nbsp;
+
+MAI",,,,1570,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg07cmt,mtg07cmt,,,,1590,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg08,"Submission of final sponsor clinical study report to IRB if required by site SOPs",,,,1600,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg08mai,"&nbsp;
+
+MAI",,,,1610,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg08cmt,mtg08cmt,,,,1630,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,mtg09,"Obligation to notify CRO/sponsor of regulatory audit (e.g., FDA BIMO)",,,,1640,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,mtg09mai,"&nbsp;
+
+MAI",,,,1650,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtg09cmt,mtg09cmt,,,,1670,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,reclocn,"Location of study record storage (including address)",,,,1700,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,cntctname,"Contact person for record access",,,,1710,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,cntctemail,"Contact person email",,,,1720,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,cntctphone,"Contact person phone number",,,,1730,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,vissum,"Visit 
+
+summary:",,,,1880,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,doc01reas,doc01reas,,,,1750,,Soft,,No,1,,50,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,doc02reas,doc02reas,,,,1770,,Soft,,No,1,,50,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,doc03xreas,explain:,,,,1810,,Soft,,No,1,,50,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,doc04reas,doc04reas,,,,1830,,Soft,,No,1,,50,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,doc06,Collected,,,,1860,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,doc06x,specify:,,,,1870,,Soft,,No,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,COVSITEID,"Site Number",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,COVSITENAME,"Site Name",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,visitrsnx,specify,,,,40,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,SUBJDATAMON,"Was subject data monitored at this visit?",,,,80,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CLCHK,Radio,esdoc07,"All monitoring action items closed",,,,410,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc07mai,"&nbsp;
+
+MAI",,,,420,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,esdoc08,"Current status of all ongoing adverse events is documented",,,,450,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,esdoc08mai,"&nbsp;
+
+MAI",,,,460,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc01cmt,esdoc01cmt,,,,200,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc02cmt,esdoc02cmt,,,,240,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc03cmt,esdoc03cmt,,,,280,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc04cmt,esdoc04cmt,,,,320,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc05cmt,esdoc05cmt,,,,360,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc06cmt,esdoc06cmt,,,,400,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc07cmt,esdoc07cmt,,,,440,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,esdoc08cmt,esdoc08cmt,,,,480,,Soft,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc01num,Number,,,,190,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc02num,Number,,,,230,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc03num,Number,,,,270,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc04num,Number,,,,310,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc05num,Number,,,,350,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc06num,Number,,,,390,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc07num,Number,,,,430,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,esdoc08num,Number,,,,470,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,prod01num,Number,,,,530,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,prod02num,Number,,,,570,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,prod03num,Number,,,,610,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb01,"IRB type",,,,650,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+CLCHK,Radio,irb05d,"d. Deaths",,,,1060,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Memo,irb05dcmt,irb05dcmt,,,,1090,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb05e,"e. Other IRB-mandated requirements",,,,1100,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Memo,irb05ecmt,irb05ecmt,,,,1130,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb06,"IRB Federal Wide Assurance (FWA) number, IRB roster, statement of compliance, 
+
+or AAHRPP number on file for each approval/review",,,,1140,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Radio,irb07,"Study personnel are not voting members of the IRB reviewing the study
+
+(Note: If no, address in comments)",,,,1180,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Radio,irb08,"IRB notified of study closure and closure report on file",,,,1220,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb05dmai,"&nbsp;
+
+MAI",,,,1070,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,irb05emai,"&nbsp;
+
+MAI",,,,1110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,irb06mai,"&nbsp;
+
+MAI",,,,1150,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb06cmt,irb06cmt,,,,1170,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,irb07mai,"&nbsp;
+
+MAI",,,,1190,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb07cmt,irb07cmt,,,,1210,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,irb08mai,"&nbsp;
+
+MAI",,,,1230,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb08cmt,irb08cmt,,,,1250,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb02anum,Number,,,,680,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb02bnum,Number,,,,720,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb02cnum,Number,,,,760,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb02dnum,Number,,,,800,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb02enum,Number,,,,840,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb03num,Number,,,,880,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb04num,Number,,,,920,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb05anum,Number,,,,960,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb05bnum,Number,,,,1000,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb05cnum,Number,,,,1040,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb05dnum,Number,,,,1080,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb05enum,Number,,,,1120,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb06num,Number,,,,1160,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb07num,Number,,,,1200,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb08num,Number,,,,1240,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,mtgcmt,Comments,,,,1680,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,mtgcmtx,None,,,,1690,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg01num,Number,,,,1340,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg02num,Number,,,,1380,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg03num,Number,,,,1420,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg04num,Number,,,,1460,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg05num,Number,,,,1500,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg06num,Number,,,,1540,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg07num,Number,,,,1580,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg08num,Number,,,,1620,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,mtg09num,Number,,,,1660,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,doc03areas,"Maintained in database",,,,1790,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,doc03breas,Other,,,,1800,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,doc01,"Final Signature/Delegation Log",,,,1740,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Radio,doc02,"Final Site Visit Log",,,,1760,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Radio,doc03,"Final Product Accountability Log",,,,1780,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Radio,doc04,"Site Close-out Report to IRB",,,,1820,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,appendix,"&nbsp;(Subject Data Monitoring)",,,,1890,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum01,"Documented consent process on file for each consented subject (e.g., to indicate 
+
+ample time to review ICF and ask questions, questions adequately answered, 
+
+signed copy provided to subject)",,,,1900,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum01mai,"&nbsp;
+
+MAI",,,,1910,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum01num,Number,,,,1920,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum01cmt,hum01cmt,,,,1930,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum02,"ICFs completed in accordance with IRB-approved format for each consented subject 
+
+(e.g., all pages require the subject initials)",,,,1940,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum02mai,"&nbsp;
+
+MAI",,,,1950,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum02num,Number,,,,1960,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum02cmt,hum02cmt,,,,1970,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum03,"Correct versions of ICFs signed by subjects",,,,1980,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum03mai,"&nbsp;
+
+MAI",,,,1990,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum03num,Number,,,,2000,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum03cmt,hum03cmt,,,,2010,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum04,"ICFs signed on same day by subject and person obtaining consent",,,,2020,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum04mai,"&nbsp;
+
+MAI",,,,2030,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum04num,Number,,,,2040,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum04cmt,hum04cmt,,,,2050,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum05,"Person obtaining consent authorized per Signature Delegation Log",,,,2060,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum05mai,"&nbsp;
+
+MAI",,,,2070,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum05num,Number,,,,2080,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum05cmt,hum05cmt,,,,2090,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum06,"ICFs obtained prior to study-specific procedures",,,,2100,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum06mai,"&nbsp;
+
+MAI",,,,2110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum06num,Number,,,,2120,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum06cmt,hum06cmt,,,,2130,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum07,"HIPAA authorization, if a separate document, obtained from all study subjects and 
+
+copy&nbsp; of authorization provided to subjects",,,,2140,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum07mai,"&nbsp;
+
+MAI",,,,2150,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum07num,Number,,,,2160,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum07cmt,hum07cmt,,,,2170,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,hum08,"Other required authorizations (e.g., CA Bill of Rights) obtained from study subjects 
+
+as applicable",,,,2180,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,hum08mai,"&nbsp;
+
+MAI",,,,2190,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,hum08num,Number,,,,2200,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,hum08cmt,hum08cmt,,,,2210,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,humcmt,Comments,,,,2220,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,humcmtx,None,,,,2230,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat01,"All original source documents available and reviewed against eCRFs",,,,2240,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat01mai,"&nbsp;
+
+MAI",,,,2250,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat01num,Number,,,,2260,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat01cmt,dat01cmt,,,,2270,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat02,"Subject eligibility determination confirmed per source documents",,,,2280,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat02mai,"&nbsp;
+
+MAI",,,,2290,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat02num,Number,,,,2300,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat02cmt,dat02cmt,,,,2310,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat03,"Randomization completed properly per Randomization Plan",,,,2320,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat03mai,"&nbsp;
+
+MAI",,,,2330,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat03num,Number,,,,2340,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat03cmt,dat03cmt,,,,2350,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat04,"eCRFs completed properly and in a timely manner",,,,2360,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat04mai,"&nbsp;
+
+MAI",,,,2370,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat04num,Number,,,,2380,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat04cmt,dat04cmt,,,,2390,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat05,"CRF worksheets signed and dated by data originator",,,,2400,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat05mai,"&nbsp;
+
+MAI",,,,2410,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat05num,Number,,,,2420,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat05cmt,dat05cmt,,,,2430,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,datcmt,Comments,,,,2600,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,datcmtx,None,,,,2610,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Text,ADDRESS,"Physical address where visit occurred
+
+(record for onsite visits only)",,,,100,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,irb09,"IRB acknowledgement of study closure on file",,,,1260,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,irb09mai,"&nbsp;
+
+MAI",,,,1270,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,irb09num,Number,,,,1280,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,irb09cmt,irb09cmt,,,,1290,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,doc05,"IRB acknowledgement of study closure",,,,1840,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Text,doc05reas,doc05reas,,,,1850,,Soft,,No,1,,50,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat06,"eCRFs approved by appropriate staff per Signature/Delegation Log",,,,2440,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat06mai,"&nbsp;
+
+MAI",,,,2450,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat06num,Number,,,,2460,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat06cmt,dat06cmt,,,,2470,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat07,"Protocol deviations appropriately reported in source documents and eCRFs",,,,2480,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat07mai,"&nbsp;
+
+MAI",,,,2490,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat07num,Number,,,,2500,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat07cmt,dat07cmt,,,,2510,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat08,"Subject early withdrawals appropriately documented",,,,2520,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat08mai,"&nbsp;
+
+MAI",,,,2530,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat08num,Number,,,,2540,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat08cmt,dat08cmt,,,,2550,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,dat09,"Subject lost-to-follow-up appropriately documented",,,,2560,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,dat09mai,"&nbsp;
+
+MAI",,,,2570,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,dat09num,Number,,,,2580,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,dat09cmt,dat09cmt,,,,2590,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,ae01,"All AEs collected and reported to sponsor",,,,2620,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,ae01mai,"&nbsp;
+
+MAI",,,,2630,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,ae01num,Number,,,,2640,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,ae01cmt,ae01cmt,,,,2650,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,ae02,"All AEs source verified",,,,2660,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,ae02mai,"&nbsp;
+
+MAI",,,,2670,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,ae02num,Number,,,,2680,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,ae02cmt,ae02cmt,,,,2690,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Radio,ae03,"Certified copies of source documents for applicable AEs submitted to 
+
+sponsor/CRO per protocol and safety reporting requirements",,,,2700,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+CLCHK,Checkbox,ae03mai,"&nbsp;
+
+MAI",,,,2710,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Number,ae03num,Number,,,,2720,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,ae03cmt,ae03cmt,,,,2730,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Memo,aecmt,Comments,,,,2740,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CLCHK,Checkbox,aecmtx,None,,,,2750,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Text,COVSITEID,"Site Number",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Text,COVSITENAME,"Site Name",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,"Date/Time Precision",SOV,"Start Date",,,,30,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+COLACHK,"Date/Time Precision",EOV,"End Date",,,,40,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+COLACHK,Text,CLNAME,"Core Lab Name",,,,50,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Text,ADDRESS,"Core Lab Address",,,,60,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,stat01,"Number of subject CRFs reviewed
+
+(Reference attached list of CRFs monitored including subject ID and date of imaging)",,,,90,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,statcmt,Comments,,,,100,,Optional,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Checkbox,statcmtx,None,,,,110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,pers01,"Core Lab Director demonstrates oversight of the study",,,,120,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,pers01mai,"&nbsp;
+
+MAI",,,,130,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,pers01num,Number,,,,140,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,pers01cmt,pers01cmt,,,,150,,Optional,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,pers02,"Core Lab has adequate qualified personnel to conduct the study",,,,160,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,pers02mai,"&nbsp;
+
+MAI",,,,170,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,pers02num,Number,,,,180,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,pers02cmt,pers02cmt,,,,190,,Optional,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,pers03,"Core Lab personnel changes are documented",,,,200,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,pers03mai,"&nbsp;
+
+MAI",,,,210,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,pers03num,Number,,,,220,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,pers03cmt,pers03cmt,,,,230,,Optional,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,perscmt,Comments,,,,240,,Optional,,No,1,,75,5000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Checkbox,perscmtx,None,,,,250,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,etmf01,"Fully executed agreement and/or statement of work (SOW) (and amendments, if 
+
+applicable) are on file",,,,260,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,etmf01mai,"&nbsp;
+
+MAI",,,,270,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,etmf01num,Number,,,,280,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,etmf01cmt,etmf01cmt,,,,290,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,etmf02,"Training documents for core lab personnel are on file",,,,300,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,etmf02mai,"&nbsp;
+
+MAI",,,,310,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,etmf02num,Number,,,,320,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,etmf02cmt,etmf02cmt,,,,330,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,etmf03,"Essential correspondence on file",,,,340,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,etmf03mai,"&nbsp;
+
+MAI",,,,350,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,etmf03num,Number,,,,360,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,etmf03cmt,etmf03cmt,,,,370,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,emtfcmt,Comments,,,,460,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Checkbox,emtfcmtx,None,,,,470,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,comp01a,"a. Protocol and amendments",,,,480,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,comp01amai,"&nbsp;
+
+MAI",,,,490,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,comp01anum,Number,,,,500,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,comp01acmt,irb02acmt,,,,510,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,comp01b,"b. Core Lab charter",,,,520,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,comp01bmai,"&nbsp;
+
+MAI",,,,530,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,comp01bnum,Number,,,,540,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,comp01bcmt,comp01bcmt,,,,550,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,comp01c,"c. Core Lab imaging requirements",,,,560,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,comp01cmai,"&nbsp;
+
+MAI",,,,570,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,comp01cnum,Number,,,,580,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,comp01ccmt,comp01ccmt,,,,590,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,comp01d,"d. Other",,,,600,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,comp01dmai,"&nbsp;
+
+MAI",,,,610,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,comp01dnum,Number,,,,620,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,comp01dcmt,comp01dcmt,,,,630,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,comp02,"Sites are submitting data that meets the Core Lab&#39;s quality requirements",,,,640,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,comp02mai,"&nbsp;
+
+MAI",,,,650,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,comp02num,Number,,,,660,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,comp02cmt,comp02cmt,,,,670,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,compcmt,Comments,,,,680,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Checkbox,compcmtx,None,,,,690,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,mtg01,"Core Lab Director met or corresponded with monitor(s) during the visit",,,,880,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,mtg01mai,"&nbsp;
+
+MAI",,,,890,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,mtg01num,Number,,,,900,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,mtg01cmt,mtg01cmt,,,,910,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,mtg02,"Other Core Lab personnel met or corresponded with monitor(s) during the visit",,,,920,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,mtg02mai,"&nbsp;
+
+MAI",,,,930,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,mtg02num,Number,,,,940,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,mtg02cmt,mtg02cmt,,,,950,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,mtg03,"Visit findings and recommended actions/corrections, study status updates, and
+
+training discussed with staff during visit",,,,960,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,mtg03mai,"&nbsp;
+
+MAI",,,,970,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,mtg03num,Number,,,,980,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,mtg03cmt,mtg03cmt,,,,990,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,mtg04,"Outstanding action items from the prior visit were addressed",,,,1000,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,mtg04mai,"&nbsp;
+
+MAI",,,,1010,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,mtg04num,Number,,,,1020,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,mtg04cmt,mtg04cmt,,,,1030,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,mtgcmt,Comments,,,,1040,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Checkbox,mtgcmtx,None,,,,1050,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,vissum,"Visit 
+
+summary:",,,,1060,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,dat01,"1. All original source documents available for subjects reviewed",,,,700,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,dat01mai,"&nbsp;
+
+MAI",,,,710,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,dat01num,Number,,,,720,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,dat01cmt,dat01cmt,,,,730,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,dat02,"2. eCRF content confirmed per source documents",,,,740,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,dat02mai,"&nbsp;
+
+MAI",,,,750,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,dat02num,Number,,,,760,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,dat02cmt,dat02cmt,,,,770,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,dat03,"3. eCRFs completed properly and in a timely manner",,,,780,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,dat03mai,"&nbsp;
+
+MAI",,,,790,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,dat03num,Number,,,,800,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,dat03cmt,dat03cmt,,,,810,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,dat04,"4. Open queries completed in a timely manner",,,,820,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,dat04mai,"&nbsp;
+
+MAI",,,,830,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,dat04num,Number,,,,840,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,dat04cmt,dat04cmt,,,,850,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,datcmt,Comments,,,,860,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Checkbox,datcmtx,None,,,,870,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Text,CLDIRNAME,"Core Lab Director Name",,,,70,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,TOTHR,"Total Hours Spent Conducting Visit",,,,80,,Soft,,No,1,,5,5,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,emtf04a,"a. Existing core lab personnel",,,,380,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,etmf04amai,"&nbsp;
+
+MAI",,,,390,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,etmf04anum,Number,,,,400,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,etmf04acmt,etmf04acmt,,,,410,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Radio,emtf04b,"b. New core lab personnel",,,,420,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+COLACHK,Checkbox,etmf04bmai,"&nbsp;
+
+MAI",,,,430,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Number,etmf04bnum,Number,,,,440,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+COLACHK,Memo,etmf04bcmt,etmf04bcmt,,,,450,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,Text,current_visit,"Current Visit:",,,,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,Text,CMNAME,Medication:,,,,20,,"Auto Query",,Yes,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,Text,CMDOSE,Dose:,,,,30,,"Auto Query",,Yes,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,Dropdown,CMDOSU,"Dose units:",,,,40,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,Text,CMDOSUX,Specify:,,,,50,,"Auto Query",,Yes,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,Dropdown,CMDOSEFRQ,Schedule/Frequency:,,,,60,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,Text,CMDOSEFRQX,Specify:,,,,70,,"Auto Query",,Yes,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,"Date/Time Precision",CMSTDAT,"Start date:",,,,80,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,Yes,Yes,Yes,UK,UNK,UNKN,First,1,2022,No,,,,,,,,,,,
+CONMEDS,Checkbox,CMON,Ongoing,,,,90,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONMEDS,"Date/Time Precision",CMENDAT,"End date:",,,,100,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,Yes,Yes,Yes,UK,UNK,UNKN,First,1,2023,No,,,,,,,,,,,
+DC,Text,current_visit,"Current Visit:",,"current interval",,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DC,"Date/Time Precision",DCDT,"Date and time of discharge:",,"Date and time of discharge",,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,Yes,No,Yes,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DC,Radio,ANYAE,"Were there additional adverse events post procedure that have yet to be reported?&nbsp;",,"Were there additional adverse events post procedure that have yet to be reported?",,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DEVDEF,Text,current_visit,"Current Visit:",,"current visit",,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,"Date/Time Precision",DDDT,"Date of occurrence:",,"Date of occurrence",,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DEVDEF,Number,DDNO,"ID number:",,"ID number",,30,,"Auto Query",,Yes,1,,5,2,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Text,OTHX,Specify:,,Specify,,160,,"Auto Query",,Yes,1,,60,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Memo,DDDESC,"Describe the device deficiency or issue in detail as 
+
+well as all action(s) taken:",,"Describe the device deficiency or issue in detail as  well as all action(s) taken",,170,,"Auto Query",,Yes,1,,80,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Radio,RTRN,"Was the device returned to the sponsor?",,"Was the device returned to the sponsor?",,180,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DEVDEF,Text,RTRNNO,"Specify reason not returned:",,"Specify reason not returned",,190,,"Auto Query",,Yes,1,,80,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Radio,DDAE,"Did the deficiency/issue result in the subject&nbsp;experiencing 
+
+any untoward medical occurrence,&nbsp;unintended disease or 
+
+injury, or untoward&nbsp;clinical signs?
+(if &lsquo;yes&rsquo;, complete AE CRF)",,"Did the deficiency/issue result in the subject experiencing  any untoward medical occurrence, unintended disease or  injury, or untoward clinical signs?",,200,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DEVDEF,Number,AENO,"Specify AE ID:",,"Specify AE ID",,210,,"Auto Query",,Yes,1,,5,2,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Radio,DDSAE,"Could the device deficiency have led to a&nbsp;serious adverse 
+
+event if appropriate action had&nbsp;not been taken, intervention 
+
+had not occurred, or&nbsp;circumstances had been less fortunate?
+(notification without unjustified delay after the investigator first 
+
+learns of the device deficiency that might have led to a SAE)",,"Could the device deficiency have led to a serious adverse  event if appropriate action had not been taken, intervention  had not occurred, or circumstances had been less fortunate?",,220,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DEVDEF,"Date/Time Precision",DDSAEDT,"Date investigator first learned deficiency&nbsp;might
+
+have led to an SAE:",,"Date investigator first learned deficiency might  have led to an SAE",,230,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DEVDEF,"Date/Time Precision",DDRPTDT,"Date reported to sponsor:",,"Date reported to sponsor",,240,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DEVDEF,Number,TMBTWN2,"Amount of time between date investigator learned&nbsp;deficiency 
+
+might have led to an SAE and initial report&nbsp;date:",<p>days</p>,"Amount of time between date investigator learned deficiency  might have led to an SAE and initial report date",,250,,Optional,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,CLLPS,"Device collapse",,"Device collapse",,70,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,DFRM,"Device deformation",,"Device deformation",,80,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,MLFNCTN,"Device malfunction",,"Device malfunction",,100,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,FRACTURE,"Device fracture",,"Device fracture",,90,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,MSLBLNG,"Device mislabeling",,"Device mislabeling",,110,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,NOTUSED,"Device opened but not used",,"Device opened but not used",,120,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,DEFECT,"Foreign material/visual defect on device",,"Foreign material/visual defect on device",,130,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,DAMAGE,"Packaging/seal damaged",,"Packaging/seal damaged",,140,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Checkbox,OTHER,Other,,Other,,150,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Text,SNO,"Serial number:",,"Serial number",,60,,"Auto Query",,Yes,1,,25,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Text,MODEL,Model:,,Model,,40,,"Auto Query",,Yes,1,,25,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVDEF,Text,LOTNO,"Lot number:",,"Lot number",,50,,"Auto Query",,Yes,1,,25,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVINFO,Dropdown,DEVICENO,"Study device:",,"Study device",,10,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVINFO,Dropdown,TL,"Device used for target lesion:",,"Device used for target lesion",,30,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVINFO,Dropdown,SNO,"Serial #:",,"serial number",,20,,"Auto Query",,Yes,1,,,,"Autogenerated inventory catalog for Inventory Catalog : SERIALNO",,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVINFO,Dropdown,DSPN,"Final disposition:",,"Final disposition",,40,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DEVINFO,Text,DSPNX,"Final disposition details:",,"Final disposition details",,50,,"Auto Query",,Yes,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DS,Radio,ESCOMP,"Is data entry for this patient complete?",,"Is data entry for this patient complete?",,130,,Hard,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DS,"Date/Time Precision",DSSTDAT,"Date of exit from study:",,"Date of exit from study",,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,Yes,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DS,Text,current_visit,"Current Visit:",,"Current visit",,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DS,Radio,CMPLT,"Did the subject successfully complete the study?",,"Did the subject successfully complete the study?",,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DS,Radio,CMPLTNO,"Reason for early study exit:",,"Reason for early study exit",,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DS,Number,AENO,"Specify AE No:",,"Specify AE No",,50,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DS,Text,PIDECN,Specify:,,Specify,,60,,"Auto Query",,Yes,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DS,Number,DEATH,"Specify AE No:",,"Specify AE No",,70,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DS,Text,WITHDRAW,Specify:,,Specify,,100,,"Auto Query",,Yes,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DS,Text,OTHSPEC,Specify:,,Specify,,110,,"Auto Query",,Yes,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DS,"File Upload",DEATHUPL,"Upload copy of de-identified death certificate:",,"Upload copy of de-identified death certificate",,80,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"5 Megabytes",,,,,,
+DS,"File Upload",AUTOPSY,"Upload copy of de-identified autopsy report:",,"Upload copy of de-identified autopsy report",,90,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"5 Megabytes",,,,,,
+DS,Checkbox,LTF,"Not confirmed
+
+Three (3) phone calls / emails tracked with delivery/read receipts, as well as a certified letter, are required prior to determining that a subject is lost to follow up.",,"Not confirmed",,120,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Memo,DVTERM,"Description of deviation:",,"Description of deviation",,220,,"Auto Query",,Yes,1,,75,2000,,,,,,,,,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,"Date/Time Precision",PDDT,"Date of deviation:",,"Date of deviation",,20,,Hard,,No,1,,,,,,,,,,,,,,,,,Yes,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DV,"Date/Time Precision",PDSTDT,"Date of site knowledge of deviation:",,"Date of site knowledge of deviation",,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DV,Number,PDNO,"Protocol deviation number:",,"Protocol deviation number",,10,,Optional,,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Radio,PDVISIT,"Associated interval:",,"Associated interval",,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DV,Radio,PDTYPE,"Type of deviation:",,"Type of deviation",,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DV,Checkbox,ICVERSN,"Incorrect version of informed consent used",,"Incorrect version of informed consent used",,80,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Checkbox,ICSUBJ,"Subject did not print own name or date signature",,"Subject did not print own name or date signature",,90,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Checkbox,ICTIME,"Time of consent signature not obtained",,"Time of consent signature not obtained",,100,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Checkbox,ICUAREP,"Unauthorized representative signed consent for subject",,"Unauthorized representative signed consent for subject",,110,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Checkbox,ICOTH,Other,,Other,,120,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Text,ICOTHX,Specify:,,Specify,,130,,"Auto Query",,Yes,1,,60,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Radio,EVALX,"Select evaluation/assessment this deviation applies to:
+
+select only one&nbsp;and complete additional PD CRFs as needed",,"Select evaluation/assessment this deviation applies to",,200,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DV,Text,EVALOTH,Specify:,,Specify,,210,,"Auto Query",,Yes,1,,60,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Radio,PDRSN,"Reason for deviation:",,"Reason for deviation",,230,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DV,Checkbox,COVID19,COVID-19,,COVID-19,,250,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Checkbox,HLTHOTH,Other,,Other,,260,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Text,HLTHOTHX,specify:,,specify,,270,,"Auto Query",,Yes,1,,60,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Text,PDRSNX,Specify:,,Specify,,240,,"Auto Query",,Yes,1,,60,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,"Date/Time Precision",IRBDT,"Date reported to the local human protection committee 
+
+(IRB/REB/EC):",,"Date reported to the local human protection committee  (IRB/REB/EC)",,290,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DV,Checkbox,IRBNA,"N/A: Deviation did not meet reporting requirements",,"N/A: Deviation did not meet reporting requirements",,300,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Radio,SOUND,"Did the deviation affect the scientific soundness of the 
+
+study or the rights, safety, or welfare of the subject 
+
+(and is not an&nbsp;emergency)?",,"Did the deviation affect the scientific soundness of the  study or the rights, safety, or welfare of the subject  (and is not an emergency)?",,310,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DV,Radio,APVL,"Was sponsor and/or local governing authority 
+
+(IRB/REB/EC/FDA) pre-approval given?",,"Was sponsor and/or local governing authority  (IRB/REB/EC/FDA) pre-approval given?",,320,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+DV,"Date/Time Precision",SPNSRDT,"Date of sponsor pre-approval:",,"Date of sponsor pre-approval",,330,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DV,Text,SPNSRNAME,"Name of sponsor&#39;s representative granting approval:",,"Name of sponsor's representative granting approval",,340,,"Auto Query",,Yes,1,,50,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Checkbox,SPNSRNA,"Not applicable",,"Not applicable",,350,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,"Date/Time Precision",IRBAPVLDT,"Date of IRB/REB/EC pre-approval:",,"Date of IRB/REB/EC pre-approval",,360,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DV,Checkbox,IRBAPVLNA,"Not applicable",,"Not applicable",,370,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,"Date/Time Precision",FDAAPVLDT,"Date of country level authority (e.g., FDA/CA) pre-approval:",,"Date of country level authority (e.g., FDA/CA) pre-approval",,380,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+DV,Checkbox,FDAAPVLNA,"Not applicable",,"Not applicable",,390,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Text,PDTYPEX,Specify:,,Specify,,60,,"Auto Query",,Yes,1,,60,150,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Radio,CNSNTTYP,"Consent type:",,"Consent type",,70,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DV,Checkbox,INC,"Inclusion not met",,"Inclusion not met",,140,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Checkbox,EXC,"Exclusion not met",,"Exclusion not met",,150,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Number,INCNUM,"Inclusion number:",,"Inclusion number",,160,,"Auto Query",,Yes,1,,5,5,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Number,EXCNUM,"Exclusion number:",,"Exclusion number",,170,,"Auto Query",,Yes,1,,5,5,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+DV,Radio,INTVLDEV,"Interval-related deviation",,"Interval-related deviation",,180,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DV,Radio,EVALDEV,"Evaluation or assessment related deviation",,"Evaluation or assessment related deviation",,190,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+DV,"Date/Time Precision",SPONDT,"Date reported to the sponsor:",,"Date reported to the sponsor",,280,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+EOSCDM,Text,current_visit,"Current Visit:",,,,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EOSCDM,Radio,ESCOMP,"Is data entry for this subject complete?",,,,20,,Hard,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+EQ5D5L,Text,current_visit,"Current Visit:",,,,10,,Optional,,Yes,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EQ5D5L,Radio,CMPLTYN,"Was EQ-5D-5L completed?",,,,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+EQ5D5L,"Date/Time Precision",CMPLTDAT,"Date of assessment:",,,,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+EQ5D5L,Radio,MBLTY,MOBILITY:,,,,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+EQ5D5L,Number,EQ5D5L01,EQ5D5L01,,,,50,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EQ5D5L,Radio,SLFCR,SELF-CARE:,,,,60,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+EQ5D5L,Number,EQ5D5L02,EQ5D5L02,,,,70,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EQ5D5L,Radio,USLACTS,"USUAL ACTIVITIES:
+
+(e.g. work, study, housework,
+
+family or leisure activities)",,,,80,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+EQ5D5L,Number,EQ5D5L03,EQ5D5L03,,,,90,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EQ5D5L,Radio,PNDSC,"PAIN / DISCOMFORT:",,,,100,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+EQ5D5L,Number,EQ5D5L04,EQ5D5L04,,,,110,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EQ5D5L,Radio,ANXDEP,"ANXIETY / DEPRESSION:",,,,120,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+EQ5D5L,Number,EQ5D5L05,EQ5D5L05,,,,130,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EQ5D5L,Text,HLTH,"Health State:",,,,140,,Optional,,No,1,,10,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+EQ5D5L,Number,HLTHTDY,"Your health today:",,,,150,,"Auto Query",,Yes,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FUP,"Date/Time Precision",FUPDAT,"Date of follow-up:",,,,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,Yes,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+FUP,Checkbox,missed_visit,"Missed visit",,,,30,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FUP,Radio,ANYAE,"Was subject assessed for new or worsening AEs and SAEs?",,,,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+FUP,Radio,ANYMEDS,"Was subject assessed for concomitant medication(s) updates?&nbsp;",,,,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+FUP,Text,current_visit,"Current Visit:",,,,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ICFEL,Text,icfsubjno,"Subject Number:",,,,10,,Soft,,No,1,,10,10,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ICFEL,Dropdown,icfdoc,Document:,,,,20,,Soft,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ICFEL,Text,icfver,"Document Version Signed:",,,,30,,Soft,,No,1,,10,10,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ICFEL,"Date/Time Precision",icfsigndt,"Date Signed by Subject:",,,,40,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+ICFEL,Memo,icfcmt,Comments:,,,,50,,Optional,,No,1,,40,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IE,Text,current_visit,"Current Visit:",,"Current visit",,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IE,"Date/Time Precision",IEDAT,"Assessment date:",,"Assesment date",,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+IE,Radio,ELIGIBLE,"Does the subject meet all eligibility criteria?
+(worksheet is required to be completed and signed by site)",,"Does the subject meet all eligibility criteria",,240,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IE,Radio,IC01,"1. Age 18 years or older.",,,,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC02,"2. Willing to provide written informed consent and written HIPAA authorization prior to 
+
+initiation&nbsp;of study-related procedures.",,,,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC03,"3. Agree to not participate in any other clinical study, during hospitalization for the index 
+
+procedure, that&nbsp;would interfere with the endpoints of this study.",,,,60,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC04,"4. Clinical evidence of ischemic heart disease, stable/unstable angina, or silent ischemia.",,,,70,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC05,"5. Acceptable candidate for PCI and emergency coronary artery bypass grafting (CABG).",,,,80,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC06,"6. De novo or restenotic lesion(s) in native coronary arteries, including in-stent restenosis.",,,,90,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC07,"7. A maximum of two lesions, including at least one target lesion, in single or double vessel 
+
+coronary&nbsp;artery disease.",,,,100,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC08,"8. Target lesion(s) must have a reference vessel diameter between 2.0 mm and 4.0 mm by
+
+visual estimation.",,,,110,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC09,"9. Target lesion(s) must have a diameter stenosis of &gt;70% by visual estimation.",,,,120,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,IC10,"10. Treatment of non-target lesion, if any, must be completed prior to treatment of target lesion; 
+
+must not,&nbsp;in the opinion of the investigator, impact the conduct or completion of the index 
+
+procedure; and&nbsp;must be deemed a clinical angiographic success as visually assessed by 
+
+the investigator.",,,,130,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC01,"1. Known hypersensitivity or contraindication to aspirin, heparin, bivalirudin, anti-platelet 
+
+medications, or sensitivity to contrast media that cannot be adequately pre-medicated.",,,,140,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC02,"2. Known diagnosis of ST-elevation myocardial infarction (STEMI) or non-ST-elevation 
+
+myocardial infarction (NSTEMI) at index presentation or within 7 days prior to 
+
+the index procedure.",,,,150,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC03,"3. Known pregnancy or is nursing. Women of child-bearing potential should have a 
+
+documented negative pregnancy test within 7 days prior to index procedure.",,,,160,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC04,"4. Planned target lesion treatment with atherectomy, laser, cutting balloon, 
+
+thrombectomy or an unapproved device during the index procedure.",,,,170,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC05,"5. Serum creatinine &gt;2.0 mg/dl within 7 days prior to the index procedure.",,,,180,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC06,"6. Cerebrovascular accident within 6 months prior to the index procedure.",,,,190,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC07,"7. Active peptic ulcer or active gastrointestinal bleeding within 6 months prior 
+
+to the index procedure.",,,,200,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC08,"8. Left ventricular ejection fraction &lt;30% (if LVEF is not available in the medical records, 
+
+it may be obtained at the time of the index procedure, prior to enrollment).",,,,210,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC09,"9. Target lesion located within a bypass graft (venous or arterial) or graft anastomosis.",,,,220,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Radio,EC10,"10. Previous percutaneous intervention, within 9 months before the study procedure, 
+
+on lesions in a target vessel (including side branches) that are located within 10 mm 
+
+from the current target lesion.",,,,230,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IE,Dropdown,PVERSN,"Protocol version:",,"Protocol version",,30,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,visitrsn,"Reason for Visit",,,,30,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IMVCHK,Radio,visittype,"Visit Type",,,,70,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+IMVCHK,"Date/Time Precision",SOV,"Start Date",,,,50,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+IMVCHK,"Date/Time Precision",EOV,"End Date",,,,60,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+IMVCHK,Text,piname,"Principal Investigator Name",,,,80,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Text,ADDRESS,"Physical address where visit occurred
+
+(record for onsite visits only)",,,,90,,Soft,,No,1,,75,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,B01,"Number of screen failures",,,,100,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,B02,"Number of subjects enrolled",,,,110,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,B03,"Number of subjects withdrawn early 
+(e.g., subject withdrawal of consent)",,,,120,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,B04,"Number of subjects who have completed the study",,,,130,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,B05,"Number of active subjects",,,,140,,Soft,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,B06,"Is study enrollment complete?",,,,150,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Memo,BCMT,Comments:,,,,160,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,BCMTX,None,,,,170,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,rct01,"Screen Failure Log",,,,180,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,rct01mai,"&nbsp;
+
+MAI",,,,190,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,rct01num,Number,,,,200,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,rct01cmt,rct01cmt,,,,210,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,rct02,"Recruitment methods and status were discussed",,,,220,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,rct02mai,"&nbsp;
+
+MAI",,,,230,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,rct02num,Number,,,,240,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,rct02cmt,rct02cmt,,,,250,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,rctcmt,Comments:,,,,260,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,rctcmtx,None,,,,270,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,fac01,"Site facilities have remained unchanged since prior monitoring visit",,,,280,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,fac01mai,"&nbsp;
+
+MAI",,,,290,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,fac01num,Number,,,,300,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,fac01cmt,fac01cmt,,,,310,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,fac02,"Site facilities remain adequate to continue conducting the study",,,,320,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,fac02mai,"&nbsp;
+
+MAI",,,,330,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,fac02num,Number,,,,340,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,fac02cmt,fac02cmt,,,,350,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,faccmt,Comments:,,,,360,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,faccmtx,None,,,,370,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,pers01,"PI has demonstrated oversight of the study",,,,380,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,pers01mai,"&nbsp;
+
+MAI",,,,390,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,pers01num,Number,,,,400,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,pers01cmt,pers01cmt,,,,410,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,pers02,"Site has adequate qualified personnel to conduct the study",,,,420,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,pers02mai,"&nbsp;
+
+MAI",,,,430,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,pers02num,Number,,,,440,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,pers02cmt,pers02cmt,,,,450,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,pers03,"Study personnel changes were reported to IRB per requirements",,,,460,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,pers03mai,"&nbsp;
+
+MAI",,,,470,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,pers03num,Number,,,,480,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,pers03cmt,pers03cmt,,,,490,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,pers04,"PI appropriately delegated authority for study procedures to qualified study
+
+personnel as documented on the Signature/Delegation Log",,,,500,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,pers04mai,"&nbsp;
+
+MAI",,,,510,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,pers04num,Number,,,,520,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,pers04cmt,pers04cmt,,,,530,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,pers05,"All study personnel listed on the Signature/Delegation Log were appropriately 
+
+trained for the delegated tasks",,,,540,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,pers05mai,"&nbsp;
+
+MAI",,,,550,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,pers05num,Number,,,,560,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,pers05cmt,pers05cmt,,,,570,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,pers06,"Study staff performed procedures in accordance with their delegated 
+
+responsibilities on the Signature/Delegation Log",,,,580,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,pers06mai,"&nbsp;
+
+MAI",,,,590,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,pers06num,Number,,,,600,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,pers06cmt,pers06cmt,,,,610,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,perscmt,Comments:,,,,620,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,perscmtx,None,,,,630,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,etmf01,"Study personnel were familiar with the eTMF folder structure and able to 
+
+view/download documents as needed",,,,640,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,etmf01mai,"&nbsp;
+
+MAI",,,,650,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,etmf01num,Number,,,,660,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,etmf01cmt,etmf01cmt,,,,670,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,etmf03,"New clinical trial agreement amendment on file",,,,680,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,etmf03mai,"&nbsp;
+
+MAI",,,,690,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,etmf03num,Number,,,,700,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,etmf03cmt,etmf03cmt,,,,710,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,etmf04,"Updated laboratory normals or certifications collected",,,,720,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,etmf04mai,"&nbsp;
+
+MAI",,,,730,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,etmf04num,Number,,,,740,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,etmf04cmt,etmf04cmt,,,,750,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,etmf05a,"a. Existing study personnel",,,,760,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,etmf05amai,"&nbsp;
+
+MAI",,,,770,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,etmf05anum,Number,,,,780,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,etmf05acmt,etmf05acmt,,,,790,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,etmf05b,"b. New study personnel",,,,800,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,etmf05bmai,"&nbsp;
+
+MAI",,,,810,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,etmf05bnum,Number,,,,820,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,etmf05bcmt,etmf05bcmt,,,,830,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,etmfcmt,Comments:,,,,840,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,etmfcmtx,None,,,,850,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb01a,"a. Protocol amendments",,,,860,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb01amai,"&nbsp;
+
+MAI",,,,870,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb01anum,Number,,,,880,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb01acmt,irb01acmt,,,,890,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb01b,"b. Updated informed consent&nbsp;
+(Note: Indicate in comments if a separate HIPAA authorization was required and 
+
+approved by the IRB)",,,,900,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb01bmai,"&nbsp;
+
+MAI",,,,910,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb01bnum,Number,,,,920,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb01bcmt,irb01bcmt,,,,930,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb01c,"c. Updated recruitment materials",,,,940,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb01cmai,"&nbsp;
+
+MAI",,,,950,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb01cnum,Number,,,,960,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb01ccmt,irb01ccmt,,,,970,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb01d,"d. Updated subject questionnaires",,,,980,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb01dmai,"&nbsp;
+
+MAI",,,,990,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb01dnum,Number,,,,1000,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb01dcmt,irb01dcmt,,,,1010,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb02,"Site progress reports required for IRB renewal were submitted and approved 
+
+prior to expiration of IRB approval",,,,1060,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb02mai,"&nbsp;
+
+MAI",,,,1070,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb02num,Number,,,,1080,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb02cmt,irb02cmt,,,,1090,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb03,"Sponsor progress reports were submitted and acknowledged per IRB requirements",,,,1100,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb03mai,"&nbsp;
+
+MAI",,,,1110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb03num,Number,,,,1120,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb03cmt,irb03cmt,,,,1130,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb04a,"a. Failure to obtain or properly obtain informed&nbsp;consent, or other 
+
+informed consent form (ICF) issues",,,,1140,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb04amai,"&nbsp;
+
+MAI",,,,1150,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb04anum,Number,,,,1160,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb04acmt,irb04acmt,,,,1170,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb04b,"b. Protocol deviations",,,,1180,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb04bmai,"&nbsp;
+
+MAI",,,,1190,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb04bnum,Number,,,,1200,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb04bcmt,irb04bcmt,,,,1210,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb04c,"c. Adverse events",,,,1220,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb04cmai,"&nbsp;
+
+MAI",,,,1230,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb04cnum,Number,,,,1240,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb04ccmt,irb04ccmt,,,,1250,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb04d,"d. Deaths",,,,1260,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb04dmai,"&nbsp;
+
+MAI",,,,1270,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb04dnum,Number,,,,1280,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb04dcmt,irb04dcmt,,,,1290,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb04e,"e. Other IRB-mandated requirements",,,,1300,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb04emai,"&nbsp;
+
+MAI",,,,1310,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb04enum,Number,,,,1320,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb04ecmt,irb04ecmt,,,,1330,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb05,"IRB Federal Wide Assurance (FWA) number, IRB roster, statement of compliance, 
+
+or AAHRPP number on file for each approval/review",,,,1340,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb05mai,"&nbsp;
+
+MAI",,,,1350,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb05num,Number,,,,1360,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb05cmt,irb05cmt,,,,1370,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb06,"Study personnel are not voting members of the IRB reviewing the study
+(Note: If no, address in comments)",,,,1380,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb06mai,"&nbsp;
+
+MAI",,,,1390,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb06num,Number,,,,1400,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb06cmt,irb06cmt,,,,1410,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irbcmt,Comments:,,,,1420,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,irbcmtx,None,,,,1430,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prod01,"Investigational product accountability/tracking records up-to-date and accurate
+
+(includes shipment, receipt, and return records)",,,,1440,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prod01mai,"&nbsp;
+
+MAI",,,,1450,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prod01num,Number,,,,1460,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prod01cmt,prod01cmt,,,,1470,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prod02,"Study product inspected and stored in a secure location
+
+(Note: For remote visits, work with the site to determine the best method for confirming 
+
+secure storage, such as pictures or videos)",,,,1480,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prod02mai,"&nbsp;
+
+MAI",,,,1490,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prod02num,Number,,,,1500,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prod02cmt,prod02cmt,,,,1510,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prodcmt,Comments:,,,,1520,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,prodcmtx,None,,,,1530,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn01,"Documented consent process on file for each consented subject (e.g., to indicate 
+
+ample time to review ICF and ask questions, questions adequately answered, 
+
+signed copy provided to subject, consent obtained prior to study procedures)",,,,1540,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn01mai,"&nbsp;
+
+MAI",,,,1550,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn01num,Number,,,,1560,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn01cmt,prtn01cmt,,,,1570,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn02,"ICFs completed in accordance with IRB-approved format for each consented 
+
+subject (e.g., all pages require the subject initials)",,,,1580,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn02mai,"&nbsp;
+
+MAI",,,,1590,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn02num,Number,,,,1600,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn02cmt,prtn02cmt,,,,1610,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn03,"Correct versions of ICFs signed by subjects",,,,1620,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn03mai,"&nbsp;
+
+MAI",,,,1630,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn03num,Number,,,,1640,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn03cmt,prtn03cmt,,,,1650,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn04,"ICFs signed on same day by subject and person obtaining consent",,,,1660,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn04mai,"&nbsp;
+
+MAI",,,,1670,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn04num,Number,,,,1680,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn04cmt,prtn04cmt,,,,1690,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn05,"Person obtaining consent authorized per Signature Delegation Log",,,,1700,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn05mai,"&nbsp;
+
+MAI",,,,1710,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn05num,Number,,,,1720,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn05cmt,prtn05cmt,,,,1730,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn06,"ICFs obtained prior to study-specific procedures",,,,1740,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn06mai,"&nbsp;
+
+MAI",,,,1750,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn06num,Number,,,,1760,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn06cmt,prtn06cmt,,,,1770,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn07,"HIPAA authorization, if a separate document, obtained from all study subjects and 
+
+copy of authorization provided to subjects",,,,1780,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn07mai,"&nbsp;
+
+MAI",,,,1790,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn07num,Number,,,,1800,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn07cmt,prtn07cmt,,,,1810,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,prtn08,"Other required authorizations (e.g., CA Bill of Rights) obtained from study subjects 
+
+as applicable",,,,1820,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,prtn08mai,"&nbsp;
+
+MAI",,,,1830,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,prtn08num,Number,,,,1840,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtn08cmt,prtn08cmt,,,,1850,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,prtncmt,Comments:,,,,1860,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,prtncmtx,None,,,,1870,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di01,"All original source documents available and reviewed against eCRFs",,,,1880,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di01mai,"&nbsp;
+
+MAI",,,,1890,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di01num,Number,,,,1900,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di01cmt,di01cmt,,,,1910,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di02,"Subject eligibility determination confirmed per source documents",,,,1920,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di02mai,"&nbsp;
+
+MAI",,,,1930,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di02num,Number,,,,1940,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di02cmt,di02cmt,,,,1950,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di03,"Randomization completed properly per Randomization plan",,,,1960,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di03mai,"&nbsp;
+
+MAI",,,,1970,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di03num,Number,,,,1980,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di03cmt,di03cmt,,,,1990,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di04,"eCRFs completed properly and in a timely manner",,,,2000,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di04mai,"&nbsp;
+
+MAI",,,,2010,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di04num,Number,,,,2020,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di04cmt,di04cmt,,,,2030,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di06,"eCRFs approved by appropriate staff per Signature/Delegation Log",,,,2080,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di06mai,"&nbsp;
+
+MAI",,,,2090,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di06num,Number,,,,2100,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di06cmt,di06cmt,,,,2110,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,dicmt,Comments:,,,,2240,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,dicmtx,None,,,,2250,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,ae01,"All AEs collected and reported to sponsor",,,,2260,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,ae01mai,"&nbsp;
+
+MAI",,,,2270,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,ae01num,Number,,,,2280,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,ae01cmt,ae01cmt,,,,2290,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,ae02,"All AEs source verified",,,,2300,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,ae02mai,"&nbsp;
+
+MAI",,,,2310,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,ae02num,Number,,,,2320,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,ae02cmt,ae02cmt,,,,2330,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,ae03,"Certified copies of source documents for applicable AEs submitted to 
+
+sponsor/CRO per protocol and safety reporting requirements",,,,2340,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,ae03mai,"&nbsp;
+
+MAI",,,,2350,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,ae03num,Number,,,,2360,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,ae03cmt,ae03cmt,,,,2370,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,aecmt,Comments:,,,,2380,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,aecmtx,None,,,,2390,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,vo01,"PI met or corresponded with monitor(s) during the visit",,,,2400,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,vo01mai,"&nbsp;
+
+MAI",,,,2410,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,vo01num,Number,,,,2420,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,vo01cmt,vo01cmt,,,,2430,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,vo02,"Visit findings and recommended actions/corrections, study status updates, and 
+
+training discussed with staff during the visit",,,,2440,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,vo02mai,"&nbsp;
+
+MAI",,,,2450,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,vo02num,Number,,,,2460,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,vo02cmt,vo02cmt,,,,2470,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,vo03,"Outstanding action items from the prior visit were addressed",,,,2480,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,vo03mai,"&nbsp;
+
+MAI",,,,2490,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,vo03num,Number,,,,2500,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,vo03cmt,vo03cmt,,,,2510,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,vocmt,Comments:,,,,2520,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Checkbox,vocmtx,None,,,,2530,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,doccmt,Comments:,,,,2540,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,addlcmt,Comments:,,,,2550,,Optional,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Text,IMVSITEID,"Site Number",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Text,IMVSITENAME,"Site Name",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,visitrsnx,specify,,,,40,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,irb01e,"e. Other, specify",,,,1020,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,irb01emai,"&nbsp;
+
+MAI",,,,1030,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,irb01enum,Number,,,,1040,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,irb01ecmt,irb01ecmt,,,,1050,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di07,"Protocol deviations appropriately reported in source documents and eCRFs",,,,2120,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di07mai,"&nbsp;
+
+MAI",,,,2130,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di07num,Number,,,,2140,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di07cmt,di07cmt,,,,2150,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di08,"Subject early withdrawals appropriately documented",,,,2160,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di08mai,"&nbsp;
+
+MAI",,,,2170,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di08num,Number,,,,2180,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di08cmt,di08cmt,,,,2190,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di09,"Subject lost-to-follow-up appropriately documented",,,,2200,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di09mai,"&nbsp;
+
+MAI",,,,2210,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di09num,Number,,,,2220,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di09cmt,di09cmt,,,,2230,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Radio,di05,"CRF worksheets signed and dated by data originator",,,,2040,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+IMVCHK,Checkbox,di05mai,"&nbsp;
+
+MAI",,,,2050,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Number,di05num,Number,,,,2060,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVCHK,Memo,di05cmt,di05cmt,,,,2070,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVEL,Text,MONNAME,"Monitor name",,,,10,,Hard,,No,1,,100,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+IMVEL,"Date/Time Precision",FIRSTDOV,"First date of visit",,,,20,,Hard,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+IMVEL,"Date/Time Precision",LASTDOV,"Last date of visit",,,,30,,Hard,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+IMVEL,"Date/Time Precision",SPNSRDT,"Date visit report provided to sponsor",,,,40,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+IMVEL,"Date/Time Precision",FULTRDT,"Date follow up letter sent to site",,,,50,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+IMVEL,Dropdown,VISITTYPE,"Visit type",,,,60,,Hard,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+INVCAT,Date/Time,INVEXP,"Expiration date",,,,60,,Optional,,No,1,,,,,,,,,,,,,Yes,No,No,,No,No,,,Yes,,,,,,,,,,Yes,,,,,,,,,,,
+INVCAT,Text,MODELNO,"Model No",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+INVCAT,Text,SERIALNO,"Serial No",,,,40,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+INVCAT,Text,LOTNO,"Lot No",,,,30,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+INVCAT,Text,INVSIZE,Size,,,,50,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+INVCAT,Text,PNNO,"PN No",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+INVCAT,Text,DLVRNO,"Delivery No",,,,70,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,"Date/Time Precision",LBDAT,"Date and time labs drawn:
+
+Specify the earliest date labs were drawn",,,,20,,"Auto Query",,No,1,,,,,,,,,,,,,,,,,Yes,Yes,Yes,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+LAB,Checkbox,LBDATND,"Not done",,,,30,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Checkbox,LBDATX,"Same as Baseline CRF Labs",,,,40,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Checkbox,RBCND,"Not done",,,,50,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,RBC,"Red blood cell (RBC) count:",,,,60,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,RBCU,Units:,,,,70,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,RBCCS,"Clinically significant?",,,,80,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,WBCND,"Not done",,,,90,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,WBC,"White blood cell (WBC) count:",,,,100,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,WBCU,Units:,,,,110,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,WBCCS,"Clinically significant?",,,,120,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,PLTND,"Not done",,,,130,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,PLT,Platelets:,,,,140,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,PLTU,Units:,,,,150,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,PLTCS,"Clinically significant?",,,,160,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,NEUTND,"Not done",,,,170,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,NEUT,Neutrophils:,,,,180,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,NEUTU,Units:,,,,190,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,NEUTCS,"Clinically significant?",,,,200,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,LYMPHND,"Not done",,,,210,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,LYMPH,Lymphocytes:,,,,220,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,LYMPHU,Units:,,,,230,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,LYMPHCS,"Clinically significant?",,,,240,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,MONOND,"Not done",,,,250,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,MONO,Monocytes:,,,,260,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,MONOU,Units:,,,,270,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,MONOCS,"Clinically significant?",,,,280,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,BASOND,"Not done",,,,290,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,BASO,Basophils:,,,,300,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,BASOU,Units:,,,,310,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,BASOCS,"Clinically significant?",,,,320,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,EOSND,"Not done",,,,330,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,EOS,Eosinophils:,,,,340,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,EOSU,Units:,,,,350,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,EOSCS,"Clinically significant?",,,,360,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,HGBND,"Not done",,,,370,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,HGB,"Hemoglobin (Hgb):",,,,380,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,HGBCS,"Clinically significant?",,,,390,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,HCTND,"Not done",,,,400,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,HCT,"Hematocrit (Hct):",,,,410,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,HCTCS,"Clinically significant?",,,,420,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,GLUND,"Not done",,,,430,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,GLU,Glucose:,,,,440,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,GLUCS,"Clinically significant?",,,,450,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,URAND,"Not done",,,,460,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,UREA,Urea/BUN:,,,,470,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,UREACS,"Clinically significant?",,,,480,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,CAND,"Not done",,,,490,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,CA,"Calcium (Ca):",,,,500,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,CACS,"Clinically significant?",,,,510,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,NAND,"Not done",,,,520,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,NA,"Sodium (Na):",,,,530,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,NAU,Units:,,,,540,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,NACS,"Clinically significant?",,,,550,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,POTASND,"Not done",,,,560,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,POTAS,"Potassium (K):",,,,570,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,POTASU,Units:,,,,580,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,POTASCS,"Clinically significant?",,,,590,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,CLND,"Not done",,,,600,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,CL,"Chloride (Cl):",,,,610,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Dropdown,CLU,Units:,,,,620,,"Auto Query",,Yes,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,CLCS,"Clinically significant?",,,,630,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,HC03ND,"Not done",,,,640,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,HCO3,"Bicarbonate (HCO3):",,,,650,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,HCO3CS,"Clinically significant?",,,,660,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,PO4ND,"Not done",,,,670,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,PO4,"Phosphate (PO4):",,,,680,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,PO4CS,"Clinically significant?",,,,690,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,URICND,"Not done",,,,700,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,URIC,"Uric acid:",,,,710,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,URICCS,"Clinically significant?",,,,720,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,AFPND,"Not done",,,,730,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,AFP,"Alpha fetoprotein:",,,,740,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,AFPCS,"Clinically significant?",,,,750,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,SCRND,"Not done",,,,760,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,SCR,Creatinine:,,,,770,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,SCRCS,"Clinically significant?",,,,780,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,TPND,"Not done",,,,790,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,TP,"Total protein:",,,,800,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,TPCS,"Clinically significant?",,,,810,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,ASTND,"Not done",,,,820,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,AST,"Aspartate aminotransferase (AST):",,,,830,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,ASTCS,"Clinically significant?",,,,840,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,ALTND,"Not done",,,,850,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,ALT,"Alanine aminotransferase (ALT):",,,,860,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,ALTCS,"Clinically significant?",,,,870,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,DBILIND,"Not done",,,,880,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,DBILI,"Bilirubin (direct):",,,,890,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,DBILICS,"Clinically significant?",,,,900,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,IBILIND,"Not done",,,,910,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,IBILI,"Bilirubin (indirect):",,,,920,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,IBILICS,"Clinically significant?",,,,930,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,TBILIND,"Not done",,,,940,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,TBILI,"Bilirubin (total):",,,,950,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,TBILICS,"Clinically significant?",,,,960,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,ALBND,"Not done",,,,970,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,ALB,Albumin:,,,,980,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,ALBCS,"Clinically significant?",,,,990,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,ALPND,"Not done",,,,1000,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,ALP,"Alkaline phosphatase (ALP):",,,,1010,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,ALPCS,"Clinically significant?",,,,1020,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,PTND,"Not done",,,,1030,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,PT,"Prothrombin Time:",,,,1040,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,PTCS,"Clinically significant?",,,,1050,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,PTTND,"Not done",,,,1060,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,PTT,"Partial thromboplastin time:",,,,1070,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,PTTCS,"Clinically significant?",,,,1080,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,INRND,"Not done",,,,1090,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Number,INR,"INR (International Normalized Ratio):",,,,1100,,"Auto Query",,Yes,1,,5,8,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,INRCS,"Clinically significant?",,,,1110,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+LAB,Checkbox,EGFRND,"Not done",,,,1120,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LAB,Radio,EGFR,"Glomerular filtration rate (GFR):",,,,1130,,"Auto Query",,Yes,1,"<p>This is a comment placed on the&nbsp;<strong>Glomerular filtration rate (GFR)</strong> field.</p>",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+LAB,Text,question_2,"Current Visit:",,,,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+LTFU,Radio,LTFTYPE,"Contact type",,"Contact type",,10,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+LTFU,"Date/Time Precision",LTFDT,Date,,Date,,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+LTFU,"Date/Time Precision",LTFCLTR,"Date certified letter sent",,"Date certified letter sent",,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+LTFU,"Date/Time Precision",LTFCNFRM,"Date of receipt confirmation",,"Date of receipt confirmation",,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+MAI,Number,MAINO,"Issue Number:",,,,10,,Optional,,No,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MAI,"Date/Time Precision",OPENDAT,"Date action item created:",,,,20,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+MAI,Text,MAICRTDBY,"Created by:",,,,30,,Optional,,No,1,,50,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MAI,Radio,MAIVISIT,"Identified during site visit?",,,,40,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+MAI,Dropdown,category,"Action item category:",,,,50,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MAI,Memo,observation,Issue/Observation:,,,,60,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MAI,Memo,actionrequested,"Action requested:",,,,70,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MAI,Radio,RSLVRMT,"Can this item be resolved remotely?",,,,80,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+MAI,Radio,actionassigned,"Assigned to:",,,,90,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+MAI,Memo,actiontaken,Resolution/Progress:,,,,100,,Optional,,No,1,,75,500,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MAI,Dropdown,recordstate,"Action item status:",,,,110,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MAI,"Date/Time Precision",CLOSDAT,"Date of resolution:",,,,120,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+MAI,Number,ETCLOSED,"Elapsed between date AI created and date of resolution:
+
+Action Item Status = Resolved",<p>days</p>,,,130,,Optional,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MONTRV,Checkbox,HIDDENFIELD,"Hidden Checkbox",,,,30,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MONTRV,Text,MVSITEID,"Site Number:",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MONTRV,Text,MVSITENAME,"Site Name:",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MONTRV,Text,AISITEID,"Site Number:",,,,40,,Optional,,No,2,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MONTRV,Text,AISITENAME,"Site Name:",,,,50,,Optional,,No,2,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MONTRV,Text,question_1,"Site Number:",,,,60,,Optional,,No,3,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MONTRV,Text,question_2,"Site Name:",,,,70,,Optional,,No,3,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MSLEL,Dropdown,SRCPARAM,Parameters,,,,10,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MSLEL,Dropdown,SRC,Source,,,,20,,Soft,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MSLEL,Text,SRCX,Specify,,,,30,,Optional,,No,1,,100,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Text,current_visit,"Current Visit:",,,,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Radio,CMPLTYN,"Was NIHSS completed?",,,,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+NIHSS,"Date/Time Precision",CMPLTDT,"Date of assessment:",,,,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+NIHSS,Number,SCORE01A,Score:,,"1a. Level of Consciousness",,40,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE01B,Score:,,"1b. LOC Questions",,50,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE01C,Score:,,"1c. LOC Commands",,60,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE02,Score:,,"2. Best Gaze",,70,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE03,Score:,,"3. Visual",,80,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE04,Score:,,"4. Facial Palsy",,90,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Checkbox,NIH05AUN,Untestable,,,,100,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE05A,Score:,,"5. Motor Arm Left",,110,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Checkbox,NIH05BUN,Untestable,,,,120,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE05B,Score:,,"5. Motor Arm Right",,130,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Text,NIH05UNX,Explain:,,,,140,,"Auto Query",,Yes,1,,40,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Checkbox,NIH06AUN,Untestable,,,,150,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE06A,Score:,,"6. Motor Leg Left",,160,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Checkbox,NIH06BUN,Untestable,,,,170,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE06B,Score:,,"6. Motor Leg Right",,180,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Text,NIH06UNX,Explain:,,,,190,,"Auto Query",,Yes,1,,40,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Checkbox,NIH07UN,"UN = Amputation or joint fusion",,,,200,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Text,NIH07UNX,Explain:,,,,210,,"Auto Query",,Yes,1,,40,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE07,Score:,,"7. Limb Ataxia",,220,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE08,Score:,,"8. Sensory",,230,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE09,Score:,,"9. Best Language",,240,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Checkbox,NIH10UN,"UN = Intubated or other physical barrier",,,,250,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Text,NIH10UNX,Explain:,,,,260,,"Auto Query",,Yes,1,,40,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SC0RE10,Score:,,"10. Dysarthria",,270,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,SCORE11,Score:,,"11. Extinction and Inattention",,280,,"Auto Query",,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+NIHSS,Number,TOTSCORE,"Total
+
+Score",,,,290,,Optional,,Yes,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PROC,Text,current_visit,"Current Visit:",,"Current visit",,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PROC,"Date/Time Precision",PROCDT,"Date of procedure:",,"Date of procedure",,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,Yes,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+PROC,Text,PRIMOPFN,"Name of primary operator:",,"First Name",,30,,"Auto Query",,Yes,1,,40,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PROC,Text,PRIMOPLN,"last name",,"Last Name",,40,,"Auto Query",,Yes,1,,40,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PROC,"Date/Time Precision",PROCSTM,"Procedure start time:",,"Procedure start time",,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,Yes,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+PROC,"Date/Time Precision",DEVSTM,"Study device start time:",,"Study device start time",,60,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,Yes,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+PROC,"Date/Time Precision",PROCETM,"Procedure end time:",,"Procedure end time",,80,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,Yes,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+PROC,"Date/Time Precision",DEVETM,"Study device end time:",,"Study device end time",,70,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,No,Yes,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+PROC,Radio,ANYMEDS,"Was subject assessed for concomitant medication(s) updates?&nbsp;",,"Was subject assessed for concomitant medication(s) updates?",,90,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+PROC,Radio,ANYAE,"Was subject assessed for new or worsening AEs and SAEs?",,"Was subject assessed for new or worsening AEs and SAEs?",,100,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+RANKIN,Text,current_visit,"Current Visit:",,,,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+RANKIN,Radio,MRSYN,"Was mRS completed?",,,,20,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+RANKIN,"Date/Time Precision",MRSDT,"Date of assessment:",,,,30,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,No,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+RANKIN,Radio,MRS,Result:,,,,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+RANKIN,Radio,MRSD90,"Was the &lsquo;Day 90,&rsquo; assessment 
+
+completed by a blinded assessor?",,,,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+REG,"Date/Time Precision",REGDAT,"Date informed consent obtained:",,"Date informed consent obtained",,40,,Hard,,Yes,1,,,,,,,,,,,,,,,,,Yes,Yes,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+REG,Text,current_visit,"Current Visit:",,"Current Visit",,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+REG,Dropdown,sitelab,"Site Lab Selection:",,"Site Lab Selection",,30,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+REG,Radio,UPLOAD,"Consent uploaded?",,"Consent uploaded",,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+REG,"File Upload",UPLOADX,"Upload de-identified consent form.",,"Upload de-identified consent form",,60,,"Auto Query",,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"20 Megabytes",,,,,,
+REG,Dropdown,rand_site_id,"Site Stratification ID",,,,20,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SCACEL,"Date/Time Precision",SCACLOGASSDT,"Assessment Date",,,,10,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+SCACEL,Checkbox,SFIC,"Screen failure(s)",,,,20,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SCACEL,Checkbox,SFEC,"Subject(s) enrolled",,,,30,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SCACEL,Number,CASEPERFCATH,"Total cases performed in cath lab",,,,40,,"Auto Query",,Yes,1,,10,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SCACEL,Checkbox,PAID,Paid,,,,50,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SCACLOG,Text,SFSITEID,"Site Number:",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SCACLOG,Text,SFSITENAME,"Site Name:",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SCACLOG,Checkbox,SFND,"Hidden Checkbox",,,,30,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SED,Date/Time,site_study_approve_enrol,"Approved to Enroll","<p><span style=""color:#ff0000""><em>Required</em></span></p>",,,40,,Soft,,No,1,,,,,,,,,,,,,Yes,No,No,,No,No,,,No,,,,,,,,,,No,,,,,,,,,,,
+SED,Text,unique_site_id,"Site ID","<p><span style=""color:#ff0000""><em>Required</em></span></p>",,,10,,Hard,,No,1,,7,7,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SED,Text,SITENAME,"Site Name","<p><span style=""color:#ff0000""><em>Required</em></span></p>",,,20,,Soft,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SED,Dropdown,sitelab,"Lab Selection",,,,70,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SED,Text,sitelabname,"Site Lab Name",,,,80,,Optional,,No,1,,45,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SED,Dropdown,rand_site_id,"Site Stratification ID",,,,50,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SED,Number,expected_enrollment,"Expected enrollment",,,,60,,Optional,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SED,Dropdown,COUNTRY,"Site Country","<p><span style=""color:#ff0000""><em>Required</em></span></p>",,,30,,Hard,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOG,Checkbox,SFND,"Hidden Checkbox",,,,30,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOG,Text,SFSITEID,"Site Number:",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOG,Text,SFSITENAME,"Site Name:",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,"Date/Time Precision",SFSCRNDT,"Date of Screening",,,,10,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+SFLOGEL,Text,SFPVERSN,"Protocol Version",,,,20,,Soft,,No,1,,15,25,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,"Date/Time Precision",SFICFDT,"Date of consent",,,,30,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+SFLOGEL,Text,SFSUBJINIT,"Unique subject identfier",,,,40,,Soft,,No,1,,5,8,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Text,SFICX,specify,,,,60,,Soft,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Text,SFECX,specify,,,,80,,Soft,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Memo,SFOTHERX,specify,,,,100,,Soft,,No,1,,40,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Checkbox,READYPAY,"Ready for payment",,,,110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Checkbox,PAID,Paid,,,,120,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Checkbox,SFIC,"Inclusion criteria not met",,,,50,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Checkbox,SFEC,"Exclusion criteria met",,,,70,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SFLOGEL,Checkbox,SFOTHER,"Other reason/additional comments",,,,90,,Optional,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,visit_type,"Visit type",,,,50,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+SICHK,Text,inv_name,"Principal Investigator Name",,,,60,,Soft,,No,1,,60,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc01,"Good documentation practices (GDP)",,,,80,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc01mai,MAI,,,,90,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc01num,Number,,,,100,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc01cmt,doc01cmt,,,,110,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc02,"eCRFs and timelines for data entry",,,,120,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc02mai,MAI,,,,130,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc02num,Number,,,,140,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc02cmt,doc02cmt,,,,150,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc03,"Database and instructions for data entry and query resolution",,,,160,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc03mai,MAI,,,,170,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc03num,Number,,,,180,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc03cmt,doc03cmt,,,,190,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc04,"Expectations for monitor access to original medical records (electronic medical 
+
+records,&nbsp;hard copy clinic/hospital charts, or combination)&nbsp;
+(Note: Describe source document access type in the comments)",,,,200,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc04mai,MAI,,,,210,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc04num,Number,,,,220,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc04cmt,doc04cmt,,,,230,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc05,"Protocol deviation documentation process and reporting requirements",,,,240,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc05mai,MAI,,,,250,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc05num,Number,,,,260,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc05cmt,doc05cmt,,,,270,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc06,"Source document and record retention procedures",,,,280,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc06mai,MAI,,,,290,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc06num,Number,,,,300,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc06cmt,doc06cmt,,,,310,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc07,"Screening, recruitment, and enrollment processes and documentation&nbsp;
+(Note: Describe noteworthy enrollment strategies in the comments)",,,,320,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc07mai,MAI,,,,330,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc07num,Number,,,,340,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc07cmt,doc07cmt,,,,350,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc08,"Site personnel indicated understanding of privacy requirements to protect 
+
+subject&nbsp;confidentiality when sending source documents to CRO/sponsor/IRB",,,,360,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc08mai,MAI,,,,370,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc08num,Number,,,,380,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc08cmt,doc08cmt,,,,390,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,doc09,"Investigator and staff indicated understanding of personal responsibility for 
+
+accurate&nbsp;and&nbsp;complete subject data and eCRF approval",,,,400,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,doc09mai,MAI,,,,410,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,doc09num,Number,,,,420,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doc09cmt,doc09cmt,,,,430,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,safe01,"Adverse event (AE) recording and reporting process",,,,460,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,safe01mai,MAI,,,,470,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,safe01num,Number,,,,480,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,safe01cmt,safe01cmt,,,,490,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,safe02,"Investigator requirements for reporting and notifying sponsor/CRO/IRB of AEs",,,,500,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,safe02mai,MAI,,,,510,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,safe02num,Number,,,,520,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,safe02cmt,safe02cmt,,,,530,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,reg01,"Procedure and GCP requirements for maintenance of accurate and complete 
+
+essential clinical trial documents, including maintenance of the 
+
+Site Regulatory&nbsp;File (electronic and/or hard copy)",,,,560,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,reg01mai,MAI,,,,570,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,reg01num,Number,,,,580,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,reg01cmt,reg01cmt,,,,590,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,reg02,"Translation of subject-facing documents
+(Note: Check no if the requirement for translations still needs to be determined or 
+
+if translations are pending)",,,,600,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,reg02mai,MAI,,,,610,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,reg02num,Number,,,,620,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,reg02cmt,reg02cmt,,,,630,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,reg03,"IRB requires use of stamped subject-facing documents
+
+(Note: Describe any subject facing forms in comments)",,,,640,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Radio,ecpt01,"Investigator and site study personnel confirmed they have adequate time
+
+and&nbsp;availability&nbsp;to conduct the study and host monitoring visits
+(Note: If additional planned site personnel were not present at the SIV, 
+
+list their names in&nbsp;the comments)",,,,700,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt01mai,MAI,,,,710,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt01num,Number,,,,720,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt01cmt,ecpt01cmt,,,,730,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt02,"Principal investigator overall responsibility for conduct of the study",,,,740,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt02mai,MAI,,,,750,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt02num,Number,,,,760,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt02cmt,ecpt02cmt,,,,770,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt03,"Study timelines and enrollment expectations",,,,780,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt03mai,MAI,,,,790,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt03num,Number,,,,800,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt03cmt,ecpt03cmt,,,,810,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt04,"Informed consent process for obtaining and documenting",,,,820,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt04mai,MAI,,,,830,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt04num,Number,,,,840,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt04cmt,ecpt04cmt,,,,850,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt05,"Protocol key elements (i.e., study objectives/purpose, endpoints, eligibility criteria, 
+
+visit&nbsp;schedule, surgical procedure, device management/accountability, risks)&nbsp;
+(Note: Describe questions that require follow-up in comments)",,,,860,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt05mai,MAI,,,,870,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt05num,Number,,,,880,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt05cmt,ecpt05cmt,,,,890,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt06,"Study device and treatment/implant procedure",,,,900,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt06mai,MAI,,,,910,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt06num,Number,,,,920,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt06cmt,ecpt06cmt,,,,930,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt07,"Imaging requirements and core lab procedures",,,,940,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt07mai,MAI,,,,950,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt07num,Number,,,,960,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt07cmt,ecpt07cmt,,,,970,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,dev01,"Secure storage of study devices and supplies
+(Note any site-specific requirements in comments)",,,,1160,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,dev01mai,MAI,,,,1170,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,dev01num,Number,,,,1180,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,dev01cmt,dev01cmt,,,,1190,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,dev02,"Study device and supply accountability records, including documentation of study&nbsp;
+
+device receipt, use, return, and disposal",,,,1200,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,dev02mai,MAI,,,,1210,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,dev02num,Number,,,,1220,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,dev02cmt,dev02cmt,,,,1230,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,dev03,"Supervision and control of study devices",,,,1240,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,dev03mai,MAI,,,,1250,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,dev03num,Number,,,,1260,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,dev03cmt,dev03cmt,,,,1290,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf01,"Single site location for all study-related activities
+(Note: If the study will be conducted in multiple locations for this site, list activities 
+
+performed at&nbsp;each location in comments)",,,,1320,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf01mai,MAI,,,,1330,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf01num,Number,,,,1340,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf01cmt,spf01cmt,,,,1350,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf02,"Investigator has adequate facilities and equipment to conduct the study, including 
+
+access&nbsp;to emergency equipment/facilities",,,,1360,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf02mai,MAI,,,,1370,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf02num,Number,,,,1380,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf02cmt,spf02cmt,,,,1390,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf03,"Storage of all study documentation in a secure drawer/cabinet or within a locked 
+
+office&nbsp;
+(Note: Note storage location and name(s) of personnel with access in comments)",,,,1400,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf03mai,MAI,,,,1410,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf03num,Number,,,,1420,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf03cmt,spf03cmt,,,,1430,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf04,"Bright Research&#39;s role as CRO and agent of sponsor",,,,1440,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf04mai,MAI,,,,1450,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf04num,Number,,,,1460,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf04cmt,spf04cmt,,,,1470,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf05,"Signature/Delegation Log completion requirements",,,,1480,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf05mai,MAI,,,,1490,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf05num,Number,,,,1500,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf05cmt,spf05cmt,,,,1510,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf06,"Site personnel training requirements and documentation on the Clinical Training 
+
+Record",,,,1520,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf06mai,MAI,,,,1530,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf06num,Number,,,,1540,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf06cmt,spf06cmt,,,,1550,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf07,"Site payment process and frequency",,,,1560,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf07mai,MAI,,,,1570,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf07num,Number,,,,1580,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf07cmt,spf07cmt,,,,1590,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf08,"Site agreed to maintain a subject identification log
+(Note: This is not required for the study, but encourage the site to maintain a log per
+
+ISO 14155 7.5.2)",,,,1600,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf08mai,MAI,,,,1610,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf08num,Number,,,,1620,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf08cmt,spf08cmt,,,,1630,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf09,"Site expressed no concerns about the items covered during the SIV",,,,1640,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf09mai,MAI,,,,1650,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf09num,Number,,,,1660,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf09cmt,spf09cmt,,,,1670,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,spf10,"Investigator and staff appear qualified and able to perform the study according
+
+to the&nbsp;protocol in the opinion of personnel conducting the SIV",,,,1680,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,spf10mai,MAI,,,,1690,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,spf10num,Number,,,,1700,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spf10cmt,spf10cmt,,,,1710,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,doccmt,Comments,,,,440,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Checkbox,doccmtcb,None,,,,450,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,safecmt,Comments,,,,540,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Checkbox,safecmtcb,None,,,,550,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,regcmt,Comments,,,,680,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Checkbox,regcmtcb,None,,,,690,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt10,"Monitoring procedures and expectations for site visit preparation (e.g., 
+
+up-to-date&nbsp;data&nbsp;entry, queries addressed)",,,,1060,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt10mai,MAI,,,,1070,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt10num,Number,,,,1080,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt10cmt,ecpt10cmt,,,,1090,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecptcmt,Comments,,,,1140,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Checkbox,ecptcmtcb,None,,,,1150,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,devcmt,Comments,,,,1300,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Checkbox,devcmtcb,None,,,,1310,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,spfcmt,Comments,,,,1720,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Checkbox,spfcmtcb,None,,,,1730,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,"Date/Time Precision",VISITSDT,"Start date",,"Visit Start Date",,30,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+SICHK,"Date/Time Precision",VISITEDT,"End date",,"Visit End Date",,40,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+SICHK,Text,SIVSITEID,"Site Number",,,,10,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Text,SIVSITENAME,"Site Name",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Text,ADDRESS,"Physical address where visit occurred
+
+(record for onsite visits only)",,,,70,,Soft,,No,1,,60,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt08,"Eligibility review committee process",,,,980,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt08mai,MAI,,,,990,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt08num,Number,,,,1000,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt08cmt,ecpt08cmt,,,,1010,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt09,"Randomization process and documentation",,,,1020,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt09mai,MAI,,,,1030,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt09num,Number,,,,1040,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt09cmt,ecpt09cmt,,,,1050,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Radio,ecpt11,"Early subject withdrawal procedure and lost-to-follow-up documentation
+
+requirements (e.g., three documented attempts or as per protocol)",,,,1100,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SICHK,Checkbox,ecpt11mai,MAI,,,,1110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,ecpt11num,Number,,,,1120,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,ecpt11cmt,ecpt11cmt,,,,1130,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Text,dev03a,"Person responsible",,,,1270,,Optional,,No,1,,10,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Text,dev03b,"Site SOP #&#39;s (if applicable)",,,,1280,,Optional,,No,1,,10,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Checkbox,reg03mai,MAI,,,,650,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Number,reg03num,Number,,,,660,,Soft,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SICHK,Memo,reg03cmt,reg03cmt,,,,670,,Soft,,No,1,,75,2000,,,,,,,,,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Text,SDLNAME,Name:,,,,10,,Soft,,No,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,SDLSIGN,Signature,,,,20,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,"Date/Time Precision",SDLSDT,"Start date:",,,,40,,Soft,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+SIGNEL,"Date/Time Precision",SDLEDT,"End date:",,,,50,,Optional,,No,1,,,,,,,,,,,,,,,,,No,No,No,No,No,No,No,No,,,,,,,No,,,,,,,,,,,
+SIGNEL,Checkbox,INCEXC,"Assess inclusion and exclusion criteria",,,,100,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,CNST,"Obtain informed consent",,,,70,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,CRF,"Case Report Form (CRF) completion",,,,90,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,OTHER,Other,,,,230,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,ADMINST,Administrative,,,,220,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,ADMINIP,"Administration of Investigational product (IP)",,,,190,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,IPACCNT,"IP accountability",,,,200,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Text,OTHSPEC,Specify:,,,,240,,Soft,,No,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,SRCDOC,"Source document collection",,,,80,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,PE,"Physical examination",,,,110,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,MDHX,"Medical history",,,,120,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,MDHXCONMED,"Medical history/Concomitant medication",,,,130,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,VITALS,"Collect vital signs",,,,140,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,RVWVITALS,"Review vital signs and labs for clinical significance",,,,150,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,LABSPEC,"Laboratory specimen collection/shipping",,,,160,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,AEINQ,"AE inquiry and reporting",,,,170,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,AESAE,"AE/SAE interpretation (severity/relationship to IP)",,,,180,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Checkbox,REGDOC,"Regulatory document maintenance",,,,210,,Optional,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Text,INITIALS,Initials:,,,,30,,Soft,,No,1,,30,5,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Text,SDLENTERER,"Data entry completed by:",,,,250,,Soft,,No,1,,30,200,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNEL,Dropdown,SDLROLE,"Study role:",,,,60,,Soft,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNLOG,Text,SDLSITEID,"Site Number:",,,,10,,Optional,,No,1,,15,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNLOG,Text,SDLSITENAME,"Site Name:",,,,20,,Optional,,No,1,,30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SIGNLOG,Radio,FNLSIGN,"Is the Signature / Delegation Log ready for final signature?",,,,30,,Soft,,No,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Horizontal,,,,,,,,,,
+SITESTAT,Dropdown,sitestatus,"Site Status",,,,10,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SITESTAT,Date/Time,statusdate,"Status Date",,,,20,,Optional,,No,1,,,,,,,,,,,,,Yes,No,No,,Yes,No,,,Yes,,,,,,,,,,No,,,,,,,,,,,
+SITESTAT,Memo,statusmemo,Comments,,,,30,,Optional,,No,1,,50,500,,,,,,,,,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+spd,Date/Time,user_study_train_log_sign,"Training Log Signed",,,,10,,Optional,,No,1,,,,,,,,,,,,,Yes,No,No,,No,No,,,No,,,,,,,,,,No,,,,,,,,,,,
+SPNRPERS,Text,spnsrname,"Sponsor/CRO Representatives Attendee Name",,,,10,,Soft,,No,1,,50,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SPNRPERS,Dropdown,spnsrroles,Role,,,,20,,Soft,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+STDYPERS,Text,sspname,"Site Study Personnel Attendee Name",,,,10,,Soft,,No,1,,50,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+STDYPERS,Dropdown,ssproles,Role,,,,20,,Soft,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SUBJECON,Text,PRTCLNO,"Protocol Number:",,,,10,,Optional,,No,1,"<p>Autopopulated field; for protocol number reference only.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SUBJECON,Text,current_visit,"Current Visit:",,,,20,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SUBJECON,Text,INITIALS,"Subject Initials:",,,,30,,Hard,,Yes,1,,30,3,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+SUBJECON,Radio,CNSNTYN,"Do you consent to enroll in the study?",,,,40,,Hard,,Yes,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vertical,,,,,,,,,,
+TEMPLATE,Date/Time,archiveddatetime,"Archived Date/Time Field",,,,20,,"Auto Query",,No,1,,,,,,,,,,,,,No,Yes,No,,No,No,,,Yes,,,,,,,,,,No,,,,,,,,,,,
+TEMPLATE,Text,current_visit,"Current Visit:",,,,10,,Optional,,Yes,1,"<p>Display interval.</p>",30,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+TEMPLATE,Dropdown,sitelab,"Site Lab Selection:",,,,30,,Optional,,No,1,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+TEMPLATE,Date/Time,STARTM,"Start time:",,,,40,,"Auto Query",,Yes,1,,,,,,,,,,,,,No,Yes,No,,No,No,,,Yes,,,,,,,,,,No,,,,,,,,,,,
+TEMPLATE,Date/Time,STOPTM,"Stop time:",,,,50,,"Auto Query",,Yes,1,,,,,,,,,,,,,No,Yes,No,,No,No,,,Yes,,,,,,,,,,No,,,,,,,,,,,
+TEMPLATE,Number,DURMIN,Duration:,<p>minutes</p>,,,60,,Optional,,No,1,,5,8,,,,,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+TEMPLATE,Text,SDLINIT,Initials,,,,70,,Soft,,No,1,,5,100,,No,No,No,No,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
