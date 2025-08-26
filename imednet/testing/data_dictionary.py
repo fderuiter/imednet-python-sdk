@@ -23,6 +23,10 @@ def _load_dd_from_options(
     if zip_file:
         return DataDictionaryLoader.from_zip(zip_file)
     if all([business_logic_file, choices_file, forms_file, questions_file]):
+        assert business_logic_file is not None
+        assert choices_file is not None
+        assert forms_file is not None
+        assert questions_file is not None
         return DataDictionaryLoader.from_files(
             business_logic=business_logic_file,
             choices=choices_file,
