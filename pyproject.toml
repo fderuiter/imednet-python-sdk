@@ -59,6 +59,8 @@ python-dotenv = "^1.1.1"
 typer = "^0.16.1"
 python-json-logger = "^3.3.0"
 urllib3 = "^2.5.0"
+thefuzz = "^0.22.1"
+python-levenshtein = "^0.27.1"
 
 [tool.poetry.extras]
 pandas = ["pandas"]
