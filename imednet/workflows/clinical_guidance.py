@@ -30,7 +30,9 @@ class ClinicalGuidanceWorkflow:
             A dictionary where keys are role names and values are their descriptions.
         """
         return {
-            "Principal Investigator/Investigator": "Data entry and approval from the study site’s side",
+            "Principal Investigator/Investigator": (
+                "Data entry and approval from the study site’s side"
+            ),
             "Data Coordinator/Site Coordinator": "Data entry from the study site’s side",
             "Monitor/CRA": "Data clarification and verification",
             "Project Manager": "Data overview and formation of requests on supplies of IP",
@@ -53,13 +55,34 @@ class ClinicalGuidanceWorkflow:
             A list of strings, each describing a requirement.
         """
         return [
-            "The PI is responsible for providing adequate training and supervision to all delegates.",
-            "Delegation of study-related tasks must be appropriate to the individual's education, training, and experience.",
-            "A list of appropriately qualified persons with delegated trial-related duties must be maintained.",
-            "Tasks of a clinical or medical nature must be delegated to staff with appropriate education, experience, and licensing.",
-            "The Delegation of Authority log should be completed at study initiation and kept up-to-date.",
-            "Corrections to the delegation of authority record must follow 'good clinical practice' procedures.",
-            "The delegation of authority record may be maintained electronically in a 21 CFR Part 11 compliant system.",
+            (
+                "The PI is responsible for providing adequate training and supervision to "
+                "all delegates."
+            ),
+            (
+                "Delegation of study-related tasks must be appropriate to the "
+                "individual's education, training, and experience."
+            ),
+            (
+                "A list of appropriately qualified persons with delegated trial-related duties "
+                "must be maintained."
+            ),
+            (
+                "Tasks of a clinical or medical nature must be delegated to staff with "
+                "appropriate education, experience, and licensing."
+            ),
+            (
+                "The Delegation of Authority log should be completed at study initiation and "
+                "kept up-to-date."
+            ),
+            (
+                "Corrections to the delegation of authority record must follow "
+                "'good clinical practice' procedures."
+            ),
+            (
+                "The delegation of authority record may be maintained electronically in a "
+                "21 CFR Part 11 compliant system."
+            ),
         ]
 
     @staticmethod
@@ -76,7 +99,10 @@ class ClinicalGuidanceWorkflow:
             "Identification and specification of authorized source data originators.",
             "Creation of data element identifiers to facilitate examination of the audit trail.",
             "Define methods for capturing source data into the eCRF (manual or electronic).",
-            "Clarify clinical investigator responsibilities for reviewing and retaining electronic data.",
+            (
+                "Clarify clinical investigator responsibilities for reviewing and retaining "
+                "electronic data."
+            ),
             "Ensure proper use and description of computerized systems in clinical investigations.",
         ]
 

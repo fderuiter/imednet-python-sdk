@@ -33,9 +33,7 @@ class RecordGenerator:
         self.sdk = sdk
         self.data_dictionary = data_dictionary
         self.faker = Faker()
-        self.forms: Dict[str, dict] = {
-            form["Form Key"]: form for form in data_dictionary.forms
-        }
+        self.forms: Dict[str, dict] = {form["Form Key"]: form for form in data_dictionary.forms}
         self.questions: Dict[str, List[Dict[str, str]]] = {}
         for question in data_dictionary.questions:
             self.questions.setdefault(question["Form"], []).append(question)

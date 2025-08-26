@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from imednet.models.users import User, Role
+from imednet.models.users import Role, User
 from imednet.workflows.clinical_guidance import ClinicalGuidanceWorkflow
 
 
