@@ -12,9 +12,10 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, Union
 
-from .config import Config, load_config
+from .config import Config, load_config_from_env
 from .core.async_client import AsyncClient
 from .core.client import Client
+from .core.client_factory import ClientFactory
 from .core.context import Context
 from .core.retry import RetryPolicy
 from .endpoints.base import BaseEndpoint
@@ -46,24 +47,8 @@ from .models.variables import Variable
 from .models.visits import Visit
 
 # Import workflow classes
-from .workflows.data_extraction import DataExtractionWorkflow
+from .workflows import Workflows
 from .workflows.job_poller import JobPoller
-from .workflows.query_management import QueryManagementWorkflow
-from .workflows.record_mapper import RecordMapper
-from .workflows.record_update import RecordUpdateWorkflow
-from .workflows.subject_data import SubjectDataWorkflow
-
-
-class Workflows:
-    """Namespace for accessing workflow classes."""
-
-    def __init__(self, sdk_instance: "ImednetSDK"):
-        self.data_extraction = DataExtractionWorkflow(sdk_instance)
-        self.query_management = QueryManagementWorkflow(sdk_instance)
-        self.record_mapper = RecordMapper(sdk_instance)
-        self.record_update = RecordUpdateWorkflow(sdk_instance)
-        self.subject_data = SubjectDataWorkflow(sdk_instance)
-
 
 # Mapping of attribute names to their endpoint classes
 _ENDPOINT_REGISTRY: dict[str, type[BaseEndpoint]] = {
@@ -120,37 +105,15 @@ class ImednetSDK:
         retry_policy: RetryPolicy | None = None,
         enable_async: bool = False,
     ) -> None:
-        """Initialize the SDK with credentials and configuration."""
-
-        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
-
+        config = load_config_from_env(api_key=api_key, security_key=security_key, base_url=base_url)
         self._validate_env(config)
-
         self.config = config
-        self._api_key = config.api_key
-        self._security_key = config.security_key
-        self._base_url = config.base_url
 
         self.ctx = Context()
-
-        self._client = Client(
-            api_key=config.api_key,
-            security_key=config.security_key,
-            base_url=config.base_url,
-            timeout=timeout,
-            retries=retries,
-            backoff_factor=backoff_factor,
-            retry_policy=retry_policy,
-        )
+        self._client = ClientFactory.create(config, timeout, retries, backoff_factor, retry_policy)
         self._async_client = (
-            AsyncClient(
-                api_key=config.api_key,
-                security_key=config.security_key,
-                base_url=config.base_url,
-                timeout=timeout,
-                retries=retries,
-                backoff_factor=backoff_factor,
-                retry_policy=retry_policy,
+            ClientFactory.create(
+                config, timeout, retries, backoff_factor, retry_policy, is_async=True
             )
             if enable_async
             else None
@@ -179,7 +142,10 @@ class ImednetSDK:
             self._async_client.retry_policy = policy
 
     def _init_endpoints(self) -> None:
-        """Instantiate endpoint clients."""
+        """Instantiate and attach endpoint clients."""
+        assert isinstance(self._client, Client)
+        assert isinstance(self._async_client, AsyncClient) or self._async_client is None
+
         for attr, endpoint_cls in _ENDPOINT_REGISTRY.items():
             setattr(self, attr, endpoint_cls(self._client, self.ctx, self._async_client))
 
@@ -199,8 +165,10 @@ class ImednetSDK:
 
     def close(self) -> None:
         """Close the client connection and free resources."""
-        self._client.close()
+        if isinstance(self._client, Client):
+            self._client.close()
         if self._async_client is not None:
+            assert isinstance(self._async_client, AsyncClient)
             try:
                 loop = asyncio.get_running_loop()
             except RuntimeError:
@@ -214,8 +182,10 @@ class ImednetSDK:
 
     async def aclose(self) -> None:
         if self._async_client is not None:
+            assert isinstance(self._async_client, AsyncClient)
             await self._async_client.aclose()
-        self._client.close()
+        if isinstance(self._client, Client):
+            self._client.close()
 
     def set_default_study(self, study_key: str) -> None:
         """

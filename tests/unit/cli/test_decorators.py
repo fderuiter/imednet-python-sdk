@@ -10,9 +10,9 @@ def test_decorator_handles_unexpected_error(monkeypatch: pytest.MonkeyPatch) -> 
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
-    sdk = MagicMock()
-    sdk.studies.list.side_effect = RuntimeError("boom")
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=sdk))
+    sdk_mock = MagicMock()
+    sdk_mock.studies.list.side_effect = RuntimeError("boom")
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
 
     result = runner.invoke(cli.app, ["studies", "list"])
 

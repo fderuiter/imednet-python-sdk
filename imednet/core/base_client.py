@@ -13,7 +13,7 @@ except Exception:  # pragma: no cover - optional dependency
     Tracer = None
 import httpx
 
-from imednet.config import load_config
+from imednet.config import load_config_from_env
 from imednet.utils import sanitize_base_url
 from imednet.utils.json_logging import configure_json_logging
 
@@ -36,7 +36,7 @@ class BaseClient:
         log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
     ) -> None:
-        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
+        config = load_config_from_env(api_key=api_key, security_key=security_key, base_url=base_url)
 
         self.base_url = sanitize_base_url(config.base_url or self.DEFAULT_BASE_URL)
 

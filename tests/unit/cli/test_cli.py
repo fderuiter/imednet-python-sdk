@@ -24,57 +24,59 @@ def runner() -> CliRunner:
     return CliRunner()
 
 
-@pytest.fixture()
-def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
-    """Provide a mocked SDK and patch get_sdk."""
-    mock_sdk = MagicMock()
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=mock_sdk))
-    return mock_sdk
-
-
 def test_missing_env_vars(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
     monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 1
-    assert "IMEDNET_API_KEY" in result.stdout
+    assert "Error: API key and security key are required" in result.stdout
 
 
-def test_studies_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.studies.list.return_value = ["study1"]
+def test_studies_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.studies.list.return_value = ["study1"]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 0
-    sdk.studies.list.assert_called_once_with()
+    sdk_mock.studies.list.assert_called_once_with()
     assert "study1" in result.stdout
 
 
-def test_studies_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.studies.list.side_effect = ApiError("boom")
+def test_studies_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.studies.list.side_effect = ApiError("boom")
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
 
 
-def test_sdk_closed_after_command(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.studies.list.return_value = []
+def test_sdk_closed_after_command(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.studies.list.return_value = []
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 0
-    sdk.close.assert_called_once()
+    sdk_mock.close.assert_called_once()
 
 
-def test_multiple_invocations_close_sdk(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.studies.list.return_value = []
+def test_multiple_invocations_close_sdk(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.studies.list.return_value = []
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     first = runner.invoke(cli.app, ["studies", "list"])
     second = runner.invoke(cli.app, ["studies", "list"])
     assert first.exit_code == 0 and second.exit_code == 0
-    assert sdk.close.call_count == 2
+    assert sdk_mock.close.call_count == 2
 
 
-def test_sites_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.sites.list.return_value = ["site1"]
+def test_sites_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.sites.list.return_value = ["site1"]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["sites", "list", "STUDY"])
     assert result.exit_code == 0
-    sdk.sites.list.assert_called_once_with("STUDY")
+    sdk_mock.sites.list.assert_called_once_with("STUDY")
     assert "site1" in result.stdout
 
 
@@ -83,42 +85,53 @@ def test_sites_list_missing_argument(runner: CliRunner) -> None:
     assert result.exit_code != 0
 
 
-def test_sites_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.sites.list.side_effect = ApiError("fail")
+def test_sites_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.sites.list.side_effect = ApiError("fail")
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["sites", "list", "STUDY"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
 
 
-def test_subjects_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.subjects.list.return_value = ["S1"]
+def test_subjects_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.subjects.list.return_value = ["S1"]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(
         cli.app,
         ["subjects", "list", "STUDY", "--filter", "subject_status=Screened"],
     )
     assert result.exit_code == 0
-    sdk.subjects.list.assert_called_once_with("STUDY", subject_status="Screened")
+    sdk_mock.subjects.list.assert_called_once_with("STUDY", subject_status="Screened")
 
 
-def test_subjects_list_invalid_filter(runner: CliRunner, sdk: MagicMock) -> None:
+def test_subjects_list_invalid_filter(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["subjects", "list", "STUDY", "--filter", "badfilter"])
     assert result.exit_code == 1
     assert "Invalid filter format" in result.stdout
-    sdk.subjects.list.assert_not_called()
+    sdk_mock.subjects.list.assert_not_called()
 
 
-def test_subjects_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.subjects.list.side_effect = ApiError("boom")
+def test_subjects_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.subjects.list.side_effect = ApiError("boom")
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["subjects", "list", "STUDY"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
 
 
-def test_extract_records_calls_workflow(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_extract_records_calls_workflow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     workflow = MagicMock()
-    monkeypatch.setattr(cli, "DataExtractionWorkflow", MagicMock(return_value=workflow))
+    monkeypatch.setattr(
+        "imednet.workflows.data_extraction.DataExtractionWorkflow",
+        MagicMock(return_value=workflow),
+    )
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     workflow.extract_records_by_criteria.return_value = [1]
     result = runner.invoke(
         cli.app,
@@ -133,126 +146,137 @@ def test_extract_records_calls_workflow(
     )
 
 
-def test_extract_records_api_error(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_extract_records_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     """CLI surfaces workflow errors."""
+    sdk_mock = MagicMock()
     workflow = MagicMock()
     workflow.extract_records_by_criteria.side_effect = ApiError("fail")
-    monkeypatch.setattr(cli, "DataExtractionWorkflow", MagicMock(return_value=workflow))
+    monkeypatch.setattr(
+        "imednet.workflows.data_extraction.DataExtractionWorkflow",
+        MagicMock(return_value=workflow),
+    )
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["workflows", "extract-records", "STUDY"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
 
 
-def test_records_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+def test_records_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1, "subjectKey": "S1"}
-    sdk.records.list.return_value = [rec]
+    sdk_mock.records.list.return_value = [rec]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 0
-    sdk.records.list.assert_called_once_with("STUDY")
+    sdk_mock.records.list.assert_called_once_with("STUDY")
     assert "S1" in result.stdout
 
 
-def test_records_list_output_csv(runner: CliRunner, sdk: MagicMock) -> None:
+def test_records_list_output_csv(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1}
-    sdk.records.list.return_value = [rec]
+    sdk_mock.records.list.return_value = [rec]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     with runner.isolated_filesystem():
         result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "csv"])
         assert result.exit_code == 0
         assert os.path.exists("records.csv")
-    sdk.records.list.assert_called_once_with("STUDY")
+    sdk_mock.records.list.assert_called_once_with("STUDY")
 
 
-def test_records_list_output_json(runner: CliRunner, sdk: MagicMock) -> None:
+def test_records_list_output_json(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1}
-    sdk.records.list.return_value = [rec]
+    sdk_mock.records.list.return_value = [rec]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     with runner.isolated_filesystem():
         result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "json"])
         assert result.exit_code == 0
         assert os.path.exists("records.json")
-    sdk.records.list.assert_called_once_with("STUDY")
+    sdk_mock.records.list.assert_called_once_with("STUDY")
 
 
-def test_records_list_no_records(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.records.list.return_value = []
+def test_records_list_no_records(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.records.list.return_value = []
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 0
     assert "No records found." in result.stdout
-    sdk.records.list.assert_called_once_with("STUDY")
+    sdk_mock.records.list.assert_called_once_with("STUDY")
 
 
-def test_records_list_invalid_output(runner: CliRunner, sdk: MagicMock) -> None:
+def test_records_list_invalid_output(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "txt"])
     assert result.exit_code == 1
     assert "Invalid output format" in result.stdout
-    sdk.records.list.assert_not_called()
+    sdk_mock.records.list.assert_not_called()
 
 
-def test_records_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.records.list.side_effect = ApiError("oops")
+def test_records_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.records.list.side_effect = ApiError("oops")
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
 
 
-def test_export_parquet_calls_helper(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_parquet_calls_helper(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_parquet", func)
-    monkeypatch.setattr(cli, "export_to_parquet", export_mod.export_to_parquet)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     result = runner.invoke(cli.app, ["export", "parquet", "STUDY", "out.parquet"])
     assert result.exit_code == 0
-    func.assert_called_once_with(sdk, "STUDY", "out.parquet")
+    func.assert_called_once_with(sdk_mock, "STUDY", "out.parquet")
 
 
-def test_export_csv_calls_helper(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_csv_calls_helper(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_csv", func)
-    monkeypatch.setattr(cli, "export_to_csv", export_mod.export_to_csv)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["export", "csv", "STUDY", "out.csv"])
     assert result.exit_code == 0
-    func.assert_called_once_with(sdk, "STUDY", "out.csv")
+    func.assert_called_once_with(sdk_mock, "STUDY", "out.csv")
 
 
-def test_export_excel_calls_helper(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_excel_calls_helper(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_excel", func)
-    monkeypatch.setattr(cli, "export_to_excel", export_mod.export_to_excel)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["export", "excel", "STUDY", "out.xlsx"])
     assert result.exit_code == 0
-    func.assert_called_once_with(sdk, "STUDY", "out.xlsx")
+    func.assert_called_once_with(sdk_mock, "STUDY", "out.xlsx")
 
 
-def test_export_json_calls_helper(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_json_calls_helper(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_json", func)
-    monkeypatch.setattr(cli, "export_to_json", export_mod.export_to_json)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["export", "json", "STUDY", "out.json"])
     assert result.exit_code == 0
-    func.assert_called_once_with(sdk, "STUDY", "out.json")
+    func.assert_called_once_with(sdk_mock, "STUDY", "out.json")
 
 
 def test_export_sql_calls_helper_non_sqlite(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    sdk_mock = MagicMock()
     func = MagicMock()
     form_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_sql", func)
     monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
-    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "postgres"
@@ -275,7 +299,7 @@ def test_export_sql_calls_helper_non_sqlite(
     )
     assert result.exit_code == 0
     func.assert_called_once_with(
-        sdk,
+        sdk_mock,
         "STUDY",
         "table",
         "postgresql://",
@@ -285,14 +309,14 @@ def test_export_sql_calls_helper_non_sqlite(
 
 
 def test_export_sql_sqlite_uses_by_form(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    sdk_mock = MagicMock()
     form_func = MagicMock()
     sql_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
     monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
-    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "sqlite"
@@ -315,7 +339,7 @@ def test_export_sql_sqlite_uses_by_form(
     )
     assert result.exit_code == 0
     form_func.assert_called_once_with(
-        sdk,
+        sdk_mock,
         "STUDY",
         "sqlite://",
         variable_whitelist=["A"],
@@ -324,15 +348,15 @@ def test_export_sql_sqlite_uses_by_form(
 
 
 def test_export_sql_sqlite_single_table(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    sdk_mock = MagicMock()
     form_func = MagicMock()
     single = ["--single-table"]
     sql_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
     monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
-    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "sqlite"
@@ -356,7 +380,7 @@ def test_export_sql_sqlite_single_table(
     )
     assert result.exit_code == 0
     sql_func.assert_called_once_with(
-        sdk,
+        sdk_mock,
         "STUDY",
         "table",
         "sqlite://",
@@ -366,18 +390,15 @@ def test_export_sql_sqlite_single_table(
     form_func.assert_not_called()
 
 
-def test_export_sql_long_format(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_sql_long_format(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     long_func = MagicMock()
     form_func = MagicMock()
     sql_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_long_sql", long_func)
     monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
     monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
-    monkeypatch.setattr(cli, "export_to_long_sql", export_mod.export_to_long_sql)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
-    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "sqlite"
@@ -389,23 +410,22 @@ def test_export_sql_long_format(
         ["export", "sql", "STUDY", "table", "sqlite://", "--long-format"],
     )
     assert result.exit_code == 0
-    long_func.assert_called_once_with(sdk, "STUDY", "table", "sqlite://")
+    long_func.assert_called_once_with(sdk_mock, "STUDY", "table", "sqlite://")
     sql_func.assert_not_called()
     form_func.assert_not_called()
 
 
 def test_export_sql_long_format_overrides_single(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    sdk_mock = MagicMock()
     long_func = MagicMock()
     form_func = MagicMock()
     sql_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_long_sql", long_func)
     monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
     monkeypatch.setattr(export_mod, "export_to_sql", sql_func)
-    monkeypatch.setattr(cli, "export_to_long_sql", export_mod.export_to_long_sql)
-    monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
-    monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     engine = MagicMock()
     engine.dialect.name = "postgres"
@@ -425,7 +445,7 @@ def test_export_sql_long_format_overrides_single(
         ],
     )
     assert result.exit_code == 0
-    long_func.assert_called_once_with(sdk, "STUDY", "tbl", "postgresql://")
+    long_func.assert_called_once_with(sdk_mock, "STUDY", "tbl", "postgresql://")
     sql_func.assert_not_called()
     form_func.assert_not_called()
 
@@ -461,72 +481,90 @@ def test_export_sql_missing_sqlalchemy(runner: CliRunner, monkeypatch: pytest.Mo
     assert "SQLAlchemy is required" in result.stdout
 
 
-def test_subject_data_calls_workflow(
-    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_subject_data_calls_workflow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
     workflow = MagicMock()
-    monkeypatch.setattr(cli, "SubjectDataWorkflow", MagicMock(return_value=workflow))
+    monkeypatch.setattr(
+        "imednet.workflows.subject_data.SubjectDataWorkflow", MagicMock(return_value=workflow)
+    )
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     workflow.get_all_subject_data.return_value = MagicMock()
     result = runner.invoke(cli.app, ["subject-data", "STUDY", "SUBJ"])
     assert result.exit_code == 0
     workflow.get_all_subject_data.assert_called_once_with("STUDY", "SUBJ")
 
 
-def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.queries.list.return_value = ["Q1"]
+def test_queries_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.queries.list.return_value = ["Q1"]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
     assert result.exit_code == 0
-    sdk.queries.list.assert_called_once_with("STUDY")
+    sdk_mock.queries.list.assert_called_once_with("STUDY")
     assert "Found 1 queries:" in result.stdout
     assert "Q1" in result.stdout
 
 
-def test_queries_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.queries.list.return_value = []
+def test_queries_list_empty(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.queries.list.return_value = []
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
     assert result.exit_code == 0
     assert "No queries found." in result.stdout
 
 
-def test_variables_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.variables.list.return_value = ["V1"]
+def test_variables_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.variables.list.return_value = ["V1"]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["variables", "list", "STUDY"])
     assert result.exit_code == 0
-    sdk.variables.list.assert_called_once_with("STUDY")
+    sdk_mock.variables.list.assert_called_once_with("STUDY")
     assert "Found 1 variables:" in result.stdout
     assert "V1" in result.stdout
 
 
-def test_variables_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.variables.list.return_value = []
+def test_variables_list_empty(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.variables.list.return_value = []
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["variables", "list", "STUDY"])
     assert result.exit_code == 0
     assert "No variables found." in result.stdout
 
 
-def test_record_revisions_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.record_revisions.list.return_value = ["R1"]
+def test_record_revisions_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.record_revisions.list.return_value = ["R1"]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
     assert result.exit_code == 0
-    sdk.record_revisions.list.assert_called_once_with("STUDY")
+    sdk_mock.record_revisions.list.assert_called_once_with("STUDY")
     assert "Found 1 record revisions:" in result.stdout
     assert "R1" in result.stdout
 
 
-def test_record_revisions_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.record_revisions.list.return_value = []
+def test_record_revisions_list_empty(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    sdk_mock.record_revisions.list.return_value = []
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
     assert result.exit_code == 0
     assert "No record revisions found." in result.stdout
 
 
-def test_jobs_status_success(runner: CliRunner, sdk: MagicMock) -> None:
+def test_jobs_status_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["jobs", "status", "STUDY", "BATCH"])
     assert result.exit_code == 0
-    sdk.get_job.assert_called_once_with("STUDY", "BATCH")
+    sdk_mock.get_job.assert_called_once_with("STUDY", "BATCH")
 
 
-def test_jobs_wait_success(runner: CliRunner, sdk: MagicMock) -> None:
+def test_jobs_wait_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    sdk_mock = MagicMock()
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["jobs", "wait", "STUDY", "BATCH"])
     assert result.exit_code == 0
-    sdk.poll_job.assert_called_once_with("STUDY", "BATCH", interval=5, timeout=300)
+    sdk_mock.poll_job.assert_called_once_with("STUDY", "BATCH", interval=5, timeout=300)

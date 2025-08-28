@@ -1,6 +1,6 @@
 import pytest
 
-from imednet.cli import parse_filter_args
+from imednet.cli.utils import parse_filter_args
 
 
 def test_parse_filter_args_none():

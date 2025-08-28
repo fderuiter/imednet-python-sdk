@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Renamed `load_config` to `load_config_from_env` for clarity.
+- Refactored `ImednetSDK` to use a `ClientFactory` for client creation.
+- Moved `Workflows` class to `imednet/workflows/__init__.py`.
+- Added `--version` option to the CLI.
+- Refactored the CLI to use a main `cli` function.
 
 ## [0.2.0] - 2025-08-18
 - Documented pagination utilities to fix missing toctree reference.
@@ -60,8 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    microsecond precision.
 - Added workflow to sanitize PR bodies and comments of `chatgpt.com/codex` links.
 - Extracted common logic from `Client` and `AsyncClient` into new `HTTPClientBase`.
-- Added `imednet.config` module with `load_config` helper for reading credentials.
-- Documented `imednet.config` module with `Config` dataclass and `load_config` function.
+- Added `imednet.config` module with `load_config_from_env` helper for reading credentials.
+- Documented `imednet.config` module with `Config` dataclass and `load_config_from_env` function.
 - Documented long-format SQL export and added example script.
 - Introduced `RetryPolicy` abstraction for configuring request retries.
 - Added tests for retry policy handling of response results and non-RequestError exceptions.

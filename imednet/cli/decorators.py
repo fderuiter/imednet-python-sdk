@@ -22,13 +22,14 @@ def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
 
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        from . import get_sdk  # local import so tests can monkeypatch
-
-        sdk = get_sdk()
         try:
+            sdk = ImednetSDK()
             return func(sdk, *args, **kwargs)
         except typer.Exit:  # allow commands to exit early
             raise
+        except ValueError as exc:
+            print(f"[bold red]Error:[/bold red] {exc}")
+            raise typer.Exit(code=1)
         except ApiError as exc:
             print(f"[bold red]API Error:[/bold red] {exc}")
             raise typer.Exit(code=1)
@@ -36,9 +37,10 @@ def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
             print(f"[bold red]Unexpected error:[/bold red] {exc}")
             raise typer.Exit(code=1)
         finally:
-            close = getattr(sdk, "close", None)
-            if callable(close):
-                close()
+            if "sdk" in locals():
+                close = getattr(sdk, "close", None)
+                if callable(close):
+                    close()
 
     wrapper.__signature__ = sig.replace(parameters=wrapper_params)  # type: ignore[attr-defined]
 

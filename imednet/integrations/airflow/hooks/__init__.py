@@ -2,7 +2,7 @@
 
 from airflow.hooks.base import BaseHook
 
-from ....config import load_config
+from ....config import load_config_from_env
 from ....sdk import ImednetSDK
 
 
@@ -33,7 +33,7 @@ class ImednetHook(BaseHook):
         password = getattr(conn, "password", None)
         if not isinstance(password, str):
             password = None
-        config = load_config(
+        config = load_config_from_env(
             api_key=extras.get("api_key") or login,
             security_key=extras.get("security_key") or password,
             base_url=base_url,
