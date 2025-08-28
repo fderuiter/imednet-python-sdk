@@ -39,7 +39,7 @@ def extract_records(
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
-    from .. import DataExtractionWorkflow
+    from ...workflows.data_extraction import DataExtractionWorkflow
 
     workflow = DataExtractionWorkflow(sdk)
 

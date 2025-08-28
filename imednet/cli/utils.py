@@ -5,33 +5,11 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import typer
 from rich import print
 
-from ..config import load_config
+from ..config import load_config_from_env
 from ..sdk import ImednetSDK
 
 # Shared CLI argument for specifying a study key
 STUDY_KEY_ARG = typer.Argument(..., help="The key identifying the study.")
-
-
-def get_sdk() -> ImednetSDK:
-    """Initialize and return the SDK instance using :func:`load_config`."""
-    try:
-        config = load_config()
-    except ValueError:
-        print(
-            "[bold red]Error:[/bold red] IMEDNET_API_KEY and "
-            "IMEDNET_SECURITY_KEY environment variables must be set."
-        )
-        raise typer.Exit(code=1)
-
-    try:
-        return ImednetSDK(
-            api_key=config.api_key,
-            security_key=config.security_key,
-            base_url=config.base_url,
-        )
-    except Exception as exc:  # pragma: no cover - defensive
-        print(f"[bold red]Error initializing SDK:[/bold red] {exc}")
-        raise typer.Exit(code=1)
 
 
 def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, Any]]:

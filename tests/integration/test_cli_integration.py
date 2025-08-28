@@ -15,7 +15,7 @@ def test_cli_rejects_missing_credentials(monkeypatch: pytest.MonkeyPatch) -> Non
     result = runner.invoke(cli.app, ["studies", "list"])
 
     assert result.exit_code == 1
-    assert "IMEDNET_API_KEY" in result.stdout
+    assert "API key and security key are required" in result.stdout
 
 
 def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -23,14 +23,14 @@ def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
 
-    sdk = MagicMock()
-    sdk.studies.list.return_value = ["study1"]
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=sdk))
+    sdk_mock = MagicMock()
+    sdk_mock.studies.list.return_value = ["study1"]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
 
     result = runner.invoke(cli.app, ["studies", "list"])
 
     assert result.exit_code == 0
-    sdk.studies.list.assert_called_once_with()
+    sdk_mock.studies.list.assert_called_once_with()
     assert "study1" in result.stdout
 
 
@@ -39,17 +39,17 @@ def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
 
+    sdk_mock = MagicMock()
     record = MagicMock()
     record.model_dump.return_value = {"id": 1}
-    sdk = MagicMock()
-    sdk.records.list.return_value = [record]
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=sdk))
+    sdk_mock.records.list.return_value = [record]
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
 
     with runner.isolated_filesystem():
         result = runner.invoke(cli.app, ["records", "list", "ST", "--output", "csv"])
         assert result.exit_code == 0
         assert Path("records.csv").exists()
-    sdk.records.list.assert_called_once_with("ST")
+    sdk_mock.records.list.assert_called_once_with("ST")
 
 
 def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -57,10 +57,14 @@ def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
 
+    sdk_mock = MagicMock()
     workflow = MagicMock()
     workflow.extract_records_by_criteria.return_value = [1]
-    monkeypatch.setattr(cli, "DataExtractionWorkflow", MagicMock(return_value=workflow))
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=MagicMock()))
+    monkeypatch.setattr(
+        "imednet.workflows.data_extraction.DataExtractionWorkflow",
+        MagicMock(return_value=workflow),
+    )
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
 
     result = runner.invoke(
         cli.app,
@@ -90,7 +94,7 @@ def test_invalid_filter_string(monkeypatch: pytest.MonkeyPatch) -> None:
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=MagicMock()))
+    monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=MagicMock()))
 
     result = runner.invoke(cli.app, ["subjects", "list", "ST", "--filter", "badfilter"])
 

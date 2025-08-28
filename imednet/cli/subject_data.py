@@ -15,7 +15,7 @@ def subject_data(
     subject_key: str = typer.Argument(..., help="The key identifying the subject."),
 ) -> None:
     """Retrieve all data for a single subject."""
-    from . import SubjectDataWorkflow
+    from ..workflows.subject_data import SubjectDataWorkflow
 
     workflow = SubjectDataWorkflow(sdk)
     data = workflow.get_all_subject_data(study_key, subject_key)

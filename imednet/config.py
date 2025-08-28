@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
-__all__ = ["Config", "load_config"]
+__all__ = ["Config", "load_config_from_env"]
 
 
 @dataclass(frozen=True)
@@ -14,7 +14,7 @@ class Config:
     base_url: Optional[str] = None
 
 
-def load_config(
+def load_config_from_env(
     api_key: Optional[str] = None,
     security_key: Optional[str] = None,
     base_url: Optional[str] = None,

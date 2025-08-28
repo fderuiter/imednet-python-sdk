@@ -4,7 +4,7 @@ Command Line Interface (CLI)
 The package installs an ``imednet`` command that wraps common SDK features. The CLI
 reads authentication details from environment variables. See :doc:`configuration`
 for the full list and details on using an ``.env`` file. The CLI calls
-:func:`imednet.config.load_config` under the hood to read these values.
+:func:`imednet.config.load_config_from_env` under the hood to read these values.
 
 Command Hierarchy
 

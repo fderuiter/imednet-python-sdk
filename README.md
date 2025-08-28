@@ -75,11 +75,11 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 ### Synchronous Example
 
 ```python
-from imednet import ImednetSDK, load_config
+from imednet import ImednetSDK, load_config_from_env
 from imednet.utils import configure_json_logging
 
 configure_json_logging()
-cfg = load_config()
+cfg = load_config_from_env()
 sdk = ImednetSDK(
     api_key=cfg.api_key,
     security_key=cfg.security_key,
@@ -92,13 +92,13 @@ print(sdk.studies.list())
 
 ```python
 import asyncio
-from imednet import AsyncImednetSDK, load_config
+from imednet import AsyncImednetSDK, load_config_from_env
 from imednet.utils import configure_json_logging
 
 
 async def main() -> None:
     configure_json_logging()
-    cfg = load_config()
+    cfg = load_config_from_env()
     async with AsyncImednetSDK(
         api_key=cfg.api_key,
         security_key=cfg.security_key,
@@ -119,8 +119,8 @@ See [docs/async_quick_start.rst](docs/async_quick_start.rst) for more details.
 The SDK and CLI read credentials from environment variables such as
 `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. See
 [configuration](docs/configuration.rst) for the complete list, optional
-settings, and `.env` support. Use `imednet.config.load_config()` to access these
-values in your code.
+settings, and `.env` support. Use `imednet.config.load_config_from_env()` to access
+these values in your code.
 
 ---
 

@@ -1,6 +1,6 @@
 from importlib import metadata as _metadata
 
-from .config import Config, load_config
+from .config import Config, load_config_from_env
 from .core.base_client import BaseClient
 from .core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 from .sdk import AsyncImednetSDK, ImednetSDK
@@ -17,7 +17,7 @@ __all__ = [
     "RetryState",
     "DefaultRetryPolicy",
     "Config",
-    "load_config",
+    "load_config_from_env",
     "__version__",
 ]
 
