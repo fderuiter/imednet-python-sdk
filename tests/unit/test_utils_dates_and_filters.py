@@ -40,6 +40,11 @@ def test_parse_iso_datetime_invalid() -> None:
         parse_iso_datetime("not-a-date")
 
 
+def test_parse_iso_datetime_nanos() -> None:
+    dt = parse_iso_datetime("2024-01-01T12:30:00.1234567Z")
+    assert dt.microsecond == 123456
+
+
 def test_parse_iso_datetime_none() -> None:
     with pytest.raises(AttributeError):
         parse_iso_datetime(None)  # type: ignore[arg-type]
