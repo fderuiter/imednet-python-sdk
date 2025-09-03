@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from imednet.core.exceptions import ApiError
+from imednet.models.error import ApiErrorDetail
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 from imednet.models.sites import Site
@@ -55,7 +56,7 @@ def test_register_subjects_missing_subject() -> None:
 def test_register_subjects_missing_subject_api_error() -> None:
     sdk = MagicMock()
     sdk.sites.list.return_value = [Site(site_name="SITE")]
-    sdk.subjects.get.side_effect = ApiError("oops")
+    sdk.subjects.get.side_effect = ApiError(ApiErrorDetail(detail="oops"))
     wf = RegisterSubjectsWorkflow(sdk)
     req = RegisterSubjectRequest(form_key="F", site_name="SITE", subject_key="SUBJ")
 

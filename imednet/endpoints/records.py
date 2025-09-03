@@ -9,7 +9,10 @@ from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache, validate_record_data
 
+from .registry import register_endpoint
 
+
+@register_endpoint("records")
 class RecordsEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with records (eCRF instances) in an iMedNet study.

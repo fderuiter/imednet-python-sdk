@@ -16,6 +16,7 @@ from tenacity import (
     wait_exponential,
 )
 
+from ..models.error import ApiErrorDetail
 from .base_client import Tracer
 from .exceptions import (
     ApiError,
@@ -86,15 +87,17 @@ class RequestExecutor:
         if response.is_error:
             status = response.status_code
             try:
-                body = response.json()
+                error_data = response.json()
+                error_detail = ApiErrorDetail.from_json(error_data)
             except Exception:
-                body = response.text
-            exc_cls = STATUS_TO_ERROR.get(status)
-            if exc_cls:
-                raise exc_cls(body)
+                error_detail = ApiErrorDetail(detail=response.text)
+
+            exc_cls = STATUS_TO_ERROR.get(status, ApiError)
             if 500 <= status < 600:
-                raise ServerError(body)
-            raise ApiError(body)
+                exc_cls = ServerError
+
+            raise exc_cls(error_detail, status)
+
         return response
 
     def _get_span_cm(self, method: str, url: str):

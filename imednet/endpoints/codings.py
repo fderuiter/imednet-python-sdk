@@ -4,7 +4,10 @@ from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.codings import Coding
 
+from .registry import register_endpoint
 
+
+@register_endpoint("codings")
 class CodingsEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with codings (medical coding) in an iMedNet study.

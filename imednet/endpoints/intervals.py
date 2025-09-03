@@ -4,7 +4,10 @@ from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.intervals import Interval
 
+from .registry import register_endpoint
 
+
+@register_endpoint("intervals")
 class IntervalsEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with intervals (visit definitions) in an iMedNet study.

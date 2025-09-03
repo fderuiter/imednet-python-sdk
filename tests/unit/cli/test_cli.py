@@ -10,6 +10,7 @@ from typer.testing import CliRunner
 import imednet.cli as cli
 from imednet.core.exceptions import ApiError
 from imednet.integrations import export as export_mod
+from imednet.models.error import ApiErrorDetail
 
 
 @pytest.fixture(autouse=True)
@@ -44,7 +45,7 @@ def test_studies_list_success(runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 
 def test_studies_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     sdk_mock = MagicMock()
-    sdk_mock.studies.list.side_effect = ApiError("boom")
+    sdk_mock.studies.list.side_effect = ApiError(ApiErrorDetail(detail="boom"))
     monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 1
@@ -87,7 +88,7 @@ def test_sites_list_missing_argument(runner: CliRunner) -> None:
 
 def test_sites_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     sdk_mock = MagicMock()
-    sdk_mock.sites.list.side_effect = ApiError("fail")
+    sdk_mock.sites.list.side_effect = ApiError(ApiErrorDetail(detail="fail"))
     monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["sites", "list", "STUDY"])
     assert result.exit_code == 1
@@ -117,7 +118,7 @@ def test_subjects_list_invalid_filter(runner: CliRunner, monkeypatch: pytest.Mon
 
 def test_subjects_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     sdk_mock = MagicMock()
-    sdk_mock.subjects.list.side_effect = ApiError("boom")
+    sdk_mock.subjects.list.side_effect = ApiError(ApiErrorDetail(detail="boom"))
     monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["subjects", "list", "STUDY"])
     assert result.exit_code == 1
@@ -150,7 +151,7 @@ def test_extract_records_api_error(runner: CliRunner, monkeypatch: pytest.Monkey
     """CLI surfaces workflow errors."""
     sdk_mock = MagicMock()
     workflow = MagicMock()
-    workflow.extract_records_by_criteria.side_effect = ApiError("fail")
+    workflow.extract_records_by_criteria.side_effect = ApiError(ApiErrorDetail(detail="fail"))
     monkeypatch.setattr(
         "imednet.workflows.data_extraction.DataExtractionWorkflow",
         MagicMock(return_value=workflow),
@@ -220,7 +221,7 @@ def test_records_list_invalid_output(runner: CliRunner, monkeypatch: pytest.Monk
 
 def test_records_list_api_error(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     sdk_mock = MagicMock()
-    sdk_mock.records.list.side_effect = ApiError("oops")
+    sdk_mock.records.list.side_effect = ApiError(ApiErrorDetail(detail="oops"))
     monkeypatch.setattr("imednet.cli.decorators.ImednetSDK", MagicMock(return_value=sdk_mock))
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 1
@@ -308,9 +309,7 @@ def test_export_sql_calls_helper_non_sqlite(
     )
 
 
-def test_export_sql_sqlite_uses_by_form(
-    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_sql_sqlite_uses_by_form(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     sdk_mock = MagicMock()
     form_func = MagicMock()
     sql_func = MagicMock()
@@ -347,9 +346,7 @@ def test_export_sql_sqlite_uses_by_form(
     )
 
 
-def test_export_sql_sqlite_single_table(
-    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_sql_sqlite_single_table(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
     sdk_mock = MagicMock()
     form_func = MagicMock()
     single = ["--single-table"]

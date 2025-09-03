@@ -47,8 +47,7 @@ def cli(
         is_eager=True,
         help="Show the application's version and exit.",
     )
-) -> None:
-    ...
+) -> None: ...
 
 
 app.add_typer(studies.app)

@@ -4,7 +4,10 @@ from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.subjects import Subject
 
+from .registry import register_endpoint
 
+
+@register_endpoint("subjects")
 class SubjectsEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with subjects in an iMedNet study.

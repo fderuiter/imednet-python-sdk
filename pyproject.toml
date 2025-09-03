@@ -61,6 +61,7 @@ python-json-logger = "^3.3.0"
 urllib3 = "^2.5.0"
 thefuzz = "^0.22.1"
 python-levenshtein = "^0.27.1"
+deprecation = "^2.1.0"
 
 [tool.poetry.extras]
 pandas = ["pandas"]

@@ -4,6 +4,7 @@ import pytest
 from imednet.core.client import Client
 from imednet.core.exceptions import ServerError
 from imednet.core.retry import DefaultRetryPolicy, RetryState
+from imednet.models.error import ApiErrorDetail
 
 
 def test_default_policy_request_error():
@@ -49,7 +50,7 @@ def test_custom_policy(monkeypatch):
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
         calls["count"] += 1
         if calls["count"] < 3:
-            raise ServerError({}, status_code=500)
+            raise ServerError(ApiErrorDetail(detail="Internal Server Error"), status_code=500)
         return httpx.Response(200, json={"ok": True})
 
     monkeypatch.setattr(client._executor, "send", request)
