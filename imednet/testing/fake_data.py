@@ -14,14 +14,20 @@ faker = Faker()
 
 
 def _timestamp() -> str:
-    """Return a formatted datetime string."""
+    """Generate a fake timestamp string in the format 'YYYY-MM-DD HH:MM:SS'.
 
+    Returns:
+        A formatted datetime string.
+    """
     return faker.date_time().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def fake_subject() -> Dict[str, Any]:
-    """Return a fake subject payload."""
+    """Generate a dictionary representing a fake subject API payload.
 
+    Returns:
+        A dictionary with fake subject data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "subjectId": faker.random_int(min=1, max=10000),
@@ -46,8 +52,11 @@ def fake_subject() -> Dict[str, Any]:
 
 
 def fake_site() -> Dict[str, Any]:
-    """Return a fake site payload."""
+    """Generate a dictionary representing a fake site API payload.
 
+    Returns:
+        A dictionary with fake site data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "siteId": faker.random_int(min=1, max=10000),
@@ -59,8 +68,11 @@ def fake_site() -> Dict[str, Any]:
 
 
 def fake_interval() -> Dict[str, Any]:
-    """Return a fake interval payload."""
+    """Generate a dictionary representing a fake interval API payload.
 
+    Returns:
+        A dictionary with fake interval data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "intervalId": faker.random_int(min=1, max=10000),
@@ -93,8 +105,11 @@ def fake_interval() -> Dict[str, Any]:
 
 
 def fake_query() -> Dict[str, Any]:
-    """Return a fake query payload."""
+    """Generate a dictionary representing a fake query API payload.
 
+    Returns:
+        A dictionary with fake query data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "subjectId": faker.random_int(min=1, max=10000),
@@ -122,8 +137,14 @@ def fake_query() -> Dict[str, Any]:
 
 
 def _fake_value(var_type: str) -> Any:
-    """Return a fake value matching ``var_type``."""
+    """Generate a fake value for a given variable type.
 
+    Args:
+        var_type: The type of the variable (e.g., "int", "float", "bool").
+
+    Returns:
+        A fake value of the specified type.
+    """
     var_type = var_type.lower()
     if var_type in {"int", "integer", "number"}:
         return faker.random_int(min=0, max=100)
@@ -135,12 +156,17 @@ def _fake_value(var_type: str) -> Any:
 
 
 def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
-    """Return a fake record payload.
+    """Generate a dictionary representing a fake record API payload.
 
-    When ``schema`` is provided variable metadata is used to generate typed
-    ``recordData`` values.
+    If a schema is provided, the `recordData` will be generated with values
+    that match the variable types in the schema.
+
+    Args:
+        schema: An optional schema cache to use for generating typed data.
+
+    Returns:
+        A dictionary with fake record data.
     """
-
     if schema and schema._form_variables:
         form_key = faker.random_element(list(schema._form_variables))
         variables = schema.variables_for_form(form_key)
@@ -213,8 +239,11 @@ def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
 
 
 def fake_form() -> Dict[str, Any]:
-    """Return a fake form payload."""
+    """Generate a dictionary representing a fake form API payload.
 
+    Returns:
+        A dictionary with fake form data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "formId": faker.random_int(min=1, max=10000),
@@ -237,8 +266,11 @@ def fake_form() -> Dict[str, Any]:
 
 
 def fake_variable() -> Dict[str, Any]:
-    """Return a fake variable payload."""
+    """Generate a dictionary representing a fake variable API payload.
 
+    Returns:
+        A dictionary with fake variable data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "variableId": faker.random_int(min=1, max=10000),
@@ -260,8 +292,15 @@ def fake_variable() -> Dict[str, Any]:
 
 
 def fake_forms_for_cache(num_forms: int = 1, study_key: Optional[str] = None) -> List[Form]:
-    """Return a list of :class:`~imednet.models.forms.Form` objects for caching."""
+    """Generate a list of `Form` model objects for use in tests.
 
+    Args:
+        num_forms: The number of forms to generate.
+        study_key: An optional study key to assign to the forms.
+
+    Returns:
+        A list of `Form` model objects.
+    """
     forms: List[Form] = []
     for _ in range(num_forms):
         data = fake_form()
@@ -276,8 +315,16 @@ def fake_variables_for_cache(
     vars_per_form: int = 1,
     study_key: Optional[str] = None,
 ) -> List[Variable]:
-    """Return a list of :class:`~imednet.models.variables.Variable` objects."""
+    """Generate a list of `Variable` model objects for a given list of forms.
 
+    Args:
+        forms: The list of forms to generate variables for.
+        vars_per_form: The number of variables to generate for each form.
+        study_key: An optional study key to assign to the variables.
+
+    Returns:
+        A list of `Variable` model objects.
+    """
     variables: List[Variable] = []
     for form in forms:
         for _ in range(vars_per_form):
@@ -292,8 +339,11 @@ def fake_variables_for_cache(
 
 
 def fake_visit() -> Dict[str, Any]:
-    """Return a fake visit payload."""
+    """Generate a dictionary representing a fake visit API payload.
 
+    Returns:
+        A dictionary with fake visit data.
+    """
     return {
         "visitId": faker.random_int(min=1, max=10000),
         "studyKey": faker.bothify(text="??????"),
@@ -314,8 +364,11 @@ def fake_visit() -> Dict[str, Any]:
 
 
 def fake_coding() -> Dict[str, Any]:
-    """Return a fake coding payload."""
+    """Generate a dictionary representing a fake coding API payload.
 
+    Returns:
+        A dictionary with fake coding data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "siteName": faker.company(),
@@ -340,8 +393,11 @@ def fake_coding() -> Dict[str, Any]:
 
 
 def fake_record_revision() -> Dict[str, Any]:
-    """Return a fake record revision payload."""
+    """Generate a dictionary representing a fake record revision API payload.
 
+    Returns:
+        A dictionary with fake record revision data.
+    """
     return {
         "studyKey": faker.bothify(text="??????"),
         "recordRevisionId": faker.random_int(min=1, max=10000),
@@ -365,8 +421,11 @@ def fake_record_revision() -> Dict[str, Any]:
 
 
 def fake_study() -> Dict[str, Any]:
-    """Return a fake study payload."""
+    """Generate a dictionary representing a fake study API payload.
 
+    Returns:
+        A dictionary with fake study data.
+    """
     return {
         "sponsorKey": faker.lexify(text="????????"),
         "studyKey": faker.bothify(text="??????"),
@@ -380,8 +439,11 @@ def fake_study() -> Dict[str, Any]:
 
 
 def fake_job() -> Dict[str, Any]:
-    """Return a fake job payload."""
+    """Generate a dictionary representing a fake job API payload.
 
+    Returns:
+        A dictionary with fake job data.
+    """
     return {
         "jobId": faker.uuid4(),
         "batchId": faker.lexify(text="????????"),
@@ -393,8 +455,11 @@ def fake_job() -> Dict[str, Any]:
 
 
 def fake_user() -> Dict[str, Any]:
-    """Return a fake user payload."""
+    """Generate a dictionary representing a fake user API payload.
 
+    Returns:
+        A dictionary with fake user data.
+    """
     return {
         "userId": faker.uuid4(),
         "login": faker.user_name(),

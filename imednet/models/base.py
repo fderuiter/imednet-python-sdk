@@ -11,56 +11,68 @@ from imednet.models.json_base import JsonModel
 
 
 class SortField(JsonModel):
-    """Sorting information for a field in a paginated response."""
+    """Defines the sorting criteria for a field in a paginated API response."""
 
-    property: str = Field(..., description="Property to sort by")
-    direction: str = Field(..., description="Sort direction (ASC or DESC)")
-
-    pass
+    property: str = Field(
+        ...,
+        description="The name of the property to sort by.",
+    )
+    direction: str = Field(
+        ...,
+        description="The sort direction, either 'ASC' for ascending or 'DESC' for descending.",
+    )
 
 
 class Pagination(JsonModel):
-    """Pagination information in an API response."""
+    """Contains pagination details from a paginated API response."""
 
-    current_page: int = Field(0, alias="currentPage")
-    size: int = Field(25, alias="size")
-    total_pages: int = Field(0, alias="totalPages")
-    total_elements: int = Field(0, alias="totalElements")
-    sort: List[SortField] = Field(default_factory=list)
-
-    pass
+    current_page: int = Field(0, alias="currentPage", description="The current page number.")
+    size: int = Field(25, alias="size", description="The number of items per page.")
+    total_pages: int = Field(0, alias="totalPages", description="The total number of pages.")
+    total_elements: int = Field(
+        0,
+        alias="totalElements",
+        description="The total number of items across all pages.",
+    )
+    sort: List[SortField] = Field(
+        default_factory=list,
+        description="A list of sorting criteria applied to the response.",
+    )
 
 
 class Error(JsonModel):
-    """Error information in an API response."""
+    """Represents an error object in an API response."""
 
-    code: str = Field("", description="Error code")
-    message: str = Field("", description="Error message")
-    details: Dict[str, Any] = Field(default_factory=dict)
-
-    pass
+    code: str = Field("", description="A machine-readable error code.")
+    message: str = Field("", description="A human-readable error message.")
+    details: Dict[str, Any] = Field(
+        default_factory=dict, description="A dictionary of additional error details."
+    )
 
 
 class Metadata(JsonModel):
-    """Metadata information in an API response."""
+    """Contains metadata about an API response."""
 
-    status: str = Field("", description="Response status")
-    method: str = Field("", description="HTTP method")
-    path: str = Field("", description="Request path")
-    timestamp: datetime
-    error: Error = Field(default_factory=lambda: Error(code="", message=""))
-
-    pass
+    status: str = Field("", description="The status of the response (e.g., 'OK', 'ERROR').")
+    method: str = Field("", description="The HTTP method of the request (e.g., 'GET', 'POST').")
+    path: str = Field("", description="The path of the API request.")
+    timestamp: datetime = Field(
+        ..., description="The timestamp of when the response was generated."
+    )
+    error: Error = Field(
+        default_factory=lambda: Error(code="", message=""),
+        description="Details of the error, if one occurred.",
+    )
 
 
 T = TypeVar("T")
 
 
 class ApiResponse(JsonModel, Generic[T]):
-    """Generic API response model."""
+    """A generic container for all API responses."""
 
-    metadata: Metadata
-    pagination: Optional[Pagination] = None
-    data: T
-
-    pass
+    metadata: Metadata = Field(..., description="Metadata about the API response.")
+    pagination: Optional[Pagination] = Field(
+        None, description="Pagination information, if the response is paginated."
+    )
+    data: T = Field(..., description="The main data payload of the response.")

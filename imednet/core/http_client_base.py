@@ -30,6 +30,19 @@ class HTTPClientBase(BaseClient):
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
+        """Initializes the HTTPClientBase.
+
+        Args:
+            api_key: The API key for authentication.
+            security_key: The security key for authentication.
+            base_url: The base URL of the iMednet API.
+            timeout: The timeout for HTTP requests.
+            retries: The number of times to retry a failed request.
+            backoff_factor: The backoff factor for retries.
+            log_level: The logging level.
+            tracer: The OpenTelemetry tracer to use.
+            retry_policy: The retry policy to use.
+        """
         super().__init__(
             api_key=api_key,
             security_key=security_key,
@@ -50,6 +63,15 @@ class HTTPClientBase(BaseClient):
         )
 
     def _create_client(self, api_key: str, security_key: str) -> httpx.Client | httpx.AsyncClient:
+        """Create and configure the underlying httpx client.
+
+        Args:
+            api_key: The API key.
+            security_key: The security key.
+
+        Returns:
+            An instance of `httpx.Client` or `httpx.AsyncClient`.
+        """
         return self.HTTPX_CLIENT_CLS(
             base_url=self.base_url,
             headers={
@@ -63,13 +85,29 @@ class HTTPClientBase(BaseClient):
 
     @property
     def retry_policy(self) -> RetryPolicy:
+        """The retry policy used for requests."""
         return cast(RetryPolicy, self._executor.retry_policy)
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
+        """Set the retry policy.
+
+        Args:
+            policy: The new retry policy.
+        """
         self._executor.retry_policy = policy
 
     def _request(
         self, method: str, path: str, **kwargs: Any
     ) -> Awaitable[httpx.Response] | httpx.Response:
+        """Make a request using the request executor.
+
+        Args:
+            method: The HTTP method.
+            path: The URL path.
+            **kwargs: Additional keyword arguments to pass to the executor.
+
+        Returns:
+            A response or an awaitable response.
+        """
         return self._executor(method, path, **kwargs)

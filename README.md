@@ -32,22 +32,26 @@ reimplementing HTTP logic.
 
 ## Features
 
-- Simple, consistent interface for API calls
-- Automatic pagination across endpoints
-- Pydantic models for requests and responses
-- Workflow helpers for data extraction and mapping
-- Pandas and CSV utilities
-- Optional in-memory caching of study metadata
-- Structured JSON logging and OpenTelemetry tracing
-- Async client and command line interface
+- **Typed API Endpoints**: A simple, consistent interface for all iMednet API endpoints, with Pydantic models for request and response validation.
+- **Automatic Pagination**: Hassle-free iteration over paginated API resources.
+- **Intelligent Workflows**: High-level workflows for common tasks like data extraction, record mapping, and query management.
+- **Data Export Utilities**: Easily export study data to various formats, including pandas DataFrames, CSV, Excel, and SQL databases.
+- **Asynchronous Support**: A fully asynchronous client for high-performance applications.
+- **Command-Line Interface**: A powerful CLI for interacting with the iMednet API from the terminal.
+- **Robust Error Handling**: A comprehensive exception hierarchy for handling API and network errors.
+- **Configurable Retries**: A flexible retry mechanism with exponential backoff.
+- **Observability**: Structured JSON logging and OpenTelemetry tracing for monitoring and debugging.
 
 ---
 
 ## Architecture
 
-The SDK is organized around a core HTTP client layer, endpoint wrappers that model
-the iMednet API, workflow helpers that combine multiple endpoint calls, and a CLI
-built on top of those pieces.
+The SDK is organized into several layers, each with a distinct responsibility:
+
+- **Client**: The core HTTP client layer, responsible for authentication, request signing, and retry logic.
+- **Endpoints**: A set of endpoint wrappers that model the iMednet API, providing a clean, consistent interface for each resource.
+- **Workflows**: High-level helpers that orchestrate multiple endpoint calls to perform complex tasks, such as data extraction and mapping.
+- **CLI**: A command-line interface built on top of the workflows and endpoints, providing a convenient way to interact with the API from the terminal.
 
 ```mermaid
 graph TD
@@ -74,21 +78,35 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 
 ### Synchronous Example
 
+This example demonstrates how to initialize the SDK and fetch a list of studies.
+The `load_config_from_env` function conveniently loads your API keys from
+environment variables.
+
 ```python
 from imednet import ImednetSDK, load_config_from_env
 from imednet.utils import configure_json_logging
 
+# Configure structured logging (optional)
 configure_json_logging()
+
+# Load credentials from environment variables
 cfg = load_config_from_env()
+
+# Initialize the SDK
 sdk = ImednetSDK(
     api_key=cfg.api_key,
     security_key=cfg.security_key,
     base_url=cfg.base_url,
 )
+
+# Fetch and print the list of studies
 print(sdk.studies.list())
 ```
 
 ### Asynchronous Example
+
+For high-performance applications, the SDK provides an async client. This
+example shows how to use it within an async context manager.
 
 ```python
 import asyncio
@@ -97,17 +115,24 @@ from imednet.utils import configure_json_logging
 
 
 async def main() -> None:
+    # Configure structured logging (optional)
     configure_json_logging()
+
+    # Load credentials from environment variables
     cfg = load_config_from_env()
+
+    # Initialize the async SDK within a context manager
     async with AsyncImednetSDK(
         api_key=cfg.api_key,
         security_key=cfg.security_key,
         base_url=cfg.base_url,
     ) as sdk:
+        # Fetch and print the list of studies asynchronously
         print(await sdk.studies.async_list())
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 See [docs/async_quick_start.rst](docs/async_quick_start.rst) for more details.
@@ -126,19 +151,52 @@ these values in your code.
 
 ## CLI Usage
 
-The package installs an `imednet` command with subcommands for studies, sites,
-subjects, records, jobs, queries and more. Use `imednet --help` to explore all
-options.
+The package installs the `imednet` command-line tool, which provides a convenient
+way to interact with the iMednet API from your terminal. Use `imednet --help` to
+explore the available commands and options.
 
-Example of exporting a subset of variables:
+### List all studies
 
 ```bash
-imednet export sql MY_STUDY table sqlite:///data.db --vars AGE,SEX --forms 10,20
+imednet studies list
+```
+
+### Export records to a CSV file
+
+This example exports all records from the `MY_STUDY` study to a CSV file,
+using variable labels for the column headers.
+
+```bash
+imednet export csv MY_STUDY records.csv --use-labels
+```
+
+### Export a subset of variables to a SQL database
+
+This example exports only the `AGE` and `SEX` variables from forms `10` and `20`
+to a SQLite database.
+
+```bash
+imednet export sql MY_STUDY records_table sqlite:///data.db --vars AGE,SEX --forms 10,20
 ```
 
 When the connection string uses SQLite, the command splits the output into one
-table per form to avoid the 2000 column limit. Pass ``--single-table`` to
-disable this behaviour. See ``docs/cli.rst`` for full examples.
+table per form to avoid the 2000 column limit. Pass `--single-table` to
+disable this behaviour. See `docs/cli.rst` for more examples.
+
+---
+
+## SDK Modules
+
+The SDK is organized into the following main modules:
+
+- `imednet.sdk`: The main entry point for the SDK, providing the `ImednetSDK` and `AsyncImednetSDK` classes.
+- `imednet.core`: The core HTTP client, authentication, and retry logic.
+- `imednet.models`: Pydantic models for all API resources.
+- `imednet.endpoints`: Wrappers for each of the iMednet API endpoints.
+- `imednet.workflows`: High-level workflows that orchestrate multiple API calls to perform complex tasks.
+- `imednet.cli`: The command-line interface.
+- `imednet.utils`: General utility functions.
+- `imednet.validation`: Schema validation and data dictionary loading.
 
 ---
 

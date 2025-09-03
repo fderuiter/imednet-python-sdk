@@ -21,11 +21,14 @@ def _to_sql_with_chunking(
     if_exists: str,
     **kwargs: Any,
 ) -> None:
-    """Write ``df`` to ``table`` splitting columns when using SQLite.
+    """Write a DataFrame to a SQL table, handling SQLite's column limit by chunking.
 
-    SQLite limits tables to ``MAX_SQLITE_COLUMNS`` columns. When the DataFrame
-    exceeds this, the data is written to multiple tables suffixed with
-    ``_part1``, ``_part2`` and so on.
+    Args:
+        df: The DataFrame to write.
+        table: The name of the SQL table.
+        engine: The SQLAlchemy engine to use.
+        if_exists: How to behave if the table already exists.
+        **kwargs: Additional keyword arguments to pass to `to_sql`.
     """
     if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
         for i, start in enumerate(range(0, len(df.columns), MAX_SQLITE_COLUMNS), start=1):
@@ -49,7 +52,19 @@ def _records_df(
     variable_whitelist: Optional[List[str]] = None,
     form_whitelist: Optional[List[int]] = None,
 ) -> pd.DataFrame:
-    """Return a DataFrame of study records with duplicate columns removed."""
+    """Fetch records and return them as a DataFrame, handling duplicate columns.
+
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        use_labels_as_columns: If `True`, use variable labels as column
+            headers; otherwise, use variable names.
+        variable_whitelist: An optional list of variable names to include.
+        form_whitelist: An optional list of form IDs to include.
+
+    Returns:
+        A pandas DataFrame of the records.
+    """
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
         study_key,
         use_labels_as_columns=use_labels_as_columns,
@@ -72,11 +87,13 @@ def export_to_parquet(
 ) -> None:
     """Export study records to a Parquet file.
 
-    Parameters
-    ----------
-    use_labels_as_columns:
-        When ``True``, variable labels are used for column names instead of
-        variable names.
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output Parquet file.
+        use_labels_as_columns: If `True`, use variable labels as column
+            headers; otherwise, use variable names.
+        **kwargs: Additional keyword arguments to pass to `to_parquet`.
     """
     df = _records_df(
         sdk,
@@ -96,11 +113,13 @@ def export_to_csv(
 ) -> None:
     """Export study records to a CSV file.
 
-    Parameters
-    ----------
-    use_labels_as_columns:
-        When ``True``, variable labels are used for column names instead of
-        variable names.
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output CSV file.
+        use_labels_as_columns: If `True`, use variable labels as column
+            headers; otherwise, use variable names.
+        **kwargs: Additional keyword arguments to pass to `to_csv`.
     """
     df = _records_df(
         sdk,
@@ -120,11 +139,13 @@ def export_to_excel(
 ) -> None:
     """Export study records to an Excel workbook.
 
-    Parameters
-    ----------
-    use_labels_as_columns:
-        When ``True``, variable labels are used for column names instead of
-        variable names.
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output Excel file.
+        use_labels_as_columns: If `True`, use variable labels as column
+            headers; otherwise, use variable names.
+        **kwargs: Additional keyword arguments to pass to `to_excel`.
     """
     df = _records_df(
         sdk,
@@ -144,11 +165,13 @@ def export_to_json(
 ) -> None:
     """Export study records to a JSON file.
 
-    Parameters
-    ----------
-    use_labels_as_columns:
-        When ``True``, variable labels are used for column names instead of
-        variable names.
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output JSON file.
+        use_labels_as_columns: If `True`, use variable labels as column
+            headers; otherwise, use variable names.
+        **kwargs: Additional keyword arguments to pass to `to_json`.
     """
     df = _records_df(
         sdk,
@@ -172,11 +195,17 @@ def export_to_sql(
 ) -> None:
     """Export study records to a SQL table.
 
-    Parameters
-    ----------
-    use_labels_as_columns:
-        When ``True``, variable labels are used for column names instead of
-        variable names.
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        table: The name of the SQL table.
+        conn_str: The SQLAlchemy connection string.
+        if_exists: How to behave if the table already exists.
+        use_labels_as_columns: If `True`, use variable labels as column
+            headers; otherwise, use variable names.
+        variable_whitelist: An optional list of variable names to include.
+        form_whitelist: An optional list of form IDs to include.
+        **kwargs: Additional keyword arguments to pass to `to_sql`.
     """
     from sqlalchemy import create_engine
 
@@ -208,7 +237,19 @@ def export_to_sql_by_form(
     form_whitelist: Optional[List[int]] = None,
     **kwargs: Any,
 ) -> None:
-    """Export records to separate SQL tables for each form."""
+    """Export records to separate SQL tables for each form.
+
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        conn_str: The SQLAlchemy connection string.
+        if_exists: How to behave if the table already exists.
+        use_labels_as_columns: If `True`, use variable labels as column
+            headers; otherwise, use variable names.
+        variable_whitelist: An optional list of variable names to include.
+        form_whitelist: An optional list of form IDs to include.
+        **kwargs: Additional keyword arguments to pass to `to_sql`.
+    """
     from sqlalchemy import create_engine
 
     mapper = RecordMapper(sdk)
@@ -261,7 +302,18 @@ def export_to_long_sql(
     *,
     chunk_size: int = 1000,
 ) -> None:
-    """Export records to a normalized long-format SQL table."""
+    """Export records to a normalized long-format SQL table.
+
+    This format is useful for data analysis and is more normalized than the
+    wide format.
+
+    Args:
+        sdk: An initialized ImednetClient instance.
+        study_key: The key of the study.
+        table_name: The name of the SQL table.
+        conn_str: The SQLAlchemy connection string.
+        chunk_size: The number of rows to write to the database at a time.
+    """
     from sqlalchemy import create_engine
 
     engine = create_engine(conn_str)

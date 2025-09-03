@@ -18,6 +18,11 @@ class Workflows:
     """Namespace for accessing workflow classes."""
 
     def __init__(self, sdk_instance: "ImednetSDK"):
+        """Initializes the Workflows namespace.
+
+        Args:
+            sdk_instance: An instance of the ImednetSDK.
+        """
         from .data_extraction import DataExtractionWorkflow
         from .query_management import QueryManagementWorkflow
         from .record_mapper import RecordMapper

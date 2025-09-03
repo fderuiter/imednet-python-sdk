@@ -21,9 +21,21 @@ class AsyncClient(HTTPClientBase):
     IS_ASYNC = True
 
     async def __aenter__(self) -> "AsyncClient":
+        """Enter the async context manager.
+
+        Returns:
+            The async client instance.
+        """
         return self
 
     async def __aexit__(self, exc_type, exc, tb) -> None:
+        """Exit the async context manager and close the client.
+
+        Args:
+            exc_type: The exception type.
+            exc: The exception instance.
+            tb: The traceback.
+        """
         await self.aclose()
 
     async def aclose(self) -> None:
@@ -36,6 +48,19 @@ class AsyncClient(HTTPClientBase):
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:
+        """Make an async GET request.
+
+        Args:
+            path: URL path or full URL.
+            params: Query parameters.
+            **kwargs: Additional keyword arguments to pass to the HTTP client.
+
+        Returns:
+            The HTTP response.
+
+        Raises:
+            APIError: If the API returns an error.
+        """
         return await cast(
             Awaitable[httpx.Response],
             self._request("GET", path, params=params, **kwargs),
@@ -47,6 +72,19 @@ class AsyncClient(HTTPClientBase):
         json: Optional[Any] = None,
         **kwargs: Any,
     ) -> httpx.Response:
+        """Make an async POST request.
+
+        Args:
+            path: URL path or full URL.
+            json: JSON body for the request.
+            **kwargs: Additional keyword arguments to pass to the HTTP client.
+
+        Returns:
+            The HTTP response.
+
+        Raises:
+            APIError: If the API returns an error.
+        """
         return await cast(
             Awaitable[httpx.Response],
             self._request("POST", path, json=json, **kwargs),

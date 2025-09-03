@@ -23,7 +23,12 @@ class RegisterSubjectsWorkflow:
         _sdk (ImednetSDK): An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):  # Use string literal for type hint
+    def __init__(self, sdk: "ImednetSDK"):
+        """Initializes the RegisterSubjectsWorkflow.
+
+        Args:
+            sdk: An instance of the ImednetSDK.
+        """
         self._sdk = sdk
 
     def register_subjects(

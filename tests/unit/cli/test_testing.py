@@ -62,6 +62,5 @@ def test_load_data_dictionary_missing_args() -> None:
     result = runner.invoke(app, ["testing", "data-dictionary", "load"])
     assert result.exit_code == 1
     assert (
-        "Error: You must provide either --zip-file or all four CSV file options."
-        in result.stdout
+        "Error: You must provide either --zip-file or all four CSV file options." in result.stdout
     )

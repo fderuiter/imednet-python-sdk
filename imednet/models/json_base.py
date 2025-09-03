@@ -23,12 +23,33 @@ class JsonModel(BaseModel):
 
     @classmethod
     def from_json(cls, data: Any) -> Self:
-        """Validate data coming from JSON APIs."""
+        """Create a model instance from a JSON-like dictionary.
+
+        This is a convenience method that wraps `model_validate`.
+
+        Args:
+            data: The dictionary of data to validate.
+
+        Returns:
+            A new instance of the model.
+        """
         return cls.model_validate(data)
 
     @field_validator("*", mode="before")
-    def _normalise(cls, v: Any, info: Any) -> Any:  # noqa: D401
-        """Normalize common primitive types before validation."""
+    def _normalise(cls, v: Any, info: Any) -> Any:
+        """Normalize common primitive types before Pydantic validation.
+
+        This validator handles common data cleaning tasks, such as converting
+        empty strings to `None` for optional fields and parsing common types
+        from string representations.
+
+        Args:
+            v: The value to normalize.
+            info: Information about the field being validated.
+
+        Returns:
+            The normalized value.
+        """
         field = cls.model_fields[info.field_name]
         annotation = field.annotation
         origin = get_origin(annotation)

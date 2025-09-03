@@ -10,8 +10,14 @@ from typing import Any, Dict, List, Tuple, Union
 
 
 def _snake_to_camel(text: str) -> str:
-    """Convert a snake_case string to camelCase."""
+    """Convert a snake_case string to camelCase.
 
+    Args:
+        text: The snake_case string to convert.
+
+    Returns:
+        The camelCase version of the string.
+    """
     if "_" not in text:
         return text
     parts = text.split("_")

@@ -9,29 +9,53 @@ from imednet.models.json_base import JsonModel
 
 
 class QueryComment(JsonModel):
-    sequence: int = Field(0, alias="sequence")
-    annotation_status: str = Field("", alias="annotationStatus")
-    user: str = Field("", alias="user")
-    comment: str = Field("", alias="comment")
-    closed: bool = Field(False, alias="closed")
-    date: datetime = Field(default_factory=datetime.now, alias="date")
+    """Represents a single comment on a query."""
 
-    pass
+    sequence: int = Field(0, alias="sequence", description="The sequence number of the comment.")
+    annotation_status: str = Field(
+        "", alias="annotationStatus", description="The status of the annotation."
+    )
+    user: str = Field("", alias="user", description="The user who made the comment.")
+    comment: str = Field("", alias="comment", description="The text of the comment.")
+    closed: bool = Field(
+        False,
+        alias="closed",
+        description="Indicates if the query was closed by this comment.",
+    )
+    date: datetime = Field(
+        default_factory=datetime.now,
+        alias="date",
+        description="The date the comment was made.",
+    )
 
 
 class Query(JsonModel):
-    study_key: str = Field("", alias="studyKey")
-    subject_id: int = Field(0, alias="subjectId")
-    subject_oid: str = Field("", alias="subjectOid")
-    annotation_type: str = Field("", alias="annotationType")
-    annotation_id: int = Field(0, alias="annotationId")
-    type: Optional[str] = Field(None, alias="type")
-    description: str = Field("", alias="description")
-    record_id: int = Field(0, alias="recordId")
-    variable: str = Field("", alias="variable")
-    subject_key: str = Field("", alias="subjectKey")
-    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
-    date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
-    query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
+    """Represents a data query in the system."""
 
-    pass
+    study_key: str = Field("", alias="studyKey", description="The key of the study.")
+    subject_id: int = Field(0, alias="subjectId", description="The ID of the subject.")
+    subject_oid: str = Field("", alias="subjectOid", description="The OID of the subject.")
+    annotation_type: str = Field(
+        "", alias="annotationType", description="The type of the annotation."
+    )
+    annotation_id: int = Field(0, alias="annotationId", description="The ID of the annotation.")
+    type: Optional[str] = Field(None, alias="type", description="The type of the query.")
+    description: str = Field("", alias="description", description="The description of the query.")
+    record_id: int = Field(0, alias="recordId", description="The ID of the record.")
+    variable: str = Field(
+        "", alias="variable", description="The variable the query is associated with."
+    )
+    subject_key: str = Field("", alias="subjectKey", description="The key of the subject.")
+    date_created: datetime = Field(
+        default_factory=datetime.now,
+        alias="dateCreated",
+        description="The date the query was created.",
+    )
+    date_modified: datetime = Field(
+        default_factory=datetime.now,
+        alias="dateModified",
+        description="The date the query was last modified.",
+    )
+    query_comments: List[QueryComment] = Field(
+        default_factory=list, alias="queryComments", description="A list of comments on the query."
+    )

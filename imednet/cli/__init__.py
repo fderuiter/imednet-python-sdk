@@ -25,6 +25,7 @@ load_dotenv()
 
 
 def version_callback(value: bool) -> None:
+    """Print the version and exit."""
     if value:
         print(f"iMednet SDK version: {__version__}")
         raise typer.Exit()
@@ -47,7 +48,8 @@ def cli(
         is_eager=True,
         help="Show the application's version and exit.",
     )
-) -> None: ...
+) -> None:
+    """iMednet CLI root command."""
 
 
 app.add_typer(studies.app)

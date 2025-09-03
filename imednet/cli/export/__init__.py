@@ -20,7 +20,13 @@ def export_parquet(
     study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination Parquet file."),
 ) -> None:
-    """Export study records to a Parquet file."""
+    """Export study records to a Parquet file.
+
+    Args:
+        sdk: The ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output Parquet file.
+    """
     if importlib.util.find_spec("pyarrow") is None:
         print(
             "[bold red]Error:[/bold red] pyarrow is required for Parquet export. "
@@ -40,7 +46,13 @@ def export_csv(
     study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination CSV file."),
 ) -> None:
-    """Export study records to a CSV file."""
+    """Export study records to a CSV file.
+
+    Args:
+        sdk: The ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output CSV file.
+    """
     from ...integrations.export import export_to_csv
 
     export_to_csv(sdk, study_key, str(path))
@@ -53,7 +65,13 @@ def export_excel(
     study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination Excel workbook."),
 ) -> None:
-    """Export study records to an Excel workbook."""
+    """Export study records to an Excel workbook.
+
+    Args:
+        sdk: The ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output Excel file.
+    """
     from ...integrations.export import export_to_excel
 
     export_to_excel(sdk, study_key, str(path))
@@ -66,7 +84,13 @@ def export_json_cmd(
     study_key: str = STUDY_KEY_ARG,
     path: Path = typer.Argument(..., help="Destination JSON file."),
 ) -> None:
-    """Export study records to a JSON file."""
+    """Export study records to a JSON file.
+
+    Args:
+        sdk: The ImednetSDK instance.
+        study_key: The key of the study.
+        path: The path to the output JSON file.
+    """
     from ...integrations.export import export_to_json
 
     export_to_json(sdk, study_key, str(path))
@@ -100,7 +124,18 @@ def export_sql(
         help="Comma-separated list of form IDs to include.",
     ),
 ) -> None:
-    """Export study records to a SQL table."""
+    """Export study records to a SQL table.
+
+    Args:
+        sdk: The ImednetSDK instance.
+        study_key: The key of the study.
+        table: The name of the destination table.
+        connection_string: The database connection string.
+        single_table: If `True`, store all records in a single table, even for SQLite.
+        long_format: If `True`, export to a normalized long-format table.
+        vars_: A comma-separated list of variable names to include.
+        forms: A comma-separated list of form IDs to include.
+    """
     if importlib.util.find_spec("sqlalchemy") is None:
         print(
             "[bold red]Error:[/bold red] SQLAlchemy is required for SQL export. "

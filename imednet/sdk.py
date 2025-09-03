@@ -90,6 +90,18 @@ class ImednetSDK:
         retry_policy: RetryPolicy | None = None,
         enable_async: bool = False,
     ) -> None:
+        """Initializes the ImednetSDK.
+
+        Args:
+            api_key: The API key for authentication.
+            security_key: The security key for authentication.
+            base_url: The base URL of the iMednet API.
+            timeout: The timeout for HTTP requests.
+            retries: The number of times to retry a failed request.
+            backoff_factor: The backoff factor for retries.
+            retry_policy: The retry policy to use.
+            enable_async: If `True`, the async client will be enabled.
+        """
         self.config = load_config_from_env(
             api_key=api_key, security_key=security_key, base_url=base_url
         )
@@ -111,16 +123,22 @@ class ImednetSDK:
 
     @property
     def retry_policy(self) -> RetryPolicy:
+        """The retry policy used for requests."""
         return self._client.retry_policy
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
+        """Set the retry policy for both sync and async clients.
+
+        Args:
+            policy: The new retry policy.
+        """
         self._client.retry_policy = policy
         if self._async_client is not None:
             self._async_client.retry_policy = policy
 
     def _init_endpoints(self) -> None:
-        """Instantiate and attach endpoint clients."""
+        """Instantiate and attach all registered endpoint clients to the SDK instance."""
         assert isinstance(self._client, Client)
         assert isinstance(self._async_client, AsyncClient) or self._async_client is None
 
@@ -132,6 +150,7 @@ class ImednetSDK:
         return self
 
     async def __aenter__(self) -> "ImednetSDK":
+        """Support for async context manager protocol."""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -139,6 +158,7 @@ class ImednetSDK:
         self.close()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Cleanup resources when exiting async context."""
         await self.aclose()
 
     def close(self) -> None:
@@ -159,6 +179,7 @@ class ImednetSDK:
                     loop.run_until_complete(self._async_client.aclose())
 
     async def aclose(self) -> None:
+        """Close the async client connection and free resources."""
         if self._async_client is not None:
             assert isinstance(self._async_client, AsyncClient)
             await self._async_client.aclose()
@@ -302,11 +323,21 @@ class ImednetSDK:
 class AsyncImednetSDK(ImednetSDK):
     """Async variant of :class:`ImednetSDK` using the async HTTP client."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover - thin wrapper
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initializes the AsyncImednetSDK.
+
+        This is a thin wrapper around the `ImednetSDK` constructor that
+        forces `enable_async` to `True`.
+
+        Args:
+            *args: Positional arguments to pass to the `ImednetSDK` constructor.
+            **kwargs: Keyword arguments to pass to the `ImednetSDK` constructor.
+        """
         kwargs["enable_async"] = True
         super().__init__(*args, **kwargs)
 
     async def __aenter__(self) -> "AsyncImednetSDK":
+        """Support for async context manager protocol."""
         await super().__aenter__()
         return self
 

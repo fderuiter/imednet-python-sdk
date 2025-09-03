@@ -14,7 +14,15 @@ def subject_data(
     study_key: str = STUDY_KEY_ARG,
     subject_key: str = typer.Argument(..., help="The key identifying the subject."),
 ) -> None:
-    """Retrieve all data for a single subject."""
+    """Retrieve and display all data for a single subject.
+
+    This includes the subject's details, visits, records, and queries.
+
+    Args:
+        sdk: The ImednetSDK instance.
+        study_key: The key of the study.
+        subject_key: The key of the subject.
+    """
     from ..workflows.subject_data import SubjectDataWorkflow
 
     workflow = SubjectDataWorkflow(sdk)
