@@ -4,7 +4,10 @@ from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.variables import Variable
 
+from .registry import register_endpoint
 
+
+@register_endpoint("variables")
 class VariablesEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with variables (data points on eCRFs) in an iMedNet study.

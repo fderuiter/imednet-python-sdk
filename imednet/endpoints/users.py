@@ -6,7 +6,10 @@ from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
 
+from .registry import register_endpoint
 
+
+@register_endpoint("users")
 class UsersEndpoint(ListGetEndpoint):
     """
     API endpoint for interacting with users in an iMedNet study.

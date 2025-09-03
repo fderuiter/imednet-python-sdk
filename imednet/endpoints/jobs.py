@@ -6,7 +6,10 @@ from typing import Any
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import JobStatus
 
+from .registry import register_endpoint
 
+
+@register_endpoint("jobs")
 class JobsEndpoint(BaseEndpoint):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.

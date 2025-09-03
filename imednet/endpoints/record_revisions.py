@@ -4,7 +4,10 @@ from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.record_revisions import RecordRevision
 
+from .registry import register_endpoint
 
+
+@register_endpoint("record_revisions")
 class RecordRevisionsEndpoint(ListGetEndpoint):
     """
     API endpoint for accessing record revision history in an iMedNet study.

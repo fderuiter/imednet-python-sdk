@@ -12,13 +12,14 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, Union
 
+from deprecation import deprecated
+
 from .config import Config, load_config_from_env
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.client_factory import ClientFactory
 from .core.context import Context
 from .core.retry import RetryPolicy
-from .endpoints.base import BaseEndpoint
 from .endpoints.codings import CodingsEndpoint
 from .endpoints.forms import FormsEndpoint
 from .endpoints.intervals import IntervalsEndpoint
@@ -26,6 +27,7 @@ from .endpoints.jobs import JobsEndpoint
 from .endpoints.queries import QueriesEndpoint
 from .endpoints.record_revisions import RecordRevisionsEndpoint
 from .endpoints.records import RecordsEndpoint
+from .endpoints.registry import get_endpoint_registry
 from .endpoints.sites import SitesEndpoint
 from .endpoints.studies import StudiesEndpoint
 from .endpoints.subjects import SubjectsEndpoint
@@ -49,23 +51,6 @@ from .models.visits import Visit
 # Import workflow classes
 from .workflows import Workflows
 from .workflows.job_poller import JobPoller
-
-# Mapping of attribute names to their endpoint classes
-_ENDPOINT_REGISTRY: dict[str, type[BaseEndpoint]] = {
-    "codings": CodingsEndpoint,
-    "forms": FormsEndpoint,
-    "intervals": IntervalsEndpoint,
-    "jobs": JobsEndpoint,
-    "queries": QueriesEndpoint,
-    "record_revisions": RecordRevisionsEndpoint,
-    "records": RecordsEndpoint,
-    "sites": SitesEndpoint,
-    "studies": StudiesEndpoint,
-    "subjects": SubjectsEndpoint,
-    "users": UsersEndpoint,
-    "variables": VariablesEndpoint,
-    "visits": VisitsEndpoint,
-}
 
 
 class ImednetSDK:
@@ -105,15 +90,17 @@ class ImednetSDK:
         retry_policy: RetryPolicy | None = None,
         enable_async: bool = False,
     ) -> None:
-        config = load_config_from_env(api_key=api_key, security_key=security_key, base_url=base_url)
-        self._validate_env(config)
-        self.config = config
+        self.config = load_config_from_env(
+            api_key=api_key, security_key=security_key, base_url=base_url
+        )
 
         self.ctx = Context()
-        self._client = ClientFactory.create(config, timeout, retries, backoff_factor, retry_policy)
+        self._client = ClientFactory.create(
+            self.config, timeout, retries, backoff_factor, retry_policy
+        )
         self._async_client = (
             ClientFactory.create(
-                config, timeout, retries, backoff_factor, retry_policy, is_async=True
+                self.config, timeout, retries, backoff_factor, retry_policy, is_async=True
             )
             if enable_async
             else None
@@ -121,15 +108,6 @@ class ImednetSDK:
 
         self._init_endpoints()
         self.workflows = Workflows(self)
-
-    def _validate_env(self, config: Config) -> None:
-        """Ensure required credentials are present."""
-        if not config.api_key and not config.security_key:
-            raise ValueError("API key and security key are required")
-        elif not config.api_key:
-            raise ValueError("API key is required")
-        elif not config.security_key:
-            raise ValueError("Security key is required")
 
     @property
     def retry_policy(self) -> RetryPolicy:
@@ -146,7 +124,7 @@ class ImednetSDK:
         assert isinstance(self._client, Client)
         assert isinstance(self._async_client, AsyncClient) or self._async_client is None
 
-        for attr, endpoint_cls in _ENDPOINT_REGISTRY.items():
+        for attr, endpoint_cls in get_endpoint_registry().items():
             setattr(self, attr, endpoint_cls(self._client, self.ctx, self._async_client))
 
     def __enter__(self) -> ImednetSDK:
@@ -204,10 +182,12 @@ class ImednetSDK:
     # Convenience wrappers around common endpoint methods
     # ------------------------------------------------------------------
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `studies.list` method instead.")
     def get_studies(self, **filters: Any) -> List[Study]:
         """Return all studies accessible by the current API key."""
         return self.studies.list(**filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `records.list` method instead.")
     def get_records(
         self,
         study_key: str,
@@ -221,14 +201,17 @@ class ImednetSDK:
             **filters,
         )
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `sites.list` method instead.")
     def get_sites(self, study_key: str, **filters: Any) -> List[Site]:
         """Return sites for the specified study."""
         return self.sites.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `subjects.list` method instead.")
     def get_subjects(self, study_key: str, **filters: Any) -> List[Subject]:
         """Return subjects for the specified study."""
         return self.subjects.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `records.create` method instead.")
     def create_record(
         self,
         study_key: str,
@@ -242,42 +225,52 @@ class ImednetSDK:
             email_notify=email_notify,
         )
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `forms.list` method instead.")
     def get_forms(self, study_key: str, **filters: Any) -> List[Form]:
         """Return forms for the specified study."""
         return self.forms.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `intervals.list` method instead.")
     def get_intervals(self, study_key: str, **filters: Any) -> List[Interval]:
         """Return intervals for the specified study."""
         return self.intervals.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `variables.list` method instead.")
     def get_variables(self, study_key: str, **filters: Any) -> List[Variable]:
         """Return variables for the specified study."""
         return self.variables.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `visits.list` method instead.")
     def get_visits(self, study_key: str, **filters: Any) -> List[Visit]:
         """Return visits for the specified study."""
         return self.visits.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `codings.list` method instead.")
     def get_codings(self, study_key: str, **filters: Any) -> List[Coding]:
         """Return codings for the specified study."""
         return self.codings.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `queries.list` method instead.")
     def get_queries(self, study_key: str, **filters: Any) -> List[Query]:
         """Return queries for the specified study."""
         return self.queries.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `record_revisions.list` method instead.")
     def get_record_revisions(self, study_key: str, **filters: Any) -> List[RecordRevision]:
         """Return record revisions for the specified study."""
         return self.record_revisions.list(study_key, **filters)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `users.list` method instead.")
     def get_users(self, study_key: str, include_inactive: bool = False) -> List[User]:
         """Return users for the specified study."""
         return self.users.list(study_key, include_inactive=include_inactive)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `jobs.get` method instead.")
     def get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Return job details for the specified batch."""
         return self.jobs.get(study_key, batch_id)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `JobPoller` class directly.")
     def poll_job(
         self,
         study_key: str,
@@ -290,6 +283,7 @@ class ImednetSDK:
 
         return JobPoller(self.jobs.get, False).run(study_key, batch_id, interval, timeout)
 
+    @deprecated(deprecated_in="0.2.0", details="Use the `JobPoller` class directly.")
     async def async_poll_job(
         self,
         study_key: str,

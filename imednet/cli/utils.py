@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import typer
 from rich import print
 
-from ..config import load_config_from_env
 from ..sdk import ImednetSDK
 
 # Shared CLI argument for specifying a study key

@@ -6,6 +6,7 @@ import respx
 
 from imednet.core import exceptions
 from imednet.core.client import Client
+from imednet.models.error import ApiErrorDetail
 
 
 @respx.mock
@@ -31,7 +32,9 @@ def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
         calls["count"] += 1
         if calls["count"] < 3:
-            raise exceptions.ServerError({}, status_code=500)
+            raise exceptions.ServerError(
+                ApiErrorDetail(detail="Internal Server Error"), status_code=500
+            )
         return httpx.Response(200, json={"ok": True})
 
     monkeypatch.setattr(client._executor, "send", request)

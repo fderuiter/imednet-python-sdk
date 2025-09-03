@@ -1,11 +1,12 @@
 from imednet.core import exceptions
+from imednet.models.error import ApiErrorDetail
 
 
 def test_api_error_str_includes_details() -> None:
-    err = exceptions.ApiError({"msg": "bad"}, status_code=400)
+    err = exceptions.ApiError(ApiErrorDetail(detail="bad"), status_code=400)
     text = str(err)
     assert "Status Code: 400" in text
-    assert "msg" in text
+    assert "bad" in text
 
 
 def test_exception_hierarchy() -> None:

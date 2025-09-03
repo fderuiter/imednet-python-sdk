@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Option
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
 from ..endpoints.forms import FormsEndpoint
 from ..endpoints.variables import VariablesEndpoint
+from ..models.error import ApiErrorDetail
 from ..models.variables import Variable
 from ._base import _ValidatorMixin
 
@@ -84,22 +85,22 @@ class AsyncSchemaCache(BaseSchemaCache["AsyncImednetSDK"]):
 
 def _validate_int(value: Any) -> None:
     if not isinstance(value, int):
-        raise ValidationError("Value must be an integer")
+        raise ValidationError(ApiErrorDetail(detail="Value must be an integer"))
 
 
 def _validate_float(value: Any) -> None:
     if not isinstance(value, (int, float)):
-        raise ValidationError("Value must be numeric")
+        raise ValidationError(ApiErrorDetail(detail="Value must be numeric"))
 
 
 def _validate_bool(value: Any) -> None:
     if not isinstance(value, bool):
-        raise ValidationError("Value must be boolean")
+        raise ValidationError(ApiErrorDetail(detail="Value must be boolean"))
 
 
 def _validate_text(value: Any) -> None:
     if not isinstance(value, str):
-        raise ValidationError("Value must be a string")
+        raise ValidationError(ApiErrorDetail(detail="Value must be a string"))
 
 
 _TYPE_VALIDATORS: Dict[str, Callable[[Any], None]] = {
@@ -121,7 +122,7 @@ def _check_type(var_type: str, value: Any) -> None:
     try:
         validator = _TYPE_VALIDATORS[var_type.lower()]
     except KeyError:
-        raise UnknownVariableTypeError(var_type)
+        raise UnknownVariableTypeError(ApiErrorDetail(detail=var_type))
     validator(value)
 
 
@@ -141,18 +142,21 @@ def validate_record_data(
     if not variables:
         # The cache has no variables for the given form key, so treat it as an
         # unknown form and fail fast.
-        raise ValidationError(f"Unknown form {form_key}")
+        raise ValidationError(ApiErrorDetail(detail=f"Unknown form {form_key}"))
     unknown = [k for k in data if k not in variables]
     if unknown:
-        raise ValidationError(f"Unknown variables for form {form_key}: {', '.join(unknown)}")
+        raise ValidationError(
+            ApiErrorDetail(detail=f"Unknown variables for form {form_key}: {', '.join(unknown)}")
+        )
     missing_required = [
         name
         for name, var in variables.items()
         if getattr(var, "required", False) and name not in data
     ]
     if missing_required:
+        missing_vars = ", ".join(missing_required)
         raise ValidationError(
-            f"Missing required variables for form {form_key}: {', '.join(missing_required)}"
+            ApiErrorDetail(detail=f"Missing required variables for form {form_key}: {missing_vars}")
         )
     for name, value in data.items():
         _check_type(variables[name].variable_type, value)

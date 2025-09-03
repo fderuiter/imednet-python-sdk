@@ -4,7 +4,9 @@ Custom exceptions for the iMednet SDK.
 Defines a hierarchy of exceptions corresponding to HTTP and validation errors.
 """
 
-from typing import Any, Optional
+from typing import Optional
+
+from imednet.models.error import ApiErrorDetail
 
 
 class ImednetError(Exception):
@@ -32,21 +34,22 @@ class ApiError(ImednetError):
         response: Parsed JSON or raw text of the error response.
     """
 
-    def __init__(self, response: Any, status_code: Optional[int] = None) -> None:
-        super().__init__(str(response))
+    def __init__(self, error_detail: ApiErrorDetail, status_code: Optional[int] = None) -> None:
+        self.error_detail = error_detail
         self.status_code = status_code
-        self.response = response
+        super().__init__(self.__str__())
 
     def __str__(self) -> str:
-        base = super().__str__()
-        details = []
-        if self.status_code is not None:
-            details.append(f"Status Code: {self.status_code}")
-        if self.response:
-            details.append(f"Response: {self.response}")
-        if details:
-            return f"{base} ({', '.join(details)})"
-        return base
+        parts = []
+        if self.status_code:
+            parts.append(f"Status Code: {self.status_code}")
+        if self.error_detail.title:
+            parts.append(f"Title: {self.error_detail.title}")
+        if self.error_detail.detail:
+            parts.append(f"Detail: {self.error_detail.detail}")
+        if self.error_detail.errors:
+            parts.append(f"Errors: {', '.join(self.error_detail.errors)}")
+        return " | ".join(parts)
 
 
 class AuthenticationError(ApiError):
