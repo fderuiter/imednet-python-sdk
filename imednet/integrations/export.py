@@ -272,7 +272,7 @@ def export_to_sql_by_form(
             study_key,
             extra_filters={
                 "formId": form.form_id,
-                **({"variableNames": variable_whitelist} if variable_whitelist else {}),
+                **({"variableNames": variable_keys} if variable_whitelist else {}),
             },
         )
         rows, _ = mapper._parse_records(records, record_model)
