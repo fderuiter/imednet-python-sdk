@@ -8,4 +8,4 @@ __all__ = ["sanitize_base_url"]
 def sanitize_base_url(url: str) -> str:
     """Return base URL without trailing slashes or ``/api`` suffix."""
     url = url.rstrip("/")
-    return re.sub(r"/api\Z", "", url)
+    return re.sub(r"/api\Z", "", url, flags=re.IGNORECASE)
