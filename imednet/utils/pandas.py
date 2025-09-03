@@ -32,13 +32,14 @@ def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.
 def export_records_csv(
     sdk: "ImednetSDK", study_key: str, file_path: str, *, flatten: bool = True
 ) -> None:
-    """Fetch all records for ``study_key`` and write them to ``file_path``.
+    """Fetch all records for a study and write them to a CSV file.
 
-    Parameters are passed to :func:`records_to_dataframe` and the resulting
-    DataFrame is written with :meth:`pandas.DataFrame.to_csv` using
-    ``index=False``.
+    Args:
+        sdk: An initialized ImednetSDK instance.
+        study_key: The key of the study.
+        file_path: The path to the output CSV file.
+        flatten: If `True`, flatten the `record_data` into separate columns.
     """
-
     records = sdk.records.list(study_key=study_key)
     df = records_to_dataframe(records, flatten=flatten)
     df.to_csv(file_path, index=False)

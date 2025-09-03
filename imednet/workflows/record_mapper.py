@@ -48,7 +48,17 @@ class RecordMapper:
         variable_whitelist: Optional[List[str]] = None,
         form_whitelist: Optional[List[int]] = None,
     ) -> Tuple[List[str], Dict[str, str]]:
-        """Return variable names and label mapping for a study."""
+        """Fetch variable names and their corresponding labels for a study.
+
+        Args:
+            study_key: The key of the study.
+            variable_whitelist: An optional list of variable names to fetch.
+            form_whitelist: An optional list of form IDs to fetch variables from.
+
+        Returns:
+            A tuple containing a list of variable names and a dictionary mapping
+            variable names to their labels.
+        """
         filters: Dict[str, Any] = {}
         if variable_whitelist is not None:
             filters["variableNames"] = variable_whitelist
@@ -73,7 +83,17 @@ class RecordMapper:
     def _build_record_model(
         self, variable_keys: List[str], label_map: Dict[str, str]
     ) -> Type[BaseModel]:
-        """Create a dynamic model for the record data payload."""
+        """Create a dynamic Pydantic model for validating record data.
+
+        This model is built on the fly based on the variables defined for the study.
+
+        Args:
+            variable_keys: A list of variable names to include in the model.
+            label_map: A dictionary mapping variable names to their labels.
+
+        Returns:
+            A dynamically created Pydantic model class.
+        """
         fields: Dict[str, Tuple[Optional[Any], Any]] = {}
         for key in variable_keys:
             fields[key] = (
@@ -88,7 +108,16 @@ class RecordMapper:
         visit_key: Optional[str] = None,
         extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
     ) -> List[RecordModel]:
-        """Fetch records for a study applying optional filters."""
+        """Fetch records from the API, applying optional filters.
+
+        Args:
+            study_key: The key of the study.
+            visit_key: An optional visit key to filter by.
+            extra_filters: An optional dictionary of additional filters.
+
+        Returns:
+            A list of fetched records.
+        """
         filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]] = (
             dict(extra_filters) if extra_filters else {}
         )
@@ -113,7 +142,19 @@ class RecordMapper:
     def _parse_records(
         self, records: List[RecordModel], record_model: Type[BaseModel]
     ) -> Tuple[List[Dict[str, Any]], int]:
-        """Parse raw records into row dictionaries and count failures."""
+        """Parse a list of raw records into dictionaries for the DataFrame.
+
+        This method validates the `recordData` of each record against the dynamic
+        Pydantic model and merges it with key metadata.
+
+        Args:
+            records: The list of raw records to parse.
+            record_model: The dynamic Pydantic model to use for validation.
+
+        Returns:
+            A tuple containing a list of parsed row dictionaries and a count of
+            parsing failures.
+        """
         rows: List[Dict[str, Any]] = []
         errors = 0
         for rec in records:
@@ -148,7 +189,20 @@ class RecordMapper:
         label_map: Dict[str, str],
         use_labels: bool,
     ) -> pd.DataFrame:
-        """Create the output DataFrame from parsed rows."""
+        """Construct the final pandas DataFrame from the parsed rows.
+
+        This method handles column ordering and renaming based on whether labels
+        are used as column headers.
+
+        Args:
+            rows: The list of parsed row dictionaries.
+            variable_keys: The list of variable names to use as columns.
+            label_map: A dictionary mapping variable names to their labels.
+            use_labels: If `True`, rename columns to their labels.
+
+        Returns:
+            The final pandas DataFrame.
+        """
         df = pd.DataFrame(rows)
         if df.empty:
             return df
@@ -180,7 +234,23 @@ class RecordMapper:
         variable_whitelist: Optional[List[str]] = None,
         form_whitelist: Optional[List[int]] = None,
     ) -> pd.DataFrame:
-        """Return a :class:`pandas.DataFrame` of records for a study."""
+        """Fetch records for a study and map them to a pandas DataFrame.
+
+        This is the main entry point for the workflow. It orchestrates fetching
+        metadata, fetching records, parsing them, and constructing the final
+        DataFrame.
+
+        Args:
+            study_key: The key of the study.
+            visit_key: An optional visit key to filter by.
+            use_labels_as_columns: If `True`, use variable labels as column
+                headers; otherwise, use variable names.
+            variable_whitelist: An optional list of variable names to include.
+            form_whitelist: An optional list of form IDs to include.
+
+        Returns:
+            A pandas DataFrame containing the mapped records.
+        """
         variable_keys, label_map = self._fetch_variable_metadata(
             study_key,
             variable_whitelist=variable_whitelist,

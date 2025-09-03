@@ -55,10 +55,19 @@ class RequestExecutor:
     retry_policy: RetryPolicy | None = None
 
     def __post_init__(self) -> None:
+        """Initialize the default retry policy if one is not provided."""
         if self.retry_policy is None:
             self.retry_policy = DefaultRetryPolicy()
 
     def _should_retry(self, retry_state: RetryCallState) -> bool:
+        """Determine if a request should be retried based on the current state.
+
+        Args:
+            retry_state: The state of the retry call from `tenacity`.
+
+        Returns:
+            `True` if the request should be retried, `False` otherwise.
+        """
         state = RetryState(
             attempt_number=retry_state.attempt_number,
             exception=(
@@ -78,12 +87,32 @@ class RequestExecutor:
     def __call__(
         self, method: str, url: str, **kwargs: Any
     ) -> Coroutine[Any, Any, httpx.Response] | httpx.Response:
+        """Execute the request, either synchronously or asynchronously.
+
+        Args:
+            method: The HTTP method.
+            url: The URL to request.
+            **kwargs: Additional keyword arguments to pass to the request.
+
+        Returns:
+            The HTTP response, or a coroutine that returns the response.
+        """
         if self.is_async:
             return self._async_execute(method, url, **kwargs)
         return self._sync_execute(method, url, **kwargs)
 
     def _handle_response(self, response: httpx.Response) -> httpx.Response:
-        """Return the response or raise an appropriate ``ApiError``."""
+        """Process the HTTP response, raising an error if necessary.
+
+        Args:
+            response: The HTTP response.
+
+        Returns:
+            The response if it was successful.
+
+        Raises:
+            ApiError: If the response has an error status code.
+        """
         if response.is_error:
             status = response.status_code
             try:
@@ -101,6 +130,18 @@ class RequestExecutor:
         return response
 
     def _get_span_cm(self, method: str, url: str):
+        """Get a context manager for a tracing span.
+
+        If a tracer is configured, this will start a new span. Otherwise, it will
+        return a null context manager.
+
+        Args:
+            method: The HTTP method of the request.
+            url: The URL of the request.
+
+        Returns:
+            A context manager for the span.
+        """
         if self.tracer:
             return self.tracer.start_as_current_span(
                 "http_request", attributes={"endpoint": url, "method": method}
@@ -113,7 +154,19 @@ class RequestExecutor:
         method: str,
         url: str,
     ) -> httpx.Response:
-        """Send a request with retry logic and tracing."""
+        """Execute a synchronous request with retry logic and tracing.
+
+        Args:
+            send_fn: A function that sends the request and returns a response.
+            method: The HTTP method.
+            url: The URL of the request.
+
+        Returns:
+            The HTTP response.
+
+        Raises:
+            RequestError: If the request fails after all retries.
+        """
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
@@ -150,7 +203,19 @@ class RequestExecutor:
         method: str,
         url: str,
     ) -> httpx.Response:
-        """Send a request with retry logic and tracing asynchronously."""
+        """Execute an asynchronous request with retry logic and tracing.
+
+        Args:
+            send_fn: A function that sends the request and returns an awaitable response.
+            method: The HTTP method.
+            url: The URL of the request.
+
+        Returns:
+            The HTTP response.
+
+        Raises:
+            RequestError: If the request fails after all retries.
+        """
         retryer = AsyncRetrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
@@ -182,6 +247,17 @@ class RequestExecutor:
         return self._handle_response(response)
 
     def _sync_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        """Prepare and execute a synchronous request.
+
+        Args:
+            method: The HTTP method.
+            url: The URL of the request.
+            **kwargs: Additional keyword arguments for the request.
+
+        Returns:
+            The HTTP response.
+        """
+
         def send_fn() -> httpx.Response:
             return cast(httpx.Response, self.send(method, url, **kwargs))
 
@@ -191,6 +267,17 @@ class RequestExecutor:
         )
 
     async def _async_execute(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        """Prepare and execute an asynchronous request.
+
+        Args:
+            method: The HTTP method.
+            url: The URL of the request.
+            **kwargs: Additional keyword arguments for the request.
+
+        Returns:
+            The HTTP response.
+        """
+
         async def send_fn() -> httpx.Response:
             return await cast(Awaitable[httpx.Response], self.send(method, url, **kwargs))
 

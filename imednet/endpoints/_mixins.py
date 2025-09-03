@@ -52,6 +52,14 @@ class ListGetEndpointMixin:
     _missing_study_exception: type[Exception] = ValueError
 
     def _parse_item(self, item: Any) -> BaseModel:
+        """Parse a single item from the API response into a Pydantic model.
+
+        Args:
+            item: The item to parse.
+
+        Returns:
+            The parsed Pydantic model.
+        """
         if hasattr(self.MODEL, "from_json"):
             return getattr(self.MODEL, "from_json")(item)
         return self.MODEL.model_validate(item)
@@ -66,6 +74,21 @@ class ListGetEndpointMixin:
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> Any:
+        """Core implementation for listing resources.
+
+        This method handles filtering, caching, and pagination.
+
+        Args:
+            client: The client to use for the request.
+            paginator_cls: The paginator class to use.
+            study_key: The key of the study to list resources from.
+            refresh: If `True`, bypass the cache and fetch fresh data.
+            extra_params: Additional parameters to pass to the request.
+            **filters: Filters to apply to the request.
+
+        Returns:
+            A list of resources, or an awaitable that returns a list of resources.
+        """
         filters = self._auto_filter(filters)
         if study_key:
             filters["studyKey"] = study_key
@@ -139,6 +162,17 @@ class ListGetEndpointMixin:
         study_key: Optional[str],
         item_id: Any,
     ) -> Any:
+        """Core implementation for getting a single resource by ID.
+
+        Args:
+            client: The client to use for the request.
+            paginator_cls: The paginator class to use.
+            study_key: The key of the study to get the resource from.
+            item_id: The ID of the resource to get.
+
+        Returns:
+            The resource, or an awaitable that returns the resource.
+        """
         filters = {self._id_param: item_id}
         result = self._list_impl(
             client,
@@ -173,6 +207,15 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
     """Endpoint base class implementing ``list`` and ``get`` helpers."""
 
     def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
+        """Common logic for listing resources, either sync or async.
+
+        Args:
+            is_async: `True` to use the async client, `False` for sync.
+            **kwargs: Keyword arguments to pass to the list implementation.
+
+        Returns:
+            A list of resources, or an awaitable that returns a list of resources.
+        """
         client: Client | AsyncClient
         paginator: type[Paginator] | type[AsyncPaginator]
         module = sys.modules[self.__class__.__module__]
@@ -191,6 +234,16 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
         study_key: Optional[str],
         item_id: Any,
     ) -> Any:
+        """Common logic for getting a single resource, either sync or async.
+
+        Args:
+            is_async: `True` to use the async client, `False` for sync.
+            study_key: The key of the study.
+            item_id: The ID of the item to get.
+
+        Returns:
+            The resource, or an awaitable that returns the resource.
+        """
         client: Client | AsyncClient
         paginator: type[Paginator] | type[AsyncPaginator]
         module = sys.modules[self.__class__.__module__]
@@ -203,13 +256,49 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
         return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
 
     def list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
+        """List resources synchronously.
+
+        Args:
+            study_key: The key of the study.
+            **filters: Filters to apply to the request.
+
+        Returns:
+            A list of resources.
+        """
         return self._list_common(False, study_key=study_key, **filters)
 
     async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
+        """List resources asynchronously.
+
+        Args:
+            study_key: The key of the study.
+            **filters: Filters to apply to the request.
+
+        Returns:
+            A list of resources.
+        """
         return await self._list_common(True, study_key=study_key, **filters)
 
     def get(self, study_key: Optional[str], item_id: Any) -> Any:
+        """Get a single resource by ID synchronously.
+
+        Args:
+            study_key: The key of the study.
+            item_id: The ID of the item to get.
+
+        Returns:
+            The resource.
+        """
         return self._get_common(False, study_key=study_key, item_id=item_id)
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> Any:
+        """Get a single resource by ID asynchronously.
+
+        Args:
+            study_key: The key of the study.
+            item_id: The ID of the item to get.
+
+        Returns:
+            The resource.
+        """
         return await self._get_common(True, study_key=study_key, item_id=item_id)

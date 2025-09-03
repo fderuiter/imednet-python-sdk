@@ -23,6 +23,12 @@ class JobPoller:
         get_job: Callable[[str, str], Any],
         is_async: bool,
     ) -> None:
+        """Initializes the JobPoller.
+
+        Args:
+            get_job: A function that fetches the job status.
+            is_async: `True` if the `get_job` function is asynchronous.
+        """
         self._get_job = get_job
         self._async = is_async
 
@@ -35,8 +41,23 @@ class JobPoller:
         interval: int,
         timeout: int,
     ) -> JobStatus:
-        """Shared polling loop used by :meth:`run` and :meth:`run_async`."""
+        """Core polling logic shared by sync and async runners.
 
+        Args:
+            study_key: The key of the study.
+            batch_id: The batch ID of the job to poll.
+            fetch_job: The function to call to get the job status.
+            sleep_fn: The function to call to pause between polls.
+            interval: The polling interval in seconds.
+            timeout: The total time to wait for the job to complete.
+
+        Returns:
+            The final job status.
+
+        Raises:
+            JobTimeoutError: If the job does not complete within the timeout.
+            RuntimeError: If the job fails.
+        """
         start = time.monotonic()
         result = fetch_job(study_key, batch_id)
         status = cast(JobStatus, await result) if self._async else cast(JobStatus, result)
@@ -54,6 +75,18 @@ class JobPoller:
         return status
 
     def _check_complete(self, status: JobStatus, batch_id: str) -> JobStatus:
+        """Check if the job has completed and raise an error if it failed.
+
+        Args:
+            status: The current job status.
+            batch_id: The batch ID of the job.
+
+        Returns:
+            The job status if it has not failed.
+
+        Raises:
+            RuntimeError: If the job has failed.
+        """
         if status.state.upper() in TERMINAL_JOB_STATES:
             if status.state.upper() == "FAILED":
                 raise RuntimeError(f"Job {batch_id} failed")
@@ -63,8 +96,20 @@ class JobPoller:
     def run(
         self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
     ) -> JobStatus:
-        """Synchronously poll a job until completion."""
+        """Synchronously poll a job until it reaches a terminal state.
 
+        Args:
+            study_key: The key of the study.
+            batch_id: The batch ID of the job to poll.
+            interval: The polling interval in seconds.
+            timeout: The total time to wait for the job to complete.
+
+        Returns:
+            The final job status.
+
+        Raises:
+            RuntimeError: If called on an async-configured poller.
+        """
         if self._async:
             raise RuntimeError("Use run_async for asynchronous polling")
         return asyncio.run(
@@ -81,8 +126,20 @@ class JobPoller:
     async def run_async(
         self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
     ) -> JobStatus:
-        """Asynchronously poll a job until completion."""
+        """Asynchronously poll a job until it reaches a terminal state.
 
+        Args:
+            study_key: The key of the study.
+            batch_id: The batch ID of the job to poll.
+            interval: The polling interval in seconds.
+            timeout: The total time to wait for the job to complete.
+
+        Returns:
+            The final job status.
+
+        Raises:
+            RuntimeError: If called on a sync-configured poller.
+        """
         if not self._async:
             raise RuntimeError("Use run for synchronous polling")
         return await self._run_common(

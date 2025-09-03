@@ -37,6 +37,11 @@ class Client(HTTPClientBase):
     IS_ASYNC = False
 
     def __enter__(self) -> Client:
+        """Enter the context manager.
+
+        Returns:
+            The client instance.
+        """
         return self
 
     def __exit__(
@@ -45,6 +50,13 @@ class Client(HTTPClientBase):
         exc: Optional[BaseException],
         tb: Optional[TracebackType],
     ) -> None:
+        """Exit the context manager and close the client.
+
+        Args:
+            exc_type: The exception type.
+            exc: The exception instance.
+            tb: The traceback.
+        """
         self.close()
 
     def close(self) -> None:
@@ -57,12 +69,18 @@ class Client(HTTPClientBase):
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        """
-        Make a GET request.
+        """Make a GET request.
 
         Args:
             path: URL path or full URL.
             params: Query parameters.
+            **kwargs: Additional keyword arguments to pass to the HTTP client.
+
+        Returns:
+            The HTTP response.
+
+        Raises:
+            APIError: If the API returns an error.
         """
         return cast(httpx.Response, self._request("GET", path, params=params, **kwargs))
 
@@ -72,11 +90,17 @@ class Client(HTTPClientBase):
         json: Optional[Any] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        """
-        Make a POST request.
+        """Make a POST request.
 
         Args:
             path: URL path or full URL.
             json: JSON body for the request.
+            **kwargs: Additional keyword arguments to pass to the HTTP client.
+
+        Returns:
+            The HTTP response.
+
+        Raises:
+            APIError: If the API returns an error.
         """
         return cast(httpx.Response, self._request("POST", path, json=json, **kwargs))

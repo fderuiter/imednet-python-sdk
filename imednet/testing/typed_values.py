@@ -41,12 +41,29 @@ _CANONICAL_TYPES: Dict[str, str] = {
 
 
 def canonical_type(var_type: str) -> Optional[str]:
-    """Return the canonical type for ``var_type`` or ``None`` if unsupported."""
+    """Get the canonical type for a given variable type string.
 
+    This is used to group synonyms like "int" and "integer" under a single
+    canonical type like "number".
+
+    Args:
+        var_type: The variable type string.
+
+    Returns:
+        The canonical type string, or `None` if the type is not supported.
+    """
     return _CANONICAL_TYPES.get(var_type.lower())
 
 
 def value_for(var_type: str) -> Optional[Any]:
-    """Return a deterministic example value for ``var_type`` if supported."""
+    """Get a deterministic example value for a given variable type.
 
+    This is useful for creating test data with predictable values.
+
+    Args:
+        var_type: The variable type string.
+
+    Returns:
+        An example value for the type, or `None` if the type is not supported.
+    """
     return _TYPED_VALUES.get(var_type.lower())

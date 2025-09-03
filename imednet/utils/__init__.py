@@ -22,7 +22,21 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
 }
 
 
-def __getattr__(name: str):  # noqa: D401
+def __getattr__(name: str):
+    """Lazily import and return an attribute from a submodule.
+
+    This allows for faster startup times by only importing modules when they
+    are actually used.
+
+    Args:
+        name: The name of the attribute to get.
+
+    Returns:
+        The requested attribute.
+
+    Raises:
+        AttributeError: If the attribute is not found.
+    """
     try:
         module_path, obj_name = _LAZY_ATTRS[name]
     except KeyError:

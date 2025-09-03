@@ -24,6 +24,11 @@ class RecordUpdateWorkflow:
     """
 
     def __init__(self, sdk: "ImednetSDK"):
+        """Initializes the RecordUpdateWorkflow.
+
+        Args:
+            sdk: An instance of the ImednetSDK.
+        """
         self._sdk = sdk
         self._validator = SchemaValidator(sdk)
         if getattr(sdk, "_async_client", None) is None:
@@ -39,8 +44,21 @@ class RecordUpdateWorkflow:
         timeout: int = 300,
         poll_interval: int = 5,
     ) -> Job:
-        """Submit records for creation or update and optionally wait for completion."""
+        """Submit a batch of records for creation or update.
 
+        Args:
+            study_key: The key of the study.
+            records_data: A list of dictionaries, where each dictionary
+                represents a record to be created or updated.
+            wait_for_completion: If `True`, the method will poll the job
+                status and wait for it to complete.
+            timeout: The timeout in seconds for waiting for the job to complete.
+            poll_interval: The interval in seconds at which to poll the job status.
+
+        Returns:
+            A `Job` object representing the submission. If `wait_for_completion`
+            is `True`, this will be the final status of the job.
+        """
         return asyncio.run(
             self._create_or_update_common(
                 study_key,
@@ -81,8 +99,22 @@ class RecordUpdateWorkflow:
         *,
         is_async: bool,
     ) -> Job:
-        """Shared logic for submitting records synchronously or asynchronously."""
+        """Core logic for submitting records, shared by sync and async methods.
 
+        This method validates the records, submits them to the API, and then
+        optionally polls for completion.
+
+        Args:
+            study_key: The key of the study.
+            records_data: The list of records to submit.
+            wait_for_completion: Whether to poll for job completion.
+            timeout: The polling timeout.
+            poll_interval: The polling interval.
+            is_async: `True` if running in an asynchronous context.
+
+        Returns:
+            The job object for the submission.
+        """
         if records_data:
             first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
                 records_data[0].get("formId", 0)

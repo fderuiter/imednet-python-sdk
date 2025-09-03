@@ -17,14 +17,37 @@ class RetryState:
 
 @runtime_checkable
 class RetryPolicy(Protocol):
-    """Interface to determine whether a request should be retried."""
+    """A protocol for defining custom retry logic.
+
+    This protocol allows users to implement their own retry strategies by providing
+    a `should_retry` method.
+    """
 
     def should_retry(self, state: RetryState) -> bool:
-        """Return ``True`` to retry the request for the given state."""
+        """Determine whether a request should be retried.
+
+        Args:
+            state: The current state of the retry attempt.
+
+        Returns:
+            `True` to retry the request, `False` otherwise.
+        """
 
 
 class DefaultRetryPolicy:
-    """Retry only when a network :class:`httpx.RequestError` occurred."""
+    """The default retry policy.
 
-    def should_retry(self, state: RetryState) -> bool:  # pragma: no cover - trivial
+    This policy retries requests only when a network error of type
+    :class:`httpx.RequestError` occurs.
+    """
+
+    def should_retry(self, state: RetryState) -> bool:
+        """Determine whether to retry based on the default policy.
+
+        Args:
+            state: The current state of the retry attempt.
+
+        Returns:
+            `True` if the exception is a `httpx.RequestError`, `False` otherwise.
+        """
         return isinstance(state.exception, httpx.RequestError)

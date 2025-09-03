@@ -15,8 +15,20 @@ R = TypeVar("R")
 
 
 def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
-    """Initialize the SDK and pass it to the wrapped command function."""
+    """A decorator that creates an `ImednetSDK` instance and passes it to the command.
 
+    This decorator also handles common exceptions, such as `ApiError` and
+    `ValueError`, printing a formatted error message and exiting with a non-zero
+    status code. It ensures that the SDK's `close` method is called after the
+    command has finished.
+
+    Args:
+        func: The command function to wrap. It must accept an `ImednetSDK`
+            instance as its first argument.
+
+    Returns:
+        The wrapped command function.
+    """
     sig = inspect.signature(func)
     wrapper_params = list(sig.parameters.values())[1:]
 

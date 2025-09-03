@@ -7,7 +7,14 @@ except ModuleNotFoundError:  # pragma: no cover - fallback for older versions
 
 
 def configure_json_logging(level: int = logging.INFO) -> None:
-    """Configure root logger to emit JSON formatted logs."""
+    """Configure the root logger to emit JSON-formatted logs.
+
+    This is useful for structured logging, which can be easily parsed by
+    log management systems.
+
+    Args:
+        level: The logging level to set for the root logger.
+    """
     handler = logging.StreamHandler()
     formatter = JsonFormatter()
     handler.setFormatter(formatter)

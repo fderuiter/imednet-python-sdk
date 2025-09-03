@@ -35,11 +35,18 @@ class ApiError(ImednetError):
     """
 
     def __init__(self, error_detail: ApiErrorDetail, status_code: Optional[int] = None) -> None:
+        """Initializes the ApiError.
+
+        Args:
+            error_detail: The parsed error detail from the API response.
+            status_code: The HTTP status code.
+        """
         self.error_detail = error_detail
         self.status_code = status_code
         super().__init__(self.__str__())
 
     def __str__(self) -> str:
+        """Return a string representation of the error."""
         parts = []
         if self.status_code:
             parts.append(f"Status Code: {self.status_code}")
