@@ -10,9 +10,7 @@ This module provides the ImednetSDK class which:
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, List, Optional, Union
-
-from deprecation import deprecated
+from typing import Any, Optional
 
 from .config import Config, load_config_from_env
 from .core.async_client import AsyncClient
@@ -34,19 +32,7 @@ from .endpoints.subjects import SubjectsEndpoint
 from .endpoints.users import UsersEndpoint
 from .endpoints.variables import VariablesEndpoint
 from .endpoints.visits import VisitsEndpoint
-from .models.codings import Coding
-from .models.forms import Form
-from .models.intervals import Interval
-from .models.jobs import Job, JobStatus
-from .models.queries import Query
-from .models.record_revisions import RecordRevision
-from .models.records import Record
-from .models.sites import Site
-from .models.studies import Study
-from .models.subjects import Subject
-from .models.users import User
-from .models.variables import Variable
-from .models.visits import Visit
+from .models.jobs import JobStatus
 
 # Import workflow classes
 from .workflows import Workflows
@@ -186,6 +172,36 @@ class ImednetSDK:
         if isinstance(self._client, Client):
             self._client.close()
 
+    def get_job(self, study_key: str, batch_id: str) -> JobStatus:
+        """Get a specific job by batch ID."""
+        return self.jobs.get(study_key, batch_id)
+
+    async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
+        """Asynchronously get a specific job by batch ID."""
+        return await self.jobs.async_get(study_key, batch_id)
+
+    def poll_job(
+        self,
+        study_key: str,
+        batch_id: str,
+        interval: int = 5,
+        timeout: int = 300,
+    ) -> JobStatus:
+        """Poll a job until it reaches a terminal state."""
+        poller = JobPoller(self.jobs.get, is_async=False)
+        return poller.run(study_key, batch_id, interval=interval, timeout=timeout)
+
+    async def async_poll_job(
+        self,
+        study_key: str,
+        batch_id: str,
+        interval: int = 5,
+        timeout: int = 300,
+    ) -> JobStatus:
+        """Asynchronously poll a job until it reaches a terminal state."""
+        poller = JobPoller(self.jobs.async_get, is_async=True)
+        return await poller.run_async(study_key, batch_id, interval=interval, timeout=timeout)
+
     def set_default_study(self, study_key: str) -> None:
         """
         Set the default study key for subsequent API calls.
@@ -198,7 +214,6 @@ class ImednetSDK:
     def clear_default_study(self) -> None:
         """Clear the default study key."""
         self.ctx.clear_default_study_key()
-
 
 
 class AsyncImednetSDK(ImednetSDK):
