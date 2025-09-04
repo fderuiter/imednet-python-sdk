@@ -129,9 +129,12 @@ def parse_dict_or_default(
 
     Returns:
         The normalized dictionary.
+
+    Raises:
+        TypeError: If the value is not a dictionary or None.
     """
     if v is None:
         return default_factory()
     if isinstance(v, dict):
         return v
-    return default_factory()  # fallback if not a dict
+    raise TypeError(f"Expected a dictionary, but got {type(v).__name__}")

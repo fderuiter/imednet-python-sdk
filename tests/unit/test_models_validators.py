@@ -29,7 +29,8 @@ def test_parse_list_and_dict_helpers():
     assert validators.parse_list_or_default([1, 2]) == [1, 2]
     assert validators.parse_dict_or_default(None) == {}
     assert validators.parse_dict_or_default({"a": 1}) == {"a": 1}
-    assert validators.parse_dict_or_default("bad") == {}
+    with pytest.raises(TypeError):
+        validators.parse_dict_or_default("bad")
 
 
 def test_parse_datetime_wrapper():
