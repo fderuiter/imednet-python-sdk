@@ -113,9 +113,16 @@ class QueryManagementWorkflow:
         if not subject_keys:
             return []
 
-        final_filter_dict: Dict[str, Any] = {"subject_key": subject_keys}
-        if additional_filter:
-            final_filter_dict.update(additional_filter)
+        final_filter_dict: Dict[str, Any] = dict(additional_filter) if additional_filter else {}
+        additional_subject_keys = final_filter_dict.get("subject_key")
+
+        if additional_subject_keys:
+            # Intersect the site subjects with the subjects from the filter
+            subject_keys = list(set(subject_keys) & set(additional_subject_keys))
+            if not subject_keys:
+                return []
+
+        final_filter_dict["subject_key"] = subject_keys
 
         return self._sdk.queries.list(study_key, **final_filter_dict, **kwargs)
 
