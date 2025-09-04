@@ -14,5 +14,5 @@ def sanitize_base_url(url: str) -> str:
     Returns:
         The sanitized URL.
     """
-    url = url.rstrip("/")
+    url = url.strip(" /")
     return re.sub(r"/api\Z", "", url, flags=re.IGNORECASE)
