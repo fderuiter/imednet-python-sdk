@@ -90,3 +90,24 @@ def test_get_queries_by_site_with_space_in_name() -> None:
     sdk.subjects.list.assert_called_once_with("STUDY", site_name="Mock Site")
     sdk.queries.list.assert_called_once_with("STUDY", subject_key=["S1"])
     assert sdk.queries.list.call_args.kwargs == {"subject_key": ["S1"]}
+
+
+def test_get_queries_by_site_intersects_subject_filters() -> None:
+    """Test that subject_key in additional_filter is intersected with site subjects."""
+    sdk = MagicMock()
+    s1 = Subject.from_json(fake_data.fake_subject())
+    s1.subject_key = "S1"
+    s2 = Subject.from_json(fake_data.fake_subject())
+    s2.subject_key = "S2"
+    sdk.subjects.list.return_value = [s1, s2]  # Subjects in the site are S1, S2
+    wf = QueryManagementWorkflow(sdk)
+
+    # Filter asks for subjects S2, S3. The intersection is just S2.
+    additional_filter = {"subject_key": ["S2", "S3"], "state": "open"}
+    wf.get_queries_by_site("STUDY", "SITE", additional_filter=additional_filter)
+
+    sdk.subjects.list.assert_called_once_with("STUDY", site_name="SITE")
+
+    sdk.queries.list.assert_called_once_with(
+        "STUDY", subject_key=["S2"], state="open"
+    )

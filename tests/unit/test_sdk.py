@@ -76,3 +76,14 @@ async def test_async_poll_job_uses_job_poller(client_factory_mock, job_poller_mo
     poller_instance.run_async.assert_called_once_with(
         "study1", "batch1", interval=10, timeout=100
     )
+
+
+@patch("imednet.sdk.ClientFactory")
+def test_sdk_close_does_not_hang_with_async_enabled(client_factory_mock):
+    """Verify that the sdk.close() method does not hang when async is enabled."""
+    client_factory_mock.create.side_effect = [
+        MagicMock(spec=Client),
+        MagicMock(spec=AsyncClient),
+    ]
+    sdk = ImednetSDK(api_key="test", security_key="test", enable_async=True)
+    sdk.close()
