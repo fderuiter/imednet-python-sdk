@@ -30,7 +30,9 @@ def parse_iso_datetime(date_str: str) -> datetime:
     if match:
         frac = match.group(1)
         if 1 <= len(frac) <= 5:
-            date_str = date_str.replace("." + frac, "." + frac.ljust(6, "0"))
+            start, end = match.start(1), match.end(1)
+            padded_frac = frac.ljust(6, "0")
+            date_str = date_str[:start] + padded_frac + date_str[end:]
 
     return datetime.fromisoformat(date_str)
 

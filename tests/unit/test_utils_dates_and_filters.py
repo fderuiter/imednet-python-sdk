@@ -50,6 +50,19 @@ def test_parse_iso_datetime_none() -> None:
         parse_iso_datetime(None)  # type: ignore[arg-type]
 
 
+def test_parse_iso_datetime_unsafe_replace() -> None:
+    """
+    Tests that padding fractional seconds doesn't corrupt other parts of the string.
+    A simple string.replace can cause this if the pattern repeats, e.g. in the timezone.
+    """
+    # The .22 in the timezone should not be touched.
+    date_str = "2024-01-01T12:30:00.22-05:22"
+    dt = parse_iso_datetime(date_str)
+    assert dt.microsecond == 220000
+    assert dt.tzinfo is not None
+    assert dt.tzinfo.utcoffset(dt) == timedelta(seconds=-(5 * 3600 + 22 * 60))
+
+
 def test_format_iso_datetime_aware() -> None:
     dt = datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone(timedelta(hours=2)))
     result = format_iso_datetime(dt)
