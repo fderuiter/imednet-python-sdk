@@ -1,12 +1,12 @@
 import pytest
 
-import imednet.endpoints.sites as sites
-from imednet.models.sites import Site
+import imednet.api.endpoints.sites as sites
+from imednet.api.models.sites import Site
 
 
 def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
     ep = sites.SitesEndpoint(dummy_client, context)
-    paginator_capture = paginator_factory(sites, [{"siteId": 1}])
+    paginator_capture = paginator_factory([{"siteId": 1}])
     patch = patch_build_filter(sites)
 
     with pytest.raises(KeyError):

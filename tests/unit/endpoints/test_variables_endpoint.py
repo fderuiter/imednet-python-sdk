@@ -1,14 +1,14 @@
 import pytest
 
-import imednet.endpoints.variables as variables
-from imednet.models.variables import Variable
+import imednet.api.endpoints.variables as variables
+from imednet.api.models.variables import Variable
 
 
 def test_list_requires_study_key_page_size(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
     ep = variables.VariablesEndpoint(dummy_client, context)
-    capture = paginator_factory(variables, [{"variableId": 1}])
+    capture = paginator_factory([{"variableId": 1}])
     patch = patch_build_filter(variables)
 
     with pytest.raises(KeyError):
@@ -37,7 +37,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 def test_list_caches_by_study_key(dummy_client, context, paginator_factory):
     ep = variables.VariablesEndpoint(dummy_client, context)
-    capture = paginator_factory(variables, [{"variableId": 1}])
+    capture = paginator_factory([{"variableId": 1}])
 
     first = ep.list(study_key="S1")
     second = ep.list(study_key="S1")
@@ -52,7 +52,7 @@ def test_list_caches_by_study_key(dummy_client, context, paginator_factory):
 
 def test_list_refresh_bypasses_cache(dummy_client, context, paginator_factory):
     ep = variables.VariablesEndpoint(dummy_client, context)
-    capture = paginator_factory(variables, [{"variableId": 1}])
+    capture = paginator_factory([{"variableId": 1}])
 
     ep.list(study_key="S1")
     ep.list(study_key="S1", refresh=True)

@@ -4,9 +4,9 @@ import httpx
 import pytest
 import respx
 
-from imednet.core import exceptions
-from imednet.core.client import Client
-from imednet.models.error import ApiErrorDetail
+from imednet.api.core import exceptions
+from imednet.api.core.client import Client
+from imednet.api.models.error import ApiErrorDetail
 
 
 @respx.mock

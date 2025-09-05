@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from imednet.models.queries import Query, QueryComment
-from imednet.models.subjects import Subject
+from imednet.api.models.queries import Query, QueryComment
+from imednet.api.models.subjects import Subject
 from imednet.testing import fake_data
 from imednet.workflows.query_management import QueryManagementWorkflow
 
@@ -108,6 +108,4 @@ def test_get_queries_by_site_intersects_subject_filters() -> None:
 
     sdk.subjects.list.assert_called_once_with("STUDY", site_name="SITE")
 
-    sdk.queries.list.assert_called_once_with(
-        "STUDY", subject_key=["S2"], state="open"
-    )
+    sdk.queries.list.assert_called_once_with("STUDY", subject_key=["S2"], state="open")

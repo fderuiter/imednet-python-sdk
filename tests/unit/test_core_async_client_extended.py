@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, MagicMock
 import httpx
 import pytest
 
-from imednet.core import exceptions
-from imednet.core.async_client import AsyncClient
+from imednet.api.core import exceptions
+from imednet.api.core.async_client import AsyncClient
 
 
 @pytest.mark.asyncio

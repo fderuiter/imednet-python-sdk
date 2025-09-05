@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
+from imednet.api.core.async_client import AsyncClient
+from imednet.api.core.client import Client
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
@@ -50,9 +50,7 @@ def test_poll_job_uses_job_poller(client_factory_mock, job_poller_mock):
     sdk.poll_job("study1", "batch1", interval=10, timeout=100)
 
     job_poller_mock.assert_called_once_with(sdk.jobs.get, is_async=False)
-    poller_instance.run.assert_called_once_with(
-        "study1", "batch1", interval=10, timeout=100
-    )
+    poller_instance.run.assert_called_once_with("study1", "batch1", interval=10, timeout=100)
 
 
 @pytest.mark.asyncio
@@ -73,9 +71,7 @@ async def test_async_poll_job_uses_job_poller(client_factory_mock, job_poller_mo
     await sdk.async_poll_job("study1", "batch1", interval=10, timeout=100)
 
     job_poller_mock.assert_called_once_with(sdk.jobs.async_get, is_async=True)
-    poller_instance.run_async.assert_called_once_with(
-        "study1", "batch1", interval=10, timeout=100
-    )
+    poller_instance.run_async.assert_called_once_with("study1", "batch1", interval=10, timeout=100)
 
 
 @patch("imednet.sdk.ClientFactory")

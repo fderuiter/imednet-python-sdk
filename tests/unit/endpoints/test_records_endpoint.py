@@ -1,9 +1,9 @@
 import pytest
 
-import imednet.endpoints.records as records
-from imednet.core.exceptions import ValidationError
-from imednet.models.records import Record
-from imednet.models.variables import Variable
+import imednet.api.endpoints.records as records
+from imednet.api.core.exceptions import ValidationError
+from imednet.api.models.records import Record
+from imednet.api.models.variables import Variable
 from imednet.validation.cache import SchemaCache
 
 
@@ -11,7 +11,7 @@ def test_list_builds_path_filters_and_data_filter(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
     ep = records.RecordsEndpoint(dummy_client, context)
-    captured = paginator_factory(records, [{"recordId": 1}])
+    captured = paginator_factory([{"recordId": 1}])
     filter_capture = patch_build_filter(records)
 
     result = ep.list(

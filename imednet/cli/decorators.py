@@ -7,7 +7,7 @@ from typing import Callable, Concatenate, ParamSpec, TypeVar
 import typer
 from rich import print
 
-from ..core.exceptions import ApiError
+from ..api.core.exceptions import ApiError
 from ..sdk import ImednetSDK
 
 P = ParamSpec("P")

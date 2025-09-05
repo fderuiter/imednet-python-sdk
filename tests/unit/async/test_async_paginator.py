@@ -1,6 +1,6 @@
 import pytest
 
-from imednet.core.paginator import AsyncPaginator
+from imednet.api.core.paginator import AsyncPaginator
 
 
 class DummyAsyncClient:

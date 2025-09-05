@@ -1,29 +1,29 @@
 import pytest
 
-import imednet.endpoints.codings as codings
-import imednet.endpoints.forms as forms
-import imednet.endpoints.intervals as intervals
-import imednet.endpoints.queries as queries
-import imednet.endpoints.record_revisions as record_revisions
-import imednet.endpoints.records as records
-import imednet.endpoints.sites as sites
-import imednet.endpoints.studies as studies
-import imednet.endpoints.subjects as subjects
-import imednet.endpoints.users as users
-import imednet.endpoints.variables as variables
-import imednet.endpoints.visits as visits
-from imednet.models.codings import Coding
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
-from imednet.models.queries import Query
-from imednet.models.record_revisions import RecordRevision
-from imednet.models.records import Record
-from imednet.models.sites import Site
-from imednet.models.studies import Study
-from imednet.models.subjects import Subject
-from imednet.models.users import User
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
+import imednet.api.endpoints.codings as codings
+import imednet.api.endpoints.forms as forms
+import imednet.api.endpoints.intervals as intervals
+import imednet.api.endpoints.queries as queries
+import imednet.api.endpoints.record_revisions as record_revisions
+import imednet.api.endpoints.records as records
+import imednet.api.endpoints.sites as sites
+import imednet.api.endpoints.studies as studies
+import imednet.api.endpoints.subjects as subjects
+import imednet.api.endpoints.users as users
+import imednet.api.endpoints.variables as variables
+import imednet.api.endpoints.visits as visits
+from imednet.api.models.codings import Coding
+from imednet.api.models.forms import Form
+from imednet.api.models.intervals import Interval
+from imednet.api.models.queries import Query
+from imednet.api.models.record_revisions import RecordRevision
+from imednet.api.models.records import Record
+from imednet.api.models.sites import Site
+from imednet.api.models.studies import Study
+from imednet.api.models.subjects import Subject
+from imednet.api.models.users import User
+from imednet.api.models.variables import Variable
+from imednet.api.models.visits import Visit
 
 CASES = [
     (codings.CodingsEndpoint, codings, Coding, "C1"),
@@ -44,7 +44,7 @@ CASES = [
 @pytest.mark.parametrize("cls,module,model,item_id", CASES)
 def test_list_and_get(dummy_client, context, paginator_factory, cls, module, model, item_id):
     ep = cls(dummy_client, context)
-    capture = paginator_factory(module, [{cls._id_param: item_id}])
+    capture = paginator_factory([{cls._id_param: item_id}])
 
     list_kwargs = {"study_key": "S1"} if getattr(cls, "requires_study_key", True) else {}
     result = ep.list(**list_kwargs)
@@ -74,7 +74,7 @@ async def test_async_list_and_get(
     item_id,
 ):
     ep = cls(dummy_client, context, async_client=dummy_client)
-    capture = async_paginator_factory(module, [{cls._id_param: item_id}])
+    capture = async_paginator_factory([{cls._id_param: item_id}])
 
     list_kwargs = {"study_key": "S1"} if getattr(cls, "requires_study_key", True) else {}
     result = await ep.async_list(**list_kwargs)

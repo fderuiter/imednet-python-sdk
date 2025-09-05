@@ -2,9 +2,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from imednet.core.exceptions import ValidationError
-from imednet.models.forms import Form
-from imednet.models.variables import Variable
+from imednet.api.core.exceptions import ValidationError
+from imednet.api.models.forms import Form
+from imednet.api.models.variables import Variable
 from imednet.validation.cache import SchemaValidator
 
 

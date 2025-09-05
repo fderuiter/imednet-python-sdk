@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from imednet.models.queries import Query, QueryComment
-from imednet.models.subjects import Subject
+from imednet.api.models.queries import Query, QueryComment
+from imednet.api.models.subjects import Subject
 from imednet.workflows.query_management import QueryManagementWorkflow
 
 

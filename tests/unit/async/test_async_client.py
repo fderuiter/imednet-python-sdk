@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from imednet.core.async_client import AsyncClient
+from imednet.api.core.async_client import AsyncClient
 
 
 @pytest.mark.asyncio

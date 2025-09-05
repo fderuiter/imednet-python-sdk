@@ -2,19 +2,19 @@ from typing import Any
 
 import pytest
 
-from imednet.core.exceptions import ServerError
-from imednet.models.codings import Coding
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
-from imednet.models.queries import Query
-from imednet.models.record_revisions import RecordRevision
-from imednet.models.records import Record
-from imednet.models.sites import Site
-from imednet.models.studies import Study
-from imednet.models.subjects import Subject
-from imednet.models.users import User
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
+from imednet.api.core.exceptions import ServerError
+from imednet.api.models.codings import Coding
+from imednet.api.models.forms import Form
+from imednet.api.models.intervals import Interval
+from imednet.api.models.queries import Query
+from imednet.api.models.record_revisions import RecordRevision
+from imednet.api.models.records import Record
+from imednet.api.models.sites import Site
+from imednet.api.models.studies import Study
+from imednet.api.models.subjects import Subject
+from imednet.api.models.users import User
+from imednet.api.models.variables import Variable
+from imednet.api.models.visits import Visit
 from imednet.sdk import ImednetSDK
 
 

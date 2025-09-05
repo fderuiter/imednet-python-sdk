@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from imednet.models.jobs import JobStatus
+from imednet.api.models.jobs import JobStatus
 from imednet.workflows.job_poller import JobPoller, JobTimeoutError
 
 

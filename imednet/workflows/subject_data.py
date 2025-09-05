@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from ..models import Query, Record, Subject, Visit
+from ..api.models import Query, Record, Subject, Visit
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK

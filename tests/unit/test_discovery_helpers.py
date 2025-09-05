@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from imednet.discovery import (
+from imednet.api.discovery import (
     NoLiveDataError,
     discover_form_key,
     discover_interval_name,

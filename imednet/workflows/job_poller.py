@@ -6,7 +6,7 @@ import asyncio
 import time
 from typing import Any, Callable, cast
 
-from ..models import JobStatus
+from ..api.models import JobStatus
 
 TERMINAL_JOB_STATES = {"COMPLETED", "FAILED", "CANCELLED"}
 

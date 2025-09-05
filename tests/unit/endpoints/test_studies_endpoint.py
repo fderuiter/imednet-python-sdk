@@ -1,14 +1,14 @@
 import pytest
 
-import imednet.endpoints.studies as studies
-from imednet.models.studies import Study
+import imednet.api.endpoints.studies as studies
+from imednet.api.models.studies import Study
 
 
 def test_list_builds_path_and_filters(
     monkeypatch, dummy_client, context, paginator_factory, patch_build_filter
 ):
     ep = studies.StudiesEndpoint(dummy_client, context)
-    captured = paginator_factory(studies, [{"studyKey": "S1"}])
+    captured = paginator_factory([{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
 
     result = ep.list(status="active")
@@ -21,7 +21,7 @@ def test_list_builds_path_and_filters(
 
 def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patch_build_filter):
     ep = studies.StudiesEndpoint(dummy_client, context)
-    captured = paginator_factory(studies, [{"studyKey": "S1"}])
+    captured = paginator_factory([{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
 
     res = ep.get(None, "S1")
@@ -34,14 +34,14 @@ def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patc
 
 def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
     ep = studies.StudiesEndpoint(dummy_client, context)
-    paginator_factory(studies, [])
+    paginator_factory([])
     with pytest.raises(ValueError):
         ep.get(None, "missing")
 
 
 def test_list_caches_results(dummy_client, context, paginator_factory):
     ep = studies.StudiesEndpoint(dummy_client, context)
-    captured = paginator_factory(studies, [{"studyKey": "S1"}])
+    captured = paginator_factory([{"studyKey": "S1"}])
 
     first = ep.list()
     second = ep.list()
@@ -52,7 +52,7 @@ def test_list_caches_results(dummy_client, context, paginator_factory):
 
 def test_list_refresh_bypasses_cache(dummy_client, context, paginator_factory):
     ep = studies.StudiesEndpoint(dummy_client, context)
-    captured = paginator_factory(studies, [{"studyKey": "S1"}])
+    captured = paginator_factory([{"studyKey": "S1"}])
 
     ep.list()
     ep.list(refresh=True)

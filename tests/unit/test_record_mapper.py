@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 
 from pydantic import BaseModel, ValidationError
 
-from imednet.models.records import Record
-from imednet.models.variables import Variable
+from imednet.api.models.records import Record
+from imednet.api.models.variables import Variable
 from imednet.workflows.record_mapper import RecordMapper
 
 

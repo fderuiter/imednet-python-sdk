@@ -6,9 +6,9 @@ It provides a simple, robust interface for registering one or more subjects.
 
 from typing import TYPE_CHECKING, List, Optional
 
-from imednet.core.exceptions import ApiError
-from imednet.models.jobs import Job
-from imednet.models.records import RegisterSubjectRequest
+from imednet.api.core.exceptions import ApiError
+from imednet.api.models.jobs import Job
+from imednet.api.models.records import RegisterSubjectRequest
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:

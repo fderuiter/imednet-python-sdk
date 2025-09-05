@@ -22,7 +22,7 @@ import os
 import sys
 from typing import Any, Dict, Tuple
 
-from imednet.discovery import (
+from imednet.api.discovery import (
     NoLiveDataError,
     discover_form_key,
     discover_interval_name,
@@ -30,7 +30,7 @@ from imednet.discovery import (
     discover_study_key,
     discover_subject_key,
 )
-from imednet.models.variables import Variable
+from imednet.api.models.variables import Variable
 from imednet.sdk import ImednetSDK
 from imednet.testing.typed_values import canonical_type, value_for
 

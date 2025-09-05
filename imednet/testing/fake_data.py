@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Optional
 
 from faker import Faker
 
-from imednet.models.forms import Form
-from imednet.models.variables import Variable
+from ..api.models.forms import Form
+from ..api.models.variables import Variable
 from imednet.validation.cache import SchemaCache
 
 faker = Faker()

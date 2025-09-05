@@ -4,7 +4,7 @@ from typing import Any, Union, get_args, get_origin
 import pytest
 from pydantic import BaseModel, ValidationError
 
-import imednet.models as models
+import imednet.api.models as models
 
 
 def _build_value(annotation: Any) -> Any:
@@ -45,7 +45,7 @@ def _build_sample_data(cls: type[BaseModel]) -> Any:
 MODEL_CLASSES = [
     cls
     for cls in (v for v in vars(models).values() if isinstance(v, type))
-    if issubclass(cls, BaseModel) and cls.__module__.startswith("imednet.models")
+    if issubclass(cls, BaseModel) and cls.__module__.startswith("imednet.api.models")
 ]
 
 

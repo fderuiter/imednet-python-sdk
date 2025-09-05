@@ -4,11 +4,11 @@ import inspect
 import types
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
-from ..core.exceptions import UnknownVariableTypeError, ValidationError
-from ..endpoints.forms import FormsEndpoint
-from ..endpoints.variables import VariablesEndpoint
-from ..models.error import ApiErrorDetail
-from ..models.variables import Variable
+from ..api.core.exceptions import UnknownVariableTypeError, ValidationError
+from ..api.endpoints.forms import FormsEndpoint
+from ..api.endpoints.variables import VariablesEndpoint
+from ..api.models.error import ApiErrorDetail
+from ..api.models.variables import Variable
 from ._base import _ValidatorMixin
 
 if TYPE_CHECKING:

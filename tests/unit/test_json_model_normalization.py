@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from imednet.models.json_base import JsonModel
+from imednet.api.models.json_base import JsonModel
 
 
 class SampleModel(JsonModel):

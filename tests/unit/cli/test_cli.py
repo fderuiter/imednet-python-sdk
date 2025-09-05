@@ -8,9 +8,9 @@ import pytest
 from typer.testing import CliRunner
 
 import imednet.cli as cli
-from imednet.core.exceptions import ApiError
+from imednet.api.core.exceptions import ApiError
 from imednet.integrations import export as export_mod
-from imednet.models.error import ApiErrorDetail
+from imednet.api.models.error import ApiErrorDetail
 
 
 @pytest.fixture(autouse=True)

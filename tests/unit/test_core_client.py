@@ -3,10 +3,10 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 
-from imednet.core import exceptions
-from imednet.core.base_client import BaseClient
-from imednet.core.client import Client
-from imednet.core.retry import RetryPolicy
+from imednet.api.core import exceptions
+from imednet.api.core.base_client import BaseClient
+from imednet.api.core.client import Client
+from imednet.api.core.retry import RetryPolicy
 
 
 class DummyResponse:

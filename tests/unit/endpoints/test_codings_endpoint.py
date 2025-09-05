@@ -1,12 +1,12 @@
 import pytest
 
-import imednet.endpoints.codings as codings
-from imednet.models.codings import Coding
+import imednet.api.endpoints.codings as codings
+from imednet.api.models.codings import Coding
 
 
 def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
     ep = codings.CodingsEndpoint(dummy_client, context)
-    capture = paginator_factory(codings, [{"codingId": 1}])
+    capture = paginator_factory([{"codingId": 1}])
     patch = patch_build_filter(codings)
 
     with pytest.raises(KeyError):

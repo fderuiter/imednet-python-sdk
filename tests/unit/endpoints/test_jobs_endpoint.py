@@ -1,7 +1,7 @@
 import pytest
 
-import imednet.endpoints.jobs as jobs
-from imednet.models.jobs import JobStatus
+import imednet.api.endpoints.jobs as jobs
+from imednet.api.models.jobs import JobStatus
 
 
 def test_get_success(dummy_client, context, response_factory):

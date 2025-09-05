@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from imednet.core.exceptions import ValidationError
-from imednet.models.jobs import Job
-from imednet.models.variables import Variable
+from imednet.api.core.exceptions import ValidationError
+from imednet.api.models.jobs import Job
+from imednet.api.models.variables import Variable
 from imednet.testing import fake_data
 from imednet.validation.cache import SchemaCache
 from imednet.workflows.record_update import RecordUpdateWorkflow
