@@ -62,6 +62,8 @@ def parse_bool(v: Any) -> bool:
             return False
     if isinstance(v, (int, float)):
         return bool(v)
+    if isinstance(v, str):
+        raise ValueError(f"Could not parse boolean from string: {v}")
     return False
 
 
