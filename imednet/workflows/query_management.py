@@ -118,7 +118,12 @@ class QueryManagementWorkflow:
 
         if additional_subject_keys:
             # Intersect the site subjects with the subjects from the filter
-            subject_keys = list(set(subject_keys) & set(additional_subject_keys))
+            additional_subjects = set(
+                [additional_subject_keys]
+                if isinstance(additional_subject_keys, str)
+                else additional_subject_keys
+            )
+            subject_keys = list(set(subject_keys) & additional_subjects)
             if not subject_keys:
                 return []
 

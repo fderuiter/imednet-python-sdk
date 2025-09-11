@@ -109,3 +109,22 @@ def test_get_queries_by_site_intersects_subject_filters() -> None:
     sdk.subjects.list.assert_called_once_with("STUDY", site_name="SITE")
 
     sdk.queries.list.assert_called_once_with("STUDY", subject_key=["S2"], state="open")
+
+
+def test_get_queries_by_site_intersects_single_subject_filter() -> None:
+    """Test that a single subject_key string is handled correctly."""
+    sdk = MagicMock()
+    s1 = Subject.from_json(fake_data.fake_subject())
+    s1.subject_key = "S1"
+    s2 = Subject.from_json(fake_data.fake_subject())
+    s2.subject_key = "S2"
+    sdk.subjects.list.return_value = [s1, s2]  # Subjects in the site are S1, S2
+    wf = QueryManagementWorkflow(sdk)
+
+    # Filter asks for subject S1. The intersection is just S1.
+    additional_filter = {"subject_key": "S1", "state": "open"}
+    wf.get_queries_by_site("STUDY", "SITE", additional_filter=additional_filter)
+
+    sdk.subjects.list.assert_called_once_with("STUDY", site_name="SITE")
+
+    sdk.queries.list.assert_called_once_with("STUDY", subject_key=["S1"], state="open")
