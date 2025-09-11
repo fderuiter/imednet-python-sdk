@@ -11,6 +11,16 @@ def test_value_for_each_type() -> None:
     assert typed_values.value_for("checkbox") is True
 
 
+import pytest
+
+
 def test_canonical_type_synonyms() -> None:
     assert typed_values.canonical_type("Text") == "string"
     assert typed_values.canonical_type("int") == "number"
+
+
+def test_typed_value_unsupported_type() -> None:
+    from tests.live.conftest import _typed_value
+
+    with pytest.raises(ValueError, match="No typed value for 'unsupported'"):
+        _typed_value("unsupported")

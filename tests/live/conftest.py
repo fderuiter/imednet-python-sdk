@@ -19,7 +19,10 @@ logger = logging.getLogger(__name__)
 def _typed_value(var_type: str) -> Any:
     """Return a deterministic example value for ``var_type``."""
 
-    return typed_values.value_for(var_type) or ""
+    val = typed_values.value_for(var_type)
+    if val is None:
+        raise ValueError(f"No typed value for {var_type!r}")
+    return val
 
 
 @pytest.fixture(scope="session", autouse=True)
