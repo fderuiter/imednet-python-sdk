@@ -175,7 +175,9 @@ async def test_async_get_record(monkeypatch, async_dummy_client, context, respon
 
 
 @pytest.mark.asyncio
-async def test_async_get_record_not_found(monkeypatch, async_dummy_client, context, response_factory):
+async def test_async_get_record_not_found(
+    monkeypatch, async_dummy_client, context, response_factory
+):
     ep = records.RecordsEndpoint(async_dummy_client, context, async_client=async_dummy_client)
 
     async def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):

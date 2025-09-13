@@ -64,7 +64,7 @@ def parse_bool(v: Any) -> bool:
         return bool(v)
     if isinstance(v, str):
         raise ValueError(f"Could not parse boolean from string: {v}")
-    return False
+    raise TypeError(f"Could not parse boolean from type: {type(v).__name__}")
 
 
 def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
