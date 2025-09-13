@@ -1,4 +1,5 @@
 import datetime
+
 import pytest
 
 from imednet.utils.validators import (
@@ -32,9 +33,6 @@ from imednet.utils.validators import (
         (0, False),
         (1.0, True),
         (0.0, False),
-        ([], False),
-        ({}, False),
-        (None, False),
     ],
 )
 def test_parse_bool(value, expected):
@@ -48,6 +46,16 @@ def test_parse_bool_invalid_string_raises_error():
         parse_bool("not-a-boolean")
     with pytest.raises(ValueError):
         parse_bool("maybe")
+
+
+def test_parse_bool_invalid_type_raises_error():
+    """Test that parse_bool raises a TypeError for invalid types."""
+    with pytest.raises(TypeError):
+        parse_bool([])
+    with pytest.raises(TypeError):
+        parse_bool({})
+    with pytest.raises(TypeError):
+        parse_bool(None)
 
 
 def test_parse_int_or_default():

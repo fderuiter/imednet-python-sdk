@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- `imednet.utils.validators.parse_bool` now raises a `TypeError` for unhandled
+  input types instead of silently returning `False`.
+
 - Renamed `load_config` to `load_config_from_env` for clarity.
 - Refactored `ImednetSDK` to use a `ClientFactory` for client creation.
 - Moved `Workflows` class to `imednet/workflows/__init__.py`.

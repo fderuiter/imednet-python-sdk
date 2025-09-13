@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 import pytest_asyncio
@@ -28,14 +28,10 @@ def dummy_client(response_factory):
     return client
 
 
-from unittest.mock import AsyncMock
-
 @pytest.fixture
 def async_dummy_client(response_factory):
     client = AsyncMock(spec=AsyncClient)
-    client.get.return_value = response_factory(
-        {"data": [], "pagination": {"totalPages": 1}}
-    )
+    client.get.return_value = response_factory({"data": [], "pagination": {"totalPages": 1}})
     return client
 
 

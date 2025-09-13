@@ -1,3 +1,5 @@
+import pytest
+
 from imednet.testing import typed_values
 
 
@@ -9,9 +11,6 @@ def test_value_for_each_type() -> None:
     assert typed_values.value_for("dropdown") == "1"
     assert typed_values.value_for("memo") == "example memo"
     assert typed_values.value_for("checkbox") is True
-
-
-import pytest
 
 
 def test_canonical_type_synonyms() -> None:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import inspect
-import sys
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Protocol, Type
 
 from pydantic import BaseModel
