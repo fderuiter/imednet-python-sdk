@@ -1,6 +1,5 @@
 """Endpoint for managing codings (medical coding) in a study."""
 
-from ..core.paginator import AsyncPaginator, Paginator
 from ..models.codings import Coding
 from ._mixins import ListGetEndpoint
 from .registry import register_endpoint

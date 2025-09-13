@@ -5,7 +5,6 @@ from typing import Any, Optional
 from ..core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from ..models.users import User
 from ._mixins import ListGetEndpoint
-
 from .registry import register_endpoint
 
 

@@ -1,4 +1,5 @@
 import datetime
+
 import pytest
 
 from imednet.utils.validators import (
@@ -129,3 +130,11 @@ def test_parse_datetime_parses_strings() -> None:
     iso = "2024-01-01T00:00:00Z"
     parsed = parse_datetime(iso)
     assert parsed == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+
+
+def test_parse_bool_numeric_strings():
+    """Test that parse_bool handles numeric strings consistently with numbers."""
+    assert parse_bool("2") is True
+    assert parse_bool("-1") is True
+    assert parse_bool("1.5") is True
+    assert parse_bool("0.0") is False

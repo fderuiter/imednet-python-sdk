@@ -56,10 +56,14 @@ def parse_bool(v: Any) -> bool:
         return v
     if isinstance(v, str):
         val = v.strip().lower()
-        if val in ("true", "1", "yes", "y", "t"):
+        if val in ("true", "yes", "y", "t"):
             return True
-        if val in ("false", "0", "no", "n", "f"):
+        if val in ("false", "no", "n", "f"):
             return False
+        try:
+            return bool(float(v))
+        except ValueError:
+            pass  # Fall through to the final check
     if isinstance(v, (int, float)):
         return bool(v)
     if isinstance(v, str):

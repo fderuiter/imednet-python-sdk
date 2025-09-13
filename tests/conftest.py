@@ -30,6 +30,7 @@ def dummy_client(response_factory):
 
 from unittest.mock import AsyncMock
 
+
 @pytest.fixture
 def async_dummy_client(response_factory):
     client = AsyncMock(spec=AsyncClient)
