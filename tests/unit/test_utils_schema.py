@@ -89,3 +89,8 @@ def test_schema_validator_batch_calls_validate_record() -> None:
     assert validator.validate_record.call_count == 2
     validator.validate_record.assert_any_call("ST", {"a": 1})
     validator.validate_record.assert_any_call("ST", {"b": 2})
+
+
+def test_check_type_number_allows_float() -> None:
+    var = _make_var("measurement", "number")
+    _check_type(var.variable_type, 1.5)

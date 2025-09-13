@@ -147,7 +147,7 @@ def _validate_text(value: Any) -> None:
 _TYPE_VALIDATORS: Dict[str, Callable[[Any], None]] = {
     "int": _validate_int,
     "integer": _validate_int,
-    "number": _validate_int,
+    "number": _validate_float,
     "float": _validate_float,
     "decimal": _validate_float,
     "bool": _validate_bool,
