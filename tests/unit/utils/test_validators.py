@@ -33,6 +33,8 @@ from imednet.utils.validators import (
         (0, False),
         (1.0, True),
         (0.0, False),
+        ("1.0", True),
+        ("0.0", False),
     ],
 )
 def test_parse_bool(value, expected):
