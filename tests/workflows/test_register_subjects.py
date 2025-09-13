@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock
 
-from imednet.models.jobs import Job
-from imednet.models.records import RegisterSubjectRequest
-from imednet.models.sites import Site
-from imednet.models.subjects import Subject
+from imednet.api.models.jobs import Job
+from imednet.api.models.records import RegisterSubjectRequest
+from imednet.api.models.sites import Site
+from imednet.api.models.subjects import Subject
 from imednet.testing import fake_data
 from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
 

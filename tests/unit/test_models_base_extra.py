@@ -1,6 +1,6 @@
 import datetime
 
-from imednet.models.base import ApiResponse, Error, Metadata, Pagination, SortField
+from imednet.api.models.base import ApiResponse, Error, Metadata, Pagination, SortField
 
 
 def test_sort_field_defaults():

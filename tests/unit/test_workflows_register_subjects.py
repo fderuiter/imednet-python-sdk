@@ -2,12 +2,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from imednet.core.exceptions import ApiError
-from imednet.models.error import ApiErrorDetail
-from imednet.models.jobs import Job
-from imednet.models.records import RegisterSubjectRequest
-from imednet.models.sites import Site
-from imednet.models.subjects import Subject
+from imednet.api.core.exceptions import ApiError
+from imednet.api.models.error import ApiErrorDetail
+from imednet.api.models.jobs import Job
+from imednet.api.models.records import RegisterSubjectRequest
+from imednet.api.models.sites import Site
+from imednet.api.models.subjects import Subject
 from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
 
 

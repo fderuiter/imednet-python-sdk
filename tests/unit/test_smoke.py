@@ -5,6 +5,6 @@ def test_smoke_import() -> None:
 
 
 def test_role_import() -> None:
-    from imednet.models import Role
+    from imednet.api.models import Role
 
     assert Role.__name__ == "Role"

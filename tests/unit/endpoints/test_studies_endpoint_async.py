@@ -1,7 +1,7 @@
 import pytest
 
-import imednet.endpoints.studies as studies
-from imednet.models.studies import Study
+import imednet.api.endpoints.studies as studies
+from imednet.api.models.studies import Study
 
 
 @pytest.mark.asyncio
@@ -13,7 +13,7 @@ async def test_async_list_builds_path_and_filters(
     patch_build_filter,
 ):
     ep = studies.StudiesEndpoint(dummy_client, context, async_client=dummy_client)
-    captured = async_paginator_factory(studies, [{"studyKey": "S1"}])
+    captured = async_paginator_factory([{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
 
     result = await ep.async_list(status="active")

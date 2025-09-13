@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from imednet.core.paginator import Paginator
+from imednet.api.core.paginator import Paginator
 
 
 class DummyClient:

@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock
 
-from imednet.models.record_revisions import RecordRevision
-from imednet.models.records import Record
-from imednet.models.subjects import Subject
-from imednet.models.visits import Visit
+from imednet.api.models.record_revisions import RecordRevision
+from imednet.api.models.records import Record
+from imednet.api.models.subjects import Subject
+from imednet.api.models.visits import Visit
 from imednet.testing import fake_data
 from imednet.workflows.data_extraction import DataExtractionWorkflow
 

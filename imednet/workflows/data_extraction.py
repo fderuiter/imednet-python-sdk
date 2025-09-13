@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
-from ..models import Record, RecordRevision
+from ..api.models import Record, RecordRevision
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK

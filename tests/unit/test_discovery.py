@@ -2,17 +2,17 @@ from unittest.mock import Mock
 
 import pytest
 
-from imednet.discovery import (
+from imednet.api.discovery import (
     NoLiveDataError,
     discover_form_key,
     discover_interval_name,
     discover_site_name,
     discover_subject_key,
 )
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
-from imednet.models.sites import Site
-from imednet.models.subjects import Subject
+from imednet.api.models.forms import Form
+from imednet.api.models.intervals import Interval
+from imednet.api.models.sites import Site
+from imednet.api.models.subjects import Subject
 
 
 def test_discover_form_key_chooses_subject_form() -> None:

@@ -3,9 +3,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from imednet.models.forms import Form
-from imednet.models.intervals import FormSummary, Interval
-from imednet.models.variables import Variable
+from imednet.api.models.forms import Form
+from imednet.api.models.intervals import FormSummary, Interval
+from imednet.api.models.variables import Variable
 from imednet.workflows.study_structure import async_get_study_structure, get_study_structure
 
 

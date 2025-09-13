@@ -1,0 +1,21 @@
+"""Endpoint for managing studies in the iMedNet system."""
+
+from ..core.paginator import AsyncPaginator, Paginator  # noqa: F401
+from ..models.studies import Study
+from ._mixins import ListGetEndpoint
+from .registry import register_endpoint
+
+
+@register_endpoint("studies")
+class StudiesEndpoint(ListGetEndpoint):
+    """
+    API endpoint for interacting with studies in the iMedNet system.
+
+    Provides methods to list available studies and retrieve specific studies.
+    """
+
+    PATH = ""
+    MODEL = Study
+    _id_param = "studyKey"
+    _cache_name = "_studies_cache"
+    requires_study_key = False

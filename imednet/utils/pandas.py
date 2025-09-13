@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, List
 
 import pandas as pd
 
-from ..models.records import Record
+from ..api.models.records import Record
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checking
     from ..sdk import ImednetSDK

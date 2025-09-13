@@ -1,7 +1,7 @@
 import pytest
 
-import imednet.endpoints.subjects as subjects
-from imednet.models.subjects import Subject
+import imednet.api.endpoints.subjects as subjects
+from imednet.api.models.subjects import Subject
 
 
 def test_list_builds_path_with_default(
@@ -9,7 +9,7 @@ def test_list_builds_path_with_default(
 ):
     context.set_default_study_key("S1")
     ep = subjects.SubjectsEndpoint(dummy_client, context)
-    capture = paginator_factory(subjects, [{"subjectKey": "x"}])
+    capture = paginator_factory([{"subjectKey": "x"}])
     patch = patch_build_filter(subjects)
 
     result = ep.list()

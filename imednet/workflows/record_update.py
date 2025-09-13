@@ -6,7 +6,7 @@ import time
 import warnings
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Literal, Union, cast
 
-from ..models import Job
+from ..api.models import Job
 from ..validation.cache import SchemaCache, SchemaValidator
 from .job_poller import JobPoller
 

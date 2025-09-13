@@ -1,14 +1,14 @@
 import pytest
 
-import imednet.endpoints.forms as forms
-from imednet.models.forms import Form
+import imednet.api.endpoints.forms as forms
+from imednet.api.models.forms import Form
 
 
 def test_list_requires_study_key_and_page_size(
     monkeypatch, dummy_client, context, paginator_factory, patch_build_filter
 ):
     ep = forms.FormsEndpoint(dummy_client, context)
-    captured = paginator_factory(forms, [{"formId": 1}])
+    captured = paginator_factory([{"formId": 1}])
     filter_capture = patch_build_filter(forms)
 
     with pytest.raises(KeyError):
@@ -56,7 +56,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 def test_list_caches_by_study_key(dummy_client, context, paginator_factory):
     ep = forms.FormsEndpoint(dummy_client, context)
-    capture = paginator_factory(forms, [{"formId": 1}])
+    capture = paginator_factory([{"formId": 1}])
 
     first = ep.list(study_key="S1")
     second = ep.list(study_key="S1")
@@ -71,7 +71,7 @@ def test_list_caches_by_study_key(dummy_client, context, paginator_factory):
 
 def test_list_refresh_bypasses_cache(dummy_client, context, paginator_factory):
     ep = forms.FormsEndpoint(dummy_client, context)
-    capture = paginator_factory(forms, [{"formId": 1}])
+    capture = paginator_factory([{"formId": 1}])
 
     ep.list(study_key="S1")
     ep.list(study_key="S1", refresh=True)

@@ -1,7 +1,7 @@
 import pytest
 
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
+from imednet.api.core.async_client import AsyncClient
+from imednet.api.core.client import Client
 
 
 def test_client_strips_api_suffix() -> None:

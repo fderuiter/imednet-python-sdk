@@ -4,9 +4,9 @@ from typing import NoReturn
 
 import pytest
 
-from imednet.discovery import NoLiveDataError
-from imednet.discovery import discover_form_key as _discover_form_key
-from imednet.discovery import discover_study_key as _discover_study_key
+from imednet.api.discovery import NoLiveDataError
+from imednet.api.discovery import discover_form_key as _discover_form_key
+from imednet.api.discovery import discover_study_key as _discover_study_key
 from imednet.sdk import ImednetSDK
 
 

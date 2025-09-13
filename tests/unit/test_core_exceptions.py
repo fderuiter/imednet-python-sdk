@@ -1,5 +1,5 @@
-from imednet.core import exceptions
-from imednet.models.error import ApiErrorDetail
+from imednet.api.core import exceptions
+from imednet.api.models.error import ApiErrorDetail
 
 
 def test_api_error_str_includes_details() -> None:

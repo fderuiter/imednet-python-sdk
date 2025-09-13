@@ -2,7 +2,7 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import imednet.testing.fake_data as fake_data
-from imednet.models import (
+from imednet.api.models import (
     Coding,
     Form,
     Interval,

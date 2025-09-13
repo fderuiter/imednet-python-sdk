@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 import pandas as pd
 from pydantic import BaseModel, Field, ValidationError, create_model
 
-from imednet.endpoints.records import Record as RecordModel  # type: ignore[attr-defined]
-from imednet.endpoints.variables import Variable as VariableModel  # type: ignore[attr-defined]
+from imednet.api.endpoints.records import Record as RecordModel  # type: ignore[attr-defined]
+from imednet.api.endpoints.variables import Variable as VariableModel  # type: ignore[attr-defined]
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK

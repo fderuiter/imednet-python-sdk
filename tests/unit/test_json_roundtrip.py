@@ -1,6 +1,6 @@
 import pytest
 
-from imednet.models import Form, Job, Subject
+from imednet.api.models import Form, Job, Subject
 from imednet.testing import fake_data
 
 

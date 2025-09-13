@@ -1,13 +1,13 @@
 import pytest
 
-import imednet.endpoints.record_revisions as record_revisions
-from imednet.models.record_revisions import RecordRevision
+import imednet.api.endpoints.record_revisions as record_revisions
+from imednet.api.models.record_revisions import RecordRevision
 
 
 def test_list_uses_filters(dummy_client, context, paginator_factory, patch_build_filter):
     context.set_default_study_key("S1")
     ep = record_revisions.RecordRevisionsEndpoint(dummy_client, context)
-    capture = paginator_factory(record_revisions, [{"recordRevisionId": 1}])
+    capture = paginator_factory([{"recordRevisionId": 1}])
     patch = patch_build_filter(record_revisions)
 
     result = ep.list(status="closed")

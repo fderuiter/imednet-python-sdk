@@ -2,9 +2,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from imednet.core.exceptions import UnknownVariableTypeError, ValidationError
-from imednet.models.forms import Form
-from imednet.models.variables import Variable
+from imednet.api.core.exceptions import UnknownVariableTypeError, ValidationError
+from imednet.api.models.forms import Form
+from imednet.api.models.variables import Variable
 from imednet.validation.cache import SchemaCache, SchemaValidator, _check_type, validate_record_data
 
 

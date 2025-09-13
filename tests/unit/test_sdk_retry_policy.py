@@ -1,6 +1,6 @@
 import pytest
 
-from imednet.core.retry import RetryPolicy, RetryState
+from imednet.api.core.retry import RetryPolicy, RetryState
 from imednet.sdk import ImednetSDK
 
 

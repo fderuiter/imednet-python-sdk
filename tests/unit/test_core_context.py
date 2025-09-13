@@ -1,4 +1,4 @@
-from imednet.core.context import Context
+from imednet.api.core.context import Context
 
 
 def test_set_and_clear_default_study_key() -> None:

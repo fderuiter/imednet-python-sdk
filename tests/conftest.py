@@ -3,9 +3,9 @@ from unittest.mock import MagicMock
 import pytest
 import pytest_asyncio
 
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
-from imednet.core.context import Context
+from imednet.api.core.async_client import AsyncClient
+from imednet.api.core.client import Client
+from imednet.api.core.context import Context
 
 
 class DummyResponse:
@@ -22,8 +22,21 @@ def context():
 
 
 @pytest.fixture
-def dummy_client():
-    return MagicMock()
+def dummy_client(response_factory):
+    client = MagicMock()
+    client.get.return_value = response_factory({"data": [], "pagination": {"totalPages": 1}})
+    return client
+
+
+from unittest.mock import AsyncMock
+
+@pytest.fixture
+def async_dummy_client(response_factory):
+    client = AsyncMock(spec=AsyncClient)
+    client.get.return_value = response_factory(
+        {"data": [], "pagination": {"totalPages": 1}}
+    )
+    return client
 
 
 @pytest.fixture
@@ -36,7 +49,7 @@ def response_factory():
 
 @pytest.fixture
 def paginator_factory(monkeypatch):
-    def factory(module, items):
+    def factory(items):
         captured = {"count": 0}
 
         class DummyPaginator:
@@ -51,7 +64,7 @@ def paginator_factory(monkeypatch):
             def __iter__(self):
                 yield from self._items
 
-        monkeypatch.setattr(module, "Paginator", DummyPaginator)
+        monkeypatch.setattr("imednet.api.endpoints._mixins.Paginator", DummyPaginator)
         return captured
 
     return factory
@@ -59,7 +72,7 @@ def paginator_factory(monkeypatch):
 
 @pytest.fixture
 def async_paginator_factory(monkeypatch):
-    def factory(module, items):
+    def factory(items):
         captured = {"count": 0}
 
         class DummyPaginator:
@@ -75,7 +88,7 @@ def async_paginator_factory(monkeypatch):
                 for item in self._items:
                     yield item
 
-        monkeypatch.setattr(module, "AsyncPaginator", DummyPaginator)
+        monkeypatch.setattr("imednet.api.endpoints._mixins.AsyncPaginator", DummyPaginator)
         return captured
 
     return factory
@@ -93,7 +106,7 @@ def patch_build_filter(monkeypatch):
         if hasattr(module, "build_filter_string"):
             monkeypatch.setattr(module, "build_filter_string", fake)
         else:
-            import imednet.endpoints._mixins as mixins
+            import imednet.api.endpoints._mixins as mixins
 
             monkeypatch.setattr(mixins, "build_filter_string", fake)
         return captured
