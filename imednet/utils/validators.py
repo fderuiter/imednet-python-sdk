@@ -60,6 +60,10 @@ def parse_bool(v: Any) -> bool:
             return True
         if val in ("false", "0", "no", "n", "f"):
             return False
+        try:
+            return bool(float(val))
+        except ValueError:
+            pass  # Fall through to the final error
     if isinstance(v, (int, float)):
         return bool(v)
     if isinstance(v, str):
