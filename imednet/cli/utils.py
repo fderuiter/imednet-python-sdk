@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 
 import typer
 from rich import print
+from rich.table import Table
 
 from ..config import load_config
 from ..sdk import ImednetSDK
@@ -63,11 +64,46 @@ def echo_fetch(name: str, study_key: str | None = None) -> None:
 
 def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None) -> None:
     """Print list output with a standardized format."""
-    if items:
-        print(f"Found {len(items)} {label}:")
-        print(items)
-    else:
+    if not items:
         print(empty_msg or f"No {label} found.")
+        return
+
+    print(f"Found {len(items)} {label}:")
+
+    # Try to determine if we can display this as a table
+    first = items[0]
+    data_list: List[Dict[str, Any]] = []
+
+    if hasattr(first, "model_dump"):
+        data_list = [item.model_dump() for item in items]
+    elif hasattr(first, "dict"):
+        data_list = [item.dict() for item in items]
+    elif isinstance(first, dict):
+        data_list = list(items)  # type: ignore
+
+    if not data_list:
+        print(items)
+        return
+
+    table = Table(show_header=True, header_style="bold magenta")
+    headers = list(data_list[0].keys())
+
+    for header in headers:
+        table.add_column(str(header).replace("_", " ").title())
+
+    for item in data_list:
+        row = []
+        for k in headers:
+            val = item.get(k)
+            if val is None:
+                row.append("-")
+            elif isinstance(val, (list, dict)):
+                row.append(str(val))
+            else:
+                row.append(str(val))
+        table.add_row(*row)
+
+    print(table)
 
 
 def register_list_command(
