@@ -43,7 +43,12 @@ Environment Variables
 Using a .env File
 -----------------
 
-Create a ``.env`` file in the project root to store the variables above::
+You can create a ``.env`` file in the project root to store these variables.
+A template is provided in ``.env.example``::
+
+    cp .env.example .env
+
+Edit the file to add your keys::
 
     IMEDNET_API_KEY=your_api_key
     IMEDNET_SECURITY_KEY=your_security_key
