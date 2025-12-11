@@ -52,6 +52,12 @@ jobs:
           poetry run black --check .
           poetry run isort --check --profile black .
           poetry run mypy imednet
+      - name: Run quick start check
+        env:
+          IMEDNET_API_KEY: dummy
+          IMEDNET_SECURITY_KEY: dummy
+        run: |
+          poetry run python scripts/quick_start_test.py
       - name: Unit tests
         run: |
           poetry run pytest -q --cov=imednet --cov-report=xml --cov-fail-under=90
