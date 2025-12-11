@@ -117,10 +117,11 @@ See [docs/async_quick_start.rst](docs/async_quick_start.rst) for more details.
 ## Configuration
 
 The SDK and CLI read credentials from environment variables such as
-`IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. See
-[configuration](docs/configuration.rst) for the complete list, optional
-settings, and `.env` support. Use `imednet.config.load_config()` to access these
-values in your code.
+`IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. You can set these in your shell or
+use a `.env` file. Copy `.env.example` to `.env` to get started.
+
+See [configuration](docs/configuration.rst) for the complete list of options.
+Use `imednet.config.load_config()` to access these values in your code.
 
 ---
 
