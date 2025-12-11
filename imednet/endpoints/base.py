@@ -3,6 +3,7 @@ Base endpoint mix-in for all API resource endpoints.
 """
 
 from typing import Any, Dict, Optional
+from urllib.parse import quote
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
@@ -49,7 +50,8 @@ class BaseEndpoint:
         for seg in segments:
             text = str(seg).strip("/")
             if text:
-                parts.append(text)
+                # Encode path segments to prevent traversal and injection
+                parts.append(quote(text, safe=""))
         return "/" + "/".join(parts)
 
     # ------------------------------------------------------------------
