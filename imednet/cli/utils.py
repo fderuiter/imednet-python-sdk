@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 import typer
@@ -62,6 +63,21 @@ def echo_fetch(name: str, study_key: str | None = None) -> None:
     print(msg)
 
 
+def _format_cell_value(value: Any) -> str:
+    """Format a single cell value for display."""
+    if value is None:
+        return "[dim]-[/dim]"
+    if isinstance(value, bool):
+        return "[green]True[/green]" if value else "[dim]False[/dim]"
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    if isinstance(value, (list, dict)):
+        # Truncate very long list/dict representations
+        s = str(value)
+        return f"{s[:60]}..." if len(s) > 60 else s
+    return str(value)
+
+
 def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None) -> None:
     """Print list output with a standardized format."""
     if not items:
@@ -95,12 +111,7 @@ def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None)
         row = []
         for k in headers:
             val = item.get(k)
-            if val is None:
-                row.append("-")
-            elif isinstance(val, (list, dict)):
-                row.append(str(val))
-            else:
-                row.append(str(val))
+            row.append(_format_cell_value(val))
         table.add_row(*row)
 
     print(table)
