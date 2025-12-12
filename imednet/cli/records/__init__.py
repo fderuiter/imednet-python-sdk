@@ -9,7 +9,7 @@ from rich import print
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
-from ..utils import STUDY_KEY_ARG, echo_fetch
+from ..utils import STUDY_KEY_ARG, fetching_status
 
 app = typer.Typer(name="records", help="Manage records within a study.")
 
@@ -32,8 +32,8 @@ def list_records(
     if output and output.lower() not in {"json", "csv"}:
         print("[bold red]Invalid output format. Use 'json' or 'csv'.[/bold red]")
         raise typer.Exit(code=1)
-    echo_fetch("records", study_key)
-    records = sdk.records.list(study_key)
+    with fetching_status("records", study_key):
+        records = sdk.records.list(study_key)
     rows = [r.model_dump(by_alias=True) for r in records]
     df = pd.DataFrame(rows)
 

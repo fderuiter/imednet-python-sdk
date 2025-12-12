@@ -1,16 +1,24 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from imednet.cli.utils import display_list, echo_fetch
+from imednet.cli.utils import display_list, fetching_status
 
 
-def test_echo_fetch_records(capfd: pytest.CaptureFixture[str]) -> None:
-    """echo_fetch prints study-specific fetching message."""
-    echo_fetch("records", "ST")
-    captured = capfd.readouterr()
-    assert captured.out == "Fetching records for study 'ST'...\n"
-    assert captured.err == ""
+def test_fetching_status_records() -> None:
+    """fetching_status shows status spinner with message."""
+    with patch("imednet.cli.utils.console") as mock_console:
+        mock_status = mock_console.status.return_value
+        mock_status.__enter__.return_value = None
+
+        with fetching_status("records", "ST"):
+            pass
+
+        mock_console.status.assert_called_with(
+            "[bold blue]Fetching records for study 'ST'...[/bold blue]", spinner="dots"
+        )
+        mock_status.__enter__.assert_called()
+        mock_status.__exit__.assert_called()
 
 
 def test_display_list_non_empty(capfd: pytest.CaptureFixture[str]) -> None:
@@ -41,15 +49,17 @@ def test_display_list_table(capfd: pytest.CaptureFixture[str]) -> None:
     assert "My Key" in captured.out  # Header title-ized and underscores replaced
     assert "my_val" in captured.out
 
+
 def test_display_list_formatting(capfd: pytest.CaptureFixture[str]) -> None:
     """display_list formats booleans and datetimes."""
     from datetime import datetime
+
     obj = MagicMock()
     obj.model_dump.return_value = {
         "active": True,
         "inactive": False,
         "date": datetime(2023, 1, 1, 12, 0, 0),
-        "none": None
+        "none": None,
     }
     display_list([obj], "items")
     captured = capfd.readouterr()

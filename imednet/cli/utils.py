@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 import typer
 from rich import print
+from rich.console import Console
 from rich.table import Table
 
 from ..config import load_config
@@ -12,6 +14,8 @@ from ..sdk import ImednetSDK
 
 # Shared CLI argument for specifying a study key
 STUDY_KEY_ARG = typer.Argument(..., help="The key identifying the study.")
+
+console = Console()
 
 
 def get_sdk() -> ImednetSDK:
@@ -57,10 +61,12 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
     return filter_dict
 
 
-def echo_fetch(name: str, study_key: str | None = None) -> None:
-    """Print a standardized fetching message."""
+@contextmanager
+def fetching_status(name: str, study_key: str | None = None):
+    """Context manager to show a spinner while fetching data."""
     msg = f"Fetching {name} for study '{study_key}'..." if study_key else f"Fetching {name}..."
-    print(msg)
+    with console.status(f"[bold blue]{msg}[/bold blue]", spinner="dots"):
+        yield
 
 
 def _format_cell_value(value: Any) -> str:
@@ -134,8 +140,8 @@ def register_list_command(
         @app.command("list")
         @with_sdk
         def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
-            echo_fetch(name, study_key)
-            items = getattr(sdk, attr).list(study_key)
+            with fetching_status(name, study_key):
+                items = getattr(sdk, attr).list(study_key)
             display_list(items, name, empty_msg)
 
         return
@@ -145,8 +151,8 @@ def register_list_command(
         @app.command("list")
         @with_sdk
         def list_cmd_no_study(sdk: ImednetSDK) -> None:
-            echo_fetch(name)
-            items = getattr(sdk, attr).list()
+            with fetching_status(name):
+                items = getattr(sdk, attr).list()
             display_list(items, name, empty_msg)
 
         return
