@@ -73,7 +73,10 @@ class RecordsEndpoint(ListGetEndpoint):
         """
         if schema is not None:
             for rec in records_data:
-                fk = rec.get("formKey") or schema.form_key_from_id(rec.get("formId", 0))
+                fk = rec.get("formKey") or rec.get("form_key")
+                if not fk:
+                    fid = rec.get("formId") or rec.get("form_id") or 0
+                    fk = schema.form_key_from_id(fid)
                 if fk:
                     validate_record_data(schema, fk, rec.get("data", {}))
 
@@ -97,7 +100,10 @@ class RecordsEndpoint(ListGetEndpoint):
         self._require_async_client()
         if schema is not None:
             for rec in records_data:
-                fk = rec.get("formKey") or schema.form_key_from_id(rec.get("formId", 0))
+                fk = rec.get("formKey") or rec.get("form_key")
+                if not fk:
+                    fid = rec.get("formId") or rec.get("form_id") or 0
+                    fk = schema.form_key_from_id(fid)
                 if fk:
                     validate_record_data(schema, fk, rec.get("data", {}))
 
