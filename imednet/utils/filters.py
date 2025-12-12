@@ -42,7 +42,8 @@ def build_filter_string(
     def _format(val: Any) -> str:
         if isinstance(val, str):
             if re.search(r"[^A-Za-z0-9_.-]", val):
-                escaped = val.replace('"', r"\"")
+                # Escape backslashes first to prevent escape injection
+                escaped = val.replace("\\", "\\\\").replace('"', r"\"")
                 return f'"{escaped}"'
             return val
         return str(val)
