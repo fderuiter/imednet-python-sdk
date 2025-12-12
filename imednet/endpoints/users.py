@@ -2,7 +2,6 @@
 
 from typing import Any, Optional
 
-from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
 

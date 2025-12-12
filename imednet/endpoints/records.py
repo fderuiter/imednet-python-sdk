@@ -3,7 +3,6 @@
 import inspect
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
