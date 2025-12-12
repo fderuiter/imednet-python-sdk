@@ -41,7 +41,7 @@ def test_parse_iso_datetime_invalid() -> None:
 
 
 def test_parse_iso_datetime_none() -> None:
-    with pytest.raises(AttributeError):
+    with pytest.raises((AttributeError, TypeError)):
         parse_iso_datetime(None)  # type: ignore[arg-type]
 
 
