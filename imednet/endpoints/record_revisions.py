@@ -1,6 +1,5 @@
 """Endpoint for retrieving record revision history in a study."""
 
-from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.record_revisions import RecordRevision
 

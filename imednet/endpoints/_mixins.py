@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import inspect
-import sys
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Protocol, Type
 
 from pydantic import BaseModel
@@ -175,13 +174,12 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
     def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
         client: Client | AsyncClient
         paginator: type[Paginator] | type[AsyncPaginator]
-        module = sys.modules[self.__class__.__module__]
         if is_async:
             client = self._require_async_client()
-            paginator = getattr(module, "AsyncPaginator")
+            paginator = AsyncPaginator
         else:
             client = self._client
-            paginator = getattr(module, "Paginator")
+            paginator = Paginator
         return self._list_impl(client, paginator, **kwargs)
 
     def _get_common(
@@ -193,13 +191,12 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
     ) -> Any:
         client: Client | AsyncClient
         paginator: type[Paginator] | type[AsyncPaginator]
-        module = sys.modules[self.__class__.__module__]
         if is_async:
             client = self._require_async_client()
-            paginator = getattr(module, "AsyncPaginator")
+            paginator = AsyncPaginator
         else:
             client = self._client
-            paginator = getattr(module, "Paginator")
+            paginator = Paginator
         return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
 
     def list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
