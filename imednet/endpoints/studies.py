@@ -1,6 +1,5 @@
 """Endpoint for managing studies in the iMedNet system."""
 
-from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.studies import Study
 
