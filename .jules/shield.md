@@ -5,3 +5,7 @@
 ## 2024-05-23 - Vulnerable dependencies
 **Discovery:** Found CVE-2025-66471/66418 (urllib3) and CVE-2025-66221 (werkzeug) via pip-audit.
 **Defense:** Updated urllib3 to ^2.6.0 and werkzeug to >=3.1.4 to patch vulnerabilities.
+
+## 2025-12-12 - Silent Validation Skip
+**Discovery:** Input validation in `RecordsEndpoint.create` was silently skipped if the user provided snake_case `form_key` (Pythonic) instead of camelCase `formKey` (API spec), leading to invalid data potentially being sent to the API.
+**Defense:** Updated `create` and `async_create` to attempt resolving `formKey`, `form_key`, `formId`, and `form_id` before falling back to default, ensuring validation runs for both conventions.

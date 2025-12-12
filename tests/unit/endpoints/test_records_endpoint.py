@@ -98,3 +98,17 @@ def test_create_validates_data(dummy_client, context, response_factory):
     # valid
     ep.create("S1", [{"formKey": "F1", "data": {"age": 5}}], schema=schema)
     dummy_client.post.assert_called_once()
+
+def test_create_validates_data_with_snake_case_keys(dummy_client, context, response_factory):
+    ep = records.RecordsEndpoint(dummy_client, context)
+    schema = SchemaCache()
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    schema._form_variables = {"F1": {"age": var}}
+    schema._form_id_to_key = {1: "F1"}
+
+    dummy_client.post.return_value = response_factory({"jobId": "1"})
+
+    # Should raise validation error because "bad" is not in schema
+    # Even if we use snake_case "form_key"
+    with pytest.raises(ValidationError):
+        ep.create("S1", [{"form_key": "F1", "data": {"bad": 1}}], schema=schema)
