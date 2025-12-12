@@ -41,15 +41,17 @@ def test_display_list_table(capfd: pytest.CaptureFixture[str]) -> None:
     assert "My Key" in captured.out  # Header title-ized and underscores replaced
     assert "my_val" in captured.out
 
+
 def test_display_list_formatting(capfd: pytest.CaptureFixture[str]) -> None:
     """display_list formats booleans and datetimes."""
     from datetime import datetime
+
     obj = MagicMock()
     obj.model_dump.return_value = {
         "active": True,
         "inactive": False,
         "date": datetime(2023, 1, 1, 12, 0, 0),
-        "none": None
+        "none": None,
     }
     display_list([obj], "items")
     captured = capfd.readouterr()

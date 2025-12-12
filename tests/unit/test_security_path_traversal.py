@@ -1,9 +1,9 @@
-
-import pytest
 from unittest.mock import MagicMock
-from imednet.endpoints.base import BaseEndpoint
+
 from imednet.core.client import Client
 from imednet.core.context import Context
+from imednet.endpoints.base import BaseEndpoint
+
 
 def test_build_path_security():
     client = MagicMock(spec=Client)

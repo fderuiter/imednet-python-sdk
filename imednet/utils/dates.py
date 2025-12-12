@@ -5,7 +5,14 @@ Utility functions for parsing and formatting ISO date/time strings.
 from __future__ import annotations
 
 import re
+import sys
 from datetime import datetime, timezone
+
+# Python 3.11+ supports Z and any precision of fractional seconds in fromisoformat
+_IS_PY311_OR_GREATER = sys.version_info >= (3, 11)
+
+# Pre-compile regex for older python versions
+_ISO8601_FRAC_REGEX = re.compile(r"\.(\d+)(?=[+-]\d{2}:\d{2}|$)")
 
 
 def parse_iso_datetime(date_str: str) -> datetime:
@@ -23,10 +30,13 @@ def parse_iso_datetime(date_str: str) -> datetime:
     Raises:
         ValueError: If the input string is not a valid ISO format.
     """
+    if _IS_PY311_OR_GREATER:
+        return datetime.fromisoformat(date_str)
+
     if date_str.endswith("Z"):
         date_str = date_str[:-1] + "+00:00"
 
-    match = re.search(r"\.(\d+)(?=[+-]\d{2}:\d{2}|$)", date_str)
+    match = _ISO8601_FRAC_REGEX.search(date_str)
     if match:
         frac = match.group(1)
         if 1 <= len(frac) <= 5:

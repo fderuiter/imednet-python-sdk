@@ -99,6 +99,7 @@ def test_create_validates_data(dummy_client, context, response_factory):
     ep.create("S1", [{"formKey": "F1", "data": {"age": 5}}], schema=schema)
     dummy_client.post.assert_called_once()
 
+
 def test_create_validates_data_with_snake_case_keys(dummy_client, context, response_factory):
     ep = records.RecordsEndpoint(dummy_client, context)
     schema = SchemaCache()
