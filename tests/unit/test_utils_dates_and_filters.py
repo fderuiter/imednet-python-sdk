@@ -99,3 +99,10 @@ def test_build_filter_string_quotes() -> None:
 def test_build_filter_string_quote_spaces() -> None:
     result = build_filter_string({"site_name": "A B"})
     assert result == 'siteName=="A B"'
+
+
+def test_build_filter_string_backslashes() -> None:
+    result = build_filter_string({"path": r"C:\Temp", "quote": r"A\"B"})
+    # path: C:\Temp -> "C:\\Temp"
+    # quote: A\"B -> "A\\\"B"
+    assert result == r'path=="C:\\Temp";quote=="A\\\"B"'
