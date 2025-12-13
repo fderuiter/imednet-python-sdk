@@ -55,6 +55,21 @@ class ListGetEndpointMixin:
             return getattr(self.MODEL, "from_json")(item)
         return self.MODEL.model_validate(item)
 
+    def _update_local_cache(
+        self,
+        result: list[BaseModel],
+        study: str | None,
+        has_filters: bool,
+        cache: Any,
+    ) -> None:
+        if has_filters:
+            return
+
+        if self.requires_study_key and cache is not None:
+            cache[study] = result
+        elif not self.requires_study_key and self._cache_name:
+            setattr(self, self._cache_name, result)
+
     def _list_impl(
         self: Any,
         client: Client | AsyncClient,
@@ -113,21 +128,13 @@ class ListGetEndpointMixin:
 
             async def _collect() -> list[BaseModel]:
                 result = [self._parse_item(item) async for item in paginator]
-                if not other_filters:
-                    if self.requires_study_key and cache is not None:
-                        cache[study] = result
-                    elif self._cache_name:
-                        setattr(self, self._cache_name, result)
+                self._update_local_cache(result, study, bool(other_filters), cache)
                 return result
 
             return _collect()
 
         result = [self._parse_item(item) for item in paginator]
-        if not other_filters:
-            if self.requires_study_key and cache is not None:
-                cache[study] = result
-            elif self._cache_name:
-                setattr(self, self._cache_name, result)
+        self._update_local_cache(result, study, bool(other_filters), cache)
         return result
 
     def _get_impl(
