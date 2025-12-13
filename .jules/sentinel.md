@@ -7,3 +7,8 @@
 **Vulnerability:** The `build_filter_string` function in `imednet/utils/filters.py` escaped double quotes but not backslashes. This allowed a string ending with a backslash to escape its closing quote (`"..."\`) causing the subsequent part of the filter string to be interpreted as part of the string literal, potentially altering the query logic.
 **Learning:** String escaping must always be comprehensive. When generating code or query strings that use backslash escapes, you must escape the escape character itself first.
 **Prevention:** Always escape `\` to `\\` before escaping other characters like `"` to `\"` in C-style/JSON-style strings.
+
+## 2025-12-13 - Secrets Leaked in Dataclass Repr
+**Vulnerability:** The `Config` class, implemented as a dataclass, automatically generated a `__repr__` method that included all fields, including `api_key` and `security_key`. This meant that logging the config object or printing it during debugging would expose sensitive credentials.
+**Learning:** Python dataclasses (and Pydantic models by default) include all fields in their string representation. Convenience features can accidentally defeat security by obscurity/minimization principles.
+**Prevention:** Explicitly override `__repr__` (or `__str__`) for any class holding sensitive information. Use a redaction pattern (e.g. `********`) for secret fields.
