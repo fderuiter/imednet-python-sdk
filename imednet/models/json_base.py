@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Callable, Dict, Tuple, Union, get_args, get_origin
+from typing import Any, Callable, Dict, Union, get_args, get_origin
 
 from pydantic import BaseModel, ConfigDict, field_validator
 from typing_extensions import Self
@@ -15,7 +15,7 @@ from imednet.utils.validators import (
     parse_str_or_default,
 )
 
-_NORMALIZERS: Dict[Tuple[type, str], Callable[[Any], Any]] = {}
+_NORMALIZERS: Dict[type, Dict[str, Callable[[Any], Any]]] = {}
 
 
 def _identity(v: Any) -> Any:
@@ -23,9 +23,8 @@ def _identity(v: Any) -> Any:
 
 
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
-    key = (cls, field_name)
-    if key in _NORMALIZERS:
-        return _NORMALIZERS[key]
+    if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
+        return _NORMALIZERS[cls][field_name]
 
     field = cls.model_fields[field_name]
     annotation = field.annotation
@@ -78,7 +77,9 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
         else:
             normalizer = parse_datetime
 
-    _NORMALIZERS[key] = normalizer
+    if cls not in _NORMALIZERS:
+        _NORMALIZERS[cls] = {}
+    _NORMALIZERS[cls][field_name] = normalizer
     return normalizer
 
 
@@ -97,5 +98,9 @@ class JsonModel(BaseModel):
         """Normalize common primitive types before validation."""
         if not info.field_name:
             return v
-        normalizer = _get_normalizer(cls, info.field_name)
-        return normalizer(v)
+
+        # Bolt Optimization: Avoid function call overhead in hot path
+        try:
+            return _NORMALIZERS[cls][info.field_name](v)
+        except KeyError:
+            return _get_normalizer(cls, info.field_name)(v)
