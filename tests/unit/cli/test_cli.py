@@ -147,7 +147,11 @@ def test_extract_records_api_error(
 
 def test_records_list_success(runner: CliRunner, sdk: MagicMock) -> None:
     rec = MagicMock()
-    rec.model_dump.return_value = {"recordId": 1, "subjectKey": "S1"}
+    rec.record_id = 1
+    rec.subject_key = "S1"
+    rec.form_key = "F1"
+    rec.record_status = "Active"
+    rec.date_created = "2023-01-01"
     sdk.records.list.return_value = [rec]
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 0
