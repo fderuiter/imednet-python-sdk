@@ -13,6 +13,9 @@ class Config:
     security_key: str
     base_url: Optional[str] = None
 
+    def __repr__(self) -> str:
+        return f"Config(api_key='********', security_key='********', base_url={self.base_url!r})"
+
 
 def load_config(
     api_key: Optional[str] = None,
