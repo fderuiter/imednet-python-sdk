@@ -9,3 +9,7 @@
 ## 2025-12-12 - Silent Validation Skip
 **Discovery:** Input validation in `RecordsEndpoint.create` was silently skipped if the user provided snake_case `form_key` (Pythonic) instead of camelCase `formKey` (API spec), leading to invalid data potentially being sent to the API.
 **Defense:** Updated `create` and `async_create` to attempt resolving `formKey`, `form_key`, `formId`, and `form_id` before falling back to default, ensuring validation runs for both conventions.
+
+## 2025-12-13 - Missing Schema Validators
+**Discovery:** The `validate_record_data` function crashes with `UnknownVariableTypeError` when encountering valid API variable types (`date`, `datetime`, `time`, `radio`, `dropdown`, `checkbox`) because they were missing from the `_TYPE_VALIDATORS` map.
+**Defense:** Added the missing validators to `imednet/validation/cache.py`, mapping them to string validation, and added comprehensive test coverage for these types in `test_utils_schema.py`.

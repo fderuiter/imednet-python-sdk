@@ -112,6 +112,12 @@ _TYPE_VALIDATORS: Dict[str, Callable[[Any], None]] = {
     "boolean": _validate_bool,
     "text": _validate_text,
     "string": _validate_text,
+    "date": _validate_text,
+    "datetime": _validate_text,
+    "time": _validate_text,
+    "radio": _validate_text,
+    "dropdown": _validate_text,
+    "checkbox": _validate_text,
 }
 
 

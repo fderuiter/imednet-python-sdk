@@ -89,3 +89,38 @@ def test_schema_validator_batch_calls_validate_record() -> None:
     assert validator.validate_record.call_count == 2
     validator.validate_record.assert_any_call("ST", {"a": 1})
     validator.validate_record.assert_any_call("ST", {"b": 2})
+
+
+def test_validate_date_types_should_pass() -> None:
+    cache = SchemaCache()
+    cache._form_variables["F1"] = {
+        "dob": _make_var("dob", "date"),
+        "timestamp": _make_var("timestamp", "datetime"),
+        "alarm": _make_var("alarm", "time"),
+    }
+
+    # These should pass validation
+    validate_record_data(cache, "F1", {
+        "dob": "2024-01-01",
+        "timestamp": "2024-01-01T12:00:00",
+        "alarm": "12:00:00",
+    })
+
+
+def test_validate_selection_types_should_pass() -> None:
+    cache = SchemaCache()
+    cache._form_variables["F1"] = {
+        "gender": _make_var("gender", "radio"),
+        "country": _make_var("country", "dropdown"),
+        "choices": _make_var("choices", "checkbox"),
+    }
+
+    validate_record_data(cache, "F1", {
+        "gender": "M",
+        "country": "US",
+        "choices": "A,B",  # Assuming string representation for now
+    })
+
+    # Verify strict string validation for these types
+    with pytest.raises(ValidationError):
+        validate_record_data(cache, "F1", {"gender": 123})

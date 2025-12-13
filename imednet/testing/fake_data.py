@@ -131,6 +131,12 @@ def _fake_value(var_type: str) -> Any:
         return faker.pyfloat(left_digits=2, right_digits=2, positive=True)
     if var_type in {"bool", "boolean"}:
         return faker.boolean()
+    if var_type == "date":
+        return faker.date()
+    if var_type == "time":
+        return faker.time()
+    if var_type == "datetime":
+        return _timestamp()
     return faker.word()
 
 
