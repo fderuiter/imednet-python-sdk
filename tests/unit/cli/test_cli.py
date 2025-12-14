@@ -1,6 +1,7 @@
 import importlib.util
 import os
 import sys
+from datetime import datetime
 from types import ModuleType
 from unittest.mock import MagicMock
 
@@ -91,13 +92,22 @@ def test_sites_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_subjects_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.subjects.list.return_value = ["S1"]
+    mock_subject = MagicMock()
+    mock_subject.subject_key = "S1"
+    mock_subject.subject_status = "Screened"
+    mock_subject.site_name = "Site 1"
+    mock_subject.enrollment_start_date = datetime(2023, 1, 1)
+    mock_subject.keywords = [MagicMock(keyword_name="Diabetes")]
+
+    sdk.subjects.list.return_value = [mock_subject]
     result = runner.invoke(
         cli.app,
         ["subjects", "list", "STUDY", "--filter", "subject_status=Screened"],
     )
     assert result.exit_code == 0
     sdk.subjects.list.assert_called_once_with("STUDY", subject_status="Screened")
+    assert "S1" in result.stdout
+    assert "Diabetes" in result.stdout
 
 
 def test_subjects_list_invalid_filter(runner: CliRunner, sdk: MagicMock) -> None:
