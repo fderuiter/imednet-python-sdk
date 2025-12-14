@@ -9,3 +9,6 @@
 ## 2025-12-12 - Silent Validation Skip
 **Discovery:** Input validation in `RecordsEndpoint.create` was silently skipped if the user provided snake_case `form_key` (Pythonic) instead of camelCase `formKey` (API spec), leading to invalid data potentially being sent to the API.
 **Defense:** Updated `create` and `async_create` to attempt resolving `formKey`, `form_key`, `formId`, and `form_id` before falling back to default, ensuring validation runs for both conventions.
+## 2025-12-13 - Async Validation Gap
+**Discovery:** Validation logic in `RecordsEndpoint.async_create` was completely untested, and the fallback mechanism from `formId` to `formKey` in both sync and async methods had no coverage, potentially allowing invalid data submission if `formKey` was missing.
+**Defense:** Added `tests/unit/endpoints/test_records_endpoint_extra.py` with specific sad-path and boundary tests for `formId` fallback and async validation flow, bringing `records.py` coverage to 100%.
