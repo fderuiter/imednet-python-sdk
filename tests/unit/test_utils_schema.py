@@ -14,7 +14,6 @@ def _make_var(name: str, var_type: str = "integer") -> Variable:
 
 def test_schema_cache_refresh() -> None:
     forms = MagicMock()
-    forms.list.return_value = [Form(form_id=1, form_key="F1")]
     variables = MagicMock()
     var = _make_var("age")
     variables.list.return_value = [var]
@@ -24,8 +23,8 @@ def test_schema_cache_refresh() -> None:
 
     assert cache.form_key_from_id(1) == "F1"
     assert cache.variables_for_form("F1")["age"] is var
-    forms.list.assert_called_once_with(study_key="S")
-    variables.list.assert_called_once_with(study_key="S", formId=1)
+    forms.list.assert_not_called()
+    variables.list.assert_called_once_with(study_key="S", refresh=True)
 
 
 def test_check_type_int() -> None:

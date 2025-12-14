@@ -45,10 +45,10 @@ class BaseSchemaCache(Generic[_TClient]):
     ) -> None:
         self._form_variables.clear()
         self._form_id_to_key.clear()
-        for form in forms.list(study_key=study_key):
-            self._form_id_to_key[form.form_id] = form.form_key
-            vars_for_form = variables.list(study_key=study_key, formId=form.form_id)
-            self._form_variables[form.form_key] = {v.variable_name: v for v in vars_for_form}
+        vars_list = variables.list(study_key=study_key, refresh=True)
+        for var in vars_list:
+            self._form_id_to_key[var.form_id] = var.form_key
+            self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
 
     def refresh(
         self,
