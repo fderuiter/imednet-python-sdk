@@ -7,6 +7,13 @@ from imednet.utils.dates import parse_iso_datetime  # Centralized date parsing
 
 T = TypeVar("T")
 
+# Pre-computed sets for boolean parsing optimization
+_TRUE_LOWER = {"true", "1", "yes", "y", "t"}
+_FALSE_LOWER = {"false", "0", "no", "n", "f"}
+# Include common casing variants to avoid .strip().lower() allocation in hot paths
+_TRUE_VARIANTS = _TRUE_LOWER | {"True", "TRUE"}
+_FALSE_VARIANTS = _FALSE_LOWER | {"False", "FALSE"}
+
 
 def _or_default(value: Any, default: Any) -> Any:
     """Return value if not None, else default."""
@@ -35,10 +42,17 @@ def parse_bool(v: Any) -> bool:
     if isinstance(v, bool):
         return v
     if isinstance(v, str):
-        val = v.strip().lower()
-        if val in ("true", "1", "yes", "y", "t"):
+        # Optimized path for common API responses to avoid string manipulation
+        if v in _TRUE_VARIANTS:
             return True
-        if val in ("false", "0", "no", "n", "f"):
+        if v in _FALSE_VARIANTS:
+            return False
+
+        # Fallback for irregular casing or whitespace
+        val = v.strip().lower()
+        if val in _TRUE_LOWER:
+            return True
+        if val in _FALSE_LOWER:
             return False
     if isinstance(v, (int, float)):
         return bool(v)
