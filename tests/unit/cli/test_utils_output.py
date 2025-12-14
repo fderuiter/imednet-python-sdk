@@ -68,3 +68,15 @@ def test_display_list_formatting(capfd: pytest.CaptureFixture[str]) -> None:
     assert "True" in captured.out
     assert "False" in captured.out
     assert "-" in captured.out
+
+
+def test_display_list_escaping(capfd: pytest.CaptureFixture[str]) -> None:
+    """display_list escapes Rich markup in user data."""
+    obj = MagicMock()
+    obj.model_dump.return_value = {"content": "[bold red]hack[/bold red]"}
+
+    display_list([obj], "items")
+    captured = capfd.readouterr()
+
+    # If escaped, the markup tags are preserved in the output text
+    assert "[bold red]hack[/bold red]" in captured.out
