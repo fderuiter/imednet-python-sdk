@@ -1,5 +1,6 @@
 from imednet.config import Config
 
+
 def test_config_repr_masks_secrets():
     """Test that Config.__repr__ masks sensitive information."""
     api_key = "secret_api_key_123"

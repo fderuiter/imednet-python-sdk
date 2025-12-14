@@ -12,3 +12,8 @@
 **Vulnerability:** The `Config` class, implemented as a dataclass, automatically generated a `__repr__` method that included all fields, including `api_key` and `security_key`. This meant that logging the config object or printing it during debugging would expose sensitive credentials.
 **Learning:** Python dataclasses (and Pydantic models by default) include all fields in their string representation. Convenience features can accidentally defeat security by obscurity/minimization principles.
 **Prevention:** Explicitly override `__repr__` (or `__str__`) for any class holding sensitive information. Use a redaction pattern (e.g. `********`) for secret fields.
+
+## 2025-12-14 - Terminal Injection in CLI Output
+**Vulnerability:** The CLI displayed user-controlled data (e.g., in tables) using `rich` without escaping. This allowed malicious input containing markup tags (e.g., `[bold red]`) to inject formatting or control sequences into the terminal output, potentially spoofing information or causing confusion.
+**Learning:** Terminal output libraries like `rich` often default to interpreting markup for convenience. When displaying untrusted data (from APIs or user input), this feature becomes a liability (similar to XSS in HTML).
+**Prevention:** Always explicitly escape untrusted data when rendering to a terminal with rich-text capabilities. Use `rich.markup.escape()` for string values before passing them to display functions.

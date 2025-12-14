@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import typer
 from rich import print
 from rich.console import Console
+from rich.markup import escape
 from rich.table import Table
 
 from ..config import load_config
@@ -80,8 +81,9 @@ def _format_cell_value(value: Any) -> str:
     if isinstance(value, (list, dict)):
         # Truncate very long list/dict representations
         s = str(value)
-        return f"{s[:60]}..." if len(s) > 60 else s
-    return str(value)
+        s = f"{s[:60]}..." if len(s) > 60 else s
+        return escape(s)
+    return escape(str(value))
 
 
 def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None) -> None:
