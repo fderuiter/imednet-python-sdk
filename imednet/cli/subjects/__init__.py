@@ -28,4 +28,19 @@ def list_subjects(
 
     with fetching_status("subjects", study_key):
         subjects_list = sdk.subjects.list(study_key, **(parsed_filter or {}))
-    display_list(subjects_list, "subjects", "No subjects found matching the criteria.")
+
+    # Create a summary view for the table
+    view_models = []
+    for s in subjects_list:
+        keywords_str = ", ".join(k.keyword_name for k in s.keywords)
+        view_models.append(
+            {
+                "subject_key": s.subject_key,
+                "status": s.subject_status,
+                "site": s.site_name,
+                "enrollment_date": s.enrollment_start_date,
+                "keywords": keywords_str,
+            }
+        )
+
+    display_list(view_models, "subjects", "No subjects found matching the criteria.")
