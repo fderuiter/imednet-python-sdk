@@ -28,7 +28,6 @@ Conventions
 - Apply DRY and SOLID principles.
 - Limit lines to 100 characters.
 - Use Conventional Commit messages.
-- Update ``[Unreleased]`` in ``CHANGELOG.md``.
 
 Pull request process
 --------------------
