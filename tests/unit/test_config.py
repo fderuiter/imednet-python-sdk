@@ -24,5 +24,40 @@ def test_load_config_overrides_env(monkeypatch):
 def test_load_config_missing(monkeypatch):
     monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
     monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="API key and security key are required"):
+        load_config()
+
+
+@pytest.mark.parametrize(
+    "api_key,security_key",
+    [
+        ("   ", "valid"),
+        ("valid", "   "),
+        ("   ", "   "),
+        ("", "valid"),
+        ("valid", ""),
+    ],
+)
+def test_load_config_whitespace_args(monkeypatch, api_key, security_key):
+    """Test that whitespace/empty arguments raise ValueError."""
+    # Ensure no environment variables interfere
+    monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
+    monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
+
+    with pytest.raises(ValueError, match="API key and security key are required"):
+        load_config(api_key=api_key, security_key=security_key)
+
+
+@pytest.mark.parametrize(
+    "env_api_key,env_security_key",
+    [
+        ("   ", "valid"),
+        ("valid", "   "),
+    ],
+)
+def test_load_config_whitespace_env(monkeypatch, env_api_key, env_security_key):
+    """Test that whitespace environment variables raise ValueError."""
+    monkeypatch.setenv("IMEDNET_API_KEY", env_api_key)
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", env_security_key)
+    with pytest.raises(ValueError, match="API key and security key are required"):
         load_config()
