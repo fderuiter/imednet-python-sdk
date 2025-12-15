@@ -24,18 +24,22 @@ class BaseSchemaCache(Generic[_TClient]):
         self._form_variables: Dict[str, Dict[str, Variable]] = {}
         self._form_id_to_key: Dict[int, str] = {}
 
+    def populate(self, variables: Iterable[Variable]) -> None:
+        """Populate the cache with the given variables."""
+        self._form_variables.clear()
+        self._form_id_to_key.clear()
+        for var in variables:
+            self._form_id_to_key[var.form_id] = var.form_key
+            self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
+
     async def _refresh_async(
         self,
         forms: FormsEndpoint,
         variables: VariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
-        self._form_variables.clear()
-        self._form_id_to_key.clear()
         vars_list = await variables.async_list(study_key=study_key, refresh=True)
-        for var in vars_list:
-            self._form_id_to_key[var.form_id] = var.form_key
-            self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
+        self.populate(vars_list)
 
     def _refresh_sync(
         self,
@@ -43,12 +47,8 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: VariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
-        self._form_variables.clear()
-        self._form_id_to_key.clear()
         vars_list = variables.list(study_key=study_key, refresh=True)
-        for var in vars_list:
-            self._form_id_to_key[var.form_id] = var.form_key
-            self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
+        self.populate(vars_list)
 
     def refresh(
         self,
@@ -184,11 +184,7 @@ class SchemaValidator(_ValidatorMixin):
             self.schema = SchemaCache()
 
     def _refresh_common(self, variables: Iterable[Variable]) -> None:
-        self.schema._form_variables.clear()
-        self.schema._form_id_to_key.clear()
-        for var in variables:
-            self.schema._form_id_to_key[var.form_id] = var.form_key
-            self.schema._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
+        self.schema.populate(variables)
 
     async def _refresh_async(self, study_key: str) -> None:
         variables = await self._sdk.variables.async_list(study_key=study_key, refresh=True)
