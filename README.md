@@ -212,7 +212,7 @@ and publishes the package to PyPI.
 ### Versioning & Changelog
 
 This project follows [Semantic Versioning](https://semver.org). See
-[CHANGELOG.md](CHANGELOG.md) for release history.
+[GitHub Releases](https://github.com/fderuiter/imednet-python-sdk/releases) for release history.
 
 ### Contributing
 

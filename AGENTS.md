@@ -15,8 +15,7 @@ poetry run pytest -q
 Coverage ≥ 90%.
 
 ## Contribute
-DRY + SOLID. Line length 100. Conventional Commits. Update `[Unreleased]` in
-`CHANGELOG.md`.
+DRY + SOLID. Line length 100. Conventional Commits.
 
 * Read nearby code, tests, and docs first.
 * Add or update tests with any code change.
@@ -29,8 +28,7 @@ DRY + SOLID. Line length 100. Conventional Commits. Update `[Unreleased]` in
 ```
 
 ## Release
-1. Update CHANGELOG.
-2. `poetry version <bump>`
-3. `make docs`
-4. Commit + tag `vX.Y.Z`
-5. Push branch + tag to publish.
+1. `poetry version <bump>`
+2. `make docs`
+3. Commit + tag `vX.Y.Z`
+4. Push branch + tag to publish.

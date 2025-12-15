@@ -27,7 +27,6 @@ Coverage must stay ≥ 90%.
 ## Conventions
 - DRY + SOLID. Line length 100.
 - Use Conventional Commits.
-- Update `[Unreleased]` in `CHANGELOG.md`.
 - Add tests, docs, and examples for any public change.
 
 ## Pull requests
