@@ -1,12 +1,5 @@
 # imednet
 
-<div align="center">
-  <img src="docs/_static/logo.png" alt="imednet logo" width="200" height="200">
-</div>
-
-<div align="center">
-
-
 **Unofficial Python SDK for the iMednet clinical trials API.**
 
 Full documentation: <https://fderuiter.github.io/imednet-python-sdk/>
