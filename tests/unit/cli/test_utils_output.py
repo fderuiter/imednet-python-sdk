@@ -21,6 +21,21 @@ def test_fetching_status_records() -> None:
         mock_status.__exit__.assert_called()
 
 
+def test_fetching_status_escapes_injection() -> None:
+    """fetching_status escapes Rich markup in study key."""
+    with patch("imednet.cli.utils.console") as mock_console:
+        mock_status = mock_console.status.return_value
+        mock_status.__enter__.return_value = None
+
+        with fetching_status("records", "[bold]bad[/bold]"):
+            pass
+
+        args, kwargs = mock_console.status.call_args
+        msg = args[0]
+        # rich.markup.escape escapes brackets
+        assert "\\[bold]bad\\[/bold]" in msg
+
+
 def test_display_list_non_empty(capfd: pytest.CaptureFixture[str]) -> None:
     """display_list shows count and items for non-empty lists."""
     display_list([1, 2], "items")
