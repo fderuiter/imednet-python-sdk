@@ -37,7 +37,7 @@ def get_sdk() -> ImednetSDK:
             base_url=config.base_url,
         )
     except Exception as exc:  # pragma: no cover - defensive
-        print(f"[bold red]Error initializing SDK:[/bold red] {exc}")
+        print(f"[bold red]Error initializing SDK:[/bold red] {escape(str(exc))}")
         raise typer.Exit(code=1)
 
 
@@ -48,7 +48,10 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
     filter_dict: Dict[str, Union[str, bool, int]] = {}
     for arg in filter_args:
         if "=" not in arg:
-            print(f"[bold red]Error:[/bold red] Invalid filter format: '{arg}'. Use 'key=value'.")
+            print(
+                f"[bold red]Error:[/bold red] Invalid filter format: '{escape(arg)}'. "
+                "Use 'key=value'."
+            )
             raise typer.Exit(code=1)
         key, value = arg.split("=", 1)
         if value.lower() == "true":
@@ -65,7 +68,10 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
 @contextmanager
 def fetching_status(name: str, study_key: str | None = None):
     """Context manager to show a spinner while fetching data."""
-    msg = f"Fetching {name} for study '{study_key}'..." if study_key else f"Fetching {name}..."
+    if study_key:
+        msg = f"Fetching {escape(name)} for study '{escape(study_key)}'..."
+    else:
+        msg = f"Fetching {escape(name)}..."
     with console.status(f"[bold blue]{msg}[/bold blue]", spinner="dots"):
         yield
 

@@ -6,6 +6,7 @@ from typing import Callable, Concatenate, ParamSpec, TypeVar
 
 import typer
 from rich import print
+from rich.markup import escape
 
 from ..core.exceptions import ApiError
 from ..sdk import ImednetSDK
@@ -30,10 +31,10 @@ def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
         except typer.Exit:  # allow commands to exit early
             raise
         except ApiError as exc:
-            print(f"[bold red]API Error:[/bold red] {exc}")
+            print(f"[bold red]API Error:[/bold red] {escape(str(exc))}")
             raise typer.Exit(code=1)
         except Exception as exc:  # pragma: no cover - defensive
-            print(f"[bold red]Unexpected error:[/bold red] {exc}")
+            print(f"[bold red]Unexpected error:[/bold red] {escape(str(exc))}")
             raise typer.Exit(code=1)
         finally:
             close = getattr(sdk, "close", None)
