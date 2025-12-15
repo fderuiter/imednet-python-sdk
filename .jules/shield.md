@@ -9,3 +9,7 @@
 ## 2025-12-12 - Silent Validation Skip
 **Discovery:** Input validation in `RecordsEndpoint.create` was silently skipped if the user provided snake_case `form_key` (Pythonic) instead of camelCase `formKey` (API spec), leading to invalid data potentially being sent to the API.
 **Defense:** Updated `create` and `async_create` to attempt resolving `formKey`, `form_key`, `formId`, and `form_id` before falling back to default, ensuring validation runs for both conventions.
+
+## 2025-05-24 - Environment Variable Leakage
+**Discovery:** Tests for configuration arguments were passing implicitly because they fell back to the environment variables present in the test runner, masking potential defects in argument handling.
+**Defense:** Explicitly use `monkeypatch.delenv()` to clear environment variables in tests that verify argument prioritization or default behavior, ensuring strict isolation.
