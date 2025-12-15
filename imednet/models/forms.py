@@ -8,6 +8,8 @@ from imednet.models.json_base import JsonModel
 
 
 class Form(JsonModel):
+    """Configuration and metadata for a CRF (Case Report Form)."""
+
     study_key: str = Field("", alias="studyKey")
     form_id: int = Field(0, alias="formId")
     form_key: str = Field("", alias="formKey")

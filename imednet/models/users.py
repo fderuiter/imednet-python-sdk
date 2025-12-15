@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class Role(JsonModel):
+    """A role assigned to a user within a study or community."""
+
     date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
     date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
     role_id: str = Field("", alias="roleId")
@@ -23,6 +25,8 @@ class Role(JsonModel):
 
 
 class User(JsonModel):
+    """A user account in the system."""
+
     user_id: str = Field("", alias="userId")
     login: str = Field("", alias="login")
     first_name: str = Field("", alias="firstName")

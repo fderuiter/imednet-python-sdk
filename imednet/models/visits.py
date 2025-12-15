@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class Visit(JsonModel):
+    """A specific instance of a subject visiting a site (or equivalent event)."""
+
     visit_id: int = Field(0, alias="visitId")
     study_key: str = Field("", alias="studyKey")
     interval_id: int = Field(0, alias="intervalId")

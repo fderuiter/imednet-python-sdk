@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import os
 import sys
 
-from imednet import ImednetSDK
+from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
 """Quick start example using environment variables for authentication.
@@ -21,16 +20,19 @@ Example:
 
 def main() -> None:
     """Run a minimal SDK example using environment variables."""
-
     configure_json_logging()
 
-    missing = [var for var in ("IMEDNET_API_KEY", "IMEDNET_SECURITY_KEY") if not os.getenv(var)]
-    if missing:
-        vars_ = ", ".join(missing)
-        print(f"Missing required environment variable(s): {vars_}", file=sys.stderr)
+    try:
+        cfg = load_config()
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
-    sdk = ImednetSDK()
+    sdk = ImednetSDK(
+        api_key=cfg.api_key,
+        security_key=cfg.security_key,
+        base_url=cfg.base_url,
+    )
     print(sdk.studies.list())
 
 

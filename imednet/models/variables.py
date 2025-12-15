@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class Variable(JsonModel):
+    """Definition of a data field (question) on a form."""
+
     study_key: str = Field("", alias="studyKey")
     variable_id: int = Field(0, alias="variableId")
     variable_type: str = Field("", alias="variableType")

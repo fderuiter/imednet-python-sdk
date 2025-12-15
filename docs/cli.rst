@@ -6,8 +6,6 @@ reads authentication details from environment variables. See :doc:`configuration
 for the full list and details on using an ``.env`` file. The CLI calls
 :func:`imednet.config.load_config` under the hood to read these values.
 
-Command Hierarchy
-
 Global Options
 --------------
 
@@ -23,6 +21,8 @@ Example:
 
    $ imednet --version
    imednet, version X.Y.Z
+
+Command Hierarchy
 -----------------
 
 .. mermaid::

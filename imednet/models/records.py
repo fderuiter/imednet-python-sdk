@@ -71,6 +71,8 @@ class BaseRecordRequest(JsonModel):
 
 
 class RegisterSubjectRequest(BaseRecordRequest):
+    """Payload for registering (enrolling) a new subject."""
+
     site_name: str = Field(
         "", alias="siteName", description="Name of the site where the subject is enrolled"
     )
@@ -82,6 +84,8 @@ class RegisterSubjectRequest(BaseRecordRequest):
 
 
 class UpdateScheduledRecordRequest(BaseRecordRequest):
+    """Payload for updating an existing scheduled record."""
+
     subject_key: str = Field("", alias="subjectKey")
     interval_name: str = Field("", alias="intervalName")
 
@@ -89,6 +93,8 @@ class UpdateScheduledRecordRequest(BaseRecordRequest):
 
 
 class CreateNewRecordRequest(BaseRecordRequest):
+    """Payload for creating a new unscheduled record."""
+
     subject_key: str = Field("", alias="subjectKey")
 
     pass
