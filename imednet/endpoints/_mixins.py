@@ -124,16 +124,25 @@ class ListGetEndpointMixin:
         page_size = self.PAGE_SIZE
         paginator = paginator_cls(client, path, params=params, page_size=page_size)
 
+        # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
+        # We respect overrides of _parse_item if present.
+        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:
+            parse_func = self._parse_item
+        else:
+            parse_func = getattr(self.MODEL, "from_json", None)
+            if parse_func is None:
+                parse_func = self.MODEL.model_validate
+
         if hasattr(paginator, "__aiter__"):
 
             async def _collect() -> list[BaseModel]:
-                result = [self._parse_item(item) async for item in paginator]
+                result = [parse_func(item) async for item in paginator]
                 self._update_local_cache(result, study, bool(other_filters), cache)
                 return result
 
             return _collect()
 
-        result = [self._parse_item(item) for item in paginator]
+        result = [parse_func(item) for item in paginator]
         self._update_local_cache(result, study, bool(other_filters), cache)
         return result
 
