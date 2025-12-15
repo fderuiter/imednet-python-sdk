@@ -8,6 +8,8 @@ from imednet.models.json_base import JsonModel
 
 
 class Coding(JsonModel):
+    """Represents a medical coding entry associated with a record."""
+
     study_key: str = Field("", alias="studyKey")
     site_name: str = Field("", alias="siteName")
     site_id: int = Field(0, alias="siteId")

@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class FormSummary(JsonModel):
+    """Minimal form details embedded within an interval definition."""
+
     form_id: int = Field(0, alias="formId")
     form_key: str = Field("", alias="formKey")
     form_name: str = Field("", alias="formName")
@@ -17,6 +19,8 @@ class FormSummary(JsonModel):
 
 
 class Interval(JsonModel):
+    """Represents a visit interval or event within the study timeline."""
+
     study_key: str = Field("", alias="studyKey")
     interval_id: int = Field(0, alias="intervalId")
     interval_name: str = Field("", alias="intervalName")

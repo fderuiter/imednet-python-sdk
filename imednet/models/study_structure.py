@@ -13,6 +13,8 @@ from .variables import Variable
 
 # Define a structure for Forms within the context of an Interval, including variables
 class FormStructure(BaseModel):
+    """Hierarchical representation of a form including its variables."""
+
     # Key identifying fields
     form_id: int = Field(..., alias="formId")
     form_key: str = Field(..., alias="formKey")
@@ -42,6 +44,8 @@ class FormStructure(BaseModel):
 
 # Define a structure for Intervals, containing FormStructures
 class IntervalStructure(BaseModel):
+    """Hierarchical representation of an interval including its forms."""
+
     # Key identifying fields
     interval_id: int = Field(..., alias="intervalId")
     interval_name: str = Field(..., alias="intervalName")
@@ -71,6 +75,8 @@ class IntervalStructure(BaseModel):
 
 # Define the root StudyStructure model
 class StudyStructure(BaseModel):
+    """Hierarchical representation of a full study including intervals and forms."""
+
     study_key: str = Field(..., alias="studyKey")
     intervals: List[IntervalStructure] = Field(default_factory=list)
 

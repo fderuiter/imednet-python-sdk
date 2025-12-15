@@ -4,7 +4,7 @@ import asyncio
 import os
 import sys
 
-from imednet import AsyncImednetSDK
+from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
 """Async quick start example using environment variables for authentication.
@@ -23,16 +23,19 @@ Example::
 
 async def main() -> None:
     """Run a minimal async SDK example using environment variables."""
-
     configure_json_logging()
 
-    missing = [var for var in ("IMEDNET_API_KEY", "IMEDNET_SECURITY_KEY") if not os.getenv(var)]
-    if missing:
-        vars_ = ", ".join(missing)
-        print(f"Missing required environment variable(s): {vars_}", file=sys.stderr)
-        raise SystemExit(1)
+    try:
+        cfg = load_config()
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
-    async with AsyncImednetSDK() as sdk:
+    async with AsyncImednetSDK(
+        api_key=cfg.api_key,
+        security_key=cfg.security_key,
+        base_url=cfg.base_url,
+    ) as sdk:
         studies = await sdk.studies.async_list()
         print(studies)
 

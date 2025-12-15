@@ -9,36 +9,36 @@ Environment Variables
 ---------------------
 
 .. list-table::
-     :header-rows: 1
-     :widths: 25 50 15
+   :header-rows: 1
+   :widths: 25 50 15
 
-     * - Variable
-         - Description
-         - Default
-     * - IMEDNET_API_KEY
-         - API key used for authentication.
-         - None
-     * - IMEDNET_SECURITY_KEY
-         - Security key used for authentication.
-         - None
-     * - IMEDNET_BASE_URL
-         - Optional base URL for private deployments.
-         - None
-     * - IMEDNET_STUDY_KEY
-         - Study identifier used by examples and some tests.
-         - None
-     * - IMEDNET_RUN_E2E
-         - Set to ``1`` to enable end-to-end tests that hit a live environment.
-         - None
-     * - IMEDNET_BATCH_ID
-         - Batch identifier used by job polling tests. Created automatically if unset.
-         - None
-     * - IMEDNET_FORM_KEY
-         - Form key for record-creation tests. If unset, the first form is used.
-         - None
-     * - IMEDNET_ALLOW_MUTATION
-         - Set to ``1`` to allow workflow tests that submit data.
-         - None
+   * - Variable
+     - Description
+     - Default
+   * - IMEDNET_API_KEY
+     - API key used for authentication.
+     - None
+   * - IMEDNET_SECURITY_KEY
+     - Security key used for authentication.
+     - None
+   * - IMEDNET_BASE_URL
+     - Optional base URL for private deployments.
+     - None
+   * - IMEDNET_STUDY_KEY
+     - Study identifier used by examples and some tests.
+     - None
+   * - IMEDNET_RUN_E2E
+     - Set to ``1`` to enable end-to-end tests that hit a live environment.
+     - None
+   * - IMEDNET_BATCH_ID
+     - Batch identifier used by job polling tests. Created automatically if unset.
+     - None
+   * - IMEDNET_FORM_KEY
+     - Form key for record-creation tests. If unset, the first form is used.
+     - None
+   * - IMEDNET_ALLOW_MUTATION
+     - Set to ``1`` to allow workflow tests that submit data.
+     - None
 
 Using a .env File
 -----------------

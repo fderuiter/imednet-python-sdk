@@ -8,6 +8,8 @@ from imednet.models.json_base import JsonModel
 
 
 class RecordRevision(JsonModel):
+    """Historical version of a record including change reason and user."""
+
     study_key: str = Field("", alias="studyKey")
     record_revision_id: int = Field(0, alias="recordRevisionId")
     record_id: int = Field(0, alias="recordId")

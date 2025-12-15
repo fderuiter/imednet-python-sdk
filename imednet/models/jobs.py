@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class Job(JsonModel):
+    """Represents an asynchronous background job."""
+
     job_id: str = Field("", alias="jobId")
     batch_id: str = Field("", alias="batchId")
     state: str = Field("", alias="state")

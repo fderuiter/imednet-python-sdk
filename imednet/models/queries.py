@@ -9,6 +9,8 @@ from imednet.models.json_base import JsonModel
 
 
 class QueryComment(JsonModel):
+    """A comment or response within a data query thread."""
+
     sequence: int = Field(0, alias="sequence")
     annotation_status: str = Field("", alias="annotationStatus")
     user: str = Field("", alias="user")
@@ -20,6 +22,8 @@ class QueryComment(JsonModel):
 
 
 class Query(JsonModel):
+    """Represents a data query (discrepancy) raised on a record."""
+
     study_key: str = Field("", alias="studyKey")
     subject_id: int = Field(0, alias="subjectId")
     subject_oid: str = Field("", alias="subjectOid")
