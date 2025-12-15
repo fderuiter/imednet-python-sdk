@@ -86,7 +86,12 @@ def _format_cell_value(value: Any) -> str:
     return escape(str(value))
 
 
-def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None) -> None:
+def display_list(
+    items: Sequence[Any],
+    label: str,
+    empty_msg: str | None = None,
+    fields: List[str] | None = None,
+) -> None:
     """Print list output with a standardized format."""
     if not items:
         print(empty_msg or f"No {label} found.")
@@ -110,7 +115,8 @@ def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None)
         return
 
     table = Table(show_header=True, header_style="bold magenta")
-    headers = list(data_list[0].keys())
+    all_keys = list(data_list[0].keys())
+    headers = fields if fields else all_keys
 
     for header in headers:
         table.add_column(str(header).replace("_", " ").title())
@@ -132,6 +138,7 @@ def register_list_command(
     *,
     requires_study_key: bool = True,
     empty_msg: str | None = None,
+    summary_fields: List[str] | None = None,
 ) -> None:
     """Attach a standard ``list`` command to ``app``."""
 
@@ -144,7 +151,7 @@ def register_list_command(
         def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
             with fetching_status(name, study_key):
                 items = getattr(sdk, attr).list(study_key)
-            display_list(items, name, empty_msg)
+            display_list(items, name, empty_msg, fields=summary_fields)
 
         return
 
@@ -155,6 +162,6 @@ def register_list_command(
         def list_cmd_no_study(sdk: ImednetSDK) -> None:
             with fetching_status(name):
                 items = getattr(sdk, attr).list()
-            display_list(items, name, empty_msg)
+            display_list(items, name, empty_msg, fields=summary_fields)
 
         return
