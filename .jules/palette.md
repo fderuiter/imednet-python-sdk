@@ -9,3 +9,7 @@
 ## 2025-12-13 - CLI Data Density & Dependencies
 **Learning:** Defaulting to showing ALL fields (especially 20+) in a CLI table makes it unreadable. Also, optional dependencies (like pandas) shouldn't be required for core CLI commands.
 **Action:** For complex objects, implement a "Summary View" for the console (key fields only) and an "Export View" (CSV/JSON) for full data. Use standard library (`csv`, `json`) for simple exports to avoid heavy dependencies.
+
+## 2025-12-15 - Generic CLI Summary Views
+**Learning:** `typer` commands generated via closures (like `register_list_command`) can easily support generic filtering (summary views) by passing metadata arguments, avoiding boilerplate in individual command modules.
+**Action:** Use this pattern to clean up other complex CLI outputs like `studies` or `sites` in the future.

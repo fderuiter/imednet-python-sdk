@@ -6,4 +6,9 @@ from ..utils import register_list_command
 
 app = typer.Typer(name="variables", help="Manage variables within a study.")
 
-register_list_command(app, "variables", "variables")
+register_list_command(
+    app,
+    "variables",
+    "variables",
+    summary_fields=["variable_name", "label", "variable_type", "form_name", "disabled"],
+)
