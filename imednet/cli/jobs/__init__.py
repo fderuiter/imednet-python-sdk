@@ -5,7 +5,7 @@ from rich import print
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
-from ..utils import STUDY_KEY_ARG
+from ..utils import STUDY_KEY_ARG, fetching_status
 
 app = typer.Typer(name="jobs", help="Manage background jobs.")
 
@@ -18,7 +18,8 @@ def job_status(
     batch_id: str = typer.Argument(..., help="Job batch ID."),
 ) -> None:
     """Fetch a job's current status."""
-    job = sdk.get_job(study_key, batch_id)
+    with fetching_status("job status", study_key):
+        job = sdk.get_job(study_key, batch_id)
     print(job.model_dump())
 
 
@@ -32,5 +33,6 @@ def job_wait(
     timeout: int = typer.Option(300, help="Maximum time to wait."),
 ) -> None:
     """Wait for a job to reach a terminal state."""
-    job = sdk.poll_job(study_key, batch_id, interval=interval, timeout=timeout)
+    with fetching_status("job result", study_key):
+        job = sdk.poll_job(study_key, batch_id, interval=interval, timeout=timeout)
     print(job.model_dump())

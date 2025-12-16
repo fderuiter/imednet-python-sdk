@@ -11,4 +11,5 @@ register_list_command(
     "sites",
     "sites",
     empty_msg="No sites found for this study.",
+    summary_fields=["site_id", "site_name", "site_enrollment_status"],
 )
