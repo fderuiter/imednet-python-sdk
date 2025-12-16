@@ -5,10 +5,15 @@ This module provides functionality to construct filter query parameters
 for iMednet API endpoints based on the reference documentation.
 """
 
+import functools
 import re
 from typing import Any, Dict, List, Tuple, Union
 
+# Pre-compiled regex for performance to avoid re-compilation in loops
+_UNSAFE_CHARS_REGEX = re.compile(r"[^A-Za-z0-9_.-]")
 
+
+@functools.lru_cache(maxsize=128)
 def _snake_to_camel(text: str) -> str:
     """Convert a snake_case string to camelCase."""
 
@@ -41,7 +46,7 @@ def build_filter_string(
 
     def _format(val: Any) -> str:
         if isinstance(val, str):
-            if re.search(r"[^A-Za-z0-9_.-]", val):
+            if _UNSAFE_CHARS_REGEX.search(val):
                 # Escape backslashes first to prevent escape injection
                 escaped = val.replace("\\", "\\\\").replace('"', r"\"")
                 return f'"{escaped}"'
