@@ -17,3 +17,8 @@
 **Vulnerability:** The CLI displayed user-controlled data (e.g., in tables) using `rich` without escaping. This allowed malicious input containing markup tags (e.g., `[bold red]`) to inject formatting or control sequences into the terminal output, potentially spoofing information or causing confusion.
 **Learning:** Terminal output libraries like `rich` often default to interpreting markup for convenience. When displaying untrusted data (from APIs or user input), this feature becomes a liability (similar to XSS in HTML).
 **Prevention:** Always explicitly escape untrusted data when rendering to a terminal with rich-text capabilities. Use `rich.markup.escape()` for string values before passing them to display functions.
+
+## 2025-12-15 - CSV Injection in Export
+**Vulnerability:** The `records list --output csv` command and `export_to_csv`/`export_to_excel` functions did not sanitize user input before writing to CSV/Excel. Malicious input starting with `=`, `+`, `-`, or `@` could be interpreted as a formula by spreadsheet software (CSV Injection), leading to code execution on the victim's machine.
+**Learning:** Exporting user-controlled data to CSV or Excel is not neutral; spreadsheet software interprets specific characters as executable formulas. Standard libraries (`csv`, `pandas`) do not prevent this by default.
+**Prevention:** Sanitize all fields in CSV/Excel exports by prefixing risky characters (`=`, `+`, `-`, `@`) with a single quote `'` to force them to be treated as text.

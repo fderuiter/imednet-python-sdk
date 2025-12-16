@@ -86,6 +86,18 @@ def export_to_parquet(
     df.to_parquet(path, index=False, **kwargs)
 
 
+def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Sanitize DataFrame string columns to prevent CSV injection."""
+    for col in df.select_dtypes(include=[object]):
+        # Apply transformation only to strings starting with risky chars
+        df[col] = df[col].apply(
+            lambda x: f"'{x}"
+            if isinstance(x, str) and x.startswith(("=", "+", "-", "@"))
+            else x
+        )
+    return df
+
+
 def export_to_csv(
     sdk: ImednetSDK,
     study_key: str,
@@ -107,6 +119,7 @@ def export_to_csv(
         study_key,
         use_labels_as_columns=use_labels_as_columns,
     )
+    df = _sanitize_df(df)
     df.to_csv(path, index=False, **kwargs)
 
 
@@ -131,6 +144,7 @@ def export_to_excel(
         study_key,
         use_labels_as_columns=use_labels_as_columns,
     )
+    df = _sanitize_df(df)
     df.to_excel(path, index=False, **kwargs)
 
 
