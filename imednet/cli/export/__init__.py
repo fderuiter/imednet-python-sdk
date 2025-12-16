@@ -8,7 +8,7 @@ from rich import print
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
-from ..utils import STUDY_KEY_ARG
+from ..utils import STUDY_KEY_ARG, fetching_status
 
 app = typer.Typer(name="export", help="Export study data to various formats.")
 
@@ -30,7 +30,8 @@ def export_parquet(
 
     from .. import export_to_parquet
 
-    export_to_parquet(sdk, study_key, str(path))
+    with fetching_status("records for Parquet export", study_key):
+        export_to_parquet(sdk, study_key, str(path))
 
 
 @app.command("csv")
@@ -43,7 +44,8 @@ def export_csv(
     """Export study records to a CSV file."""
     from .. import export_to_csv
 
-    export_to_csv(sdk, study_key, str(path))
+    with fetching_status("records for CSV export", study_key):
+        export_to_csv(sdk, study_key, str(path))
 
 
 @app.command("excel")
@@ -56,7 +58,8 @@ def export_excel(
     """Export study records to an Excel workbook."""
     from .. import export_to_excel
 
-    export_to_excel(sdk, study_key, str(path))
+    with fetching_status("records for Excel export", study_key):
+        export_to_excel(sdk, study_key, str(path))
 
 
 @app.command("json")
@@ -69,7 +72,8 @@ def export_json_cmd(
     """Export study records to a JSON file."""
     from .. import export_to_json
 
-    export_to_json(sdk, study_key, str(path))
+    with fetching_status("records for JSON export", study_key):
+        export_to_json(sdk, study_key, str(path))
 
 
 @app.command("sql")
@@ -115,23 +119,25 @@ def export_sql(
     engine = create_engine(connection_string)
     var_list = [v.strip() for v in vars_.split(",")] if vars_ else None
     form_list = [int(f.strip()) for f in forms.split(",")] if forms else None
-    if long_format:
-        export_to_long_sql(sdk, study_key, table, connection_string)
-        return
-    if not single_table and engine.dialect.name == "sqlite":
-        export_to_sql_by_form(
-            sdk,
-            study_key,
-            connection_string,
-            variable_whitelist=var_list,
-            form_whitelist=form_list,
-        )
-    else:
-        export_to_sql(
-            sdk,
-            study_key,
-            table,
-            connection_string,
-            variable_whitelist=var_list,
-            form_whitelist=form_list,
-        )
+
+    with fetching_status("records for SQL export", study_key):
+        if long_format:
+            export_to_long_sql(sdk, study_key, table, connection_string)
+            return
+        if not single_table and engine.dialect.name == "sqlite":
+            export_to_sql_by_form(
+                sdk,
+                study_key,
+                connection_string,
+                variable_whitelist=var_list,
+                form_whitelist=form_list,
+            )
+        else:
+            export_to_sql(
+                sdk,
+                study_key,
+                table,
+                connection_string,
+                variable_whitelist=var_list,
+                form_whitelist=form_list,
+            )
