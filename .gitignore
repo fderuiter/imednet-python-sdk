@@ -83,3 +83,6 @@ examples/variables_output
 examples/register_subjects_input/*
 !examples/register_subjects_input/sample_subjects.json
 !.env.example
+
+.jules/
+.Jules/
