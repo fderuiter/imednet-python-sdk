@@ -44,6 +44,12 @@ def list_records(
 
         if output == "csv":
             if data:
+                # Sanitize data to prevent CSV injection
+                for row in data:
+                    for k, v in row.items():
+                        if isinstance(v, str) and v.startswith(("=", "+", "-", "@")):
+                            row[k] = f"'{v}"
+
                 keys = data[0].keys()
                 with open(path, "w", newline="", encoding="utf-8") as f:
                     writer = csv.DictWriter(f, fieldnames=keys)
