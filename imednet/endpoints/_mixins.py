@@ -187,15 +187,15 @@ class ListGetEndpointMixin:
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
     """Endpoint base class implementing ``list`` and ``get`` helpers."""
 
-    def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
-        client: Client | AsyncClient
-        paginator: type[Paginator] | type[AsyncPaginator]
+    def _get_context(
+        self, is_async: bool
+    ) -> tuple[Client | AsyncClient, type[Paginator] | type[AsyncPaginator]]:
         if is_async:
-            client = self._require_async_client()
-            paginator = AsyncPaginator
-        else:
-            client = self._client
-            paginator = Paginator
+            return self._require_async_client(), AsyncPaginator
+        return self._client, Paginator
+
+    def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
+        client, paginator = self._get_context(is_async)
         return self._list_impl(client, paginator, **kwargs)
 
     def _get_common(
@@ -205,14 +205,7 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
         study_key: Optional[str],
         item_id: Any,
     ) -> Any:
-        client: Client | AsyncClient
-        paginator: type[Paginator] | type[AsyncPaginator]
-        if is_async:
-            client = self._require_async_client()
-            paginator = AsyncPaginator
-        else:
-            client = self._client
-            paginator = Paginator
+        client, paginator = self._get_context(is_async)
         return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
 
     def list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
