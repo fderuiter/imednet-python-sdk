@@ -79,10 +79,29 @@ def test_display_list_formatting(capfd: pytest.CaptureFixture[str]) -> None:
     display_list([obj], "items")
     captured = capfd.readouterr()
 
-    assert "2023-01-01 12:00:00" in captured.out
-    assert "True" in captured.out
-    assert "False" in captured.out
+    assert "2023-01-01 12:00" in captured.out
+    assert "Yes" in captured.out
+    assert "No" in captured.out
     assert "-" in captured.out
+
+
+def test_display_list_formatting_lists(capfd: pytest.CaptureFixture[str]) -> None:
+    """display_list formats lists of primitives as comma-separated strings."""
+    obj = MagicMock()
+    obj.model_dump.return_value = {
+        "tags": ["a", "b", "c"],
+        "numbers": [1, 2],
+        "empty": [],
+        "complex": [{"a": 1}],
+    }
+    display_list([obj], "items")
+    captured = capfd.readouterr()
+
+    assert "a, b, c" in captured.out
+    assert "1, 2" in captured.out
+    assert "-" in captured.out
+    # Complex lists fall back to truncation/repr
+    assert "[{'a': 1}]" in captured.out
 
 
 def test_display_list_escaping(capfd: pytest.CaptureFixture[str]) -> None:

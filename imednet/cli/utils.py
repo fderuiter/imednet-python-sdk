@@ -81,9 +81,15 @@ def _format_cell_value(value: Any) -> str:
     if value is None:
         return "[dim]-[/dim]"
     if isinstance(value, bool):
-        return "[green]True[/green]" if value else "[dim]False[/dim]"
+        return "[green]Yes[/green]" if value else "[dim]No[/dim]"
     if isinstance(value, datetime):
-        return value.strftime("%Y-%m-%d %H:%M:%S")
+        return value.strftime("%Y-%m-%d %H:%M")
+    if isinstance(value, list) and all(isinstance(x, (str, int, float, bool)) for x in value):
+        if not value:
+            return "[dim]-[/dim]"
+        s = ", ".join(str(x) for x in value)
+        s = f"{s[:60]}..." if len(s) > 60 else s
+        return escape(s)
     if isinstance(value, (list, dict)):
         # Truncate very long list/dict representations
         s = str(value)
