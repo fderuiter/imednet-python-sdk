@@ -8,6 +8,8 @@ from typing import Optional
 import typer
 from rich import print
 
+from imednet.utils import sanitize_csv_formula
+
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
 from ..utils import STUDY_KEY_ARG, display_list, fetching_status
@@ -47,8 +49,7 @@ def list_records(
                 # Sanitize data to prevent CSV injection
                 for row in data:
                     for k, v in row.items():
-                        if isinstance(v, str) and v.startswith(("=", "+", "-", "@")):
-                            row[k] = f"'{v}"
+                        row[k] = sanitize_csv_formula(v)
 
                 keys = data[0].keys()
                 with open(path, "w", newline="", encoding="utf-8") as f:

@@ -1,10 +1,12 @@
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
 
 import imednet.endpoints.records as records
 from imednet.core.exceptions import ValidationError
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache
+
 
 @pytest.fixture
 def schema():
@@ -13,6 +15,7 @@ def schema():
     s._form_variables = {"F1": {"age": var}}
     s._form_id_to_key = {1: "F1"}
     return s
+
 
 @pytest.mark.asyncio
 async def test_async_create_validates_data(dummy_client, context, response_factory, schema):
@@ -33,8 +36,11 @@ async def test_async_create_validates_data(dummy_client, context, response_facto
     await ep.async_create("S1", [{"formKey": "F1", "data": {"age": 5}}], schema=schema)
     dummy_client.post.assert_called_once()
 
+
 @pytest.mark.asyncio
-async def test_async_create_validates_data_with_snake_case_keys(dummy_client, context, response_factory, schema):
+async def test_async_create_validates_data_with_snake_case_keys(
+    dummy_client, context, response_factory, schema
+):
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
@@ -42,6 +48,7 @@ async def test_async_create_validates_data_with_snake_case_keys(dummy_client, co
     # Even if we use snake_case "form_key"
     with pytest.raises(ValidationError):
         await ep.async_create("S1", [{"form_key": "F1", "data": {"bad": 1}}], schema=schema)
+
 
 @pytest.mark.asyncio
 async def test_async_create_resolves_form_id(dummy_client, context, response_factory, schema):
