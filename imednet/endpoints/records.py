@@ -48,6 +48,18 @@ class RecordsEndpoint(ListGetEndpoint):
         response = client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
 
+    def _validate_records_if_schema_present(
+        self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]
+    ) -> None:
+        if schema is not None:
+            for rec in records_data:
+                fk = rec.get("formKey") or rec.get("form_key")
+                if not fk:
+                    fid = rec.get("formId") or rec.get("form_id") or 0
+                    fk = schema.form_key_from_id(fid)
+                if fk:
+                    validate_record_data(schema, fk, rec.get("data", {}))
+
     def create(
         self,
         study_key: str,
@@ -70,14 +82,7 @@ class RecordsEndpoint(ListGetEndpoint):
         Returns:
             Job object with information about the created job
         """
-        if schema is not None:
-            for rec in records_data:
-                fk = rec.get("formKey") or rec.get("form_key")
-                if not fk:
-                    fid = rec.get("formId") or rec.get("form_id") or 0
-                    fk = schema.form_key_from_id(fid)
-                if fk:
-                    validate_record_data(schema, fk, rec.get("data", {}))
+        self._validate_records_if_schema_present(schema, records_data)
 
         result = self._create_impl(
             self._client,
@@ -97,14 +102,7 @@ class RecordsEndpoint(ListGetEndpoint):
     ) -> Job:
         """Asynchronous version of :meth:`create`."""
         self._require_async_client()
-        if schema is not None:
-            for rec in records_data:
-                fk = rec.get("formKey") or rec.get("form_key")
-                if not fk:
-                    fid = rec.get("formId") or rec.get("form_id") or 0
-                    fk = schema.form_key_from_id(fid)
-                if fk:
-                    validate_record_data(schema, fk, rec.get("data", {}))
+        self._validate_records_if_schema_present(schema, records_data)
 
         return await self._create_impl(
             self._async_client,
