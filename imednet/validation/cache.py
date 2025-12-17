@@ -114,14 +114,26 @@ _TYPE_VALIDATORS: Dict[str, Callable[[Any], None]] = {
     "string": _validate_text,
 }
 
+# Bolt Optimization: Expand validators to include common casings
+# to avoid .lower() allocation in hot paths.
+for key, validator in list(_TYPE_VALIDATORS.items()):
+    _TYPE_VALIDATORS[key.capitalize()] = validator
+    _TYPE_VALIDATORS[key.upper()] = validator
+
 
 def _check_type(var_type: str, value: Any) -> None:
     if value is None:
         return
+
+    # Bolt Optimization: Try direct lookup first to avoid string manipulation
     try:
-        validator = _TYPE_VALIDATORS[var_type.lower()]
+        validator = _TYPE_VALIDATORS[var_type]
     except KeyError:
-        raise UnknownVariableTypeError(var_type)
+        try:
+            validator = _TYPE_VALIDATORS[var_type.lower()]
+        except KeyError:
+            raise UnknownVariableTypeError(var_type) from None
+
     validator(value)
 
 
