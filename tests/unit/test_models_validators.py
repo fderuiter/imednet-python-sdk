@@ -5,12 +5,51 @@ import pytest
 from imednet.utils import validators
 
 
-def test_parse_bool_various_inputs():
-    assert validators.parse_bool(True) is True
-    assert validators.parse_bool("yes") is True
-    assert validators.parse_bool("0") is False
-    assert validators.parse_bool(1) is True
-    assert validators.parse_bool("maybe") is False
+@pytest.mark.parametrize(
+    "input_val, expected",
+    [
+        # Boolean inputs
+        (True, True),
+        (False, False),
+        # String inputs - True variants (optimized)
+        ("true", True),
+        ("True", True),
+        ("TRUE", True),
+        ("1", True),
+        ("yes", True),
+        ("y", True),
+        ("t", True),
+        # String inputs - False variants (optimized)
+        ("false", False),
+        ("False", False),
+        ("FALSE", False),
+        ("0", False),
+        ("no", False),
+        ("n", False),
+        ("f", False),
+        # String inputs - Whitespace/Case (fallback path)
+        (" true ", True),
+        (" Yes ", True),
+        ("TrUe", True),
+        (" FALSE ", False),
+        (" No ", False),
+        ("FaLsE", False),
+        # Numeric inputs
+        (1, True),
+        (0, False),
+        (1.0, True),
+        (0.0, False),
+        (-1, True),  # Non-zero number is True
+        # Edge cases / Invalid
+        (None, False),
+        ("maybe", False),
+        ("", False),
+        ([], False),
+        ({}, False),
+    ],
+)
+def test_parse_bool_comprehensive(input_val, expected):
+    assert validators.parse_bool(input_val) is expected
 
 
 def test_parse_int_or_default_and_str_default():
