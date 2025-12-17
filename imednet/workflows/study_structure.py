@@ -7,11 +7,7 @@ from imednet.core.exceptions import ImednetError
 # Import the models we need
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval
-from imednet.models.study_structure import (
-    FormStructure,
-    IntervalStructure,
-    StudyStructure,
-)
+from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
 from imednet.models.variables import Variable
 
 # Use TYPE_CHECKING to avoid circular import at runtime

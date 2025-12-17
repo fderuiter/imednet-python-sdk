@@ -6,6 +6,8 @@ from typing import Any, List, Optional
 
 import pandas as pd
 
+from imednet.utils import sanitize_csv_formula
+
 from .. import ImednetClient
 from ..sdk import ImednetSDK
 from ..workflows.record_mapper import RecordMapper
@@ -89,12 +91,7 @@ def export_to_parquet(
 def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
     """Sanitize DataFrame string columns to prevent CSV injection."""
     for col in df.select_dtypes(include=[object]):
-        # Apply transformation only to strings starting with risky chars
-        df[col] = df[col].apply(
-            lambda x: f"'{x}"
-            if isinstance(x, str) and x.startswith(("=", "+", "-", "@"))
-            else x
-        )
+        df[col] = df[col].apply(sanitize_csv_formula)  # type: ignore[call-overload]
     return df
 
 

@@ -1,4 +1,3 @@
-import os
 from unittest.mock import MagicMock
 
 import pytest
@@ -6,9 +5,11 @@ from typer.testing import CliRunner
 
 import imednet.cli as cli
 
+
 @pytest.fixture()
 def runner() -> CliRunner:
     return CliRunner()
+
 
 @pytest.fixture()
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
@@ -16,14 +17,11 @@ def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=mock_sdk))
     return mock_sdk
 
+
 def test_records_list_output_csv_injection_prevention(runner: CliRunner, sdk: MagicMock) -> None:
     rec = MagicMock()
     # Malicious payload and normal payload
-    rec.model_dump.return_value = {
-        "recordId": 1,
-        "note": "=cmd|' /C calc'!A0",
-        "normal": "hello"
-    }
+    rec.model_dump.return_value = {"recordId": 1, "note": "=cmd|' /C calc'!A0", "normal": "hello"}
     sdk.records.list.return_value = [rec]
 
     with runner.isolated_filesystem():
