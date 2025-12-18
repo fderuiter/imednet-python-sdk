@@ -15,11 +15,6 @@ _TRUE_VARIANTS = _TRUE_LOWER | {"True", "TRUE"}
 _FALSE_VARIANTS = _FALSE_LOWER | {"False", "FALSE"}
 
 
-def _or_default(value: Any, default: Any) -> Any:
-    """Return value if not None, else default."""
-    return value if value is not None else default
-
-
 def parse_datetime(v: str | datetime) -> datetime:
     """Parse an ISO datetime string or return a sentinel value.
 
