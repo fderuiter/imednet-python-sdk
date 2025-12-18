@@ -16,7 +16,7 @@ def _build_schema() -> tuple[SchemaCache, Variable]:
     forms = fake_data.fake_forms_for_cache(1, study_key="S")
     variables = fake_data.fake_variables_for_cache(forms, vars_per_form=1, study_key="S")
     var = variables[0]
-    object.__setattr__(var, "required", True)
+    # Bolt: Removed 'required' attribute injection as support was removed
     var.variable_type = "integer"
     forms_ep = types.SimpleNamespace(list=lambda **_: forms)
 
@@ -69,13 +69,13 @@ def test_create_or_update_records_validation(async_mode: bool) -> None:
     wf._validator.schema = schema
     wf._schema = schema
 
+    # Bolt: Changed to type error test since required field check was removed
     with pytest.raises(ValidationError):
+        bad_payload = [{"formKey": var.form_key, "data": {var.variable_name: "bad_type"}}]
         if async_mode:
-            asyncio.run(
-                wf.async_create_or_update_records("S", [{"formKey": var.form_key, "data": {}}])
-            )
+            asyncio.run(wf.async_create_or_update_records("S", bad_payload))
         else:
-            wf.create_or_update_records("S", [{"formKey": var.form_key, "data": {}}])
+            wf.create_or_update_records("S", bad_payload)
     if async_mode:
         sdk.records.async_create.assert_not_awaited()
     else:

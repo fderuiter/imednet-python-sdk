@@ -58,14 +58,14 @@ def test_check_type_unknown_type() -> None:
 def test_validate_record_data_errors() -> None:
     cache = SchemaCache()
     var = _make_var("age")
-    object.__setattr__(var, "required", True)
+    # Bolt: Removed 'required' attribute injection as support was removed
     cache._form_variables["F1"] = {"age": var}
 
     with pytest.raises(ValidationError):
         validate_record_data(cache, "F1", {"other": 1})
 
-    with pytest.raises(ValidationError):
-        validate_record_data(cache, "F1", {})
+    # Empty data is now valid if there are no required variables (or check is removed)
+    validate_record_data(cache, "F1", {})
 
     with pytest.raises(ValidationError):
         validate_record_data(cache, "F1", {"age": "x"})

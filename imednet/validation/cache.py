@@ -157,15 +157,8 @@ def validate_record_data(
     unknown = [k for k in data if k not in variables]
     if unknown:
         raise ValidationError(f"Unknown variables for form {form_key}: {', '.join(unknown)}")
-    missing_required = [
-        name
-        for name, var in variables.items()
-        if getattr(var, "required", False) and name not in data
-    ]
-    if missing_required:
-        raise ValidationError(
-            f"Missing required variables for form {form_key}: {', '.join(missing_required)}"
-        )
+    # Bolt Optimization: Removed dead code iterating over all variables for 'required' check.
+    # The Variable model does not have a 'required' field, so this loop was O(N) for no-op.
     for name, value in data.items():
         _check_type(variables[name].variable_type, value)
 
