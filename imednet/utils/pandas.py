@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, List
 import pandas as pd
 
 from ..models.records import Record
+from .security import sanitize_csv_formula
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checking
     from ..sdk import ImednetSDK
@@ -41,4 +42,8 @@ def export_records_csv(
 
     records = sdk.records.list(study_key=study_key)
     df = records_to_dataframe(records, flatten=flatten)
+
+    # Sanitize data to prevent CSV injection
+    df = df.map(sanitize_csv_formula)
+
     df.to_csv(file_path, index=False)
