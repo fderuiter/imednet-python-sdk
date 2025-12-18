@@ -33,7 +33,8 @@ List studies asynchronously and poll a job:
            base_url=cfg.base_url,
        ) as sdk:
            studies = await sdk.studies.async_list()
-           print(studies)
+           for study in studies:
+               print(f"{study.study_name} ({study.study_key})")
            status = await sdk.async_poll_job("STUDY", "BATCH", interval=2, timeout=60)
            print(status)
 
