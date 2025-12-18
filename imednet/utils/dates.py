@@ -41,6 +41,8 @@ def parse_iso_datetime(date_str: str) -> datetime:
         frac = match.group(1)
         if 1 <= len(frac) <= 5:
             date_str = date_str.replace("." + frac, "." + frac.ljust(6, "0"))
+        elif len(frac) > 6:
+            date_str = date_str.replace("." + frac, "." + frac[:6])
 
     return datetime.fromisoformat(date_str)
 
