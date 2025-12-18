@@ -126,12 +126,18 @@ def display_list(
         print(items)
         return
 
-    table = Table(show_header=True, header_style="bold magenta")
+    table = Table(show_header=True, header_style="bold magenta", row_styles=["none", "dim"])
     all_keys = list(data_list[0].keys())
     headers = fields if fields else all_keys
 
+    # Check first item to determine column alignment
+    first_item = data_list[0]
+
     for header in headers:
-        table.add_column(str(header).replace("_", " ").title())
+        val = first_item.get(header)
+        # Right-align numbers (int/float but not bool)
+        justify = "right" if isinstance(val, (int, float)) and not isinstance(val, bool) else "left"
+        table.add_column(str(header).replace("_", " ").title(), justify=justify)
 
     for item in data_list:
         row = []
