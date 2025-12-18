@@ -71,14 +71,22 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
+# Optional: Configure structured JSON logging
 configure_json_logging()
+
+# Load credentials from environment variables (e.g. .env file)
 cfg = load_config()
+
 sdk = ImednetSDK(
     api_key=cfg.api_key,
     security_key=cfg.security_key,
     base_url=cfg.base_url,
 )
-print(sdk.studies.list())
+
+# List all studies available to the user
+studies = sdk.studies.list()
+for study in studies:
+    print(f"{study.study_name} ({study.study_key})")
 ```
 
 ### Asynchronous Example
@@ -90,14 +98,19 @@ from imednet.utils import configure_json_logging
 
 
 async def main() -> None:
+    # Optional: Configure structured JSON logging
     configure_json_logging()
+
     cfg = load_config()
+
     async with AsyncImednetSDK(
         api_key=cfg.api_key,
         security_key=cfg.security_key,
         base_url=cfg.base_url,
     ) as sdk:
-        print(await sdk.studies.async_list())
+        studies = await sdk.studies.async_list()
+        for study in studies:
+            print(f"{study.study_name} ({study.study_key})")
 
 
 asyncio.run(main())
@@ -182,7 +195,7 @@ After running tests, validate documentation builds cleanly (no warnings):
 make docs
 ```
 
-See [docs/AGENTS.md](docs/AGENTS.md) for full documentation guidelines.
+See [AGENTS.md](AGENTS.md) for full documentation guidelines.
 
 ### Smoke-test workflow
 
