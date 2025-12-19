@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
 import typer
 from rich import print
@@ -126,12 +126,17 @@ def display_list(
         print(items)
         return
 
-    table = Table(show_header=True, header_style="bold magenta")
+    table = Table(show_header=True, header_style="bold magenta", row_styles=["none", "dim"])
     all_keys = list(data_list[0].keys())
     headers = fields if fields else all_keys
 
     for header in headers:
-        table.add_column(str(header).replace("_", " ").title())
+        justify: Literal["left", "right"] = "left"
+        first_val = data_list[0].get(header)
+        if isinstance(first_val, (int, float)) and not isinstance(first_val, bool):
+            justify = "right"
+
+        table.add_column(str(header).replace("_", " ").title(), justify=justify)
 
     for item in data_list:
         row = []
