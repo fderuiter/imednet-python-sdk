@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from unittest.mock import patch
 
 import pytest
@@ -6,47 +6,69 @@ import pytest
 from imednet.utils import dates
 
 
+@pytest.fixture
+def force_legacy_dates():
+    """Forces the legacy date parsing path (simulating Python < 3.11)."""
+    with patch("imednet.utils.dates._IS_PY311_OR_GREATER", False):
+        yield
+
+
 @pytest.mark.unit
-def test_parse_iso_datetime_legacy_high_precision():
+class TestLegacyDateParsing:
     """
-    Ensure that on Python < 3.11, high precision fractional seconds are truncated.
-    Simulates legacy environment where >6 digit precision raises ValueError.
+    Tests for `parse_iso_datetime` running in legacy mode (Python < 3.11 simulation).
+    This ensures the manual padding, truncation, and 'Z' handling logic is correct.
     """
 
-    # Define a side_effect that simulates Python 3.10 limitation
-    def picky_fromisoformat(date_str):
-        import re
+    def test_legacy_z_handling(self, force_legacy_dates):
+        """Test replacement of 'Z' with '+00:00'."""
+        dt = dates.parse_iso_datetime("2024-01-01T12:00:00Z")
+        assert dt == datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
-        # Find fractional seconds
-        match = re.search(r"\.(\d+)", date_str)
-        if match:
-            frac = match.group(1)
-            if len(frac) > 6:
-                msg = f"Invalid isoformat string: '{date_str}' (simulated legacy limitation)"
-                raise ValueError(msg)
+    def test_legacy_padding_1_digit(self, force_legacy_dates):
+        """Test padding of 1 fractional digit to 6."""
+        # .1 -> .100000
+        dt = dates.parse_iso_datetime("2024-01-01T12:00:00.1")
+        assert dt.microsecond == 100000
+        assert dt.tzinfo is None
 
-        # In a real scenario we'd call the real datetime.fromisoformat,
-        # but here we just return a dummy to prove success
-        return datetime(2025, 6, 30, 21, 40, 44, 123456, tzinfo=timezone.utc)
+    def test_legacy_padding_2_digits_with_offset(self, force_legacy_dates):
+        """Test padding of 2 fractional digits to 6 with timezone offset."""
+        # .12 -> .120000
+        dt = dates.parse_iso_datetime("2024-01-01T12:00:00.12+02:00")
+        assert dt.microsecond == 120000
+        assert dt.tzinfo is not None
+        assert dt.tzinfo.utcoffset(dt) == timedelta(hours=2)
 
-    # Force the module to use the legacy path
-    with patch.object(dates, "_IS_PY311_OR_GREATER", False):
-        # Patch the datetime class imported in the module
-        with patch("imednet.utils.dates.datetime") as mock_dt:
-            mock_dt.fromisoformat.side_effect = picky_fromisoformat
-            mock_dt.timezone = timezone
+    def test_legacy_truncation_7_digits(self, force_legacy_dates):
+        """Test truncation of 7 fractional digits to 6."""
+        # .1234567 -> .123456
+        dt = dates.parse_iso_datetime("2024-01-01T12:00:00.1234567")
+        assert dt.microsecond == 123456
 
-            # Act
-            result = dates.parse_iso_datetime("2025-06-30T21:40:44.1234567")
+    def test_legacy_truncation_9_digits_with_z(self, force_legacy_dates):
+        """Test truncation of 9 fractional digits to 6 with Z suffix."""
+        # Z is replaced first, then regex finds .123456789 before +00:00
+        dt = dates.parse_iso_datetime("2024-01-01T12:00:00.123456789Z")
+        assert dt.microsecond == 123456
+        assert dt.tzinfo == timezone.utc
 
-            # Assert
-            assert result.microsecond == 123456
+    def test_legacy_exact_6_digits(self, force_legacy_dates):
+        """Test that exactly 6 digits are untouched."""
+        dt = dates.parse_iso_datetime("2024-01-01T12:00:00.123456")
+        assert dt.microsecond == 123456
 
-            # Verify that fromisoformat was called with a truncated string
-            call_args = mock_dt.fromisoformat.call_args
-            assert call_args is not None
-            called_str = call_args[0][0]
+    def test_legacy_no_fraction(self, force_legacy_dates):
+        """Test parsing without fractional seconds."""
+        dt = dates.parse_iso_datetime("2024-01-01T12:00:00")
+        assert dt.microsecond == 0
 
-            # It should have exactly 6 digits of precision
-            assert ".123456" in called_str
-            assert ".1234567" not in called_str
+    def test_legacy_invalid_format(self, force_legacy_dates):
+        """Test that invalid formats still raise ValueError."""
+        with pytest.raises(ValueError):
+            dates.parse_iso_datetime("not-a-date")
+
+    def test_legacy_none(self, force_legacy_dates):
+        """Test that None raises TypeError/AttributeError (same as native)."""
+        with pytest.raises((TypeError, AttributeError)):
+            dates.parse_iso_datetime(None)  # type: ignore
