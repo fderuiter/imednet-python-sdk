@@ -24,6 +24,17 @@ def _snake_to_camel(text: str) -> str:
     return first + "".join(word.capitalize() for word in rest)
 
 
+def _format_filter_value(val: Any) -> str:
+    """Format a single filter value, escaping if necessary."""
+    if isinstance(val, str):
+        if _UNSAFE_CHARS_REGEX.search(val):
+            # Escape backslashes first to prevent escape injection
+            escaped = val.replace("\\", "\\\\").replace('"', r"\"")
+            return f'"{escaped}"'
+        return val
+    return str(val)
+
+
 def build_filter_string(
     filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]],
     and_connector: str = ";",
@@ -44,24 +55,15 @@ def build_filter_string(
     'type==A,type==B'
     """
 
-    def _format(val: Any) -> str:
-        if isinstance(val, str):
-            if _UNSAFE_CHARS_REGEX.search(val):
-                # Escape backslashes first to prevent escape injection
-                escaped = val.replace("\\", "\\\\").replace('"', r"\"")
-                return f'"{escaped}"'
-            return val
-        return str(val)
-
     parts: List[str] = []
     for key, value in filters.items():
         camel_key = _snake_to_camel(key)
         if isinstance(value, tuple) and len(value) == 2:
             op, val = value
-            parts.append(f"{camel_key}{op}{_format(val)}")
+            parts.append(f"{camel_key}{op}{_format_filter_value(val)}")
         elif isinstance(value, list):
-            subparts = [f"{camel_key}=={_format(v)}" for v in value]
+            subparts = [f"{camel_key}=={_format_filter_value(v)}" for v in value]
             parts.append(or_connector.join(subparts))
         else:
-            parts.append(f"{camel_key}=={_format(value)}")
+            parts.append(f"{camel_key}=={_format_filter_value(value)}")
     return and_connector.join(parts)
