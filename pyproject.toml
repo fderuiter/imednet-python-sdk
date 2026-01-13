@@ -59,7 +59,7 @@ python-dotenv = "^1.1.0"
 typer = {extras = ["all"], version = "^0.15.2"}
 python-json-logger = "^2.0.7"
 urllib3 = "^2.6.3"
-filelock = "^3.20.1"
+filelock = "^3.20.3"
 textual = "0.86.0"
 
 [tool.poetry.extras]
@@ -81,6 +81,7 @@ respx = "^0.22.0"
 pytest-asyncio = "^0.23.5"
 faker = "^24.9"
 pre-commit = "^4.2.0"
+virtualenv = "^20.36.1"
 types-requests = "^2.32.0.20250328"
 isort = "^6.0.1"
 werkzeug = "^3.1.5"
