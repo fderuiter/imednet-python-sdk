@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.codings import Coding
 
 
-class CodingsEndpoint(ListGetEndpoint):
+class CodingsEndpoint(ListGetEndpoint[Coding]):
     """
     API endpoint for interacting with codings (medical coding) in an iMedNet study.
 

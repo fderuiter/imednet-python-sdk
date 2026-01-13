@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.queries import Query
 
 
-class QueriesEndpoint(ListGetEndpoint):
+class QueriesEndpoint(ListGetEndpoint[Query]):
     """
     API endpoint for interacting with queries (dialogue/questions) in an iMedNet study.
 

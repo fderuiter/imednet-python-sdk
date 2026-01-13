@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.intervals import Interval
 
 
-class IntervalsEndpoint(ListGetEndpoint):
+class IntervalsEndpoint(ListGetEndpoint[Interval]):
     """
     API endpoint for interacting with intervals (visit definitions) in an iMedNet study.
 

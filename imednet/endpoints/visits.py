@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.visits import Visit
 
 
-class VisitsEndpoint(ListGetEndpoint):
+class VisitsEndpoint(ListGetEndpoint[Visit]):
     """
     API endpoint for interacting with visits (interval instances) in an iMedNet study.
 

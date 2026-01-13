@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.forms import Form
 
 
-class FormsEndpoint(ListGetEndpoint):
+class FormsEndpoint(ListGetEndpoint[Form]):
     """
     API endpoint for interacting with forms (eCRFs) in an iMedNet study.
 

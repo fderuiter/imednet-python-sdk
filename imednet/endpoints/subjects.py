@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.subjects import Subject
 
 
-class SubjectsEndpoint(ListGetEndpoint):
+class SubjectsEndpoint(ListGetEndpoint[Subject]):
     """
     API endpoint for interacting with subjects in an iMedNet study.
 

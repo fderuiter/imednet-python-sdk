@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.variables import Variable
 
 
-class VariablesEndpoint(ListGetEndpoint):
+class VariablesEndpoint(ListGetEndpoint[Variable]):
     """
     API endpoint for interacting with variables (data points on eCRFs) in an iMedNet study.
 
