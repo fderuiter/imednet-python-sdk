@@ -31,6 +31,7 @@ def parse_iso_datetime(date_str: str) -> datetime:
         ValueError: If the input string is not a valid ISO format.
     """
     if _IS_PY311_OR_GREATER:
+        # Python 3.11+ handles Z suffix and arbitrary precision natively
         return datetime.fromisoformat(date_str)
 
     if date_str.endswith("Z"):

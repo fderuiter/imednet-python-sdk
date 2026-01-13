@@ -15,6 +15,10 @@ _TRUE_VARIANTS = _TRUE_LOWER | {"True", "TRUE"}
 _FALSE_VARIANTS = _FALSE_LOWER | {"False", "FALSE"}
 
 
+# Sentinel value for empty timestamps to avoid allocation overhead
+_SENTINEL_DATETIME = datetime(1969, 4, 20, 16, 20)
+
+
 def parse_datetime(v: str | datetime) -> datetime:
     """Parse an ISO datetime string or return a sentinel value.
 
@@ -23,7 +27,7 @@ def parse_datetime(v: str | datetime) -> datetime:
     compatibility.
     """
     if not v:
-        return datetime(1969, 4, 20, 16, 20)
+        return _SENTINEL_DATETIME
     if isinstance(v, str):
         return parse_iso_datetime(v)
     return v
