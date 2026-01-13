@@ -146,6 +146,17 @@ class ListGetEndpointMixin:
         self._update_local_cache(result, study, bool(other_filters), cache)
         return result
 
+    def _ensure_one(
+        self, items: list[BaseModel], study_key: Optional[str], item_id: Any
+    ) -> BaseModel:
+        if not items:
+            if self.requires_study_key:
+                raise ValueError(
+                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
+                )
+            raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
+        return items[0]
+
     def _get_impl(
         self: Any,
         client: Client | AsyncClient,
@@ -167,21 +178,11 @@ class ListGetEndpointMixin:
 
             async def _await() -> BaseModel:
                 items = await result
-                if not items:
-                    if self.requires_study_key:
-                        raise ValueError(
-                            f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
-                        )
-                    raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
-                return items[0]
+                return self._ensure_one(items, study_key, item_id)
 
             return _await()
 
-        if not result:
-            if self.requires_study_key:
-                raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
-            raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
-        return result[0]
+        return self._ensure_one(result, study_key, item_id)
 
 
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
