@@ -1,9 +1,18 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Dict, Generic, Iterable, List, Optional, Protocol, Type, TypeVar
-
-from pydantic import BaseModel
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Protocol,
+    Type,
+    TypeVar,
+)
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
