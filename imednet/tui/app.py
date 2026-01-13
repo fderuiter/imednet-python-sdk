@@ -1,15 +1,22 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
-from rich.text import Text
 from textual.app import App, ComposeResult
-from textual.binding import Binding
-from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Footer, Header, ListItem, ListView, Static, DataTable, Label, TabbedContent, TabPane, Log, Button
-from textual.screen import Screen
+from textual.containers import Container
 from textual.message import Message
+from textual.screen import Screen
+from textual.widgets import (
+    DataTable,
+    Label,
+    ListItem,
+    ListView,
+    Log,
+    Static,
+    TabbedContent,
+    TabPane,
+)
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -17,6 +24,7 @@ if TYPE_CHECKING:
 # =============================================================================
 # LOGGING HANDLER
 # =============================================================================
+
 
 class TextualLogHandler(logging.Handler):
     """A logging handler that writes to a Textual Log widget."""
@@ -30,15 +38,18 @@ class TextualLogHandler(logging.Handler):
         # Use call_after_refresh to ensure thread safety when logging from background threads
         self.log_widget.write_line(msg)
 
+
 # =============================================================================
 # WIDGETS
 # =============================================================================
+
 
 class StudyList(ListView):
     """A list of studies."""
 
     class Selected(Message):
         """Study selected message."""
+
         def __init__(self, study_key: str, study_name: str) -> None:
             self.study_key = study_key
             self.study_name = study_name
@@ -85,6 +96,7 @@ class SiteList(ListView):
 
     class Selected(Message):
         """Site selected message."""
+
         def __init__(self, site_id: str, site_name: str) -> None:
             self.site_id = site_id
             self.site_name = site_name
@@ -135,21 +147,12 @@ class SubjectTable(DataTable):
         self.loading = True
         try:
             subjects = await self.sdk.subjects.async_list(study_key)
-            # Filter client-side for now as the SDK list(study_key) gets all subjects?
-            # Wait, sdk.subjects.list(study_key) gets all subjects in the study.
-            # Does it support filtering by site?
-            # Looking at memory: "The ListGetEndpointMixin class optimizes list iteration performance..."
-            # And "Mednet API Subjects Endpoint Documentation: https://portal.prod.imednetapi.com/docs/subjects"
-            # The list endpoint usually takes studyKey.
-            # If I want to filter by site, I might need to do it client side if the API doesn't support it in list.
-            # But wait, usually `list` returns everything.
-            # I'll check if I can filter. For now, I'll filter client side if needed.
 
             # Note: Subjects endpoint often returns `site_id` in the response.
             rows = []
             for sub in subjects:
                 s_site_id = str(getattr(sub, "site_id", ""))
-                # Strict string comparison
+                # Strict string comparison to filter by site
                 if s_site_id == str(site_id):
                     sub_id = getattr(sub, "subject_id", "-")
                     status = getattr(sub, "status", "-")
@@ -196,11 +199,17 @@ class JobMonitor(Static):
 
             lines = []
             lines.append(f"[bold]Active Jobs ({len(jobs)})[/bold]")
-            for job in jobs[:10]: # Show last 10
+            for job in jobs[:10]:  # Show last 10
                 job_type = getattr(job, "job_type", "Unknown")
                 status = getattr(job, "status", "Unknown")
                 created = getattr(job, "date_created", "")
-                color = "green" if status == "Completed" else "yellow" if status == "Processing" else "red"
+                color = (
+                    "green"
+                    if status == "Completed"
+                    else "yellow"
+                    if status == "Processing"
+                    else "red"
+                )
                 lines.append(f"[{color}]{status}[/{color}] - {job_type} ({created})")
 
             self.update("\n".join(lines))
@@ -210,13 +219,16 @@ class JobMonitor(Static):
 
 class LogViewer(Log):
     """A log viewer widget."""
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.border_title = "Logs"
 
+
 # =============================================================================
 # SCREENS
 # =============================================================================
+
 
 class DashboardScreen(Screen):
     """The main dashboard screen."""
@@ -263,18 +275,9 @@ class DashboardScreen(Screen):
         self.log_viewer = LogViewer()
 
     def compose(self) -> ComposeResult:
-        yield Container(
-            StudyList(self.sdk, id="study_list"),
-            id="studies-box"
-        )
-        yield Container(
-            SiteList(self.sdk, id="site_list"),
-            id="sites-box"
-        )
-        yield Container(
-            SubjectTable(self.sdk, id="subject_table"),
-            id="subjects-box"
-        )
+        yield Container(StudyList(self.sdk, id="study_list"), id="studies-box")
+        yield Container(SiteList(self.sdk, id="site_list"), id="sites-box")
+        yield Container(SubjectTable(self.sdk, id="subject_table"), id="subjects-box")
 
         with TabbedContent(id="bottom-pane"):
             with TabPane("Jobs"):
@@ -298,9 +301,11 @@ class DashboardScreen(Screen):
             subject_table = self.query_one(SubjectTable)
             self.run_worker(subject_table.load_subjects(study_key, message.site_id))
 
+
 # =============================================================================
 # APP
 # =============================================================================
+
 
 class ImednetTuiApp(App):
     """The iMednet TUI Application."""
@@ -332,7 +337,7 @@ class ImednetTuiApp(App):
         log_widget = dashboard.log_viewer
 
         handler = TextualLogHandler(log_widget)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         handler.setFormatter(formatter)
 
         # Attach to imednet logger
@@ -345,6 +350,7 @@ class ImednetTuiApp(App):
 
     def action_toggle_dark(self) -> None:
         self.dark = not self.dark
+
 
 def run_tui(sdk: ImednetSDK) -> None:
     """Run the TUI application."""
