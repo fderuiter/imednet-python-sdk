@@ -4,7 +4,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.sites import Site
 
 
-class SitesEndpoint(ListGetEndpoint):
+class SitesEndpoint(ListGetEndpoint[Site]):
     """
     API endpoint for interacting with sites (study locations) in an iMedNet study.
 
