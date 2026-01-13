@@ -17,6 +17,7 @@ Welcome to imednet's documentation!
    api_overview
    rest_api_reference
    endpoints/index
+   form_builder
    architecture
    schema_validation
    cli

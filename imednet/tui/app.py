@@ -19,6 +19,8 @@ from textual.widgets import (
     TabPane,
 )
 
+from imednet.tui.form_builder import FormBuilderPane
+
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
 
@@ -294,6 +296,8 @@ class DashboardScreen(Screen):
         with TabbedContent(id="bottom-pane"):
             with TabPane("Jobs"):
                 yield JobMonitor(self.sdk)
+            with TabPane("Form Builder"):
+                yield FormBuilderPane(self.sdk)
             with TabPane("Logs"):
                 yield self.log_viewer
 

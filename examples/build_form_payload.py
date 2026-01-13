@@ -22,7 +22,6 @@ from imednet import ImednetSDK
 from imednet.builders.form_builder import FormBuilder
 from imednet.builders.presets import PRESETS
 from imednet.endpoints.form_designer import FormDesignerClient
-from imednet.tui.app import run_tui
 
 # Load env vars
 load_dotenv()
@@ -113,6 +112,9 @@ def main() -> None:
     else:
         # TUI Mode
         try:
+            # Import TUI components only when needed to support headless mode without 'textual'
+            from imednet.tui.app import run_tui
+
             # We need an SDK instance for the TUI (even if we don't use REST API for form builder)
             # We can init with dummy values if env not set, but better to try load
             api_key = os.getenv("IMEDNET_API_KEY", "dummy_key")
