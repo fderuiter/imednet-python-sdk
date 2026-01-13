@@ -114,7 +114,8 @@ class FormBuilderPane(Container):
             phpsessid = self.query_one("#fb_phpsessid", Input).value
             csrf = self.query_one("#fb_csrf", Input).value
 
-            # Inputs with type="integer" are still returning str in .value, validation handled by widget?
+            # Inputs with type="integer" are still returning str in .value,
+            # validation handled by widget?
             # Actually Textual's Input with type='integer' restricts input but .value is str.
             # We need to parse.
             try:
