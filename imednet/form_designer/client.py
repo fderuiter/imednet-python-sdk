@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 import requests
 from requests.exceptions import RequestException
 
-from imednet.models.form_designer import Layout
+from .models import Layout
 
 
 class FormDesignerClient:

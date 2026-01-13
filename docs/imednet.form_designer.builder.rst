@@ -1,7 +1,7 @@
-imednet.builders.form\_builder module
+imednet.form\_designer.builder module
 =====================================
 
-.. automodule:: imednet.builders.form_builder
+.. automodule:: imednet.form_designer.builder
    :members:
    :undoc-members:
    :show-inheritance:

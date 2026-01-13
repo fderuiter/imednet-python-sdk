@@ -56,7 +56,7 @@ For CI/CD or automated workflows, use the example script:
 Presets
 -------
 
-Forms are defined as "Presets" in ``imednet/builders/presets.py``. A preset is simply a function that accepts a ``FormBuilder`` instance.
+Forms are defined as "Presets" in ``imednet/form_designer/presets.py``. A preset is simply a function that accepts a ``FormBuilder`` instance.
 
 .. code-block:: python
 
@@ -70,7 +70,7 @@ Forms are defined as "Presets" in ``imednet/builders/presets.py``. A preset is s
             required=True
         )
 
-See ``imednet.builders.presets`` for more examples.
+See ``imednet.form_designer.presets`` for more examples.
 
 API Reference
 -------------
@@ -78,6 +78,6 @@ API Reference
 .. toctree::
    :maxdepth: 2
 
-   imednet.models.form_designer
-   imednet.builders.form_builder
-   imednet.endpoints.form_designer
+   imednet.form_designer.models
+   imednet.form_designer.builder
+   imednet.form_designer.client

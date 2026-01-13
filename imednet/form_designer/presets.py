@@ -1,7 +1,6 @@
 from typing import Callable, Dict
 
-from imednet.builders.form_builder import FormBuilder
-from imednet.models.form_designer import Layout
+from .builder import FormBuilder
 
 FormPreset = Callable[[FormBuilder], None]
 

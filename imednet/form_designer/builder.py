@@ -2,7 +2,7 @@ import random
 import string
 from typing import List, Literal, Optional
 
-from imednet.models.form_designer import (
+from .models import (
     Choice,
     Col,
     Entity,

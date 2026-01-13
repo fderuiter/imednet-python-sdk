@@ -19,9 +19,7 @@ from typing import Optional
 from dotenv import load_dotenv
 
 from imednet import ImednetSDK
-from imednet.builders.form_builder import FormBuilder
-from imednet.builders.presets import PRESETS
-from imednet.endpoints.form_designer import FormDesignerClient
+from imednet.form_designer import PRESETS, FormBuilder, FormDesignerClient
 
 # Load env vars
 load_dotenv()

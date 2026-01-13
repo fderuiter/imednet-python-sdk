@@ -13,9 +13,7 @@ from textual.widgets import (
     Select,
 )
 
-from imednet.builders.form_builder import FormBuilder
-from imednet.builders.presets import PRESETS
-from imednet.endpoints.form_designer import FormDesignerClient
+from imednet.form_designer import PRESETS, FormBuilder, FormDesignerClient
 
 if TYPE_CHECKING:
     from imednet.sdk import ImednetSDK
