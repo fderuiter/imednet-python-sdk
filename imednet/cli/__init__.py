@@ -55,5 +55,16 @@ app.add_typer(records_app)
 app.add_typer(workflows_app)
 app.command("subject-data")(subject_data)
 
+
+@app.command()
+def tui(ctx: typer.Context) -> None:
+    """Launch the interactive terminal user interface (Dashboard)."""
+    # Import locally to avoid importing textual when just running help or other commands
+    from ..tui.app import run_tui
+
+    sdk = get_sdk()
+    run_tui(sdk)
+
+
 if __name__ == "__main__":  # pragma: no cover - manual invocation
     app()
