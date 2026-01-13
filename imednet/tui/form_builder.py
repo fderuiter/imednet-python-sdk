@@ -9,7 +9,6 @@ from textual.widgets import (
     Button,
     Input,
     Label,
-    Log,
     Select,
 )
 
@@ -76,7 +75,7 @@ class FormBuilderPane(Container):
         form_id: int,
         comm_id: int,
         rev: int,
-        preset_name: str
+        preset_name: str,
     ) -> None:
         logger = logging.getLogger("imednet")
         logger.info(f"Starting Form Build: {preset_name} -> {base_url}")
@@ -94,11 +93,7 @@ class FormBuilderPane(Container):
             logger.info("Submitting payload to formdez_save.php...")
 
             response_text = client.save_form(
-                csrf_key=csrf,
-                form_id=form_id,
-                community_id=comm_id,
-                revision=rev,
-                layout=layout
+                csrf_key=csrf, form_id=form_id, community_id=comm_id, revision=rev, layout=layout
             )
 
             logger.info("Submission Complete!")

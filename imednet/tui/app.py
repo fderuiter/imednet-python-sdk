@@ -90,7 +90,7 @@ class StudyList(ListView):
             study_key = event.item.id.replace("study-", "")
             # Get label text as name
             label_widget = event.item.query_one(Label)
-            study_name = str(label_widget.renderable)
+            study_name = str(label_widget.renderable)  # type: ignore
             self.post_message(self.Selected(study_key, study_name))
 
 
@@ -132,7 +132,7 @@ class SiteList(ListView):
         if event.item and event.item.id:
             site_id = event.item.id.replace("site-", "")
             label_widget = event.item.query_one(Label)
-            site_name = str(label_widget.renderable)
+            site_name = str(label_widget.renderable)  # type: ignore
             self.post_message(self.Selected(site_id, site_name))
 
 
@@ -220,9 +220,7 @@ class JobMonitor(Static):
                 color = (
                     "green"
                     if status in ("Completed", "Success")
-                    else "yellow"
-                    if status in ("Processing", "Pending")
-                    else "red"
+                    else "yellow" if status in ("Processing", "Pending") else "red"
                 )
                 lines.append(f"[{color}]{status}[/{color}] - {job_type} ({created})")
 

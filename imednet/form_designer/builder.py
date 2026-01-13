@@ -49,11 +49,7 @@ class FormBuilder:
         return f"lfdiv_{suffix}"
 
     def _create_entity(self, props: FieldProps, rows: Optional[List[Row]] = None) -> Entity:
-        return Entity(
-            props=props,
-            id=self._generate_dom_id(),
-            rows=rows
-        )
+        return Entity(props=props, id=self._generate_dom_id(), rows=rows)
 
     def add_page(self) -> None:
         """Add a new page to the form."""
@@ -79,7 +75,7 @@ class FormBuilder:
                 return last
 
         # Create new table
-        table_props = FieldProps(type="table", columns=2) # Standard 2-col
+        table_props = FieldProps(type="table", columns=2)  # Standard 2-col
         table = self._create_entity(table_props, rows=[])
         self.current_page.entities.append(table)
         return table
@@ -104,12 +100,14 @@ class FormBuilder:
 
     def add_field(
         self,
-        type: Literal["text", "number", "radio", "dropdown", "datetime", "upload", "checkbox", "memo"],
+        type: Literal[
+            "text", "number", "radio", "dropdown", "datetime", "upload", "checkbox", "memo"
+        ],
         label: str,
         question_name: str,
         required: bool = False,
         # Type specific args
-        choices: Optional[List[tuple[str, str]]] = None, # (text, code)
+        choices: Optional[List[tuple[str, str]]] = None,  # (text, code)
         max_length: Optional[int] = None,
         is_float: bool = False,
     ) -> None:
@@ -134,19 +132,12 @@ class FormBuilder:
         bl_req = "hard" if required else "optional"
 
         # 1. Label Entity (Col 1)
-        label_props = FieldProps(
-            type="label",
-            label=label,
-            new_fld_id=shared_id
-        )
+        label_props = FieldProps(type="label", label=label, new_fld_id=shared_id)
         col1 = Col(entities=[self._create_entity(label_props)])
 
         # 2. Control Entity (Col 2)
         ctrl_props = FieldProps(
-            type=type,
-            question_name=question_name,
-            new_fld_id=shared_id,
-            bl_req=bl_req
+            type=type, question_name=question_name, new_fld_id=shared_id, bl_req=bl_req
         )
 
         # Apply type-specifics
@@ -167,7 +158,7 @@ class FormBuilder:
                 for t, c in choices
             ]
             if type == "radio":
-                ctrl_props.radio = 1 # Horizontal default
+                ctrl_props.radio = 1  # Horizontal default
         elif type == "datetime":
             ctrl_props.date_ctrl = 1
             ctrl_props.time_ctrl = 0

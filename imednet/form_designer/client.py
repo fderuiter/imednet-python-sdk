@@ -1,8 +1,6 @@
 import json
-from typing import Any, Dict, Optional
 
 import requests
-from requests.exceptions import RequestException
 
 from .models import Layout
 
@@ -15,12 +13,7 @@ class FormDesignerClient:
     formdez_save.php endpoint.
     """
 
-    def __init__(
-        self,
-        base_url: str,
-        phpsessid: str,
-        timeout: float = 30.0
-    ):
+    def __init__(self, base_url: str, phpsessid: str, timeout: float = 30.0):
         """
         Initialize the client.
 
@@ -66,7 +59,7 @@ class FormDesignerClient:
             "Cookie": f"PHPSESSID={self.phpsessid}",
             "X-Requested-With": "XMLHttpRequest",
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "User-Agent": "iMedNet-SDK-FormBuilder/1.0"
+            "User-Agent": "iMedNet-SDK-FormBuilder/1.0",
         }
 
         # Serialize Layout
@@ -84,15 +77,10 @@ class FormDesignerClient:
             "layout": layout_json,
             "resubmit": "0",
             "quick_save": "1",
-            "__internal_ajax_request": "1"
+            "__internal_ajax_request": "1",
         }
 
-        response = self.session.post(
-            url,
-            data=payload,
-            headers=headers,
-            timeout=self.timeout
-        )
+        response = self.session.post(url, data=payload, headers=headers, timeout=self.timeout)
 
         response.raise_for_status()
 
@@ -105,7 +93,7 @@ class FormDesignerClient:
             # Example success: {"success": true, ...}
             # Example error: {"error": "..."}
             if isinstance(resp_data, dict) and resp_data.get("error"):
-                 raise ValueError(f"Server Error: {resp_data['error']}")
+                raise ValueError(f"Server Error: {resp_data['error']}")
         except json.JSONDecodeError:
             # Fallback if not JSON (legacy endpoints sometimes return HTML on error)
             pass

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, List, Literal, Optional
+from typing import List, Literal, Optional
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 
 class Choice(BaseModel):
     """A choice for radio or dropdown fields."""
+
     text: str
     code: str
     new_choice_id: int
@@ -14,10 +15,22 @@ class Choice(BaseModel):
 
 class FieldProps(BaseModel):
     """Properties for a field or entity."""
+
     # Common
     type: Literal[
-        "sep", "table", "label", "text", "memo", "number", "radio", "dropdown",
-        "checkbox", "datetime", "precisiondate", "upload", "ext_question"
+        "sep",
+        "table",
+        "label",
+        "text",
+        "memo",
+        "number",
+        "radio",
+        "dropdown",
+        "checkbox",
+        "datetime",
+        "precisiondate",
+        "upload",
+        "ext_question",
     ]
     label: Optional[str] = None
 
@@ -72,6 +85,7 @@ class FieldProps(BaseModel):
 
 class Entity(BaseModel):
     """A generic entity in the form (Separator, Table, Label, Control)."""
+
     props: FieldProps
     id: str  # DOM ID (e.g., lfdiv_...)
     rows: Optional[List[Row]] = None  # Only for type='table'
@@ -79,22 +93,27 @@ class Entity(BaseModel):
 
 class Col(BaseModel):
     """A column in a table row."""
+
     entities: List[Entity]
 
 
 class Row(BaseModel):
     """A row in a table."""
+
     cols: List[Col]
 
 
 class Page(BaseModel):
     """A page in the form definition."""
+
     entities: List[Entity]
 
 
 class Layout(BaseModel):
     """The root layout object."""
+
     pages: List[Page]
+
 
 # Handle circular references
 Entity.model_rebuild()
