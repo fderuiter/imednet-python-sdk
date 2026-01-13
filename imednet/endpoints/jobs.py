@@ -1,10 +1,10 @@
 """Endpoint for checking job status in a study."""
 
 import inspect
-from typing import Any
+from typing import Any, List
 
 from imednet.endpoints.base import BaseEndpoint
-from imednet.models.jobs import JobStatus
+from imednet.models.jobs import Job, JobStatus
 
 
 class JobsEndpoint(BaseEndpoint):
@@ -60,3 +60,32 @@ class JobsEndpoint(BaseEndpoint):
         """
         client = self._require_async_client()
         return await self._get_impl(client, study_key, batch_id)
+
+    def list(self, study_key: str) -> List[Job]:
+        """
+        List all jobs for a specific study.
+
+        Args:
+            study_key: Study identifier
+
+        Returns:
+            List of Job objects
+        """
+        endpoint = self._build_path(study_key, "jobs")
+        response = self._client.get(endpoint)
+        return [Job.from_json(item) for item in response.json()]
+
+    async def async_list(self, study_key: str) -> List[Job]:
+        """
+        Asynchronously list all jobs for a specific study.
+
+        Args:
+            study_key: Study identifier
+
+        Returns:
+            List of Job objects
+        """
+        client = self._require_async_client()
+        endpoint = self._build_path(study_key, "jobs")
+        response = await client.get(endpoint)
+        return [Job.from_json(item) for item in response.json()]

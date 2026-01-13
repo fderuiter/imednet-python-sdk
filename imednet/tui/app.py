@@ -7,6 +7,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Container
 from textual.message import Message
 from textual.screen import Screen
+from textual.timer import Timer
 from textual.widgets import (
     DataTable,
     Label,
@@ -181,19 +182,30 @@ class JobMonitor(Static):
     def __init__(self, sdk: ImednetSDK, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.sdk = sdk
-        self.timer = None
+        self.timer: Timer | None = None
+        self.current_study_key: str | None = None
 
     def on_mount(self) -> None:
-        self.update("Job Monitor: Initializing...")
-        self.timer = self.set_interval(10.0, self.refresh_jobs)
+        self.update("Job Monitor: Select a study to view jobs.")
+        self.timer = self.set_interval(10.0, self.refresh_jobs, pause=True)
+
+    def set_study(self, study_key: str) -> None:
+        self.current_study_key = study_key
+        self.update(f"Job Monitor: Loading jobs for study {study_key}...")
+        if self.timer:
+            self.timer.resume()
         self.run_worker(self.refresh_jobs())
 
     async def refresh_jobs(self) -> None:
+        if not self.current_study_key:
+            self.update("Job Monitor: Select a study to view jobs.")
+            if self.timer:
+                self.timer.pause()
+            return
+
         try:
-            # Jobs are global or study specific? usually global or need context.
-            # SDK usually has .jobs.async_list().
-            # I'll try fetching recent jobs.
-            jobs = await self.sdk.jobs.async_list()
+            # Polling jobs for the selected study
+            jobs = await self.sdk.jobs.async_list(self.current_study_key)
             # Sort by date descending?
             # Assuming jobs is a list of models.
 
@@ -201,13 +213,13 @@ class JobMonitor(Static):
             lines.append(f"[bold]Active Jobs ({len(jobs)})[/bold]")
             for job in jobs[:10]:  # Show last 10
                 job_type = getattr(job, "job_type", "Unknown")
-                status = getattr(job, "status", "Unknown")
+                status = getattr(job, "state", getattr(job, "status", "Unknown"))
                 created = getattr(job, "date_created", "")
                 color = (
                     "green"
-                    if status == "Completed"
+                    if status in ("Completed", "Success")
                     else "yellow"
-                    if status == "Processing"
+                    if status in ("Processing", "Pending")
                     else "red"
                 )
                 lines.append(f"[{color}]{status}[/{color}] - {job_type} ({created})")
@@ -292,6 +304,10 @@ class DashboardScreen(Screen):
         # Clear subjects
         self.query_one(SubjectTable).clear()
 
+        # Update Job Monitor
+        job_monitor = self.query_one(JobMonitor)
+        job_monitor.set_study(message.study_key)
+
     def on_site_list_selected(self, message: SiteList.Selected) -> None:
         self.log_viewer.write_line(f"Selected Site: {message.site_name}")
         site_list = self.query_one(SiteList)
@@ -329,7 +345,9 @@ class ImednetTuiApp(App):
         self.push_screen(DashboardScreen(self.sdk))
         self.title = "iMednet Mission Control"
         # Set sub-title to environment
-        self.sub_title = f"Env: {self.sdk.base_url}"
+        # Use hidden attribute or public if available. SDK doesn't expose base_url publicly.
+        base_url = getattr(self.sdk, "_base_url", "Unknown")
+        self.sub_title = f"Env: {base_url}"
 
         # Attach logging handler
         # We need to find the DashboardScreen to get the LogViewer
@@ -349,7 +367,7 @@ class ImednetTuiApp(App):
         # Note: If json_logging is active, it might interfere, but adding a handler usually works.
 
     def action_toggle_dark(self) -> None:
-        self.dark = not self.dark
+        self.dark = not self.dark  # type: ignore
 
 
 def run_tui(sdk: ImednetSDK) -> None:
