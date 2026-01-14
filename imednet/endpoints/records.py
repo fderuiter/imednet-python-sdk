@@ -1,10 +1,10 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-import inspect
 from typing import Any, Dict, List, Optional, Union
 
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.jobs import Job
+from imednet.models.json_base import JsonModel
 from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache, validate_record_data
 
@@ -21,32 +21,25 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
     _id_param = "recordId"
     _pop_study_filter = False
 
-    def _create_impl(
-        self,
-        client: Any,
-        *,
-        study_key: str,
-        records_data: List[Dict[str, Any]],
-        email_notify: Union[bool, str, None] = None,
-    ) -> Any:
-        path = self._build_path(study_key, self.PATH)
+    def _build_create_headers(self, email_notify: Union[bool, str, None]) -> Dict[str, str]:
         headers = {}
         if email_notify is not None:
             if isinstance(email_notify, str):
                 headers["x-email-notify"] = email_notify
             else:
                 headers["x-email-notify"] = str(email_notify).lower()
+        return headers
 
-        if inspect.iscoroutinefunction(client.post):
-
-            async def _async() -> Job:
-                response = await client.post(path, json=records_data, headers=headers)
-                return Job.from_json(response.json())
-
-            return _async()
-
-        response = client.post(path, json=records_data, headers=headers)
-        return Job.from_json(response.json())
+    def _prepare_records_data(
+        self, records_data: List[Union[Dict[str, Any], JsonModel]]
+    ) -> List[Dict[str, Any]]:
+        data = []
+        for item in records_data:
+            if isinstance(item, JsonModel):
+                data.append(item.model_dump(by_alias=True))
+            else:
+                data.append(item)
+        return data
 
     def _validate_records_if_schema_present(
         self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]
@@ -63,7 +56,7 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
     def create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: List[Union[Dict[str, Any], JsonModel]],
         email_notify: Union[bool, str, None] = None,  # Accept bool, str (email), or None
         *,
         schema: Optional[SchemaCache] = None,
@@ -82,34 +75,34 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         Returns:
             Job object with information about the created job
         """
-        self._validate_records_if_schema_present(schema, records_data)
+        data = self._prepare_records_data(records_data)
+        self._validate_records_if_schema_present(schema, data)
 
-        result = self._create_impl(
-            self._client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
-        )
-        return result  # type: ignore[return-value]
+        path = self._build_path(study_key, self.PATH)
+        headers = self._build_create_headers(email_notify)
+
+        response = self._client.post(path, json=data, headers=headers)
+        return Job.from_json(response.json())
 
     async def async_create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: List[Union[Dict[str, Any], JsonModel]],
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
         """Asynchronous version of :meth:`create`."""
-        self._require_async_client()
-        self._validate_records_if_schema_present(schema, records_data)
+        client = self._require_async_client()
 
-        return await self._create_impl(
-            self._async_client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
-        )
+        data = self._prepare_records_data(records_data)
+        self._validate_records_if_schema_present(schema, data)
+
+        path = self._build_path(study_key, self.PATH)
+        headers = self._build_create_headers(email_notify)
+
+        response = await client.post(path, json=data, headers=headers)
+        return Job.from_json(response.json())
 
     def _list_impl(
         self,

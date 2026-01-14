@@ -1,6 +1,5 @@
 """Endpoint for checking job status in a study."""
 
-import inspect
 from typing import Any, List
 
 from imednet.endpoints.base import BaseEndpoint
@@ -16,21 +15,7 @@ class JobsEndpoint(BaseEndpoint):
 
     PATH = "/api/v1/edc/studies"
 
-    def _get_impl(self, client: Any, study_key: str, batch_id: str) -> Any:
-        endpoint = self._build_path(study_key, "jobs", batch_id)
-        if inspect.iscoroutinefunction(client.get):
-
-            async def _async() -> JobStatus:
-                response = await client.get(endpoint)
-                data = response.json()
-                if not data:
-                    raise ValueError(f"Job {batch_id} not found in study {study_key}")
-                return JobStatus.from_json(data)
-
-            return _async()
-
-        response = client.get(endpoint)
-        data = response.json()
+    def _validate_job_response(self, data: Any, batch_id: str, study_key: str) -> JobStatus:
         if not data:
             raise ValueError(f"Job {batch_id} not found in study {study_key}")
         return JobStatus.from_json(data)
@@ -49,8 +34,9 @@ class JobsEndpoint(BaseEndpoint):
         Returns:
             JobStatus object with current state and timestamps
         """
-        result = self._get_impl(self._client, study_key, batch_id)
-        return result  # type: ignore[return-value]
+        endpoint = self._build_path(study_key, "jobs", batch_id)
+        response = self._client.get(endpoint)
+        return self._validate_job_response(response.json(), batch_id, study_key)
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
         """Asynchronous version of :meth:`get`.
@@ -59,7 +45,9 @@ class JobsEndpoint(BaseEndpoint):
         without any caching.
         """
         client = self._require_async_client()
-        return await self._get_impl(client, study_key, batch_id)
+        endpoint = self._build_path(study_key, "jobs", batch_id)
+        response = await client.get(endpoint)
+        return self._validate_job_response(response.json(), batch_id, study_key)
 
     def list(self, study_key: str) -> List[Job]:
         """
