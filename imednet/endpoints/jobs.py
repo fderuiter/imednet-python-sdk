@@ -1,10 +1,10 @@
 """Endpoint for checking job status in a study."""
 
-import inspect
 from typing import Any, List
 
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job, JobStatus
+from imednet.utils.dispatch import call_sync_or_async
 
 
 class JobsEndpoint(BaseEndpoint):
@@ -18,22 +18,14 @@ class JobsEndpoint(BaseEndpoint):
 
     def _get_impl(self, client: Any, study_key: str, batch_id: str) -> Any:
         endpoint = self._build_path(study_key, "jobs", batch_id)
-        if inspect.iscoroutinefunction(client.get):
 
-            async def _async() -> JobStatus:
-                response = await client.get(endpoint)
-                data = response.json()
-                if not data:
-                    raise ValueError(f"Job {batch_id} not found in study {study_key}")
-                return JobStatus.from_json(data)
+        def _process(response: Any) -> JobStatus:
+            data = response.json()
+            if not data:
+                raise ValueError(f"Job {batch_id} not found in study {study_key}")
+            return JobStatus.from_json(data)
 
-            return _async()
-
-        response = client.get(endpoint)
-        data = response.json()
-        if not data:
-            raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        return JobStatus.from_json(data)
+        return call_sync_or_async(client.get, _process, endpoint)
 
     def get(self, study_key: str, batch_id: str) -> JobStatus:
         """

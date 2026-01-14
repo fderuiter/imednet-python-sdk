@@ -1,11 +1,11 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-import inspect
 from typing import Any, Dict, List, Optional, Union
 
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
+from imednet.utils.dispatch import call_sync_or_async
 from imednet.validation.cache import SchemaCache, validate_record_data
 
 
@@ -37,16 +37,12 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
             else:
                 headers["x-email-notify"] = str(email_notify).lower()
 
-        if inspect.iscoroutinefunction(client.post):
+        def _process(response: Any) -> Job:
+            return Job.from_json(response.json())
 
-            async def _async() -> Job:
-                response = await client.post(path, json=records_data, headers=headers)
-                return Job.from_json(response.json())
-
-            return _async()
-
-        response = client.post(path, json=records_data, headers=headers)
-        return Job.from_json(response.json())
+        return call_sync_or_async(
+            client.post, _process, path, json=records_data, headers=headers
+        )
 
     def _validate_records_if_schema_present(
         self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]

@@ -4,6 +4,7 @@ import inspect
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Dict,
     Generic,
     Iterable,
@@ -83,6 +84,57 @@ class ListGetEndpointMixin(Generic[T]):
         elif not self.requires_study_key and self._cache_name:
             setattr(self, self._cache_name, result)
 
+    def _resolve_study_key(self, filters: Dict[str, Any], study_key: Optional[str]) -> Optional[str]:
+        if study_key:
+            filters["studyKey"] = study_key
+
+        if not self.requires_study_key:
+            return filters.get("studyKey")
+
+        if self._pop_study_filter:
+            try:
+                return filters.pop("studyKey")
+            except KeyError as exc:
+                raise self._missing_study_exception(
+                    "Study key must be provided or set in the context"
+                ) from exc
+
+        study = filters.get("studyKey")
+        if not study:
+            raise ValueError("Study key must be provided or set in the context")
+        return study
+
+    def _check_cache(
+        self,
+        study: Optional[str],
+        filters: Dict[str, Any],
+        refresh: bool,
+    ) -> Optional[List[T]]:
+        cache = getattr(self, self._cache_name, None) if self._cache_name else None
+        other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
+
+        if self.requires_study_key:
+            if not study:
+                raise ValueError("Study key must be provided or set in the context")
+            if cache is not None and not other_filters and not refresh and study in cache:
+                return cache[study]  # type: ignore[no-any-return]
+        else:
+            if cache is not None and not other_filters and not refresh:
+                return cache  # type: ignore[no-any-return]
+
+        return None
+
+    def _get_parse_func(self) -> Callable[[Any], T]:
+        # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
+        # We respect overrides of _parse_item if present.
+        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:
+            return self._parse_item
+
+        parse_func = getattr(self.MODEL, "from_json", None)
+        if parse_func is None:
+            parse_func = self.MODEL.model_validate
+        return parse_func  # type: ignore[no-any-return]
+
     def _list_impl(
         self: Any,
         client: Client | AsyncClient,
@@ -95,33 +147,11 @@ class ListGetEndpointMixin(Generic[T]):
     ) -> Any:
         # Note: Return type is Any because it could be List[T] or Awaitable[List[T]]
         filters = self._auto_filter(filters)
-        if study_key:
-            filters["studyKey"] = study_key
-        if self.requires_study_key:
-            if self._pop_study_filter:
-                try:
-                    study = filters.pop("studyKey")
-                except KeyError as exc:
-                    raise self._missing_study_exception(
-                        "Study key must be provided or set in the context"
-                    ) from exc
-            else:
-                study = filters.get("studyKey")
-                if not study:
-                    raise ValueError("Study key must be provided or set in the context")
-        else:
-            study = filters.get("studyKey")
+        study = self._resolve_study_key(filters, study_key)
 
-        cache = getattr(self, self._cache_name, None) if self._cache_name else None
-        other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
-        if self.requires_study_key:
-            if not study:
-                raise ValueError("Study key must be provided or set in the context")
-            if cache is not None and not other_filters and not refresh and study in cache:
-                return cache[study]
-        else:
-            if cache is not None and not other_filters and not refresh and cache is not None:
-                return cache
+        cached_result = self._check_cache(study, filters, refresh)
+        if cached_result is not None:
+            return cached_result
 
         params: Dict[str, Any] = {}
         if filters:
@@ -138,14 +168,9 @@ class ListGetEndpointMixin(Generic[T]):
         page_size = self.PAGE_SIZE
         paginator = paginator_cls(client, path, params=params, page_size=page_size)
 
-        # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
-        # We respect overrides of _parse_item if present.
-        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:
-            parse_func = self._parse_item
-        else:
-            parse_func = getattr(self.MODEL, "from_json", None)
-            if parse_func is None:
-                parse_func = self.MODEL.model_validate
+        parse_func = self._get_parse_func()
+        cache = getattr(self, self._cache_name, None) if self._cache_name else None
+        other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
 
         if hasattr(paginator, "__aiter__"):
 
