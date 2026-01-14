@@ -22,7 +22,8 @@ def test_save_form_success(mock_layout):
     )
 
     resp = client.save_form("csrf", 1, 1, 1, mock_layout)
-    assert '{"success": True}' in resp or "success" in resp # responses.json returns json body as text if accessed via .text? No, requests.text returns str.
+    # responses.json returns json body as text if accessed via .text? No, requests.text returns str.
+    assert '{"success": True}' in resp or "success" in resp
 
     # Check headers
     req_headers = responses.calls[0].request.headers
