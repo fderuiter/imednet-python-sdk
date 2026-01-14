@@ -1,14 +1,24 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Protocol, Type
-
-from pydantic import BaseModel
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Protocol,
+    Type,
+    TypeVar,
+)
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.endpoints.base import BaseEndpoint
+from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
 
 if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
@@ -18,7 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
         def _build_path(self, *segments: Any) -> str: ...
 
         PATH: str
-        MODEL: Type[BaseModel]
+        MODEL: Type[JsonModel]
         _id_param: str
         _cache_name: Optional[str]
         requires_study_key: bool
@@ -33,16 +43,19 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
             refresh: bool = False,
             extra_params: Optional[Dict[str, Any]] = None,
             **filters: Any,
-        ) -> Any: ...
+        ) -> List[JsonModel]: ...
 
-        def _parse_item(self, item: Any) -> BaseModel: ...
+        def _parse_item(self, item: Any) -> JsonModel: ...
 
 
-class ListGetEndpointMixin:
+T = TypeVar("T", bound=JsonModel)
+
+
+class ListGetEndpointMixin(Generic[T]):
     """Mixin implementing ``list`` and ``get`` helpers."""
 
     PATH: str
-    MODEL: Type[BaseModel]
+    MODEL: Type[T]
     _id_param: str
     _cache_name: Optional[str] = None
     requires_study_key: bool = True
@@ -50,14 +63,14 @@ class ListGetEndpointMixin:
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
-    def _parse_item(self, item: Any) -> BaseModel:
+    def _parse_item(self, item: Any) -> T:
         if hasattr(self.MODEL, "from_json"):
             return getattr(self.MODEL, "from_json")(item)
         return self.MODEL.model_validate(item)
 
     def _update_local_cache(
         self,
-        result: list[BaseModel],
+        result: list[T],
         study: str | None,
         has_filters: bool,
         cache: Any,
@@ -80,6 +93,7 @@ class ListGetEndpointMixin:
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> Any:
+        # Note: Return type is Any because it could be List[T] or Awaitable[List[T]]
         filters = self._auto_filter(filters)
         if study_key:
             filters["studyKey"] = study_key
@@ -135,7 +149,7 @@ class ListGetEndpointMixin:
 
         if hasattr(paginator, "__aiter__"):
 
-            async def _collect() -> list[BaseModel]:
+            async def _collect() -> List[T]:
                 result = [parse_func(item) async for item in paginator]
                 self._update_local_cache(result, study, bool(other_filters), cache)
                 return result
@@ -165,7 +179,7 @@ class ListGetEndpointMixin:
 
         if inspect.isawaitable(result):
 
-            async def _await() -> BaseModel:
+            async def _await() -> T:
                 items = await result
                 if not items:
                     if self.requires_study_key:
@@ -184,7 +198,7 @@ class ListGetEndpointMixin:
         return result[0]
 
 
-class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
+class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
     """Endpoint base class implementing ``list`` and ``get`` helpers."""
 
     def _get_context(
@@ -208,14 +222,14 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin):
         client, paginator = self._get_context(is_async)
         return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
         return self._list_common(False, study_key=study_key, **filters)
 
-    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> Any:
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
         return await self._list_common(True, study_key=study_key, **filters)
 
-    def get(self, study_key: Optional[str], item_id: Any) -> Any:
+    def get(self, study_key: Optional[str], item_id: Any) -> T:
         return self._get_common(False, study_key=study_key, item_id=item_id)
 
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> Any:
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
         return await self._get_common(True, study_key=study_key, item_id=item_id)

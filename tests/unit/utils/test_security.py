@@ -1,18 +1,31 @@
+import pytest
 from imednet.utils.security import sanitize_csv_formula
 
 
-def test_sanitize_csv_formula_unsafe():
-    unsafe = ["=SUM(A1:A2)", "+1", "-1", "@foo"]
-    for u in unsafe:
-        assert sanitize_csv_formula(u) == f"'{u}"
-
-
-def test_sanitize_csv_formula_safe():
-    safe = ["hello", "123", "", None, 1, 1.5, True]
-    for s in safe:
-        assert sanitize_csv_formula(s) == s
-
-
-def test_sanitize_csv_formula_mixed():
-    # Should not touch values that don't start with trigger chars
-    assert sanitize_csv_formula("foo=bar") == "foo=bar"
+@pytest.mark.parametrize(
+    "input_val, expected",
+    [
+        # Unsafe inputs (direct)
+        ("=SUM(A1:A2)", "'=SUM(A1:A2)"),
+        ("+1", "'+1"),
+        ("-1", "'-1"),
+        ("@foo", "'@foo"),
+        # Unsafe inputs (whitespace bypass)
+        ("   =cmd", "'   =cmd"),
+        ("\t+1", "'\t+1"),
+        ("\n-1", "'\n-1"),
+        # Safe inputs
+        ("hello", "hello"),
+        ("123", "123"),
+        ("", ""),
+        (None, None),
+        (1, 1),
+        (1.5, 1.5),
+        (True, True),
+        # Mixed (safe)
+        ("foo=bar", "foo=bar"),
+        (" foo=bar", " foo=bar"),
+    ],
+)
+def test_sanitize_csv_formula(input_val, expected):
+    assert sanitize_csv_formula(input_val) == expected

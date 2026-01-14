@@ -6,7 +6,7 @@ from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
 
 
-class UsersEndpoint(ListGetEndpoint):
+class UsersEndpoint(ListGetEndpoint[User]):
     """
     API endpoint for interacting with users in an iMedNet study.
 

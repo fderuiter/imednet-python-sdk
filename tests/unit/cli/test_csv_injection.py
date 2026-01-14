@@ -36,8 +36,6 @@ def test_records_list_output_csv_injection_prevention(runner: CliRunner, sdk: Ma
             assert "recordId,note,normal" in content or "recordId" in content
 
             # The malicious payload should be sanitized (prefixed with ')
-            # Note: We haven't implemented the fix yet, so this assertion is expected to fail
-            # unless we implement the fix.
             # We check that the RAW malicious string is NOT present as a starting value
 
             # Since we are using csv module, it might quote fields.
