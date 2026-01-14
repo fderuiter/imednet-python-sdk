@@ -17,9 +17,35 @@ from imednet.utils.validators import (
 
 _NORMALIZERS: Dict[type, Dict[str, Callable[[Any], Any]]] = {}
 
+# Map types to their default normalizers
+_TYPE_VALIDATORS: Dict[Any, Callable[[Any], Any]] = {
+    str: parse_str_or_default,
+    int: parse_int_or_default,
+    bool: parse_bool,
+    datetime: parse_datetime,
+    # Container types based on origin
+    list: parse_list_or_default,
+    dict: parse_dict_or_default,
+}
+
 
 def _identity(v: Any) -> Any:
     return v
+
+
+def _make_optional_normalizer(
+    validator: Callable[[Any], Any], annotation: Any
+) -> Callable[[Any], Any]:
+    """Create a wrapper that preserves None for optional fields."""
+    if annotation is datetime:
+        # For datetime, we want None if the value is empty/None,
+        # instead of the sentinel value returned by parse_datetime.
+        return lambda v: None if not v else validator(v)
+
+    # For other primitives, we only want to return None if the input is explicitly None.
+    # Otherwise we run the validator (which typically handles None by returning a default,
+    # but here we intercept None first).
+    return lambda v: None if v is None else validator(v)
 
 
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
@@ -38,44 +64,16 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
             origin = get_origin(annotation)
             optional = True
 
-    normalizer = _identity
+    # Check if we have a direct validator for the origin (list, dict) or the annotation (str, int, etc)
+    key = origin if origin in _TYPE_VALIDATORS else annotation
+    normalizer = _TYPE_VALIDATORS.get(key, _identity)
 
-    if origin is list:
-        normalizer = parse_list_or_default
-    elif origin is dict:
-        normalizer = parse_dict_or_default
-    elif annotation is str:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if v is None else parse_str_or_default(v)
-
-        else:
-            normalizer = parse_str_or_default
-    elif annotation is int:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if v is None else parse_int_or_default(v)
-
-        else:
-            normalizer = parse_int_or_default
-    elif annotation is bool:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if v is None else parse_bool(v)
-
-        else:
-            normalizer = parse_bool
-    elif annotation is datetime:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if not v else parse_datetime(v)
-
-        else:
-            normalizer = parse_datetime
+    if optional and normalizer is not _identity:
+        # Container types (list, dict) in the original code did NOT have optional logic applied
+        # (they default to empty list/dict via parse_list/dict_or_default even if optional).
+        # Only primitives (str, int, bool, datetime) had optional logic.
+        if key in (str, int, bool, datetime):
+            normalizer = _make_optional_normalizer(normalizer, key)
 
     if cls not in _NORMALIZERS:
         _NORMALIZERS[cls] = {}
