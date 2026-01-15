@@ -1,6 +1,6 @@
 import json
 
-import requests
+import httpx
 
 from .models import Layout
 
@@ -25,7 +25,7 @@ class FormDesignerClient:
         self.base_url = base_url.rstrip("/")
         self.phpsessid = phpsessid
         self.timeout = timeout
-        self.session = requests.Session()
+        self.session = httpx.Client(timeout=timeout)
 
     def save_form(
         self,
@@ -49,7 +49,7 @@ class FormDesignerClient:
             The raw response text from the server.
 
         Raises:
-            RequestException: If the network request fails.
+            httpx.HTTPStatusError: If the server returns a non-2xx status code.
             ValueError: If the server returns an error.
         """
         url = f"{self.base_url}/app/formdez/formdez_save.php"
@@ -81,7 +81,7 @@ class FormDesignerClient:
             "__internal_ajax_request": "1",
         }
 
-        response = self.session.post(url, data=payload, headers=headers, timeout=self.timeout)
+        response = self.session.post(url, data=payload, headers=headers)
 
         response.raise_for_status()
 

@@ -46,7 +46,6 @@ imednet = "imednet.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-requests = "2.32.4"
 h11 = "0.16.0"
 pandas = { version = ">=2.2.3,<3.0.0", optional = true }
 pyarrow = { version = ">=16.0.0,<17.0.0", optional = true }
@@ -76,13 +75,11 @@ ruff = "^0.11.6"
 mypy = "^1.15.0"
 pytest = "^8.3.5"
 pytest-cov = "^6.1.1"
-responses = "^0.25.7"
 respx = "^0.22.0"
 pytest-asyncio = "^0.23.5"
 faker = "^24.9"
 pre-commit = "^4.2.0"
 virtualenv = "^20.36.1"
-types-requests = "^2.32.0.20250328"
 isort = "^6.0.1"
 werkzeug = "^3.1.5"
 sphinx = "^6.2.0"
