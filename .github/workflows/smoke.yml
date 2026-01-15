@@ -4,6 +4,8 @@ name: Smoke
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * *' # Runs every day at 8am
 
 jobs:
   smoke:

@@ -26,6 +26,7 @@ def test_demo_form_preset():
     assert "datetime" in types
     assert "memo" in types
 
+
 def test_cv_pathology_preset():
     builder = FormBuilder()
     PRESETS["CV Pathology"](builder)
