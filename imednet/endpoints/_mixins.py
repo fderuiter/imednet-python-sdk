@@ -4,12 +4,14 @@ import inspect
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Dict,
     Generic,
     Iterable,
     List,
     Optional,
     Protocol,
+    Tuple,
     Type,
     TypeVar,
 )
@@ -83,20 +85,22 @@ class ListGetEndpointMixin(Generic[T]):
         elif not self.requires_study_key and self._cache_name:
             setattr(self, self._cache_name, result)
 
-    def _list_impl(
-        self: Any,
-        client: Client | AsyncClient,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
-        *,
-        study_key: Optional[str] = None,
-        refresh: bool = False,
-        extra_params: Optional[Dict[str, Any]] = None,
-        **filters: Any,
-    ) -> Any:
-        # Note: Return type is Any because it could be List[T] or Awaitable[List[T]]
+    def _get_cache_object(self) -> Any:
+        return getattr(self, self._cache_name, None) if self._cache_name else None
+
+    def _has_other_filters(self, filters: Dict[str, Any]) -> bool:
+        return any(k != "studyKey" for k in filters)
+
+    def _resolve_study_key(
+        self,
+        study_key: Optional[str],
+        filters: Dict[str, Any],
+    ) -> Tuple[str | None, Dict[str, Any]]:
         filters = self._auto_filter(filters)
         if study_key:
             filters["studyKey"] = study_key
+
+        study: str | None = None
         if self.requires_study_key:
             if self._pop_study_filter:
                 try:
@@ -111,18 +115,40 @@ class ListGetEndpointMixin(Generic[T]):
                     raise ValueError("Study key must be provided or set in the context")
         else:
             study = filters.get("studyKey")
+        return study, filters
 
-        cache = getattr(self, self._cache_name, None) if self._cache_name else None
-        other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
+    def _get_cached_result(
+        self,
+        study: str | None,
+        filters: Dict[str, Any],
+        refresh: bool,
+    ) -> List[T] | None:
+        cache = self._get_cache_object()
+        has_others = self._has_other_filters(filters)
+
         if self.requires_study_key:
-            if not study:
-                raise ValueError("Study key must be provided or set in the context")
-            if cache is not None and not other_filters and not refresh and study in cache:
+            # study is guaranteed here by _resolve_study_key
+            if (
+                cache is not None
+                and not has_others
+                and not refresh
+                and study is not None
+                and study in cache
+            ):
                 return cache[study]
         else:
-            if cache is not None and not other_filters and not refresh and cache is not None:
+            if cache is not None and not has_others and not refresh:
                 return cache
+        return None
 
+    def _create_paginator(
+        self,
+        client: Client | AsyncClient,
+        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        study: str | None,
+        filters: Dict[str, Any],
+        extra_params: Optional[Dict[str, Any]],
+    ) -> Paginator | AsyncPaginator:
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
@@ -136,29 +162,71 @@ class ListGetEndpointMixin(Generic[T]):
             segments = (self.PATH,) if self.PATH else ()
         path = self._build_path(*segments)
         page_size = self.PAGE_SIZE
-        paginator = paginator_cls(client, path, params=params, page_size=page_size)
+        return paginator_cls(client, path, params=params, page_size=page_size)
 
+    def _get_parse_func(self) -> Callable[[Any], T]:
         # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
         # We respect overrides of _parse_item if present.
         if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:
-            parse_func = self._parse_item
-        else:
-            parse_func = getattr(self.MODEL, "from_json", None)
-            if parse_func is None:
-                parse_func = self.MODEL.model_validate
+            return self._parse_item
+
+        parse_func = getattr(self.MODEL, "from_json", None)
+        if parse_func is None:
+            parse_func = self.MODEL.model_validate
+        return parse_func
+
+    async def _execute_async_pagination(
+        self,
+        paginator: AsyncPaginator,
+        parse_func: Callable[[Any], T],
+        study: str | None,
+        filters: Dict[str, Any],
+    ) -> List[T]:
+        result = [parse_func(item) async for item in paginator]
+        self._update_local_cache(
+            result, study, self._has_other_filters(filters), self._get_cache_object()
+        )
+        return result
+
+    def _execute_sync_pagination(
+        self,
+        paginator: Paginator,
+        parse_func: Callable[[Any], T],
+        study: str | None,
+        filters: Dict[str, Any],
+    ) -> List[T]:
+        result = [parse_func(item) for item in paginator]
+        self._update_local_cache(
+            result, study, self._has_other_filters(filters), self._get_cache_object()
+        )
+        return result
+
+    def _list_impl(
+        self: Any,
+        client: Client | AsyncClient,
+        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> Any:
+        # Note: Return type is Any because it could be List[T] or Awaitable[List[T]]
+        study, filters = self._resolve_study_key(study_key, filters)
+
+        cached = self._get_cached_result(study, filters, refresh)
+        if cached is not None:
+            return cached
+
+        paginator = self._create_paginator(client, paginator_cls, study, filters, extra_params)
+        parse_func = self._get_parse_func()
 
         if hasattr(paginator, "__aiter__"):
+            return self._execute_async_pagination(
+                paginator, parse_func, study, filters
+            )  # type: ignore
 
-            async def _collect() -> List[T]:
-                result = [parse_func(item) async for item in paginator]
-                self._update_local_cache(result, study, bool(other_filters), cache)
-                return result
-
-            return _collect()
-
-        result = [parse_func(item) for item in paginator]
-        self._update_local_cache(result, study, bool(other_filters), cache)
-        return result
+        return self._execute_sync_pagination(paginator, parse_func, study, filters)  # type: ignore
 
     def _get_impl(
         self: Any,
