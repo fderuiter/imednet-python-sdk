@@ -45,7 +45,9 @@ def test_save_form_http_error(mock_layout, respx_mock):
     base_url = "https://test.imednet.com"
     client = FormDesignerClient(base_url, "fake_sessid")
 
-    respx_mock.post(f"{base_url}/app/formdez/formdez_save.php").mock(return_value=httpx.Response(500))
+    respx_mock.post(f"{base_url}/app/formdez/formdez_save.php").mock(
+        return_value=httpx.Response(500)
+    )
 
     with pytest.raises(httpx.HTTPStatusError):
         client.save_form("csrf", 1, 1, 1, mock_layout)
