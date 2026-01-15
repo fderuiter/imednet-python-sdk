@@ -44,6 +44,7 @@ Command Hierarchy
        A --> K(workflows)
        K --> K1("extract-records")
        A --> L("subject-data")
+       A --> M(tui)
 
 Available Commands
 ------------------
@@ -182,3 +183,15 @@ Subject Data
 The command prints a nested JSON structure containing the subject's visits, forms, and
 variable values. This is helpful for debugging or exporting an individual subject's
 dataset.
+
+Interactive TUI
+---------------
+
+``tui`` launches the terminal user interface for an interactive dashboard.
+
+.. code-block:: console
+
+   imednet tui
+
+This command opens a full-screen application to browse studies, filter subjects, and
+inspect records without needing to memorize CLI arguments.
