@@ -1,13 +1,105 @@
-import time
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from playwright.sync_api import sync_playwright
 
-from imednet.form_designer.client import FormDesignerClient
-from imednet.form_designer.models import Col, Entity, Layout, Page, Row, TableProps, TextFieldProps
+from imednet.form_designer.models import (
+    Col,
+    DateTimeFieldProps,
+    Entity,
+    LabelProps,
+    Layout,
+    Page,
+    Row,
+    TableProps,
+    TextFieldProps,
+)
 
 
-def inject_form_specification(page, spec_data: Dict[str, Any]):
+def generate_form_payload(
+    form_id: str, csrf_key: str, community_id: str, revision: str, spec_data: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """
+    Generates the exact HTTP POST body required by iMednet's formdez_save.php.
+    Constructs the Layout object using Pydantic models and serializes it.
+    """
+    rows = []
+
+    for field in spec_data:
+        # Create a Label Column
+        label_entity = Entity(
+            id=f"gen_{field['id']}_lbl",
+            props=LabelProps(
+                type="label",
+                label=f"<p><strong>{field['label']}</strong></p>",
+                label_id=f"lbl_{field['id']}",
+            ),
+        )
+
+        # Create an Input Column
+        f_type = field.get("type", "text")
+        props = None
+
+        # Map simple types to specific Props models
+        if f_type == "text":
+            props = TextFieldProps(
+                type="text",
+                question_name=field["variable_name"],
+                question_id=field["id"],
+                fld_id=field["id"],
+                length=field.get("length", 50),
+            )
+        elif f_type == "datetime":
+            props = DateTimeFieldProps(
+                type="datetime",
+                question_name=field["variable_name"],
+                question_id=field["id"],
+                fld_id=field["id"],
+                # Default settings for date/time
+                date_ctrl=1,
+                time_ctrl=0,
+            )
+        else:
+            # Fallback for now to text if unknown
+            props = TextFieldProps(
+                type="text",
+                question_name=field["variable_name"],
+                question_id=field["id"],
+                fld_id=field["id"],
+                length=50,
+            )
+
+        input_entity = Entity(id=f"gen_{field['id']}_inp", props=props)
+
+        # Add to Row (Label Col + Input Col)
+        rows.append(Row(cols=[Col(entities=[label_entity]), Col(entities=[input_entity])]))
+
+    # Construct the full Page Layout
+    # We wrap everything in a Table for alignment
+    root_table = Entity(id="root_table", props=TableProps(type="table", columns=2), rows=rows)
+
+    layout_obj = Layout(pages=[Page(entities=[root_table])])
+
+    # Serialize Layout to JSON string
+    layout_json = layout_obj.model_dump_json(exclude_none=True)
+
+    # Construct the Final Body Payload
+    payload = {
+        "CSRFKey": csrf_key,
+        "resubmit": "0",
+        "__internal_form_url": "/app/formdez/formdez_save.php",
+        "form_id": str(form_id),
+        "lang_id": "1",
+        "community_id": str(community_id),
+        "quick_save": "1",
+        "revision": str(revision),
+        "layout": layout_json,  # The magic string
+        "__internal_ajax_request": "1",
+    }
+
+    return payload
+
+
+def inject_form_specification(page, spec_data: List[Dict[str, Any]]):
     """
     This function runs once the human has navigated to the designer.
     It scrapes the necessary tokens and uses the API to update the form.
@@ -15,114 +107,75 @@ def inject_form_specification(page, spec_data: Dict[str, Any]):
     print(">>> 🤖 AUTOMATION ENGAGED")
 
     # 1. Scrape the "Hidden" Context from the Page
-    # We need:
-    # - CSRF Key
-    # - Form ID
-    # - Community ID (Study ID)
-    # - Revision ID (Next Revision)
-    # - PHPSESSID (Cookie)
-
-    # Note: The exact selectors here are hypothetical and based on typical legacy app patterns.
-    # Users may need to adjust selectors based on the actual DOM of iMednet Form Designer.
     app_context = page.evaluate(
         """() => {
-        // Helper to find value by name or id
         const getValue = (selector) => document.querySelector(selector)?.value;
-
-        // Form ID is often in the URL or a hidden field
         const urlParams = new URLSearchParams(window.location.search);
-
-        // Revision might be in a hidden field like 'revision' or 'next_revision'
-        // or embedded in a JS object.
-        // Assuming there is a global JS object or hidden fields.
 
         return {
             csrf_token: getValue('input[name="CSRFKey"]') || getValue('#CSRFKey'),
             form_id: urlParams.get('formId') || getValue('input[name="form_id"]'),
             community_id: getValue('input[name="community_id"]'),
             revision: getValue('input[name="revision"]'),
-            base_url: window.location.origin,
-            cookies: document.cookie
         }
     }"""
     )
-
-    # Extract PHPSESSID from cookies
-    cookies = app_context["cookies"]
-    phpsessid = None
-    if cookies:
-        for cookie in cookies.split(";"):
-            name, _, value = cookie.strip().partition("=")
-            if name == "PHPSESSID":
-                phpsessid = value
-                break
-
-    if not phpsessid:
-        print(">>> ❌ Error: Could not find PHPSESSID in cookies. Are you logged in?")
-        return
 
     # Verify we have all required fields
     required_fields = ["csrf_token", "form_id", "community_id", "revision"]
     missing_fields = [f for f in required_fields if not app_context.get(f)]
 
     if missing_fields:
-        print(f">>> ❌ Error: Could not scrape the following fields: {', '.join(missing_fields)}")
+        print(f">>> ❌ Error: Could not scrape: {', '.join(missing_fields)}")
         print(">>> Please ensure you are on the Form Designer page.")
         return
 
     print(
         f">>> Captured Context: FormID={app_context['form_id']}, "
-        f"StudyID={app_context['community_id']}"
+        f"StudyID={app_context['community_id']}, Rev={app_context['revision']}"
     )
 
-    # 2. Transform your Spec to the iMednet Layout
-    # Create a simple Layout with the spec data
-    # Here we create a single page with a single row containing a text field
+    # 2. Generate Payload
+    try:
+        payload = generate_form_payload(
+            form_id=app_context["form_id"],
+            csrf_key=app_context["csrf_token"],
+            community_id=app_context["community_id"],
+            revision=app_context["revision"],
+            spec_data=spec_data,
+        )
+    except Exception as e:
+        print(f">>> ❌ Error generating payload: {e}")
+        return
 
-    # Generate a unique field ID or use one from spec
-    field_id = f"fld_{int(time.time())}"
-
-    text_field = Entity(
-        id=field_id,
-        props=TextFieldProps(
-            type="text",
-            label=spec_data.get("question", "New Question"),
-            length=50,
-            fld_id=field_id,
-            question_id=field_id,  # Usually needs to be unique
-            question_name="NEW_Q",
-        ),
-    )
-
-    table_entity = Entity(
-        id=f"tbl_{int(time.time())}",
-        props=TableProps(type="table", columns=1),
-        rows=[Row(cols=[Col(entities=[text_field])])],
-    )
-
-    layout = Layout(pages=[Page(entities=[table_entity])])
-
-    # 3. Send the Data via API (Using the SDK Client)
-    client = FormDesignerClient(base_url=app_context["base_url"], phpsessid=phpsessid)
+    # 3. Send the Data via Playwright Request (reuses browser context/cookies)
+    url = f"{page.url.split('/app/')[0]}/app/formdez/formdez_save.php"
+    print(f">>> 🚀 Sending payload to {url}...")
 
     try:
-        print(">>> 🚀 Sending payload via FormDesignerClient...")
-        response_text = client.save_form(
-            csrf_key=app_context["csrf_token"],
-            form_id=int(app_context["form_id"]),
-            community_id=int(app_context["community_id"]),
-            revision=int(app_context["revision"]),
-            layout=layout,
+        # page.request uses the browser context, so cookies are included automatically
+        response = page.request.post(
+            url,
+            data=payload,
+            headers={
+                "X-Requested-With": "XMLHttpRequest",
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            },
         )
-        print(">>> ✅ Form Updated Successfully!")
-        print(f">>> Server Response: {response_text[:100]}...")  # Truncate for display
 
-        # Reload to show changes
-        print(">>> 🔄 Reloading page...")
-        page.reload()
+        if response.ok:
+            print(">>> ✅ Form Updated Successfully!")
+            print(f">>> Server Response: {response.text()[:100]}...")
+
+            # Reload to show changes
+            print(">>> 🔄 Reloading page...")
+            page.reload()
+        else:
+            print(f">>> ❌ Server returned error: {response.status} {response.status_text}")
+            print(response.text())
 
     except Exception as e:
-        print(f">>> ❌ Error saving form: {e}")
+        print(f">>> ❌ Error sending request: {e}")
 
 
 def run_hybrid_mode():
@@ -135,18 +188,18 @@ def run_hybrid_mode():
         browser = p.chromium.launch_persistent_context(
             user_data_dir,
             headless=False,
-            args=["--start-maximized"],  # easier for the human
-            channel="chrome",  # Use installed chrome if available, else chromium
+            args=["--start-maximized"],
+            channel="chrome",
         )
 
         page = browser.pages[0] if browser.pages else browser.new_page()
 
-        # 1. Initial Nav (Optional - just to be helpful)
+        # 1. Initial Nav
         if "imednet.com" not in page.url:
             try:
                 page.goto("https://www.imednet.com/")
             except Exception:
-                pass  # Might fail if offline or bad URL, just let user drive
+                pass
 
         # 2. THE HUMAN LOOP
         print("-------------------------------------------------")
@@ -156,12 +209,24 @@ def run_hybrid_mode():
         print("3. Ensure you are ready to inject the new design.")
         print("-------------------------------------------------")
 
-        # Wait for user input in the console to trigger the automation
         input(">>> PRESS ENTER HERE WHEN READY TO INJECT SPECIFICATION <<<")
 
         # 3. Load your external specification
-        # In a real app, this might open a file picker
-        mock_spec = {"question": "Did you take the medication?", "type": "text"}
+        # Example Spec matching the user's request
+        mock_spec = [
+            {
+                "id": 105803,
+                "label": "Subject Initials",
+                "variable_name": "SUBINIT",
+                "type": "text",
+            },
+            {
+                "id": 105804,
+                "label": "Date of Visit",
+                "variable_name": "VISDAT",
+                "type": "datetime",
+            },
+        ]
 
         # 4. Run the injection
         try:
@@ -169,7 +234,6 @@ def run_hybrid_mode():
         except Exception as e:
             print(f">>> ❌ Unexpected Error: {e}")
 
-        # Keep browser open for inspection
         print(">>> Done. You can close the browser manually.")
         input("Press Enter to close script...")
         browser.close()
