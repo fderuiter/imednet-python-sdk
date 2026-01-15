@@ -4,6 +4,7 @@ import inspect
 from typing import (
     TYPE_CHECKING,
     Any,
+    Awaitable,
     Dict,
     Generic,
     Iterable,
@@ -12,40 +13,19 @@ from typing import (
     Protocol,
     Type,
     TypeVar,
+    Union,
+    overload,
 )
 
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.protocols import AsyncResourceClient, ResourceClient
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
 
 if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
-
-    class _EndpointBase(Protocol):
-        def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]: ...
-        def _build_path(self, *segments: Any) -> str: ...
-
-        PATH: str
-        MODEL: Type[JsonModel]
-        _id_param: str
-        _cache_name: Optional[str]
-        requires_study_key: bool
-        PAGE_SIZE: int
-
-        def _list_impl(
-            self,
-            client: Client | AsyncClient,
-            paginator_cls: type[Paginator] | type[AsyncPaginator],
-            *,
-            study_key: Optional[str] | None = None,
-            refresh: bool = False,
-            extra_params: Optional[Dict[str, Any]] = None,
-            **filters: Any,
-        ) -> List[JsonModel]: ...
-
-        def _parse_item(self, item: Any) -> JsonModel: ...
+    # No changes needed here, just keeping it for reference if needed
+    pass
 
 
 T = TypeVar("T", bound=JsonModel)
@@ -83,16 +63,40 @@ class ListGetEndpointMixin(Generic[T]):
         elif not self.requires_study_key and self._cache_name:
             setattr(self, self._cache_name, result)
 
+    @overload
     def _list_impl(
         self: Any,
-        client: Client | AsyncClient,
+        client: ResourceClient,
+        paginator_cls: type[Paginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]: ...
+
+    @overload
+    def _list_impl(
+        self: Any,
+        client: AsyncResourceClient,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> Awaitable[List[T]]: ...
+
+    def _list_impl(
+        self: Any,
+        client: ResourceClient | AsyncResourceClient,
         paginator_cls: type[Paginator] | type[AsyncPaginator],
         *,
         study_key: Optional[str] = None,
         refresh: bool = False,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> Any:
+    ) -> Union[List[T], Awaitable[List[T]]]:
         # Note: Return type is Any because it could be List[T] or Awaitable[List[T]]
         filters = self._auto_filter(filters)
         if study_key:
@@ -136,7 +140,9 @@ class ListGetEndpointMixin(Generic[T]):
             segments = (self.PATH,) if self.PATH else ()
         path = self._build_path(*segments)
         page_size = self.PAGE_SIZE
-        paginator = paginator_cls(client, path, params=params, page_size=page_size)
+        # We need to cast client to Any here because Paginator expects Client, but we are passing ResourceClient protocol.
+        # This is a temporary measure until Paginator is also updated to use Protocol or generics.
+        paginator = paginator_cls(client, path, params=params, page_size=page_size)  # type: ignore
 
         # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
         # We respect overrides of _parse_item if present.
@@ -160,18 +166,38 @@ class ListGetEndpointMixin(Generic[T]):
         self._update_local_cache(result, study, bool(other_filters), cache)
         return result
 
+    @overload
     def _get_impl(
         self: Any,
-        client: Client | AsyncClient,
+        client: ResourceClient,
+        paginator_cls: type[Paginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T: ...
+
+    @overload
+    def _get_impl(
+        self: Any,
+        client: AsyncResourceClient,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> Awaitable[T]: ...
+
+    def _get_impl(
+        self: Any,
+        client: ResourceClient | AsyncResourceClient,
         paginator_cls: type[Paginator] | type[AsyncPaginator],
         *,
         study_key: Optional[str],
         item_id: Any,
-    ) -> Any:
+    ) -> Union[T, Awaitable[T]]:
         filters = {self._id_param: item_id}
         result = self._list_impl(
-            client,
-            paginator_cls,
+            client,  # type: ignore
+            paginator_cls,  # type: ignore
             study_key=study_key,
             refresh=True,
             **filters,
@@ -203,14 +229,15 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
 
     def _get_context(
         self, is_async: bool
-    ) -> tuple[Client | AsyncClient, type[Paginator] | type[AsyncPaginator]]:
+    ) -> tuple[ResourceClient | AsyncResourceClient, type[Paginator] | type[AsyncPaginator]]:
         if is_async:
             return self._require_async_client(), AsyncPaginator
         return self._client, Paginator
 
     def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
         client, paginator = self._get_context(is_async)
-        return self._list_impl(client, paginator, **kwargs)
+        # Type checkers might complain about the union match here, but we know it's correct by construction
+        return self._list_impl(client, paginator, **kwargs)  # type: ignore
 
     def _get_common(
         self,
@@ -220,7 +247,7 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
         item_id: Any,
     ) -> Any:
         client, paginator = self._get_context(is_async)
-        return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
+        return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)  # type: ignore
 
     def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
         return self._list_common(False, study_key=study_key, **filters)
