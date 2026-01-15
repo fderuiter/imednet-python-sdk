@@ -1,4 +1,5 @@
 import pytest
+
 from imednet.utils.security import sanitize_csv_formula
 
 
