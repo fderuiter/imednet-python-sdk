@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from airflow import DAG
+from airflow import DAG  # type: ignore
 from imednet.integrations.airflow import ImednetExportOperator
 
 """Example DAG showing :class:`ImednetExportOperator` to write records to a file.

@@ -1,13 +1,24 @@
 import time
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from playwright.sync_api import sync_playwright
 
 from imednet.form_designer.client import FormDesignerClient
-from imednet.form_designer.models import Col, Entity, Layout, Page, Row, TableProps, TextFieldProps
+from imednet.form_designer.models import (
+    Col,
+    DateTimeFieldProps,
+    Entity,
+    EntityProps,
+    LabelProps,
+    Layout,
+    Page,
+    Row,
+    TableProps,
+    TextFieldProps,
+)
 
 
-def inject_form_specification(page, spec_data: Dict[str, Any]):
+def inject_form_specification(page, spec_data: List[Dict[str, Any]]):
     """
     This function runs once the human has navigated to the designer.
     It scrapes the necessary tokens and uses the API to update the form.
@@ -22,7 +33,7 @@ def inject_form_specification(page, spec_data: Dict[str, Any]):
     # - Revision ID (Next Revision)
     # - PHPSESSID (Cookie)
 
-    # Note: The exact selectors here are hypothetical and based on typical legacy app patterns.
+    # Note: The exact selectors here are based on typical legacy app patterns.
     # Users may need to adjust selectors based on the actual DOM of iMednet Form Designer.
     app_context = page.evaluate(
         """() => {
@@ -31,10 +42,6 @@ def inject_form_specification(page, spec_data: Dict[str, Any]):
 
         // Form ID is often in the URL or a hidden field
         const urlParams = new URLSearchParams(window.location.search);
-
-        // Revision might be in a hidden field like 'revision' or 'next_revision'
-        // or embedded in a JS object.
-        // Assuming there is a global JS object or hidden fields.
 
         return {
             csrf_token: getValue('input[name="CSRFKey"]') || getValue('#CSRFKey'),
@@ -72,32 +79,66 @@ def inject_form_specification(page, spec_data: Dict[str, Any]):
 
     print(
         f">>> Captured Context: FormID={app_context['form_id']}, "
-        f"StudyID={app_context['community_id']}"
+        f"StudyID={app_context['community_id']}, Revision={app_context['revision']}"
     )
 
     # 2. Transform your Spec to the iMednet Layout
-    # Create a simple Layout with the spec data
-    # Here we create a single page with a single row containing a text field
+    # Create the rows for the layout
+    rows = []
 
-    # Generate a unique field ID or use one from spec
-    field_id = f"fld_{int(time.time())}"
+    for field in spec_data:
+        # Unique IDs for new elements
+        label_id = f"gen_{field['id']}_lbl"
+        input_id = f"gen_{field['id']}_inp"
 
-    text_field = Entity(
-        id=field_id,
-        props=TextFieldProps(
-            type="text",
-            label=spec_data.get("question", "New Question"),
-            length=50,
-            fld_id=field_id,
-            question_id=field_id,  # Usually needs to be unique
-            question_name="NEW_Q",
-        ),
-    )
+        # Create a Label Column
+        label_entity = Entity(
+            id=label_id, props=LabelProps(type="label", label=f"<p>{field['label']}</p>")
+        )
 
+        # Create an Input Column based on type
+        field_type = field.get("type", "text")
+        props: EntityProps
+
+        if field_type == "text":
+            props = TextFieldProps(
+                type="text",
+                length=50,
+                question_name=field["variable_name"],
+                question_id=field["id"],
+                fld_id=field["id"],
+            )
+        elif field_type == "datetime":
+            props = DateTimeFieldProps(
+                type="datetime",
+                date_ctrl=1,
+                time_ctrl=1,
+                question_name=field["variable_name"],
+                question_id=field["id"],
+                fld_id=field["id"],
+            )
+        else:
+            # Fallback to text
+            props = TextFieldProps(
+                type="text",
+                length=50,
+                question_name=field["variable_name"],
+                question_id=field["id"],
+                fld_id=field["id"],
+            )
+
+        input_entity = Entity(id=input_id, props=props)
+
+        # Add to Row with 2 columns: Label | Input
+        rows.append(Row(cols=[Col(entities=[label_entity]), Col(entities=[input_entity])]))
+
+    # Construct the full Page Layout
+    # The structure is Page -> Entity(Table) -> Rows -> Cols -> Entities(Fields)
+    root_table_id = f"tbl_{int(time.time())}"
     table_entity = Entity(
-        id=f"tbl_{int(time.time())}",
-        props=TableProps(type="table", columns=1),
-        rows=[Row(cols=[Col(entities=[text_field])])],
+        id=root_table_id,
+        props=TableProps(type="table", columns=2),
+        rows=rows,
     )
 
     layout = Layout(pages=[Page(entities=[table_entity])])
@@ -115,7 +156,8 @@ def inject_form_specification(page, spec_data: Dict[str, Any]):
             layout=layout,
         )
         print(">>> ✅ Form Updated Successfully!")
-        print(f">>> Server Response: {response_text[:100]}...")  # Truncate for display
+        # Truncate for display but show start to confirm it looks like success
+        print(f">>> Server Response: {response_text[:100]}...")
 
         # Reload to show changes
         print(">>> 🔄 Reloading page...")
@@ -160,8 +202,22 @@ def run_hybrid_mode():
         input(">>> PRESS ENTER HERE WHEN READY TO INJECT SPECIFICATION <<<")
 
         # 3. Load your external specification
-        # In a real app, this might open a file picker
-        mock_spec = {"question": "Did you take the medication?", "type": "text"}
+        # In a real app, this might read from an Excel or JSON file
+        # Using the user's example spec
+        mock_spec = [
+            {
+                "id": 105803,
+                "label": "Subject Initials",
+                "variable_name": "SUBINIT",
+                "type": "text",
+            },
+            {
+                "id": 105804,
+                "label": "Date of Visit",
+                "variable_name": "VISDAT",
+                "type": "datetime",
+            },
+        ]
 
         # 4. Run the injection
         try:

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from airflow import DAG
+from airflow import DAG  # type: ignore
 from imednet.integrations.airflow import ImednetJobSensor
 
 """Example DAG demonstrating :class:`ImednetJobSensor` to monitor an iMednet job.
