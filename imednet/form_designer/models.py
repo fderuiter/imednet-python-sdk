@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import List, Literal, Optional, Union, Any
+from typing import Any, List, Literal, Optional, Union
 
 from pydantic import BaseModel, Field
 
 
 class Choice(BaseModel):
     """A choice for radio or dropdown fields."""
+
     text: str
     choice_id: Union[int, str]
     code: str
@@ -14,6 +15,7 @@ class Choice(BaseModel):
 
 class BaseFieldProps(BaseModel):
     """Shared properties for all data capture fields."""
+
     fld_id: Optional[Union[int, str]] = None
     question_id: Optional[Union[int, str]] = None
     question_name: Optional[str] = None
@@ -128,9 +130,9 @@ class FileUploadProps(BaseFieldProps):
 
 class DateTimeFieldProps(BaseFieldProps):
     type: Literal["datetime"]
-    time_ctrl: Optional[int] = None   # 1 = Show Time
-    date_ctrl: Optional[int] = None   # 1 = Show Date
-    use_seconds: Optional[int] = None # 1 = Show Seconds
+    time_ctrl: Optional[int] = None  # 1 = Show Time
+    date_ctrl: Optional[int] = None  # 1 = Show Date
+    use_seconds: Optional[int] = None  # 1 = Show Seconds
     record_comp_date: Optional[int] = None
     record_key_date: Optional[int] = None
 
@@ -183,12 +185,13 @@ EntityProps = Union[
     DateTimeFieldProps,
     PrecisionDateFieldProps,
     MemoFieldProps,
-    FileUploadProps
+    FileUploadProps,
 ]
 
 
 class Entity(BaseModel):
     """The 'Component' in the Composite Pattern."""
+
     id: str
     props: EntityProps = Field(discriminator="type")
     rows: Optional[List[Row]] = None
@@ -196,22 +199,27 @@ class Entity(BaseModel):
 
 class Col(BaseModel):
     """A column in a layout table row."""
+
     entities: Optional[List[Entity]] = None
 
 
 class Row(BaseModel):
     """A row in a layout table."""
+
     cols: List[Col]
 
 
 class Page(BaseModel):
     """Represents a single page within the electronic Case Report Form (CRF)."""
+
     entities: List[Entity]
 
 
 class ProtocolDeviationFormPayload(BaseModel):
     """Root object representing the entire form definition payload."""
+
     pages: List[Page]
+
 
 # Alias for compatibility with builder
 Layout = ProtocolDeviationFormPayload

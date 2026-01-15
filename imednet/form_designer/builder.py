@@ -1,6 +1,6 @@
 import random
 import string
-from typing import List, Literal, Optional, Union
+from typing import List, Literal, Optional
 
 from .models import (
     CheckboxFieldProps,
@@ -143,26 +143,15 @@ class FormBuilder:
         # 2. Control Entity (Col 2)
         ctrl_props: EntityProps
 
-        common_kwargs = {
-            "question_name": question_name,
-            "new_fld_id": shared_id,
-            "bl_req": bl_req
-        }
+        common_kwargs = {"question_name": question_name, "new_fld_id": shared_id, "bl_req": bl_req}
 
         if type == "text":
             ctrl_props = TextFieldProps(
-                type="text",
-                length=max_length or 100,
-                columns=30,
-                **common_kwargs
+                type="text", length=max_length or 100, columns=30, **common_kwargs
             )
         elif type == "memo":
             ctrl_props = MemoFieldProps(
-                type="memo",
-                length=max_length or 500,
-                columns=40,
-                rows=6,
-                **common_kwargs
+                type="memo", length=max_length or 500, columns=40, rows=6, **common_kwargs
             )
         elif type == "number":
             ctrl_props = NumberFieldProps(
@@ -170,7 +159,7 @@ class FormBuilder:
                 length=max_length or 5,
                 columns=10,
                 real=1 if is_float else 0,
-                **common_kwargs
+                **common_kwargs,
             )
         elif type == "radio":
             field_choices = []
@@ -180,10 +169,7 @@ class FormBuilder:
                     for t, c in choices
                 ]
             ctrl_props = RadioFieldProps(
-                type="radio",
-                choices=field_choices,
-                radio=1,  # Horizontal default
-                **common_kwargs
+                type="radio", choices=field_choices, radio=1, **common_kwargs  # Horizontal default
             )
         elif type == "dropdown":
             field_choices = []
@@ -192,11 +178,7 @@ class FormBuilder:
                     Choice(text=t, code=c, choice_id=self._generate_new_fld_id())
                     for t, c in choices
                 ]
-            ctrl_props = DropdownFieldProps(
-                type="dropdown",
-                choices=field_choices,
-                **common_kwargs
-            )
+            ctrl_props = DropdownFieldProps(type="dropdown", choices=field_choices, **common_kwargs)
         elif type == "checkbox":
             field_choices = []
             if choices:
@@ -204,11 +186,7 @@ class FormBuilder:
                     Choice(text=t, code=c, choice_id=self._generate_new_fld_id())
                     for t, c in choices
                 ]
-            ctrl_props = CheckboxFieldProps(
-                type="checkbox",
-                choices=field_choices,
-                **common_kwargs
-            )
+            ctrl_props = CheckboxFieldProps(type="checkbox", choices=field_choices, **common_kwargs)
         elif type == "datetime":
             ctrl_props = DateTimeFieldProps(
                 type="datetime",
@@ -217,17 +195,17 @@ class FormBuilder:
                 allow_no_day=0,
                 allow_no_month=0,
                 allow_no_year=0,
-                **common_kwargs
+                **common_kwargs,
             )
         elif type == "upload":
             ctrl_props = FileUploadProps(
                 type="upload",
                 mfs=1,
-                max_files=10, # default to something reasonable if missing
-                **common_kwargs
+                max_files=10,  # default to something reasonable if missing
+                **common_kwargs,
             )
         else:
-             # Fallback (should not happen due to type hint)
+            # Fallback (should not happen due to type hint)
             raise ValueError(f"Unsupported field type: {type}")
 
         col2 = Col(entities=[self._create_entity(ctrl_props)])

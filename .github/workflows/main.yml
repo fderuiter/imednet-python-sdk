@@ -1,0 +1,173 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # ------------------------------------------------------------------
+  # JOB 1: QUALITY GATE (Runs once)
+  # ------------------------------------------------------------------
+  quality:
+    name: Quality & Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install Dependencies
+        run: poetry install --with dev
+
+      # FAIL if code is ugly. Do not fix it for them.
+      - name: Enforce Style
+        run: |
+          poetry run black --check .
+          poetry run isort --check --profile black .
+
+      - name: Lint (Ruff)
+        run: poetry run ruff check .
+
+      - name: Type Check (MyPy)
+        run: poetry run mypy imednet
+
+      - name: Security Audit
+        run: |
+          poetry run pip install pip-audit
+          poetry run pip-audit -s osv
+
+  # ------------------------------------------------------------------
+  # JOB 2: BUILD ARTIFACT (Builds the library)
+  # ------------------------------------------------------------------
+  build:
+    name: Build Distribution
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: abatilo/actions-poetry@v2
+
+      - name: Build Wheel and Sdist
+        run: poetry build
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  # ------------------------------------------------------------------
+  # JOB 3: TEST MATRIX (Tests the BUILT library)
+  # ------------------------------------------------------------------
+  test:
+    name: Test Python ${{ matrix.python-version }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Download the artifact we built in the previous job
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      # CRITICAL: Install the .whl, not the source!
+      # We install test dependencies manually because we aren't using 'poetry install'
+      - name: Install Library & Test Deps
+        run: |
+          pip install dist/*.whl
+          pip install pytest pytest-cov responses respx pytest-asyncio faker boto3 moto pandas sqlalchemy openpyxl
+
+      - name: Run Tests
+        env:
+          IMEDNET_API_KEY: dummy
+          IMEDNET_SECURITY_KEY: dummy
+        # Note: We run pytest against the installed package
+        run: |
+          pytest -q --cov=imednet --cov-report=xml --cov-fail-under=90
+
+  # ------------------------------------------------------------------
+  # JOB 4: DOCS (Build & Prepare for Deploy)
+  # ------------------------------------------------------------------
+  docs:
+    name: Build Documentation
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: abatilo/actions-poetry@v2
+
+      - run: poetry install --with dev
+
+      - name: Build HTML
+        run: poetry run sphinx-build -b html docs docs/_build/html
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html
+
+  # ------------------------------------------------------------------
+  # JOB 5: DEPLOY DOCS (Only on main push)
+  # ------------------------------------------------------------------
+  deploy-docs:
+    name: Deploy to GH Pages
+    needs: [test, docs]
+    # Only deploy docs if tests pass and we are on main
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ------------------------------------------------------------------
+  # JOB 6: PUBLISH TO PYPI (Only on Tags)
+  # ------------------------------------------------------------------
+  publish:
+    name: Publish to PyPI
+    needs: test # Only publish if tests passed
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
