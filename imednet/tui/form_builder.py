@@ -5,12 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from textual import work
 from textual.containers import Container, VerticalScroll
-from textual.widgets import (
-    Button,
-    Input,
-    Label,
-    Select,
-)
+from textual.widgets import Button, Input, Label, Select
 
 from imednet.form_designer import PRESETS, FormBuilder, FormDesignerClient
 
