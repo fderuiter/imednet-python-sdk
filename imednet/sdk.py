@@ -35,7 +35,6 @@ from .sdk_mixins import SDKConvenienceMixin
 
 # Import workflow classes
 from .workflows.data_extraction import DataExtractionWorkflow
-from .workflows.job_poller import JobPoller
 from .workflows.query_management import QueryManagementWorkflow
 from .workflows.record_mapper import RecordMapper
 from .workflows.record_update import RecordUpdateWorkflow

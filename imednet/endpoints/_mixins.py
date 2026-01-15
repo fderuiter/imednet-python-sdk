@@ -10,7 +10,6 @@ from typing import (
     Iterable,
     List,
     Optional,
-    Protocol,
     Type,
     TypeVar,
     Union,
@@ -140,7 +139,8 @@ class ListGetEndpointMixin(Generic[T]):
             segments = (self.PATH,) if self.PATH else ()
         path = self._build_path(*segments)
         page_size = self.PAGE_SIZE
-        # We need to cast client to Any here because Paginator expects Client, but we are passing ResourceClient protocol.
+        # We need to cast client to Any here because Paginator expects Client,
+        # but we are passing ResourceClient protocol.
         # This is a temporary measure until Paginator is also updated to use Protocol or generics.
         paginator = paginator_cls(client, path, params=params, page_size=page_size)  # type: ignore
 
@@ -236,7 +236,8 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
 
     def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
         client, paginator = self._get_context(is_async)
-        # Type checkers might complain about the union match here, but we know it's correct by construction
+        # Type checkers might complain about the union match here,
+        # but we know it's correct by construction
         return self._list_impl(client, paginator, **kwargs)  # type: ignore
 
     def _get_common(
