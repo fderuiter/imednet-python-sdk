@@ -1,15 +1,26 @@
 import random
 import string
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Union
 
 from .models import (
+    CheckboxFieldProps,
     Choice,
     Col,
+    DateTimeFieldProps,
+    DropdownFieldProps,
     Entity,
-    FieldProps,
+    EntityProps,
+    FileUploadProps,
+    LabelProps,
     Layout,
+    MemoFieldProps,
+    NumberFieldProps,
     Page,
+    RadioFieldProps,
     Row,
+    SeparatorProps,
+    TableProps,
+    TextFieldProps,
 )
 
 
@@ -48,7 +59,7 @@ class FormBuilder:
         suffix = "".join(random.choices(string.digits, k=5))
         return f"lfdiv_{suffix}"
 
-    def _create_entity(self, props: FieldProps, rows: Optional[List[Row]] = None) -> Entity:
+    def _create_entity(self, props: EntityProps, rows: Optional[List[Row]] = None) -> Entity:
         return Entity(props=props, id=self._generate_dom_id(), rows=rows)
 
     def add_page(self) -> None:
@@ -57,15 +68,9 @@ class FormBuilder:
 
     def add_section_header(self, label: str) -> None:
         """Add a separator/section header."""
-        props = FieldProps(type="sep", label=label, septype=1)
+        props = SeparatorProps(type="sep", label=label, septype=1)
         entity = self._create_entity(props)
         self.current_page.entities.append(entity)
-        # After a separator, we typically need a table container for fields
-        # But in the schema, tables are siblings of separators.
-        # We start a new table automatically when a field is added if one doesn't exist?
-        # The schema shows Separators and Tables as siblings in `page.entities`.
-        # For simplicity, `add_field` will append to the *last* table if available,
-        # or create a new one.
 
     def _get_or_create_table(self) -> Entity:
         """Get the last entity if it's a table, or create a new one."""
@@ -75,7 +80,7 @@ class FormBuilder:
                 return last
 
         # Create new table
-        table_props = FieldProps(type="table", columns=2)  # Standard 2-col
+        table_props = TableProps(type="table", columns=2)  # Standard 2-col
         table = self._create_entity(table_props, rows=[])
         self.current_page.entities.append(table)
         return table
@@ -88,7 +93,7 @@ class FormBuilder:
 
         # Group header is Row -> Col 1 (Label) -> Col 2 (Empty)
         # Col 1
-        label_props = FieldProps(type="label", label=label)
+        label_props = LabelProps(type="label", label=label)
         # Usually group headers don't have IDs linked to controls
         col1 = Col(entities=[self._create_entity(label_props)])
 
@@ -132,41 +137,98 @@ class FormBuilder:
         bl_req = "hard" if required else "optional"
 
         # 1. Label Entity (Col 1)
-        label_props = FieldProps(type="label", label=label, new_fld_id=shared_id)
+        label_props = LabelProps(type="label", label=label, new_fld_id=shared_id)
         col1 = Col(entities=[self._create_entity(label_props)])
 
         # 2. Control Entity (Col 2)
-        ctrl_props = FieldProps(
-            type=type, question_name=question_name, new_fld_id=shared_id, bl_req=bl_req
-        )
+        ctrl_props: EntityProps
 
-        # Apply type-specifics
+        common_kwargs = {
+            "question_name": question_name,
+            "new_fld_id": shared_id,
+            "bl_req": bl_req
+        }
+
         if type == "text":
-            ctrl_props.columns = 30
-            ctrl_props.length = max_length or 100
+            ctrl_props = TextFieldProps(
+                type="text",
+                length=max_length or 100,
+                columns=30,
+                **common_kwargs
+            )
         elif type == "memo":
-            ctrl_props.columns = 40
-            ctrl_props.rows = 6
-            ctrl_props.length = max_length or 500
+            ctrl_props = MemoFieldProps(
+                type="memo",
+                length=max_length or 500,
+                columns=40,
+                rows=6,
+                **common_kwargs
+            )
         elif type == "number":
-            ctrl_props.columns = 10
-            ctrl_props.length = max_length or 5
-            ctrl_props.real = 1 if is_float else 0
-        elif type in ("radio", "dropdown") and choices:
-            ctrl_props.choices = [
-                Choice(text=t, code=c, new_choice_id=self._generate_new_fld_id())
-                for t, c in choices
-            ]
-            if type == "radio":
-                ctrl_props.radio = 1  # Horizontal default
+            ctrl_props = NumberFieldProps(
+                type="number",
+                length=max_length or 5,
+                columns=10,
+                real=1 if is_float else 0,
+                **common_kwargs
+            )
+        elif type == "radio":
+            field_choices = []
+            if choices:
+                field_choices = [
+                    Choice(text=t, code=c, choice_id=self._generate_new_fld_id())
+                    for t, c in choices
+                ]
+            ctrl_props = RadioFieldProps(
+                type="radio",
+                choices=field_choices,
+                radio=1,  # Horizontal default
+                **common_kwargs
+            )
+        elif type == "dropdown":
+            field_choices = []
+            if choices:
+                field_choices = [
+                    Choice(text=t, code=c, choice_id=self._generate_new_fld_id())
+                    for t, c in choices
+                ]
+            ctrl_props = DropdownFieldProps(
+                type="dropdown",
+                choices=field_choices,
+                **common_kwargs
+            )
+        elif type == "checkbox":
+            field_choices = []
+            if choices:
+                field_choices = [
+                    Choice(text=t, code=c, choice_id=self._generate_new_fld_id())
+                    for t, c in choices
+                ]
+            ctrl_props = CheckboxFieldProps(
+                type="checkbox",
+                choices=field_choices,
+                **common_kwargs
+            )
         elif type == "datetime":
-            ctrl_props.date_ctrl = 1
-            ctrl_props.time_ctrl = 0
-            ctrl_props.allow_no_day = 0
-            ctrl_props.allow_no_month = 0
-            ctrl_props.allow_no_year = 0
+            ctrl_props = DateTimeFieldProps(
+                type="datetime",
+                date_ctrl=1,
+                time_ctrl=0,
+                allow_no_day=0,
+                allow_no_month=0,
+                allow_no_year=0,
+                **common_kwargs
+            )
         elif type == "upload":
-            ctrl_props.mfs = 1
+            ctrl_props = FileUploadProps(
+                type="upload",
+                mfs=1,
+                max_files=10, # default to something reasonable if missing
+                **common_kwargs
+            )
+        else:
+             # Fallback (should not happen due to type hint)
+            raise ValueError(f"Unsupported field type: {type}")
 
         col2 = Col(entities=[self._create_entity(ctrl_props)])
 
