@@ -33,6 +33,8 @@ reimplementing HTTP logic.
 - Optional in-memory caching of study metadata
 - Structured JSON logging and OpenTelemetry tracing
 - Async client and command line interface
+- **Form Designer**: Pythonic API for building and validating CRFs
+- **Interactive TUI**: Terminal-based dashboard for exploring data
 
 ---
 
@@ -145,7 +147,7 @@ The SDK includes a terminal-based user interface (TUI) for interactive explorati
 imednet tui
 ```
 
-This dashboard allows you to browse studies, subjects, and records without remembering CLI flags.
+This dashboard allows you to browse studies, subjects, and records without remembering CLI flags. It also features a **Form Builder** pane for visually designing forms. See [docs/tui_manual.rst](docs/tui_manual.rst) for a full guide.
 
 ### Data Export
 

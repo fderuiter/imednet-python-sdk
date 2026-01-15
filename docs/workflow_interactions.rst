@@ -48,3 +48,16 @@ Subject Data
        D --> F
        E --> F
        F --> G[return SubjectComprehensiveData]
+
+Query Management
+----------------
+
+.. mermaid::
+
+   graph TD
+       A[get_open_queries] --> B[queries.list]
+       B --> C{Iterate Queries}
+       C --> D{Check latest comment}
+       D -- closed=False --> E[Add to Open list]
+       D -- closed=True --> F[Skip]
+       E --> G[Return open queries]
