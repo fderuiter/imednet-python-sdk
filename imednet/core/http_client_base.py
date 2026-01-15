@@ -26,7 +26,6 @@ class HTTPClientBase(BaseClient):
         timeout: Union[float, httpx.Timeout] = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
-        log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
@@ -37,7 +36,6 @@ class HTTPClientBase(BaseClient):
             timeout=timeout,
             retries=retries,
             backoff_factor=backoff_factor,
-            log_level=log_level,
             tracer=tracer,
         )
         self._executor = RequestExecutor(

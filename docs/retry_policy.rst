@@ -53,8 +53,7 @@ Logging and exponential backoff
 -------------------------------
 
 Each attempt is logged with JSON formatting. Configure logging globally via
-:func:`imednet.utils.configure_json_logging` or by supplying ``log_level`` when
-constructing the client. Retries use exponential backoff with delays controlled
+:func:`imednet.utils.configure_json_logging`. Retries use exponential backoff with delays controlled
 by ``retries`` and ``backoff_factor``. With ``retries=5`` and ``backoff_factor=0.5``
 the wait times are 0.5 s, 1 s, 2 s, 4 s, and 8 s.
 
