@@ -9,10 +9,25 @@ The Form Builder module allows you to programmatically define form layouts and s
 Core Concepts
 -------------
 
-The module mimics the "State Dump" architecture of the Form Designer:
+The module mimics the "State Dump" architecture of the Form Designer and uses a **Composite Design Pattern** to represent the form structure.
 
-1.  **Layout Definition**: You define the form structure (Pages, Sections, Fields) using Python code.
-2.  **Serialization**: The code converts this definition into the complex JSON hierarchy expected by the server.
+Models and Architecture
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The core building block is the :class:`~imednet.form_designer.models.Entity`. An Entity can be a visual container (like a Table or Row) or a data entry element (like a TextField or DateField).
+
+*   **TableProps**: Represents a section or table on a form.
+*   **RowProps**: A horizontal arrangement of columns.
+*   **ColumnProps**: A vertical container for fields.
+*   **EntityProps**: A discriminated union of specific field properties.
+
+This abstract structure is then serialized into the complex JSON hierarchy expected by the legacy server.
+
+Process
+~~~~~~~
+
+1.  **Layout Definition**: You define the form structure using the ``FormBuilder`` class.
+2.  **Serialization**: The code converts this definition into the required JSON payload.
 3.  **Submission**: The payload is POSTed to the legacy endpoint using your browser cookies.
 
 .. note::
