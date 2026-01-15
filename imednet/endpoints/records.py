@@ -33,6 +33,9 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         headers = {}
         if email_notify is not None:
             if isinstance(email_notify, str):
+                # Security: Prevent header injection via newlines
+                if "\n" in email_notify or "\r" in email_notify:
+                    raise ValueError("email_notify must not contain newlines")
                 headers["x-email-notify"] = email_notify
             else:
                 headers["x-email-notify"] = str(email_notify).lower()
