@@ -18,6 +18,21 @@ class Job(JsonModel):
     date_started: datetime = Field(default_factory=datetime.now, alias="dateStarted")
     date_finished: datetime = Field(default_factory=datetime.now, alias="dateFinished")
 
+    @property
+    def is_terminal(self) -> bool:
+        """Checks if the job has reached a final state (Success/Failed/Cancelled)."""
+        return self.state.upper() in {"COMPLETED", "SUCCESS", "FAILED", "CANCELLED"}
+
+    @property
+    def is_successful(self) -> bool:
+        """Checks if the job completed successfully."""
+        return self.state.upper() in {"COMPLETED", "SUCCESS"}
+
+    @property
+    def is_failed(self) -> bool:
+        """Checks if the job failed or was cancelled."""
+        return self.state.upper() in {"FAILED", "CANCELLED"}
+
 
 class JobStatus(Job):
     """Extended job information returned when polling."""
