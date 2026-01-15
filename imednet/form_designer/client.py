@@ -52,6 +52,18 @@ class FormDesignerClient:
             httpx.HTTPStatusError: If the server returns a non-2xx status code.
             ValueError: If the server returns an error.
         """
+        if not csrf_key or not csrf_key.strip():
+            raise ValueError("CSRF Key cannot be empty.")
+
+        if form_id <= 0:
+            raise ValueError(f"Invalid form_id: {form_id}. Must be a positive integer.")
+
+        if community_id <= 0:
+            raise ValueError(f"Invalid community_id: {community_id}. Must be a positive integer.")
+
+        if revision < 0:
+            raise ValueError(f"Invalid revision: {revision}. Must be non-negative.")
+
         url = f"{self.base_url}/app/formdez/formdez_save.php"
 
         # Critical Headers

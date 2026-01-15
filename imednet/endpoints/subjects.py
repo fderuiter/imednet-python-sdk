@@ -1,5 +1,7 @@
 """Endpoint for managing subjects in a study."""
 
+from typing import List
+
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.subjects import Subject
 
@@ -14,3 +16,20 @@ class SubjectsEndpoint(ListGetEndpoint[Subject]):
     PATH = "subjects"
     MODEL = Subject
     _id_param = "subjectKey"
+
+    def list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
+        """
+        List subjects filtered by a specific site ID.
+
+        Migrated from TUI logic to core SDK to support filtering.
+        """
+        all_subjects = self.list(study_key)
+        # TUI Logic: Strict string comparison to handle int/str mismatch
+        target_site = str(site_id)
+        return [s for s in all_subjects if str(s.site_id) == target_site]
+
+    async def async_list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
+        """Asynchronously list subjects filtered by a specific site ID."""
+        all_subjects = await self.async_list(study_key)
+        target_site = str(site_id)
+        return [s for s in all_subjects if str(s.site_id) == target_site]
