@@ -137,6 +137,18 @@ The package installs an `imednet` command with subcommands for studies, sites,
 subjects, records, jobs, queries and more. Use `imednet --help` to explore all
 options.
 
+### Interactive Dashboard
+
+The SDK includes a terminal-based user interface (TUI) for interactive exploration:
+
+```bash
+imednet tui
+```
+
+This dashboard allows you to browse studies, subjects, and records without remembering CLI flags.
+
+### Data Export
+
 Example of exporting a subset of variables:
 
 ```bash
