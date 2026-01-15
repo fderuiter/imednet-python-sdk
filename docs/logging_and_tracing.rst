@@ -1,10 +1,12 @@
 Logging and Tracing
 ===================
 
-The :class:`imednet.core.client.Client` configures JSON formatted logging when it
-is instantiated. You can adjust the log level with the ``log_level`` parameter or
-call :func:`imednet.utils.json_logging.configure_json_logging` in your application
-to apply the same format globally.
+The :class:`imednet.core.client.Client` uses standard Python logging. It does not
+configure logging handlers or formatters by default, respecting the consuming
+application's configuration.
+
+You can opt-in to JSON formatted logging by calling
+:func:`imednet.utils.json_logging.configure_json_logging` in your application.
 
 If `opentelemetry` is installed, the client can record spans around each HTTP
 request. Installing ``opentelemetry-instrumentation-httpx`` will automatically

@@ -38,7 +38,7 @@ request when you configure logging:
     from imednet.core.client import Client
 
     configure_json_logging()
-    client = Client(api_key="...", security_key="...", log_level="INFO")
+    client = Client(api_key="...", security_key="...")
 
 If ``opentelemetry`` is installed, pass a tracer instance or rely on the global
 tracer provider. Each request is executed within a span and works with

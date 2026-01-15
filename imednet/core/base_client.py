@@ -15,7 +15,6 @@ import httpx
 
 from imednet.config import load_config
 from imednet.utils import sanitize_base_url
-from imednet.utils.json_logging import configure_json_logging
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +32,6 @@ class BaseClient:
         timeout: Union[float, httpx.Timeout] = 30.0,
         retries: int = 3,
         backoff_factor: float = 1.0,
-        log_level: Union[int, str] = logging.INFO,
         tracer: Optional[Tracer] = None,
     ) -> None:
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
@@ -43,10 +41,6 @@ class BaseClient:
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
         self.backoff_factor = backoff_factor
-
-        level = logging.getLevelName(log_level.upper()) if isinstance(log_level, str) else log_level
-        configure_json_logging(level)
-        logger.setLevel(level)
 
         self._client = self._create_client(config.api_key, config.security_key)
 
