@@ -21,10 +21,10 @@ def test_list_requires_study_key_and_include_inactive(dummy_client, context, pag
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = users.UsersEndpoint(dummy_client, context)
 
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(users.UsersEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(users.UsersEndpoint, "_list_sync", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

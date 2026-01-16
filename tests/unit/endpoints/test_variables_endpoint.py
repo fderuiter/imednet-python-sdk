@@ -26,10 +26,10 @@ def test_list_requires_study_key_page_size(
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = variables.VariablesEndpoint(dummy_client, context)
 
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(variables.VariablesEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(variables.VariablesEndpoint, "_list_sync", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)
