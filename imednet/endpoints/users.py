@@ -1,6 +1,6 @@
 """Endpoint for managing users in a study."""
 
-from typing import Any, Optional
+from typing import Any, Dict, Tuple
 
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
@@ -18,20 +18,7 @@ class UsersEndpoint(ListGetEndpoint[User]):
     _id_param = "userId"
     _pop_study_filter = True
 
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        include_inactive: bool = False,
-        **filters: Any,
-    ) -> Any:
+    def _process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        include_inactive = filters.pop("include_inactive", False)
         params = {"includeInactive": str(include_inactive).lower()}
-        return super()._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            extra_params=params,
-            **filters,
-        )
+        return filters, params

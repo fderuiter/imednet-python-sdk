@@ -1,7 +1,7 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
 import inspect
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.jobs import Job
@@ -20,6 +20,11 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
     MODEL = Record
     _id_param = "recordId"
     _pop_study_filter = False
+
+    def _process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        record_data_filter = filters.pop("record_data_filter", None)
+        extra = {"recordDataFilter": record_data_filter} if record_data_filter else {}
+        return filters, extra
 
     def _create_impl(
         self,
@@ -112,22 +117,4 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
             study_key=study_key,
             records_data=records_data,
             email_notify=email_notify,
-        )
-
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> Any:
-        extra = {"recordDataFilter": record_data_filter} if record_data_filter else None
-        return super()._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            extra_params=extra,
-            **filters,
         )

@@ -23,10 +23,10 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = sites.SitesEndpoint(dummy_client, context)
 
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(sites.SitesEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(sites.SitesEndpoint, "_list_sync", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

@@ -21,10 +21,10 @@ def test_list_filters_and_path(dummy_client, context, paginator_factory, patch_b
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = visits.VisitsEndpoint(dummy_client, context)
 
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(visits.VisitsEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(visits.VisitsEndpoint, "_list_sync", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)
