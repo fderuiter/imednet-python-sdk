@@ -1,15 +1,14 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-import inspect
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.endpoints._mixins import ListGetEndpoint
+from imednet.endpoints._mixins import CreateEndpointMixin, ListGetEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache, validate_record_data
 
 
-class RecordsEndpoint(ListGetEndpoint[Record]):
+class RecordsEndpoint(CreateEndpointMixin, ListGetEndpoint[Record]):
     """
     API endpoint for interacting with records (eCRF instances) in an iMedNet study.
 
@@ -21,14 +20,11 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
     _id_param = "recordId"
     _pop_study_filter = False
 
-    def _create_impl(
+    def _prepare_create_args(
         self,
-        client: Any,
-        *,
         study_key: str,
-        records_data: List[Dict[str, Any]],
-        email_notify: Union[bool, str, None] = None,
-    ) -> Any:
+        email_notify: Union[bool, str, None],
+    ) -> tuple[str, Dict[str, str]]:
         path = self._build_path(study_key, self.PATH)
         headers = {}
         if email_notify is not None:
@@ -39,17 +35,7 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
                 headers["x-email-notify"] = email_notify
             else:
                 headers["x-email-notify"] = str(email_notify).lower()
-
-        if inspect.iscoroutinefunction(client.post):
-
-            async def _async() -> Job:
-                response = await client.post(path, json=records_data, headers=headers)
-                return Job.from_json(response.json())
-
-            return _async()
-
-        response = client.post(path, json=records_data, headers=headers)
-        return Job.from_json(response.json())
+        return path, headers
 
     def _validate_records_if_schema_present(
         self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]
@@ -86,14 +72,15 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
             Job object with information about the created job
         """
         self._validate_records_if_schema_present(schema, records_data)
+        path, headers = self._prepare_create_args(study_key, email_notify)
 
-        result = self._create_impl(
+        return self._create_resource(  # type: ignore[return-value]
             self._client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
+            path,
+            json=records_data,
+            headers=headers,
+            response_model=Job,
         )
-        return result  # type: ignore[return-value]
 
     async def async_create(
         self,
@@ -106,12 +93,14 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         """Asynchronous version of :meth:`create`."""
         self._require_async_client()
         self._validate_records_if_schema_present(schema, records_data)
+        path, headers = self._prepare_create_args(study_key, email_notify)
 
-        return await self._create_impl(
+        return await self._create_resource(
             self._async_client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
+            path,
+            json=records_data,
+            headers=headers,
+            response_model=Job,
         )
 
     def _list_impl(

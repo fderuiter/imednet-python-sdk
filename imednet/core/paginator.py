@@ -84,3 +84,30 @@ class AsyncPaginator(BasePaginator):
     async def __aiter__(self) -> AsyncIterator[Any]:
         async for item in self._iter_async():
             yield item
+
+
+class ListPaginatorMixin:
+    """Mixin for endpoints that return a flat list."""
+
+    def _build_params(self, page: int) -> Dict[str, Any]:
+        return self.params
+
+    def _extract_items(self, payload: Any) -> list[Any]:  # type: ignore[override]
+        if isinstance(payload, list):
+            return payload
+        return []
+
+    def _next_page(self, payload: Any, page: int) -> Optional[int]:  # type: ignore[override]
+        return None
+
+
+class ListPaginator(ListPaginatorMixin, Paginator):
+    """Paginator for endpoints that return a single list (no pagination)."""
+
+    pass
+
+
+class AsyncListPaginator(ListPaginatorMixin, AsyncPaginator):
+    """Async paginator for endpoints that return a single list (no pagination)."""
+
+    pass

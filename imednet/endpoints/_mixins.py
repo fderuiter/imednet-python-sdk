@@ -51,12 +51,11 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
 T = TypeVar("T", bound=JsonModel)
 
 
-class ListGetEndpointMixin(Generic[T]):
-    """Mixin implementing ``list`` and ``get`` helpers."""
+class ListEndpointMixin(Generic[T]):
+    """Mixin implementing ``list`` helpers."""
 
     PATH: str
     MODEL: Type[T]
-    _id_param: str
     _cache_name: Optional[str] = None
     requires_study_key: bool = True
     PAGE_SIZE: int = 100
@@ -140,7 +139,7 @@ class ListGetEndpointMixin(Generic[T]):
 
         # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
         # We respect overrides of _parse_item if present.
-        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:
+        if self._parse_item.__func__ is not ListEndpointMixin._parse_item:
             parse_func = self._parse_item
         else:
             parse_func = getattr(self.MODEL, "from_json", None)
@@ -159,6 +158,14 @@ class ListGetEndpointMixin(Generic[T]):
         result = [parse_func(item) for item in paginator]
         self._update_local_cache(result, study, bool(other_filters), cache)
         return result
+
+
+class GetEndpointMixin(Generic[T]):
+    """Mixin implementing ``get`` helpers."""
+
+    _id_param: str
+    requires_study_key: bool = True
+    MODEL: Type[T]
 
     def _get_impl(
         self: Any,
@@ -198,15 +205,64 @@ class ListGetEndpointMixin(Generic[T]):
         return result[0]
 
 
+class CreateEndpointMixin:
+    """Mixin implementing creation helpers."""
+
+    def _create_resource(
+        self,
+        client: Client | AsyncClient,
+        path: str,
+        *,
+        json: Any = None,
+        headers: Optional[Dict[str, str]] = None,
+        response_model: Type[JsonModel] | None = None,
+    ) -> Any:
+        """
+        Execute a POST request to create a resource, handling sync/async dispatch.
+        """
+        if inspect.iscoroutinefunction(client.post):
+
+            async def _async() -> Any:
+                response = await client.post(path, json=json, headers=headers)
+                if response_model:
+                    if hasattr(response_model, "from_json"):
+                        return response_model.from_json(response.json())
+                    return response_model.model_validate(response.json())
+                return response.json()
+
+            return _async()
+
+        response = client.post(path, json=json, headers=headers)
+        if response_model:
+            if hasattr(response_model, "from_json"):
+                return response_model.from_json(response.json())
+            return response_model.model_validate(response.json())
+        return response.json()
+
+
+class ListGetEndpointMixin(ListEndpointMixin[T], GetEndpointMixin[T]):
+    """Mixin implementing ``list`` and ``get`` helpers."""
+
+    pass
+
+
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
     """Endpoint base class implementing ``list`` and ``get`` helpers."""
+
+    @property
+    def paginator_cls(self) -> type[Paginator]:
+        return Paginator
+
+    @property
+    def async_paginator_cls(self) -> type[AsyncPaginator]:
+        return AsyncPaginator
 
     def _get_context(
         self, is_async: bool
     ) -> tuple[Client | AsyncClient, type[Paginator] | type[AsyncPaginator]]:
         if is_async:
-            return self._require_async_client(), AsyncPaginator
-        return self._client, Paginator
+            return self._require_async_client(), self.async_paginator_cls
+        return self._client, self.paginator_cls
 
     def _list_common(self, is_async: bool, **kwargs: Any) -> Any:
         client, paginator = self._get_context(is_async)
