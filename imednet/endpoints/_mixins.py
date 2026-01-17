@@ -51,12 +51,11 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
 T = TypeVar("T", bound=JsonModel)
 
 
-class ListGetEndpointMixin(Generic[T]):
-    """Mixin implementing ``list`` and ``get`` helpers."""
+class ListEndpointMixin(Generic[T]):
+    """Mixin implementing ``list`` helpers."""
 
     PATH: str
     MODEL: Type[T]
-    _id_param: str
     _cache_name: Optional[str] = None
     requires_study_key: bool = True
     PAGE_SIZE: int = 100
@@ -140,7 +139,8 @@ class ListGetEndpointMixin(Generic[T]):
 
         # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
         # We respect overrides of _parse_item if present.
-        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:
+        # Note: We must check against ListEndpointMixin now, not ListGetEndpointMixin
+        if self._parse_item.__func__ is not ListEndpointMixin._parse_item:
             parse_func = self._parse_item
         else:
             parse_func = getattr(self.MODEL, "from_json", None)
@@ -160,6 +160,14 @@ class ListGetEndpointMixin(Generic[T]):
         self._update_local_cache(result, study, bool(other_filters), cache)
         return result
 
+
+class GetEndpointMixin(Generic[T]):
+    """Mixin implementing ``get`` helper."""
+
+    _id_param: str
+    MODEL: Type[T]
+    requires_study_key: bool = True
+
     def _get_impl(
         self: Any,
         client: Client | AsyncClient,
@@ -169,6 +177,7 @@ class ListGetEndpointMixin(Generic[T]):
         item_id: Any,
     ) -> Any:
         filters = {self._id_param: item_id}
+        # This assumes the class mixing this in also has ListEndpointMixin
         result = self._list_impl(
             client,
             paginator_cls,
@@ -196,6 +205,15 @@ class ListGetEndpointMixin(Generic[T]):
                 raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return result[0]
+
+
+class ListGetEndpointMixin(ListEndpointMixin[T], GetEndpointMixin[T]):
+    """
+    Mixin implementing ``list`` and ``get`` helpers.
+
+    Deprecated: Inherits from ListEndpointMixin and GetEndpointMixin.
+    """
+    pass
 
 
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
