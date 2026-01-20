@@ -42,7 +42,6 @@ class TestBaseEndpoint:
         with pytest.raises(RuntimeError, match="Async client not configured"):
             ep._require_async_client()
 
-
     def test_auto_filter_injects_study_key(self, client, context):
         context.set_default_study_key("DEFAULT")
         ep = MockEndpointImpl(client, context)

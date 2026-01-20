@@ -3,6 +3,7 @@ Mixins for the ImednetSDK.
 
 This module contains mixins that extend the functionality of the main ImednetSDK class.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Union
@@ -121,7 +122,9 @@ class SDKConvenienceMixin:
         """Return queries for the specified study."""
         return self.queries.list(study_key, **filters)
 
-    def get_record_revisions(self: SDKProtocol, study_key: str, **filters: Any) -> List[RecordRevision]:
+    def get_record_revisions(
+        self: SDKProtocol, study_key: str, **filters: Any
+    ) -> List[RecordRevision]:
         """Return record revisions for the specified study."""
         return self.record_revisions.list(study_key, **filters)
 
@@ -143,6 +146,7 @@ class SDKConvenienceMixin:
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
         from imednet.workflows.job_poller import JobPoller
+
         return JobPoller(self.jobs.get, False).run(study_key, batch_id, interval, timeout)
 
     async def async_poll_job(
@@ -155,6 +159,7 @@ class SDKConvenienceMixin:
     ) -> JobStatus:
         """Asynchronously poll a job until it reaches a terminal state."""
         from imednet.workflows.job_poller import JobPoller
+
         return await JobPoller(self.jobs.async_get, True).run_async(
             study_key, batch_id, interval, timeout
         )
