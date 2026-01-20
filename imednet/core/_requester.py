@@ -29,6 +29,7 @@ from .exceptions import (
     UnauthorizedError,
 )
 from .retry import DefaultRetryPolicy, RetryPolicy, RetryState
+from imednet.utils.url import redact_url_query
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +101,8 @@ class RequestExecutor:
     def _get_span_cm(self, method: str, url: str):
         if self.tracer:
             return self.tracer.start_as_current_span(
-                "http_request", attributes={"endpoint": url, "method": method}
+                "http_request",
+                attributes={"endpoint": redact_url_query(url), "method": method},
             )
         return nullcontext()
 
@@ -127,7 +129,7 @@ class RequestExecutor:
                     "http_request",
                     extra={
                         "method": method,
-                        "url": url,
+                        "url": redact_url_query(url),
                         "status_code": response.status_code,
                         "latency": latency,
                     },
@@ -164,7 +166,7 @@ class RequestExecutor:
                     "http_request",
                     extra={
                         "method": method,
-                        "url": url,
+                        "url": redact_url_query(url),
                         "status_code": response.status_code,
                         "latency": latency,
                     },
