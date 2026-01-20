@@ -139,7 +139,7 @@ class ListGetEndpointMixin(Generic[T]):
         parse_func: Callable[[Any], T],
         study: Optional[str],
         has_filters: bool,
-        cache: Any
+        cache: Any,
     ) -> List[T]:
         result = [parse_func(item) async for item in paginator]
         self._update_local_cache(result, study, has_filters, cache)
@@ -151,7 +151,7 @@ class ListGetEndpointMixin(Generic[T]):
         parse_func: Callable[[Any], T],
         study: Optional[str],
         has_filters: bool,
-        cache: Any
+        cache: Any,
     ) -> List[T]:
         result = [parse_func(item) for item in paginator]
         self._update_local_cache(result, study, has_filters, cache)
@@ -189,19 +189,11 @@ class ListGetEndpointMixin(Generic[T]):
 
         if hasattr(paginator, "__aiter__"):
             return self._execute_async_list(
-                cast(AsyncPaginator, paginator),
-                parse_func,
-                study,
-                bool(other_filters),
-                cache
+                cast(AsyncPaginator, paginator), parse_func, study, bool(other_filters), cache
             )
 
         return self._execute_sync_list(
-            cast(Paginator, paginator),
-            parse_func,
-            study,
-            bool(other_filters),
-            cache
+            cast(Paginator, paginator), parse_func, study, bool(other_filters), cache
         )
 
     def _get_impl(
@@ -272,10 +264,14 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
         return cast(List[T], self._list_common(False, study_key=study_key, **filters))
 
     async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
-        return await cast(Awaitable[List[T]], self._list_common(True, study_key=study_key, **filters))
+        return await cast(
+            Awaitable[List[T]], self._list_common(True, study_key=study_key, **filters)
+        )
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
         return cast(T, self._get_common(False, study_key=study_key, item_id=item_id))
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
-        return await cast(Awaitable[T], self._get_common(True, study_key=study_key, item_id=item_id))
+        return await cast(
+            Awaitable[T], self._get_common(True, study_key=study_key, item_id=item_id)
+        )
