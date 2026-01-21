@@ -59,11 +59,8 @@ app.command("subject-data")(subject_data)
 @app.command()
 def tui(ctx: typer.Context) -> None:
     """Launch the interactive terminal user interface (Dashboard)."""
-    # Import locally to avoid importing textual when just running help or other commands
-    from ..tui.app import run_tui
-
-    sdk = get_sdk()
-    run_tui(sdk)
+    typer.echo("TUI mode has been removed. Please use the CLI commands.")
+    raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":  # pragma: no cover - manual invocation

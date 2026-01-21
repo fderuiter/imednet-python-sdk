@@ -120,25 +120,9 @@ def main() -> None:
             args.revision,
         )
     else:
-        # TUI Mode
-        try:
-            # Import TUI components only when needed to support headless mode without 'textual'
-            from imednet.tui.app import run_tui
-
-            # We need an SDK instance for the TUI (even if we don't use REST API for form builder)
-            # We can init with dummy values if env not set, but better to try load
-            api_key = os.getenv("IMEDNET_API_KEY", "dummy_key")
-            sec_key = os.getenv("IMEDNET_SECURITY_KEY", "dummy_sec")
-            base_url = os.getenv("IMEDNET_BASE_URL", "https://portal.prod.imednetapi.com")
-
-            sdk = ImednetSDK(api_key=api_key, security_key=sec_key, base_url=base_url)
-            run_tui(sdk)
-        except ImportError:
-            print("Error: Textual not installed. Install with 'pip install textual'.")
-            sys.exit(1)
-        except Exception as e:
-            print(f"Error launching TUI: {e}")
-            sys.exit(1)
+        print("TUI mode has been removed. Please use the CLI arguments to run in headless mode.")
+        parser.print_help()
+        sys.exit(1)
 
 
 if __name__ == "__main__":
