@@ -5,6 +5,7 @@ from imednet.models.subjects import Subject
 from imednet.form_designer.client import FormDesignerClient
 from imednet.form_designer.models import Layout
 
+
 def test_job_status_properties():
     """Verify logic migrated from TUI JobMonitor."""
     # Test Success cases
@@ -27,6 +28,7 @@ def test_job_status_properties():
     assert j4.is_terminal is True
     assert j4.is_failed is True
 
+
 def test_subject_filtering_logic():
     """Verify logic migrated from TUI SubjectTable."""
     from imednet.endpoints.subjects import SubjectsEndpoint
@@ -35,7 +37,7 @@ def test_subject_filtering_logic():
     # Mock data
     s1 = Subject(studyKey="sk", subjectId=1, siteId=101, subjectKey="s1")
     s2 = Subject(studyKey="sk", subjectId=2, siteId=102, subjectKey="s2")
-    s3 = Subject(studyKey="sk", subjectId=3, siteId=101, subjectKey="s3") # Matches 101
+    s3 = Subject(studyKey="sk", subjectId=3, siteId=101, subjectKey="s3")  # Matches 101
 
     # Mock client and endpoint
     mock_client = Mock()
@@ -43,9 +45,9 @@ def test_subject_filtering_logic():
         "data": [
             s1.model_dump(by_alias=True),
             s2.model_dump(by_alias=True),
-            s3.model_dump(by_alias=True)
+            s3.model_dump(by_alias=True),
         ],
-        "pagination": {"totalPages": 1}
+        "pagination": {"totalPages": 1},
     }
     mock_ctx = Mock()
     mock_ctx.default_study_key = "sk"
@@ -60,6 +62,7 @@ def test_subject_filtering_logic():
     assert all(s.site_id == 101 for s in filtered)
     assert filtered[0].subject_id == 1
     assert filtered[1].subject_id == 3
+
 
 def test_form_designer_validation():
     """Verify validation logic migrated from TUI FormBuilderPane."""
