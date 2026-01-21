@@ -52,6 +52,7 @@ class FormDesignerClient:
             httpx.HTTPStatusError: If the server returns a non-2xx status code.
             ValueError: If the server returns an error.
         """
+        # --- Validation Logic Migrated from TUI ---
         if not csrf_key or not csrf_key.strip():
             raise ValueError("CSRF Key cannot be empty.")
 
@@ -63,6 +64,7 @@ class FormDesignerClient:
 
         if revision < 0:
             raise ValueError(f"Invalid revision: {revision}. Must be non-negative.")
+        # ------------------------------------------
 
         url = f"{self.base_url}/app/formdez/formdez_save.php"
 
