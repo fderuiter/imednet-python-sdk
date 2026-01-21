@@ -10,15 +10,6 @@ from imednet.core.client import Client
 from imednet.core.context import Context
 
 
-def _find_by_attr(items: Iterable[Any], attr: str, value: Any) -> Optional[Any]:
-    """Find an item in an iterable by matching a stringified attribute."""
-    target = str(value)
-    for item in items:
-        if str(getattr(item, attr)) == target:
-            return item
-    return None
-
-
 class BaseEndpoint:
     """
     Shared base for endpoint wrappers.
@@ -62,23 +53,6 @@ class BaseEndpoint:
                 # Encode path segments to prevent traversal and injection
                 parts.append(quote(text, safe=""))
         return "/" + "/".join(parts)
-
-    # ------------------------------------------------------------------
-    # Helper methods
-    # ------------------------------------------------------------------
-    def _fallback_from_list(self, study_key: str, item_id: Any, attr: str):
-        """Return an item from ``list`` when direct ``get`` fails."""
-        item = _find_by_attr(self.list(study_key), attr, item_id)  # type: ignore[attr-defined]
-        if item:
-            return item
-        raise ValueError(f"{attr} {item_id} not found in study {study_key}")
-
-    async def _async_fallback_from_list(self, study_key: str, item_id: Any, attr: str):
-        items = await self.async_list(study_key)  # type: ignore[attr-defined]
-        item = _find_by_attr(items, attr, item_id)
-        if item:
-            return item
-        raise ValueError(f"{attr} {item_id} not found in study {study_key}")
 
     def _require_async_client(self) -> AsyncClient:
         """Return the configured async client or raise if missing."""
