@@ -179,7 +179,12 @@ disable this behaviour. See ``docs/cli.rst`` for full examples.
 ### Tech Stack
 
 - Python 3.10–3.12
-- requests, httpx, pydantic, typer, tenacity, python-dotenv
+- httpx, pydantic, typer, tenacity, python-dotenv
+
+### Prerequisites
+
+- [Poetry](https://python-poetry.org/docs/) (for dependency management)
+- [Make](https://www.gnu.org/software/make/) (optional, for building docs)
 
 ### Project Structure
 

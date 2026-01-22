@@ -7,6 +7,10 @@ The SDK targets Python 3.10–3.12 and includes:
 - Workflows in `imednet/workflows/`
 - Docs, tests, examples, and tooling in their directories
 
+## Prerequisites
+- [Poetry](https://python-poetry.org/docs/) (for dependency management)
+- [Make](https://www.gnu.org/software/make/) (optional, for building docs)
+
 ## Setup
 ```bash
 ./scripts/setup.sh
