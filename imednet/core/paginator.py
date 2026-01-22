@@ -84,3 +84,31 @@ class AsyncPaginator(BasePaginator):
     async def __aiter__(self) -> AsyncIterator[Any]:
         async for item in self._iter_async():
             yield item
+
+class SimpleListPaginator(Paginator):
+    """Paginator for endpoints that return a flat list without pagination metadata."""
+
+    def _extract_items(self, payload: Any) -> list[Any]:
+        # Payload is expected to be a list directly
+        return payload if isinstance(payload, list) else []
+
+    def _next_page(self, payload: Any, page: int) -> Optional[int]:
+        # Flat lists are always single-page
+        return None
+
+    def _build_params(self, page: int) -> Dict[str, Any]:
+        # Do not inject page/size params as they might be unsupported
+        return self.params
+
+
+class AsyncSimpleListPaginator(AsyncPaginator):
+    """Asynchronous paginator for endpoints that return a flat list."""
+
+    def _extract_items(self, payload: Any) -> list[Any]:
+        return payload if isinstance(payload, list) else []
+
+    def _next_page(self, payload: Any, page: int) -> Optional[int]:
+        return None
+
+    def _build_params(self, page: int) -> Dict[str, Any]:
+        return self.params

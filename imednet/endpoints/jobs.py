@@ -3,18 +3,21 @@
 import inspect
 from typing import Any, List
 
+from imednet.core.paginator import AsyncSimpleListPaginator, SimpleListPaginator
+from imednet.endpoints._mixins import ListEndpointMixin
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job, JobStatus
 
 
-class JobsEndpoint(BaseEndpoint):
+class JobsEndpoint(BaseEndpoint, ListEndpointMixin[Job]):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
     Provides a method to fetch a job by its batch ID.
     """
 
-    PATH = "/api/v1/edc/studies"
+    PATH = "jobs"
+    MODEL = Job
 
     def _get_impl(self, client: Any, study_key: str, batch_id: str) -> Any:
         endpoint = self._build_path(study_key, "jobs", batch_id)
@@ -71,9 +74,13 @@ class JobsEndpoint(BaseEndpoint):
         Returns:
             List of Job objects
         """
-        endpoint = self._build_path(study_key, "jobs")
-        response = self._client.get(endpoint)
-        return [Job.from_json(item) for item in response.json()]
+        # We use SimpleListPaginator because the API returns a flat list
+        # without pagination metadata.
+        return self._list_impl(
+            self._client,
+            SimpleListPaginator,
+            study_key=study_key,
+        )
 
     async def async_list(self, study_key: str) -> List[Job]:
         """
@@ -85,7 +92,8 @@ class JobsEndpoint(BaseEndpoint):
         Returns:
             List of Job objects
         """
-        client = self._require_async_client()
-        endpoint = self._build_path(study_key, "jobs")
-        response = await client.get(endpoint)
-        return [Job.from_json(item) for item in response.json()]
+        return await self._list_impl(
+            self._require_async_client(),
+            AsyncSimpleListPaginator,
+            study_key=study_key,
+        )

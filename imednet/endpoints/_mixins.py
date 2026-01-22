@@ -51,12 +51,11 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
 T = TypeVar("T", bound=JsonModel)
 
 
-class ListGetEndpointMixin(Generic[T]):
-    """Mixin implementing ``list`` and ``get`` helpers."""
+class ListEndpointMixin(Generic[T]):
+    """Mixin implementing ``list`` helpers."""
 
     PATH: str
     MODEL: Type[T]
-    _id_param: str
     _cache_name: Optional[str] = None
     requires_study_key: bool = True
     PAGE_SIZE: int = 100
@@ -140,7 +139,7 @@ class ListGetEndpointMixin(Generic[T]):
 
         # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
         # We respect overrides of _parse_item if present.
-        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:
+        if self._parse_item.__func__ is not ListEndpointMixin._parse_item:
             parse_func = self._parse_item
         else:
             parse_func = getattr(self.MODEL, "from_json", None)
@@ -159,6 +158,16 @@ class ListGetEndpointMixin(Generic[T]):
         result = [parse_func(item) for item in paginator]
         self._update_local_cache(result, study, bool(other_filters), cache)
         return result
+
+
+class GetEndpointMixin(Generic[T]):
+    """Mixin implementing ``get`` helpers."""
+
+    _id_param: str
+    MODEL: Type[T]
+    requires_study_key: bool = True
+
+    def _list_impl(self, *args: Any, **kwargs: Any) -> Any: ...
 
     def _get_impl(
         self: Any,
@@ -198,6 +207,12 @@ class ListGetEndpointMixin(Generic[T]):
         return result[0]
 
 
+class ListGetEndpointMixin(ListEndpointMixin[T], GetEndpointMixin[T]):
+    """Mixin implementing ``list`` and ``get`` helpers."""
+
+    pass
+
+
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
     """Endpoint base class implementing ``list`` and ``get`` helpers."""
 
@@ -233,3 +248,8 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
         return await self._get_common(True, study_key=study_key, item_id=item_id)
+
+
+class StudyScopedEndpoint(ListGetEndpoint[T]):
+    _pop_study_filter = True
+    _missing_study_exception = KeyError
