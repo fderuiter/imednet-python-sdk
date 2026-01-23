@@ -84,3 +84,36 @@ class AsyncPaginator(BasePaginator):
     async def __aiter__(self) -> AsyncIterator[Any]:
         async for item in self._iter_async():
             yield item
+
+
+class SimpleListPaginator(BasePaginator):
+    """Iterate synchronously over a flat list response (no pagination)."""
+
+    def _iter_sync(self) -> Iterator[Any]:
+        response: httpx.Response = self.client.get(self.path, params=self.params)
+        payload = response.json()
+        if isinstance(payload, list):
+            yield from payload
+        else:
+            yield from self._extract_items(payload)
+
+    def __iter__(self) -> Iterator[Any]:
+        yield from self._iter_sync()
+
+
+class AsyncSimpleListPaginator(BasePaginator):
+    """Asynchronous variant of :class:`SimpleListPaginator`."""
+
+    async def _iter_async(self) -> AsyncIterator[Any]:
+        response: httpx.Response = await self.client.get(self.path, params=self.params)
+        payload = response.json()
+        if isinstance(payload, list):
+            for item in payload:
+                yield item
+        else:
+            for item in self._extract_items(payload):
+                yield item
+
+    async def __aiter__(self) -> AsyncIterator[Any]:
+        async for item in self._iter_async():
+            yield item

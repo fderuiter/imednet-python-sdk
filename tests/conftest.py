@@ -53,7 +53,7 @@ def paginator_factory(monkeypatch):
 
         # We patch the mixin module because that's where Paginator is now resolved.
         # 'module' arg is kept for compatibility but ignored for patching target.
-        import imednet.endpoints._mixins as mixins_module
+        import imednet.endpoints.mixins as mixins_module
 
         monkeypatch.setattr(mixins_module, "Paginator", DummyPaginator)
         return captured
@@ -79,7 +79,7 @@ def async_paginator_factory(monkeypatch):
                 for item in self._items:
                     yield item
 
-        import imednet.endpoints._mixins as mixins_module
+        import imednet.endpoints.mixins as mixins_module
 
         monkeypatch.setattr(mixins_module, "AsyncPaginator", DummyPaginator)
         return captured
@@ -99,7 +99,7 @@ def patch_build_filter(monkeypatch):
         if hasattr(module, "build_filter_string"):
             monkeypatch.setattr(module, "build_filter_string", fake)
         else:
-            import imednet.endpoints._mixins as mixins
+            import imednet.endpoints.mixins as mixins
 
             monkeypatch.setattr(mixins, "build_filter_string", fake)
         return captured
