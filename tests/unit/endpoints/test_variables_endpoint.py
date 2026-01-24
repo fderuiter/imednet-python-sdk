@@ -23,13 +23,9 @@ def test_list_requires_study_key_page_size(
     assert isinstance(result[0], Variable)
 
 
-def test_get_not_found(monkeypatch, dummy_client, context):
+def test_get_not_found(dummy_client, context, paginator_factory):
     ep = variables.VariablesEndpoint(dummy_client, context)
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(variables.VariablesEndpoint, "_list_impl", fake_impl)
+    paginator_factory(variables, [])
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

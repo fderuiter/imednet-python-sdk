@@ -21,13 +21,9 @@ def test_list_uses_default_study_and_page_size(
     assert isinstance(result[0], Interval)
 
 
-def test_get_not_found(monkeypatch, dummy_client, context):
+def test_get_not_found(dummy_client, context, paginator_factory):
     ep = intervals.IntervalsEndpoint(dummy_client, context)
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(intervals.IntervalsEndpoint, "_list_impl", fake_impl)
+    paginator_factory(intervals, [])
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

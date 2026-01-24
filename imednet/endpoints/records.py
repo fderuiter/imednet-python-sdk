@@ -114,20 +114,20 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
             email_notify=email_notify,
         )
 
-    def _list_impl(
+    def _prepare_request(
         self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
         study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
         record_data_filter: Optional[str] = None,
         **filters: Any,
     ) -> Any:
-        extra = {"recordDataFilter": record_data_filter} if record_data_filter else None
-        return super()._list_impl(
-            client,
-            paginator_cls,
+        extra_params = extra_params or {}
+        if record_data_filter:
+            extra_params["recordDataFilter"] = record_data_filter
+        return super()._prepare_request(
             study_key=study_key,
-            extra_params=extra,
+            refresh=refresh,
+            extra_params=extra_params,
             **filters,
         )

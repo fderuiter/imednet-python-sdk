@@ -18,13 +18,9 @@ def test_list_uses_filters(dummy_client, context, paginator_factory, patch_build
     assert isinstance(result[0], RecordRevision)
 
 
-def test_get_not_found(monkeypatch, dummy_client, context):
+def test_get_not_found(dummy_client, context, paginator_factory):
     ep = record_revisions.RecordRevisionsEndpoint(dummy_client, context)
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(record_revisions.RecordRevisionsEndpoint, "_list_impl", fake_impl)
+    paginator_factory(record_revisions, [])
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

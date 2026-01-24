@@ -18,20 +18,19 @@ class UsersEndpoint(ListGetEndpoint[User]):
     _id_param = "userId"
     _pop_study_filter = True
 
-    def _list_impl(
+    def _prepare_request(
         self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
         study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[dict[str, Any]] = None,
         include_inactive: bool = False,
         **filters: Any,
     ) -> Any:
-        params = {"includeInactive": str(include_inactive).lower()}
-        return super()._list_impl(
-            client,
-            paginator_cls,
+        extra_params = extra_params or {}
+        extra_params["includeInactive"] = str(include_inactive).lower()
+        return super()._prepare_request(
             study_key=study_key,
-            extra_params=params,
+            refresh=refresh,
+            extra_params=extra_params,
             **filters,
         )
