@@ -1,6 +1,6 @@
 """Endpoint for managing users in a study."""
 
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
@@ -18,20 +18,20 @@ class UsersEndpoint(ListGetEndpoint[User]):
     _id_param = "userId"
     _pop_study_filter = True
 
-    def _list_impl(
+    def list(
         self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
         study_key: Optional[str] = None,
         include_inactive: bool = False,
         **filters: Any,
-    ) -> Any:
+    ) -> List[User]:
         params = {"includeInactive": str(include_inactive).lower()}
-        return super()._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            extra_params=params,
-            **filters,
-        )
+        return super().list(study_key=study_key, extra_params=params, **filters)
+
+    async def async_list(
+        self,
+        study_key: Optional[str] = None,
+        include_inactive: bool = False,
+        **filters: Any,
+    ) -> List[User]:
+        params = {"includeInactive": str(include_inactive).lower()}
+        return await super().async_list(study_key=study_key, extra_params=params, **filters)

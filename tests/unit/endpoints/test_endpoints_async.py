@@ -157,31 +157,23 @@ async def test_async_get_job(dummy_client, context, response_factory):
 
 
 @pytest.mark.asyncio
-async def test_async_get_record(monkeypatch, dummy_client, context, response_factory):
+async def test_async_get_record(monkeypatch, dummy_client, context, async_paginator_factory, patch_build_filter):
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
-    called = {}
-
-    async def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        called["study_key"] = study_key
-        called["filters"] = filters
-        return [Record(record_id=1)]
-
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
+    captured = async_paginator_factory(records, [{"recordId": 1}])
+    filter_capture = patch_build_filter(records)
 
     rec = await ep.async_get("S1", 1)
 
-    assert called == {"study_key": "S1", "filters": {"recordId": 1, "refresh": True}}
+    assert captured["path"] == "/api/v1/edc/studies/S1/records"
+    assert captured["params"]["filter"] == "FILTERED"
+    assert filter_capture["filters"] == {"recordId": 1, "studyKey": "S1"}
     assert isinstance(rec, Record)
 
 
 @pytest.mark.asyncio
-async def test_async_get_record_not_found(monkeypatch, dummy_client, context, response_factory):
+async def test_async_get_record_not_found(monkeypatch, dummy_client, context, async_paginator_factory):
     ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
-
-    async def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
+    async_paginator_factory(records, [])
 
     with pytest.raises(ValueError):
         await ep.async_get("S1", 1)

@@ -26,30 +26,22 @@ def test_list_builds_path_filters_and_data_filter(
     assert isinstance(result[0], Record)
 
 
-def test_get_success(monkeypatch, dummy_client, context):
+def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patch_build_filter):
     ep = records.RecordsEndpoint(dummy_client, context)
-    called = {}
-
-    def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        called["study_key"] = study_key
-        called["filters"] = filters
-        return [Record(record_id=1)]
-
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
+    captured = paginator_factory(records, [{"recordId": 1}])
+    filter_capture = patch_build_filter(records)
 
     res = ep.get("S1", 1)
 
-    assert called == {"study_key": "S1", "filters": {"recordId": 1, "refresh": True}}
+    assert captured["path"] == "/api/v1/edc/studies/S1/records"
+    assert captured["params"]["filter"] == "FILTERED"
+    assert filter_capture["filters"] == {"recordId": 1, "studyKey": "S1"}
     assert isinstance(res, Record)
 
 
-def test_get_not_found(monkeypatch, dummy_client, context):
+def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
     ep = records.RecordsEndpoint(dummy_client, context)
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
+    paginator_factory(records, [])
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

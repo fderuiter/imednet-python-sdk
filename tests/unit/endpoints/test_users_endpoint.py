@@ -18,13 +18,9 @@ def test_list_requires_study_key_and_include_inactive(dummy_client, context, pag
     assert isinstance(result[0], User)
 
 
-def test_get_not_found(monkeypatch, dummy_client, context):
+def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
     ep = users.UsersEndpoint(dummy_client, context)
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(users.UsersEndpoint, "_list_impl", fake_impl)
+    paginator_factory(users, [])
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

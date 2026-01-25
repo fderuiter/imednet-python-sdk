@@ -20,13 +20,9 @@ def test_list_builds_path_with_default(
     assert isinstance(result[0], Subject)
 
 
-def test_get_not_found(monkeypatch, dummy_client, context):
+def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
     ep = subjects.SubjectsEndpoint(dummy_client, context)
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(subjects.SubjectsEndpoint, "_list_impl", fake_impl)
+    paginator_factory(subjects, [])
 
     with pytest.raises(ValueError):
         ep.get("S1", "X")

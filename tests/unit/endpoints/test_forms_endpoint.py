@@ -24,31 +24,19 @@ def test_list_requires_study_key_and_page_size(
     assert isinstance(result[0], Form)
 
 
-def test_get_success(monkeypatch, dummy_client, context):
+def test_get_success(monkeypatch, dummy_client, context, paginator_factory):
     ep = forms.FormsEndpoint(dummy_client, context)
-    called = {}
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        called["study_key"] = study_key
-        called["refresh"] = refresh
-        called["filters"] = filters
-        return [Form(form_id=1)]
-
-    monkeypatch.setattr(forms.FormsEndpoint, "_list_impl", fake_impl)
+    captured = paginator_factory(forms, [{"formId": 1}])
 
     res = ep.get("S1", 1)
 
-    assert called == {"study_key": "S1", "refresh": True, "filters": {"formId": 1}}
+    assert captured["path"] == "/api/v1/edc/studies/S1/forms"
     assert isinstance(res, Form)
 
 
-def test_get_not_found(monkeypatch, dummy_client, context):
+def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
     ep = forms.FormsEndpoint(dummy_client, context)
-
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        return []
-
-    monkeypatch.setattr(forms.FormsEndpoint, "_list_impl", fake_impl)
+    paginator_factory(forms, [])
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)
