@@ -8,6 +8,7 @@ from urllib.parse import quote
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.context import Context
+from imednet.errors import ResourceNotFound
 
 
 def _find_by_attr(items: Iterable[Any], attr: str, value: Any) -> Optional[Any]:
@@ -71,14 +72,14 @@ class BaseEndpoint:
         item = _find_by_attr(self.list(study_key), attr, item_id)  # type: ignore[attr-defined]
         if item:
             return item
-        raise ValueError(f"{attr} {item_id} not found in study {study_key}")
+        raise ResourceNotFound(f"{attr} {item_id} not found in study {study_key}")
 
     async def _async_fallback_from_list(self, study_key: str, item_id: Any, attr: str):
         items = await self.async_list(study_key)  # type: ignore[attr-defined]
         item = _find_by_attr(items, attr, item_id)
         if item:
             return item
-        raise ValueError(f"{attr} {item_id} not found in study {study_key}")
+        raise ResourceNotFound(f"{attr} {item_id} not found in study {study_key}")
 
     def _require_async_client(self) -> AsyncClient:
         """Return the configured async client or raise if missing."""
