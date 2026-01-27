@@ -24,7 +24,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(users.UsersEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(users.UsersEndpoint, "_list_sync", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

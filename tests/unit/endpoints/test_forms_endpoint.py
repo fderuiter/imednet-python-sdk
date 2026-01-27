@@ -34,7 +34,7 @@ def test_get_success(monkeypatch, dummy_client, context):
         called["filters"] = filters
         return [Form(form_id=1)]
 
-    monkeypatch.setattr(forms.FormsEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(forms.FormsEndpoint, "_list_sync", fake_impl)
 
     res = ep.get("S1", 1)
 
@@ -48,7 +48,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(forms.FormsEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(forms.FormsEndpoint, "_list_sync", fake_impl)
 
     with pytest.raises(ValueError):
         ep.get("S1", 1)

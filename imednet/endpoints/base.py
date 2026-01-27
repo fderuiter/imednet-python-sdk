@@ -34,7 +34,7 @@ class BaseEndpoint:
         self,
         client: Client,
         ctx: Context,
-        async_client: AsyncClient | None = None,
+        async_client: Optional[AsyncClient] = None,
     ) -> None:
         self._client = client
         self._async_client = async_client
@@ -47,7 +47,12 @@ class BaseEndpoint:
                 setattr(self, cache_name, None)
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        # inject default studyKey if missing
+        """
+        Inject default studyKey if missing.
+
+        Returns a new dictionary to ensure immutability of the input.
+        """
+        filters = filters.copy()
         if "studyKey" not in filters and self._ctx.default_study_key:
             filters["studyKey"] = self._ctx.default_study_key
         return filters
@@ -66,14 +71,14 @@ class BaseEndpoint:
     # ------------------------------------------------------------------
     # Helper methods
     # ------------------------------------------------------------------
-    def _fallback_from_list(self, study_key: str, item_id: Any, attr: str):
+    def _fallback_from_list(self, study_key: str, item_id: Any, attr: str) -> Any:
         """Return an item from ``list`` when direct ``get`` fails."""
         item = _find_by_attr(self.list(study_key), attr, item_id)  # type: ignore[attr-defined]
         if item:
             return item
         raise ValueError(f"{attr} {item_id} not found in study {study_key}")
 
-    async def _async_fallback_from_list(self, study_key: str, item_id: Any, attr: str):
+    async def _async_fallback_from_list(self, study_key: str, item_id: Any, attr: str) -> Any:
         items = await self.async_list(study_key)  # type: ignore[attr-defined]
         item = _find_by_attr(items, attr, item_id)
         if item:

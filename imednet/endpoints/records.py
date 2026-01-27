@@ -1,6 +1,5 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-import inspect
 from typing import Any, Dict, List, Optional, Union
 
 from imednet.endpoints._mixins import ListGetEndpoint
@@ -21,15 +20,9 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
     _id_param = "recordId"
     _pop_study_filter = False
 
-    def _create_impl(
-        self,
-        client: Any,
-        *,
-        study_key: str,
-        records_data: List[Dict[str, Any]],
-        email_notify: Union[bool, str, None] = None,
-    ) -> Any:
-        path = self._build_path(study_key, self.PATH)
+    def _prepare_create_headers(
+        self, email_notify: Union[bool, str, None]
+    ) -> Dict[str, str]:
         headers = {}
         if email_notify is not None:
             if isinstance(email_notify, str):
@@ -39,17 +32,7 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
                 headers["x-email-notify"] = email_notify
             else:
                 headers["x-email-notify"] = str(email_notify).lower()
-
-        if inspect.iscoroutinefunction(client.post):
-
-            async def _async() -> Job:
-                response = await client.post(path, json=records_data, headers=headers)
-                return Job.from_json(response.json())
-
-            return _async()
-
-        response = client.post(path, json=records_data, headers=headers)
-        return Job.from_json(response.json())
+        return headers
 
     def _validate_records_if_schema_present(
         self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]
@@ -86,14 +69,11 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
             Job object with information about the created job
         """
         self._validate_records_if_schema_present(schema, records_data)
+        path = self._build_path(study_key, self.PATH)
+        headers = self._prepare_create_headers(email_notify)
 
-        result = self._create_impl(
-            self._client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
-        )
-        return result  # type: ignore[return-value]
+        response = self._client.post(path, json=records_data, headers=headers)
+        return Job.from_json(response.json())
 
     async def async_create(
         self,
@@ -104,30 +84,16 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         schema: Optional[SchemaCache] = None,
     ) -> Job:
         """Asynchronous version of :meth:`create`."""
-        self._require_async_client()
+        client = self._require_async_client()
         self._validate_records_if_schema_present(schema, records_data)
 
-        return await self._create_impl(
-            self._async_client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
-        )
+        path = self._build_path(study_key, self.PATH)
+        headers = self._prepare_create_headers(email_notify)
 
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> Any:
-        extra = {"recordDataFilter": record_data_filter} if record_data_filter else None
-        return super()._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            extra_params=extra,
-            **filters,
-        )
+        response = await client.post(path, json=records_data, headers=headers)
+        return Job.from_json(response.json())
+
+    def _process_filters(self, filters: Dict[str, Any]) -> tuple[Dict[str, Any], Dict[str, Any]]:
+        record_data_filter = filters.pop("record_data_filter", None)
+        extra = {"recordDataFilter": record_data_filter} if record_data_filter else {}
+        return filters, extra

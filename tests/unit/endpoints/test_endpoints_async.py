@@ -166,7 +166,7 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
         called["filters"] = filters
         return [Record(record_id=1)]
 
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(records.RecordsEndpoint, "_list_async", fake_impl)
 
     rec = await ep.async_get("S1", 1)
 
@@ -181,7 +181,7 @@ async def test_async_get_record_not_found(monkeypatch, dummy_client, context, re
     async def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         return []
 
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_impl", fake_impl)
+    monkeypatch.setattr(records.RecordsEndpoint, "_list_async", fake_impl)
 
     with pytest.raises(ValueError):
         await ep.async_get("S1", 1)
@@ -201,3 +201,15 @@ async def test_async_create_record(dummy_client, context, response_factory, monk
         headers={"x-email-notify": "user@test"},
     )
     assert job == {"jobId": "1"}
+
+@pytest.mark.asyncio
+async def test_async_list_jobs(dummy_client, context, response_factory):
+    ep = jobs.JobsEndpoint(dummy_client, context, async_client=dummy_client)
+
+    async def fake_get(path):
+        assert path == "/api/v1/edc/studies/S1/jobs"
+        return response_factory([{"jobId": "1"}])
+
+    dummy_client.get = fake_get
+    result = await ep.async_list("S1")
+    assert isinstance(result[0], jobs.Job)
