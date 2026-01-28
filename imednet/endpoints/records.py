@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Union
 
+from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
@@ -58,9 +59,9 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
                 # Security: Prevent header injection via newlines
                 if "\n" in email_notify or "\r" in email_notify:
                     raise ValueError("email_notify must not contain newlines")
-                headers["x-email-notify"] = email_notify
+                headers[HEADER_EMAIL_NOTIFY] = email_notify
             else:
-                headers["x-email-notify"] = str(email_notify).lower()
+                headers[HEADER_EMAIL_NOTIFY] = str(email_notify).lower()
         return headers
 
     def create(

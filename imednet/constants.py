@@ -16,6 +16,13 @@ __all__ = [
     "LARGE_PAGE_SIZE",
     "MAX_SQLITE_COLUMNS",
     "TERMINAL_JOB_STATES",
+    # HTTP Headers
+    "HEADER_ACCEPT",
+    "HEADER_CONTENT_TYPE",
+    "HEADER_API_KEY",
+    "HEADER_SECURITY_KEY",
+    "HEADER_EMAIL_NOTIFY",
+    "CONTENT_TYPE_JSON",
 ]
 
 # API Configuration
@@ -54,3 +61,23 @@ TERMINAL_JOB_STATES = frozenset({"COMPLETED", "FAILED", "CANCELLED"})
 These states are used by the job poller to determine when to stop polling.
 Jobs in these states will not transition to another state.
 """
+
+# HTTP Headers
+HEADER_ACCEPT = "Accept"
+"""HTTP Accept header name."""
+
+HEADER_CONTENT_TYPE = "Content-Type"
+"""HTTP Content-Type header name."""
+
+HEADER_API_KEY = "x-api-key"
+"""iMednet API key header name."""
+
+HEADER_SECURITY_KEY = "x-imn-security-key"
+"""iMednet security key header name."""
+
+HEADER_EMAIL_NOTIFY = "x-email-notify"
+"""iMednet email notification header name."""
+
+# Content Types
+CONTENT_TYPE_JSON = "application/json"
+"""JSON content type value."""
