@@ -7,27 +7,14 @@ Pydantic models, eliminating duplicated parsing logic across endpoints.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Protocol, Type, TypeVar, runtime_checkable
+from typing import Any, Callable, Type, TypeVar
 
 from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    pass
 
 __all__ = ["ModelParser", "get_model_parser"]
 
 
 T = TypeVar("T", bound=BaseModel)
-
-
-@runtime_checkable
-class JsonSerializable(Protocol):
-    """Protocol for models that support from_json class method."""
-
-    @classmethod
-    def from_json(cls, data: Any) -> Any:
-        """Parse JSON data into model instance."""
-        ...
 
 
 def get_model_parser(model: Type[T]) -> Callable[[Any], T]:

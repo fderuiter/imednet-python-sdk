@@ -28,8 +28,6 @@ logger = logging.getLogger(__name__)
 class BaseClient:
     """Common initialization logic for HTTP clients."""
 
-    DEFAULT_BASE_URL = DEFAULT_BASE_URL
-
     def __init__(
         self,
         api_key: Optional[str] = None,
@@ -42,7 +40,7 @@ class BaseClient:
     ) -> None:
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
-        self.base_url = sanitize_base_url(config.base_url or self.DEFAULT_BASE_URL)
+        self.base_url = sanitize_base_url(config.base_url or DEFAULT_BASE_URL)
 
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
