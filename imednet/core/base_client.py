@@ -14,6 +14,12 @@ except Exception:  # pragma: no cover - optional dependency
 import httpx
 
 from imednet.config import load_config
+from imednet.constants import (
+    DEFAULT_BACKOFF_FACTOR,
+    DEFAULT_BASE_URL,
+    DEFAULT_RETRIES,
+    DEFAULT_TIMEOUT,
+)
 from imednet.utils import sanitize_base_url
 
 logger = logging.getLogger(__name__)
@@ -22,16 +28,16 @@ logger = logging.getLogger(__name__)
 class BaseClient:
     """Common initialization logic for HTTP clients."""
 
-    DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
+    DEFAULT_BASE_URL = DEFAULT_BASE_URL
 
     def __init__(
         self,
         api_key: Optional[str] = None,
         security_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout: Union[float, httpx.Timeout] = 30.0,
-        retries: int = 3,
-        backoff_factor: float = 1.0,
+        timeout: Union[float, httpx.Timeout] = DEFAULT_TIMEOUT,
+        retries: int = DEFAULT_RETRIES,
+        backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
         tracer: Optional[Tracer] = None,
     ) -> None:
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
