@@ -5,6 +5,14 @@ from typing import Any, Awaitable, Optional, Type, Union, cast
 
 import httpx
 
+from imednet.constants import (
+    CONTENT_TYPE_JSON,
+    HEADER_ACCEPT,
+    HEADER_API_KEY,
+    HEADER_CONTENT_TYPE,
+    HEADER_SECURITY_KEY,
+)
+
 from ._requester import RequestExecutor
 from .base_client import BaseClient, Tracer
 from .retry import RetryPolicy
@@ -51,10 +59,10 @@ class HTTPClientBase(BaseClient):
         return self.HTTPX_CLIENT_CLS(
             base_url=self.base_url,
             headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "x-api-key": api_key,
-                "x-imn-security-key": security_key,
+                HEADER_ACCEPT: CONTENT_TYPE_JSON,
+                HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
+                HEADER_API_KEY: api_key,
+                HEADER_SECURITY_KEY: security_key,
             },
             timeout=self.timeout,
         )
