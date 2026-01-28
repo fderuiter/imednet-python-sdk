@@ -39,7 +39,8 @@ class JobsEndpoint(BaseEndpoint):
         data = response.json()
         if not data:
             raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        return JobStatus.from_json(data)
+        parser = get_model_parser(JobStatus)
+        return parser(data)
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
         """
@@ -64,7 +65,8 @@ class JobsEndpoint(BaseEndpoint):
         data = response.json()
         if not data:
             raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        return JobStatus.from_json(data)
+        parser = get_model_parser(JobStatus)
+        return parser(data)
 
     def list(self, study_key: str) -> List[Job]:
         """

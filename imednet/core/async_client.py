@@ -15,8 +15,6 @@ logger = logging.getLogger(__name__)
 class AsyncClient(HTTPClientBase):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
-    DEFAULT_BASE_URL = HTTPClientBase.DEFAULT_BASE_URL
-
     HTTPX_CLIENT_CLS = httpx.AsyncClient
     IS_ASYNC = True
 
