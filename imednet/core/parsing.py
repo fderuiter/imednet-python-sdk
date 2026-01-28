@@ -7,9 +7,12 @@ Pydantic models, eliminating duplicated parsing logic across endpoints.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Protocol, Type, TypeVar, runtime_checkable
+from typing import TYPE_CHECKING, Any, Callable, Protocol, Type, TypeVar, runtime_checkable
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    pass
 
 __all__ = ["ModelParser", "get_model_parser"]
 
@@ -22,7 +25,7 @@ class JsonSerializable(Protocol):
     """Protocol for models that support from_json class method."""
 
     @classmethod
-    def from_json(cls: Type[T], data: Any) -> T:
+    def from_json(cls, data: Any) -> Any:
         """Parse JSON data into model instance."""
         ...
 
@@ -48,7 +51,7 @@ def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
     """
     # Check for custom from_json method
     if hasattr(model, "from_json") and callable(getattr(model, "from_json")):
-        return model.from_json  # type: ignore[return-value]
+        return model.from_json  # type: ignore[attr-defined,return-value]
 
     # Fall back to Pydantic's model_validate
     return model.model_validate
@@ -67,7 +70,7 @@ class ModelParser:
         >>> studies = [parser.parse(data) for data in api_response]
     """
 
-    def __init__(self, model: Type[T]) -> None:
+    def __init__(self, model: Type[BaseModel]) -> None:
         """
         Initialize parser with a model type.
 
@@ -75,9 +78,9 @@ class ModelParser:
             model: The model class to parse data into
         """
         self.model = model
-        self._parse_func = get_model_parser(model)
+        self._parse_func: Callable[[Any], BaseModel] = get_model_parser(model)
 
-    def parse(self, data: Any) -> T:
+    def parse(self, data: Any) -> BaseModel:
         """
         Parse raw data into a model instance.
 
@@ -89,7 +92,7 @@ class ModelParser:
         """
         return self._parse_func(data)
 
-    def parse_many(self, items: list[Any]) -> list[T]:
+    def parse_many(self, items: list[Any]) -> list[BaseModel]:
         """
         Parse a list of raw data items into model instances.
 
