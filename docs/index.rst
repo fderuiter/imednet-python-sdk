@@ -20,6 +20,7 @@ Welcome to imednet's documentation!
    form_builder
    tui_manual
    architecture
+   parsing
    schema_validation
    cli
    workflow_interactions
