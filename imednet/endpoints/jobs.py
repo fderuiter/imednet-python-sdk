@@ -1,8 +1,8 @@
 """Endpoint for checking job status in a study."""
 
-import inspect
-from typing import Any, List
+from typing import List
 
+from imednet.core.parsing import get_model_parser
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job, JobStatus
 
@@ -11,29 +11,11 @@ class JobsEndpoint(BaseEndpoint):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
-    Provides a method to fetch a job by its batch ID.
+    This endpoint provides methods to fetch individual job status by batch ID
+    and list all jobs for a study.
     """
 
     PATH = "/api/v1/edc/studies"
-
-    def _get_impl(self, client: Any, study_key: str, batch_id: str) -> Any:
-        endpoint = self._build_path(study_key, "jobs", batch_id)
-        if inspect.iscoroutinefunction(client.get):
-
-            async def _async() -> JobStatus:
-                response = await client.get(endpoint)
-                data = response.json()
-                if not data:
-                    raise ValueError(f"Job {batch_id} not found in study {study_key}")
-                return JobStatus.from_json(data)
-
-            return _async()
-
-        response = client.get(endpoint)
-        data = response.json()
-        if not data:
-            raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        return JobStatus.from_json(data)
 
     def get(self, study_key: str, batch_id: str) -> JobStatus:
         """
@@ -48,18 +30,41 @@ class JobsEndpoint(BaseEndpoint):
 
         Returns:
             JobStatus object with current state and timestamps
+
+        Raises:
+            ValueError: If the job is not found
         """
-        result = self._get_impl(self._client, study_key, batch_id)
-        return result  # type: ignore[return-value]
+        endpoint = self._build_path(study_key, "jobs", batch_id)
+        response = self._client.get(endpoint)
+        data = response.json()
+        if not data:
+            raise ValueError(f"Job {batch_id} not found in study {study_key}")
+        return JobStatus.from_json(data)
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
-        """Asynchronous version of :meth:`get`.
+        """
+        Asynchronously get a specific job by batch ID.
 
-        Like the sync variant, it simply issues a request by ``batch_id``
-        without any caching.
+        This is the async variant of :meth:`get`. Like the sync version,
+        it issues a direct request by ``batch_id`` without any caching.
+
+        Args:
+            study_key: Study identifier
+            batch_id: Batch ID of the job
+
+        Returns:
+            JobStatus object with current state and timestamps
+
+        Raises:
+            ValueError: If the job is not found
         """
         client = self._require_async_client()
-        return await self._get_impl(client, study_key, batch_id)
+        endpoint = self._build_path(study_key, "jobs", batch_id)
+        response = await client.get(endpoint)
+        data = response.json()
+        if not data:
+            raise ValueError(f"Job {batch_id} not found in study {study_key}")
+        return JobStatus.from_json(data)
 
     def list(self, study_key: str) -> List[Job]:
         """
@@ -73,7 +78,8 @@ class JobsEndpoint(BaseEndpoint):
         """
         endpoint = self._build_path(study_key, "jobs")
         response = self._client.get(endpoint)
-        return [Job.from_json(item) for item in response.json()]
+        parser = get_model_parser(Job)
+        return [parser(item) for item in response.json()]
 
     async def async_list(self, study_key: str) -> List[Job]:
         """
@@ -88,4 +94,5 @@ class JobsEndpoint(BaseEndpoint):
         client = self._require_async_client()
         endpoint = self._build_path(study_key, "jobs")
         response = await client.get(endpoint)
-        return [Job.from_json(item) for item in response.json()]
+        parser = get_model_parser(Job)
+        return [parser(item) for item in response.json()]

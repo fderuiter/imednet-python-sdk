@@ -20,6 +20,7 @@ from typing import (
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.parsing import get_model_parser
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
@@ -56,9 +57,20 @@ class ListGetEndpointMixin(Generic[T]):
     _missing_study_exception: type[Exception] = ValueError
 
     def _parse_item(self, item: Any) -> T:
-        if hasattr(self.MODEL, "from_json"):
-            return getattr(self.MODEL, "from_json")(item)
-        return self.MODEL.model_validate(item)
+        """
+        Parse a single item into the model type.
+
+        This method can be overridden by subclasses for custom parsing logic.
+        By default, it uses the centralized parsing strategy.
+
+        Args:
+            item: Raw data to parse
+
+        Returns:
+            Parsed model instance
+        """
+        parse_func = get_model_parser(self.MODEL)
+        return parse_func(item)
 
     def _update_local_cache(
         self,
@@ -123,15 +135,21 @@ class ListGetEndpointMixin(Generic[T]):
         return self._build_path(*segments)  # type: ignore[attr-defined]
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
-        # Bolt Optimization: Resolve parsing function once to avoid attribute lookup loop overhead
-        # We respect overrides of _parse_item if present.
+        """
+        Resolve the parsing function to use for this endpoint.
+
+        This optimization resolves the parsing function once to avoid
+        repeated attribute lookups in tight loops.
+
+        Returns:
+            The parsing function to use
+        """
+        # Check if _parse_item has been overridden by a subclass
         if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:  # type: ignore[attr-defined]
             return self._parse_item
-        else:
-            parse_func = getattr(self.MODEL, "from_json", None)
-            if parse_func is None:
-                return self.MODEL.model_validate
-            return parse_func
+
+        # Use centralized parsing strategy
+        return get_model_parser(self.MODEL)
 
     async def _execute_async_list(
         self,
