@@ -5,7 +5,6 @@ import pytest
 
 from imednet.constants import DEFAULT_BASE_URL
 from imednet.core import exceptions
-from imednet.core.base_client import BaseClient
 from imednet.core.client import Client
 from imednet.core.retry import RetryPolicy
 
