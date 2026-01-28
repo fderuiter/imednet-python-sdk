@@ -1,9 +1,9 @@
 import pytest
-from datetime import datetime
-from imednet.models.jobs import Job
-from imednet.models.subjects import Subject
+
 from imednet.form_designer.client import FormDesignerClient
 from imednet.form_designer.models import Layout
+from imednet.models.jobs import Job
+from imednet.models.subjects import Subject
 
 
 def test_job_status_properties():
@@ -31,8 +31,9 @@ def test_job_status_properties():
 
 def test_subject_filtering_logic():
     """Verify logic migrated from TUI SubjectTable."""
-    from imednet.endpoints.subjects import SubjectsEndpoint
     from unittest.mock import Mock
+
+    from imednet.endpoints.subjects import SubjectsEndpoint
 
     # Mock data
     s1 = Subject(studyKey="sk", subjectId=1, siteId=101, subjectKey="s1")
