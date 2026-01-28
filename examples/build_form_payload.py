@@ -17,7 +17,6 @@ import sys
 
 from dotenv import load_dotenv
 
-from imednet import ImednetSDK
 from imednet.form_designer import PRESETS, FormBuilder, FormDesignerClient
 
 # Load env vars
