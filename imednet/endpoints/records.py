@@ -1,6 +1,5 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-import inspect
 from typing import Any, Dict, List, Optional, Union
 
 from imednet.endpoints._mixins import ListGetEndpoint
@@ -21,39 +20,16 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
     _id_param = "recordId"
     _pop_study_filter = False
 
-    def _create_impl(
-        self,
-        client: Any,
-        *,
-        study_key: str,
-        records_data: List[Dict[str, Any]],
-        email_notify: Union[bool, str, None] = None,
-    ) -> Any:
-        path = self._build_path(study_key, self.PATH)
-        headers = {}
-        if email_notify is not None:
-            if isinstance(email_notify, str):
-                # Security: Prevent header injection via newlines
-                if "\n" in email_notify or "\r" in email_notify:
-                    raise ValueError("email_notify must not contain newlines")
-                headers["x-email-notify"] = email_notify
-            else:
-                headers["x-email-notify"] = str(email_notify).lower()
-
-        if inspect.iscoroutinefunction(client.post):
-
-            async def _async() -> Job:
-                response = await client.post(path, json=records_data, headers=headers)
-                return Job.from_json(response.json())
-
-            return _async()
-
-        response = client.post(path, json=records_data, headers=headers)
-        return Job.from_json(response.json())
-
     def _validate_records_if_schema_present(
         self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]
     ) -> None:
+        """
+        Validate records against schema if provided.
+
+        Args:
+            schema: Optional schema cache for validation
+            records_data: List of record data to validate
+        """
         if schema is not None:
             for rec in records_data:
                 fk = rec.get("formKey") or rec.get("form_key")
@@ -63,11 +39,35 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
                 if fk:
                     validate_record_data(schema, fk, rec.get("data", {}))
 
+    def _build_headers(self, email_notify: Union[bool, str, None]) -> Dict[str, str]:
+        """
+        Build headers for record creation request.
+
+        Args:
+            email_notify: Email notification setting
+
+        Returns:
+            Dictionary of headers
+
+        Raises:
+            ValueError: If email_notify contains newlines (header injection prevention)
+        """
+        headers = {}
+        if email_notify is not None:
+            if isinstance(email_notify, str):
+                # Security: Prevent header injection via newlines
+                if "\n" in email_notify or "\r" in email_notify:
+                    raise ValueError("email_notify must not contain newlines")
+                headers["x-email-notify"] = email_notify
+            else:
+                headers["x-email-notify"] = str(email_notify).lower()
+        return headers
+
     def create(
         self,
         study_key: str,
         records_data: List[Dict[str, Any]],
-        email_notify: Union[bool, str, None] = None,  # Accept bool, str (email), or None
+        email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
@@ -84,16 +84,16 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
 
         Returns:
             Job object with information about the created job
+
+        Raises:
+            ValueError: If email_notify contains invalid characters
         """
         self._validate_records_if_schema_present(schema, records_data)
+        headers = self._build_headers(email_notify)
 
-        result = self._create_impl(
-            self._client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
-        )
-        return result  # type: ignore[return-value]
+        path = self._build_path(study_key, self.PATH)
+        response = self._client.post(path, json=records_data, headers=headers)
+        return Job.from_json(response.json())
 
     async def async_create(
         self,
@@ -103,16 +103,32 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        """Asynchronous version of :meth:`create`."""
-        self._require_async_client()
-        self._validate_records_if_schema_present(schema, records_data)
+        """
+        Asynchronously create new records in a study.
 
-        return await self._create_impl(
-            self._async_client,
-            study_key=study_key,
-            records_data=records_data,
-            email_notify=email_notify,
-        )
+        This is the async variant of :meth:`create`.
+
+        Args:
+            study_key: Study identifier
+            records_data: List of record data objects to create
+            email_notify: Whether to send email notifications (True/False), or an
+                email address as a string.
+            schema: Optional :class:`SchemaCache` instance used for local
+                validation.
+
+        Returns:
+            Job object with information about the created job
+
+        Raises:
+            ValueError: If email_notify contains invalid characters
+        """
+        client = self._require_async_client()
+        self._validate_records_if_schema_present(schema, records_data)
+        headers = self._build_headers(email_notify)
+
+        path = self._build_path(study_key, self.PATH)
+        response = await client.post(path, json=records_data, headers=headers)
+        return Job.from_json(response.json())
 
     def _list_impl(
         self,
