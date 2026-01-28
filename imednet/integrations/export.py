@@ -6,13 +6,12 @@ from typing import Any, List, Optional
 
 import pandas as pd
 
+from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 
 from .. import ImednetClient
 from ..sdk import ImednetSDK
 from ..workflows.record_mapper import RecordMapper
-
-MAX_SQLITE_COLUMNS = 2000
 
 
 def _to_sql_with_chunking(

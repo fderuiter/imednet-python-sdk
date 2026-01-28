@@ -17,6 +17,7 @@ from typing import (
     cast,
 )
 
+from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
@@ -52,7 +53,7 @@ class ListGetEndpointMixin(Generic[T]):
     _id_param: str
     _cache_name: Optional[str] = None
     requires_study_key: bool = True
-    PAGE_SIZE: int = 100
+    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
