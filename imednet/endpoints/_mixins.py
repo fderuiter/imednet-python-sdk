@@ -57,9 +57,7 @@ class ListGetEndpointMixin(Generic[T]):
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
-    def _extract_special_params(
-        self, params: Dict[str, Any], filters: Dict[str, Any]
-    ) -> None:
+    def _extract_special_params(self, params: Dict[str, Any], filters: Dict[str, Any]) -> None:
         """
         Hook to extract special parameters from filters and inject them into params.
 

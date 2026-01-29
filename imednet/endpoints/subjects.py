@@ -17,9 +17,7 @@ class SubjectsEndpoint(ListGetEndpoint[Subject]):
     MODEL = Subject
     _id_param = "subjectKey"
 
-    def _filter_by_site(
-        self, all_subjects: List[Subject], site_id: str | int
-    ) -> List[Subject]:
+    def _filter_by_site(self, all_subjects: List[Subject], site_id: str | int) -> List[Subject]:
         # TUI Logic: Strict string comparison to handle int/str mismatch
         target_site = str(site_id)
         return [s for s in all_subjects if str(s.site_id) == target_site]

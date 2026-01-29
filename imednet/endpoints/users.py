@@ -18,8 +18,6 @@ class UsersEndpoint(ListGetEndpoint[User]):
     _id_param = "userId"
     _pop_study_filter = True
 
-    def _extract_special_params(
-        self, params: Dict[str, Any], filters: Dict[str, Any]
-    ) -> None:
+    def _extract_special_params(self, params: Dict[str, Any], filters: Dict[str, Any]) -> None:
         include_inactive = filters.pop("include_inactive", False)
         params["includeInactive"] = str(include_inactive).lower()

@@ -101,9 +101,7 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         Raises:
             ValueError: If email_notify contains invalid characters
         """
-        path, headers = self._prepare_create_request(
-            study_key, records_data, email_notify, schema
-        )
+        path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
         response = self._client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
 
@@ -135,15 +133,11 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
             ValueError: If email_notify contains invalid characters
         """
         client = self._require_async_client()
-        path, headers = self._prepare_create_request(
-            study_key, records_data, email_notify, schema
-        )
+        path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
         response = await client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
 
-    def _extract_special_params(
-        self, params: Dict[str, Any], filters: Dict[str, Any]
-    ) -> None:
+    def _extract_special_params(self, params: Dict[str, Any], filters: Dict[str, Any]) -> None:
         if "record_data_filter" in filters:
             val = filters.pop("record_data_filter")
             if val:
