@@ -7,8 +7,9 @@ from imednet.core.base_client import BaseClient
 
 
 class DummyClient(BaseClient):
-    def _create_client(self, api_key: str, security_key: str) -> httpx.Client:
-        return httpx.Client(headers={"x-api-key": api_key, "x-imn-security-key": security_key})
+    def _create_client(self) -> httpx.Client:
+        headers = self.auth.get_headers()
+        return httpx.Client(headers=headers)
 
 
 def test_initialization_from_env(monkeypatch) -> None:
