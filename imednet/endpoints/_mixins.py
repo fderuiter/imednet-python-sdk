@@ -57,6 +57,18 @@ class ListGetEndpointMixin(Generic[T]):
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
+    def _extract_special_params(
+        self, params: Dict[str, Any], filters: Dict[str, Any]
+    ) -> None:
+        """
+        Hook to extract special parameters from filters and inject them into params.
+
+        Args:
+            params: Dictionary of parameters to be sent in the request.
+            filters: Dictionary of filters passed to the list method.
+        """
+        pass
+
     def _parse_item(self, item: Any) -> T:
         """
         Parse a single item into the model type.
@@ -120,10 +132,13 @@ class ListGetEndpointMixin(Generic[T]):
         other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
 
         params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
         if extra_params:
             params.update(extra_params)
+
+        self._extract_special_params(params, filters)
+
+        if filters:
+            params["filter"] = build_filter_string(filters)
 
         return study, cache, params, other_filters
 
