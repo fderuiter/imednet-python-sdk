@@ -12,11 +12,11 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, Union
 
+from .auth.api_key import ApiKeyAuth
 from .config import Config, load_config
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
-from .auth.api_key import ApiKeyAuth
 from .core.retry import RetryPolicy
 from .endpoints.base import BaseEndpoint
 from .endpoints.codings import CodingsEndpoint
