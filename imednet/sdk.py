@@ -16,6 +16,7 @@ from .config import Config, load_config
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
+from .auth.api_key import ApiKeyAuth
 from .core.retry import RetryPolicy
 from .endpoints.base import BaseEndpoint
 from .endpoints.codings import CodingsEndpoint
@@ -133,9 +134,10 @@ class ImednetSDK:
 
         self.ctx = Context()
 
+        auth = ApiKeyAuth(config.api_key, config.security_key)
+
         self._client = Client(
-            api_key=config.api_key,
-            security_key=config.security_key,
+            auth=auth,
             base_url=config.base_url,
             timeout=timeout,
             retries=retries,
@@ -144,8 +146,7 @@ class ImednetSDK:
         )
         self._async_client = (
             AsyncClient(
-                api_key=config.api_key,
-                security_key=config.security_key,
+                auth=auth,
                 base_url=config.base_url,
                 timeout=timeout,
                 retries=retries,
