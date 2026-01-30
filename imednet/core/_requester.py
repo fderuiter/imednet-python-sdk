@@ -155,7 +155,9 @@ class RequestExecutor:
             reraise=True,
         )
 
-        async with self._get_span_cm(method, url) as span:
+        # OpenTelemetry spans are synchronous context managers.
+        # They use contextvars which propagate correctly in asyncio.
+        with self._get_span_cm(method, url) as span:
             try:
                 start = time.monotonic()
                 response: httpx.Response = await retryer(send_fn)
