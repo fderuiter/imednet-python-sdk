@@ -131,20 +131,8 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         response = await client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
 
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> Any:
-        extra = {"recordDataFilter": record_data_filter} if record_data_filter else None
-        return super()._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            extra_params=extra,
-            **filters,
-        )
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        val = filters.pop("record_data_filter", None)
+        if val:
+            return {"recordDataFilter": val}
+        return {}
