@@ -51,9 +51,10 @@ async def test_async_request_error_mapping(monkeypatch, status, exc):
 @pytest.mark.asyncio
 async def test_tracing(monkeypatch):
     tracer = MagicMock()
-    span_cm = AsyncMock()
+    # OpenTelemetry spans are synchronous context managers even in async flows
+    span_cm = MagicMock()
     span = MagicMock()
-    span_cm.__aenter__.return_value = span
+    span_cm.__enter__.return_value = span
     tracer.start_as_current_span.return_value = span_cm
 
     client = AsyncClient("k", "s", base_url="https://api.test", tracer=tracer)
