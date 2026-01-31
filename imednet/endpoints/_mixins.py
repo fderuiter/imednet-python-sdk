@@ -227,9 +227,7 @@ class ListGetEndpointMixin(Generic[T]):
         paginator = paginator_cls(client, path, params=params, page_size=self.PAGE_SIZE)
         parse_func = self._resolve_parse_func()
 
-        return self._execute_sync_list(
-            paginator, parse_func, study, bool(other_filters), cache
-        )
+        return self._execute_sync_list(paginator, parse_func, study, bool(other_filters), cache)
 
     async def _list_async(
         self,
@@ -274,9 +272,7 @@ class ListGetEndpointMixin(Generic[T]):
         )
         if not items:
             if self.requires_study_key:
-                raise ValueError(
-                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
-                )
+                raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
 
@@ -298,9 +294,7 @@ class ListGetEndpointMixin(Generic[T]):
         )
         if not items:
             if self.requires_study_key:
-                raise ValueError(
-                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
-                )
+                raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
 
