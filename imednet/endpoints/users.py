@@ -21,25 +21,7 @@ class UsersEndpoint(ListGetEndpoint[User]):
     _id_param = "userId"
     _pop_study_filter = True
 
-    def _list_impl(
-        self,
-        client: Client | AsyncClient,
-        paginator_cls: Union[type[Paginator], type[AsyncPaginator]],
-        *,
-        study_key: Optional[str] = None,
-        refresh: bool = False,
-        extra_params: Optional[Dict[str, Any]] = None,
-        include_inactive: bool = False,
-        **filters: Any,
-    ) -> List[User] | Awaitable[List[User]]:
-        params = extra_params or {}
-        params["includeInactive"] = str(include_inactive).lower()
-
-        return super()._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            refresh=refresh,
-            extra_params=params,
-            **filters,
-        )
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract includeInactive parameter."""
+        include_inactive = filters.pop("include_inactive", False)
+        return {"includeInactive": str(include_inactive).lower()}

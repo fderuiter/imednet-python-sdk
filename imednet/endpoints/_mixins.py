@@ -88,6 +88,18 @@ class ListGetEndpointMixin(Generic[T]):
         elif not self.requires_study_key and self._cache_name:
             setattr(self, self._cache_name, result)
 
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extract special parameters from filters that should be moved to extra_params.
+
+        Args:
+            filters: The filters dictionary (modified in-place)
+
+        Returns:
+            Dictionary of extracted parameters
+        """
+        return {}
+
     def _prepare_list_params(
         self,
         study_key: Optional[str],
@@ -97,6 +109,8 @@ class ListGetEndpointMixin(Generic[T]):
     ) -> tuple[Optional[str], Any, Dict[str, Any], Dict[str, Any]]:
         # This method handles filter normalization and cache retrieval preparation
         filters = self._auto_filter(filters)  # type: ignore[attr-defined]
+        special_params = self._extract_special_params(filters)
+
         if study_key:
             filters["studyKey"] = study_key
 
@@ -124,6 +138,7 @@ class ListGetEndpointMixin(Generic[T]):
             params["filter"] = build_filter_string(filters)
         if extra_params:
             params.update(extra_params)
+        params.update(special_params)
 
         return study, cache, params, other_filters
 

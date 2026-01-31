@@ -64,6 +64,18 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
                 headers[HEADER_EMAIL_NOTIFY] = str(email_notify).lower()
         return headers
 
+    def _prepare_create_request(
+        self,
+        study_key: str,
+        records_data: List[Dict[str, Any]],
+        email_notify: Union[bool, str, None],
+        schema: Optional[SchemaCache],
+    ) -> tuple[str, Dict[str, str]]:
+        self._validate_records_if_schema_present(schema, records_data)
+        headers = self._build_headers(email_notify)
+        path = self._build_path(study_key, self.PATH)
+        return path, headers
+
     def create(
         self,
         study_key: str,
@@ -89,10 +101,9 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
         Raises:
             ValueError: If email_notify contains invalid characters
         """
-        self._validate_records_if_schema_present(schema, records_data)
-        headers = self._build_headers(email_notify)
-
-        path = self._build_path(study_key, self.PATH)
+        path, headers = self._prepare_create_request(
+            study_key, records_data, email_notify, schema
+        )
         response = self._client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
 
@@ -124,27 +135,15 @@ class RecordsEndpoint(ListGetEndpoint[Record]):
             ValueError: If email_notify contains invalid characters
         """
         client = self._require_async_client()
-        self._validate_records_if_schema_present(schema, records_data)
-        headers = self._build_headers(email_notify)
-
-        path = self._build_path(study_key, self.PATH)
+        path, headers = self._prepare_create_request(
+            study_key, records_data, email_notify, schema
+        )
         response = await client.post(path, json=records_data, headers=headers)
         return Job.from_json(response.json())
 
-    def _list_impl(
-        self,
-        client: Any,
-        paginator_cls: type[Any],
-        *,
-        study_key: Optional[str] = None,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> Any:
-        extra = {"recordDataFilter": record_data_filter} if record_data_filter else None
-        return super()._list_impl(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            extra_params=extra,
-            **filters,
-        )
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract recordDataFilter parameter."""
+        val = filters.pop("record_data_filter", None)
+        if val:
+            return {"recordDataFilter": val}
+        return {}

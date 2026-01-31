@@ -1,6 +1,6 @@
 """Endpoint for checking job status in a study."""
 
-from typing import List
+from typing import Any, List
 
 from imednet.core.parsing import get_model_parser
 from imednet.endpoints.base import BaseEndpoint
@@ -16,6 +16,17 @@ class JobsEndpoint(BaseEndpoint):
     """
 
     PATH = "/api/v1/edc/studies"
+
+    def _get_job_path(self, study_key: str, batch_id: str) -> str:
+        return self._build_path(study_key, "jobs", batch_id)
+
+    def _parse_job_status(
+        self, response_data: Any, study_key: str, batch_id: str
+    ) -> JobStatus:
+        if not response_data:
+            raise ValueError(f"Job {batch_id} not found in study {study_key}")
+        parser = get_model_parser(JobStatus)
+        return parser(response_data)
 
     def get(self, study_key: str, batch_id: str) -> JobStatus:
         """
@@ -34,13 +45,9 @@ class JobsEndpoint(BaseEndpoint):
         Raises:
             ValueError: If the job is not found
         """
-        endpoint = self._build_path(study_key, "jobs", batch_id)
+        endpoint = self._get_job_path(study_key, batch_id)
         response = self._client.get(endpoint)
-        data = response.json()
-        if not data:
-            raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        parser = get_model_parser(JobStatus)
-        return parser(data)
+        return self._parse_job_status(response.json(), study_key, batch_id)
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
         """
@@ -60,13 +67,9 @@ class JobsEndpoint(BaseEndpoint):
             ValueError: If the job is not found
         """
         client = self._require_async_client()
-        endpoint = self._build_path(study_key, "jobs", batch_id)
+        endpoint = self._get_job_path(study_key, batch_id)
         response = await client.get(endpoint)
-        data = response.json()
-        if not data:
-            raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        parser = get_model_parser(JobStatus)
-        return parser(data)
+        return self._parse_job_status(response.json(), study_key, batch_id)
 
     def list(self, study_key: str) -> List[Job]:
         """
