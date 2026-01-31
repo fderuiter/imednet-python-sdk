@@ -1,6 +1,6 @@
 """Endpoint for managing users in a study."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
