@@ -159,7 +159,7 @@ class ListGetEndpoint:
 
 **Issue**: Error status code mapping is hardcoded in core module.
 
-**Location**: `imednet/core/_requester.py:35-42`
+**Location**: `imednet/core/request_executor.py:35-42`
 
 ```python
 STATUS_TO_ERROR: dict[int, type[ApiError]] = {
