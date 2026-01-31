@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import inspect
 from typing import (
     TYPE_CHECKING,
     Any,
-    Awaitable,
     Callable,
     Dict,
     Generic,
@@ -18,10 +16,9 @@ from typing import (
 )
 
 from imednet.constants import DEFAULT_PAGE_SIZE
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
@@ -88,6 +85,15 @@ class ListGetEndpointMixin(Generic[T]):
         elif not self.requires_study_key and self._cache_name:
             setattr(self, self._cache_name, result)
 
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Hook to extract special parameters from filters.
+
+        Subclasses can override this to handle parameters that should be passed
+        as query parameters but removed from the RQL filter.
+        """
+        return {}
+
     def _prepare_list_params(
         self,
         study_key: Optional[str],
@@ -120,6 +126,12 @@ class ListGetEndpointMixin(Generic[T]):
         other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
 
         params: Dict[str, Any] = {}
+
+        # Extract special parameters before building filter string
+        special = self._extract_special_params(filters)
+        if special:
+            params.update(special)
+
         if filters:
             params["filter"] = build_filter_string(filters)
         if extra_params:
@@ -152,6 +164,24 @@ class ListGetEndpointMixin(Generic[T]):
         # Use centralized parsing strategy
         return get_model_parser(self.MODEL)
 
+    def _check_cache(
+        self,
+        study: Optional[str],
+        cache: Any,
+        other_filters: Dict[str, Any],
+        refresh: bool,
+    ) -> Optional[List[T]]:
+        if self.requires_study_key:
+            if not study:
+                # Should have been caught in _prepare_list_params but strict typing requires check
+                raise ValueError("Study key must be provided or set in the context")
+            if cache is not None and not other_filters and not refresh and study in cache:
+                return cast(List[T], cache[study])
+        else:
+            if cache is not None and not other_filters and not refresh:
+                return cast(List[T], cache)
+        return None
+
     async def _execute_async_list(
         self,
         paginator: AsyncPaginator,
@@ -176,81 +206,101 @@ class ListGetEndpointMixin(Generic[T]):
         self._update_local_cache(result, study, has_filters, cache)
         return result
 
-    def _list_impl(
+    def _list_sync(
         self,
-        client: Client | AsyncClient,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
         *,
         study_key: Optional[str] = None,
         refresh: bool = False,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T] | Awaitable[List[T]]:
-
+    ) -> List[T]:
         study, cache, params, other_filters = self._prepare_list_params(
             study_key, refresh, extra_params, filters
         )
 
-        # Cache Hit Check
-        if self.requires_study_key:
-            if not study:
-                # Should have been caught in _prepare_list_params but strict typing requires check
-                raise ValueError("Study key must be provided or set in the context")
-            if cache is not None and not other_filters and not refresh and study in cache:
-                return cast(List[T], cache[study])
-        else:
-            if cache is not None and not other_filters and not refresh:
-                return cast(List[T], cache)
+        if cached := self._check_cache(study, cache, other_filters, refresh):
+            return cached
 
         path = self._get_path(study)
         paginator = paginator_cls(client, path, params=params, page_size=self.PAGE_SIZE)
         parse_func = self._resolve_parse_func()
 
-        if hasattr(paginator, "__aiter__"):
-            return self._execute_async_list(
-                cast(AsyncPaginator, paginator), parse_func, study, bool(other_filters), cache
-            )
-
         return self._execute_sync_list(
-            cast(Paginator, paginator), parse_func, study, bool(other_filters), cache
+            paginator, parse_func, study, bool(other_filters), cache
         )
 
-    def _get_impl(
+    async def _list_async(
         self,
-        client: Client | AsyncClient,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]:
+        study, cache, params, other_filters = self._prepare_list_params(
+            study_key, refresh, extra_params, filters
+        )
+
+        if cached := self._check_cache(study, cache, other_filters, refresh):
+            return cached
+
+        path = self._get_path(study)
+        paginator = paginator_cls(client, path, params=params, page_size=self.PAGE_SIZE)
+        parse_func = self._resolve_parse_func()
+
+        return await self._execute_async_list(
+            paginator, parse_func, study, bool(other_filters), cache
+        )
+
+    def _get_sync(
+        self,
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
         *,
         study_key: Optional[str],
         item_id: Any,
-    ) -> T | Awaitable[T]:
+    ) -> T:
         filters = {self._id_param: item_id}
-        result = self._list_impl(
+        items = self._list_sync(
             client,
             paginator_cls,
             study_key=study_key,
             refresh=True,
             **filters,
         )
-
-        if inspect.isawaitable(result):
-
-            async def _await() -> T:
-                items = await result
-                if not items:
-                    if self.requires_study_key:
-                        raise ValueError(
-                            f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
-                        )
-                    raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
-                return items[0]
-
-            return _await()
-
-        # Sync path
-        items = cast(List[T], result)
         if not items:
             if self.requires_study_key:
-                raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
+                raise ValueError(
+                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
+                )
+            raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
+        return items[0]
+
+    async def _get_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T:
+        filters = {self._id_param: item_id}
+        items = await self._list_async(
+            client,
+            paginator_cls,
+            study_key=study_key,
+            refresh=True,
+            **filters,
+        )
+        if not items:
+            if self.requires_study_key:
+                raise ValueError(
+                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
+                )
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
 
@@ -258,39 +308,36 @@ class ListGetEndpointMixin(Generic[T]):
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
     """Endpoint base class implementing ``list`` and ``get`` helpers."""
 
-    def _get_context(
-        self, is_async: bool
-    ) -> tuple[Client | AsyncClient, type[Paginator] | type[AsyncPaginator]]:
-        if is_async:
-            return self._require_async_client(), AsyncPaginator
-        return self._client, Paginator
-
-    def _list_common(self, is_async: bool, **kwargs: Any) -> List[T] | Awaitable[List[T]]:
-        client, paginator = self._get_context(is_async)
-        return self._list_impl(client, paginator, **kwargs)
-
-    def _get_common(
-        self,
-        is_async: bool,
-        *,
-        study_key: Optional[str],
-        item_id: Any,
-    ) -> T | Awaitable[T]:
-        client, paginator = self._get_context(is_async)
-        return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
-
     def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
-        return cast(List[T], self._list_common(False, study_key=study_key, **filters))
+        return self._list_sync(
+            self._client,
+            Paginator,
+            study_key=study_key,
+            **filters,
+        )
 
     async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
-        return await cast(
-            Awaitable[List[T]], self._list_common(True, study_key=study_key, **filters)
+        client = self._require_async_client()
+        return await self._list_async(
+            client,
+            AsyncPaginator,
+            study_key=study_key,
+            **filters,
         )
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
-        return cast(T, self._get_common(False, study_key=study_key, item_id=item_id))
+        return self._get_sync(
+            self._client,
+            Paginator,
+            study_key=study_key,
+            item_id=item_id,
+        )
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
-        return await cast(
-            Awaitable[T], self._get_common(True, study_key=study_key, item_id=item_id)
+        client = self._require_async_client()
+        return await self._get_async(
+            client,
+            AsyncPaginator,
+            study_key=study_key,
+            item_id=item_id,
         )

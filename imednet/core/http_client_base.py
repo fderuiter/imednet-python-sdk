@@ -13,8 +13,8 @@ from imednet.constants import (
     HEADER_SECURITY_KEY,
 )
 
-from ._requester import RequestExecutor
 from .base_client import BaseClient, Tracer
+from .request_executor import RequestExecutor
 from .retry import RetryPolicy
 
 logger = logging.getLogger(__name__)
