@@ -20,9 +20,7 @@ class JobsEndpoint(BaseEndpoint):
     def _get_job_path(self, study_key: str, batch_id: str) -> str:
         return self._build_path(study_key, "jobs", batch_id)
 
-    def _parse_job_status(
-        self, response_data: Any, study_key: str, batch_id: str
-    ) -> JobStatus:
+    def _parse_job_status(self, response_data: Any, study_key: str, batch_id: str) -> JobStatus:
         if not response_data:
             raise ValueError(f"Job {batch_id} not found in study {study_key}")
         parser = get_model_parser(JobStatus)

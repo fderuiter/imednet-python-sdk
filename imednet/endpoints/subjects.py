@@ -17,9 +17,7 @@ class SubjectsEndpoint(ListGetEndpoint[Subject]):
     MODEL = Subject
     _id_param = "subjectKey"
 
-    def _filter_by_site(
-        self, subjects: List[Subject], site_id: str | int
-    ) -> List[Subject]:
+    def _filter_by_site(self, subjects: List[Subject], site_id: str | int) -> List[Subject]:
         """Filter subjects by site ID using strict string comparison."""
         target_site = str(site_id)
         return [s for s in subjects if str(s.site_id) == target_site]
