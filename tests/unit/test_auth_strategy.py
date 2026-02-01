@@ -1,9 +1,7 @@
 """Tests for authentication strategy pattern."""
 
 import os
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from imednet.auth.api_key import ApiKeyAuth
 from imednet.core.client import Client
