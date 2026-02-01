@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Optional, Union
+
+from imednet.auth.api_key import ApiKeyAuth
+from imednet.auth.strategy import AuthStrategy
 
 try:
     from opentelemetry import trace
@@ -37,16 +41,23 @@ class BaseClient:
         retries: int = DEFAULT_RETRIES,
         backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
         tracer: Optional[Tracer] = None,
+        auth: Optional[AuthStrategy] = None,
     ) -> None:
-        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
-
-        self.base_url = sanitize_base_url(config.base_url or DEFAULT_BASE_URL)
+        if auth:
+            self.auth = auth
+            self.base_url = sanitize_base_url(
+                base_url or os.getenv("IMEDNET_BASE_URL") or DEFAULT_BASE_URL
+            )
+        else:
+            config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
+            self.base_url = sanitize_base_url(config.base_url or DEFAULT_BASE_URL)
+            self.auth = ApiKeyAuth(config.api_key, config.security_key)
 
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
         self.backoff_factor = backoff_factor
 
-        self._client = self._create_client(config.api_key, config.security_key)
+        self._client = self._create_client(self.auth)
 
         if tracer is not None:
             self._tracer = tracer
@@ -55,5 +66,5 @@ class BaseClient:
         else:
             self._tracer = None
 
-    def _create_client(self, api_key: str, security_key: str) -> Any:
+    def _create_client(self, auth: AuthStrategy) -> Any:
         raise NotImplementedError

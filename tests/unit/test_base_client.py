@@ -3,12 +3,13 @@ from unittest.mock import MagicMock
 import httpx
 
 import imednet.core.base_client as base_client
+from imednet.auth.strategy import AuthStrategy
 from imednet.core.base_client import BaseClient
 
 
 class DummyClient(BaseClient):
-    def _create_client(self, api_key: str, security_key: str) -> httpx.Client:
-        return httpx.Client(headers={"x-api-key": api_key, "x-imn-security-key": security_key})
+    def _create_client(self, auth: AuthStrategy) -> httpx.Client:
+        return httpx.Client(headers=auth.get_headers())
 
 
 def test_initialization_from_env(monkeypatch) -> None:
