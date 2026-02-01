@@ -17,9 +17,7 @@ class SubjectsEndpoint(ListGetEndpoint[Subject]):
     MODEL = Subject
     _id_param = "subjectKey"
 
-    def _filter_by_site(
-        self, subjects: List[Subject], site_id: Union[str, int]
-    ) -> List[Subject]:
+    def _filter_by_site(self, subjects: List[Subject], site_id: Union[str, int]) -> List[Subject]:
         """
         Filter a list of subjects by site ID.
 
@@ -43,9 +41,7 @@ class SubjectsEndpoint(ListGetEndpoint[Subject]):
         all_subjects = self.list(study_key)
         return self._filter_by_site(all_subjects, site_id)
 
-    async def async_list_by_site(
-        self, study_key: str, site_id: Union[str, int]
-    ) -> List[Subject]:
+    async def async_list_by_site(self, study_key: str, site_id: Union[str, int]) -> List[Subject]:
         """Asynchronously list subjects filtered by a specific site ID."""
         all_subjects = await self.async_list(study_key)
         return self._filter_by_site(all_subjects, site_id)
