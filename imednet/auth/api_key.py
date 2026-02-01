@@ -3,8 +3,8 @@
 from dataclasses import dataclass
 from typing import Dict
 
-from imednet.constants import HEADER_API_KEY, HEADER_SECURITY_KEY
 from imednet.auth.strategy import AuthStrategy
+from imednet.constants import HEADER_API_KEY, HEADER_SECURITY_KEY
 
 
 @dataclass

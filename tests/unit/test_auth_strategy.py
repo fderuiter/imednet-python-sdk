@@ -52,5 +52,6 @@ def test_client_init_with_auth_strategy_missing_base_url():
     # We patch os.environ to ensure no env var
     with patch.dict(os.environ, {}, clear=True):
         from imednet.constants import DEFAULT_BASE_URL
+
         client = Client(auth=auth)
         assert client.base_url.rstrip("/") == DEFAULT_BASE_URL.rstrip("/")
