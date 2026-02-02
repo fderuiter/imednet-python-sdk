@@ -259,9 +259,7 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
 
     def _get_context(
         self, is_async: bool
-    ) -> tuple[
-        RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]
-    ]:
+    ) -> tuple[RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]]:
         if is_async:
             return self._require_async_client(), AsyncPaginator
         return self._client, Paginator
