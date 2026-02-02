@@ -2,9 +2,8 @@
 
 from typing import Any, Awaitable, Dict, List, Optional, Union
 
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
 
@@ -23,7 +22,7 @@ class UsersEndpoint(ListGetEndpoint[User]):
 
     def _list_impl(
         self,
-        client: Client | AsyncClient,
+        client: RequestorProtocol | AsyncRequestorProtocol,
         paginator_cls: Union[type[Paginator], type[AsyncPaginator]],
         *,
         study_key: Optional[str] = None,
