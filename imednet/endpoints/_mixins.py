@@ -18,10 +18,9 @@ from typing import (
 )
 
 from imednet.constants import DEFAULT_PAGE_SIZE
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
@@ -178,7 +177,7 @@ class ListGetEndpointMixin(Generic[T]):
 
     def _list_impl(
         self,
-        client: Client | AsyncClient,
+        client: RequestorProtocol | AsyncRequestorProtocol,
         paginator_cls: type[Paginator] | type[AsyncPaginator],
         *,
         study_key: Optional[str] = None,
@@ -217,7 +216,7 @@ class ListGetEndpointMixin(Generic[T]):
 
     def _get_impl(
         self,
-        client: Client | AsyncClient,
+        client: RequestorProtocol | AsyncRequestorProtocol,
         paginator_cls: type[Paginator] | type[AsyncPaginator],
         *,
         study_key: Optional[str],
@@ -260,7 +259,9 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
 
     def _get_context(
         self, is_async: bool
-    ) -> tuple[Client | AsyncClient, type[Paginator] | type[AsyncPaginator]]:
+    ) -> tuple[
+        RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]
+    ]:
         if is_async:
             return self._require_async_client(), AsyncPaginator
         return self._client, Paginator

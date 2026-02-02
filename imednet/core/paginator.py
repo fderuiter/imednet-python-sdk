@@ -1,8 +1,10 @@
 """Pagination helpers for iterating through API responses."""
 
-from typing import Any, AsyncIterator, Dict, Iterator, Optional
+from typing import Any, AsyncIterator, Dict, Iterator, Optional, cast
 
 import httpx
+
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
 
 class BasePaginator:
@@ -10,7 +12,7 @@ class BasePaginator:
 
     def __init__(
         self,
-        client: Any,
+        client: RequestorProtocol | AsyncRequestorProtocol,
         path: str,
         params: Optional[Dict[str, Any]] = None,
         page_size: int = 100,
@@ -45,10 +47,11 @@ class BasePaginator:
         return page + 1
 
     def _iter_sync(self) -> Iterator[Any]:
+        client = cast(RequestorProtocol, self.client)
         page = 0
         while True:
             params = self._build_params(page)
-            response: httpx.Response = self.client.get(self.path, params=params)
+            response: httpx.Response = client.get(self.path, params=params)
             payload = response.json()
             for item in self._extract_items(payload):
                 yield item
@@ -58,10 +61,11 @@ class BasePaginator:
             page = next_page
 
     async def _iter_async(self) -> AsyncIterator[Any]:
+        client = cast(AsyncRequestorProtocol, self.client)
         page = 0
         while True:
             params = self._build_params(page)
-            response: httpx.Response = await self.client.get(self.path, params=params)
+            response: httpx.Response = await client.get(self.path, params=params)
             payload = response.json()
             for item in self._extract_items(payload):
                 yield item

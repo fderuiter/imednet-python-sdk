@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, Union
 
+from .auth.api_key import ApiKeyAuth
 from .config import Config, load_config
 from .core.async_client import AsyncClient
 from .core.client import Client
@@ -133,6 +134,8 @@ class ImednetSDK:
 
         self.ctx = Context()
 
+        auth = ApiKeyAuth(config.api_key or "", config.security_key or "")
+
         self._client = Client(
             api_key=config.api_key,
             security_key=config.security_key,
@@ -141,6 +144,7 @@ class ImednetSDK:
             retries=retries,
             backoff_factor=backoff_factor,
             retry_policy=retry_policy,
+            auth=auth,
         )
         self._async_client = (
             AsyncClient(
@@ -151,6 +155,7 @@ class ImednetSDK:
                 retries=retries,
                 backoff_factor=backoff_factor,
                 retry_policy=retry_policy,
+                auth=auth,
             )
             if enable_async
             else None
