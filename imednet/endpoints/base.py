@@ -5,9 +5,8 @@ Base endpoint mix-in for all API resource endpoints.
 from typing import Any, Dict, Optional
 from urllib.parse import quote
 
-from imednet.core.async_client import AsyncClient
-from imednet.core.client import Client
 from imednet.core.context import Context
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
 
 class BaseEndpoint:
@@ -23,9 +22,9 @@ class BaseEndpoint:
 
     def __init__(
         self,
-        client: Client,
+        client: RequestorProtocol,
         ctx: Context,
-        async_client: AsyncClient | None = None,
+        async_client: AsyncRequestorProtocol | None = None,
     ) -> None:
         self._client = client
         self._async_client = async_client
@@ -54,7 +53,7 @@ class BaseEndpoint:
                 parts.append(quote(text, safe=""))
         return "/" + "/".join(parts)
 
-    def _require_async_client(self) -> AsyncClient:
+    def _require_async_client(self) -> AsyncRequestorProtocol:
         """Return the configured async client or raise if missing."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")

@@ -5,12 +5,11 @@ from typing import Any, Awaitable, Optional, Type, Union, cast
 
 import httpx
 
+from imednet.auth.strategy import AuthStrategy
 from imednet.constants import (
     CONTENT_TYPE_JSON,
     HEADER_ACCEPT,
-    HEADER_API_KEY,
     HEADER_CONTENT_TYPE,
-    HEADER_SECURITY_KEY,
 )
 
 from ._requester import RequestExecutor
@@ -36,6 +35,7 @@ class HTTPClientBase(BaseClient):
         backoff_factor: float = 1.0,
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
+        auth: Optional[AuthStrategy] = None,
     ) -> None:
         super().__init__(
             api_key=api_key,
@@ -45,6 +45,7 @@ class HTTPClientBase(BaseClient):
             retries=retries,
             backoff_factor=backoff_factor,
             tracer=tracer,
+            auth=auth,
         )
         self._executor = RequestExecutor(
             lambda *a, **kw: self._client.request(*a, **kw),
@@ -55,15 +56,16 @@ class HTTPClientBase(BaseClient):
             retry_policy=retry_policy,
         )
 
-    def _create_client(self, api_key: str, security_key: str) -> httpx.Client | httpx.AsyncClient:
+    def _create_client(self, auth: AuthStrategy) -> httpx.Client | httpx.AsyncClient:
+        headers = {
+            HEADER_ACCEPT: CONTENT_TYPE_JSON,
+            HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
+        }
+        headers.update(auth.get_headers())
+
         return self.HTTPX_CLIENT_CLS(
             base_url=self.base_url,
-            headers={
-                HEADER_ACCEPT: CONTENT_TYPE_JSON,
-                HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
-                HEADER_API_KEY: api_key,
-                HEADER_SECURITY_KEY: security_key,
-            },
+            headers=headers,
             timeout=self.timeout,
         )
 
