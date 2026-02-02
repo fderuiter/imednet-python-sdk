@@ -1,6 +1,7 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, cast
 
 from imednet.core.paginator import Paginator
+from imednet.core.protocols import RequestorProtocol
 
 
 class DummyClient:
@@ -16,7 +17,7 @@ class DummyClient:
 
 def test_single_page_iteration() -> None:
     client = DummyClient([{"data": [1, 2]}])
-    paginator = Paginator(client, "/p")
+    paginator = Paginator(cast(RequestorProtocol, client), "/p")
     assert list(paginator) == [1, 2]
     assert client.calls[0]["params"]["page"] == 0
 
@@ -28,7 +29,7 @@ def test_multiple_page_iteration() -> None:
             {"data": [2], "pagination": {"totalPages": 2}},
         ]
     )
-    paginator = Paginator(client, "/p", params={"a": 1}, page_size=10)
+    paginator = Paginator(cast(RequestorProtocol, client), "/p", params={"a": 1}, page_size=10)
     items = list(paginator)
     assert items == [1, 2]
     assert client.calls[0]["params"] == {"a": 1, "page": 0, "size": 10}
