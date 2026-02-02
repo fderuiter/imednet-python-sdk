@@ -56,6 +56,23 @@ class ListGetEndpointMixin(Generic[T]):
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extract special parameters from filters.
+
+        Subclasses can override this to extract specific parameters from the
+        filters dictionary (e.g., 'includeInactive') and return them as a
+        dictionary of query parameters to be added to the request.
+        The extracted keys should be removed from the filters dictionary.
+
+        Args:
+            filters: The dictionary of filters passed to the list method.
+
+        Returns:
+            A dictionary of parameters to add to the request query string.
+        """
+        return {}
+
     def _parse_item(self, item: Any) -> T:
         """
         Parse a single item into the model type.
@@ -96,6 +113,9 @@ class ListGetEndpointMixin(Generic[T]):
     ) -> tuple[Optional[str], Any, Dict[str, Any], Dict[str, Any]]:
         # This method handles filter normalization and cache retrieval preparation
         filters = self._auto_filter(filters)  # type: ignore[attr-defined]
+
+        extracted_params = self._extract_special_params(filters)
+
         if study_key:
             filters["studyKey"] = study_key
 
@@ -123,6 +143,8 @@ class ListGetEndpointMixin(Generic[T]):
             params["filter"] = build_filter_string(filters)
         if extra_params:
             params.update(extra_params)
+        if extracted_params:
+            params.update(extracted_params)
 
         return study, cache, params, other_filters
 
