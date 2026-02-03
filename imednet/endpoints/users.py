@@ -1,9 +1,7 @@
 """Endpoint for managing users in a study."""
 
-from typing import Any, Awaitable, Dict, List, Optional, Union
+from typing import Any, Dict
 
-from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.endpoints._mixins import ListGetEndpoint
 from imednet.models.users import User
 
