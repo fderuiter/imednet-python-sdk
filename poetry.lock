@@ -1601,6 +1601,18 @@ re2 = ["google-re2 (>=1.1)"]
 tests = ["pytest (>=9)", "typing-extensions (>=4.15)"]
 
 [[package]]
+name = "pip"
+version = "26.0"
+description = "The PyPA recommended tool for installing Python packages."
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "pip-26.0-py3-none-any.whl", hash = "sha256:98436feffb9e31bc9339cf369fd55d3331b1580b6a6f1173bacacddcf9c34754"},
+    {file = "pip-26.0.tar.gz", hash = "sha256:3ce220a0a17915972fbf1ab451baae1521c4539e778b28127efa79b974aff0fa"},
+]
+
+[[package]]
 name = "platformdirs"
 version = "4.5.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
@@ -2793,4 +2805,4 @@ sqlalchemy = ["SQLAlchemy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "3f7910b623d64132666b1611c589229d5c3eea7e05b57e2323a3d45961b0b687"
+content-hash = "f566c8f13cf3eb0c80d496ed8ecf21f9cdd87e0ad0277fe67db4440f8ab6bb09"
