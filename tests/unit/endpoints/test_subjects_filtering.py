@@ -1,4 +1,3 @@
-from typing import List
 from unittest.mock import AsyncMock, Mock
 
 import pytest
