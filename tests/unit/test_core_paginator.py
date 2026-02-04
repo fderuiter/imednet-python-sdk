@@ -1,7 +1,8 @@
 from typing import Any, Dict, List
 
 import pytest
-from imednet.core.paginator import Paginator, AsyncPaginator
+
+from imednet.core.paginator import AsyncPaginator, Paginator
 
 
 class DummyClient:
@@ -70,7 +71,7 @@ async def test_async_paginator() -> None:
             {"data": [2], "pagination": {"totalPages": 2}},
         ]
     )
-    paginator = AsyncPaginator(client, "/p", params={"a": 1}, page_size=10) # type: ignore
+    paginator = AsyncPaginator(client, "/p", params={"a": 1}, page_size=10)  # type: ignore
     items = [item async for item in paginator]
     assert items == [1, 2]
     assert client.calls[0]["params"] == {"a": 1, "page": 0, "size": 10}
@@ -81,6 +82,6 @@ async def test_async_paginator() -> None:
 async def test_async_paginator_empty() -> None:
     """Test AsyncPaginator with empty results."""
     client = AsyncDummyClient([{"data": []}])
-    paginator = AsyncPaginator(client, "/p") # type: ignore
+    paginator = AsyncPaginator(client, "/p")  # type: ignore
     items = [item async for item in paginator]
     assert items == []
