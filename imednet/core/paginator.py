@@ -88,3 +88,45 @@ class AsyncPaginator(BasePaginator):
     async def __aiter__(self) -> AsyncIterator[Any]:
         async for item in self._iter_async():
             yield item
+
+
+class BaseJsonListPaginator:
+    """Paginator for APIs that return a single JSON list (no pagination)."""
+
+    def __init__(
+        self,
+        client: RequestorProtocol | AsyncRequestorProtocol,
+        path: str,
+        params: Optional[Dict[str, Any]] = None,
+        page_size: int = 100,
+        **kwargs: Any,
+    ) -> None:
+        self.client = client
+        self.path = path
+        self.params = params or {}
+        # page_size and kwargs are ignored but kept for signature compatibility
+
+
+class JsonListPaginator(BaseJsonListPaginator):
+    """Iterate synchronously over a JSON list response."""
+
+    def __iter__(self) -> Iterator[Any]:
+        client = cast(RequestorProtocol, self.client)
+        response = client.get(self.path, params=self.params)
+        items = response.json()
+        if not isinstance(items, list):
+            raise ValueError(f"Expected list response from {self.path}, got {type(items).__name__}")
+        yield from items
+
+
+class AsyncJsonListPaginator(BaseJsonListPaginator):
+    """Iterate asynchronously over a JSON list response."""
+
+    async def __aiter__(self) -> AsyncIterator[Any]:
+        client = cast(AsyncRequestorProtocol, self.client)
+        response = await client.get(self.path, params=self.params)
+        items = response.json()
+        if not isinstance(items, list):
+            raise ValueError(f"Expected list response from {self.path}, got {type(items).__name__}")
+        for item in items:
+            yield item

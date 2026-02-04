@@ -1,13 +1,14 @@
 """Endpoint for checking job status in a study."""
 
-from typing import Any, List
+from typing import Awaitable, List, cast
 
-from imednet.core.parsing import get_model_parser
+from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
+from imednet.endpoints._mixins import ListEndpointMixin, PathGetEndpointMixin
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job, JobStatus
 
 
-class JobsEndpoint(BaseEndpoint):
+class JobsEndpoint(BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMixin[JobStatus]):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
@@ -15,62 +16,33 @@ class JobsEndpoint(BaseEndpoint):
     and list all jobs for a study.
     """
 
-    PATH = "/api/v1/edc/studies"
-
-    def _get_job_path(self, study_key: str, batch_id: str) -> str:
-        return self._build_path(study_key, "jobs", batch_id)
-
-    def _get_jobs_list_path(self, study_key: str) -> str:
-        return self._build_path(study_key, "jobs")
-
-    def _parse_job_status(self, response_data: Any, batch_id: str, study_key: str) -> JobStatus:
-        if not response_data:
-            raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        parser = get_model_parser(JobStatus)
-        return parser(response_data)
+    PATH = "jobs"
+    MODEL = JobStatus
 
     def get(self, study_key: str, batch_id: str) -> JobStatus:
         """
         Get a specific job by batch ID.
 
-        This method performs a direct API request using the provided
-        ``batch_id``; it does not use caching or the ``refresh`` flag.
-
         Args:
             study_key: Study identifier
             batch_id: Batch ID of the job
 
         Returns:
             JobStatus object with current state and timestamps
-
-        Raises:
-            ValueError: If the job is not found
         """
-        endpoint = self._get_job_path(study_key, batch_id)
-        response = self._client.get(endpoint)
-        return self._parse_job_status(response.json(), batch_id, study_key)
+        return cast(
+            JobStatus,
+            self._get_impl_path(self._client, study_key=study_key, item_id=batch_id),
+        )
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
-        """
-        Asynchronously get a specific job by batch ID.
-
-        This is the async variant of :meth:`get`. Like the sync version,
-        it issues a direct request by ``batch_id`` without any caching.
-
-        Args:
-            study_key: Study identifier
-            batch_id: Batch ID of the job
-
-        Returns:
-            JobStatus object with current state and timestamps
-
-        Raises:
-            ValueError: If the job is not found
-        """
-        client = self._require_async_client()
-        endpoint = self._get_job_path(study_key, batch_id)
-        response = await client.get(endpoint)
-        return self._parse_job_status(response.json(), batch_id, study_key)
+        """Asynchronously get a specific job by batch ID."""
+        return await cast(
+            Awaitable[JobStatus],
+            self._get_impl_path(
+                self._require_async_client(), study_key=study_key, item_id=batch_id
+            ),
+        )
 
     def list(self, study_key: str) -> List[Job]:
         """
@@ -82,23 +54,16 @@ class JobsEndpoint(BaseEndpoint):
         Returns:
             List of Job objects
         """
-        endpoint = self._get_jobs_list_path(study_key)
-        response = self._client.get(endpoint)
-        parser = get_model_parser(Job)
-        return [parser(item) for item in response.json()]
+        return cast(
+            List[Job],
+            self._list_impl(self._client, JsonListPaginator, study_key=study_key),
+        )
 
     async def async_list(self, study_key: str) -> List[Job]:
-        """
-        Asynchronously list all jobs for a specific study.
-
-        Args:
-            study_key: Study identifier
-
-        Returns:
-            List of Job objects
-        """
-        client = self._require_async_client()
-        endpoint = self._get_jobs_list_path(study_key)
-        response = await client.get(endpoint)
-        parser = get_model_parser(Job)
-        return [parser(item) for item in response.json()]
+        """Asynchronously list all jobs for a specific study."""
+        return await cast(
+            Awaitable[List[Job]],
+            self._list_impl(
+                self._require_async_client(), AsyncJsonListPaginator, study_key=study_key
+            ),
+        )

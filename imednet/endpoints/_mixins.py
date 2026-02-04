@@ -44,12 +44,11 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
 T = TypeVar("T", bound=JsonModel)
 
 
-class ListGetEndpointMixin(Generic[T]):
-    """Mixin implementing ``list`` and ``get`` helpers."""
+class ListEndpointMixin(Generic[T]):
+    """Mixin implementing core logic for listing resources."""
 
     PATH: str
     MODEL: Type[T]
-    _id_param: str
     _cache_name: Optional[str] = None
     requires_study_key: bool = True
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
@@ -163,7 +162,7 @@ class ListGetEndpointMixin(Generic[T]):
             The parsing function to use
         """
         # Check if _parse_item has been overridden by a subclass
-        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:  # type: ignore[attr-defined]
+        if self._parse_item.__func__ is not ListEndpointMixin._parse_item:  # type: ignore[attr-defined]
             return self._parse_item
 
         # Use centralized parsing strategy
@@ -171,7 +170,7 @@ class ListGetEndpointMixin(Generic[T]):
 
     async def _execute_async_list(
         self,
-        paginator: AsyncPaginator,
+        paginator: Any,
         parse_func: Callable[[Any], T],
         study: Optional[str],
         has_filters: bool,
@@ -183,7 +182,7 @@ class ListGetEndpointMixin(Generic[T]):
 
     def _execute_sync_list(
         self,
-        paginator: Paginator,
+        paginator: Any,
         parse_func: Callable[[Any], T],
         study: Optional[str],
         has_filters: bool,
@@ -196,7 +195,7 @@ class ListGetEndpointMixin(Generic[T]):
     def _list_impl(
         self,
         client: RequestorProtocol | AsyncRequestorProtocol,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        paginator_cls: Any,
         *,
         study_key: Optional[str] = None,
         refresh: bool = False,
@@ -225,17 +224,21 @@ class ListGetEndpointMixin(Generic[T]):
 
         if hasattr(paginator, "__aiter__"):
             return self._execute_async_list(
-                cast(AsyncPaginator, paginator), parse_func, study, bool(other_filters), cache
+                paginator, parse_func, study, bool(other_filters), cache
             )
 
-        return self._execute_sync_list(
-            cast(Paginator, paginator), parse_func, study, bool(other_filters), cache
-        )
+        return self._execute_sync_list(paginator, parse_func, study, bool(other_filters), cache)
+
+
+class FilterGetEndpointMixin(ListEndpointMixin[T]):
+    """Mixin implementing ``get`` by filtering a list."""
+
+    _id_param: str
 
     def _get_impl(
         self,
         client: RequestorProtocol | AsyncRequestorProtocol,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        paginator_cls: Any,
         *,
         study_key: Optional[str],
         item_id: Any,
@@ -270,6 +273,76 @@ class ListGetEndpointMixin(Generic[T]):
                 raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
+
+
+class PathGetEndpointMixin(Generic[T]):
+    """Mixin implementing ``get`` via direct path ID."""
+
+    PATH: str
+    MODEL: Type[T]
+    requires_study_key: bool = True
+    _missing_study_exception: type[Exception] = ValueError
+
+    def _get_path_id(self, study: Optional[str], item_id: Any) -> str:
+        segments: Iterable[Any]
+        if self.requires_study_key:
+            if not study:
+                 raise ValueError("Study key must be provided or set in the context")
+            segments = (study, self.PATH, item_id)
+        else:
+            segments = (self.PATH, item_id)
+        return self._build_path(*segments)  # type: ignore[attr-defined]
+
+    def _resolve_parse_func(self) -> Callable[[Any], T]:
+        # Duplicated from ListEndpointMixin because this mixin might be used standalone
+        # Ideally we share this logic, but for now simple duplication to avoid complex inheritance
+        # Actually, if used with ListEndpointMixin, this method is already there.
+        # But if standalone, we need it.
+        # Let's assume it might be standalone.
+        if hasattr(self, "_parse_item") and self._parse_item.__func__ is not PathGetEndpointMixin._parse_item:  # type: ignore
+             return self._parse_item # type: ignore
+        return get_model_parser(self.MODEL)
+
+    def _parse_item(self, item: Any) -> T:
+        parse_func = get_model_parser(self.MODEL)
+        return parse_func(item)
+
+    def _get_impl_path(
+        self,
+        client: RequestorProtocol | AsyncRequestorProtocol,
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T | Awaitable[T]:
+
+        path = self._get_path_id(study_key, item_id)
+
+        response_or_awaitable = client.get(path)
+
+        if inspect.isawaitable(response_or_awaitable):
+             async def _await() -> T:
+                 response = await response_or_awaitable
+                 data = response.json()
+                 if not data:
+                     if self.requires_study_key:
+                         raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
+                     raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
+                 return self._resolve_parse_func()(data)
+             return _await()
+
+        # Sync
+        response = response_or_awaitable
+        data = response.json()
+        if not data:
+             if self.requires_study_key:
+                 raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
+             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
+        return self._resolve_parse_func()(data)
+
+
+class ListGetEndpointMixin(FilterGetEndpointMixin[T]):
+    """Mixin implementing ``list`` and ``get`` helpers (Backwards Compatibility)."""
+    pass
 
 
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
