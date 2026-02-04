@@ -16,6 +16,7 @@ from tenacity import (
     wait_exponential,
 )
 
+from ..utils.url import redact_url_query
 from .base_client import Tracer
 from .exceptions import (
     ApiError,
@@ -118,7 +119,9 @@ class RequestExecutor:
             reraise=True,
         )
 
-        with self._get_span_cm(method, url) as span:
+        safe_url = redact_url_query(url)
+
+        with self._get_span_cm(method, safe_url) as span:
             try:
                 start = time.monotonic()
                 response: httpx.Response = retryer(send_fn)
@@ -127,7 +130,7 @@ class RequestExecutor:
                     "http_request",
                     extra={
                         "method": method,
-                        "url": url,
+                        "url": safe_url,
                         "status_code": response.status_code,
                         "latency": latency,
                     },
@@ -155,7 +158,9 @@ class RequestExecutor:
             reraise=True,
         )
 
-        async with self._get_span_cm(method, url) as span:
+        safe_url = redact_url_query(url)
+
+        async with self._get_span_cm(method, safe_url) as span:
             try:
                 start = time.monotonic()
                 response: httpx.Response = await retryer(send_fn)
@@ -164,7 +169,7 @@ class RequestExecutor:
                     "http_request",
                     extra={
                         "method": method,
-                        "url": url,
+                        "url": safe_url,
                         "status_code": response.status_code,
                         "latency": latency,
                     },
