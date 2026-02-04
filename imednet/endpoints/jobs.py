@@ -1,13 +1,14 @@
 """Endpoint for checking job status in a study."""
 
-from typing import Any, List
+from typing import Any, Awaitable, List, Optional, cast
 
 from imednet.core.parsing import get_model_parser
+from imednet.endpoints._mixins import PathGetEndpointMixin
 from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job, JobStatus
 
 
-class JobsEndpoint(BaseEndpoint):
+class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
@@ -15,19 +16,11 @@ class JobsEndpoint(BaseEndpoint):
     and list all jobs for a study.
     """
 
-    PATH = "/api/v1/edc/studies"
+    PATH = "jobs"
+    MODEL = JobStatus
 
-    def _get_job_path(self, study_key: str, batch_id: str) -> str:
-        return self._build_path(study_key, "jobs", batch_id)
-
-    def _get_jobs_list_path(self, study_key: str) -> str:
-        return self._build_path(study_key, "jobs")
-
-    def _parse_job_status(self, response_data: Any, batch_id: str, study_key: str) -> JobStatus:
-        if not response_data:
-            raise ValueError(f"Job {batch_id} not found in study {study_key}")
-        parser = get_model_parser(JobStatus)
-        return parser(response_data)
+    def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
+        raise ValueError(f"Job {item_id} not found in study {study_key}")
 
     def get(self, study_key: str, batch_id: str) -> JobStatus:
         """
@@ -46,9 +39,10 @@ class JobsEndpoint(BaseEndpoint):
         Raises:
             ValueError: If the job is not found
         """
-        endpoint = self._get_job_path(study_key, batch_id)
-        response = self._client.get(endpoint)
-        return self._parse_job_status(response.json(), batch_id, study_key)
+        return cast(
+            JobStatus,
+            self._get_impl_path(self._client, study_key=study_key, item_id=batch_id),
+        )
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
         """
@@ -68,9 +62,10 @@ class JobsEndpoint(BaseEndpoint):
             ValueError: If the job is not found
         """
         client = self._require_async_client()
-        endpoint = self._get_job_path(study_key, batch_id)
-        response = await client.get(endpoint)
-        return self._parse_job_status(response.json(), batch_id, study_key)
+        return await cast(
+            Awaitable[JobStatus],
+            self._get_impl_path(client, study_key=study_key, item_id=batch_id),
+        )
 
     def list(self, study_key: str) -> List[Job]:
         """
@@ -82,7 +77,7 @@ class JobsEndpoint(BaseEndpoint):
         Returns:
             List of Job objects
         """
-        endpoint = self._get_jobs_list_path(study_key)
+        endpoint = self._build_path(study_key, self.PATH)
         response = self._client.get(endpoint)
         parser = get_model_parser(Job)
         return [parser(item) for item in response.json()]
@@ -98,7 +93,7 @@ class JobsEndpoint(BaseEndpoint):
             List of Job objects
         """
         client = self._require_async_client()
-        endpoint = self._get_jobs_list_path(study_key)
+        endpoint = self._build_path(study_key, self.PATH)
         response = await client.get(endpoint)
         parser = get_model_parser(Job)
         return [parser(item) for item in response.json()]
