@@ -24,7 +24,12 @@ def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
 
     sdk = MagicMock()
-    sdk.studies.list.return_value = ["study1"]
+    obj = MagicMock()
+    obj.study_key = "study1"
+    obj.study_name = "Study One"
+    obj.study_type = "Type"
+    obj.sponsor_key = "Sponsor"
+    sdk.studies.list.return_value = [obj]
     monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=sdk))
 
     result = runner.invoke(cli.app, ["studies", "list"])

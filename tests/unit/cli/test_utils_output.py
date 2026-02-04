@@ -114,3 +114,25 @@ def test_display_list_escaping(capfd: pytest.CaptureFixture[str]) -> None:
 
     # If escaped, the markup tags are preserved in the output text
     assert "[bold red]hack[/bold red]" in captured.out
+
+
+def test_display_list_with_fields(capfd: pytest.CaptureFixture[str]) -> None:
+    """display_list uses optimized path when fields are provided."""
+    obj = MagicMock()
+    # Mock attribute access for optimized path
+    obj.id = 123
+    obj.name = "Test Item"
+    # Ensure model_dump is NOT called
+    obj.model_dump = MagicMock()
+
+    display_list([obj], "items", fields=["id", "name"])
+    captured = capfd.readouterr()
+
+    assert "Found 1 items:" in captured.out
+    assert "Id" in captured.out
+    assert "Name" in captured.out
+    assert "123" in captured.out
+    assert "Test Item" in captured.out
+
+    # Verify optimization: model_dump should not be called
+    obj.model_dump.assert_not_called()
