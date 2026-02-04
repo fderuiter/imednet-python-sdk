@@ -42,7 +42,12 @@ def test_missing_env_vars(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) ->
 
 
 def test_studies_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.studies.list.return_value = ["study1"]
+    obj = MagicMock()
+    obj.study_key = "study1"
+    obj.study_name = "Study One"
+    obj.study_type = "Type"
+    obj.sponsor_key = "Sponsor"
+    sdk.studies.list.return_value = [obj]
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 0
     sdk.studies.list.assert_called_once_with()
@@ -72,7 +77,11 @@ def test_multiple_invocations_close_sdk(runner: CliRunner, sdk: MagicMock) -> No
 
 
 def test_sites_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.sites.list.return_value = ["site1"]
+    obj = MagicMock()
+    obj.site_id = "site1"
+    obj.site_name = "Site One"
+    obj.site_enrollment_status = "Active"
+    sdk.sites.list.return_value = [obj]
     result = runner.invoke(cli.app, ["sites", "list", "STUDY"])
     assert result.exit_code == 0
     sdk.sites.list.assert_called_once_with("STUDY")
@@ -487,7 +496,13 @@ def test_subject_data_calls_workflow(
 
 
 def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.queries.list.return_value = ["Q1"]
+    obj = MagicMock()
+    obj.description = "Q1"
+    obj.annotation_type = "Query"
+    obj.subject_key = "S1"
+    obj.variable = "V1"
+    obj.date_created = "2023"
+    sdk.queries.list.return_value = [obj]
     result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
     assert result.exit_code == 0
     sdk.queries.list.assert_called_once_with("STUDY")
@@ -503,7 +518,13 @@ def test_queries_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_variables_list_success(runner: CliRunner, sdk: MagicMock) -> None:
-    sdk.variables.list.return_value = ["V1"]
+    obj = MagicMock()
+    obj.variable_name = "V1"
+    obj.label = "Var 1"
+    obj.variable_type = "Text"
+    obj.form_name = "Form"
+    obj.disabled = False
+    sdk.variables.list.return_value = [obj]
     result = runner.invoke(cli.app, ["variables", "list", "STUDY"])
     assert result.exit_code == 0
     sdk.variables.list.assert_called_once_with("STUDY")

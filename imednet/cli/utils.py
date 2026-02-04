@@ -113,6 +113,28 @@ def display_list(
 
     print(f"Found {len(items)} {label}:")
 
+    # Bolt Optimization: If specific fields are requested, extract them directly
+    # from the objects instead of converting everything to a dictionary.
+    # This avoids O(N*M) overhead for large lists where M is total field count.
+    if fields:
+        table = Table(show_header=True, header_style="bold magenta")
+        for header in fields:
+            table.add_column(str(header).replace("_", " ").title())
+
+        for item in items:
+            row = []
+            for k in fields:
+                if isinstance(item, dict):
+                    val = item.get(k)
+                else:
+                    # Use getattr for Pydantic models or objects
+                    val = getattr(item, k, None)
+                row.append(_format_cell_value(val))
+            table.add_row(*row)
+
+        print(table)
+        return
+
     # Try to determine if we can display this as a table
     first = items[0]
     data_list: List[Dict[str, Any]] = []
@@ -130,7 +152,7 @@ def display_list(
 
     table = Table(show_header=True, header_style="bold magenta")
     all_keys = list(data_list[0].keys())
-    headers = fields if fields else all_keys
+    headers = all_keys
 
     for header in headers:
         table.add_column(str(header).replace("_", " ").title())
