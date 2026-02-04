@@ -351,6 +351,7 @@ class PathGetEndpointMixin(ParsingMixin[T]):
 
 class ListGetEndpointMixin(ListEndpointMixin[T], FilterGetEndpointMixin[T]):
     """Mixin implementing ``list`` and ``get`` helpers."""
+
     pass
 
 
