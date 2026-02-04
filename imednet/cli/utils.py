@@ -76,6 +76,11 @@ def fetching_status(name: str, study_key: str | None = None):
         yield
 
 
+def _truncate(text: str, length: int = 60) -> str:
+    """Truncate text to a maximum length with ellipsis."""
+    return f"{text[:length]}..." if len(text) > length else text
+
+
 def _format_cell_value(value: Any) -> str:
     """Format a single cell value for display."""
     if value is None:
@@ -88,13 +93,10 @@ def _format_cell_value(value: Any) -> str:
         if not value:
             return "[dim]-[/dim]"
         s = ", ".join(str(x) for x in value)
-        s = f"{s[:60]}..." if len(s) > 60 else s
-        return escape(s)
+        return escape(_truncate(s))
     if isinstance(value, (list, dict)):
         # Truncate very long list/dict representations
-        s = str(value)
-        s = f"{s[:60]}..." if len(s) > 60 else s
-        return escape(s)
+        return escape(_truncate(str(value)))
     return escape(str(value))
 
 
