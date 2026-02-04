@@ -299,7 +299,10 @@ class PathGetEndpointMixin(Generic[T]):
         # Actually, if used with ListEndpointMixin, this method is already there.
         # But if standalone, we need it.
         # Let's assume it might be standalone.
-        if hasattr(self, "_parse_item") and self._parse_item.__func__ is not PathGetEndpointMixin._parse_item:  # type: ignore
+        if (
+            hasattr(self, "_parse_item")
+            and self._parse_item.__func__ is not PathGetEndpointMixin._parse_item  # type: ignore
+        ):
             return self._parse_item  # type: ignore
         return get_model_parser(self.MODEL)
 
