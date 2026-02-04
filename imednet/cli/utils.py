@@ -81,7 +81,7 @@ def _truncate(text: str, length: int = 60) -> str:
     return f"{text[:length]}..." if len(text) > length else text
 
 
-def _format_cell_value(value: Any) -> str:
+def _format_cell_value(value: Any, key: str | None = None) -> str:
     """Format a single cell value for display."""
     if value is None:
         return "[dim]-[/dim]"
@@ -89,6 +89,43 @@ def _format_cell_value(value: Any) -> str:
         return "[green]Yes[/green]" if value else "[dim]No[/dim]"
     if isinstance(value, datetime):
         return value.strftime("%Y-%m-%d %H:%M")
+
+    str_val = str(value)
+
+    # Colorize status columns
+    if key and any(k in key.lower() for k in ("status", "state")):
+        lower_val = str_val.lower()
+        if lower_val in (
+            "active",
+            "success",
+            "ok",
+            "completed",
+            "open",
+            "approved",
+            "verified",
+        ):
+            return f"[green]{escape(str_val)}[/green]"
+        if lower_val in (
+            "pending",
+            "processing",
+            "suspended",
+            "hold",
+            "incomplete",
+            "initiated",
+        ):
+            return f"[yellow]{escape(str_val)}[/yellow]"
+        if lower_val in (
+            "inactive",
+            "closed",
+            "error",
+            "fail",
+            "failed",
+            "rejected",
+            "terminated",
+            "withdrawn",
+        ):
+            return f"[red]{escape(str_val)}[/red]"
+
     if isinstance(value, list) and all(isinstance(x, (str, int, float, bool)) for x in value):
         if not value:
             return "[dim]-[/dim]"
@@ -97,7 +134,7 @@ def _format_cell_value(value: Any) -> str:
     if isinstance(value, (list, dict)):
         # Truncate very long list/dict representations
         return escape(_truncate(str(value)))
-    return escape(str(value))
+    return escape(str_val)
 
 
 def display_list(
@@ -139,7 +176,7 @@ def display_list(
         row = []
         for k in headers:
             val = item.get(k)
-            row.append(_format_cell_value(val))
+            row.append(_format_cell_value(val, key=str(k)))
         table.add_row(*row)
 
     print(table)
