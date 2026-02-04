@@ -287,7 +287,7 @@ class PathGetEndpointMixin(Generic[T]):
         segments: Iterable[Any]
         if self.requires_study_key:
             if not study:
-                 raise ValueError("Study key must be provided or set in the context")
+                raise ValueError("Study key must be provided or set in the context")
             segments = (study, self.PATH, item_id)
         else:
             segments = (self.PATH, item_id)
@@ -300,7 +300,7 @@ class PathGetEndpointMixin(Generic[T]):
         # But if standalone, we need it.
         # Let's assume it might be standalone.
         if hasattr(self, "_parse_item") and self._parse_item.__func__ is not PathGetEndpointMixin._parse_item:  # type: ignore
-             return self._parse_item # type: ignore
+            return self._parse_item  # type: ignore
         return get_model_parser(self.MODEL)
 
     def _parse_item(self, item: Any) -> T:
@@ -320,28 +320,33 @@ class PathGetEndpointMixin(Generic[T]):
         response_or_awaitable = client.get(path)
 
         if inspect.isawaitable(response_or_awaitable):
-             async def _await() -> T:
-                 response = await response_or_awaitable
-                 data = response.json()
-                 if not data:
-                     if self.requires_study_key:
-                         raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
-                     raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
-                 return self._resolve_parse_func()(data)
-             return _await()
+
+            async def _await() -> T:
+                response = await response_or_awaitable
+                data = response.json()
+                if not data:
+                    if self.requires_study_key:
+                        raise ValueError(
+                            f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
+                        )
+                    raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
+                return self._resolve_parse_func()(data)
+
+            return _await()
 
         # Sync
         response = response_or_awaitable
         data = response.json()
         if not data:
-             if self.requires_study_key:
-                 raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
-             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
+            if self.requires_study_key:
+                raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
+            raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return self._resolve_parse_func()(data)
 
 
 class ListGetEndpointMixin(FilterGetEndpointMixin[T]):
     """Mixin implementing ``list`` and ``get`` helpers (Backwards Compatibility)."""
+
     pass
 
 
