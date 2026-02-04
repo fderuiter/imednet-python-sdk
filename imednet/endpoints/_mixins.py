@@ -44,27 +44,10 @@ if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
 T = TypeVar("T", bound=JsonModel)
 
 
-class ListGetEndpointMixin(Generic[T]):
-    """Mixin implementing ``list`` and ``get`` helpers."""
+class ParsingMixin(Generic[T]):
+    """Mixin implementing model parsing helpers."""
 
-    PATH: str
     MODEL: Type[T]
-    _id_param: str
-    _cache_name: Optional[str] = None
-    requires_study_key: bool = True
-    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
-    _pop_study_filter: bool = False
-    _missing_study_exception: type[Exception] = ValueError
-
-    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Hook to extract special parameters from filters.
-
-        Subclasses should override this method to handle parameters that need to be
-        passed separately (e.g. in extra_params) rather than in the filter string.
-        These parameters should be removed from the filters dictionary.
-        """
-        return {}
 
     def _parse_item(self, item: Any) -> T:
         """
@@ -81,6 +64,27 @@ class ListGetEndpointMixin(Generic[T]):
         """
         parse_func = get_model_parser(self.MODEL)
         return parse_func(item)
+
+
+class ListEndpointMixin(ParsingMixin[T]):
+    """Mixin implementing ``list`` helpers."""
+
+    PATH: str
+    _cache_name: Optional[str] = None
+    requires_study_key: bool = True
+    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
+    _pop_study_filter: bool = False
+    _missing_study_exception: type[Exception] = ValueError
+
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Hook to extract special parameters from filters.
+
+        Subclasses should override this method to handle parameters that need to be
+        passed separately (e.g. in extra_params) rather than in the filter string.
+        These parameters should be removed from the filters dictionary.
+        """
+        return {}
 
     def _update_local_cache(
         self,
@@ -163,7 +167,7 @@ class ListGetEndpointMixin(Generic[T]):
             The parsing function to use
         """
         # Check if _parse_item has been overridden by a subclass
-        if self._parse_item.__func__ is not ListGetEndpointMixin._parse_item:  # type: ignore[attr-defined]
+        if self._parse_item.__func__ is not ListEndpointMixin._parse_item:  # type: ignore[attr-defined]
             return self._parse_item
 
         # Use centralized parsing strategy
@@ -232,6 +236,27 @@ class ListGetEndpointMixin(Generic[T]):
             cast(Paginator, paginator), parse_func, study, bool(other_filters), cache
         )
 
+
+class FilterGetEndpointMixin(Generic[T]):
+    """Mixin implementing ``get`` via filtering."""
+
+    MODEL: Type[T]
+    _id_param: str
+    requires_study_key: bool = True
+
+    # This should be provided by ListEndpointMixin
+    def _list_impl(
+        self,
+        client: RequestorProtocol | AsyncRequestorProtocol,
+        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T] | Awaitable[List[T]]:
+        raise NotImplementedError
+
     def _get_impl(
         self,
         client: RequestorProtocol | AsyncRequestorProtocol,
@@ -270,6 +295,63 @@ class ListGetEndpointMixin(Generic[T]):
                 raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
+
+
+class PathGetEndpointMixin(ParsingMixin[T]):
+    """Mixin implementing ``get`` via direct path."""
+
+    PATH: str
+    requires_study_key: bool = True
+
+    def _build_path(self, *segments: Any) -> str:
+        # Expected from BaseEndpoint
+        raise NotImplementedError
+
+    def _get_path_for_id(self, study_key: Optional[str], item_id: Any) -> str:
+        segments: Iterable[Any]
+        if self.requires_study_key:
+            if not study_key:
+                raise ValueError("Study key must be provided")
+            segments = (study_key, self.PATH, item_id)
+        else:
+            segments = (self.PATH, item_id) if self.PATH else (item_id,)
+        return self._build_path(*segments)
+
+    def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
+        raise ValueError(f"{self.MODEL.__name__} not found")
+
+    def _get_impl_path(
+        self,
+        client: RequestorProtocol | AsyncRequestorProtocol,
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T | Awaitable[T]:
+        path = self._get_path_for_id(study_key, item_id)
+
+        # Helper to process response
+        def process_response(response: Any) -> T:
+            data = response.json()
+            if not data:
+                # Enforce strict validation for empty body
+                self._raise_not_found(study_key, item_id)
+            return self._parse_item(data)
+
+        if inspect.iscoroutinefunction(client.get):
+
+            async def _await() -> T:
+                response = await client.get(path)  # type: ignore
+                return process_response(response)
+
+            return _await()
+
+        response = client.get(path)  # type: ignore
+        return process_response(response)
+
+
+class ListGetEndpointMixin(ListEndpointMixin[T], FilterGetEndpointMixin[T]):
+    """Mixin implementing ``list`` and ``get`` helpers."""
+    pass
 
 
 class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
