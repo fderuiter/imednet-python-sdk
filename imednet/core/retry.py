@@ -27,5 +27,5 @@ class RetryPolicy(Protocol):
 class DefaultRetryPolicy:
     """Retry only when a network :class:`httpx.RequestError` occurred."""
 
-    def should_retry(self, state: RetryState) -> bool:  # pragma: no cover - trivial
+    def should_retry(self, state: RetryState) -> bool:
         return isinstance(state.exception, httpx.RequestError)

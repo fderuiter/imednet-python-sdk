@@ -34,7 +34,6 @@ from imednet.models.variables import Variable
 from imednet.sdk import ImednetSDK
 from imednet.testing.typed_values import canonical_type, value_for
 
-
 logger = logging.getLogger(__name__)
 
 
