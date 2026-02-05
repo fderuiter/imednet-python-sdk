@@ -59,7 +59,25 @@ graph TD
 ```bash
 # PyPI release
 pip install imednet
-# Dev version
+```
+
+### Optional Dependencies
+
+To use data export features (SQL, Parquet, Excel), install the relevant extras:
+
+```bash
+# Install all export dependencies
+pip install "imednet[pandas,sqlalchemy,pyarrow,excel]"
+
+# Or pick specific ones
+pip install "imednet[sqlalchemy]"  # For SQL export
+pip install "imednet[pyarrow]"     # For Parquet export
+pip install "imednet[excel]"       # For Excel export
+```
+
+### Development Version
+
+```bash
 pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 ```
 
