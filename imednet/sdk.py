@@ -17,8 +17,8 @@ from .config import Config, load_config
 from .core.async_client import AsyncClient
 from .core.client import Client
 from .core.context import Context
+from .core.endpoint.base import BaseEndpoint
 from .core.retry import RetryPolicy
-from .endpoints.base import BaseEndpoint
 from .endpoints.codings import CodingsEndpoint
 from .endpoints.forms import FormsEndpoint
 from .endpoints.intervals import IntervalsEndpoint
@@ -47,23 +47,8 @@ from .models.variables import Variable
 from .models.visits import Visit
 
 # Import workflow classes
-from .workflows.data_extraction import DataExtractionWorkflow
 from .workflows.job_poller import JobPoller
-from .workflows.query_management import QueryManagementWorkflow
-from .workflows.record_mapper import RecordMapper
-from .workflows.record_update import RecordUpdateWorkflow
-from .workflows.subject_data import SubjectDataWorkflow
-
-
-class Workflows:
-    """Namespace for accessing workflow classes."""
-
-    def __init__(self, sdk_instance: "ImednetSDK"):
-        self.data_extraction = DataExtractionWorkflow(sdk_instance)
-        self.query_management = QueryManagementWorkflow(sdk_instance)
-        self.record_mapper = RecordMapper(sdk_instance)
-        self.record_update = RecordUpdateWorkflow(sdk_instance)
-        self.subject_data = SubjectDataWorkflow(sdk_instance)
+from .workflows.namespace import Workflows
 
 
 # Mapping of attribute names to their endpoint classes

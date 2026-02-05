@@ -3,7 +3,7 @@
 from typing import Any, Dict, List, Optional, Union
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
-from imednet.endpoints._mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import ListGetEndpoint
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache, validate_record_data

@@ -1,6 +1,6 @@
 """Endpoint for managing intervals (visit definitions) in a study."""
 
-from imednet.endpoints._mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import ListGetEndpoint
 from imednet.models.intervals import Interval
 
 

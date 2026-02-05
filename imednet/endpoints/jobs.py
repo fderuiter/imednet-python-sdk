@@ -2,9 +2,9 @@
 
 from typing import Any, Awaitable, List, Optional, cast
 
+from imednet.core.endpoint.base import BaseEndpoint
+from imednet.core.endpoint.mixins import PathGetEndpointMixin
 from imednet.core.parsing import get_model_parser
-from imednet.endpoints._mixins import PathGetEndpointMixin
-from imednet.endpoints.base import BaseEndpoint
 from imednet.models.jobs import Job, JobStatus
 
 
