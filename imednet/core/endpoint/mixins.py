@@ -21,9 +21,10 @@ from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
-from imednet.endpoints.base import BaseEndpoint
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
+
+from .base import BaseEndpoint
 
 if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
 

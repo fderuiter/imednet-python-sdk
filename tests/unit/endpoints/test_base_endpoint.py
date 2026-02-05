@@ -4,7 +4,7 @@ import pytest
 
 from imednet.core.client import Client
 from imednet.core.context import Context
-from imednet.endpoints.base import BaseEndpoint
+from imednet.core.endpoint.base import BaseEndpoint
 
 
 class MockEndpointImpl(BaseEndpoint):

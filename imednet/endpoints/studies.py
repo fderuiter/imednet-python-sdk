@@ -1,6 +1,6 @@
 """Endpoint for managing studies in the iMedNet system."""
 
-from imednet.endpoints._mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import ListGetEndpoint
 from imednet.models.studies import Study
 
 

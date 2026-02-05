@@ -1,6 +1,6 @@
 """Endpoint for managing forms (eCRFs) in a study."""
 
-from imednet.endpoints._mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import ListGetEndpoint
 from imednet.models.forms import Form
 
 

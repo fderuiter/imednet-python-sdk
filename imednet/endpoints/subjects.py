@@ -2,7 +2,7 @@
 
 from typing import List
 
-from imednet.endpoints._mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import ListGetEndpoint
 from imednet.models.subjects import Subject
 
 
