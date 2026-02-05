@@ -185,7 +185,7 @@ class RequestExecutor:
 
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response = retryer(send_fn)
+                response: httpx.Response = retryer(send_fn)
                 monitor.on_success(response)
             except RetryError as e:
                 monitor.on_retry_error(e)
@@ -208,7 +208,7 @@ class RequestExecutor:
 
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response = await retryer(send_fn)
+                response: httpx.Response = await retryer(send_fn)
                 monitor.on_success(response)
             except RetryError as e:
                 monitor.on_retry_error(e)
