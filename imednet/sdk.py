@@ -50,7 +50,6 @@ from .models.visits import Visit
 from .workflows.job_poller import JobPoller
 from .workflows.namespace import Workflows
 
-
 # Mapping of attribute names to their endpoint classes
 _ENDPOINT_REGISTRY: dict[str, type[BaseEndpoint]] = {
     "codings": CodingsEndpoint,
