@@ -13,6 +13,7 @@ class RetryState:
     attempt_number: int
     exception: Optional[BaseException] = None
     result: Optional[Any] = None
+    method: Optional[str] = None
 
 
 @runtime_checkable
