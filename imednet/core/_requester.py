@@ -43,6 +43,71 @@ STATUS_TO_ERROR: dict[int, type[ApiError]] = {
 }
 
 
+class RequestMonitor:
+    """Helper to handle request monitoring (tracing, timing, logging)."""
+
+    def __init__(self, tracer: Optional[Tracer], method: str, url: str) -> None:
+        self.tracer = tracer
+        self.method = method
+        self.safe_url = redact_url_query(url)
+        self.start_time: float = 0.0
+        self.span: Any = None
+        self._cm: Any = None
+
+    def _create_cm(self) -> Any:
+        if self.tracer:
+            return self.tracer.start_as_current_span(
+                "http_request",
+                attributes={"endpoint": self.safe_url, "method": self.method},
+            )
+        return nullcontext()
+
+    def __enter__(self) -> RequestMonitor:
+        self._cm = self._create_cm()
+        self.span = self._cm.__enter__()
+        self.start_time = time.monotonic()
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        if self._cm:
+            self._cm.__exit__(exc_type, exc_val, exc_tb)
+
+    async def __aenter__(self) -> RequestMonitor:
+        self._cm = self._create_cm()
+        # Handle async context managers if the tracer supports them
+        if hasattr(self._cm, "__aenter__"):
+            self.span = await self._cm.__aenter__()
+        else:
+            self.span = self._cm.__enter__()
+        self.start_time = time.monotonic()
+        return self
+
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        if self._cm:
+            if hasattr(self._cm, "__aexit__"):
+                await self._cm.__aexit__(exc_type, exc_val, exc_tb)
+            else:
+                self._cm.__exit__(exc_type, exc_val, exc_tb)
+
+    def on_success(self, response: httpx.Response) -> None:
+        latency = time.monotonic() - self.start_time
+        logger.info(
+            "http_request",
+            extra={
+                "method": self.method,
+                "url": self.safe_url,
+                "status_code": response.status_code,
+                "latency": latency,
+            },
+        )
+        if self.span:
+            self.span.set_attribute("status_code", response.status_code)
+
+    def on_retry_error(self, e: RetryError) -> None:
+        logger.error("Request failed after retries: %s", e)
+        raise RequestError("Network request failed after retries") from e
+
+
 @dataclass
 class RequestExecutor:
     """Execute HTTP requests with retry and error handling."""
@@ -58,22 +123,28 @@ class RequestExecutor:
         if self.retry_policy is None:
             self.retry_policy = DefaultRetryPolicy()
 
-    def _should_retry(self, retry_state: RetryCallState) -> bool:
-        state = RetryState(
-            attempt_number=retry_state.attempt_number,
-            exception=(
-                retry_state.outcome.exception()
-                if retry_state.outcome and retry_state.outcome.failed
-                else None
-            ),
-            result=(
-                retry_state.outcome.result()
-                if retry_state.outcome and not retry_state.outcome.failed
-                else None
-            ),
-        )
+    def _get_retry_predicate(self, method: str) -> Callable[[RetryCallState], bool]:
+        """Return a retry predicate that includes the HTTP method in state."""
         policy = self.retry_policy or DefaultRetryPolicy()
-        return policy.should_retry(state)
+
+        def should_retry(retry_state: RetryCallState) -> bool:
+            state = RetryState(
+                attempt_number=retry_state.attempt_number,
+                exception=(
+                    retry_state.outcome.exception()
+                    if retry_state.outcome and retry_state.outcome.failed
+                    else None
+                ),
+                result=(
+                    retry_state.outcome.result()
+                    if retry_state.outcome and not retry_state.outcome.failed
+                    else None
+                ),
+                method=method,
+            )
+            return policy.should_retry(state)
+
+        return should_retry
 
     def __call__(
         self, method: str, url: str, **kwargs: Any
@@ -98,13 +169,6 @@ class RequestExecutor:
             raise ApiError(body)
         return response
 
-    def _get_span_cm(self, method: str, url: str):
-        if self.tracer:
-            return self.tracer.start_as_current_span(
-                "http_request", attributes={"endpoint": url, "method": method}
-            )
-        return nullcontext()
-
     def _execute_with_retry_sync(
         self,
         send_fn: Callable[[], httpx.Response],
@@ -115,32 +179,16 @@ class RequestExecutor:
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self._should_retry,
+            retry=self._get_retry_predicate(method),
             reraise=True,
         )
 
-        safe_url = redact_url_query(url)
-
-        with self._get_span_cm(method, safe_url) as span:
+        with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                start = time.monotonic()
-                response: httpx.Response = retryer(send_fn)
-                latency = time.monotonic() - start
-                logger.info(
-                    "http_request",
-                    extra={
-                        "method": method,
-                        "url": safe_url,
-                        "status_code": response.status_code,
-                        "latency": latency,
-                    },
-                )
+                response = retryer(send_fn)
+                monitor.on_success(response)
             except RetryError as e:
-                logger.error("Request failed after retries: %s", e)
-                raise RequestError("Network request failed after retries")
-
-            if span is not None:
-                span.set_attribute("status_code", response.status_code)
+                monitor.on_retry_error(e)
 
         return self._handle_response(response)
 
@@ -154,32 +202,16 @@ class RequestExecutor:
         retryer = AsyncRetrying(
             stop=stop_after_attempt(self.retries),
             wait=wait_exponential(multiplier=self.backoff_factor),
-            retry=self._should_retry,
+            retry=self._get_retry_predicate(method),
             reraise=True,
         )
 
-        safe_url = redact_url_query(url)
-
-        async with self._get_span_cm(method, safe_url) as span:
+        async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                start = time.monotonic()
-                response: httpx.Response = await retryer(send_fn)
-                latency = time.monotonic() - start
-                logger.info(
-                    "http_request",
-                    extra={
-                        "method": method,
-                        "url": safe_url,
-                        "status_code": response.status_code,
-                        "latency": latency,
-                    },
-                )
+                response = await retryer(send_fn)
+                monitor.on_success(response)
             except RetryError as e:
-                logger.error("Request failed after retries: %s", e)
-                raise RequestError("Network request failed after retries")
-
-            if span is not None:
-                span.set_attribute("status_code", response.status_code)
+                monitor.on_retry_error(e)
 
         return self._handle_response(response)
 
