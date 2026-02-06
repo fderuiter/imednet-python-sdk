@@ -16,6 +16,34 @@ from ..sdk import ImednetSDK
 # Shared CLI argument for specifying a study key
 STUDY_KEY_ARG = typer.Argument(..., help="The key identifying the study.")
 
+# Map status strings to Rich colors for O(1) lookup
+_STATUS_COLOR_MAP = {
+    # Green (Success/Active)
+    "active": "green",
+    "success": "green",
+    "ok": "green",
+    "completed": "green",
+    "open": "green",
+    "approved": "green",
+    "verified": "green",
+    # Yellow (Pending/Processing)
+    "pending": "yellow",
+    "processing": "yellow",
+    "suspended": "yellow",
+    "hold": "yellow",
+    "incomplete": "yellow",
+    "initiated": "yellow",
+    # Red (Failure/Inactive)
+    "inactive": "red",
+    "closed": "red",
+    "error": "red",
+    "fail": "red",
+    "failed": "red",
+    "rejected": "red",
+    "terminated": "red",
+    "withdrawn": "red",
+}
+
 console = Console()
 
 
@@ -95,36 +123,8 @@ def _format_cell_value(value: Any, key: str | None = None) -> str:
     # Colorize status columns
     if key and any(k in key.lower() for k in ("status", "state")):
         lower_val = str_val.lower()
-        if lower_val in (
-            "active",
-            "success",
-            "ok",
-            "completed",
-            "open",
-            "approved",
-            "verified",
-        ):
-            return f"[green]{escape(str_val)}[/green]"
-        if lower_val in (
-            "pending",
-            "processing",
-            "suspended",
-            "hold",
-            "incomplete",
-            "initiated",
-        ):
-            return f"[yellow]{escape(str_val)}[/yellow]"
-        if lower_val in (
-            "inactive",
-            "closed",
-            "error",
-            "fail",
-            "failed",
-            "rejected",
-            "terminated",
-            "withdrawn",
-        ):
-            return f"[red]{escape(str_val)}[/red]"
+        if color := _STATUS_COLOR_MAP.get(lower_val):
+            return f"[{color}]{escape(str_val)}[/{color}]"
 
     if isinstance(value, list) and all(isinstance(x, (str, int, float, bool)) for x in value):
         if not value:
