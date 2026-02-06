@@ -92,3 +92,19 @@ def test_parse_datetime_parses_strings() -> None:
     iso = "2024-01-01T00:00:00Z"
     parsed = validators.parse_datetime(iso)
     assert parsed == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+
+
+def test_parse_int_handle_floats() -> None:
+    """Ensure parse_int_or_default handles float values and float strings robustly."""
+    # Float values should be truncated to int
+    assert validators.parse_int_or_default(5.5) == 5
+    assert validators.parse_int_or_default(5.0) == 5
+
+    # Float strings should be parsed and truncated to int (currently fails for strings)
+    assert validators.parse_int_or_default("5.0") == 5
+    assert validators.parse_int_or_default("5.5") == 5
+    assert validators.parse_int_or_default("-5.5") == -5
+
+    # Edge case: "inf" should fallback to default, not crash with OverflowError
+    assert validators.parse_int_or_default("inf") == 0
+    assert validators.parse_int_or_default("-inf") == 0
