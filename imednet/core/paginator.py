@@ -36,8 +36,11 @@ class BasePaginator:
         query[self.size_param] = self.page_size
         return query
 
-    def _extract_items(self, payload: Dict[str, Any]) -> list[Any]:
-        return payload.get(self.data_key, []) or []
+    def _extract_items(self, payload: Dict[str, Any]) -> list[Dict[str, Any]]:
+        items = payload.get(self.data_key, [])
+        if not items:
+            return []
+        return cast(list[Dict[str, Any]], items)
 
     def _next_page(self, payload: Dict[str, Any], page: int) -> Optional[int]:
         pagination = payload.get("pagination", {})
@@ -46,7 +49,7 @@ class BasePaginator:
             return None
         return page + 1
 
-    def _iter_sync(self) -> Iterator[Any]:
+    def _iter_sync(self) -> Iterator[Dict[str, Any]]:
         client = cast(RequestorProtocol, self.client)
         page = 0
         while True:
@@ -60,7 +63,7 @@ class BasePaginator:
                 break
             page = next_page
 
-    async def _iter_async(self) -> AsyncIterator[Any]:
+    async def _iter_async(self) -> AsyncIterator[Dict[str, Any]]:
         client = cast(AsyncRequestorProtocol, self.client)
         page = 0
         while True:
@@ -78,13 +81,13 @@ class BasePaginator:
 class Paginator(BasePaginator):
     """Iterate synchronously over paginated API results."""
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[Dict[str, Any]]:
         yield from self._iter_sync()
 
 
 class AsyncPaginator(BasePaginator):
     """Asynchronous variant of :class:`Paginator`."""
 
-    async def __aiter__(self) -> AsyncIterator[Any]:
+    async def __aiter__(self) -> AsyncIterator[Dict[str, Any]]:
         async for item in self._iter_async():
             yield item
