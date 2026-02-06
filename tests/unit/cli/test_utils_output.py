@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from imednet.cli.utils import display_list, fetching_status
+from imednet.cli.utils import _format_cell_value, display_list, fetching_status
 
 
 def test_fetching_status_records() -> None:
@@ -136,3 +136,32 @@ def test_display_list_with_fields(capfd: pytest.CaptureFixture[str]) -> None:
 
     # Verify optimization: model_dump should not be called
     obj.model_dump.assert_not_called()
+
+
+def test_format_cell_value_status_colors() -> None:
+    """Test that status columns are correctly colorized."""
+    # Green statuses
+    assert _format_cell_value("Active", key="status") == "[green]Active[/green]"
+    assert _format_cell_value("Success", key="state") == "[green]Success[/green]"
+    assert _format_cell_value("OK", key="status") == "[green]OK[/green]"
+
+    # Yellow statuses
+    assert _format_cell_value("Pending", key="status") == "[yellow]Pending[/yellow]"
+    assert _format_cell_value("Processing", key="state") == "[yellow]Processing[/yellow]"
+
+    # Red statuses
+    assert _format_cell_value("Inactive", key="status") == "[red]Inactive[/red]"
+    assert _format_cell_value("Error", key="state") == "[red]Error[/red]"
+    assert _format_cell_value("Failed", key="status") == "[red]Failed[/red]"
+
+
+def test_format_cell_value_non_status_columns() -> None:
+    """Test that non-status columns are not colorized based on value."""
+    # Even if value matches a status keyword, if key is not status/state, no color
+    assert _format_cell_value("Active", key="name") == "Active"
+    assert _format_cell_value("Pending", key="description") == "Pending"
+
+
+def test_format_cell_value_unknown_status() -> None:
+    """Test that unknown statuses are not colorized."""
+    assert _format_cell_value("UnknownStatus", key="status") == "UnknownStatus"
