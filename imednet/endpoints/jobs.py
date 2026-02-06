@@ -1,10 +1,12 @@
 """Endpoint for checking job status in a study."""
 
+import inspect
 from typing import Any, Awaitable, List, Optional, cast
 
 from imednet.core.endpoint.base import BaseEndpoint
 from imednet.core.endpoint.mixins import PathGetEndpointMixin
 from imednet.core.parsing import get_model_parser
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.jobs import Job, JobStatus
 
 
@@ -67,6 +69,27 @@ class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
             self._get_impl_path(client, study_key=study_key, item_id=batch_id),
         )
 
+    def _execute_list_request(
+        self,
+        client: RequestorProtocol | AsyncRequestorProtocol,
+        study_key: str,
+    ) -> List[Job] | Awaitable[List[Job]]:
+        endpoint = self._build_path(study_key, self.PATH)
+        parser = get_model_parser(Job)
+
+        if inspect.iscoroutinefunction(client.get):
+
+            async def _await() -> List[Job]:
+                c = cast(AsyncRequestorProtocol, client)
+                response = await c.get(endpoint)
+                return [parser(item) for item in response.json()]
+
+            return _await()
+
+        c = cast(RequestorProtocol, client)
+        response = c.get(endpoint)
+        return [parser(item) for item in response.json()]
+
     def list(self, study_key: str) -> List[Job]:
         """
         List all jobs for a specific study.
@@ -77,10 +100,7 @@ class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
         Returns:
             List of Job objects
         """
-        endpoint = self._build_path(study_key, self.PATH)
-        response = self._client.get(endpoint)
-        parser = get_model_parser(Job)
-        return [parser(item) for item in response.json()]
+        return cast(List[Job], self._execute_list_request(self._client, study_key))
 
     async def async_list(self, study_key: str) -> List[Job]:
         """
@@ -93,7 +113,4 @@ class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
             List of Job objects
         """
         client = self._require_async_client()
-        endpoint = self._build_path(study_key, self.PATH)
-        response = await client.get(endpoint)
-        parser = get_model_parser(Job)
-        return [parser(item) for item in response.json()]
+        return await cast(Awaitable[List[Job]], self._execute_list_request(client, study_key))
