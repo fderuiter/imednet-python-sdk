@@ -1,16 +1,16 @@
 """Endpoint for checking job status in a study."""
 
-import inspect
 from typing import Any, Awaitable, List, Optional, cast
 
 from imednet.core.endpoint.base import BaseEndpoint
-from imednet.core.endpoint.mixins import PathGetEndpointMixin
-from imednet.core.parsing import get_model_parser
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
-from imednet.models.jobs import Job, JobStatus
+from imednet.core.endpoint.mixins import ListEndpointMixin, PathGetEndpointMixin
+from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
+from imednet.models.jobs import JobStatus
 
 
-class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
+class JobsEndpoint(
+    BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMixin[JobStatus]
+):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
@@ -20,6 +20,8 @@ class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
 
     PATH = "jobs"
     MODEL = JobStatus
+    # Jobs endpoint uses direct listing without query param filtering for studyKey
+    _pop_study_filter = True
 
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise ValueError(f"Job {item_id} not found in study {study_key}")
@@ -69,28 +71,7 @@ class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
             self._get_impl_path(client, study_key=study_key, item_id=batch_id),
         )
 
-    def _execute_list_request(
-        self,
-        client: RequestorProtocol | AsyncRequestorProtocol,
-        study_key: str,
-    ) -> List[Job] | Awaitable[List[Job]]:
-        endpoint = self._build_path(study_key, self.PATH)
-        parser = get_model_parser(Job)
-
-        if inspect.iscoroutinefunction(client.get):
-
-            async def _await() -> List[Job]:
-                c = cast(AsyncRequestorProtocol, client)
-                response = await c.get(endpoint)
-                return [parser(item) for item in response.json()]
-
-            return _await()
-
-        c = cast(RequestorProtocol, client)
-        response = c.get(endpoint)
-        return [parser(item) for item in response.json()]
-
-    def list(self, study_key: str) -> List[Job]:
+    def list(self, study_key: str) -> List[JobStatus]:
         """
         List all jobs for a specific study.
 
@@ -98,11 +79,18 @@ class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
             study_key: Study identifier
 
         Returns:
-            List of Job objects
+            List of JobStatus objects
         """
-        return cast(List[Job], self._execute_list_request(self._client, study_key))
+        return cast(
+            List[JobStatus],
+            self._list_impl(
+                self._client,
+                JsonListPaginator,
+                study_key=study_key,
+            ),
+        )
 
-    async def async_list(self, study_key: str) -> List[Job]:
+    async def async_list(self, study_key: str) -> List[JobStatus]:
         """
         Asynchronously list all jobs for a specific study.
 
@@ -110,7 +98,14 @@ class JobsEndpoint(BaseEndpoint, PathGetEndpointMixin[JobStatus]):
             study_key: Study identifier
 
         Returns:
-            List of Job objects
+            List of JobStatus objects
         """
         client = self._require_async_client()
-        return await cast(Awaitable[List[Job]], self._execute_list_request(client, study_key))
+        return await cast(
+            Awaitable[List[JobStatus]],
+            self._list_impl(
+                client,
+                AsyncJsonListPaginator,
+                study_key=study_key,
+            ),
+        )

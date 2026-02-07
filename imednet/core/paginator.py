@@ -88,3 +88,42 @@ class AsyncPaginator(BasePaginator):
     async def __aiter__(self) -> AsyncIterator[Any]:
         async for item in self._iter_async():
             yield item
+
+
+class JsonListPaginator(Paginator):
+    """
+    Iterate over API results that return a raw JSON list.
+
+    This paginator is used for endpoints that do not return pagination metadata
+    but instead return a direct list of items (e.g., `[{}, {}]`).
+    It iterates over the list directly and does not support page-based navigation.
+    """
+
+    def _iter_sync(self) -> Iterator[Any]:
+        client = cast(RequestorProtocol, self.client)
+        # Note: We ignore page_size as this is a non-paginated list endpoint
+        response: httpx.Response = client.get(self.path, params=self.params)
+        payload = response.json()
+        if isinstance(payload, list):
+            for item in payload:
+                yield item
+        else:
+            # Handle case where API might return a single object or error wrapped in non-list
+            # For now, let's assume strict list return or empty list.
+            if payload:
+                yield payload
+
+
+class AsyncJsonListPaginator(AsyncPaginator):
+    """Asynchronous variant of :class:`JsonListPaginator`."""
+
+    async def _iter_async(self) -> AsyncIterator[Any]:
+        client = cast(AsyncRequestorProtocol, self.client)
+        response: httpx.Response = await client.get(self.path, params=self.params)
+        payload = response.json()
+        if isinstance(payload, list):
+            for item in payload:
+                yield item
+        else:
+            if payload:
+                yield payload
