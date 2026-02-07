@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 import imednet.endpoints.jobs as jobs
 from imednet.models.jobs import Job, JobStatus
@@ -32,10 +33,12 @@ def test_get_not_found(dummy_client, context, response_factory):
 
 def test_list_success(dummy_client, context, response_factory):
     ep = jobs.JobsEndpoint(dummy_client, context)
-    dummy_client.get.return_value = response_factory([
-        {"jobId": "1", "batchId": "B1", "state": "COMPLETED"},
-        {"jobId": "2", "batchId": "B2", "state": "PROCESSING"}
-    ])
+    dummy_client.get.return_value = response_factory(
+        [
+            {"jobId": "1", "batchId": "B1", "state": "COMPLETED"},
+            {"jobId": "2", "batchId": "B2", "state": "PROCESSING"},
+        ]
+    )
 
     result = ep.list("S1")
 
@@ -50,9 +53,9 @@ def test_list_success(dummy_client, context, response_factory):
 @pytest.mark.asyncio
 async def test_async_list_success(dummy_client_async, context, response_factory):
     ep = jobs.JobsEndpoint(dummy_client_async, context, async_client=dummy_client_async)
-    dummy_client_async.get.return_value = response_factory([
-        {"jobId": "1", "batchId": "B1", "state": "COMPLETED"}
-    ])
+    dummy_client_async.get.return_value = response_factory(
+        [{"jobId": "1", "batchId": "B1", "state": "COMPLETED"}]
+    )
 
     result = await ep.async_list("S1")
 

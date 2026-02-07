@@ -8,9 +8,7 @@ from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 from imednet.models.jobs import JobStatus
 
 
-class JobsEndpoint(
-    BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMixin[JobStatus]
-):
+class JobsEndpoint(BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMixin[JobStatus]):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
