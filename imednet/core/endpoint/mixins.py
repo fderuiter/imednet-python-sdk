@@ -67,13 +67,53 @@ class ParsingMixin(Generic[T]):
         return parse_func(item)
 
 
-class ListEndpointMixin(ParsingMixin[T]):
-    """Mixin implementing ``list`` helpers."""
+class CacheMixin:
+    """Mixin for handling endpoint caching."""
 
-    PATH: str
     _cache_name: Optional[str] = None
+    requires_study_key: bool = True  # Default, can be overridden
+
+    def _get_local_cache(self) -> Any:
+        if self._cache_name:
+            return getattr(self, self._cache_name, None)
+        return None
+
+    def _update_local_cache(
+        self,
+        result: Any,
+        study: str | None,
+        has_filters: bool,
+        cache: Any,
+    ) -> None:
+        if has_filters:
+            return
+
+        if self.requires_study_key and cache is not None:
+            cache[study] = result
+        elif not self.requires_study_key and self._cache_name:
+            setattr(self, self._cache_name, result)
+
+    def _check_cache_hit(
+        self,
+        study: Optional[str],
+        refresh: bool,
+        other_filters: Dict[str, Any],
+        cache: Any,
+    ) -> Optional[Any]:
+        if self.requires_study_key:
+            # Strict check usually done before, but here we just check cache
+            if cache is not None and not other_filters and not refresh and study in cache:
+                return cache[study]
+        else:
+            if cache is not None and not other_filters and not refresh:
+                return cache
+        return None
+
+
+class ParamMixin:
+    """Mixin for handling endpoint parameters and filters."""
+
     requires_study_key: bool = True
-    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
@@ -87,29 +127,14 @@ class ListEndpointMixin(ParsingMixin[T]):
         """
         return {}
 
-    def _update_local_cache(
-        self,
-        result: List[T],
-        study: str | None,
-        has_filters: bool,
-        cache: Any,
-    ) -> None:
-        if has_filters:
-            return
-
-        if self.requires_study_key and cache is not None:
-            cache[study] = result
-        elif not self.requires_study_key and self._cache_name:
-            setattr(self, self._cache_name, result)
-
-    def _prepare_list_params(
+    def _resolve_params(
         self,
         study_key: Optional[str],
-        refresh: bool,
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
-    ) -> tuple[Optional[str], Any, Dict[str, Any], Dict[str, Any]]:
+    ) -> tuple[Optional[str], Dict[str, Any], Dict[str, Any]]:
         # This method handles filter normalization and cache retrieval preparation
+        # Assuming _auto_filter is available via self (BaseEndpoint)
         filters = self._auto_filter(filters)  # type: ignore[attr-defined]
 
         # Extract special parameters using the hook
@@ -138,7 +163,6 @@ class ListEndpointMixin(ParsingMixin[T]):
         else:
             study = filters.get("studyKey")
 
-        cache = getattr(self, self._cache_name, None) if self._cache_name else None
         other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
 
         params: Dict[str, Any] = {}
@@ -147,7 +171,14 @@ class ListEndpointMixin(ParsingMixin[T]):
         if extra_params:
             params.update(extra_params)
 
-        return study, cache, params, other_filters
+        return study, params, other_filters
+
+
+class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T]):
+    """Mixin implementing ``list`` helpers."""
+
+    PATH: str
+    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
 
     def _get_path(self, study: Optional[str]) -> str:
         segments: Iterable[Any]
@@ -209,20 +240,14 @@ class ListEndpointMixin(ParsingMixin[T]):
         **filters: Any,
     ) -> List[T] | Awaitable[List[T]]:
 
-        study, cache, params, other_filters = self._prepare_list_params(
-            study_key, refresh, extra_params, filters
+        study, params, other_filters = self._resolve_params(
+            study_key, extra_params, filters
         )
 
-        # Cache Hit Check
-        if self.requires_study_key:
-            if not study:
-                # Should have been caught in _prepare_list_params but strict typing requires check
-                raise ValueError("Study key must be provided or set in the context")
-            if cache is not None and not other_filters and not refresh and study in cache:
-                return cast(List[T], cache[study])
-        else:
-            if cache is not None and not other_filters and not refresh:
-                return cast(List[T], cache)
+        cache = self._get_local_cache()
+        cached_result = self._check_cache_hit(study, refresh, other_filters, cache)
+        if cached_result is not None:
+             return cast(List[T], cached_result)
 
         path = self._get_path(study)
         paginator = paginator_cls(client, path, params=params, page_size=self.PAGE_SIZE)
