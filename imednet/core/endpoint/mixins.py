@@ -383,16 +383,12 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
 
     def _get_context(
         self, is_async: bool
-    ) -> tuple[
-        RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]
-    ]:
+    ) -> tuple[RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]]:
         if is_async:
             return self._require_async_client(), AsyncPaginator
         return self._client, Paginator
 
-    def _list_common(
-        self, is_async: bool, **kwargs: Any
-    ) -> List[T] | Awaitable[List[T]]:
+    def _list_common(self, is_async: bool, **kwargs: Any) -> List[T] | Awaitable[List[T]]:
         client, paginator = self._get_context(is_async)
         return self._list_impl(client, paginator, **kwargs)
 
@@ -409,9 +405,7 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
     def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
         return cast(List[T], self._list_common(False, study_key=study_key, **filters))
 
-    async def async_list(
-        self, study_key: Optional[str] = None, **filters: Any
-    ) -> List[T]:
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
         return await cast(
             Awaitable[List[T]],
             self._list_common(True, study_key=study_key, **filters),
