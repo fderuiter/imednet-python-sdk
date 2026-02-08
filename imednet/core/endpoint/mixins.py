@@ -240,14 +240,12 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T]):
         **filters: Any,
     ) -> List[T] | Awaitable[List[T]]:
 
-        study, params, other_filters = self._resolve_params(
-            study_key, extra_params, filters
-        )
+        study, params, other_filters = self._resolve_params(study_key, extra_params, filters)
 
         cache = self._get_local_cache()
         cached_result = self._check_cache_hit(study, refresh, other_filters, cache)
         if cached_result is not None:
-             return cast(List[T], cached_result)
+            return cast(List[T], cached_result)
 
         path = self._get_path(study)
         paginator = paginator_cls(client, path, params=params, page_size=self.PAGE_SIZE)
