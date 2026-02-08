@@ -26,7 +26,7 @@ from imednet.utils.filters import build_filter_string
 from .base import BaseEndpoint
 
 if TYPE_CHECKING:
-    from .protocols import EndpointProtocol
+    pass
 
 T = TypeVar("T", bound=JsonModel)
 
