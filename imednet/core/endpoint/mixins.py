@@ -11,7 +11,6 @@ from typing import (
     Iterable,
     List,
     Optional,
-    Protocol,
     Type,
     TypeVar,
     cast,
@@ -26,21 +25,8 @@ from imednet.utils.filters import build_filter_string
 
 from .base import BaseEndpoint
 
-if TYPE_CHECKING:  # pragma: no cover - imported for type hints only
-
-    class EndpointProtocol(Protocol):
-        PATH: str
-        MODEL: Type[JsonModel]
-        _id_param: str
-        _cache_name: Optional[str]
-        requires_study_key: bool
-        PAGE_SIZE: int
-        _pop_study_filter: bool
-        _missing_study_exception: type[Exception]
-
-        def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]: ...
-        def _build_path(self, *segments: Any) -> str: ...
-
+if TYPE_CHECKING:
+    from .protocols import EndpointProtocol
 
 T = TypeVar("T", bound=JsonModel)
 
@@ -67,29 +53,15 @@ class ParsingMixin(Generic[T]):
         return parse_func(item)
 
 
-class ListEndpointMixin(ParsingMixin[T]):
-    """Mixin implementing ``list`` helpers."""
+class CacheMixin:
+    """Mixin implementing local caching helpers."""
 
-    PATH: str
     _cache_name: Optional[str] = None
     requires_study_key: bool = True
-    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
-    _pop_study_filter: bool = False
-    _missing_study_exception: type[Exception] = ValueError
-
-    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Hook to extract special parameters from filters.
-
-        Subclasses should override this method to handle parameters that need to be
-        passed separately (e.g. in extra_params) rather than in the filter string.
-        These parameters should be removed from the filters dictionary.
-        """
-        return {}
 
     def _update_local_cache(
         self,
-        result: List[T],
+        result: List[Any],
         study: str | None,
         has_filters: bool,
         cache: Any,
@@ -102,23 +74,34 @@ class ListEndpointMixin(ParsingMixin[T]):
         elif not self.requires_study_key and self._cache_name:
             setattr(self, self._cache_name, result)
 
-    def _prepare_list_params(
-        self,
-        study_key: Optional[str],
-        refresh: bool,
-        extra_params: Optional[Dict[str, Any]],
-        filters: Dict[str, Any],
-    ) -> tuple[Optional[str], Any, Dict[str, Any], Dict[str, Any]]:
-        # This method handles filter normalization and cache retrieval preparation
-        filters = self._auto_filter(filters)  # type: ignore[attr-defined]
+    def _get_local_cache(self) -> Any:
+        return getattr(self, self._cache_name, None) if self._cache_name else None
 
-        # Extract special parameters using the hook
-        special_params = self._extract_special_params(filters)
-        if special_params:
-            if extra_params is None:
-                extra_params = {}
-            extra_params.update(special_params)
 
+class ParamMixin:
+    """Mixin implementing parameter preparation helpers."""
+
+    requires_study_key: bool = True
+    _pop_study_filter: bool = False
+    _missing_study_exception: type[Exception] = ValueError
+
+    # Expected from BaseEndpoint via Protocol
+    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        raise NotImplementedError
+
+    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Hook to extract special parameters from filters.
+
+        Subclasses should override this method to handle parameters that need to be
+        passed separately (e.g. in extra_params) rather than in the filter string.
+        These parameters should be removed from the filters dictionary.
+        """
+        return {}
+
+    def _resolve_study_key(
+        self, study_key: Optional[str], filters: Dict[str, Any]
+    ) -> Optional[str]:
         if study_key:
             filters["studyKey"] = study_key
 
@@ -137,17 +120,54 @@ class ListEndpointMixin(ParsingMixin[T]):
                     raise ValueError("Study key must be provided or set in the context")
         else:
             study = filters.get("studyKey")
+        return study
 
-        cache = getattr(self, self._cache_name, None) if self._cache_name else None
-        other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
-
+    def _build_query_params(
+        self, filters: Dict[str, Any], extra_params: Optional[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         params: Dict[str, Any] = {}
         if filters:
             params["filter"] = build_filter_string(filters)
         if extra_params:
             params.update(extra_params)
+        return params
 
-        return study, cache, params, other_filters
+    def _prepare_list_context(
+        self,
+        study_key: Optional[str],
+        refresh: bool,
+        extra_params: Optional[Dict[str, Any]],
+        filters: Dict[str, Any],
+    ) -> tuple[Optional[str], Dict[str, Any], Dict[str, Any]]:
+        # Normalize filters
+        filters = self._auto_filter(filters)
+
+        # Extract special parameters
+        special_params = self._extract_special_params(filters)
+        if special_params:
+            if extra_params is None:
+                extra_params = {}
+            extra_params.update(special_params)
+
+        study = self._resolve_study_key(study_key, filters)
+
+        # Identify "other" filters (non-studyKey)
+        other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
+
+        params = self._build_query_params(filters, extra_params)
+
+        return study, params, other_filters
+
+
+class ListEndpointMixin(ParsingMixin[T], CacheMixin, ParamMixin):
+    """Mixin implementing ``list`` helpers."""
+
+    PATH: str
+    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
+
+    # Expected from BaseEndpoint
+    def _build_path(self, *segments: Any) -> str:
+        raise NotImplementedError
 
     def _get_path(self, study: Optional[str]) -> str:
         segments: Iterable[Any]
@@ -155,7 +175,7 @@ class ListEndpointMixin(ParsingMixin[T]):
             segments = (study, self.PATH)
         else:
             segments = (self.PATH,) if self.PATH else ()
-        return self._build_path(*segments)  # type: ignore[attr-defined]
+        return self._build_path(*segments)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
         """
@@ -168,7 +188,7 @@ class ListEndpointMixin(ParsingMixin[T]):
             The parsing function to use
         """
         # Check if _parse_item has been overridden by a subclass
-        if self._parse_item.__func__ is not ListEndpointMixin._parse_item:  # type: ignore[attr-defined]
+        if self._parse_item.__func__ is not ParsingMixin._parse_item:  # type: ignore
             return self._parse_item
 
         # Use centralized parsing strategy
@@ -209,14 +229,16 @@ class ListEndpointMixin(ParsingMixin[T]):
         **filters: Any,
     ) -> List[T] | Awaitable[List[T]]:
 
-        study, cache, params, other_filters = self._prepare_list_params(
+        study, params, other_filters = self._prepare_list_context(
             study_key, refresh, extra_params, filters
         )
+
+        cache = self._get_local_cache()
 
         # Cache Hit Check
         if self.requires_study_key:
             if not study:
-                # Should have been caught in _prepare_list_params but strict typing requires check
+                # Should have been caught in _resolve_study_key but strictly required
                 raise ValueError("Study key must be provided or set in the context")
             if cache is not None and not other_filters and not refresh and study in cache:
                 return cast(List[T], cache[study])
@@ -361,12 +383,16 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
 
     def _get_context(
         self, is_async: bool
-    ) -> tuple[RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]]:
+    ) -> tuple[
+        RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]
+    ]:
         if is_async:
             return self._require_async_client(), AsyncPaginator
         return self._client, Paginator
 
-    def _list_common(self, is_async: bool, **kwargs: Any) -> List[T] | Awaitable[List[T]]:
+    def _list_common(
+        self, is_async: bool, **kwargs: Any
+    ) -> List[T] | Awaitable[List[T]]:
         client, paginator = self._get_context(is_async)
         return self._list_impl(client, paginator, **kwargs)
 
@@ -383,9 +409,12 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
     def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
         return cast(List[T], self._list_common(False, study_key=study_key, **filters))
 
-    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+    async def async_list(
+        self, study_key: Optional[str] = None, **filters: Any
+    ) -> List[T]:
         return await cast(
-            Awaitable[List[T]], self._list_common(True, study_key=study_key, **filters)
+            Awaitable[List[T]],
+            self._list_common(True, study_key=study_key, **filters),
         )
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
