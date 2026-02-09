@@ -419,6 +419,7 @@ class ListGetEndpoint(BaseEndpoint, ListGetEndpointMixin[T]):
             Awaitable[T], self._get_common(True, study_key=study_key, item_id=item_id)
         )
 
+
 T_RESP = TypeVar("T_RESP")
 
 
@@ -440,6 +441,7 @@ class CreateEndpointMixin(Generic[T_RESP]):
 
         Handles both sync and async execution based on the client type.
         """
+
         def process_response(response: Any) -> T_RESP:
             payload = response.json()
             if parse_func:
