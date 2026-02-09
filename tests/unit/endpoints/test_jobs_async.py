@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock, Mock
+
+import pytest
 
 import imednet.endpoints.jobs as jobs
 from imednet.models.jobs import JobStatus
@@ -17,6 +18,7 @@ async def test_async_get_success(dummy_client, context, response_factory):
 
     async_client.get.assert_called_once_with("/api/v1/edc/studies/S1/jobs/B1")
     assert isinstance(result, JobStatus)
+
 
 @pytest.mark.asyncio
 async def test_async_get_not_found(dummy_client, context, response_factory):

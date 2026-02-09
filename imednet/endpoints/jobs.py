@@ -64,9 +64,7 @@ class JobsEndpoint(BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMi
         client = self._require_async_client()
         return await cast(
             Awaitable[JobStatus],
-            self._get_impl_path(
-                client, study_key=study_key, item_id=batch_id, is_async=True
-            ),
+            self._get_impl_path(client, study_key=study_key, item_id=batch_id, is_async=True),
         )
 
     def list(self, study_key: str) -> List[JobStatus]:
