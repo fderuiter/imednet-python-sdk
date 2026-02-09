@@ -88,3 +88,33 @@ class AsyncPaginator(BasePaginator):
     async def __aiter__(self) -> AsyncIterator[Any]:
         async for item in self._iter_async():
             yield item
+
+
+class JsonListPaginator(Paginator):
+    """Paginator for endpoints returning a raw list."""
+
+    def _iter_sync(self) -> Iterator[Any]:
+        client = cast(RequestorProtocol, self.client)
+        # Raw list endpoints do not support pagination params
+        response: httpx.Response = client.get(self.path, params=self.params)
+        payload = response.json()
+        if isinstance(payload, list):
+            yield from payload
+        else:
+            yield from []
+
+
+class AsyncJsonListPaginator(AsyncPaginator):
+    """Asynchronous variant of :class:`JsonListPaginator`."""
+
+    async def _iter_async(self) -> AsyncIterator[Any]:
+        client = cast(AsyncRequestorProtocol, self.client)
+        # Raw list endpoints do not support pagination params
+        response: httpx.Response = await client.get(self.path, params=self.params)
+        payload = response.json()
+        if isinstance(payload, list):
+            for item in payload:
+                yield item
+        else:
+            # Fallback for empty or malformed response
+            pass
