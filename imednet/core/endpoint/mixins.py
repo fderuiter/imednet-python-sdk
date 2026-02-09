@@ -381,6 +381,7 @@ class PathGetEndpointMixin(ParsingMixin[T]):
             return self._parse_item(data)
 
         if is_async:
+
             async def _await() -> T:
                 # We assume client is AsyncRequestorProtocol because is_async=True
                 # But we can't be sure type-wise unless we narrow it down.
