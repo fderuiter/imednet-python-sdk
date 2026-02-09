@@ -27,7 +27,8 @@ from .base import BaseEndpoint
 from .protocols import EndpointProtocol
 
 if TYPE_CHECKING:  # pragma: no cover
-    # EndpointProtocol is imported from .protocols, but we keep this import for backward compatibility if needed
+    # EndpointProtocol is imported from .protocols, but we keep this import for
+    # backward compatibility if needed
     pass
 
 
