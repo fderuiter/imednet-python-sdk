@@ -85,3 +85,10 @@ async def test_async_paginator_empty() -> None:
     paginator = AsyncPaginator(client, "/p")  # type: ignore
     items = [item async for item in paginator]
     assert items == []
+
+
+def test_pagination_key_is_null() -> None:
+    """Test handling of responses where 'pagination' is explicitly null."""
+    client = DummyClient([{"data": [1, 2], "pagination": None}])
+    paginator = Paginator(client, "/p")
+    assert list(paginator) == [1, 2]

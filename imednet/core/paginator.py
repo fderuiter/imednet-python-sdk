@@ -40,7 +40,7 @@ class BasePaginator:
         return payload.get(self.data_key, []) or []
 
     def _next_page(self, payload: Dict[str, Any], page: int) -> Optional[int]:
-        pagination = payload.get("pagination", {})
+        pagination = payload.get("pagination") or {}
         total_pages = pagination.get("totalPages")
         if total_pages is None or page >= total_pages - 1:
             return None
