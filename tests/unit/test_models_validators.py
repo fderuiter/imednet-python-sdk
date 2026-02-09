@@ -58,6 +58,15 @@ def test_parse_int_or_default_and_str_default():
     assert validators.parse_int_or_default("bad") == 0
     with pytest.raises(ValueError):
         validators.parse_int_or_default("bad", strict=True)
+
+    # Float string robustness
+    assert validators.parse_int_or_default("5.0") == 5
+    assert validators.parse_int_or_default("5.9") == 5
+    assert validators.parse_int_or_default(5.9) == 5
+    assert validators.parse_int_or_default("inf") == 0
+    with pytest.raises(OverflowError):
+        validators.parse_int_or_default("inf", strict=True)
+
     assert validators.parse_str_or_default(None) == ""
     assert validators.parse_str_or_default(123) == "123"
 

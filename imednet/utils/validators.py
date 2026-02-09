@@ -68,9 +68,13 @@ def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
     try:
         return int(v)
     except (ValueError, TypeError):
-        if strict:
-            raise
-        return default
+        # Fallback: Try float conversion (for "123.0", 5.0)
+        try:
+            return int(float(v))
+        except (ValueError, TypeError, OverflowError):
+            if strict:
+                raise
+            return default
 
 
 def parse_str_or_default(v: Any, default: str = "") -> str:
