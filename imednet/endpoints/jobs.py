@@ -1,6 +1,6 @@
 """Endpoint for checking job status in a study."""
 
-from typing import Any, Awaitable, List, Optional, cast
+from typing import Any, Awaitable, Optional, cast
 
 from imednet.core.endpoint.mixins import ListEndpoint, PathGetEndpointMixin
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
