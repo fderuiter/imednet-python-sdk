@@ -87,9 +87,7 @@ def async_paginator_factory(monkeypatch):
         monkeypatch.setattr(mixins_module, "AsyncPaginator", DummyPaginator)
         # Also patch the class attribute since it's now used
         if hasattr(mixins_module, "ListEndpoint"):
-            monkeypatch.setattr(
-                mixins_module.ListEndpoint, "ASYNC_PAGINATOR_CLS", DummyPaginator
-            )
+            monkeypatch.setattr(mixins_module.ListEndpoint, "ASYNC_PAGINATOR_CLS", DummyPaginator)
         return captured
 
     return factory
