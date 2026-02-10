@@ -2,13 +2,12 @@
 
 from typing import Any, Awaitable, List, Optional, cast
 
-from imednet.core.endpoint.base import BaseEndpoint
-from imednet.core.endpoint.mixins import ListEndpointMixin, PathGetEndpointMixin
+from imednet.core.endpoint.mixins import ListEndpoint, PathGetEndpointMixin
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 from imednet.models.jobs import JobStatus
 
 
-class JobsEndpoint(BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMixin[JobStatus]):
+class JobsEndpoint(ListEndpoint[JobStatus], PathGetEndpointMixin[JobStatus]):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
@@ -18,6 +17,8 @@ class JobsEndpoint(BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMi
 
     PATH = "jobs"
     MODEL = JobStatus
+    PAGINATOR_CLS = JsonListPaginator
+    ASYNC_PAGINATOR_CLS = AsyncJsonListPaginator
 
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise ValueError(f"Job {item_id} not found in study {study_key}")
@@ -65,43 +66,4 @@ class JobsEndpoint(BaseEndpoint, ListEndpointMixin[JobStatus], PathGetEndpointMi
         return await cast(
             Awaitable[JobStatus],
             self._get_impl_path(client, study_key=study_key, item_id=batch_id, is_async=True),
-        )
-
-    def list(self, study_key: str) -> List[JobStatus]:
-        """
-        List all jobs for a specific study.
-
-        Args:
-            study_key: Study identifier
-
-        Returns:
-            List of JobStatus objects
-        """
-        return cast(
-            List[JobStatus],
-            self._list_impl(
-                self._client,
-                JsonListPaginator,
-                study_key=study_key,
-            ),
-        )
-
-    async def async_list(self, study_key: str) -> List[JobStatus]:
-        """
-        Asynchronously list all jobs for a specific study.
-
-        Args:
-            study_key: Study identifier
-
-        Returns:
-            List of JobStatus objects
-        """
-        client = self._require_async_client()
-        return await cast(
-            Awaitable[List[JobStatus]],
-            self._list_impl(
-                client,
-                AsyncJsonListPaginator,
-                study_key=study_key,
-            ),
         )
