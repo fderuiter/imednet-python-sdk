@@ -10,47 +10,32 @@ This module provides the ImednetSDK class which:
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-from .auth.api_key import ApiKeyAuth
 from .config import Config, load_config
-from .core.async_client import AsyncClient
-from .core.client import Client
 from .core.context import Context
-from .core.endpoint.base import BaseEndpoint
+from .core.factory import ClientFactory
 from .core.retry import RetryPolicy
-from .endpoints.codings import CodingsEndpoint
-from .endpoints.forms import FormsEndpoint
-from .endpoints.intervals import IntervalsEndpoint
-from .endpoints.jobs import JobsEndpoint
-from .endpoints.queries import QueriesEndpoint
-from .endpoints.record_revisions import RecordRevisionsEndpoint
-from .endpoints.records import RecordsEndpoint
-from .endpoints.sites import SitesEndpoint
-from .endpoints.studies import StudiesEndpoint
-from .endpoints.subjects import SubjectsEndpoint
-from .endpoints.users import UsersEndpoint
-from .endpoints.variables import VariablesEndpoint
-from .endpoints.visits import VisitsEndpoint
+from .endpoints.registry import ENDPOINT_REGISTRY
 from .sdk_convenience import SDKConvenienceMixin
 from .workflows.namespace import Workflows
 
-# Mapping of attribute names to their endpoint classes
-_ENDPOINT_REGISTRY: dict[str, type[BaseEndpoint]] = {
-    "codings": CodingsEndpoint,
-    "forms": FormsEndpoint,
-    "intervals": IntervalsEndpoint,
-    "jobs": JobsEndpoint,
-    "queries": QueriesEndpoint,
-    "record_revisions": RecordRevisionsEndpoint,
-    "records": RecordsEndpoint,
-    "sites": SitesEndpoint,
-    "studies": StudiesEndpoint,
-    "subjects": SubjectsEndpoint,
-    "users": UsersEndpoint,
-    "variables": VariablesEndpoint,
-    "visits": VisitsEndpoint,
-}
+if TYPE_CHECKING:
+    from .core.async_client import AsyncClient
+    from .core.client import Client
+    from .endpoints.codings import CodingsEndpoint
+    from .endpoints.forms import FormsEndpoint
+    from .endpoints.intervals import IntervalsEndpoint
+    from .endpoints.jobs import JobsEndpoint
+    from .endpoints.queries import QueriesEndpoint
+    from .endpoints.record_revisions import RecordRevisionsEndpoint
+    from .endpoints.records import RecordsEndpoint
+    from .endpoints.sites import SitesEndpoint
+    from .endpoints.studies import StudiesEndpoint
+    from .endpoints.subjects import SubjectsEndpoint
+    from .endpoints.users import UsersEndpoint
+    from .endpoints.variables import VariablesEndpoint
+    from .endpoints.visits import VisitsEndpoint
 
 
 class ImednetSDK(SDKConvenienceMixin):
@@ -58,10 +43,6 @@ class ImednetSDK(SDKConvenienceMixin):
     Public entry-point for library users.
 
     Provides access to all iMednet API endpoints and maintains configuration.
-
-    Attributes:
-        ctx: Context object for storing state across SDK calls.
-        etc...
     """
 
     codings: CodingsEndpoint
@@ -89,12 +70,12 @@ class ImednetSDK(SDKConvenienceMixin):
         backoff_factor: float = 1.0,
         retry_policy: RetryPolicy | None = None,
         enable_async: bool = False,
+        client: Optional[Client] = None,
+        async_client: Optional[AsyncClient] = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
 
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
-
-        self._validate_env(config)
 
         self.config = config
         self._api_key = config.api_key
@@ -103,44 +84,32 @@ class ImednetSDK(SDKConvenienceMixin):
 
         self.ctx = Context()
 
-        auth = ApiKeyAuth(config.api_key or "", config.security_key or "")
-
-        self._client = Client(
-            api_key=config.api_key,
-            security_key=config.security_key,
-            base_url=config.base_url,
-            timeout=timeout,
-            retries=retries,
-            backoff_factor=backoff_factor,
-            retry_policy=retry_policy,
-            auth=auth,
-        )
-        self._async_client = (
-            AsyncClient(
-                api_key=config.api_key,
-                security_key=config.security_key,
-                base_url=config.base_url,
+        if client:
+            self._client = client
+        else:
+            self._client = ClientFactory.create_client(
+                config=config,
                 timeout=timeout,
                 retries=retries,
                 backoff_factor=backoff_factor,
                 retry_policy=retry_policy,
-                auth=auth,
             )
-            if enable_async
-            else None
-        )
+
+        if async_client:
+            self._async_client: Optional[AsyncClient] = async_client
+        elif enable_async:
+            self._async_client = ClientFactory.create_async_client(
+                config=config,
+                timeout=timeout,
+                retries=retries,
+                backoff_factor=backoff_factor,
+                retry_policy=retry_policy,
+            )
+        else:
+            self._async_client = None
 
         self._init_endpoints()
         self.workflows = Workflows(self)
-
-    def _validate_env(self, config: Config) -> None:
-        """Ensure required credentials are present."""
-        if not config.api_key and not config.security_key:
-            raise ValueError("API key and security key are required")
-        elif not config.api_key:
-            raise ValueError("API key is required")
-        elif not config.security_key:
-            raise ValueError("Security key is required")
 
     @property
     def retry_policy(self) -> RetryPolicy:
@@ -154,7 +123,7 @@ class ImednetSDK(SDKConvenienceMixin):
 
     def _init_endpoints(self) -> None:
         """Instantiate endpoint clients."""
-        for attr, endpoint_cls in _ENDPOINT_REGISTRY.items():
+        for attr, endpoint_cls in ENDPOINT_REGISTRY.items():
             setattr(self, attr, endpoint_cls(self._client, self.ctx, self._async_client))
 
     def __enter__(self) -> ImednetSDK:
