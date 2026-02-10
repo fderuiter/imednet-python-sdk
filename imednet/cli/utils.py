@@ -166,7 +166,7 @@ def display_list(
                 else:
                     # Use getattr for Pydantic models or objects
                     val = getattr(item, k, None)
-                row.append(_format_cell_value(val))
+                row.append(_format_cell_value(val, key=str(k)))
             table.add_row(*row)
 
         print(table)

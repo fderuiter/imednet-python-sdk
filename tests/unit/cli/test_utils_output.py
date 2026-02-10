@@ -165,3 +165,21 @@ def test_format_cell_value_non_status_columns() -> None:
 def test_format_cell_value_unknown_status() -> None:
     """Test that unknown statuses are not colorized."""
     assert _format_cell_value("UnknownStatus", key="status") == "UnknownStatus"
+
+
+def test_display_list_with_fields_passes_key_to_formatter() -> None:
+    """display_list should pass the field key to _format_cell_value for context-aware formatting."""
+    obj = MagicMock()
+    # Mock attribute access for optimized path
+    obj.status = "Active"
+
+    # We patch where it's used
+    with patch("imednet.cli.utils._format_cell_value") as mock_format:
+        # Mock format return value to prevent downstream errors if any
+        mock_format.return_value = "Active"
+
+        display_list([obj], "items", fields=["status"])
+
+        # Verify it was called with key="status"
+        # It should be called ONCE for the status field
+        mock_format.assert_called_with("Active", key="status")
