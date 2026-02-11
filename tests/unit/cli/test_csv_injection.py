@@ -14,7 +14,7 @@ def runner() -> CliRunner:
 @pytest.fixture()
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     mock_sdk = MagicMock()
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=mock_sdk))
+    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk))
     return mock_sdk
 
 

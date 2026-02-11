@@ -1,20 +1,12 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Sequence
 
-import typer
 from rich import print
 from rich.console import Console
 from rich.markup import escape
 from rich.table import Table
-
-from ..config import load_config
-from ..sdk import ImednetSDK
-
-# Shared CLI argument for specifying a study key
-STUDY_KEY_ARG = typer.Argument(..., help="The key identifying the study.")
 
 # Map status strings to Rich colors for O(1) lookup
 _STATUS_COLOR_MAP = {
@@ -45,63 +37,6 @@ _STATUS_COLOR_MAP = {
 }
 
 console = Console()
-
-
-def get_sdk() -> ImednetSDK:
-    """Initialize and return the SDK instance using :func:`load_config`."""
-    try:
-        config = load_config()
-    except ValueError:
-        print(
-            "[bold red]Error:[/bold red] IMEDNET_API_KEY and "
-            "IMEDNET_SECURITY_KEY environment variables must be set."
-        )
-        raise typer.Exit(code=1)
-
-    try:
-        return ImednetSDK(
-            api_key=config.api_key,
-            security_key=config.security_key,
-            base_url=config.base_url,
-        )
-    except Exception as exc:  # pragma: no cover - defensive
-        print(f"[bold red]Error initializing SDK:[/bold red] {escape(str(exc))}")
-        raise typer.Exit(code=1)
-
-
-def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, Any]]:
-    """Parse a list of ``key=value`` strings into a dictionary."""
-    if not filter_args:
-        return None
-    filter_dict: Dict[str, Union[str, bool, int]] = {}
-    for arg in filter_args:
-        if "=" not in arg:
-            print(
-                f"[bold red]Error:[/bold red] Invalid filter format: '{escape(arg)}'. "
-                "Use 'key=value'."
-            )
-            raise typer.Exit(code=1)
-        key, value = arg.split("=", 1)
-        if value.lower() == "true":
-            filter_dict[key.strip()] = True
-        elif value.lower() == "false":
-            filter_dict[key.strip()] = False
-        elif value.isdigit():
-            filter_dict[key.strip()] = int(value)
-        else:
-            filter_dict[key.strip()] = value
-    return filter_dict
-
-
-@contextmanager
-def fetching_status(name: str, study_key: str | None = None):
-    """Context manager to show a spinner while fetching data."""
-    if study_key:
-        msg = f"Fetching {escape(name)} for study '{escape(study_key)}'..."
-    else:
-        msg = f"Fetching {escape(name)}..."
-    with console.status(f"[bold blue]{msg}[/bold blue]", spinner="dots"):
-        yield
 
 
 def _truncate(text: str, length: int = 60) -> str:
@@ -202,39 +137,3 @@ def display_list(
         table.add_row(*row)
 
     print(table)
-
-
-def register_list_command(
-    app: typer.Typer,
-    attr: str,
-    name: str,
-    *,
-    requires_study_key: bool = True,
-    empty_msg: str | None = None,
-    summary_fields: List[str] | None = None,
-) -> None:
-    """Attach a standard ``list`` command to ``app``."""
-
-    from .decorators import with_sdk  # imported lazily to avoid circular import
-
-    if requires_study_key:
-
-        @app.command("list")
-        @with_sdk
-        def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
-            with fetching_status(name, study_key):
-                items = getattr(sdk, attr).list(study_key)
-            display_list(items, name, empty_msg, fields=summary_fields)
-
-        return
-
-    else:
-
-        @app.command("list")
-        @with_sdk
-        def list_cmd_no_study(sdk: ImednetSDK) -> None:
-            with fetching_status(name):
-                items = getattr(sdk, attr).list()
-            display_list(items, name, empty_msg, fields=summary_fields)
-
-        return

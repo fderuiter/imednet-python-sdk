@@ -23,7 +23,7 @@ def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
 
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        from . import get_sdk  # local import so tests can monkeypatch
+        from .utils.context import get_sdk
 
         sdk = get_sdk()
         try:
