@@ -7,7 +7,7 @@ from imednet.cli.utils import _format_cell_value, display_list, fetching_status
 
 def test_fetching_status_records() -> None:
     """fetching_status shows status spinner with message."""
-    with patch("imednet.cli.utils.console") as mock_console:
+    with patch("imednet.cli.utils.context.console") as mock_console:
         mock_status = mock_console.status.return_value
         mock_status.__enter__.return_value = None
 
@@ -23,7 +23,7 @@ def test_fetching_status_records() -> None:
 
 def test_fetching_status_escapes_injection() -> None:
     """fetching_status escapes Rich markup in study key."""
-    with patch("imednet.cli.utils.console") as mock_console:
+    with patch("imednet.cli.utils.context.console") as mock_console:
         mock_status = mock_console.status.return_value
         mock_status.__enter__.return_value = None
 

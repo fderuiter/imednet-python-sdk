@@ -29,7 +29,8 @@ def runner() -> CliRunner:
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Provide a mocked SDK and patch get_sdk."""
     mock_sdk = MagicMock()
-    monkeypatch.setattr(cli, "get_sdk", MagicMock(return_value=mock_sdk))
+    # Patch the source of get_sdk used by decorators
+    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk))
     return mock_sdk
 
 
