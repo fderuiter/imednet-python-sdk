@@ -23,7 +23,7 @@ class JobsEndpoint(ListPathGetEndpoint[JobStatus]):
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise ValueError(f"Job {item_id} not found in study {study_key}")
 
-    def get(self, study_key: str, batch_id: str) -> JobStatus:
+    def get(self, study_key: Optional[str], batch_id: str) -> JobStatus:
         """
         Get a specific job by batch ID.
 
@@ -42,7 +42,7 @@ class JobsEndpoint(ListPathGetEndpoint[JobStatus]):
         """
         return super().get(study_key, batch_id)
 
-    async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
+    async def async_get(self, study_key: Optional[str], batch_id: str) -> JobStatus:
         """
         Asynchronously get a specific job by batch ID.
 
