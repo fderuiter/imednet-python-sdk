@@ -452,6 +452,20 @@ class ListGetEndpoint(ListEndpoint[T], FilterGetEndpointMixin[T]):
         )
 
 
+class ListPathGetEndpoint(ListEndpoint[T], PathGetEndpointMixin[T]):
+    """Endpoint base class implementing ``list`` and ``get`` (via path) helpers."""
+
+    def get(self, study_key: Optional[str], item_id: Any) -> T:
+        return cast(T, self._get_impl_path(self._client, study_key=study_key, item_id=item_id))
+
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+        client = self._require_async_client()
+        return await cast(
+            Awaitable[T],
+            self._get_impl_path(client, study_key=study_key, item_id=item_id, is_async=True),
+        )
+
+
 T_RESP = TypeVar("T_RESP")
 
 

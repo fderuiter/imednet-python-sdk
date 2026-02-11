@@ -1,13 +1,13 @@
 """Endpoint for checking job status in a study."""
 
-from typing import Any, Awaitable, Optional, cast
+from typing import Any, Optional
 
-from imednet.core.endpoint.mixins import ListEndpoint, PathGetEndpointMixin
+from imednet.core.endpoint.mixins import ListPathGetEndpoint
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 from imednet.models.jobs import JobStatus
 
 
-class JobsEndpoint(ListEndpoint[JobStatus], PathGetEndpointMixin[JobStatus]):
+class JobsEndpoint(ListPathGetEndpoint[JobStatus]):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
@@ -40,10 +40,7 @@ class JobsEndpoint(ListEndpoint[JobStatus], PathGetEndpointMixin[JobStatus]):
         Raises:
             ValueError: If the job is not found
         """
-        return cast(
-            JobStatus,
-            self._get_impl_path(self._client, study_key=study_key, item_id=batch_id),
-        )
+        return super().get(study_key, batch_id)
 
     async def async_get(self, study_key: str, batch_id: str) -> JobStatus:
         """
@@ -62,8 +59,4 @@ class JobsEndpoint(ListEndpoint[JobStatus], PathGetEndpointMixin[JobStatus]):
         Raises:
             ValueError: If the job is not found
         """
-        client = self._require_async_client()
-        return await cast(
-            Awaitable[JobStatus],
-            self._get_impl_path(client, study_key=study_key, item_id=batch_id, is_async=True),
-        )
+        return await super().async_get(study_key, batch_id)
