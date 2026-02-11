@@ -44,7 +44,13 @@ jobs:
       - name: Security Audit
         run: |
           poetry run pip install pip-audit
-          poetry run pip-audit -s osv
+          for i in 1 2 3; do
+            poetry run pip-audit -s osv --timeout 60 && exit 0
+            echo "Attempt $i failed. Retrying in 10s..."
+            sleep 10
+          done
+          echo "Audit failed after 3 attempts."
+          exit 1
 
   # ------------------------------------------------------------------
   # JOB 2: BUILD ARTIFACT (Builds the library)
