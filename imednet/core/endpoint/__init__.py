@@ -8,6 +8,7 @@ from .mixins import (
     ListEndpointMixin,
     ListGetEndpoint,
     ListGetEndpointMixin,
+    ListPathGetEndpoint,
     ParsingMixin,
     PathGetEndpointMixin,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "ListEndpointMixin",
     "ListGetEndpoint",
     "ListGetEndpointMixin",
+    "ListPathGetEndpoint",
     "ParsingMixin",
     "PathGetEndpointMixin",
 ]
