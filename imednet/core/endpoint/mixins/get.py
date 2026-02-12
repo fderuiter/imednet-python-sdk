@@ -5,6 +5,7 @@ from typing import Any, Awaitable, Dict, Generic, Iterable, List, Optional, Type
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+
 from ..base import BaseEndpoint
 from .parsing import ParsingMixin, T
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional, cast
 
 from imednet.utils.filters import build_filter_string
+
 from ..protocols import EndpointProtocol
 
 

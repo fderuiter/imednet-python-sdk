@@ -4,6 +4,7 @@ from typing import Any, Awaitable, List, Optional, cast
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+
 from ..base import BaseEndpoint
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
 from .list import ListEndpointMixin

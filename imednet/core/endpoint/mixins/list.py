@@ -6,6 +6,7 @@ from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+
 from ..protocols import EndpointProtocol
 from .caching import CacheMixin
 from .params import ParamMixin
