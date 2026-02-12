@@ -38,8 +38,7 @@ class FilterGetEndpointMixin(Generic[T], ABC):
         refresh: bool = False,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T] | Awaitable[List[T]]:
-        ...
+    ) -> List[T] | Awaitable[List[T]]: ...
 
     def _get_impl(
         self,
