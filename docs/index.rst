@@ -18,7 +18,6 @@ Welcome to imednet's documentation!
    rest_api_reference
    endpoints/index
    form_builder
-   tui_manual
    architecture
    parsing
    schema_validation
