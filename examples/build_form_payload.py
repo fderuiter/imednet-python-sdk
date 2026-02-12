@@ -3,9 +3,6 @@
 Hybrid Entry Point for iMedNet Form Builder.
 
 Usage:
-  # Interactive Mode (Launches TUI)
-  python examples/build_form_payload.py
-
   # Headless Mode (CLI)
   python examples/build_form_payload.py --preset "Demo Form" --form-id 123 --revision 5 ...
 """

@@ -34,7 +34,6 @@ reimplementing HTTP logic.
 - Structured JSON logging and OpenTelemetry tracing
 - Async client and command line interface
 - **Form Designer**: Pythonic API for building and validating CRFs
-- **Interactive TUI**: Terminal-based dashboard for exploring data
 
 ---
 
@@ -156,16 +155,6 @@ Use `imednet.config.load_config()` to access these values in your code.
 The package installs an `imednet` command with subcommands for studies, sites,
 subjects, records, jobs, queries and more. Use `imednet --help` to explore all
 options.
-
-### Interactive Dashboard
-
-The SDK includes a terminal-based user interface (TUI) for interactive exploration:
-
-```bash
-imednet tui
-```
-
-This dashboard allows you to browse studies, subjects, and records without remembering CLI flags. It also features a **Form Builder** pane for visually designing forms. See [docs/tui_manual.rst](docs/tui_manual.rst) for a full guide.
 
 ### Data Export
 

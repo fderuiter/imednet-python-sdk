@@ -36,22 +36,7 @@ Process
 Usage
 -----
 
-The primary way to use the Form Builder is via the **Textual TUI** or the **Hybrid Script**.
-
-TUI (Interactive)
-~~~~~~~~~~~~~~~~~
-
-Launch the TUI and navigate to the "Form Builder" tab:
-
-.. code-block:: console
-
-    imednet tui
-
-The TUI provides a dashboard to:
-1.  Enter your Session Credentials (PHPSESSID, CSRFKey).
-2.  Configure target parameters (Form ID, Community ID, Revision).
-3.  Select a "Preset" (a pre-defined Python function that builds a specific form).
-4.  Execute the build and submission in the background.
+The primary way to use the Form Builder is via the **Hybrid Script**.
 
 Hybrid Script (Headless)
 ~~~~~~~~~~~~~~~~~~~~~~~~
