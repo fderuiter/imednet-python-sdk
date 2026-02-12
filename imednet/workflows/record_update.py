@@ -2,9 +2,8 @@
 
 import asyncio
 import inspect
-import time
 import warnings
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 
 from ..models import Job
 from ..validation.cache import SchemaCache, SchemaValidator
@@ -109,15 +108,11 @@ class RecordUpdateWorkflow:
             raise ValueError("Submission successful but no batch_id received.")
 
         poller = JobPoller(self._sdk.jobs.async_get if is_async else self._sdk.jobs.get, is_async)
-        sleep_fn = asyncio.sleep if is_async else time.sleep
-        return await poller._run_common(
-            study_key,
-            job.batch_id,
-            poller._get_job,
-            cast(Callable[[float], Any], sleep_fn),
-            poll_interval,
-            timeout,
-        )
+
+        if is_async:
+            return await poller.run_async(study_key, job.batch_id, poll_interval, timeout)
+
+        return poller.run(study_key, job.batch_id, poll_interval, timeout)
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
         warnings.warn(
@@ -302,9 +297,3 @@ class RecordUpdateWorkflow:
             timeout=timeout,
             poll_interval=poll_interval,
         )
-
-
-# Integration:
-# - Accessed via the main SDK instance
-#       (e.g., `sdk.workflows.record_update.create_or_update_records(...)`).
-# - Simplifies the process of submitting data and optionally monitoring the asynchronous job.
