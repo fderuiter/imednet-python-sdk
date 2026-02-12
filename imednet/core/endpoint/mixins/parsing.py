@@ -14,7 +14,7 @@ class ParsingMixin(Generic[T], ABC):
 
     @property
     @abstractmethod
-    def MODEL(self) -> Type[T]:
+    def MODEL(self) -> Type[T]:  # noqa: N802
         """The model class associated with this endpoint."""
         ...
 

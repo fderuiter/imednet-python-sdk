@@ -3,7 +3,7 @@ Base endpoint mix-in for all API resource endpoints.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Dict, Optional, Type
+from typing import Any, Dict, Optional, Type
 from urllib.parse import quote
 
 from imednet.core.context import Context
@@ -23,13 +23,13 @@ class BaseEndpoint(ABC):
     # Abstract properties to enforce definition in subclasses
     @property
     @abstractmethod
-    def PATH(self) -> str:
+    def PATH(self) -> str:  # noqa: N802
         """The relative path for this endpoint."""
         ...
 
     @property
     @abstractmethod
-    def MODEL(self) -> Type[JsonModel]:
+    def MODEL(self) -> Type[JsonModel]:  # noqa: N802
         """The model class associated with this endpoint."""
         ...
 

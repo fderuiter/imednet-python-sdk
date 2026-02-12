@@ -6,7 +6,6 @@ from typing import Any, Awaitable, Dict, Generic, Iterable, List, Optional, Type
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
-from imednet.models.json_base import JsonModel
 
 from .parsing import ParsingMixin, T
 
@@ -18,7 +17,7 @@ class FilterGetEndpointMixin(Generic[T], ABC):
 
     @property
     @abstractmethod
-    def MODEL(self) -> Type[T]:
+    def MODEL(self) -> Type[T]:  # noqa: N802
         """The model class associated with this endpoint."""
         ...
 
@@ -87,7 +86,7 @@ class PathGetEndpointMixin(ParsingMixin[T], ABC):
 
     @property
     @abstractmethod
-    def PATH(self) -> str:
+    def PATH(self) -> str:  # noqa: N802
         """The relative path for this endpoint."""
         ...
 

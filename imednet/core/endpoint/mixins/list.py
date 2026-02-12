@@ -20,7 +20,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], ABC):
 
     @property
     @abstractmethod
-    def PATH(self) -> str:
+    def PATH(self) -> str:  # noqa: N802
         """The relative path for this endpoint."""
         ...
 
