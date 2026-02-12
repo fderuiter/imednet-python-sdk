@@ -72,6 +72,25 @@ def _format_cell_value(value: Any, key: str | None = None) -> str:
     return escape(str_val)
 
 
+def _create_table(items: Sequence[Any], fields: List[str]) -> Table:
+    """Create a Rich table from a list of items and specified fields."""
+    table = Table(show_header=True, header_style="bold magenta")
+    for header in fields:
+        table.add_column(str(header).replace("_", " ").title())
+
+    for item in items:
+        row = []
+        for k in fields:
+            if isinstance(item, dict):
+                val = item.get(k)
+            else:
+                # Use getattr for Pydantic models or objects
+                val = getattr(item, k, None)
+            row.append(_format_cell_value(val, key=str(k)))
+        table.add_row(*row)
+    return table
+
+
 def display_list(
     items: Sequence[Any],
     label: str,
@@ -89,21 +108,7 @@ def display_list(
     # from the objects instead of converting everything to a dictionary.
     # This avoids O(N*M) overhead for large lists where M is total field count.
     if fields:
-        table = Table(show_header=True, header_style="bold magenta")
-        for header in fields:
-            table.add_column(str(header).replace("_", " ").title())
-
-        for item in items:
-            row = []
-            for k in fields:
-                if isinstance(item, dict):
-                    val = item.get(k)
-                else:
-                    # Use getattr for Pydantic models or objects
-                    val = getattr(item, k, None)
-                row.append(_format_cell_value(val))
-            table.add_row(*row)
-
+        table = _create_table(items, fields)
         print(table)
         return
 
@@ -122,18 +127,6 @@ def display_list(
         print(items)
         return
 
-    table = Table(show_header=True, header_style="bold magenta")
     all_keys = list(data_list[0].keys())
-    headers = all_keys
-
-    for header in headers:
-        table.add_column(str(header).replace("_", " ").title())
-
-    for item in data_list:
-        row = []
-        for k in headers:
-            val = item.get(k)
-            row.append(_format_cell_value(val, key=str(k)))
-        table.add_row(*row)
-
+    table = _create_table(data_list, all_keys)
     print(table)
