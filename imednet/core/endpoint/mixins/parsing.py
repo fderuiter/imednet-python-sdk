@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import Any, Generic, Type, TypeVar
 
 from imednet.core.parsing import get_model_parser
@@ -8,10 +9,14 @@ from imednet.models.json_base import JsonModel
 T = TypeVar("T", bound=JsonModel)
 
 
-class ParsingMixin(Generic[T]):
+class ParsingMixin(Generic[T], ABC):
     """Mixin implementing model parsing helpers."""
 
-    MODEL: Type[T]
+    @property
+    @abstractmethod
+    def MODEL(self) -> Type[T]:
+        """The model class associated with this endpoint."""
+        ...
 
     def _parse_item(self, item: Any) -> T:
         """

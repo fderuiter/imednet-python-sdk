@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional, Protocol, Type, runtime_checkable
 
+from imednet.core.protocols import AsyncRequestorProtocol
 from imednet.models.json_base import JsonModel
 
 
@@ -22,4 +23,8 @@ class EndpointProtocol(Protocol):
 
     def _build_path(self, *segments: Any) -> str:
         """Build the API path."""
+        ...
+
+    def _require_async_client(self) -> AsyncRequestorProtocol:
+        """Return the configured async client or raise if missing."""
         ...

@@ -1,23 +1,34 @@
 from __future__ import annotations
 
 import inspect
+from abc import ABC, abstractmethod
 from typing import Any, Awaitable, Dict, Generic, Iterable, List, Optional, Type, cast
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.models.json_base import JsonModel
 
-from ..base import BaseEndpoint
 from .parsing import ParsingMixin, T
 
 
-class FilterGetEndpointMixin(Generic[T]):
+class FilterGetEndpointMixin(Generic[T], ABC):
     """Mixin implementing ``get`` via filtering."""
 
-    MODEL: Type[T]
-    _id_param: str
     requires_study_key: bool = True
 
-    # This should be provided by ListEndpointMixin
+    @property
+    @abstractmethod
+    def MODEL(self) -> Type[T]:
+        """The model class associated with this endpoint."""
+        ...
+
+    @property
+    @abstractmethod
+    def _id_param(self) -> str:
+        """The parameter name for the ID filter."""
+        ...
+
+    @abstractmethod
     def _list_impl(
         self,
         client: RequestorProtocol | AsyncRequestorProtocol,
@@ -28,7 +39,7 @@ class FilterGetEndpointMixin(Generic[T]):
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T] | Awaitable[List[T]]:
-        raise NotImplementedError
+        ...
 
     def _get_impl(
         self,
@@ -70,15 +81,21 @@ class FilterGetEndpointMixin(Generic[T]):
         return items[0]
 
 
-class PathGetEndpointMixin(ParsingMixin[T]):
+class PathGetEndpointMixin(ParsingMixin[T], ABC):
     """Mixin implementing ``get`` via direct path."""
 
-    PATH: str
     requires_study_key: bool = True
 
+    @property
+    @abstractmethod
+    def PATH(self) -> str:
+        """The relative path for this endpoint."""
+        ...
+
+    @abstractmethod
     def _build_path(self, *segments: Any) -> str:
-        # Expected from BaseEndpoint
-        raise NotImplementedError
+        """Build the API path."""
+        ...
 
     def _get_path_for_id(self, study_key: Optional[str], item_id: Any) -> str:
         segments: Iterable[Any]
@@ -88,9 +105,9 @@ class PathGetEndpointMixin(ParsingMixin[T]):
             segments = (study_key, self.PATH, item_id)
         else:
             segments = (self.PATH, item_id) if self.PATH else (item_id,)
-        # self is mixed into BaseEndpoint which implements _build_path
-        # Use cast for type checking compliance without importing BaseEndpoint
-        return cast(BaseEndpoint, self)._build_path(*segments)
+
+        # No cast needed
+        return self._build_path(*segments)
 
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise ValueError(f"{self.MODEL.__name__} not found")
@@ -107,6 +124,9 @@ class PathGetEndpointMixin(ParsingMixin[T]):
 
         # Helper to process response
         def process_response(response: Any) -> T:
+            # We assume response has json() method (httpx.Response)
+            # Since client returns Response object, we rely on duck typing or we can cast
+            # RequestorProtocol returns Any, but usually httpx.Response
             data = response.json()
             if not data:
                 # Enforce strict validation for empty body
@@ -116,9 +136,7 @@ class PathGetEndpointMixin(ParsingMixin[T]):
         if is_async:
 
             async def _await() -> T:
-                # We assume client is AsyncRequestorProtocol because is_async=True
-                # But we can't be sure type-wise unless we narrow it down.
-                # In practice, caller ensures this.
+                # client is expected to be AsyncRequestorProtocol
                 aclient = cast(AsyncRequestorProtocol, client)
                 response = await aclient.get(path)
                 return process_response(response)

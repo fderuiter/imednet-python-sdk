@@ -84,6 +84,32 @@ class ImednetSDK(SDKConvenienceMixin):
 
         self.ctx = Context()
 
+        self._init_clients(
+            config,
+            client,
+            async_client,
+            enable_async,
+            timeout,
+            retries,
+            backoff_factor,
+            retry_policy,
+        )
+
+        self._init_endpoints()
+        self.workflows = Workflows(self)
+
+    def _init_clients(
+        self,
+        config: Config,
+        client: Optional[Client],
+        async_client: Optional[AsyncClient],
+        enable_async: bool,
+        timeout: float,
+        retries: int,
+        backoff_factor: float,
+        retry_policy: RetryPolicy | None,
+    ) -> None:
+        """Initialize sync and async clients."""
         if client:
             self._client = client
         else:
@@ -107,9 +133,6 @@ class ImednetSDK(SDKConvenienceMixin):
             )
         else:
             self._async_client = None
-
-        self._init_endpoints()
-        self.workflows = Workflows(self)
 
     @property
     def retry_policy(self) -> RetryPolicy:

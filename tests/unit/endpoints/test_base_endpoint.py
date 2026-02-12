@@ -5,10 +5,16 @@ import pytest
 from imednet.core.client import Client
 from imednet.core.context import Context
 from imednet.core.endpoint.base import BaseEndpoint
+from imednet.models.json_base import JsonModel
+
+
+class MockModel(JsonModel):
+    pass
 
 
 class MockEndpointImpl(BaseEndpoint):
     PATH = "/test"
+    MODEL = MockModel
 
     def __init__(self, client, ctx, async_client=None):
         super().__init__(client, ctx, async_client)

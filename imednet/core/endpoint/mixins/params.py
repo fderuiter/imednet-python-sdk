@@ -1,18 +1,22 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, cast
+from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional
 
 from imednet.utils.filters import build_filter_string
 
-from ..protocols import EndpointProtocol
 
-
-class ParamMixin:
+class ParamMixin(ABC):
     """Mixin for handling endpoint parameters and filters."""
 
     requires_study_key: bool = True
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
+
+    @abstractmethod
+    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """Apply automatic filters (e.g., default study key)."""
+        ...
 
     def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -31,8 +35,9 @@ class ParamMixin:
         filters: Dict[str, Any],
     ) -> tuple[Optional[str], Dict[str, Any], Dict[str, Any]]:
         # This method handles filter normalization and cache retrieval preparation
-        # Assuming _auto_filter is available via self (EndpointProtocol)
-        filters = cast(EndpointProtocol, self)._auto_filter(filters)
+
+        # Use abstract method instead of cast
+        filters = self._auto_filter(filters)
 
         # Extract special parameters using the hook
         special_params = self._extract_special_params(filters)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
@@ -7,27 +8,35 @@ from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
-from ..protocols import EndpointProtocol
 from .caching import CacheMixin
 from .params import ParamMixin
 from .parsing import ParsingMixin, T
 
 
-class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T]):
+class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], ABC):
     """Mixin implementing ``list`` helpers."""
 
-    PATH: str
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
 
+    @property
+    @abstractmethod
+    def PATH(self) -> str:
+        """The relative path for this endpoint."""
+        ...
+
+    @abstractmethod
+    def _build_path(self, *segments: Any) -> str:
+        """Build the API path."""
+        ...
+
     def _get_path(self, study: Optional[str]) -> str:
-        # Cast to EndpointProtocol to access PATH and _build_path
-        protocol_self = cast(EndpointProtocol, self)
+        # No cast needed, self has abstract methods/properties
         segments: Iterable[Any]
-        if protocol_self.requires_study_key:
-            segments = (study, protocol_self.PATH)
+        if self.requires_study_key:
+            segments = (study, self.PATH)
         else:
-            segments = (protocol_self.PATH,) if protocol_self.PATH else ()
-        return protocol_self._build_path(*segments)
+            segments = (self.PATH,) if self.PATH else ()
+        return self._build_path(*segments)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
         """
