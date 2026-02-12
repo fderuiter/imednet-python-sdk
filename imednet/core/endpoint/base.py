@@ -16,7 +16,7 @@ class BaseEndpoint:
     Handles context injection and filtering.
     """
 
-    BASE_PATH = "/api/v1/edc/studies"
+    BASE_PATH = ""
 
     PATH: str  # to be set in subclasses
 
@@ -37,15 +37,18 @@ class BaseEndpoint:
                 setattr(self, cache_name, None)
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        # inject default studyKey if missing
-        if "studyKey" not in filters and self._ctx.default_study_key:
-            filters["studyKey"] = self._ctx.default_study_key
+        """
+        Hook to modify filters before they are processed.
+
+        Subclasses (or mixins) should override this to inject default values.
+        """
         return filters
 
     def _build_path(self, *segments: Any) -> str:
         """Return an API path joined with :data:`BASE_PATH`."""
+        base = self.BASE_PATH.strip("/")
+        parts = [base] if base else []
 
-        parts = [self.BASE_PATH.strip("/")]
         for seg in segments:
             text = str(seg).strip("/")
             if text:

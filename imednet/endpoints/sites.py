@@ -1,10 +1,11 @@
 """Endpoint for managing sites (study locations) in a study."""
 
 from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 from imednet.models.sites import Site
 
 
-class SitesEndpoint(ListGetEndpoint[Site]):
+class SitesEndpoint(EdcEndpointMixin, ListGetEndpoint[Site]):
     """
     API endpoint for interacting with sites (study locations) in an iMedNet study.
 

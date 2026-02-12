@@ -1,10 +1,11 @@
 """Endpoint for managing intervals (visit definitions) in a study."""
 
 from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 from imednet.models.intervals import Interval
 
 
-class IntervalsEndpoint(ListGetEndpoint[Interval]):
+class IntervalsEndpoint(EdcEndpointMixin, ListGetEndpoint[Interval]):
     """
     API endpoint for interacting with intervals (visit definitions) in an iMedNet study.
 

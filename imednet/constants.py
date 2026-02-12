@@ -9,6 +9,7 @@ from __future__ import annotations
 
 __all__ = [
     "DEFAULT_BASE_URL",
+    "EDC_BASE_PATH",
     "DEFAULT_TIMEOUT",
     "DEFAULT_RETRIES",
     "DEFAULT_BACKOFF_FACTOR",
@@ -28,6 +29,9 @@ __all__ = [
 # API Configuration
 DEFAULT_BASE_URL = "https://edc.prod.imednetapi.com"
 """Default base URL for the iMednet API."""
+
+EDC_BASE_PATH = "/api/v1/edc/studies"
+"""Base path for EDC related endpoints."""
 
 # HTTP Client Configuration
 DEFAULT_TIMEOUT = 30.0

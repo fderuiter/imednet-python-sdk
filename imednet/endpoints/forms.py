@@ -1,10 +1,11 @@
 """Endpoint for managing forms (eCRFs) in a study."""
 
 from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 from imednet.models.forms import Form
 
 
-class FormsEndpoint(ListGetEndpoint[Form]):
+class FormsEndpoint(EdcEndpointMixin, ListGetEndpoint[Form]):
     """
     API endpoint for interacting with forms (eCRFs) in an iMedNet study.
 

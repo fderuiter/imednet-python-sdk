@@ -3,11 +3,12 @@
 from typing import Any, Optional
 
 from imednet.core.endpoint.mixins import ListPathGetEndpoint
+from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 from imednet.models.jobs import JobStatus
 
 
-class JobsEndpoint(ListPathGetEndpoint[JobStatus]):
+class JobsEndpoint(EdcEndpointMixin, ListPathGetEndpoint[JobStatus]):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 

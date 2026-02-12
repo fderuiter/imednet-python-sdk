@@ -1,10 +1,11 @@
 """Endpoint for retrieving record revision history in a study."""
 
 from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 from imednet.models.record_revisions import RecordRevision
 
 
-class RecordRevisionsEndpoint(ListGetEndpoint[RecordRevision]):
+class RecordRevisionsEndpoint(EdcEndpointMixin, ListGetEndpoint[RecordRevision]):
     """
     API endpoint for accessing record revision history in an iMedNet study.
 

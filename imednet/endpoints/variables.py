@@ -1,10 +1,11 @@
 """Endpoint for managing variables (data points on eCRFs) in a study."""
 
 from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 from imednet.models.variables import Variable
 
 
-class VariablesEndpoint(ListGetEndpoint[Variable]):
+class VariablesEndpoint(EdcEndpointMixin, ListGetEndpoint[Variable]):
     """
     API endpoint for interacting with variables (data points on eCRFs) in an iMedNet study.
 

@@ -3,10 +3,11 @@
 from typing import Any, Dict
 
 from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 from imednet.models.users import User
 
 
-class UsersEndpoint(ListGetEndpoint[User]):
+class UsersEndpoint(EdcEndpointMixin, ListGetEndpoint[User]):
     """
     API endpoint for interacting with users in an iMedNet study.
 
