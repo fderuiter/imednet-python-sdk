@@ -105,9 +105,9 @@ def patch_build_filter(monkeypatch):
         if hasattr(module, "build_filter_string"):
             monkeypatch.setattr(module, "build_filter_string", fake)
         else:
-            import imednet.core.endpoint.mixins as mixins
+            import imednet.core.endpoint.mixins.params as params_mixin
 
-            monkeypatch.setattr(mixins, "build_filter_string", fake)
+            monkeypatch.setattr(params_mixin, "build_filter_string", fake)
         return captured
 
     return patch
