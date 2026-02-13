@@ -15,3 +15,6 @@ def test_exception_hierarchy() -> None:
     assert issubclass(exceptions.RateLimitError, exceptions.ApiError)
     assert issubclass(exceptions.ServerError, exceptions.ApiError)
     assert issubclass(exceptions.ValidationError, exceptions.ApiError)
+
+    # New check
+    assert issubclass(exceptions.ClientError, exceptions.ImednetError)
