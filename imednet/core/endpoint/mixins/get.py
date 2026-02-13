@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Awaitable, Dict, Generic, Iterable, List, Optional, Type, cast
+from typing import Any, Awaitable, Dict, Iterable, List, Optional, cast
 
 from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.paginator import AsyncPaginator, Paginator

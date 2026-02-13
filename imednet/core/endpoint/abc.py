@@ -20,13 +20,13 @@ class EndpointABC(ABC, Generic[T]):
 
     @property
     @abstractmethod
-    def PATH(self) -> str:
+    def PATH(self) -> str:  # noqa: N802
         """The relative path for the endpoint."""
         pass
 
     @property
     @abstractmethod
-    def MODEL(self) -> Type[T]:
+    def MODEL(self) -> Type[T]:  # noqa: N802
         """The model class associated with this endpoint."""
         pass
 
