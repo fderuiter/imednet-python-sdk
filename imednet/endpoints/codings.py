@@ -1,10 +1,10 @@
 """Endpoint for managing codings (medical coding) in a study."""
 
-from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import StrictListGetEndpoint
 from imednet.models.codings import Coding
 
 
-class CodingsEndpoint(ListGetEndpoint[Coding]):
+class CodingsEndpoint(StrictListGetEndpoint[Coding]):
     """
     API endpoint for interacting with codings (medical coding) in an iMedNet study.
 
@@ -14,5 +14,3 @@ class CodingsEndpoint(ListGetEndpoint[Coding]):
     PATH = "codings"
     MODEL = Coding
     _id_param = "codingId"
-    _pop_study_filter = True
-    _missing_study_exception = KeyError

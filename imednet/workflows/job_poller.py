@@ -32,6 +32,10 @@ class JobPoller:
             return status
         return status
 
+    def _check_timeout(self, start_time: float, timeout: int, batch_id: str) -> None:
+        if time.monotonic() - start_time >= timeout:
+            raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+
     def _poll_sync(
         self,
         study_key: str,
@@ -41,19 +45,15 @@ class JobPoller:
     ) -> JobStatus:
         start = time.monotonic()
 
-        # Initial check
         result = self._get_job(study_key, batch_id)
-        status = cast(JobStatus, result)
-        status = self._check_complete(status, batch_id)
+        status = self._check_complete(cast(JobStatus, result), batch_id)
 
         while status.state.upper() not in TERMINAL_JOB_STATES:
-            if time.monotonic() - start >= timeout:
-                raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+            self._check_timeout(start, timeout, batch_id)
             time.sleep(interval)
 
             result = self._get_job(study_key, batch_id)
-            status = cast(JobStatus, result)
-            status = self._check_complete(status, batch_id)
+            status = self._check_complete(cast(JobStatus, result), batch_id)
 
         return status
 
@@ -66,19 +66,15 @@ class JobPoller:
     ) -> JobStatus:
         start = time.monotonic()
 
-        # Initial check
-        result = self._get_job(study_key, batch_id)
-        status = cast(JobStatus, await result)
-        status = self._check_complete(status, batch_id)
+        result = await self._get_job(study_key, batch_id)
+        status = self._check_complete(cast(JobStatus, result), batch_id)
 
         while status.state.upper() not in TERMINAL_JOB_STATES:
-            if time.monotonic() - start >= timeout:
-                raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+            self._check_timeout(start, timeout, batch_id)
             await asyncio.sleep(interval)
 
-            result = self._get_job(study_key, batch_id)
-            status = cast(JobStatus, await result)
-            status = self._check_complete(status, batch_id)
+            result = await self._get_job(study_key, batch_id)
+            status = self._check_complete(cast(JobStatus, result), batch_id)
 
         return status
 

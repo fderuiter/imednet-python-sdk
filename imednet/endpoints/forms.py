@@ -1,10 +1,10 @@
 """Endpoint for managing forms (eCRFs) in a study."""
 
-from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import MetadataListGetEndpoint
 from imednet.models.forms import Form
 
 
-class FormsEndpoint(ListGetEndpoint[Form]):
+class FormsEndpoint(MetadataListGetEndpoint[Form]):
     """
     API endpoint for interacting with forms (eCRFs) in an iMedNet study.
 
@@ -15,6 +15,3 @@ class FormsEndpoint(ListGetEndpoint[Form]):
     MODEL = Form
     _id_param = "formId"
     _cache_name = "_forms_cache"
-    PAGE_SIZE = 500
-    _pop_study_filter = True
-    _missing_study_exception = KeyError
