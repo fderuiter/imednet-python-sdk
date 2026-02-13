@@ -53,6 +53,15 @@ def parse_bool(v: Any) -> bool:
             return True
         if val in _FALSE_LOWER:
             return False
+
+        # Fallback: Try float conversion (for "1.0", "inf", "nan")
+        # Optimization: Only attempt if it looks numeric or special float
+        # to avoid try/except overhead on common strings like "apple"
+        if val and (val[0].isdigit() or val[0] in ("-", "+", ".") or val[0] in ("n", "i")):
+            try:
+                return bool(float(val))
+            except (ValueError, TypeError):
+                pass
     if isinstance(v, (int, float)):
         return bool(v)
     return False
