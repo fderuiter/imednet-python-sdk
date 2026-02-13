@@ -3,12 +3,22 @@ from unittest.mock import MagicMock
 from imednet.core.client import Client
 from imednet.core.context import Context
 from imednet.core.endpoint.base import BaseEndpoint
+from imednet.models.json_base import JsonModel
+
+
+class MockModel(JsonModel):
+    pass
+
+
+class MockEndpoint(BaseEndpoint[MockModel]):
+    MODEL = MockModel
+    PATH = "/test"
 
 
 def test_build_path_security():
     client = MagicMock(spec=Client)
     ctx = Context()
-    endpoint = BaseEndpoint(client, ctx)
+    endpoint = MockEndpoint(client, ctx)
     endpoint.BASE_PATH = "api/v1/edc/studies"
 
     # Case 1: Path Traversal
