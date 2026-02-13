@@ -1,5 +1,7 @@
 import pytest
+
 from imednet.utils.validators import parse_bool
+
 
 @pytest.mark.parametrize(
     "input_val, expected",
