@@ -77,3 +77,24 @@ class ListPathGetEndpoint(ListEndpoint[T], PathGetEndpointMixin[T]):
             Awaitable[T],
             self._get_impl_path(client, study_key=study_key, item_id=item_id, is_async=True),
         )
+
+
+class StrictListGetEndpoint(ListGetEndpoint[T]):
+    """
+    Endpoint base class enforcing strict study key requirements.
+
+    Populates study key from filters and raises KeyError if missing.
+    """
+
+    _pop_study_filter = True
+    _missing_study_exception = KeyError
+
+
+class MetadataListGetEndpoint(StrictListGetEndpoint[T]):
+    """
+    Endpoint base class for metadata resources.
+
+    Inherits strict study key requirements and sets a larger default page size.
+    """
+
+    PAGE_SIZE = 500

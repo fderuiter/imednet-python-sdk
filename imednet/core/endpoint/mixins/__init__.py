@@ -6,6 +6,8 @@ from .bases import (
     ListGetEndpoint,
     ListGetEndpointMixin,
     ListPathGetEndpoint,
+    MetadataListGetEndpoint,
+    StrictListGetEndpoint,
 )
 from .caching import CacheMixin
 from .create import CreateEndpointMixin
@@ -24,9 +26,11 @@ __all__ = [
     "ListGetEndpoint",
     "ListGetEndpointMixin",
     "ListPathGetEndpoint",
+    "MetadataListGetEndpoint",
     "Paginator",
     "ParamMixin",
     "ParsingMixin",
     "PathGetEndpointMixin",
+    "StrictListGetEndpoint",
     "build_filter_string",
 ]
