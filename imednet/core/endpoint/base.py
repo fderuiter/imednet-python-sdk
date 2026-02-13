@@ -2,14 +2,20 @@
 Base endpoint mix-in for all API resource endpoints.
 """
 
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Dict, TypeVar
 from urllib.parse import quote
 
 from imednet.core.context import Context
+from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.models.json_base import JsonModel
+
+T = TypeVar("T", bound=JsonModel)
 
 
-class BaseEndpoint:
+class BaseEndpoint(EndpointABC[T]):
     """
     Shared base for endpoint wrappers.
 
@@ -17,8 +23,6 @@ class BaseEndpoint:
     """
 
     BASE_PATH = "/api/v1/edc/studies"
-
-    PATH: str  # to be set in subclasses
 
     def __init__(
         self,
@@ -29,9 +33,11 @@ class BaseEndpoint:
         self._client = client
         self._async_client = async_client
         self._ctx = ctx
-        cache_name: Optional[str] = getattr(self, "_cache_name", None)
+
+        # Initialize cache if configured
+        cache_name = self._cache_name
         if cache_name:
-            if getattr(self, "requires_study_key", True):
+            if self.requires_study_key:
                 setattr(self, cache_name, {})
             else:
                 setattr(self, cache_name, None)

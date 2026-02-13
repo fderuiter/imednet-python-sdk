@@ -3,31 +3,28 @@ from __future__ import annotations
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
+from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
-from ..protocols import EndpointProtocol
 from .caching import CacheMixin
 from .params import ParamMixin
 from .parsing import ParsingMixin, T
 
 
-class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T]):
+class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T]):
     """Mixin implementing ``list`` helpers."""
 
-    PATH: str
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
 
     def _get_path(self, study: Optional[str]) -> str:
-        # Cast to EndpointProtocol to access PATH and _build_path
-        protocol_self = cast(EndpointProtocol, self)
         segments: Iterable[Any]
-        if protocol_self.requires_study_key:
-            segments = (study, protocol_self.PATH)
+        if self.requires_study_key:
+            segments = (study, self.PATH)
         else:
-            segments = (protocol_self.PATH,) if protocol_self.PATH else ()
-        return protocol_self._build_path(*segments)
+            segments = (self.PATH,) if self.PATH else ()
+        return self._build_path(*segments)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
         """
@@ -40,7 +37,8 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T]):
             The parsing function to use
         """
         # Check if _parse_item has been overridden by a subclass
-        if self._parse_item.__func__ is not ListEndpointMixin._parse_item:  # type: ignore[attr-defined]
+        # We check against ParsingMixin which provides the default implementation
+        if self._parse_item.__func__ is not ParsingMixin._parse_item:  # type: ignore[attr-defined]
             return self._parse_item
 
         # Use centralized parsing strategy

@@ -4,7 +4,7 @@ Custom exceptions for the iMednet SDK.
 Defines a hierarchy of exceptions corresponding to HTTP and validation errors.
 """
 
-from typing import Any, Optional
+from typing import Any, Dict, Optional, Union
 
 
 class ImednetError(Exception):
@@ -23,6 +23,14 @@ class RequestError(ImednetError):
     pass
 
 
+class ClientError(ImednetError):
+    """
+    Raised for client-side errors (validation, configuration, misuse).
+    """
+
+    pass
+
+
 class ApiError(ImednetError):
     """
     Raised for generic API errors (non-2xx HTTP status codes).
@@ -32,7 +40,9 @@ class ApiError(ImednetError):
         response: Parsed JSON or raw text of the error response.
     """
 
-    def __init__(self, response: Any, status_code: Optional[int] = None) -> None:
+    def __init__(
+        self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = None
+    ) -> None:
         super().__init__(str(response))
         self.status_code = status_code
         self.response = response

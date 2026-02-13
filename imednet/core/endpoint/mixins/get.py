@@ -3,21 +3,19 @@ from __future__ import annotations
 import inspect
 from typing import Any, Awaitable, Dict, Generic, Iterable, List, Optional, Type, cast
 
+from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
-from ..base import BaseEndpoint
 from .parsing import ParsingMixin, T
 
 
-class FilterGetEndpointMixin(Generic[T]):
+class FilterGetEndpointMixin(EndpointABC[T]):
     """Mixin implementing ``get`` via filtering."""
 
-    MODEL: Type[T]
-    _id_param: str
-    requires_study_key: bool = True
+    # MODEL and _id_param are inherited from EndpointABC as abstract or properties
 
-    # This should be provided by ListEndpointMixin
+    # This should be provided by ListEndpointMixin or similar implementation
     def _list_impl(
         self,
         client: RequestorProtocol | AsyncRequestorProtocol,
@@ -70,15 +68,10 @@ class FilterGetEndpointMixin(Generic[T]):
         return items[0]
 
 
-class PathGetEndpointMixin(ParsingMixin[T]):
+class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     """Mixin implementing ``get`` via direct path."""
 
-    PATH: str
-    requires_study_key: bool = True
-
-    def _build_path(self, *segments: Any) -> str:
-        # Expected from BaseEndpoint
-        raise NotImplementedError
+    # PATH is inherited from EndpointABC as abstract
 
     def _get_path_for_id(self, study_key: Optional[str], item_id: Any) -> str:
         segments: Iterable[Any]
@@ -88,9 +81,9 @@ class PathGetEndpointMixin(ParsingMixin[T]):
             segments = (study_key, self.PATH, item_id)
         else:
             segments = (self.PATH, item_id) if self.PATH else (item_id,)
-        # self is mixed into BaseEndpoint which implements _build_path
-        # Use cast for type checking compliance without importing BaseEndpoint
-        return cast(BaseEndpoint, self)._build_path(*segments)
+
+        # No cast needed as we inherit EndpointABC which defines _build_path
+        return self._build_path(*segments)
 
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise ValueError(f"{self.MODEL.__name__} not found")
@@ -117,8 +110,6 @@ class PathGetEndpointMixin(ParsingMixin[T]):
 
             async def _await() -> T:
                 # We assume client is AsyncRequestorProtocol because is_async=True
-                # But we can't be sure type-wise unless we narrow it down.
-                # In practice, caller ensures this.
                 aclient = cast(AsyncRequestorProtocol, client)
                 response = await aclient.get(path)
                 return process_response(response)
