@@ -44,6 +44,16 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         # Use centralized parsing strategy
         return get_model_parser(self.MODEL)
 
+    def _process_list_result(
+        self,
+        result: List[T],
+        study: Optional[str],
+        has_filters: bool,
+        cache: Any,
+    ) -> List[T]:
+        self._update_local_cache(result, study, has_filters, cache)
+        return result
+
     async def _execute_async_list(
         self,
         paginator: AsyncPaginator,
@@ -53,8 +63,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         cache: Any,
     ) -> List[T]:
         result = [parse_func(item) async for item in paginator]
-        self._update_local_cache(result, study, has_filters, cache)
-        return result
+        return self._process_list_result(result, study, has_filters, cache)
 
     def _execute_sync_list(
         self,
@@ -65,8 +74,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         cache: Any,
     ) -> List[T]:
         result = [parse_func(item) for item in paginator]
-        self._update_local_cache(result, study, has_filters, cache)
-        return result
+        return self._process_list_result(result, study, has_filters, cache)
 
     def _prepare_list_request(
         self,
