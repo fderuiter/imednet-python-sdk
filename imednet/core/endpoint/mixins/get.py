@@ -28,6 +28,15 @@ class FilterGetEndpointMixin(EndpointABC[T]):
     ) -> List[T] | Awaitable[List[T]]:
         raise NotImplementedError
 
+    def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
+        if not items:
+            if self.requires_study_key:
+                raise ValueError(
+                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
+                )
+            raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
+        return items[0]
+
     def _get_impl(
         self,
         client: RequestorProtocol | AsyncRequestorProtocol,
@@ -49,23 +58,12 @@ class FilterGetEndpointMixin(EndpointABC[T]):
 
             async def _await() -> T:
                 items = await result
-                if not items:
-                    if self.requires_study_key:
-                        raise ValueError(
-                            f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
-                        )
-                    raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
-                return items[0]
+                return self._validate_get_result(items, study_key, item_id)
 
             return _await()
 
         # Sync path
-        items = cast(List[T], result)
-        if not items:
-            if self.requires_study_key:
-                raise ValueError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
-            raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
-        return items[0]
+        return self._validate_get_result(cast(List[T], result), study_key, item_id)
 
 
 class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
@@ -88,6 +86,13 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise ValueError(f"{self.MODEL.__name__} not found")
 
+    def _process_response(self, response: Any, study_key: Optional[str], item_id: Any) -> T:
+        data = response.json()
+        if not data:
+            # Enforce strict validation for empty body
+            self._raise_not_found(study_key, item_id)
+        return self._parse_item(data)
+
     def _get_impl_path(
         self,
         client: RequestorProtocol | AsyncRequestorProtocol,
@@ -98,24 +103,16 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     ) -> T | Awaitable[T]:
         path = self._get_path_for_id(study_key, item_id)
 
-        # Helper to process response
-        def process_response(response: Any) -> T:
-            data = response.json()
-            if not data:
-                # Enforce strict validation for empty body
-                self._raise_not_found(study_key, item_id)
-            return self._parse_item(data)
-
         if is_async:
 
             async def _await() -> T:
                 # We assume client is AsyncRequestorProtocol because is_async=True
                 aclient = cast(AsyncRequestorProtocol, client)
                 response = await aclient.get(path)
-                return process_response(response)
+                return self._process_response(response, study_key, item_id)
 
             return _await()
 
         sclient = cast(RequestorProtocol, client)
         response = sclient.get(path)
-        return process_response(response)
+        return self._process_response(response, study_key, item_id)
