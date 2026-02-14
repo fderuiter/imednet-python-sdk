@@ -1,12 +1,15 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from imednet.core.context import Context
 from imednet.core.endpoint.mixins.edc import EdcEndpointMixin
 
+
 class MockEdcEndpoint(EdcEndpointMixin):
     def __init__(self, ctx):
         self._ctx = ctx
+
 
 class TestEdcEndpointMixin:
     @pytest.fixture
