@@ -22,7 +22,7 @@ class BaseEndpoint(EndpointABC[T]):
     Handles context injection and filtering.
     """
 
-    BASE_PATH = "/api/v1/edc/studies"
+    BASE_PATH: str = ""
 
     def __init__(
         self,
@@ -43,9 +43,11 @@ class BaseEndpoint(EndpointABC[T]):
                 setattr(self, cache_name, None)
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        # inject default studyKey if missing
-        if "studyKey" not in filters and self._ctx.default_study_key:
-            filters["studyKey"] = self._ctx.default_study_key
+        """
+        Apply automatic filters.
+
+        Override in subclasses or mixins to inject default filters (e.g., studyKey).
+        """
         return filters
 
     def _build_path(self, *segments: Any) -> str:
@@ -57,7 +59,10 @@ class BaseEndpoint(EndpointABC[T]):
             if text:
                 # Encode path segments to prevent traversal and injection
                 parts.append(quote(text, safe=""))
-        return "/" + "/".join(parts)
+
+        # Ensure the path starts with / but doesn't have double //
+        path = "/" + "/".join(p for p in parts if p)
+        return path if path.startswith("/") else "/" + path
 
     def _require_async_client(self) -> AsyncRequestorProtocol:
         """Return the configured async client or raise if missing."""

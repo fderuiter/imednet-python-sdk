@@ -6,6 +6,7 @@ from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
 from ..base import BaseEndpoint
+from .edc import EdcEndpointMixin
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
 from .list import ListEndpointMixin
 from .parsing import T
@@ -98,3 +99,40 @@ class MetadataListGetEndpoint(StrictListGetEndpoint[T]):
     """
 
     PAGE_SIZE = 500
+
+
+# EDC Specific Base Classes
+
+
+class EdcListEndpoint(EdcEndpointMixin, ListEndpoint[T]):
+    """EDC-specific endpoint implementing ``list`` helpers."""
+
+    pass
+
+
+class EdcListGetEndpoint(EdcEndpointMixin, ListGetEndpoint[T]):
+    """EDC-specific endpoint implementing ``list`` and ``get`` helpers."""
+
+    pass
+
+
+class EdcStrictListGetEndpoint(EdcEndpointMixin, StrictListGetEndpoint[T]):
+    """
+    EDC-specific endpoint enforcing strict study key requirements.
+    """
+
+    pass
+
+
+class EdcMetadataListGetEndpoint(EdcEndpointMixin, MetadataListGetEndpoint[T]):
+    """
+    EDC-specific endpoint for metadata resources.
+    """
+
+    pass
+
+
+class EdcListPathGetEndpoint(EdcEndpointMixin, ListPathGetEndpoint[T]):
+    """EDC-specific endpoint implementing ``list`` and ``get`` (via path)."""
+
+    pass

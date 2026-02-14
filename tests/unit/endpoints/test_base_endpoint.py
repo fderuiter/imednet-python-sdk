@@ -34,19 +34,13 @@ class TestBaseEndpoint:
         with pytest.raises(RuntimeError, match="Async client not configured"):
             ep._require_async_client()
 
-    def test_auto_filter_injects_study_key(self, client, context):
+    def test_auto_filter_does_nothing(self, client, context):
+        """Verify generic BaseEndpoint does not inject filters."""
         context.set_default_study_key("DEFAULT")
         ep = MockEndpointImpl(client, context)
 
         filters = {"foo": "bar"}
         result = ep._auto_filter(filters)
-        assert result["studyKey"] == "DEFAULT"
-        assert result["foo"] == "bar"
-
-    def test_auto_filter_preserves_existing_study_key(self, client, context):
-        context.set_default_study_key("DEFAULT")
-        ep = MockEndpointImpl(client, context)
-
-        filters = {"studyKey": "EXPLICIT", "foo": "bar"}
-        result = ep._auto_filter(filters)
-        assert result["studyKey"] == "EXPLICIT"
+        # Should be unchanged
+        assert result == filters
+        assert "studyKey" not in result
