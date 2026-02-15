@@ -5,7 +5,8 @@ from typing import Any, Awaitable, List, Optional, cast
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
-from ..base import BaseEndpoint
+from ..base import BaseEndpoint, GenericEndpoint
+from .edc import EdcEndpointMixin
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
 from .list import ListEndpointMixin
 from .parsing import T
@@ -17,8 +18,8 @@ class ListGetEndpointMixin(ListEndpointMixin[T], FilterGetEndpointMixin[T]):
     pass
 
 
-class ListEndpoint(BaseEndpoint, ListEndpointMixin[T]):
-    """Endpoint base class implementing ``list`` helpers."""
+class GenericListEndpoint(GenericEndpoint[T], ListEndpointMixin[T]):
+    """Generic endpoint implementing ``list`` helpers."""
 
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
@@ -43,8 +44,60 @@ class ListEndpoint(BaseEndpoint, ListEndpointMixin[T]):
         )
 
 
-class ListGetEndpoint(ListEndpoint[T], FilterGetEndpointMixin[T]):
-    """Endpoint base class implementing ``list`` and ``get`` helpers."""
+class EdcListEndpoint(EdcEndpointMixin, GenericListEndpoint[T]):
+    """EDC-specific endpoint implementing ``list`` helpers."""
+    pass
+
+
+class ListEndpoint(BaseEndpoint, ListEndpointMixin[T]):
+    """
+    Deprecated: Use EdcListEndpoint for EDC resources or GenericListEndpoint.
+    Currently mapped to legacy BaseEndpoint behavior.
+    """
+    # Re-implementing GenericListEndpoint logic because BaseEndpoint inherits GenericEndpoint
+    # but GenericListEndpoint inherits GenericEndpoint AND implements logic.
+    # To avoid MRO issues or duplication, we can just mix in GenericListEndpoint?
+    # No, BaseEndpoint already inherits GenericEndpoint.
+
+    # Actually, ListEndpoint in previous code inherited (BaseEndpoint, ListEndpointMixin).
+    # BaseEndpoint provided EDC logic. ListEndpointMixin provided _list_impl.
+    # ListEndpoint provided list/async_list.
+
+    # So we can just alias ListEndpoint = EdcListEndpoint if we want full replacement.
+    # But for strict back-compat, we might want to keep BaseEndpoint in the MRO.
+    # EdcListEndpoint uses (EdcEndpointMixin, GenericListEndpoint).
+    # GenericListEndpoint uses (GenericEndpoint, ListEndpointMixin).
+    # So EdcListEndpoint uses (EdcEndpointMixin, GenericEndpoint, ListEndpointMixin).
+
+    # BaseEndpoint uses (GenericEndpoint) + inline EDC logic.
+
+    # So EdcListEndpoint is preferred.
+
+    PAGINATOR_CLS: type[Paginator] = Paginator
+    ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
+
+    def _get_context(
+        self, is_async: bool
+    ) -> tuple[RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]]:
+        if is_async:
+            return self._require_async_client(), self.ASYNC_PAGINATOR_CLS
+        return self._client, self.PAGINATOR_CLS
+
+    def _list_common(self, is_async: bool, **kwargs: Any) -> List[T] | Awaitable[List[T]]:
+        client, paginator = self._get_context(is_async)
+        return self._list_impl(client, paginator, **kwargs)
+
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        return cast(List[T], self._list_common(False, study_key=study_key, **filters))
+
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        return await cast(
+            Awaitable[List[T]], self._list_common(True, study_key=study_key, **filters)
+        )
+
+
+class GenericListGetEndpoint(GenericListEndpoint[T], FilterGetEndpointMixin[T]):
+    """Generic endpoint implementing ``list`` and ``get`` helpers."""
 
     def _get_common(
         self,
@@ -65,9 +118,57 @@ class ListGetEndpoint(ListEndpoint[T], FilterGetEndpointMixin[T]):
         )
 
 
-class ListPathGetEndpoint(ListEndpoint[T], PathGetEndpointMixin[T]):
-    """Endpoint base class implementing ``list`` and ``get`` (via path) helpers."""
+class EdcListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[T]):
+    """EDC-specific endpoint implementing ``list`` and ``get`` helpers."""
+    pass
 
+
+class ListGetEndpoint(ListEndpoint[T], FilterGetEndpointMixin[T]):
+    """
+    Deprecated: Use EdcListGetEndpoint.
+    """
+    def _get_common(
+        self,
+        is_async: bool,
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T | Awaitable[T]:
+        client, paginator = self._get_context(is_async)
+        return self._get_impl(client, paginator, study_key=study_key, item_id=item_id)
+
+    def get(self, study_key: Optional[str], item_id: Any) -> T:
+        return cast(T, self._get_common(False, study_key=study_key, item_id=item_id))
+
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+        return await cast(
+            Awaitable[T], self._get_common(True, study_key=study_key, item_id=item_id)
+        )
+
+
+class GenericListPathGetEndpoint(GenericListEndpoint[T], PathGetEndpointMixin[T]):
+    """Generic endpoint implementing ``list`` and ``get`` (via path)."""
+
+    def get(self, study_key: Optional[str], item_id: Any) -> T:
+        return cast(T, self._get_impl_path(self._client, study_key=study_key, item_id=item_id))
+
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+        client = self._require_async_client()
+        return await cast(
+            Awaitable[T],
+            self._get_impl_path(client, study_key=study_key, item_id=item_id, is_async=True),
+        )
+
+
+class EdcListPathGetEndpoint(EdcEndpointMixin, GenericListPathGetEndpoint[T]):
+    """EDC-specific endpoint implementing ``list`` and ``get`` (via path)."""
+    pass
+
+
+class ListPathGetEndpoint(ListEndpoint[T], PathGetEndpointMixin[T]):
+    """
+    Deprecated: Use EdcListPathGetEndpoint.
+    """
     def get(self, study_key: Optional[str], item_id: Any) -> T:
         return cast(T, self._get_impl_path(self._client, study_key=study_key, item_id=item_id))
 
@@ -89,6 +190,13 @@ class StrictListGetEndpoint(ListGetEndpoint[T]):
     _pop_study_filter = True
     _missing_study_exception = KeyError
 
+class EdcStrictListGetEndpoint(EdcListGetEndpoint[T]):
+    """
+    EDC Endpoint base class enforcing strict study key requirements.
+    """
+    _pop_study_filter = True
+    _missing_study_exception = KeyError
+
 
 class MetadataListGetEndpoint(StrictListGetEndpoint[T]):
     """
@@ -97,4 +205,10 @@ class MetadataListGetEndpoint(StrictListGetEndpoint[T]):
     Inherits strict study key requirements and sets a larger default page size.
     """
 
+    PAGE_SIZE = 500
+
+class EdcMetadataListGetEndpoint(EdcStrictListGetEndpoint[T]):
+    """
+    EDC Endpoint base class for metadata resources.
+    """
     PAGE_SIZE = 500

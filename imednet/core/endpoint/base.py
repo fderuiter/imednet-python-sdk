@@ -15,14 +15,13 @@ from imednet.models.json_base import JsonModel
 T = TypeVar("T", bound=JsonModel)
 
 
-class BaseEndpoint(EndpointABC[T]):
+class GenericEndpoint(EndpointABC[T]):
     """
-    Shared base for endpoint wrappers.
+    Generic base for endpoint wrappers.
 
-    Handles context injection and filtering.
+    Handles context injection and basic HTTP client setup.
+    Does NOT assume EDC-specific paths or filters.
     """
-
-    BASE_PATH = "/api/v1/edc/studies"
 
     def __init__(
         self,
@@ -42,6 +41,44 @@ class BaseEndpoint(EndpointABC[T]):
             else:
                 setattr(self, cache_name, None)
 
+    def _require_async_client(self) -> AsyncRequestorProtocol:
+        """Return the configured async client or raise if missing."""
+        if self._async_client is None:
+            raise RuntimeError("Async client not configured")
+        return self._async_client
+
+    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Pass-through filter. Subclasses should override.
+        """
+        return filters
+
+    def _build_path(self, *segments: Any) -> str:
+        """
+        Build path by joining segments.
+        Does not prepend a base path by default.
+        """
+        parts: list[str] = []
+        for seg in segments:
+            text = str(seg).strip("/")
+            if text:
+                parts.append(quote(text, safe=""))
+        return "/" + "/".join(parts)
+
+
+class BaseEndpoint(GenericEndpoint[T]):
+    """
+    Legacy base for EDC endpoint wrappers.
+
+    Inherits from GenericEndpoint but enforces EDC-specific logic:
+    - Prepend /api/v1/edc/studies
+    - Inject studyKey from context
+
+    Deprecated: Prefer using GenericEndpoint combined with EdcEndpointMixin.
+    """
+
+    BASE_PATH = "/api/v1/edc/studies"
+
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         # inject default studyKey if missing
         if "studyKey" not in filters and self._ctx.default_study_key:
@@ -58,9 +95,3 @@ class BaseEndpoint(EndpointABC[T]):
                 # Encode path segments to prevent traversal and injection
                 parts.append(quote(text, safe=""))
         return "/" + "/".join(parts)
-
-    def _require_async_client(self) -> AsyncRequestorProtocol:
-        """Return the configured async client or raise if missing."""
-        if self._async_client is None:
-            raise RuntimeError("Async client not configured")
-        return self._async_client
