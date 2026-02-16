@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 import time
 from contextlib import nullcontext
-from typing import Any, NoReturn, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, NoReturn, Optional
 
 import httpx
 from tenacity import RetryError
