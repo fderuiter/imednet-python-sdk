@@ -69,10 +69,12 @@ def test_default_retry_policy_retries_connection_error(respx_mock_external) -> N
         side_effect=httpx.ConnectError("Network Error", request=None)
     )
 
-    # Note: RequestExecutor configures tenacity with reraise=True, so the underlying
-    # httpx.ConnectError bubbles up instead of being wrapped in exceptions.RequestError.
-    with pytest.raises(httpx.ConnectError):
+    # Note: RequestExecutor configures tenacity with reraise=False, so the underlying
+    # httpx.ConnectError is wrapped in exceptions.RequestError.
+    with pytest.raises(exceptions.RequestError) as exc_info:
         sdk._client.get("/test")
+
+    assert isinstance(exc_info.value.__cause__, httpx.ConnectError)
 
     # Should attempt 3 times (default retries=3)
     assert route.call_count == 3

@@ -60,8 +60,9 @@ def test_timeout_handling():
 
     respx.get("https://api.test/slow").mock(side_effect=slow)
 
-    with pytest.raises(httpx.ReadTimeout):
+    with pytest.raises(exceptions.RequestError) as exc_info:
         client.get("/slow")
+    assert isinstance(exc_info.value.__cause__, httpx.ReadTimeout)
 
 
 @respx.mock
