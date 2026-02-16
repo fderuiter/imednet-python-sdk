@@ -1,6 +1,6 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Awaitable, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.endpoint.mixins import CreateEndpointMixin, ListGetEndpoint
@@ -108,15 +108,12 @@ class RecordsEndpoint(ListGetEndpoint[Record], CreateEndpointMixin[Job]):
             ValueError: If email_notify contains invalid characters
         """
         path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
-        return cast(
-            Job,
-            self._create_impl(
-                self._client,
-                path,
-                json=records_data,
-                headers=headers,
-                parse_func=Job.from_json,
-            ),
+        return self._create_sync(
+            self._client,
+            path,
+            json=records_data,
+            headers=headers,
+            parse_func=Job.from_json,
         )
 
     async def async_create(
@@ -148,9 +145,6 @@ class RecordsEndpoint(ListGetEndpoint[Record], CreateEndpointMixin[Job]):
         """
         client = self._require_async_client()
         path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
-        return await cast(
-            Awaitable[Job],
-            self._create_impl(
-                client, path, json=records_data, headers=headers, parse_func=Job.from_json
-            ),
+        return await self._create_async(
+            client, path, json=records_data, headers=headers, parse_func=Job.from_json
         )
