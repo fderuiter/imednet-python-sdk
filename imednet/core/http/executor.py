@@ -5,7 +5,7 @@ HTTP request execution with retries and monitoring.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Coroutine, Optional, TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Coroutine, Optional, cast
 
 import httpx
 from tenacity import (
@@ -17,9 +17,9 @@ from tenacity import (
     wait_exponential,
 )
 
-from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 from imednet.core.http.handlers import handle_response
 from imednet.core.http.monitor import RequestMonitor
+from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 
 if TYPE_CHECKING:
     from opentelemetry.trace import Tracer
