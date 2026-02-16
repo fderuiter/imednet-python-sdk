@@ -11,8 +11,8 @@ from imednet.constants import (
     HEADER_ACCEPT,
     HEADER_CONTENT_TYPE,
 )
-
 from imednet.core.http.executor import RequestExecutor
+
 from .base_client import BaseClient, Tracer
 from .retry import RetryPolicy
 
