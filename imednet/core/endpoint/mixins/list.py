@@ -134,9 +134,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         if state.cached_result is not None:
             return state.cached_result
 
-        paginator = paginator_cls(
-            client, state.path, params=state.params, page_size=self.PAGE_SIZE
-        )
+        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
         parse_func = self._resolve_parse_func()
 
         if hasattr(paginator, "__aiter__"):
