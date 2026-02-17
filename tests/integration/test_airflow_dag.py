@@ -12,6 +12,7 @@ def test_dag_runs(monkeypatch):
     pytest.importorskip("airflow")
     from airflow.models import DAG, TaskInstance
     from airflow.utils.state import State
+
     from imednet.integrations.airflow import ImednetJobSensor, ImednetToS3Operator
 
     s3 = boto3.client("s3", region_name="us-east-1")

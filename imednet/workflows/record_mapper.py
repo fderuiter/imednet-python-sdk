@@ -154,7 +154,8 @@ class RecordMapper:
             import pandas as pd
         except ImportError as exc:
             raise ImportError(
-                "Pandas is required for this feature. Install it with `pip install pandas` or `pip install imednet[pandas]`."
+                "Pandas is required for this feature. "
+                "Install it with `pip install pandas` or `pip install imednet[pandas]`."
             ) from exc
 
         df = pd.DataFrame(rows)
@@ -194,7 +195,8 @@ class RecordMapper:
             import pandas as pd
         except ImportError as exc:
             raise ImportError(
-                "Pandas is required for this feature. Install it with `pip install pandas` or `pip install imednet[pandas]`."
+                "Pandas is required for this feature. "
+                "Install it with `pip install pandas` or `pip install imednet[pandas]`."
             ) from exc
 
         variable_keys, label_map = self._fetch_variable_metadata(
