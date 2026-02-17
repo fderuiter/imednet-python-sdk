@@ -4,6 +4,7 @@ from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional, cas
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.structs import ListRequestState
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
@@ -82,24 +83,40 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
         refresh: bool,
-    ) -> tuple[Optional[List[T]], str, Dict[str, Any], Optional[str], bool, Any]:
+    ) -> ListRequestState[T]:
         """
         Prepare parameters, cache, and path for list request.
 
         Returns:
-            Tuple of (cached_result, path, params, study, has_other_filters, cache_obj)
+            ListRequestState object containing all necessary context.
         """
-        # self is ListEndpointMixin, which inherits ParamMixin and CacheMixin
-        study, params, other_filters = self._resolve_params(study_key, extra_params, filters)
+        # Resolve parameters using the ParamMixin logic
+        param_state = self._resolve_params(study_key, extra_params, filters)
+        study = param_state.study
+        params = param_state.params
+        other_filters = param_state.other_filters
 
         cache = self._get_local_cache()
         cached_result = self._check_cache_hit(study, refresh, other_filters, cache)
 
         if cached_result is not None:
-            return cast(List[T], cached_result), "", {}, study, False, None
+            return ListRequestState(
+                path="",
+                params={},
+                study=study,
+                has_filters=False,
+                cache=None,
+                cached_result=cast(List[T], cached_result),
+            )
 
         path = self._get_path(study)
-        return None, path, params, study, bool(other_filters), cache
+        return ListRequestState(
+            path=path,
+            params=params,
+            study=study,
+            has_filters=bool(other_filters),
+            cache=cache,
+        )
 
     def _list_impl(
         self,
@@ -112,21 +129,29 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         **filters: Any,
     ) -> List[T] | Awaitable[List[T]]:
 
-        cached_result, path, params, study, has_filters, cache = self._prepare_list_request(
-            study_key, extra_params, filters, refresh
+        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
+
+        if state.cached_result is not None:
+            return state.cached_result
+
+        paginator = paginator_cls(
+            client, state.path, params=state.params, page_size=self.PAGE_SIZE
         )
-
-        if cached_result is not None:
-            return cached_result
-
-        paginator = paginator_cls(client, path, params=params, page_size=self.PAGE_SIZE)
         parse_func = self._resolve_parse_func()
 
         if hasattr(paginator, "__aiter__"):
             return self._execute_async_list(
-                cast(AsyncPaginator, paginator), parse_func, study, has_filters, cache
+                cast(AsyncPaginator, paginator),
+                parse_func,
+                state.study,
+                state.has_filters,
+                state.cache,
             )
 
         return self._execute_sync_list(
-            cast(Paginator, paginator), parse_func, study, has_filters, cache
+            cast(Paginator, paginator),
+            parse_func,
+            state.study,
+            state.has_filters,
+            state.cache,
         )

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, cast
 
+from imednet.core.endpoint.structs import ParamState
 from imednet.utils.filters import build_filter_string
 
 from ..protocols import EndpointProtocol
@@ -29,7 +30,7 @@ class ParamMixin:
         study_key: Optional[str],
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
-    ) -> tuple[Optional[str], Dict[str, Any], Dict[str, Any]]:
+    ) -> ParamState:
         # This method handles filter normalization and cache retrieval preparation
         # Assuming _auto_filter is available via self (EndpointProtocol)
         filters = cast(EndpointProtocol, self)._auto_filter(filters)
@@ -69,4 +70,4 @@ class ParamMixin:
         if extra_params:
             params.update(extra_params)
 
-        return study, params, other_filters
+        return ParamState(study=study, params=params, other_filters=other_filters)
