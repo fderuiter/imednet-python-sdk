@@ -107,6 +107,7 @@ def test_build_filter_string_backslashes() -> None:
     # quote: A\"B -> "A\\\"B"
     assert result == r'path=="C:\\Temp";quote=="A\\\"B"'
 
+
 def test_build_filter_string_empty_value() -> None:
     result = build_filter_string({"empty": ""})
     assert result == 'empty==""'
