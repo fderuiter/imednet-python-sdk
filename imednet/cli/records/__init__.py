@@ -1,18 +1,14 @@
 from __future__ import annotations
 
-import csv
-import json
-from pathlib import Path
 from typing import Optional
 
 import typer
 from rich import print
 
-from imednet.utils import sanitize_csv_formula
-
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
 from ..utils import STUDY_KEY_ARG, display_list, fetching_status
+from ..utils.export import export_list_to_file
 
 app = typer.Typer(name="records", help="Manage records within a study.")
 
@@ -40,30 +36,7 @@ def list_records(
         records = sdk.records.list(study_key)
 
     if output:
-        path = Path(f"records.{output}")
-        # Export full data
-        data = [r.model_dump(by_alias=True) for r in records]
-
-        if output == "csv":
-            if data:
-                # Sanitize data to prevent CSV injection
-                for row in data:
-                    for k, v in row.items():
-                        row[k] = sanitize_csv_formula(v)
-
-                keys = data[0].keys()
-                with open(path, "w", newline="", encoding="utf-8") as f:
-                    writer = csv.DictWriter(f, fieldnames=keys)
-                    writer.writeheader()
-                    writer.writerows(data)
-            else:
-                # Create empty file
-                path.touch()
-        else:
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, default=str)
-
-        print(f"Saved {len(records)} records to {path}")
+        export_list_to_file(records, "records", output.lower())
     else:
         # Display simplified view
         view_models = []
