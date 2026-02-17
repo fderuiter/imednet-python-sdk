@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from imednet.sdk import ImednetSDK
+
     from .data_extraction import DataExtractionWorkflow
     from .query_management import QueryManagementWorkflow
     from .record_mapper import RecordMapper
