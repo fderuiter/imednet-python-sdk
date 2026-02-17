@@ -2,11 +2,14 @@
 Type definitions for imednet SDK utilities.
 """
 
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
-try:
-    from pandas import DataFrame
-except ImportError:
-    DataFrame = Any  # type: ignore
+if TYPE_CHECKING:
+    try:
+        from pandas import DataFrame
+    except ImportError:
+        DataFrame = Any  # type: ignore
+else:
+    DataFrame = Any
 
 JsonDict = Dict[str, Any]

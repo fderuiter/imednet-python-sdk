@@ -1,13 +1,14 @@
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 
-import pandas as pd
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 from imednet.endpoints.records import Record as RecordModel  # type: ignore[attr-defined]
 from imednet.endpoints.variables import Variable as VariableModel  # type: ignore[attr-defined]
 
 if TYPE_CHECKING:
+    import pandas as pd
+
     from ..sdk import ImednetSDK
 
 # Setup basic logging
@@ -147,8 +148,15 @@ class RecordMapper:
         variable_keys: List[str],
         label_map: Dict[str, str],
         use_labels: bool,
-    ) -> pd.DataFrame:
+    ) -> "pd.DataFrame":
         """Create the output DataFrame from parsed rows."""
+        try:
+            import pandas as pd
+        except ImportError as exc:
+            raise ImportError(
+                "Pandas is required for this feature. Install it with `pip install pandas` or `pip install imednet[pandas]`."
+            ) from exc
+
         df = pd.DataFrame(rows)
         if df.empty:
             return df
@@ -179,8 +187,16 @@ class RecordMapper:
         use_labels_as_columns: bool = True,
         variable_whitelist: Optional[List[str]] = None,
         form_whitelist: Optional[List[int]] = None,
-    ) -> pd.DataFrame:
+    ) -> "pd.DataFrame":
         """Return a :class:`pandas.DataFrame` of records for a study."""
+        # Ensure pandas is available early to fail fast
+        try:
+            import pandas as pd
+        except ImportError as exc:
+            raise ImportError(
+                "Pandas is required for this feature. Install it with `pip install pandas` or `pip install imednet[pandas]`."
+            ) from exc
+
         variable_keys, label_map = self._fetch_variable_metadata(
             study_key,
             variable_whitelist=variable_whitelist,

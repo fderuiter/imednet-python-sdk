@@ -31,43 +31,52 @@ class ParamMixin:
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
     ) -> ParamState:
-        # This method handles filter normalization and cache retrieval preparation
-        # Assuming _auto_filter is available via self (EndpointProtocol)
-        filters = cast(EndpointProtocol, self)._auto_filter(filters)
+        # Create a copy of filters to avoid mutating the input
+        # Note: We copy shallowly which is enough for typical filter dicts
+        working_filters = filters.copy()
+
+        # Inject default filters (e.g., study key)
+        # This might add 'studyKey' to working_filters if missing
+        working_filters = cast(EndpointProtocol, self)._auto_filter(working_filters)
 
         # Extract special parameters using the hook
-        special_params = self._extract_special_params(filters)
+        # This might remove keys from working_filters (e.g. include_inactive)
+        special_params = self._extract_special_params(working_filters)
 
-        if special_params:
-            if extra_params is None:
-                extra_params = {}
-            extra_params.update(special_params)
-
-        if study_key:
-            filters["studyKey"] = study_key
-
-        study: Optional[str] = None
-        if self.requires_study_key:
-            if self._pop_study_filter:
-                try:
-                    study = filters.pop("studyKey")
-                except KeyError as exc:
-                    raise self._missing_study_exception(
-                        "Study key must be provided or set in the context"
-                    ) from exc
-            else:
-                study = filters.get("studyKey")
-                if not study:
-                    raise ValueError("Study key must be provided or set in the context")
-        else:
-            study = filters.get("studyKey")
-
-        other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
-
+        # Prepare params to be sent
         params: Dict[str, Any] = {}
-        if filters:
-            params["filter"] = build_filter_string(filters)
         if extra_params:
             params.update(extra_params)
+        if special_params:
+            params.update(special_params)
+
+        # Ensure study_key is present in working_filters if provided explicitly via argument
+        if study_key:
+            working_filters["studyKey"] = study_key
+
+        # Resolve study context
+        study: Optional[str] = None
+        if self.requires_study_key:
+            study = working_filters.get("studyKey")
+            if not study:
+                 raise self._missing_study_exception(
+                    "Study key must be provided or set in the context"
+                )
+        else:
+            study = working_filters.get("studyKey")
+
+        # Determine if studyKey should be in the filter string
+        # If _pop_study_filter is True, we remove it from filters used for string generation.
+        # If False, we keep it (e.g. for RecordsEndpoint).
+        filters_for_string = working_filters.copy()
+        if self._pop_study_filter and "studyKey" in filters_for_string:
+            del filters_for_string["studyKey"]
+
+        # other_filters excludes studyKey regardless of _pop_study_filter setting
+        # (Used for cache key generation or logic relying on non-study filters)
+        other_filters = {k: v for k, v in working_filters.items() if k != "studyKey"}
+
+        if filters_for_string:
+            params["filter"] = build_filter_string(filters_for_string)
 
         return ParamState(study=study, params=params, other_filters=other_filters)
