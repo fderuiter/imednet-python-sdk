@@ -27,6 +27,8 @@ def _snake_to_camel(text: str) -> str:
 def _format_filter_value(val: Any) -> str:
     """Format a single filter value, escaping if necessary."""
     if isinstance(val, str):
+        if not val:
+            return '""'
         if _UNSAFE_CHARS_REGEX.search(val):
             # Escape backslashes first to prevent escape injection
             escaped = val.replace("\\", "\\\\").replace('"', r"\"")
