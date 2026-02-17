@@ -59,7 +59,7 @@ class ParamMixin:
         if self.requires_study_key:
             study = working_filters.get("studyKey")
             if not study:
-                 raise self._missing_study_exception(
+                raise self._missing_study_exception(
                     "Study key must be provided or set in the context"
                 )
         else:
