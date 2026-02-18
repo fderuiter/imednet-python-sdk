@@ -139,9 +139,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         """
         return cast(
             Job,
-            self._create_impl(
-                study_key, records_data, email_notify, schema=schema, is_async=False
-            ),
+            self._create_impl(study_key, records_data, email_notify, schema=schema, is_async=False),
         )
 
     async def async_create(
@@ -173,7 +171,5 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         """
         return await cast(
             Awaitable[Job],
-            self._create_impl(
-                study_key, records_data, email_notify, schema=schema, is_async=True
-            ),
+            self._create_impl(study_key, records_data, email_notify, schema=schema, is_async=True),
         )

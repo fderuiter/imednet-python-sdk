@@ -35,4 +35,3 @@ class EdcEndpointMixin:
         if "studyKey" not in filters and self._ctx.default_study_key:
             filters["studyKey"] = self._ctx.default_study_key
         return filters
-
