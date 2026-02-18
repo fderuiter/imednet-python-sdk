@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict
-from urllib.parse import quote
 
 if TYPE_CHECKING:
     from imednet.core.context import Context
