@@ -37,7 +37,12 @@ class BasePaginator:
         return query
 
     def _extract_items(self, payload: Dict[str, Any]) -> list[Any]:
-        return payload.get(self.data_key, []) or []
+        items = payload.get(self.data_key)
+        if items is None:
+            return []
+        if not isinstance(items, list):
+            raise TypeError(f"Expected list for key '{self.data_key}', got {type(items).__name__}")
+        return items
 
     def _next_page(self, payload: Dict[str, Any], page: int) -> Optional[int]:
         pagination = payload.get("pagination") or {}
@@ -53,6 +58,8 @@ class BasePaginator:
             params = self._build_params(page)
             response: httpx.Response = client.get(self.path, params=params)
             payload = response.json()
+            if not isinstance(payload, dict):
+                raise TypeError(f"Expected JSON object (dict), got {type(payload).__name__}")
             for item in self._extract_items(payload):
                 yield item
             next_page = self._next_page(payload, page)
@@ -67,6 +74,8 @@ class BasePaginator:
             params = self._build_params(page)
             response: httpx.Response = await client.get(self.path, params=params)
             payload = response.json()
+            if not isinstance(payload, dict):
+                raise TypeError(f"Expected JSON object (dict), got {type(payload).__name__}")
             for item in self._extract_items(payload):
                 yield item
             next_page = self._next_page(payload, page)
