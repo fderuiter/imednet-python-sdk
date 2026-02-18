@@ -36,20 +36,3 @@ class EdcEndpointMixin:
             filters["studyKey"] = self._ctx.default_study_key
         return filters
 
-    def _build_path(self, *segments: Any) -> str:
-        """
-        Return an API path joined with :data:`BASE_PATH`.
-
-        Args:
-            *segments: URL path segments to append.
-
-        Returns:
-            The full API path string.
-        """
-        parts = [self.BASE_PATH.strip("/")]
-        for seg in segments:
-            text = str(seg).strip("/")
-            if text:
-                # Encode path segments to prevent traversal and injection
-                parts.append(quote(text, safe=""))
-        return "/" + "/".join(parts)
