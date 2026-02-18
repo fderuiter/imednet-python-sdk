@@ -1,5 +1,7 @@
 import pytest
+
 from imednet.core.paginator import Paginator
+
 
 class DummyClient:
     def __init__(self, response_data):
@@ -9,6 +11,7 @@ class DummyClient:
         data = self.response_data
         return type("Resp", (), {"json": lambda self: data})()
 
+
 def test_paginator_raises_on_non_list_data():
     """Test that Paginator raises TypeError if data field is not a list."""
     # This prevents subtle bugs where iterating over a string yields characters
@@ -17,6 +20,7 @@ def test_paginator_raises_on_non_list_data():
 
     with pytest.raises(TypeError, match="Expected list for key 'data'"):
         list(paginator)
+
 
 def test_paginator_raises_on_non_dict_response():
     """Test that Paginator raises TypeError if response payload is not a dict."""
