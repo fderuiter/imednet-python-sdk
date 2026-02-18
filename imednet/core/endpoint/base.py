@@ -4,7 +4,7 @@ Base endpoint mix-in for all API resource endpoints.
 
 from __future__ import annotations
 
-from typing import Any, Dict, TypeVar
+from typing import Any, Dict, Optional, TypeVar
 from urllib.parse import quote
 
 from imednet.core.context import Context
@@ -25,12 +25,14 @@ class GenericEndpoint(EndpointABC[T]):
     """
 
     BASE_PATH = ""
+    _client: RequestorProtocol
+    _async_client: Optional[AsyncRequestorProtocol]
 
     def __init__(
         self,
         client: RequestorProtocol,
         ctx: Context,
-        async_client: AsyncRequestorProtocol | None = None,
+        async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
         self._client = client
         self._async_client = async_client
@@ -67,6 +69,10 @@ class GenericEndpoint(EndpointABC[T]):
                 parts.append(quote(text, safe=""))
         return "/" + "/".join(parts)
 
+    def _require_sync_client(self) -> RequestorProtocol:
+        """Return the configured sync client."""
+        return self._client
+
     def _require_async_client(self) -> AsyncRequestorProtocol:
         """Return the configured async client or raise if missing."""
         if self._async_client is None:
@@ -85,7 +91,7 @@ class GenericEndpoint(EndpointABC[T]):
         """
         if is_async:
             return self._require_async_client()
-        return self._client
+        return self._require_sync_client()
 
 
 class BaseEndpoint(EdcEndpointMixin, GenericEndpoint[T]):
