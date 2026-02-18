@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Dict, Type
 
-from imednet.core.endpoint.base import BaseEndpoint
+from imednet.core.endpoint.base import GenericEndpoint
 from imednet.endpoints.codings import CodingsEndpoint
 from imednet.endpoints.forms import FormsEndpoint
 from imednet.endpoints.intervals import IntervalsEndpoint
@@ -24,7 +24,7 @@ from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
 
-ENDPOINT_REGISTRY: Dict[str, Type[BaseEndpoint]] = {
+ENDPOINT_REGISTRY: Dict[str, Type[GenericEndpoint]] = {
     "codings": CodingsEndpoint,
     "forms": FormsEndpoint,
     "intervals": IntervalsEndpoint,
