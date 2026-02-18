@@ -9,20 +9,22 @@ from urllib.parse import quote
 
 from imednet.core.context import Context
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
 
 
-class BaseEndpoint(EndpointABC[T]):
+class GenericEndpoint(EndpointABC[T]):
     """
-    Shared base for endpoint wrappers.
+    Generic base for endpoint wrappers.
 
-    Handles context injection and filtering.
+    Handles context injection and basic path building.
+    Does NOT include EDC-specific logic.
     """
 
-    BASE_PATH = "/api/v1/edc/studies"
+    BASE_PATH = ""
 
     def __init__(
         self,
@@ -43,15 +45,21 @@ class BaseEndpoint(EndpointABC[T]):
                 setattr(self, cache_name, None)
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        # inject default studyKey if missing
-        if "studyKey" not in filters and self._ctx.default_study_key:
-            filters["studyKey"] = self._ctx.default_study_key
+        """Pass-through for filters in generic endpoints."""
         return filters
 
     def _build_path(self, *segments: Any) -> str:
-        """Return an API path joined with :data:`BASE_PATH`."""
+        """
+        Return an API path joined with :data:`BASE_PATH`.
 
-        parts = [self.BASE_PATH.strip("/")]
+        Args:
+            *segments: URL path segments to append.
+
+        Returns:
+            The full API path string.
+        """
+        base = self.BASE_PATH.strip("/")
+        parts = [base] if base else []
         for seg in segments:
             text = str(seg).strip("/")
             if text:
@@ -64,3 +72,14 @@ class BaseEndpoint(EndpointABC[T]):
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         return self._async_client
+
+
+class BaseEndpoint(EdcEndpointMixin, GenericEndpoint[T]):
+    """
+    Shared base for endpoint wrappers (Legacy).
+
+    Includes EDC-specific logic for backward compatibility.
+    New endpoints should use GenericEndpoint or explicit Edc* mixins.
+    """
+
+    pass

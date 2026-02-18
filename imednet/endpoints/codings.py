@@ -1,10 +1,10 @@
 """Endpoint for managing codings (medical coding) in a study."""
 
-from imednet.core.endpoint.mixins import StrictListGetEndpoint
+from imednet.core.endpoint.mixins import EdcStrictListGetEndpoint
 from imednet.models.codings import Coding
 
 
-class CodingsEndpoint(StrictListGetEndpoint[Coding]):
+class CodingsEndpoint(EdcStrictListGetEndpoint[Coding]):
     """
     API endpoint for interacting with codings (medical coding) in an iMedNet study.
 
