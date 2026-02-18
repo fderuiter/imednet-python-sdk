@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional, cast
+from typing import Any, Callable, Dict, Iterable, List, Optional, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -118,17 +118,16 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
             cache=cache,
         )
 
-    def _list_impl(
+    def _list_sync(
         self,
-        client: RequestorProtocol | AsyncRequestorProtocol,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
         *,
         study_key: Optional[str] = None,
         refresh: bool = False,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T] | Awaitable[List[T]]:
-
+    ) -> List[T]:
         state = self._prepare_list_request(study_key, extra_params, filters, refresh)
 
         if state.cached_result is not None:
@@ -137,17 +136,34 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
         parse_func = self._resolve_parse_func()
 
-        if hasattr(paginator, "__aiter__"):
-            return self._execute_async_list(
-                cast(AsyncPaginator, paginator),
-                parse_func,
-                state.study,
-                state.has_filters,
-                state.cache,
-            )
-
         return self._execute_sync_list(
-            cast(Paginator, paginator),
+            paginator,
+            parse_func,
+            state.study,
+            state.has_filters,
+            state.cache,
+        )
+
+    async def _list_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]:
+        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
+
+        if state.cached_result is not None:
+            return state.cached_result
+
+        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
+        parse_func = self._resolve_parse_func()
+
+        return await self._execute_async_list(
+            paginator,
             parse_func,
             state.study,
             state.has_filters,

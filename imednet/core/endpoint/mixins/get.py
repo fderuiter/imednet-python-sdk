@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import inspect
-from typing import Any, Awaitable, Dict, Iterable, List, Optional, cast
+from typing import Any, Dict, Iterable, List, Optional
 
 from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.paginator import AsyncPaginator, Paginator
@@ -15,17 +14,29 @@ class FilterGetEndpointMixin(EndpointABC[T]):
 
     # MODEL and _id_param are inherited from EndpointABC as abstract or properties
 
-    # This should be provided by ListEndpointMixin or similar implementation
-    def _list_impl(
+    # These should be provided by ListEndpointMixin or similar implementation
+    def _list_sync(
         self,
-        client: RequestorProtocol | AsyncRequestorProtocol,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
         *,
         study_key: Optional[str] = None,
         refresh: bool = False,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T] | Awaitable[List[T]]:
+    ) -> List[T]:
+        raise NotImplementedError
+
+    async def _list_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]:
         raise NotImplementedError
 
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
@@ -35,33 +46,41 @@ class FilterGetEndpointMixin(EndpointABC[T]):
             raise ValueError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
 
-    def _get_impl(
+    def _get_sync(
         self,
-        client: RequestorProtocol | AsyncRequestorProtocol,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
         *,
         study_key: Optional[str],
         item_id: Any,
-    ) -> T | Awaitable[T]:
+    ) -> T:
         filters = {self._id_param: item_id}
-        result = self._list_impl(
+        result = self._list_sync(
             client,
             paginator_cls,
             study_key=study_key,
             refresh=True,
             **filters,
         )
+        return self._validate_get_result(result, study_key, item_id)
 
-        if inspect.isawaitable(result):
-
-            async def _await() -> T:
-                items = await result
-                return self._validate_get_result(items, study_key, item_id)
-
-            return _await()
-
-        # Sync path
-        return self._validate_get_result(cast(List[T], result), study_key, item_id)
+    async def _get_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T:
+        filters = {self._id_param: item_id}
+        result = await self._list_async(
+            client,
+            paginator_cls,
+            study_key=study_key,
+            refresh=True,
+            **filters,
+        )
+        return self._validate_get_result(result, study_key, item_id)
 
 
 class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
@@ -91,26 +110,24 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
             self._raise_not_found(study_key, item_id)
         return self._parse_item(data)
 
-    def _get_impl_path(
+    def _get_path_sync(
         self,
-        client: RequestorProtocol | AsyncRequestorProtocol,
+        client: RequestorProtocol,
         *,
         study_key: Optional[str],
         item_id: Any,
-        is_async: bool = False,
-    ) -> T | Awaitable[T]:
+    ) -> T:
         path = self._get_path_for_id(study_key, item_id)
+        response = client.get(path)
+        return self._process_response(response, study_key, item_id)
 
-        if is_async:
-
-            async def _await() -> T:
-                # We assume client is AsyncRequestorProtocol because is_async=True
-                aclient = cast(AsyncRequestorProtocol, client)
-                response = await aclient.get(path)
-                return self._process_response(response, study_key, item_id)
-
-            return _await()
-
-        sclient = cast(RequestorProtocol, client)
-        response = sclient.get(path)
+    async def _get_path_async(
+        self,
+        client: AsyncRequestorProtocol,
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T:
+        path = self._get_path_for_id(study_key, item_id)
+        response = await client.get(path)
         return self._process_response(response, study_key, item_id)
