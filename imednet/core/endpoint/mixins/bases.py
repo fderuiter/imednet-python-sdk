@@ -27,9 +27,10 @@ class GenericListEndpoint(GenericEndpoint[T], ListEndpointMixin[T]):
     def _get_context(
         self, is_async: bool
     ) -> tuple[RequestorProtocol | AsyncRequestorProtocol, type[Paginator] | type[AsyncPaginator]]:
+        client = self._get_client(is_async)
         if is_async:
-            return self._require_async_client(), self.ASYNC_PAGINATOR_CLS
-        return self._client, self.PAGINATOR_CLS
+            return client, self.ASYNC_PAGINATOR_CLS
+        return client, self.PAGINATOR_CLS
 
     def _list_common(self, is_async: bool, **kwargs: Any) -> List[T] | Awaitable[List[T]]:
         client, paginator = self._get_context(is_async)
@@ -94,10 +95,11 @@ class GenericListPathGetEndpoint(GenericListEndpoint[T], PathGetEndpointMixin[T]
     """Generic endpoint implementing ``list`` and ``get`` (via path) helpers."""
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
-        return cast(T, self._get_impl_path(self._client, study_key=study_key, item_id=item_id))
+        client = self._get_client(is_async=False)
+        return cast(T, self._get_impl_path(client, study_key=study_key, item_id=item_id))
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
-        client = self._require_async_client()
+        client = self._get_client(is_async=True)
         return await cast(
             Awaitable[T],
             self._get_impl_path(client, study_key=study_key, item_id=item_id, is_async=True),
