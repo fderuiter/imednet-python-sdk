@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Awaitable, List, Optional, cast
 
-from imednet.core.endpoint.base import BaseEndpoint, GenericEndpoint
+from imednet.core.endpoint.base import GenericEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
