@@ -2,11 +2,11 @@
 
 from typing import List
 
-from imednet.core.endpoint.mixins import ListGetEndpoint
+from imednet.core.endpoint.mixins import EdcListGetEndpoint
 from imednet.models.subjects import Subject
 
 
-class SubjectsEndpoint(ListGetEndpoint[Subject]):
+class SubjectsEndpoint(EdcListGetEndpoint[Subject]):
     """
     API endpoint for interacting with subjects in an iMedNet study.
 
