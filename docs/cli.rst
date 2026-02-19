@@ -80,11 +80,12 @@ SQLite Exports
 
 SQLite only allows ``2000`` columns per table. When the connection string
 targets SQLite, ``export sql`` therefore creates a table for **each form** by
-default:
+default. Note that the ``table`` argument is still required but **ignored** in
+this mode:
 
 .. code-block:: console
 
-   imednet export sql MY_STUDY sqlite:///data.db
+   imednet export sql MY_STUDY table sqlite:///data.db
 
 Use ``--single-table`` to combine everything into one table instead:
 

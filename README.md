@@ -165,8 +165,9 @@ imednet export sql MY_STUDY table sqlite:///data.db --vars AGE,SEX --forms 10,20
 ```
 
 When the connection string uses SQLite, the command splits the output into one
-table per form to avoid the 2000 column limit. Pass ``--single-table`` to
-disable this behaviour. See ``docs/cli.rst`` for full examples.
+table per form to avoid the 2000 column limit (in this case, the `table`
+argument is ignored). Pass ``--single-table`` to disable this behaviour and use
+the specified table name. See ``docs/cli.rst`` for full examples.
 
 ---
 
