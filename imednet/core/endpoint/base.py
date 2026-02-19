@@ -79,20 +79,6 @@ class GenericEndpoint(EndpointABC[T]):
             raise RuntimeError("Async client not configured")
         return self._async_client
 
-    def _get_client(self, is_async: bool) -> RequestorProtocol | AsyncRequestorProtocol:
-        """
-        Get the appropriate client for the execution context.
-
-        Args:
-            is_async: Whether an async client is required.
-
-        Returns:
-            The sync or async client instance.
-        """
-        if is_async:
-            return self._require_async_client()
-        return self._require_sync_client()
-
 
 class BaseEndpoint(EdcEndpointMixin, GenericEndpoint[T]):
     """
