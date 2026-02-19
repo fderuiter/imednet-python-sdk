@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional
-
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
 from .list import ListEndpointMixin
@@ -20,25 +18,7 @@ class ListGetEndpointMixin(ListEndpointMixin[T], FilterGetEndpointMixin[T]):
 class GenericListEndpoint(GenericEndpoint[T], ListEndpointMixin[T]):
     """Generic endpoint implementing ``list`` helpers."""
 
-    PAGINATOR_CLS: type[Paginator] = Paginator
-    ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
-
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
-        return self._list_sync(
-            self._require_sync_client(),
-            self.PAGINATOR_CLS,
-            study_key=study_key,
-            **filters,
-        )
-
-    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
-        client = self._require_async_client()
-        return await self._list_async(
-            client,
-            self.ASYNC_PAGINATOR_CLS,
-            study_key=study_key,
-            **filters,
-        )
+    pass
 
 
 class EdcListEndpoint(EdcEndpointMixin, GenericListEndpoint[T]):
@@ -56,22 +36,7 @@ class ListEndpoint(EdcListEndpoint[T]):
 class GenericListGetEndpoint(GenericListEndpoint[T], FilterGetEndpointMixin[T]):
     """Generic endpoint implementing ``list`` and ``get`` helpers."""
 
-    def get(self, study_key: Optional[str], item_id: Any) -> T:
-        return self._get_sync(
-            self._require_sync_client(),
-            self.PAGINATOR_CLS,
-            study_key=study_key,
-            item_id=item_id,
-        )
-
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
-        client = self._require_async_client()
-        return await self._get_async(
-            client,
-            self.ASYNC_PAGINATOR_CLS,
-            study_key=study_key,
-            item_id=item_id,
-        )
+    pass
 
 
 class EdcListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[T]):
@@ -89,20 +54,7 @@ class ListGetEndpoint(EdcListGetEndpoint[T]):
 class GenericListPathGetEndpoint(GenericListEndpoint[T], PathGetEndpointMixin[T]):
     """Generic endpoint implementing ``list`` and ``get`` (via path) helpers."""
 
-    def get(self, study_key: Optional[str], item_id: Any) -> T:
-        return self._get_path_sync(
-            self._require_sync_client(),
-            study_key=study_key,
-            item_id=item_id,
-        )
-
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
-        client = self._require_async_client()
-        return await self._get_path_async(
-            client,
-            study_key=study_key,
-            item_id=item_id,
-        )
+    pass
 
 
 class EdcListPathGetEndpoint(EdcEndpointMixin, GenericListPathGetEndpoint[T]):

@@ -79,3 +79,16 @@ class AsyncRequestorProtocol(Protocol):
     ) -> Awaitable[httpx.Response]:
         """Make a POST request."""
         ...
+
+
+@runtime_checkable
+class ClientProvider(Protocol):
+    """Protocol for classes that provide access to synchronous and asynchronous clients."""
+
+    def _require_sync_client(self) -> RequestorProtocol:
+        """Return the configured sync client."""
+        ...
+
+    def _require_async_client(self) -> AsyncRequestorProtocol:
+        """Return the configured async client."""
+        ...
