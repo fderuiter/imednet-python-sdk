@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -12,9 +12,6 @@ from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from .caching import CacheMixin
 from .params import ParamMixin
 from .parsing import ParsingMixin, T
-
-if TYPE_CHECKING:
-    from imednet.core.protocols import ClientProvider
 
 
 class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T]):
