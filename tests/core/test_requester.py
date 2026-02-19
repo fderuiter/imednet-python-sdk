@@ -3,7 +3,7 @@ import pytest
 import respx
 
 from imednet.core.exceptions import NotFoundError
-from imednet.core.http.executor import RequestExecutor
+from imednet.core.http.executor import AsyncRequestExecutor, SyncRequestExecutor
 
 
 @respx.mock
@@ -19,7 +19,7 @@ def test_sync_executor_retries_success():
 
     respx.get("https://api.test/ping").mock(side_effect=handler)
 
-    executor = RequestExecutor(client.request, is_async=False, retries=2, backoff_factor=0)
+    executor = SyncRequestExecutor(client.request, retries=2, backoff_factor=0)
     resp = executor("GET", "/ping")
     assert resp.status_code == 200
     assert calls["count"] == 2
@@ -32,7 +32,7 @@ async def test_async_executor_error_mapping():
     async_client = httpx.AsyncClient(base_url="https://api.test")
     respx.get("https://api.test/bad").respond(status_code=404, json={"msg": "x"})
 
-    executor = RequestExecutor(async_client.request, is_async=True, retries=1, backoff_factor=0)
+    executor = AsyncRequestExecutor(async_client.request, retries=1, backoff_factor=0)
 
     with pytest.raises(NotFoundError):
         try:
