@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Iterable, List, Optional, cast, Tuple, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -160,7 +160,9 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        result = self._prepare_execution(study_key, refresh, extra_params, filters, client, paginator_cls)
+        result = self._prepare_execution(
+            study_key, refresh, extra_params, filters, client, paginator_cls
+        )
         if isinstance(result, list):
             return result
 
@@ -183,7 +185,9 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        result = self._prepare_execution(study_key, refresh, extra_params, filters, client, paginator_cls)
+        result = self._prepare_execution(
+            study_key, refresh, extra_params, filters, client, paginator_cls
+        )
         if isinstance(result, list):
             return result
 
