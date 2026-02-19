@@ -11,7 +11,7 @@ from imednet.constants import (
     HEADER_ACCEPT,
     HEADER_CONTENT_TYPE,
 )
-from imednet.core.http.executor import RequestExecutor
+from imednet.core.http.executor import BaseRequestExecutor
 
 from .base_client import BaseClient, Tracer
 from .retry import RetryPolicy
@@ -23,6 +23,7 @@ class HTTPClientBase(BaseClient):
     """Shared logic for synchronous and asynchronous HTTP clients."""
 
     HTTPX_CLIENT_CLS: Type[httpx.Client | httpx.AsyncClient]
+    EXECUTOR_CLS: Type[BaseRequestExecutor]
     IS_ASYNC: bool
 
     def __init__(
@@ -47,9 +48,23 @@ class HTTPClientBase(BaseClient):
             tracer=tracer,
             auth=auth,
         )
-        self._executor = RequestExecutor(
-            lambda *a, **kw: self._client.request(*a, **kw),
-            is_async=self.IS_ASYNC,
+
+        send_fn: Any
+        if self.IS_ASYNC:
+
+            async def send_async(method: str, url: str, **kwargs: Any) -> httpx.Response:
+                return await self._client.request(method, url, **kwargs)
+
+            send_fn = send_async
+        else:
+
+            def send_sync(method: str, url: str, **kwargs: Any) -> httpx.Response:
+                return self._client.request(method, url, **kwargs)
+
+            send_fn = send_sync
+
+        self._executor = self.EXECUTOR_CLS(
+            send=send_fn,
             retries=self.retries,
             backoff_factor=self.backoff_factor,
             tracer=self._tracer,

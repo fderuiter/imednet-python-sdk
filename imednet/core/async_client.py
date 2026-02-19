@@ -7,6 +7,8 @@ from typing import Any, Awaitable, Dict, Optional, cast
 
 import httpx
 
+from imednet.core.http.executor import AsyncRequestExecutor
+
 from .http_client_base import HTTPClientBase
 
 logger = logging.getLogger(__name__)
@@ -16,6 +18,7 @@ class AsyncClient(HTTPClientBase):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
     HTTPX_CLIENT_CLS = httpx.AsyncClient
+    EXECUTOR_CLS = AsyncRequestExecutor
     IS_ASYNC = True
 
     async def __aenter__(self) -> "AsyncClient":

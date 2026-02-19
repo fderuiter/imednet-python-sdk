@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from imednet.core.exceptions import RequestError
-from imednet.core.http.executor import RequestExecutor
+from imednet.core.http.executor import AsyncRequestExecutor, SyncRequestExecutor
 
 
 def test_retry_exhaustion_sync():
@@ -13,7 +13,7 @@ def test_retry_exhaustion_sync():
     # But usually message is enough for simple tests
     mock_send = Mock(side_effect=httpx.ConnectError("Connection failed"))
 
-    executor = RequestExecutor(send=mock_send, is_async=False, retries=2, backoff_factor=0.01)
+    executor = SyncRequestExecutor(send=mock_send, retries=2, backoff_factor=0.01)
 
     with pytest.raises(RequestError) as exc_info:
         executor("GET", "http://test.com")
@@ -28,7 +28,7 @@ async def test_retry_exhaustion_async():
     """Verify that RequestError is raised after retries are exhausted in async mode."""
     mock_send = AsyncMock(side_effect=httpx.ConnectError("Connection failed"))
 
-    executor = RequestExecutor(send=mock_send, is_async=True, retries=2, backoff_factor=0.01)
+    executor = AsyncRequestExecutor(send=mock_send, retries=2, backoff_factor=0.01)
 
     with pytest.raises(RequestError) as exc_info:
         await executor("GET", "http://test.com")

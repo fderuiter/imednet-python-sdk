@@ -17,6 +17,8 @@ from typing import Any, Dict, Optional, cast
 
 import httpx
 
+from imednet.core.http.executor import SyncRequestExecutor
+
 from .http_client_base import HTTPClientBase
 
 logger = logging.getLogger(__name__)
@@ -34,6 +36,7 @@ class Client(HTTPClientBase):
     """
 
     HTTPX_CLIENT_CLS = httpx.Client
+    EXECUTOR_CLS = SyncRequestExecutor
     IS_ASYNC = False
 
     def __enter__(self) -> Client:
