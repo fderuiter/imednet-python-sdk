@@ -128,25 +128,6 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
             cache=cache,
         )
 
-    def _prepare_execution(
-        self,
-        study_key: Optional[str],
-        refresh: bool,
-        extra_params: Optional[Dict[str, Any]],
-        filters: Dict[str, Any],
-        client: RequestorProtocol | AsyncRequestorProtocol,
-        paginator_cls: type[Paginator] | type[AsyncPaginator],
-    ) -> Union[List[T], Tuple[Any, Callable[[Any], T], Optional[str], bool, Any]]:
-        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
-
-        if state.cached_result is not None:
-            return state.cached_result
-
-        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
-        parse_func = self._resolve_parse_func()
-
-        return paginator, parse_func, state.study, state.has_filters, state.cache
-
     def _list_sync(
         self,
         client: RequestorProtocol,
@@ -157,19 +138,20 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        result = self._prepare_execution(
-            study_key, refresh, extra_params, filters, client, paginator_cls
-        )
-        if isinstance(result, list):
-            return result
+        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
 
-        paginator, parse_func, study, has_filters, cache = result
+        if state.cached_result is not None:
+            return state.cached_result
+
+        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
+        parse_func = self._resolve_parse_func()
+
         return self._execute_sync_list(
-            cast(Paginator, paginator),
+            paginator,
             parse_func,
-            study,
-            has_filters,
-            cache,
+            state.study,
+            state.has_filters,
+            state.cache,
         )
 
     async def _list_async(
@@ -182,19 +164,20 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        result = self._prepare_execution(
-            study_key, refresh, extra_params, filters, client, paginator_cls
-        )
-        if isinstance(result, list):
-            return result
+        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
 
-        paginator, parse_func, study, has_filters, cache = result
+        if state.cached_result is not None:
+            return state.cached_result
+
+        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
+        parse_func = self._resolve_parse_func()
+
         return await self._execute_async_list(
-            cast(AsyncPaginator, paginator),
+            paginator,
             parse_func,
-            study,
-            has_filters,
-            cache,
+            state.study,
+            state.has_filters,
+            state.cache,
         )
 
     def list(
