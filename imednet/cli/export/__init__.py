@@ -81,7 +81,13 @@ def export_json_cmd(
 def export_sql(
     sdk: ImednetSDK,
     study_key: str = STUDY_KEY_ARG,
-    table: str = typer.Argument(..., help="Destination table name."),
+    table: str = typer.Argument(
+        ...,
+        help=(
+            "Destination table name. Ignored when exporting to SQLite unless "
+            "--single-table is used."
+        ),
+    ),
     connection_string: str = typer.Argument(..., help="Database connection string."),
     single_table: bool = typer.Option(
         False,
