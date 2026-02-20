@@ -63,14 +63,13 @@ def test_export_to_excel_sanitization(tmp_path, mock_record_mapper, monkeypatch)
     # Instead, we patch pd.DataFrame.to_excel to verify the dataframe state just before export.
 
     captured_df = None
-    original_to_excel = pd.DataFrame.to_excel
 
     def mock_to_excel(self, excel_writer, index=False, **kwargs):
         nonlocal captured_df
         captured_df = self.copy()
-        # Call original to generate file if needed, but we can skip file generation for speed/dependency
-        # Just creating an empty file to satisfy existence checks if any
-        # However, export_mod doesn't check existence after.
+        # Call original to generate file if needed, but we can skip file generation
+        # for speed/dependency. Just creating an empty file to satisfy existence
+        # checks if any. However, export_mod doesn't check existence after.
         # But we need to ensure the method signature matches.
         pass
 
