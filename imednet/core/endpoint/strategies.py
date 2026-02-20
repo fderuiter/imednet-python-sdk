@@ -10,7 +10,7 @@ from typing import Any, Dict, Tuple
 from imednet.core.protocols import ParamProcessor
 
 
-class DefaultParamProcessor:
+class DefaultParamProcessor(ParamProcessor):
     """
     Default parameter processor.
 
