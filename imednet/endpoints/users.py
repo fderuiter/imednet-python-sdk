@@ -10,9 +10,7 @@ from imednet.models.users import User
 class UsersParamProcessor(ParamProcessor):
     """Parameter processor for Users endpoint."""
 
-    def process_filters(
-        self, filters: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         Extract 'include_inactive' parameter.
 

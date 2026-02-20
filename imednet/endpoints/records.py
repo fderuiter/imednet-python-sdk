@@ -13,9 +13,7 @@ from imednet.validation.cache import SchemaCache, validate_record_data
 class RecordsParamProcessor(ParamProcessor):
     """Parameter processor for Records endpoint."""
 
-    def process_filters(
-        self, filters: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         Extract 'record_data_filter' parameter.
 

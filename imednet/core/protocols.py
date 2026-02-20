@@ -98,9 +98,7 @@ class ClientProvider(Protocol):
 class ParamProcessor(Protocol):
     """Protocol for parameter processing strategies."""
 
-    def process_filters(
-        self, filters: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         Process filters to extract special parameters.
 

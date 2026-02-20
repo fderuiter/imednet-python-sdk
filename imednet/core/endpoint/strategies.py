@@ -17,9 +17,7 @@ class DefaultParamProcessor:
     Simply passes filters through without modification.
     """
 
-    def process_filters(
-        self, filters: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         Return filters as-is and no special parameters.
 
