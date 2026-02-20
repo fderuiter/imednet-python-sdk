@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, cast
 
+from imednet.core.endpoint.strategies import DefaultParamProcessor
 from imednet.core.endpoint.structs import ParamState
+from imednet.core.protocols import ParamProcessor
 from imednet.utils.filters import build_filter_string
 
 from ..protocols import EndpointProtocol
@@ -15,15 +17,7 @@ class ParamMixin:
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
-    def _extract_special_params(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Hook to extract special parameters from filters.
-
-        Subclasses should override this method to handle parameters that need to be
-        passed separately (e.g. in extra_params) rather than in the filter string.
-        These parameters should be removed from the filters dictionary.
-        """
-        return {}
+    PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
 
     def _resolve_params(
         self,
@@ -35,8 +29,9 @@ class ParamMixin:
         # Assuming _auto_filter is available via self (EndpointProtocol)
         filters = cast(EndpointProtocol, self)._auto_filter(filters)
 
-        # Extract special parameters using the hook
-        special_params = self._extract_special_params(filters)
+        # Use the configured parameter processor strategy
+        processor = self.PARAM_PROCESSOR_CLS()
+        filters, special_params = processor.process_filters(filters)
 
         if special_params:
             if extra_params is None:
