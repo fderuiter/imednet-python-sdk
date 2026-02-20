@@ -89,7 +89,9 @@ def export_to_parquet(
 
 def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
     """Sanitize DataFrame string columns to prevent CSV injection."""
-    for col in df.select_dtypes(include=[object]):
+    # Explicitly include "str" to avoid Pandas 3.0 warning about object dtype
+    # including strings implicitly.
+    for col in df.select_dtypes(include=[object, "str"]):
         df[col] = df[col].apply(sanitize_csv_formula)  # type: ignore[call-overload]
     return df
 
