@@ -37,7 +37,6 @@ class Client(HTTPClientBase):
 
     HTTPX_CLIENT_CLS = httpx.Client
     EXECUTOR_CLS = SyncRequestExecutor
-    IS_ASYNC = False
 
     def __enter__(self) -> Client:
         return self
@@ -53,6 +52,9 @@ class Client(HTTPClientBase):
     def close(self) -> None:
         """Close the underlying HTTP client."""
         self._client.close()
+
+    def _send(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        return self._client.request(method, url, **kwargs)
 
     def get(
         self,

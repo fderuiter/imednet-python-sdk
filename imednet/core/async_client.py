@@ -19,7 +19,6 @@ class AsyncClient(HTTPClientBase):
 
     HTTPX_CLIENT_CLS = httpx.AsyncClient
     EXECUTOR_CLS = AsyncRequestExecutor
-    IS_ASYNC = True
 
     async def __aenter__(self) -> "AsyncClient":
         return self
@@ -30,6 +29,9 @@ class AsyncClient(HTTPClientBase):
     async def aclose(self) -> None:
         """Close the underlying async HTTP client."""
         await self._client.aclose()
+
+    async def _send(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        return await self._client.request(method, url, **kwargs)
 
     async def get(
         self,
