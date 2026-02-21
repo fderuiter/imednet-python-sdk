@@ -19,7 +19,12 @@ class AsyncClient(HTTPClientBase):
 
     HTTPX_CLIENT_CLS = httpx.AsyncClient
     EXECUTOR_CLS = AsyncRequestExecutor
-    IS_ASYNC = True
+
+    async def _send(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        return await cast(
+            Awaitable[httpx.Response],
+            self._client.request(method, url, **kwargs),
+        )
 
     async def __aenter__(self) -> "AsyncClient":
         return self
