@@ -151,12 +151,18 @@ class RecordUpdateWorkflow:
             record[subject_id_field_map[subject_identifier_type]] = subject_identifier
 
         if site_identifier is not None:
-            record["siteName" if site_identifier_type == "name" else "siteId"] = site_identifier
+            site_id_field_map = {
+                "name": "siteName",
+                "id": "siteId",
+            }
+            record[site_id_field_map[site_identifier_type]] = site_identifier
 
         if interval_identifier is not None:
-            record["intervalName" if interval_identifier_type == "name" else "intervalId"] = (
-                interval_identifier
-            )
+            interval_id_field_map = {
+                "name": "intervalName",
+                "id": "intervalId",
+            }
+            record[interval_id_field_map[interval_identifier_type]] = interval_identifier
 
         return record
 
