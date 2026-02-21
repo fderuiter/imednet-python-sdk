@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Callable, Dict, Generic, Optional, TypeVar, cast
 
 import httpx
+from pydantic import BaseModel
 
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
@@ -22,9 +23,21 @@ class CreateEndpointMixin(Generic[T_RESP]):
         Prepare keyword arguments for the request.
 
         Filters out None values to preserve default behavior.
+        Also serializes Pydantic models in json payload.
         """
         kwargs: Dict[str, Any] = {}
         if json is not None:
+            if isinstance(json, list):
+                json = [
+                    (
+                        item.model_dump(by_alias=True)
+                        if isinstance(item, BaseModel)
+                        else item
+                    )
+                    for item in json
+                ]
+            elif isinstance(json, BaseModel):
+                json = json.model_dump(by_alias=True)
             kwargs["json"] = json
         if data is not None:
             kwargs["data"] = data

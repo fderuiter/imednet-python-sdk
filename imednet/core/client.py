@@ -37,7 +37,9 @@ class Client(HTTPClientBase):
 
     HTTPX_CLIENT_CLS = httpx.Client
     EXECUTOR_CLS = SyncRequestExecutor
-    IS_ASYNC = False
+
+    def _send(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        return cast(httpx.Response, self._client.request(method, url, **kwargs))
 
     def __enter__(self) -> Client:
         return self

@@ -6,7 +6,7 @@ from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.endpoint.mixins import CreateEndpointMixin, EdcListGetEndpoint
 from imednet.core.protocols import ParamProcessor
 from imednet.models.jobs import Job
-from imednet.models.records import Record
+from imednet.models.records import BaseRecordRequest, Record
 from imednet.validation.cache import SchemaCache, validate_record_data
 
 
@@ -43,6 +43,14 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     _id_param = "recordId"
     _pop_study_filter = False
     PARAM_PROCESSOR_CLS = RecordsParamProcessor
+
+    def _normalize_records_data(
+        self, records_data: List[Dict[str, Any] | BaseRecordRequest]
+    ) -> List[Dict[str, Any]]:
+        return [
+            r.model_dump(by_alias=True) if isinstance(r, BaseRecordRequest) else r
+            for r in records_data
+        ]
 
     def _prepare_create_request(
         self,
@@ -102,7 +110,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     def create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: List[Dict[str, Any] | BaseRecordRequest],
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
@@ -112,7 +120,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
 
         Args:
             study_key: Study identifier
-            records_data: List of record data objects to create
+            records_data: List of record data objects or Pydantic models to create
             email_notify: Whether to send email notifications (True/False), or an
                 email address as a string.
             schema: Optional :class:`SchemaCache` instance used for local
@@ -124,12 +132,15 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         Raises:
             ValueError: If email_notify contains invalid characters
         """
-        path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
+        normalized_data = self._normalize_records_data(records_data)
+        path, headers = self._prepare_create_request(
+            study_key, normalized_data, email_notify, schema
+        )
         client = self._require_sync_client()
         return self._create_sync(
             client,
             path,
-            json=records_data,
+            json=normalized_data,
             headers=headers,
             parse_func=Job.from_json,
         )
@@ -137,7 +148,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     async def async_create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: List[Dict[str, Any] | BaseRecordRequest],
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
@@ -149,7 +160,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
 
         Args:
             study_key: Study identifier
-            records_data: List of record data objects to create
+            records_data: List of record data objects or Pydantic models to create
             email_notify: Whether to send email notifications (True/False), or an
                 email address as a string.
             schema: Optional :class:`SchemaCache` instance used for local
@@ -161,12 +172,15 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         Raises:
             ValueError: If email_notify contains invalid characters
         """
-        path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
+        normalized_data = self._normalize_records_data(records_data)
+        path, headers = self._prepare_create_request(
+            study_key, normalized_data, email_notify, schema
+        )
         client = self._require_async_client()
         return await self._create_async(
             client,
             path,
-            json=records_data,
+            json=normalized_data,
             headers=headers,
             parse_func=Job.from_json,
         )

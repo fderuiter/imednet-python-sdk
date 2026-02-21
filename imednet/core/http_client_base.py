@@ -24,7 +24,6 @@ class HTTPClientBase(BaseClient):
 
     HTTPX_CLIENT_CLS: Type[httpx.Client | httpx.AsyncClient]
     EXECUTOR_CLS: Type[BaseRequestExecutor]
-    IS_ASYNC: bool
 
     def __init__(
         self,
@@ -49,27 +48,23 @@ class HTTPClientBase(BaseClient):
             auth=auth,
         )
 
-        send_fn: Any
-        if self.IS_ASYNC:
-
-            async def send_async(method: str, url: str, **kwargs: Any) -> httpx.Response:
-                return await self._client.request(method, url, **kwargs)
-
-            send_fn = send_async
-        else:
-
-            def send_sync(method: str, url: str, **kwargs: Any) -> httpx.Response:
-                return self._client.request(method, url, **kwargs)
-
-            send_fn = send_sync
-
         self._executor = self.EXECUTOR_CLS(
-            send=send_fn,
+            send=self._send,
             retries=self.retries,
             backoff_factor=self.backoff_factor,
             tracer=self._tracer,
             retry_policy=retry_policy,
         )
+
+    def _send(
+        self, method: str, url: str, **kwargs: Any
+    ) -> httpx.Response | Awaitable[httpx.Response]:
+        """
+        Execute the raw HTTP request using the underlying client.
+
+        Must be implemented by subclasses.
+        """
+        raise NotImplementedError
 
     def _create_client(self, auth: AuthStrategy) -> httpx.Client | httpx.AsyncClient:
         headers = {

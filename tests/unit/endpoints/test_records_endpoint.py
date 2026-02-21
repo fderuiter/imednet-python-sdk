@@ -2,7 +2,7 @@ import pytest
 
 import imednet.endpoints.records as records
 from imednet.core.exceptions import ValidationError
-from imednet.models.records import Record
+from imednet.models.records import BaseRecordRequest, Record, RecordData
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache
 
@@ -113,3 +113,39 @@ def test_create_validates_data_with_snake_case_keys(dummy_client, context, respo
     # Even if we use snake_case "form_key"
     with pytest.raises(ValidationError):
         ep.create("S1", [{"form_key": "F1", "data": {"bad": 1}}], schema=schema)
+
+
+def test_create_with_pydantic_models(dummy_client, context, response_factory):
+    ep = records.RecordsEndpoint(dummy_client, context)
+    dummy_client.post.return_value = response_factory({"jobId": "1"})
+
+    req = BaseRecordRequest(form_key="fk", data=RecordData({"foo": "bar"}))
+    ep.create("S1", [req])
+
+    # check if serialization happened correctly (aliasing)
+    dummy_client.post.assert_called_once_with(
+        "/api/v1/edc/studies/S1/records",
+        json=[{"formKey": "fk", "data": {"foo": "bar"}}],
+        headers={},
+    )
+
+
+def test_create_with_pydantic_models_and_schema(dummy_client, context, response_factory):
+    ep = records.RecordsEndpoint(dummy_client, context)
+    schema = SchemaCache()
+    var = Variable(variable_name="foo", variable_type="string", form_id=1, form_key="fk")
+    schema._form_variables = {"fk": {"foo": var}}
+    schema._form_id_to_key = {1: "fk"}
+
+    dummy_client.post.return_value = response_factory({"jobId": "1"})
+
+    req = BaseRecordRequest(form_key="fk", data=RecordData({"foo": "bar"}))
+
+    ep.create("S1", [req], schema=schema)
+
+    # Validation should have passed and serialization happened correctly
+    dummy_client.post.assert_called_once_with(
+        "/api/v1/edc/studies/S1/records",
+        json=[{"formKey": "fk", "data": {"foo": "bar"}}],
+        headers={},
+    )
