@@ -1,6 +1,6 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.endpoint.mixins import CreateEndpointMixin, EdcListGetEndpoint
@@ -45,7 +45,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     PARAM_PROCESSOR_CLS = RecordsParamProcessor
 
     def _normalize_records_data(
-        self, records_data: List[Dict[str, Any] | BaseRecordRequest]
+        self, records_data: Sequence[Dict[str, Any] | BaseRecordRequest]
     ) -> List[Dict[str, Any]]:
         return [
             r.model_dump(by_alias=True) if isinstance(r, BaseRecordRequest) else r
@@ -110,7 +110,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     def create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any] | BaseRecordRequest],
+        records_data: Sequence[Dict[str, Any] | BaseRecordRequest],
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
@@ -148,7 +148,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     async def async_create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any] | BaseRecordRequest],
+        records_data: Sequence[Dict[str, Any] | BaseRecordRequest],
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
