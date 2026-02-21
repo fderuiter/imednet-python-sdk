@@ -29,11 +29,7 @@ class CreateEndpointMixin(Generic[T_RESP]):
         if json is not None:
             if isinstance(json, list):
                 json = [
-                    (
-                        item.model_dump(by_alias=True)
-                        if isinstance(item, BaseModel)
-                        else item
-                    )
+                    (item.model_dump(by_alias=True) if isinstance(item, BaseModel) else item)
                     for item in json
                 ]
             elif isinstance(json, BaseModel):
