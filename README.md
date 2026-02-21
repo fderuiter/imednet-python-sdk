@@ -72,7 +72,7 @@ pip install "imednet[pandas,sqlalchemy,pyarrow,excel]"
 pip install "imednet[sqlalchemy]"  # For SQL export
 pip install "imednet[pyarrow]"     # For Parquet export
 pip install "imednet[excel]"       # For Excel export
-pip install "imednet[airflow]"     # For Airflow integration
+pip install "imednet[airflow]"     # For Airflow integration (requires manual airflow installation)
 ```
 
 ### Development Version
