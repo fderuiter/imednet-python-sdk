@@ -1,7 +1,9 @@
+from unittest.mock import Mock
 
 import pytest
-from unittest.mock import Mock
+
 from imednet.core.paginator import Paginator
+
 
 class MockClient:
     def __init__(self, response_data):
@@ -11,6 +13,7 @@ class MockClient:
         response = Mock()
         response.json.return_value = self.response_data
         return response
+
 
 def test_paginator_raises_type_error_on_list_response():
     """
@@ -23,6 +26,7 @@ def test_paginator_raises_type_error_on_list_response():
     with pytest.raises(TypeError, match="API response must be a dictionary"):
         list(paginator)
 
+
 def test_paginator_raises_type_error_on_scalar_response():
     """
     Test that the Paginator raises a helpful TypeError when the API returns a scalar
@@ -33,6 +37,7 @@ def test_paginator_raises_type_error_on_scalar_response():
 
     with pytest.raises(TypeError, match="API response must be a dictionary"):
         list(paginator)
+
 
 def test_paginator_raises_type_error_on_invalid_data_key():
     """

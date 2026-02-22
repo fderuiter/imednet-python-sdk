@@ -38,9 +38,7 @@ class BasePaginator:
 
     def _extract_items(self, payload: Dict[str, Any]) -> list[Any]:
         if not isinstance(payload, dict):
-            raise TypeError(
-                f"API response must be a dictionary, got {type(payload).__name__}"
-            )
+            raise TypeError(f"API response must be a dictionary, got {type(payload).__name__}")
         items = payload.get(self.data_key, []) or []
         if not isinstance(items, list):
             raise TypeError(
