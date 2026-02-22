@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from abc import ABC, abstractmethod
 from typing import Any, Awaitable, Optional, Type, Union, cast
 
 import httpx
@@ -19,12 +20,16 @@ from .retry import RetryPolicy
 logger = logging.getLogger(__name__)
 
 
-class HTTPClientBase(BaseClient):
+class HTTPClientBase(BaseClient, ABC):
     """Shared logic for synchronous and asynchronous HTTP clients."""
 
     HTTPX_CLIENT_CLS: Type[httpx.Client | httpx.AsyncClient]
-    EXECUTOR_CLS: Type[BaseRequestExecutor]
-    IS_ASYNC: bool
+
+    @abstractmethod
+    def _create_executor(
+        self, client: Any, retry_policy: Optional[RetryPolicy] = None
+    ) -> BaseRequestExecutor:
+        """Create the request executor."""
 
     def __init__(
         self,
@@ -49,27 +54,7 @@ class HTTPClientBase(BaseClient):
             auth=auth,
         )
 
-        send_fn: Any
-        if self.IS_ASYNC:
-
-            async def send_async(method: str, url: str, **kwargs: Any) -> httpx.Response:
-                return await self._client.request(method, url, **kwargs)
-
-            send_fn = send_async
-        else:
-
-            def send_sync(method: str, url: str, **kwargs: Any) -> httpx.Response:
-                return self._client.request(method, url, **kwargs)
-
-            send_fn = send_sync
-
-        self._executor = self.EXECUTOR_CLS(
-            send=send_fn,
-            retries=self.retries,
-            backoff_factor=self.backoff_factor,
-            tracer=self._tracer,
-            retry_policy=retry_policy,
-        )
+        self._executor = self._create_executor(self._client, retry_policy)
 
     def _create_client(self, auth: AuthStrategy) -> httpx.Client | httpx.AsyncClient:
         headers = {

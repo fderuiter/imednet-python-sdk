@@ -7,7 +7,8 @@ from typing import Any, Awaitable, Dict, Optional, cast
 
 import httpx
 
-from imednet.core.http.executor import AsyncRequestExecutor
+from imednet.core.http.executor import AsyncRequestExecutor, BaseRequestExecutor
+from imednet.core.retry import RetryPolicy
 
 from .http_client_base import HTTPClientBase
 
@@ -18,8 +19,23 @@ class AsyncClient(HTTPClientBase):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
     HTTPX_CLIENT_CLS = httpx.AsyncClient
-    EXECUTOR_CLS = AsyncRequestExecutor
-    IS_ASYNC = True
+
+    def _create_executor(
+        self, client: Any, retry_policy: Optional[RetryPolicy] = None
+    ) -> BaseRequestExecutor:
+        client = cast(httpx.AsyncClient, client)
+
+        # Use wrapper to allow mocking client.request after initialization
+        async def send_wrapper(method: str, url: str, **kwargs: Any) -> httpx.Response:
+            return await client.request(method, url, **kwargs)
+
+        return AsyncRequestExecutor(
+            send=send_wrapper,
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            tracer=self._tracer,
+            retry_policy=retry_policy,
+        )
 
     async def __aenter__(self) -> "AsyncClient":
         return self
