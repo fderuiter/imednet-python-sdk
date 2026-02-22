@@ -17,7 +17,8 @@ from typing import Any, Dict, Optional, cast
 
 import httpx
 
-from imednet.core.http.executor import SyncRequestExecutor
+from imednet.core.http.executor import BaseRequestExecutor, SyncRequestExecutor
+from imednet.core.retry import RetryPolicy
 
 from .http_client_base import HTTPClientBase
 
@@ -36,8 +37,18 @@ class Client(HTTPClientBase):
     """
 
     HTTPX_CLIENT_CLS = httpx.Client
-    EXECUTOR_CLS = SyncRequestExecutor
-    IS_ASYNC = False
+
+    def _create_executor(self, retry_policy: RetryPolicy | None) -> BaseRequestExecutor:
+        def send_sync(method: str, url: str, **kwargs: Any) -> httpx.Response:
+            return self._client.request(method, url, **kwargs)
+
+        return SyncRequestExecutor(
+            send=send_sync,
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            tracer=self._tracer,
+            retry_policy=retry_policy,
+        )
 
     def __enter__(self) -> Client:
         return self
