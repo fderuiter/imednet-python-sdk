@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, List, Optional, TypeVar
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
 from ..endpoints.forms import FormsEndpoint
@@ -161,6 +161,33 @@ def validate_record_data(
     # The Variable model does not have a 'required' field, so this loop was O(N) for no-op.
     for name, value in data.items():
         _check_type(variables[name].variable_type, value)
+
+
+def validate_records_batch(
+    schema: BaseSchemaCache[Any],
+    records_data: List[Dict[str, Any]],
+) -> None:
+    """
+    Validate a batch of records against the schema.
+
+    Iterates over the records, resolves the form key (handling aliases and ID fallback),
+    and validates each record's data.
+
+    Args:
+        schema: The schema cache to validate against.
+        records_data: The list of record data dictionaries.
+
+    Raises:
+        ValidationError: If any record fails validation.
+    """
+    for rec in records_data:
+        fk = rec.get("formKey") or rec.get("form_key")
+        if not fk:
+            fid = rec.get("formId") or rec.get("form_id") or 0
+            if fid:
+                fk = schema.form_key_from_id(int(fid))
+        if fk:
+            validate_record_data(schema, fk, rec.get("data", {}))
 
 
 class SchemaValidator(_ValidatorMixin):
