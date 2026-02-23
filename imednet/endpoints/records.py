@@ -7,7 +7,8 @@ from imednet.core.endpoint.mixins import CreateEndpointMixin, EdcListGetEndpoint
 from imednet.core.protocols import ParamProcessor
 from imednet.models.jobs import Job
 from imednet.models.records import Record
-from imednet.validation.cache import SchemaCache, validate_record_data
+from imednet.utils.security import validate_header_value
+from imednet.validation.cache import SchemaCache, validate_record_entry
 
 
 class RecordsParamProcessor(ParamProcessor):
@@ -44,60 +45,30 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     _pop_study_filter = False
     PARAM_PROCESSOR_CLS = RecordsParamProcessor
 
-    def _prepare_create_request(
+    def _prepare_create(
         self,
         study_key: str,
         records_data: List[Dict[str, Any]],
         email_notify: Union[bool, str, None],
         schema: Optional[SchemaCache],
     ) -> tuple[str, Dict[str, str]]:
-        self._validate_records_if_schema_present(schema, records_data)
-        headers = self._build_headers(email_notify)
-        path = self._build_path(study_key, self.PATH)
-        return path, headers
-
-    def _validate_records_if_schema_present(
-        self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]
-    ) -> None:
         """
-        Validate records against schema if provided.
-
-        Args:
-            schema: Optional schema cache for validation
-            records_data: List of record data to validate
+        Internal helper to prepare path and headers for creation.
+        Performs validation side-effects.
         """
         if schema is not None:
             for rec in records_data:
-                fk = rec.get("formKey") or rec.get("form_key")
-                if not fk:
-                    fid = rec.get("formId") or rec.get("form_id") or 0
-                    fk = schema.form_key_from_id(fid)
-                if fk:
-                    validate_record_data(schema, fk, rec.get("data", {}))
+                validate_record_entry(schema, rec)
 
-    def _build_headers(self, email_notify: Union[bool, str, None]) -> Dict[str, str]:
-        """
-        Build headers for record creation request.
-
-        Args:
-            email_notify: Email notification setting
-
-        Returns:
-            Dictionary of headers
-
-        Raises:
-            ValueError: If email_notify contains newlines (header injection prevention)
-        """
         headers = {}
         if email_notify is not None:
             if isinstance(email_notify, str):
-                # Security: Prevent header injection via newlines
-                if "\n" in email_notify or "\r" in email_notify:
-                    raise ValueError("email_notify must not contain newlines")
-                headers[HEADER_EMAIL_NOTIFY] = email_notify
+                headers[HEADER_EMAIL_NOTIFY] = validate_header_value(email_notify)
             else:
                 headers[HEADER_EMAIL_NOTIFY] = str(email_notify).lower()
-        return headers
+
+        path = self._build_path(study_key, self.PATH)
+        return path, headers
 
     def create(
         self,
@@ -124,7 +95,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         Raises:
             ValueError: If email_notify contains invalid characters
         """
-        path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
+        path, headers = self._prepare_create(study_key, records_data, email_notify, schema)
         client = self._require_sync_client()
         return self._create_sync(
             client,
@@ -161,7 +132,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         Raises:
             ValueError: If email_notify contains invalid characters
         """
-        path, headers = self._prepare_create_request(study_key, records_data, email_notify, schema)
+        path, headers = self._prepare_create(study_key, records_data, email_notify, schema)
         client = self._require_async_client()
         return await self._create_async(
             client,

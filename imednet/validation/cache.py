@@ -163,6 +163,31 @@ def validate_record_data(
         _check_type(variables[name].variable_type, value)
 
 
+def validate_record_entry(
+    schema: BaseSchemaCache[Any],
+    record: Dict[str, Any],
+) -> None:
+    """
+    Validate a single record entry against the provided schema.
+
+    Resolves the form key from 'formKey', 'form_key', 'formId', or 'form_id'.
+    If the form key is found, validates the 'data' dictionary.
+
+    Args:
+        schema: The schema cache.
+        record: The record dictionary containing form identification and data.
+
+    Raises:
+        ValidationError: If validation fails.
+    """
+    fk = record.get("formKey") or record.get("form_key")
+    if not fk:
+        fid = record.get("formId") or record.get("form_id") or 0
+        fk = schema.form_key_from_id(fid)
+    if fk:
+        validate_record_data(schema, fk, record.get("data", {}))
+
+
 class SchemaValidator(_ValidatorMixin):
     """Validate record payloads using variable metadata from the API."""
 
