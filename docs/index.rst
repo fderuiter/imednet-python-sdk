@@ -29,7 +29,6 @@ Welcome to imednet's documentation!
    job_polling
    record_mapping
    airflow
-   veeva_integration
    test_skip_conditions
    live_test_plan
    live_tests
