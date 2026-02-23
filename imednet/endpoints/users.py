@@ -1,6 +1,5 @@
 """Endpoint for managing users in a study."""
 
-
 from imednet.core.endpoint.mixins import EdcListGetEndpoint
 from imednet.core.endpoint.strategies import MappingParamProcessor, ParamRule
 from imednet.models.users import User
