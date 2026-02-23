@@ -105,10 +105,9 @@ class JsonListPaginator(Paginator):
         # Raw list endpoints do not support pagination params
         response: httpx.Response = client.get(self.path, params=self.params)
         payload = response.json()
-        if isinstance(payload, list):
-            yield from payload
-        else:
-            yield from []
+        if not isinstance(payload, list):
+            raise TypeError(f"API response must be a list, got {type(payload).__name__}")
+        yield from payload
 
 
 class AsyncJsonListPaginator(AsyncPaginator):
@@ -119,9 +118,7 @@ class AsyncJsonListPaginator(AsyncPaginator):
         # Raw list endpoints do not support pagination params
         response: httpx.Response = await client.get(self.path, params=self.params)
         payload = response.json()
-        if isinstance(payload, list):
-            for item in payload:
-                yield item
-        else:
-            # Fallback for empty or malformed response
-            pass
+        if not isinstance(payload, list):
+            raise TypeError(f"API response must be a list, got {type(payload).__name__}")
+        for item in payload:
+            yield item
