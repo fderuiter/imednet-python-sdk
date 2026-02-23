@@ -7,9 +7,10 @@ from typing import Any, Awaitable, Dict, Optional, cast
 
 import httpx
 
-from imednet.core.http.executor import AsyncRequestExecutor
+from imednet.core.http.executor import AsyncRequestExecutor, BaseRequestExecutor
 
 from .http_client_base import HTTPClientBase
+from .retry import RetryPolicy
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,6 @@ class AsyncClient(HTTPClientBase):
 
     HTTPX_CLIENT_CLS = httpx.AsyncClient
     EXECUTOR_CLS = AsyncRequestExecutor
-    IS_ASYNC = True
 
     async def __aenter__(self) -> "AsyncClient":
         return self
@@ -30,6 +30,20 @@ class AsyncClient(HTTPClientBase):
     async def aclose(self) -> None:
         """Close the underlying async HTTP client."""
         await self._client.aclose()
+
+    def _create_executor(self, retry_policy: RetryPolicy | None) -> BaseRequestExecutor:
+        """Create an asynchronous request executor."""
+
+        async def send_async(method: str, url: str, **kwargs: Any) -> httpx.Response:
+            return await self._client.request(method, url, **kwargs)
+
+        return self.EXECUTOR_CLS(
+            send=send_async,
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            tracer=self._tracer,
+            retry_policy=retry_policy,
+        )
 
     async def get(
         self,
