@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import Mock
 
 import pytest
 
@@ -58,7 +58,7 @@ async def test_async_json_list_paginator_raises_on_dict():
     paginator = AsyncJsonListPaginator(client, "/path")  # type: ignore
 
     with pytest.raises(TypeError, match="API response must be a list"):
-        items = [item async for item in paginator]
+        [item async for item in paginator]
 
 
 @pytest.mark.asyncio
@@ -68,4 +68,4 @@ async def test_async_json_list_paginator_raises_on_none():
     paginator = AsyncJsonListPaginator(client, "/path")  # type: ignore
 
     with pytest.raises(TypeError, match="API response must be a list"):
-        items = [item async for item in paginator]
+        [item async for item in paginator]
