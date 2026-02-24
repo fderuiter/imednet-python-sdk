@@ -132,7 +132,7 @@ ignore_path = ["docs/_build"]
 python_version = "3.10"
 strict = false
 ignore_missing_imports = true
-plugins = ["pydantic.mypy"]
+plugins = []
 # ────────────────────────────────────────────────────────────────
 # Ignore all files under examples/
 exclude                = '^examples/.*$'
