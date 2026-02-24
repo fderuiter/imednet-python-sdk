@@ -1,34 +1,23 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.endpoint.mixins import CreateEndpointMixin, EdcListGetEndpoint
-from imednet.core.protocols import ParamProcessor
+from imednet.core.endpoint.strategies import (
+    KeepStudyKeyStrategy,
+    MappingParamProcessor,
+    ParamRule,
+)
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache, validate_record_data
 
 
-class RecordsParamProcessor(ParamProcessor):
+class RecordsParamProcessor(MappingParamProcessor):
     """Parameter processor for Records endpoint."""
 
-    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """
-        Extract 'record_data_filter' parameter.
-
-        Args:
-            filters: The filters dictionary.
-
-        Returns:
-            Tuple of (cleaned filters, special parameters).
-        """
-        filters = filters.copy()
-        record_data_filter = filters.pop("record_data_filter", None)
-        special_params = {}
-        if record_data_filter:
-            special_params["recordDataFilter"] = record_data_filter
-        return filters, special_params
+    rules = [ParamRule(source="record_data_filter", target="recordDataFilter")]
 
 
 class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
@@ -41,7 +30,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"
-    _pop_study_filter = False
+    STUDY_KEY_STRATEGY = KeepStudyKeyStrategy
     PARAM_PROCESSOR_CLS = RecordsParamProcessor
 
     def _prepare_create_request(

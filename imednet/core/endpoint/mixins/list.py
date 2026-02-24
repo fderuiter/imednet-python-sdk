@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Iterable, List, Optional, cast
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -128,6 +128,19 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
             cache=cache,
         )
 
+    def _create_paginator_and_parser(
+        self,
+        client: Union[RequestorProtocol, AsyncRequestorProtocol],
+        paginator_cls: Union[type[Paginator], type[AsyncPaginator]],
+        state: ListRequestState[T],
+    ) -> Tuple[Union[Paginator, AsyncPaginator], Callable[[Any], T]]:
+        """Create paginator and resolve parser."""
+        paginator = paginator_cls(  # type: ignore[operator]
+            client, state.path, params=state.params, page_size=self.PAGE_SIZE
+        )
+        parse_func = self._resolve_parse_func()
+        return paginator, parse_func
+
     def _list_sync(
         self,
         client: RequestorProtocol,
@@ -143,11 +156,10 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         if state.cached_result is not None:
             return state.cached_result
 
-        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
-        parse_func = self._resolve_parse_func()
+        paginator, parse_func = self._create_paginator_and_parser(client, paginator_cls, state)
 
         return self._execute_sync_list(
-            paginator,
+            cast(Paginator, paginator),
             parse_func,
             state.study,
             state.has_filters,
@@ -169,11 +181,10 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         if state.cached_result is not None:
             return state.cached_result
 
-        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
-        parse_func = self._resolve_parse_func()
+        paginator, parse_func = self._create_paginator_and_parser(client, paginator_cls, state)
 
         return await self._execute_async_list(
-            paginator,
+            cast(AsyncPaginator, paginator),
             parse_func,
             state.study,
             state.has_filters,
