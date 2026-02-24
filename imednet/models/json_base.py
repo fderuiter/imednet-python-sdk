@@ -103,4 +103,6 @@ class JsonModel(BaseModel):
         try:
             return _NORMALIZERS[cls][info.field_name](v)
         except KeyError:
+            # Pass the class, not the instance (though in a classmethod validator cls is the class)
+            # However, Mypy might be confused if it thinks cls is JsonModel
             return _get_normalizer(cls, info.field_name)(v)
