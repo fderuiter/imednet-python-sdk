@@ -3,7 +3,7 @@
 This document outlines the tasks required to automate the creation of a comprehensive specification sheet from iMednet Data Dictionary exports and aCRF PDFs.
 
 ## Phase 1: Preparation & Analysis
-- [ ] **Locate Input Data**: Verify the existence and location of `acrfs/` (PDFs), `data-dictionary/` (CSVs), and `SRS/` (Sample Excel). *Currently missing in repo root.*
+- [ ] **Locate Input Data**: Verify the existence and location of `acrfs/` (PDFs), `data-dictionary/` (CSVs), and `srs/` (Sample Excel).
 - [ ] **Analyze Data Dictionary**: Inspect the full CSV export to understand all available fields (Forms, Fields, Variables, Codelists).
 - [ ] **Analyze aCRF PDFs**: Determine if text/metadata extraction from PDFs is feasible or if manual mapping is required.
     - [ ] Research Python PDF libraries (`pypdf`, `pdfplumber`) for extracting form names/page numbers.
