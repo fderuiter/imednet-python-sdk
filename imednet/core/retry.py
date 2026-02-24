@@ -25,7 +25,14 @@ class RetryPolicy(Protocol):
 
 
 class DefaultRetryPolicy:
-    """Retry only when a network :class:`httpx.RequestError` occurred."""
+    """Retry on network errors, rate limits (429), and server errors (500-599)."""
 
     def should_retry(self, state: RetryState) -> bool:
-        return isinstance(state.exception, httpx.RequestError)
+        if state.exception:
+            return isinstance(state.exception, httpx.RequestError)
+
+        response = state.result
+        if isinstance(response, httpx.Response):
+            return response.status_code == 429 or 500 <= response.status_code < 600
+
+        return False

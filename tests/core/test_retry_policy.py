@@ -15,9 +15,25 @@ def test_default_policy_request_error():
     assert not policy.should_retry(RetryState(1))
 
 
-def test_default_policy_non_retryable_response_and_exception():
+def test_default_policy_retry_behavior():
     policy = DefaultRetryPolicy()
-    assert not policy.should_retry(RetryState(1, result=httpx.Response(500)))
+
+    # Retryable responses (Server Errors & Rate Limits)
+    assert policy.should_retry(RetryState(1, result=httpx.Response(500)))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(502)))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(503)))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(504)))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(429)))
+
+    # Non-retryable responses (Client Errors & Success)
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(400)))
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(401)))
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(403)))
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(404)))
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(200)))
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(201)))
+
+    # Non-retryable exceptions
     assert not policy.should_retry(RetryState(1, exception=Exception("boom")))
     assert not policy.should_retry(RetryState(1, result=httpx.Response(200), exception=None))
 
