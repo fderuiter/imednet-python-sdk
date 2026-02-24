@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Protocol, Type, runtime_checkable
+from typing import Any, Dict, Protocol, Type, runtime_checkable
 
 from imednet.models.json_base import JsonModel
 
