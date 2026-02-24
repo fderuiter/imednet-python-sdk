@@ -14,4 +14,4 @@ class IntervalsEndpoint(EdcMetadataListGetEndpoint[Interval]):
     PATH = "intervals"
     MODEL = Interval
     _id_param = "intervalId"
-    _cache_name = "_intervals_cache"
+    _enable_cache = True

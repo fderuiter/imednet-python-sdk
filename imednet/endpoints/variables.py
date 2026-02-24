@@ -14,4 +14,4 @@ class VariablesEndpoint(EdcMetadataListGetEndpoint[Variable]):
     PATH = "variables"
     MODEL = Variable
     _id_param = "variableId"
-    _cache_name = "_variables_cache"
+    _enable_cache = True

@@ -47,12 +47,12 @@ class EndpointABC(ABC, Generic[T]):
         return "id"
 
     @property
-    def _cache_name(self) -> Optional[str]:
+    def _enable_cache(self) -> bool:
         """
-        The name of the attribute used for caching results.
-        Defaults to None (no caching).
+        Whether this endpoint supports caching.
+        Defaults to False. Override in subclasses if needed.
         """
-        return None
+        return False
 
     @abstractmethod
     def _build_path(self, *segments: Any) -> str:
