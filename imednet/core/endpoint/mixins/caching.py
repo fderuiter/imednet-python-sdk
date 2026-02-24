@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
+
+from ..protocols import EndpointProtocol
 
 
 class CacheMixin:
     """Mixin for handling endpoint caching."""
 
-    requires_study_key: bool = True  # Default, can be overridden
     _enable_cache: bool = False  # Default, overridden by EndpointABC/subclasses
     _cache: Any = None  # Default, overridden by GenericEndpoint
 
@@ -25,7 +26,7 @@ class CacheMixin:
         if has_filters or not self._enable_cache:
             return
 
-        if self.requires_study_key:
+        if cast(EndpointProtocol, self).requires_study_key:
             if self._cache is not None:
                 self._cache[study] = result
         else:
@@ -41,7 +42,7 @@ class CacheMixin:
         if not self._enable_cache:
             return None
 
-        if self.requires_study_key:
+        if cast(EndpointProtocol, self).requires_study_key:
             # Strict check usually done before, but here we just check cache
             if cache is not None and not other_filters and not refresh and study in cache:
                 return cache[study]
