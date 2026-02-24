@@ -101,8 +101,6 @@ class JsonModel(BaseModel):
 
         # Bolt Optimization: Avoid function call overhead in hot path
         try:
-            return _NORMALIZERS[cls][info.field_name](v)
+            return _NORMALIZERS[cls][info.field_name](v)  # type: ignore[index]
         except KeyError:
-            # Pass the class, not the instance (though in a classmethod validator cls is the class)
-            # However, Mypy might be confused if it thinks cls is JsonModel
-            return _get_normalizer(cls, info.field_name)(v)
+            return _get_normalizer(cls, info.field_name)(v)  # type: ignore[arg-type]
