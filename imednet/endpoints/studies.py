@@ -1,6 +1,7 @@
 """Endpoint for managing studies in the iMedNet system."""
 
 from imednet.core.endpoint.mixins import EdcListGetEndpoint
+from imednet.core.endpoint.strategies import OptionalStudyKeyStrategy
 from imednet.models.studies import Study
 
 
@@ -15,4 +16,4 @@ class StudiesEndpoint(EdcListGetEndpoint[Study]):
     MODEL = Study
     _id_param = "studyKey"
     _enable_cache = True
-    requires_study_key = False
+    STUDY_KEY_STRATEGY = OptionalStudyKeyStrategy()

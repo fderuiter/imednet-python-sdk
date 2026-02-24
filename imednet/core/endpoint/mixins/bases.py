@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.strategies import PopStudyKeyStrategy
 from imednet.core.paginator import AsyncPaginator, Paginator  # noqa: F401
 
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
@@ -76,8 +77,7 @@ class EdcStrictListGetEndpoint(EdcListGetEndpoint[T]):
     Populates study key from filters and raises KeyError if missing.
     """
 
-    _pop_study_filter = True
-    _missing_study_exception = KeyError
+    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(KeyError)
 
 
 class StrictListGetEndpoint(EdcStrictListGetEndpoint[T]):

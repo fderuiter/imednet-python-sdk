@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, cast
 
-from imednet.core.endpoint.strategies import DefaultParamProcessor
+from imednet.core.endpoint.strategies import (
+    DefaultParamProcessor,
+    KeepStudyKeyStrategy,
+    StudyKeyStrategy,
+)
 from imednet.core.endpoint.structs import ParamState
 from imednet.core.protocols import ParamProcessor
 from imednet.utils.filters import build_filter_string
@@ -13,11 +17,16 @@ from ..protocols import EndpointProtocol
 class ParamMixin:
     """Mixin for handling endpoint parameters and filters."""
 
-    requires_study_key: bool = True
-    _pop_study_filter: bool = False
-    _missing_study_exception: type[Exception] = ValueError
+    # Default strategy: Keep studyKey, raise ValueError if missing
+    STUDY_KEY_STRATEGY: StudyKeyStrategy = KeepStudyKeyStrategy(ValueError)
 
+    PARAM_PROCESSOR: Optional[ParamProcessor] = None
     PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
+
+    @property
+    def requires_study_key(self) -> bool:
+        """Whether this endpoint requires a study key."""
+        return self.STUDY_KEY_STRATEGY.is_required
 
     def _resolve_params(
         self,
@@ -30,7 +39,7 @@ class ParamMixin:
         filters = cast(EndpointProtocol, self)._auto_filter(filters)
 
         # Use the configured parameter processor strategy
-        processor = self.PARAM_PROCESSOR_CLS()
+        processor = self.PARAM_PROCESSOR or self.PARAM_PROCESSOR_CLS()
         filters, special_params = processor.process_filters(filters)
 
         if special_params:
@@ -41,21 +50,7 @@ class ParamMixin:
         if study_key:
             filters["studyKey"] = study_key
 
-        study: Optional[str] = None
-        if self.requires_study_key:
-            if self._pop_study_filter:
-                try:
-                    study = filters.pop("studyKey")
-                except KeyError as exc:
-                    raise self._missing_study_exception(
-                        "Study key must be provided or set in the context"
-                    ) from exc
-            else:
-                study = filters.get("studyKey")
-                if not study:
-                    raise ValueError("Study key must be provided or set in the context")
-        else:
-            study = filters.get("studyKey")
+        study, filters = self.STUDY_KEY_STRATEGY.extract_study_key(filters)
 
         other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
 

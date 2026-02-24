@@ -1,34 +1,17 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.endpoint.mixins import CreateEndpointMixin, EdcListGetEndpoint
-from imednet.core.protocols import ParamProcessor
+from imednet.core.endpoint.strategies import (
+    KeepStudyKeyStrategy,
+    MappingParamProcessor,
+    ParamRule,
+)
 from imednet.models.jobs import Job
 from imednet.models.records import Record
-from imednet.validation.cache import SchemaCache, validate_record_data
-
-
-class RecordsParamProcessor(ParamProcessor):
-    """Parameter processor for Records endpoint."""
-
-    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """
-        Extract 'record_data_filter' parameter.
-
-        Args:
-            filters: The filters dictionary.
-
-        Returns:
-            Tuple of (cleaned filters, special parameters).
-        """
-        filters = filters.copy()
-        record_data_filter = filters.pop("record_data_filter", None)
-        special_params = {}
-        if record_data_filter:
-            special_params["recordDataFilter"] = record_data_filter
-        return filters, special_params
+from imednet.validation.cache import SchemaCache, validate_record_entry
 
 
 class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
@@ -41,8 +24,17 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"
-    _pop_study_filter = False
-    PARAM_PROCESSOR_CLS = RecordsParamProcessor
+
+    STUDY_KEY_STRATEGY = KeepStudyKeyStrategy()
+
+    PARAM_PROCESSOR = MappingParamProcessor(
+        [
+            ParamRule(
+                input_key="record_data_filter",
+                output_key="recordDataFilter",
+            )
+        ]
+    )
 
     def _prepare_create_request(
         self,
@@ -51,29 +43,13 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         email_notify: Union[bool, str, None],
         schema: Optional[SchemaCache],
     ) -> tuple[str, Dict[str, str]]:
-        self._validate_records_if_schema_present(schema, records_data)
+        if schema is not None:
+            for rec in records_data:
+                validate_record_entry(schema, rec)
+
         headers = self._build_headers(email_notify)
         path = self._build_path(study_key, self.PATH)
         return path, headers
-
-    def _validate_records_if_schema_present(
-        self, schema: Optional[SchemaCache], records_data: List[Dict[str, Any]]
-    ) -> None:
-        """
-        Validate records against schema if provided.
-
-        Args:
-            schema: Optional schema cache for validation
-            records_data: List of record data to validate
-        """
-        if schema is not None:
-            for rec in records_data:
-                fk = rec.get("formKey") or rec.get("form_key")
-                if not fk:
-                    fid = rec.get("formId") or rec.get("form_id") or 0
-                    fk = schema.form_key_from_id(fid)
-                if fk:
-                    validate_record_data(schema, fk, rec.get("data", {}))
 
     def _build_headers(self, email_notify: Union[bool, str, None]) -> Dict[str, str]:
         """
