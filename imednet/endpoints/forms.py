@@ -14,4 +14,4 @@ class FormsEndpoint(EdcMetadataListGetEndpoint[Form]):
     PATH = "forms"
     MODEL = Form
     _id_param = "formId"
-    _cache_name = "_forms_cache"
+    _enable_cache = True

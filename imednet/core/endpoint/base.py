@@ -4,7 +4,7 @@ Base endpoint mix-in for all API resource endpoints.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar, Union
 from urllib.parse import quote
 
 from imednet.core.context import Context
@@ -27,6 +27,7 @@ class GenericEndpoint(EndpointABC[T]):
     BASE_PATH = ""
     _client: RequestorProtocol
     _async_client: Optional[AsyncRequestorProtocol]
+    _cache: Optional[Union[List[T], Dict[str, List[T]]]] = None
 
     def __init__(
         self,
@@ -39,12 +40,11 @@ class GenericEndpoint(EndpointABC[T]):
         self._ctx = ctx
 
         # Initialize cache if configured
-        cache_name = self._cache_name
-        if cache_name:
+        if self._enable_cache:
             if self.requires_study_key:
-                setattr(self, cache_name, {})
+                self._cache = {}
             else:
-                setattr(self, cache_name, None)
+                self._cache = None
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """Pass-through for filters in generic endpoints."""

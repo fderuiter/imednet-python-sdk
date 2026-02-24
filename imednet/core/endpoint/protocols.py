@@ -10,7 +10,7 @@ class EndpointProtocol(Protocol):
     PATH: str
     MODEL: Type[JsonModel]
     _id_param: str
-    _cache_name: Optional[str]
+    _enable_cache: bool
     requires_study_key: bool
     PAGE_SIZE: int
     _pop_study_filter: bool
