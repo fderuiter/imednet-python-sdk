@@ -6,11 +6,11 @@ The SDK ships with operators and sensors for building Airflow pipelines.
 Installation
 ------------
 
-Install the SDK with the Airflow extra:
+Install the SDK along with Airflow dependencies manually (due to version conflicts, the Airflow packages cannot be managed automatically):
 
 .. code-block:: bash
 
-   pip install "imednet[airflow]"
+   pip install imednet apache-airflow apache-airflow-providers-amazon
 
 Example DAG
 -----------

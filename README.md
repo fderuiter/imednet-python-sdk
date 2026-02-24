@@ -73,8 +73,8 @@ pip install "imednet[sqlalchemy]"  # For SQL export
 pip install "imednet[pyarrow]"     # For Parquet export
 pip install "imednet[excel]"       # For Excel export
 
-# For Airflow integration (apache-airflow must be installed manually due to version conflicts)
-pip install "imednet[airflow]" apache-airflow apache-airflow-providers-amazon
+# For Airflow integration (must be installed manually due to version conflicts)
+pip install imednet apache-airflow apache-airflow-providers-amazon
 ```
 
 ### Development Version
