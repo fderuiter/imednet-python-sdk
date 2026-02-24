@@ -80,33 +80,33 @@ def test_default_retry_policy_retries_connection_error(respx_mock_external) -> N
     assert route.call_count == 3
 
 
-def test_default_retry_policy_no_retry_on_500(respx_mock_external) -> None:
-    """Verify that server errors (500) do NOT trigger retries."""
+def test_default_retry_policy_retries_on_500(respx_mock_external) -> None:
+    """Verify that server errors (500) trigger retries."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(500))
 
     with pytest.raises(exceptions.ServerError):
         sdk._client.get("/test")
 
-    # Should call only once
-    assert route.call_count == 1
+    # Should attempt 3 times
+    assert route.call_count == 3
 
 
-def test_default_retry_policy_no_retry_on_429(respx_mock_external) -> None:
-    """Verify that rate limit errors (429) do NOT trigger retries."""
+def test_default_retry_policy_retries_on_429(respx_mock_external) -> None:
+    """Verify that rate limit errors (429) trigger retries."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(429))
 
     with pytest.raises(exceptions.RateLimitError):
         sdk._client.get("/test")
 
-    # Should call only once
-    assert route.call_count == 1
+    # Should attempt 3 times
+    assert route.call_count == 3
 
 
 @pytest.mark.asyncio
-async def test_default_retry_policy_async_no_retry_on_500(respx_mock_external) -> None:
-    """Verify that server errors (500) do NOT trigger retries in async client."""
+async def test_default_retry_policy_async_retries_on_500(respx_mock_external) -> None:
+    """Verify that server errors (500) trigger retries in async client."""
     sdk = ImednetSDK(
         api_key="k",
         security_key="s",
@@ -121,5 +121,5 @@ async def test_default_retry_policy_async_no_retry_on_500(respx_mock_external) -
     with pytest.raises(exceptions.ServerError):
         await sdk._async_client.get("/test")
 
-    # Should call only once
-    assert route.call_count == 1
+    # Should attempt 3 times
+    assert route.call_count == 3
