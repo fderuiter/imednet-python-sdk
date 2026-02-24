@@ -101,7 +101,8 @@ class SyncRequestExecutor(BaseRequestExecutor):
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
                 response = retryer(send_fn)
-                monitor.on_success(response)
+                if response is not None:
+                    monitor.on_success(response)
             except RetryError as e:
                 if e.last_attempt and not e.last_attempt.failed:
                     response = e.last_attempt.result()
@@ -145,7 +146,8 @@ class AsyncRequestExecutor(BaseRequestExecutor):
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
                 response = await retryer(send_fn)
-                monitor.on_success(response)
+                if response is not None:
+                    monitor.on_success(response)
             except RetryError as e:
                 if e.last_attempt and not e.last_attempt.failed:
                     response = e.last_attempt.result()
