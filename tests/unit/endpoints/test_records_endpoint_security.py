@@ -1,6 +1,9 @@
 """Security tests for RecordsEndpoint."""
+
 import pytest
+
 from imednet.endpoints.records import RecordsEndpoint
+
 
 def test_create_email_notify_header_injection(dummy_client, context):
     """Test that header injection via email_notify raises ValueError."""
