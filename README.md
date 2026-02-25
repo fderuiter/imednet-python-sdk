@@ -57,8 +57,10 @@ graph TD
 
 ```bash
 # PyPI release
-pip install imednet
+pip install "imednet[pandas]"
 ```
+
+> **Note:** The `pandas` library is currently required for core functionality. While listed as optional in configuration, installing without it may cause import errors.
 
 ### Optional Dependencies
 
