@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.operations.list import ListOperation
 from imednet.core.endpoint.structs import ListRequestState
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
@@ -73,7 +74,8 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         has_filters: bool,
         cache: Any,
     ) -> List[T]:
-        result = [parse_func(item) async for item in paginator]
+        operation = ListOperation[T]()
+        result = await operation.execute_async(paginator, parse_func)
         return self._process_list_result(result, study, has_filters, cache)
 
     def _execute_sync_list(
@@ -84,7 +86,8 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         has_filters: bool,
         cache: Any,
     ) -> List[T]:
-        result = [parse_func(item) for item in paginator]
+        operation = ListOperation[T]()
+        result = operation.execute_sync(paginator, parse_func)
         return self._process_list_result(result, study, has_filters, cache)
 
     def _prepare_list_request(
