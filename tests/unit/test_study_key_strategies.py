@@ -1,9 +1,11 @@
 import pytest
+
 from imednet.core.endpoint.strategies import (
     KeepStudyKeyStrategy,
-    PopStudyKeyStrategy,
     OptionalStudyKeyStrategy,
+    PopStudyKeyStrategy,
 )
+
 
 class TestKeepStudyKeyStrategy:
     def test_process_with_valid_key(self):

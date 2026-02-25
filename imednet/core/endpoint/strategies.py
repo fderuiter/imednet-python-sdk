@@ -107,7 +107,7 @@ class PopStudyKeyStrategy:
         filters_copy = filters.copy()
 
         if "studyKey" not in filters_copy:
-             raise self._exception_cls("Study key must be provided or set in the context")
+            raise self._exception_cls("Study key must be provided or set in the context")
 
         study_key = filters_copy.pop("studyKey")
         return study_key, filters_copy
