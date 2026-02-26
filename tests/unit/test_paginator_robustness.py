@@ -50,3 +50,20 @@ def test_paginator_raises_type_error_on_invalid_data_key():
 
     with pytest.raises(TypeError, match="Expected a list of items"):
         list(paginator)
+
+
+def test_paginator_raises_type_error_on_invalid_pagination_field():
+    """
+    Test that the Paginator raises a helpful TypeError when the pagination key in the response
+    is not a dictionary.
+    """
+    # unexpected: 'pagination' is a string, not a dict
+    client = MockClient({
+        "data": [{"id": 1}],
+        "pagination": "invalid_structure"
+    })
+    paginator = Paginator(client, "/path")
+
+    # Before the fix, this raises AttributeError because it tries to call .get() on a string
+    with pytest.raises(TypeError, match="Response field 'pagination' must be a dictionary"):
+        list(paginator)
