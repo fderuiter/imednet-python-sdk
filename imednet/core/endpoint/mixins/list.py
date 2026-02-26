@@ -4,9 +4,9 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.operations.list import ListOperation
 from imednet.core.endpoint.structs import ListRequestState
 from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.core.endpoint.operations.list import ListOperation
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 

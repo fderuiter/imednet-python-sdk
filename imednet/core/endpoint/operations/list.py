@@ -8,11 +8,11 @@ the endpoint configuration.
 
 from __future__ import annotations
 
-from typing import Any, Callable, List, Optional, TypeVar, Generic
+from typing import Any, Callable, Generic, List, Optional, TypeVar
 
-from imednet.models.json_base import JsonModel
-from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.endpoint.protocols import ListEndpointProtocol
+from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
 
