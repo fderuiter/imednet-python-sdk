@@ -23,6 +23,7 @@ class ParamMixin:
     _pop_study_filter: bool = False
     _missing_study_exception: type[Exception] = ValueError
 
+    PARAM_PROCESSOR: Optional[ParamProcessor] = None
     PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
     STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = None
 
@@ -44,6 +45,18 @@ class ParamMixin:
             return KeepStudyKeyStrategy(exception_cls=self._missing_study_exception)
         return OptionalStudyKeyStrategy()
 
+    @property
+    def param_processor(self) -> ParamProcessor:
+        """
+        Get the configured parameter processor.
+
+        Returns:
+            The processor instance to use.
+        """
+        if self.PARAM_PROCESSOR:
+            return self.PARAM_PROCESSOR
+        return self.PARAM_PROCESSOR_CLS()
+
     def _resolve_params(
         self,
         study_key: Optional[str],
@@ -55,7 +68,7 @@ class ParamMixin:
         filters = cast(EndpointProtocol, self)._auto_filter(filters)
 
         # Use the configured parameter processor strategy
-        processor = self.PARAM_PROCESSOR_CLS()
+        processor = self.param_processor
         filters, special_params = processor.process_filters(filters)
 
         if special_params:

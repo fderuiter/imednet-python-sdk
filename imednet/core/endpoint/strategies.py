@@ -30,6 +30,60 @@ class DefaultParamProcessor(ParamProcessor):
         return filters.copy(), {}
 
 
+class MappingParamProcessor(ParamProcessor):
+    """
+    ParamProcessor that maps specific filter keys to API parameters.
+
+    Extracts keys defined in the mapping and returns them as special parameters,
+    optionally renaming them according to the mapping values.
+    """
+
+    def __init__(
+        self,
+        mapping: Dict[str, str],
+        defaults: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """
+        Initialize the processor with a mapping.
+
+        Args:
+            mapping: A dictionary where keys are the filter keys to look for,
+                     and values are the API parameter names to map them to.
+            defaults: A dictionary of default values for keys not found in filters.
+        """
+        self.mapping = mapping
+        self.defaults = defaults or {}
+
+    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        """
+        Process filters using the configured mapping.
+
+        Args:
+            filters: The input filters dictionary.
+
+        Returns:
+            A tuple of (cleaned filters, special parameters).
+        """
+        filters = filters.copy()
+        special_params = {}
+
+        for filter_key, api_key in self.mapping.items():
+            value = None
+            if filter_key in filters:
+                value = filters.pop(filter_key)
+            elif filter_key in self.defaults:
+                value = self.defaults[filter_key]
+
+            if value is not None:
+                # Convert boolean to lowercase string if necessary, or just pass through
+                if isinstance(value, bool):
+                    special_params[api_key] = str(value).lower()
+                else:
+                    special_params[api_key] = value
+
+        return filters, special_params
+
+
 @runtime_checkable
 class StudyKeyStrategy(Protocol):
     """Protocol for study key handling strategies."""

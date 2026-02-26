@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.operations import ListOperation
 from imednet.core.endpoint.structs import ListRequestState
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
@@ -65,28 +66,6 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         self._update_local_cache(result, study, has_filters, cache)
         return result
 
-    async def _execute_async_list(
-        self,
-        paginator: AsyncPaginator,
-        parse_func: Callable[[Any], T],
-        study: Optional[str],
-        has_filters: bool,
-        cache: Any,
-    ) -> List[T]:
-        result = [parse_func(item) async for item in paginator]
-        return self._process_list_result(result, study, has_filters, cache)
-
-    def _execute_sync_list(
-        self,
-        paginator: Paginator,
-        parse_func: Callable[[Any], T],
-        study: Optional[str],
-        has_filters: bool,
-        cache: Any,
-    ) -> List[T]:
-        result = [parse_func(item) for item in paginator]
-        return self._process_list_result(result, study, has_filters, cache)
-
     def _prepare_list_request(
         self,
         study_key: Optional[str],
@@ -143,16 +122,15 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         if state.cached_result is not None:
             return state.cached_result
 
-        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
-        parse_func = self._resolve_parse_func()
-
-        return self._execute_sync_list(
-            paginator,
-            parse_func,
-            state.study,
-            state.has_filters,
-            state.cache,
+        operation = ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
         )
+
+        result = operation.execute_sync(client, paginator_cls)
+        return self._process_list_result(result, state.study, state.has_filters, state.cache)
 
     async def _list_async(
         self,
@@ -169,16 +147,15 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         if state.cached_result is not None:
             return state.cached_result
 
-        paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
-        parse_func = self._resolve_parse_func()
-
-        return await self._execute_async_list(
-            paginator,
-            parse_func,
-            state.study,
-            state.has_filters,
-            state.cache,
+        operation = ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
         )
+
+        result = await operation.execute_async(client, paginator_cls)
+        return self._process_list_result(result, state.study, state.has_filters, state.cache)
 
     def list(
         self,
