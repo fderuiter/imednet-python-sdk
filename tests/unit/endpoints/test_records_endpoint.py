@@ -113,3 +113,9 @@ def test_create_validates_data_with_snake_case_keys(dummy_client, context, respo
     # Even if we use snake_case "form_key"
     with pytest.raises(ValidationError):
         ep.create("S1", [{"form_key": "F1", "data": {"bad": 1}}], schema=schema)
+
+
+def test_create_raises_on_header_injection(dummy_client, context):
+    ep = records.RecordsEndpoint(dummy_client, context)
+    with pytest.raises(ValueError, match="Header value must not contain newlines"):
+        ep.create("S1", [{"data": {}}], email_notify="test\n@example.com")
