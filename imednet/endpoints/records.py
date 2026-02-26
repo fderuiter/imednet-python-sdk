@@ -1,35 +1,14 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.endpoint.mixins import CreateEndpointMixin, EdcListGetEndpoint
-from imednet.core.protocols import ParamProcessor
+from imednet.core.endpoint.strategies import MappingParamProcessor
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.utils.security import validate_header_value
 from imednet.validation.cache import SchemaCache, validate_record_entry
-
-
-class RecordsParamProcessor(ParamProcessor):
-    """Parameter processor for Records endpoint."""
-
-    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """
-        Extract 'record_data_filter' parameter.
-
-        Args:
-            filters: The filters dictionary.
-
-        Returns:
-            Tuple of (cleaned filters, special parameters).
-        """
-        filters = filters.copy()
-        record_data_filter = filters.pop("record_data_filter", None)
-        special_params = {}
-        if record_data_filter:
-            special_params["recordDataFilter"] = record_data_filter
-        return filters, special_params
 
 
 class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
@@ -43,7 +22,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
     MODEL = Record
     _id_param = "recordId"
     _pop_study_filter = False
-    PARAM_PROCESSOR_CLS = RecordsParamProcessor
+    PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
 
     def _prepare_create_request(
         self,
