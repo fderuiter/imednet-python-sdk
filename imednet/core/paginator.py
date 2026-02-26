@@ -47,7 +47,12 @@ class BasePaginator:
         return items
 
     def _next_page(self, payload: Dict[str, Any], page: int) -> Optional[int]:
-        pagination = payload.get("pagination") or {}
+        pagination = payload.get("pagination")
+        if pagination is not None and not isinstance(pagination, dict):
+            raise TypeError(
+                f"Response field 'pagination' must be a dictionary, got {type(pagination).__name__}"
+            )
+        pagination = pagination or {}
         total_pages = pagination.get("totalPages")
         if total_pages is None or page >= total_pages - 1:
             return None
