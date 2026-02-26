@@ -58,10 +58,7 @@ def test_paginator_raises_type_error_on_invalid_pagination_field():
     is not a dictionary.
     """
     # unexpected: 'pagination' is a string, not a dict
-    client = MockClient({
-        "data": [{"id": 1}],
-        "pagination": "invalid_structure"
-    })
+    client = MockClient({"data": [{"id": 1}], "pagination": "invalid_structure"})
     paginator = Paginator(client, "/path")
 
     # Before the fix, this raises AttributeError because it tries to call .get() on a string
