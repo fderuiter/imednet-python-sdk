@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Optional
 
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.operations.get import FilterGetOperation, PathGetOperation
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
@@ -15,6 +16,7 @@ class FilterGetEndpointMixin(EndpointABC[T]):
     # MODEL and _id_param are inherited from EndpointABC as abstract or properties
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
+    FILTER_GET_OPERATION_CLS: type[FilterGetOperation[T]] = FilterGetOperation
 
     def _require_sync_client(self) -> RequestorProtocol:
         """Return the configured sync client."""
@@ -64,15 +66,8 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        filters = {self._id_param: item_id}
-        result = self._list_sync(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            refresh=True,
-            **filters,
-        )
-        return self._validate_get_result(result, study_key, item_id)
+        op = self.FILTER_GET_OPERATION_CLS(self)
+        return op.execute_sync(client, paginator_cls, study_key, item_id)
 
     async def _get_async(
         self,
@@ -82,15 +77,8 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        filters = {self._id_param: item_id}
-        result = await self._list_async(
-            client,
-            paginator_cls,
-            study_key=study_key,
-            refresh=True,
-            **filters,
-        )
-        return self._validate_get_result(result, study_key, item_id)
+        op = self.FILTER_GET_OPERATION_CLS(self)
+        return await op.execute_async(client, paginator_cls, study_key, item_id)
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
         """Get an item by ID using filtering."""
@@ -115,6 +103,7 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     """Mixin implementing ``get`` via direct path."""
 
     # PATH is inherited from EndpointABC as abstract
+    PATH_GET_OPERATION_CLS: type[PathGetOperation[T]] = PathGetOperation
 
     def _require_sync_client(self) -> RequestorProtocol:
         """Return the configured sync client."""
@@ -153,9 +142,8 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        path = self._get_path_for_id(study_key, item_id)
-        response = client.get(path)
-        return self._process_response(response, study_key, item_id)
+        op = self.PATH_GET_OPERATION_CLS(self)
+        return op.execute_sync(client, study_key, item_id)
 
     async def _get_path_async(
         self,
@@ -164,9 +152,8 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        path = self._get_path_for_id(study_key, item_id)
-        response = await client.get(path)
-        return self._process_response(response, study_key, item_id)
+        op = self.PATH_GET_OPERATION_CLS(self)
+        return await op.execute_async(client, study_key, item_id)
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
         """Get an item by ID using direct path."""

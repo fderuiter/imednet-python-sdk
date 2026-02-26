@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, Generic, Optional, TypeVar, cast
 
 import httpx
 
+from imednet.core.endpoint.operations.create import CreateOperation
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
 T_RESP = TypeVar("T_RESP")
@@ -11,6 +12,8 @@ T_RESP = TypeVar("T_RESP")
 
 class CreateEndpointMixin(Generic[T_RESP]):
     """Mixin implementing creation logic."""
+
+    CREATE_OPERATION_CLS: type[CreateOperation[T_RESP]] = CreateOperation
 
     def _prepare_kwargs(
         self,
@@ -65,9 +68,15 @@ class CreateEndpointMixin(Generic[T_RESP]):
         """
         Execute a synchronous creation request (POST).
         """
-        kwargs = self._prepare_kwargs(json=json, data=data, headers=headers)
-        response = client.post(path, **kwargs)
-        return self._process_response(response, parse_func)
+        op = self.CREATE_OPERATION_CLS(self)
+        return op.execute_sync(
+            client,
+            path,
+            json=json,
+            data=data,
+            headers=headers,
+            parse_func=parse_func,
+        )
 
     async def _create_async(
         self,
@@ -82,6 +91,12 @@ class CreateEndpointMixin(Generic[T_RESP]):
         """
         Execute an asynchronous creation request (POST).
         """
-        kwargs = self._prepare_kwargs(json=json, data=data, headers=headers)
-        response = await client.post(path, **kwargs)
-        return self._process_response(response, parse_func)
+        op = self.CREATE_OPERATION_CLS(self)
+        return await op.execute_async(
+            client,
+            path,
+            json=json,
+            data=data,
+            headers=headers,
+            parse_func=parse_func,
+        )

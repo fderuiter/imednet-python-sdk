@@ -6,6 +6,7 @@ from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.endpoint.structs import ListRequestState
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.endpoint.operations.list import ListOperation
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
@@ -20,6 +21,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
+    LIST_OPERATION_CLS: type[ListOperation[T]] = ListOperation
 
     def _require_sync_client(self) -> RequestorProtocol:
         """Return the configured sync client."""
@@ -65,27 +67,6 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         self._update_local_cache(result, study, has_filters, cache)
         return result
 
-    async def _execute_async_list(
-        self,
-        paginator: AsyncPaginator,
-        parse_func: Callable[[Any], T],
-        study: Optional[str],
-        has_filters: bool,
-        cache: Any,
-    ) -> List[T]:
-        result = [parse_func(item) async for item in paginator]
-        return self._process_list_result(result, study, has_filters, cache)
-
-    def _execute_sync_list(
-        self,
-        paginator: Paginator,
-        parse_func: Callable[[Any], T],
-        study: Optional[str],
-        has_filters: bool,
-        cache: Any,
-    ) -> List[T]:
-        result = [parse_func(item) for item in paginator]
-        return self._process_list_result(result, study, has_filters, cache)
 
     def _prepare_list_request(
         self,
@@ -146,7 +127,8 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
         parse_func = self._resolve_parse_func()
 
-        return self._execute_sync_list(
+        op = self.LIST_OPERATION_CLS(self)
+        return op.execute_sync(
             paginator,
             parse_func,
             state.study,
@@ -172,7 +154,8 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         paginator = paginator_cls(client, state.path, params=state.params, page_size=self.PAGE_SIZE)
         parse_func = self._resolve_parse_func()
 
-        return await self._execute_async_list(
+        op = self.LIST_OPERATION_CLS(self)
+        return await op.execute_async(
             paginator,
             parse_func,
             state.study,
