@@ -7,7 +7,8 @@ from imednet.core.endpoint.mixins import CreateEndpointMixin, EdcListGetEndpoint
 from imednet.core.protocols import ParamProcessor
 from imednet.models.jobs import Job
 from imednet.models.records import Record
-from imednet.validation.cache import SchemaCache, validate_record_data
+from imednet.utils.security import validate_header_value
+from imednet.validation.cache import SchemaCache, validate_record_entry
 
 
 class RecordsParamProcessor(ParamProcessor):
@@ -68,12 +69,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         """
         if schema is not None:
             for rec in records_data:
-                fk = rec.get("formKey") or rec.get("form_key")
-                if not fk:
-                    fid = rec.get("formId") or rec.get("form_id") or 0
-                    fk = schema.form_key_from_id(fid)
-                if fk:
-                    validate_record_data(schema, fk, rec.get("data", {}))
+                validate_record_entry(schema, rec)
 
     def _build_headers(self, email_notify: Union[bool, str, None]) -> Dict[str, str]:
         """
@@ -91,9 +87,7 @@ class RecordsEndpoint(EdcListGetEndpoint[Record], CreateEndpointMixin[Job]):
         headers = {}
         if email_notify is not None:
             if isinstance(email_notify, str):
-                # Security: Prevent header injection via newlines
-                if "\n" in email_notify or "\r" in email_notify:
-                    raise ValueError("email_notify must not contain newlines")
+                validate_header_value(email_notify)
                 headers[HEADER_EMAIL_NOTIFY] = email_notify
             else:
                 headers[HEADER_EMAIL_NOTIFY] = str(email_notify).lower()
