@@ -67,7 +67,6 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         self._update_local_cache(result, study, has_filters, cache)
         return result
 
-
     def _prepare_list_request(
         self,
         study_key: Optional[str],
