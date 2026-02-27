@@ -5,12 +5,12 @@ import types
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
-from ..endpoints.forms import FormsEndpoint
-from ..endpoints.variables import VariablesEndpoint
 from ..models.variables import Variable
 from ._base import _ValidatorMixin
 
 if TYPE_CHECKING:
+    from ..endpoints.forms import FormsEndpoint
+    from ..endpoints.variables import VariablesEndpoint
     from ..sdk import AsyncImednetSDK, ImednetSDK
 
 _TClient = TypeVar("_TClient")
