@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, TypeVar
 
 from imednet.utils.dates import parse_iso_datetime  # Centralized date parsing
@@ -19,17 +19,23 @@ _FALSE_VARIANTS = _FALSE_LOWER | {"False", "FALSE"}
 _SENTINEL_DATETIME = datetime(1969, 4, 20, 16, 20)
 
 
-def parse_datetime(v: str | datetime) -> datetime:
-    """Parse an ISO datetime string or return a sentinel value.
+def parse_datetime(v: str | int | float | datetime) -> datetime:
+    """Parse an ISO datetime string, numeric timestamp, or return a sentinel value.
 
     The SDK historically returns ``datetime(1969, 4, 20, 16, 20)`` when a
     timestamp field is empty. This helper mirrors that behaviour for backward
     compatibility.
+
+    Args:
+        v: Date string, numeric timestamp (seconds since epoch), or datetime object.
+           Numeric values are assumed to be UTC timestamps.
     """
     if not v:
         return _SENTINEL_DATETIME
     if isinstance(v, str):
         return parse_iso_datetime(v)
+    if isinstance(v, (int, float)):
+        return datetime.fromtimestamp(v, tz=timezone.utc)
     return v
 
 
