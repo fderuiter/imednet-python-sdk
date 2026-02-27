@@ -30,11 +30,11 @@ classifiers = [
 ]
 authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
 maintainers = ["Frederick de Ruiter <fpderuiter@gmail.com>"]
-packages = [{ include = "imednet" }]
+packages = [{ include = "imednet", from = "src" }]
 include = [
     "README.md",
     "LICENSE",
-    "imednet/py.typed",
+    "src/imednet/py.typed",
     { path = "examples", format = "sdist" } # Include examples only in sdist
 ]
 license = "MIT"
@@ -106,7 +106,7 @@ target-version = ["py310"]
 
 [tool.ruff]
 line-length = 100
-src = ["imednet", "tests"]
+src = ["src", "tests"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["imednet"]
@@ -122,7 +122,7 @@ classmethod-decorators = ["field_validator", "model_validator"]
 profile = "black"
 line_length = 100
 known_first_party = ["imednet"]
-src_paths = ["imednet", "tests"]
+src_paths = ["src", "tests"]
 
 [tool.doc8]
 max_line_length = 400
