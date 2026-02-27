@@ -1,7 +1,5 @@
 from datetime import datetime, timezone
 
-import pytest
-
 from imednet.utils.validators import parse_datetime
 
 
