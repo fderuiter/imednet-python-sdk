@@ -28,7 +28,8 @@ Note:
 
 
 # Add project root directory to sys.path so `imednet` can be imported
-sys.path.insert(0, os.path.abspath(".."))
+# The path must point to 'src' so 'imednet' is importable from there.
+sys.path.insert(0, os.path.abspath("../src"))
 warnings.filterwarnings("ignore", message="duplicate object description*")
 warnings.filterwarnings("ignore", message="Failed guarded type import*")
 

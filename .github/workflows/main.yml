@@ -39,7 +39,7 @@ jobs:
         run: poetry run ruff check .
 
       - name: Type Check (MyPy)
-        run: poetry run mypy imednet
+        run: poetry run mypy src/imednet
 
       - name: Security Audit
         run: |
