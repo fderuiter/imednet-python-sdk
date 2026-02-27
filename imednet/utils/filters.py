@@ -7,10 +7,12 @@ for iMednet API endpoints based on the reference documentation.
 
 import functools
 import re
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, TypeVar, Union
 
 # Pre-compiled regex for performance to avoid re-compilation in loops
 _UNSAFE_CHARS_REGEX = re.compile(r"[^A-Za-z0-9_.-]")
+
+T = TypeVar("T")
 
 
 @functools.lru_cache(maxsize=128)
@@ -67,3 +69,28 @@ def build_filter_string(
         else:
             parts.append(f"{camel_key}=={_format_filter_value(value)}")
     return and_connector.join(parts)
+
+
+def filter_by_attribute(items: List[T], attr_name: str, target_value: Any) -> List[T]:
+    """
+    Filter a list of objects by a specific attribute value using strict string comparison.
+
+    This function handles the common case where API IDs might be returned as integers
+    or strings, ensuring consistent comparison by converting both to strings.
+
+    Args:
+        items: List of objects to filter.
+        attr_name: The name of the attribute to check on each object.
+        target_value: The value to filter for.
+
+    Returns:
+        A new list containing only the items where the attribute matches the target value.
+    """
+    target_str = str(target_value)
+    filtered_items = []
+    for item in items:
+        # Use getattr to safely access the attribute
+        attr_val = getattr(item, attr_name, None)
+        if attr_val is not None and str(attr_val) == target_str:
+            filtered_items.append(item)
+    return filtered_items

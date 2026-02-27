@@ -18,7 +18,6 @@ from .bases import (
     StrictListGetEndpoint,
 )
 from .caching import CacheMixin
-from .create import CreateEndpointMixin
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
 from .list import ListEndpointMixin
 from .params import ParamMixin
@@ -27,7 +26,6 @@ from .parsing import ParsingMixin
 __all__ = [
     "AsyncPaginator",
     "CacheMixin",
-    "CreateEndpointMixin",
     "EdcListEndpoint",
     "EdcListGetEndpoint",
     "EdcListPathGetEndpoint",
