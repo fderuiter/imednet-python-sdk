@@ -16,8 +16,6 @@ class SortField(JsonModel):
     property: str = Field(..., description="Property to sort by")
     direction: str = Field(..., description="Sort direction (ASC or DESC)")
 
-    pass
-
 
 class Pagination(JsonModel):
     """Pagination information in an API response."""
@@ -28,8 +26,6 @@ class Pagination(JsonModel):
     total_elements: int = Field(0, alias="totalElements")
     sort: List[SortField] = Field(default_factory=list)
 
-    pass
-
 
 class Error(JsonModel):
     """Error information in an API response."""
@@ -37,8 +33,6 @@ class Error(JsonModel):
     code: str = Field("", description="Error code")
     message: str = Field("", description="Error message")
     details: Dict[str, Any] = Field(default_factory=dict)
-
-    pass
 
 
 class Metadata(JsonModel):
@@ -50,8 +44,6 @@ class Metadata(JsonModel):
     timestamp: datetime
     error: Error = Field(default_factory=lambda: Error(code="", message=""))
 
-    pass
-
 
 T = TypeVar("T")
 
@@ -62,5 +54,3 @@ class ApiResponse(JsonModel, Generic[T]):
     metadata: Metadata
     pagination: Optional[Pagination] = None
     data: T
-
-    pass

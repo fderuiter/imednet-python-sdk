@@ -18,5 +18,3 @@ class Study(JsonModel):
     study_type: str = Field("", alias="studyType")
     date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
     date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
-
-    pass

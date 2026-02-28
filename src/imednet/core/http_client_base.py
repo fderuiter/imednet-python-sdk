@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Awaitable, Optional, Type, Union, cast
+from typing import Any, Generic, Optional, TypeVar, Union, cast
 
 import httpx
 
@@ -19,16 +19,24 @@ from .retry import RetryPolicy
 
 logger = logging.getLogger(__name__)
 
+ClientT = TypeVar("ClientT", bound=Union[httpx.Client, httpx.AsyncClient])
+ExecutorT = TypeVar("ExecutorT", bound=BaseRequestExecutor)
 
-class HTTPClientBase(BaseClient, ABC):
+
+class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
     """Shared logic for synchronous and asynchronous HTTP clients."""
 
-    HTTPX_CLIENT_CLS: Type[httpx.Client | httpx.AsyncClient]
+    _client: ClientT
+    _executor: ExecutorT
+
+    @abstractmethod
+    def _get_client_class(self) -> type[ClientT]:
+        """Return the underlying httpx client class."""
 
     @abstractmethod
     def _create_executor(
-        self, client: Any, retry_policy: Optional[RetryPolicy] = None
-    ) -> BaseRequestExecutor:
+        self, client: ClientT, retry_policy: Optional[RetryPolicy] = None
+    ) -> ExecutorT:
         """Create the request executor."""
 
     def __init__(
@@ -56,18 +64,19 @@ class HTTPClientBase(BaseClient, ABC):
 
         self._executor = self._create_executor(self._client, retry_policy)
 
-    def _create_client(self, auth: AuthStrategy) -> httpx.Client | httpx.AsyncClient:
+    def _create_client(self, auth: AuthStrategy) -> ClientT:
         headers = {
             HEADER_ACCEPT: CONTENT_TYPE_JSON,
             HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
         }
         headers.update(auth.get_headers())
 
-        return self.HTTPX_CLIENT_CLS(
+        client_cls = self._get_client_class()
+        return cast(ClientT, client_cls(
             base_url=self.base_url,
             headers=headers,
             timeout=self.timeout,
-        )
+        ))
 
     @property
     def retry_policy(self) -> RetryPolicy:
@@ -77,7 +86,6 @@ class HTTPClientBase(BaseClient, ABC):
     def retry_policy(self, policy: RetryPolicy) -> None:
         self._executor.retry_policy = policy
 
-    def _request(
-        self, method: str, path: str, **kwargs: Any
-    ) -> Awaitable[httpx.Response] | httpx.Response:
-        return self._executor(method, path, **kwargs)
+    @abstractmethod
+    def _request(self, method: str, path: str, **kwargs: Any) -> Any:
+        """Make an HTTP request. Return type varies by async/sync client."""

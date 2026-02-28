@@ -15,15 +15,15 @@ from .http_client_base import HTTPClientBase
 logger = logging.getLogger(__name__)
 
 
-class AsyncClient(HTTPClientBase):
+class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
-    HTTPX_CLIENT_CLS = httpx.AsyncClient
+    def _get_client_class(self) -> type[httpx.AsyncClient]:
+        return httpx.AsyncClient
 
     def _create_executor(
-        self, client: Any, retry_policy: Optional[RetryPolicy] = None
-    ) -> BaseRequestExecutor:
-        client = cast(httpx.AsyncClient, client)
+        self, client: httpx.AsyncClient, retry_policy: Optional[RetryPolicy] = None
+    ) -> AsyncRequestExecutor:
 
         # Use wrapper to allow mocking client.request after initialization
         async def send_wrapper(method: str, url: str, **kwargs: Any) -> httpx.Response:
@@ -47,16 +47,16 @@ class AsyncClient(HTTPClientBase):
         """Close the underlying async HTTP client."""
         await self._client.aclose()
 
+    async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+        return await self._executor(method, path, **kwargs)
+
     async def get(
         self,
         path: str,
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        return await cast(
-            Awaitable[httpx.Response],
-            self._request("GET", path, params=params, **kwargs),
-        )
+        return await self._request("GET", path, params=params, **kwargs)
 
     async def post(
         self,
@@ -64,7 +64,4 @@ class AsyncClient(HTTPClientBase):
         json: Optional[Any] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        return await cast(
-            Awaitable[httpx.Response],
-            self._request("POST", path, json=json, **kwargs),
-        )
+        return await self._request("POST", path, json=json, **kwargs)
