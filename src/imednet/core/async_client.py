@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Awaitable, Dict, Optional, cast
+from typing import Any, Dict, Optional
 
 import httpx
 
-from imednet.core.http.executor import AsyncRequestExecutor, BaseRequestExecutor
+from imednet.core.http.executor import AsyncRequestExecutor
 from imednet.core.retry import RetryPolicy
 
 from .http_client_base import HTTPClientBase
