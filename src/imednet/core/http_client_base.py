@@ -72,11 +72,14 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         headers.update(auth.get_headers())
 
         client_cls = self._get_client_class()
-        return cast(ClientT, client_cls(
-            base_url=self.base_url,
-            headers=headers,
-            timeout=self.timeout,
-        ))
+        return cast(
+            ClientT,
+            client_cls(
+                base_url=self.base_url,
+                headers=headers,
+                timeout=self.timeout,
+            ),
+        )
 
     @property
     def retry_policy(self) -> RetryPolicy:
