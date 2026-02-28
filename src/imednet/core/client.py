@@ -25,7 +25,7 @@ from .http_client_base import HTTPClientBase
 logger = logging.getLogger(__name__)
 
 
-class Client(HTTPClientBase):
+class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
     """
     Core HTTP client for the iMednet API.
 
@@ -36,12 +36,12 @@ class Client(HTTPClientBase):
         backoff_factor: Multiplier for exponential backoff.
     """
 
-    HTTPX_CLIENT_CLS = httpx.Client
+    def _get_client_class(self) -> type[httpx.Client]:
+        return httpx.Client
 
     def _create_executor(
-        self, client: Any, retry_policy: Optional[RetryPolicy] = None
-    ) -> BaseRequestExecutor:
-        client = cast(httpx.Client, client)
+        self, client: httpx.Client, retry_policy: Optional[RetryPolicy] = None
+    ) -> SyncRequestExecutor:
 
         # Use wrapper to allow mocking client.request after initialization
         def send_wrapper(method: str, url: str, **kwargs: Any) -> httpx.Response:
@@ -70,6 +70,9 @@ class Client(HTTPClientBase):
         """Close the underlying HTTP client."""
         self._client.close()
 
+    def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+        return self._executor(method, path, **kwargs)
+
     def get(
         self,
         path: str,
@@ -83,7 +86,7 @@ class Client(HTTPClientBase):
             path: URL path or full URL.
             params: Query parameters.
         """
-        return cast(httpx.Response, self._request("GET", path, params=params, **kwargs))
+        return self._request("GET", path, params=params, **kwargs)
 
     def post(
         self,
@@ -98,4 +101,4 @@ class Client(HTTPClientBase):
             path: URL path or full URL.
             json: JSON body for the request.
         """
-        return cast(httpx.Response, self._request("POST", path, json=json, **kwargs))
+        return self._request("POST", path, json=json, **kwargs)

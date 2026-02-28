@@ -21,8 +21,6 @@ class Role(JsonModel):
     type: str = Field("", alias="type")
     inactive: bool = Field(False, alias="inactive")
 
-    pass
-
 
 class User(JsonModel):
     """A user account in the system."""
@@ -34,8 +32,6 @@ class User(JsonModel):
     email: str = Field("", alias="email")
     user_active_in_study: bool = Field(False, alias="userActiveInStudy")
     roles: List[Role] = Field(default_factory=list, alias="roles")
-
-    pass
 
     @computed_field
     def name(self) -> str:
