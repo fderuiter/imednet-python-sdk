@@ -13,11 +13,11 @@ from __future__ import annotations
 
 import logging
 from types import TracebackType
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, Optional
 
 import httpx
 
-from imednet.core.http.executor import BaseRequestExecutor, SyncRequestExecutor
+from imednet.core.http.executor import SyncRequestExecutor
 from imednet.core.retry import RetryPolicy
 
 from .http_client_base import HTTPClientBase
