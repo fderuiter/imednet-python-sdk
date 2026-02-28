@@ -22,6 +22,22 @@ def _identity(v: Any) -> Any:
     return v
 
 
+def _optional_str(v: Any) -> Any:
+    return None if v is None else parse_str_or_default(v)
+
+
+def _optional_int(v: Any) -> Any:
+    return None if v is None else parse_int_or_default(v)
+
+
+def _optional_bool(v: Any) -> Any:
+    return None if v is None else parse_bool(v)
+
+
+def _optional_datetime(v: Any) -> Any:
+    return None if not v else parse_datetime(v)
+
+
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
     if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
         return _NORMALIZERS[cls][field_name]
@@ -45,37 +61,13 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
     elif origin is dict:
         normalizer = parse_dict_or_default
     elif annotation is str:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if v is None else parse_str_or_default(v)
-
-        else:
-            normalizer = parse_str_or_default
+        normalizer = _optional_str if optional else parse_str_or_default
     elif annotation is int:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if v is None else parse_int_or_default(v)
-
-        else:
-            normalizer = parse_int_or_default
+        normalizer = _optional_int if optional else parse_int_or_default
     elif annotation is bool:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if v is None else parse_bool(v)
-
-        else:
-            normalizer = parse_bool
+        normalizer = _optional_bool if optional else parse_bool
     elif annotation is datetime:
-        if optional:
-
-            def normalizer(v: Any) -> Any:
-                return None if not v else parse_datetime(v)
-
-        else:
-            normalizer = parse_datetime
+        normalizer = _optional_datetime if optional else parse_datetime
 
     if cls not in _NORMALIZERS:
         _NORMALIZERS[cls] = {}
