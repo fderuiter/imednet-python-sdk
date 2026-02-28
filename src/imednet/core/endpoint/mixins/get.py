@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Optional
 
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
@@ -139,13 +140,6 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise ValueError(f"{self.MODEL.__name__} not found")
 
-    def _process_response(self, response: Any, study_key: Optional[str], item_id: Any) -> T:
-        data = response.json()
-        if not data:
-            # Enforce strict validation for empty body
-            self._raise_not_found(study_key, item_id)
-        return self._parse_item(data)
-
     def _get_path_sync(
         self,
         client: RequestorProtocol,
@@ -154,8 +148,12 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
         item_id: Any,
     ) -> T:
         path = self._get_path_for_id(study_key, item_id)
-        response = client.get(path)
-        return self._process_response(response, study_key, item_id)
+        operation = PathGetOperation[T](
+            path=path,
+            parse_func=self._parse_item,
+            not_found_func=lambda: self._raise_not_found(study_key, item_id),
+        )
+        return operation.execute_sync(client)
 
     async def _get_path_async(
         self,
@@ -165,8 +163,12 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
         item_id: Any,
     ) -> T:
         path = self._get_path_for_id(study_key, item_id)
-        response = await client.get(path)
-        return self._process_response(response, study_key, item_id)
+        operation = PathGetOperation[T](
+            path=path,
+            parse_func=self._parse_item,
+            not_found_func=lambda: self._raise_not_found(study_key, item_id),
+        )
+        return await operation.execute_async(client)
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
         """Get an item by ID using direct path."""
