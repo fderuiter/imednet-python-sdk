@@ -23,7 +23,7 @@ Run before committing:
 poetry run ruff check --fix .
 poetry run black --check .
 poetry run isort --check --profile black .
-poetry run mypy imednet
+poetry run mypy src/imednet
 poetry run pytest -q
 ```
 Coverage must stay ≥ 90%.
