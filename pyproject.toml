@@ -48,7 +48,7 @@ imednet = "imednet.cli:app"
 python = "^3.10"
 h11 = "0.16.0"
 pandas = { version = ">=2.2.3,<3.0.0", optional = true }
-pyarrow = { version = ">=16.0.0,<17.0.0", optional = true }
+pyarrow = { version = ">=17.0.0", optional = true }
 SQLAlchemy = { version = ">=2.0.0,<3.0.0", optional = true }
 openpyxl = { version = "^3.1", optional = true }
 pydantic = "^2.11.3"
@@ -69,7 +69,7 @@ airflow = ["apache-airflow", "apache-airflow-providers-amazon"]
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"
-black = "^25.1.0"
+black = ">=26.3.1"
 ruff = "^0.11.6"
 mypy = "^1.15.0"
 pytest = "^8.3.5"
