@@ -90,6 +90,7 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 ### Synchronous Example
 
 ```python
+from dotenv import load_dotenv
 from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -97,6 +98,7 @@ from imednet.utils import configure_json_logging
 configure_json_logging()
 
 # Load credentials from environment variables (e.g. .env file)
+load_dotenv()
 cfg = load_config()
 
 sdk = ImednetSDK(
@@ -115,6 +117,7 @@ for study in studies:
 
 ```python
 import asyncio
+from dotenv import load_dotenv
 from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -123,6 +126,8 @@ async def main() -> None:
     # Optional: Configure structured JSON logging
     configure_json_logging()
 
+    # Load credentials from environment variables (e.g. .env file)
+    load_dotenv()
     cfg = load_config()
 
     async with AsyncImednetSDK(
