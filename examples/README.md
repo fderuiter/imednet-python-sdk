@@ -24,7 +24,7 @@ Before running the examples, you need to set up your environment with your iMedn
 You can run any example directly using Python:
 
 ```bash
-python examples/basic/get_studies.py
+poetry run python examples/basic/get_studies.py
 ```
 
 ## Structure
