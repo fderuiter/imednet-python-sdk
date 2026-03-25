@@ -32,6 +32,7 @@ def main(ctx: typer.Context) -> None:  # pragma: no cover - simple passthrough
 
 # Subcommands
 from .export import app as export_app  # noqa: E402
+from .intervals import app as intervals_app  # noqa: E402
 from .jobs import app as jobs_app  # noqa: E402
 from .queries import app as queries_app  # noqa: E402
 from .record_revisions import app as record_revisions_app  # noqa: E402
@@ -50,6 +51,7 @@ app.add_typer(record_revisions_app)
 app.add_typer(sites_app)
 app.add_typer(export_app)
 app.add_typer(subjects_app)
+app.add_typer(intervals_app)
 app.add_typer(jobs_app)
 app.add_typer(records_app)
 app.add_typer(workflows_app)
