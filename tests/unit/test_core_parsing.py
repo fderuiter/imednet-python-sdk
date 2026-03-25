@@ -1,9 +1,11 @@
-import pytest
 from pydantic import BaseModel
-from imednet.core.parsing import get_model_parser, ModelParser
+
+from imednet.core.parsing import ModelParser, get_model_parser
+
 
 class SimpleModel(BaseModel):
     name: str
+
 
 class CustomModel(BaseModel):
     name: str
@@ -12,11 +14,13 @@ class CustomModel(BaseModel):
     def from_json(cls, data):
         return cls(name=data.get("name", "").upper())
 
+
 def test_get_model_parser_simple():
     parser = get_model_parser(SimpleModel)
     model = parser({"name": "test"})
     assert isinstance(model, SimpleModel)
     assert model.name == "test"
+
 
 def test_get_model_parser_custom():
     parser = get_model_parser(CustomModel)
@@ -24,11 +28,13 @@ def test_get_model_parser_custom():
     assert isinstance(model, CustomModel)
     assert model.name == "TEST"
 
+
 def test_model_parser_class_simple():
     parser = ModelParser(SimpleModel)
     model = parser.parse({"name": "test"})
     assert isinstance(model, SimpleModel)
     assert model.name == "test"
+
 
 def test_model_parser_class_many():
     parser = ModelParser(SimpleModel)
