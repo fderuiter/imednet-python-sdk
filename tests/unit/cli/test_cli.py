@@ -566,3 +566,23 @@ def test_jobs_wait_success(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["jobs", "wait", "STUDY", "BATCH"])
     assert result.exit_code == 0
     sdk.poll_job.assert_called_once_with("STUDY", "BATCH", interval=5, timeout=300)
+
+
+def test_intervals_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    obj = MagicMock()
+    obj.interval_id = 1
+    obj.interval_name = "Baseline"
+    obj.interval_sequence = 10
+    sdk.intervals.list.return_value = [obj]
+    result = runner.invoke(cli.app, ["intervals", "list", "STUDY"])
+    assert result.exit_code == 0
+    sdk.intervals.list.assert_called_once_with("STUDY")
+    assert "Found 1 intervals:" in result.stdout
+    assert "Baseline" in result.stdout
+
+
+def test_intervals_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    sdk.intervals.list.return_value = []
+    result = runner.invoke(cli.app, ["intervals", "list", "STUDY"])
+    assert result.exit_code == 0
+    assert "No intervals found." in result.stdout
