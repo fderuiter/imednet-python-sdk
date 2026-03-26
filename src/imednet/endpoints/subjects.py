@@ -4,7 +4,6 @@ from typing import List
 
 from imednet.core.endpoint.mixins import EdcListGetEndpoint
 from imednet.models.subjects import Subject
-from imednet.utils.filters import filter_by_attribute
 
 
 class SubjectsEndpoint(EdcListGetEndpoint[Subject]):
@@ -18,20 +17,14 @@ class SubjectsEndpoint(EdcListGetEndpoint[Subject]):
     MODEL = Subject
     _id_param = "subjectKey"
 
-    def _filter_by_site(self, subjects: List[Subject], site_id: str | int) -> List[Subject]:
-        # TUI Logic: Strict string comparison to handle int/str mismatch
-        return filter_by_attribute(subjects, "site_id", site_id)
-
     def list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
         """
         List subjects filtered by a specific site ID.
 
         Migrated from TUI logic to core SDK to support filtering.
         """
-        all_subjects = self.list(study_key)
-        return self._filter_by_site(all_subjects, site_id)
+        return self.list_by_attribute("site_id", site_id, study_key=study_key)
 
     async def async_list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
         """Asynchronously list subjects filtered by a specific site ID."""
-        all_subjects = await self.async_list(study_key)
-        return self._filter_by_site(all_subjects, site_id)
+        return await self.async_list_by_attribute("site_id", site_id, study_key=study_key)
