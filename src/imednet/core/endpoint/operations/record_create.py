@@ -29,7 +29,7 @@ class RecordCreateOperation(Generic[T]):
         path: str,
         records_data: List[Dict[str, Any]],
         email_notify: Union[bool, str, None] = None,
-        schema: Optional[BaseSchemaCache[Any]] = None,
+        schema: Optional[BaseSchemaCache] = None,
     ) -> None:
         """
         Initialize the record creation operation.

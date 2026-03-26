@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
 from ..models.variables import Variable
@@ -12,10 +12,8 @@ if TYPE_CHECKING:
     from ..endpoints.variables import VariablesEndpoint
     from ..sdk import AsyncImednetSDK, ImednetSDK
 
-_TClient = TypeVar("_TClient")
 
-
-class BaseSchemaCache(Generic[_TClient]):
+class BaseSchemaCache:
     """Cache of variables by form key with optional async refresh."""
 
     def __init__(self, is_async: bool) -> None:
@@ -71,12 +69,12 @@ class BaseSchemaCache(Generic[_TClient]):
         return self._form_variables
 
 
-class SchemaCache(BaseSchemaCache["ImednetSDK"]):
+class SchemaCache(BaseSchemaCache):
     def __init__(self) -> None:
         super().__init__(is_async=False)
 
 
-class AsyncSchemaCache(BaseSchemaCache["AsyncImednetSDK"]):
+class AsyncSchemaCache(BaseSchemaCache):
     def __init__(self) -> None:
         super().__init__(is_async=True)
 
@@ -137,7 +135,7 @@ def _check_type(var_type: str, value: Any) -> None:
 
 
 def validate_record_data(
-    schema: BaseSchemaCache[Any],
+    schema: BaseSchemaCache,
     form_key: str,
     data: Dict[str, Any],
 ) -> None:
@@ -163,7 +161,7 @@ def validate_record_data(
 
 
 def validate_record_entry(
-    schema: BaseSchemaCache[Any],
+    schema: BaseSchemaCache,
     record: Dict[str, Any],
 ) -> None:
     """
@@ -193,7 +191,7 @@ class SchemaValidator(_ValidatorMixin):
     def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK", *, is_async: bool = False) -> None:
         self._sdk = sdk
         self._is_async = is_async
-        self.schema: BaseSchemaCache[Any]
+        self.schema: BaseSchemaCache
         if self._is_async:
             self.schema = AsyncSchemaCache()
         else:
