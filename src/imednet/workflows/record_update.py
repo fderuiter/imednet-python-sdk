@@ -24,9 +24,9 @@ class RecordUpdateWorkflow:
 
     def __init__(self, sdk: "ImednetSDK"):
         self._sdk = sdk
-        self._validator = SchemaValidator(sdk)
-        if getattr(sdk, "_async_client", None) is None:
-            self._validator._is_async = False
+        self._validator = SchemaValidator(
+            sdk, is_async=getattr(sdk, "_async_client", None) is not None
+        )
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 

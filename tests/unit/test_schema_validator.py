@@ -21,7 +21,7 @@ def _build_sdk(variable: Variable, async_mode: bool) -> MagicMock:
 def test_validate_record_unknown_variable(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=async_mode)
 
     with pytest.raises(ValidationError):
         if async_mode:
@@ -39,7 +39,7 @@ def test_validate_record_unknown_variable(async_mode: bool) -> None:
 def test_validate_record_wrong_type(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=async_mode)
 
     with pytest.raises(ValidationError):
         if async_mode:
@@ -57,7 +57,7 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
 def test_validate_record_unknown_form(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=async_mode)
 
     with pytest.raises(ValidationError, match="Unknown form BAD"):
         if async_mode:
@@ -75,7 +75,7 @@ def test_validate_record_unknown_form(async_mode: bool) -> None:
 def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=async_mode)
     if async_mode:
         validator.refresh = AsyncMock(wraps=validator.refresh)  # type: ignore[assignment]
         asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}}))
@@ -92,7 +92,7 @@ def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
 def test_validate_record_cached(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=async_mode)
     validator.schema._form_variables["F1"] = {"age": var}
 
     if async_mode:

@@ -23,7 +23,7 @@ async def test_async_schema_cache_refresh() -> None:
     sdk = MagicMock()
     sdk.forms = forms
     sdk.variables = variables
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=True)
 
     await validator.schema.refresh(forms, variables, study_key="ST")
 
@@ -37,7 +37,7 @@ async def test_validate_record_and_batch_async() -> None:
     var = _make_var("age")
     sdk = MagicMock()
     sdk.variables.async_list = AsyncMock(return_value=[var])
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=True)
 
     record = {"formKey": "F1", "data": {"age": 1}}
     await validator.validate_record("ST", record)
@@ -53,7 +53,7 @@ async def test_unknown_form_refreshes_and_raises() -> None:
     var = _make_var("age")
     sdk = MagicMock()
     sdk.variables.async_list = AsyncMock(return_value=[var])
-    validator = SchemaValidator(sdk)
+    validator = SchemaValidator(sdk, is_async=True)
 
     with pytest.raises(ValidationError, match="Unknown form BAD"):
         await validator.validate_record("ST", {"formKey": "BAD", "data": {}})
