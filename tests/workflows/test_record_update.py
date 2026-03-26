@@ -37,6 +37,10 @@ def test_create_or_update_records_no_wait(schema: SchemaCache, async_mode: bool)
     job = Job(batch_id="1", state="PROCESSING")
     if async_mode:
         sdk._async_client = object()
+    else:
+        sdk._async_client = None
+
+    if async_mode:
         sdk.records.async_create = AsyncMock(return_value=job)
     else:
         sdk.records.create = MagicMock(return_value=job)
@@ -141,6 +145,10 @@ def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None
     job = Job(batch_id="1", state="PROCESSING")
     if async_mode:
         sdk._async_client = object()
+    else:
+        sdk._async_client = None
+
+    if async_mode:
         sdk.records.async_create = AsyncMock(return_value=job)
         sdk.variables.async_list = AsyncMock(
             return_value=[
@@ -205,6 +213,10 @@ def test_create_or_update_records_wait_for_completion(
     completed_job = Job(batch_id="1", state="COMPLETED")
     if async_mode:
         sdk._async_client = object()
+    else:
+        sdk._async_client = None
+
+    if async_mode:
         sdk.records.async_create = AsyncMock(return_value=initial_job)
         sdk.jobs.async_get = AsyncMock(side_effect=[initial_job, completed_job])
         sdk.variables.async_list = AsyncMock(
