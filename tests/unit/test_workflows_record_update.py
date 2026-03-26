@@ -10,6 +10,7 @@ from imednet.workflows.record_update import RecordUpdateWorkflow
 
 def test_create_or_update_records_no_wait() -> None:
     sdk = MagicMock()
+    sdk._async_client = None
     job = Job(batch_id="1", state="PROCESSING")
     sdk.records.create.return_value = job
 
@@ -22,6 +23,7 @@ def test_create_or_update_records_no_wait() -> None:
 
 def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
     sdk = MagicMock()
+    sdk._async_client = None
     initial_job = Job(batch_id="1", state="PROCESSING")
     completed_job = Job(batch_id="1", state="COMPLETED")
     sdk.records.create.return_value = initial_job
@@ -45,6 +47,7 @@ def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
 
 def test_update_scheduled_record_builds_payload() -> None:
     sdk = MagicMock()
+    sdk._async_client = None
     wf = RecordUpdateWorkflow(sdk)
     wf.create_or_update_records = MagicMock(return_value="job")  # type: ignore[method-assign]
 
@@ -72,6 +75,7 @@ def test_update_scheduled_record_builds_payload() -> None:
 
 def test_create_or_update_records_validation() -> None:
     sdk = MagicMock()
+    sdk._async_client = None
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk.variables.list.return_value = [var]
     wf = RecordUpdateWorkflow(sdk)

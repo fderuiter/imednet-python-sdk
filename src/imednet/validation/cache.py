@@ -191,22 +191,9 @@ def validate_record_entry(
 class SchemaValidator(_ValidatorMixin):
     """Validate record payloads using variable metadata from the API."""
 
-    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK") -> None:
+    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK", *, is_async: bool = False) -> None:
         self._sdk = sdk
-        import inspect
-
-        # Determine async mode. Prefer the presence of an async client attribute
-        # but fall back to inspecting the variables endpoint so tests can supply
-        # a lightweight mock that only defines ``async_list``.
-        has_async_client = (
-            "_async_client" in getattr(sdk, "__dict__", {})
-            and getattr(sdk, "_async_client") is not None
-        )
-        async_attr = getattr(sdk.variables, "async_list", None)
-        is_bound_method = isinstance(async_attr, types.MethodType)
-        self._is_async = has_async_client or (
-            inspect.iscoroutinefunction(async_attr) and not is_bound_method
-        )
+        self._is_async = is_async
         self.schema: BaseSchemaCache[Any]
         if self._is_async:
             self.schema = AsyncSchemaCache()
