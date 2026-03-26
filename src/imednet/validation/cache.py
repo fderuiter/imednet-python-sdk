@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import inspect
-import types
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
