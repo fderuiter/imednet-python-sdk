@@ -9,7 +9,6 @@ from urllib.parse import quote
 
 from imednet.core.context import Context
 from imednet.core.endpoint.abc import EndpointABC
-from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.json_base import JsonModel
 
@@ -78,14 +77,3 @@ class GenericEndpoint(EndpointABC[T]):
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         return self._async_client
-
-
-class BaseEndpoint(EdcEndpointMixin, GenericEndpoint[T]):
-    """
-    Shared base for endpoint wrappers (Legacy).
-
-    Includes EDC-specific logic for backward compatibility.
-    New endpoints should use GenericEndpoint or explicit Edc* mixins.
-    """
-
-    pass

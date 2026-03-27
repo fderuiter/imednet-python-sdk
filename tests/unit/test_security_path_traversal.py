@@ -2,7 +2,8 @@ from unittest.mock import MagicMock
 
 from imednet.core.client import Client
 from imednet.core.context import Context
-from imednet.core.endpoint.base import BaseEndpoint
+from imednet.core.endpoint.base import GenericEndpoint
+from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.models.json_base import JsonModel
 
 
@@ -10,7 +11,7 @@ class MockModel(JsonModel):
     pass
 
 
-class MockEndpoint(BaseEndpoint[MockModel]):
+class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
     MODEL = MockModel
     PATH = "/test"
 
