@@ -131,8 +131,9 @@ def test_create_or_update_records_unknown_form_key(async_mode: bool) -> None:
         wf._validator.validate_batch.assert_not_called()
         sdk.records.async_create.assert_not_awaited()
     else:
-        # Mocking sync calls, but within _create_or_update_common they are called within an event loop.
-        # However, _is_async on workflow is False, so it calls it synchronously.
+        # Mocking sync calls, but within _create_or_update_common they are
+        # called within an event loop. However, _is_async on workflow is
+        # False, so it calls it synchronously.
         wf._validator.refresh = MagicMock()  # type: ignore[method-assign]
         wf._validator.validate_batch = MagicMock()  # type: ignore[method-assign]
         with pytest.raises(ValueError, match="Form key 'F1' not found"):

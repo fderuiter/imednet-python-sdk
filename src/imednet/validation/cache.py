@@ -201,12 +201,14 @@ class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
     def __new__(cls, sdk: "ImednetSDK", *args: Any, **kwargs: Any) -> Any:
         if kwargs.get("is_async") or (args and args[0] is True):
             import warnings
+
             warnings.warn(
-                "Passing `is_async=True` to SchemaValidator is deprecated. Use `AsyncSchemaValidator` instead.",
+                "Passing `is_async=True` to SchemaValidator is deprecated. "
+                "Use `AsyncSchemaValidator` instead.",
                 DeprecationWarning,
                 stacklevel=2,
             )
-            return AsyncSchemaValidator(sdk) # type: ignore[arg-type]
+            return AsyncSchemaValidator(sdk)  # type: ignore[arg-type]
         return super().__new__(cls)
 
     def __init__(self, sdk: ImednetSDK, *, is_async: bool = False) -> None:
