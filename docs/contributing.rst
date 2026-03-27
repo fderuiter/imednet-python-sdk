@@ -20,7 +20,7 @@ Run these commands and ensure **≥90%** test coverage before opening a pull req
    poetry run ruff check --fix .
    poetry run black --check .
    poetry run isort --check --profile black .
-   poetry run mypy imednet
+   poetry run mypy src/imednet
    poetry run pytest -q
 
 Conventions
