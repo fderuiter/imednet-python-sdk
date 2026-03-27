@@ -1,12 +1,11 @@
 """Utilities for submitting and updating records in iMedNet studies."""
 
 import asyncio
-import inspect
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 
 from ..models import Job
-from ..validation.cache import SchemaCache, SchemaValidator
+from ..validation.cache import AsyncSchemaValidator, SchemaCache, SchemaValidator
 from .job_poller import JobPoller
 
 if TYPE_CHECKING:
@@ -24,9 +23,11 @@ class RecordUpdateWorkflow:
 
     def __init__(self, sdk: "ImednetSDK"):
         self._sdk = sdk
-        self._validator = SchemaValidator(
-            sdk, is_async=getattr(sdk, "_async_client", None) is not None
-        )
+        self._is_async = getattr(sdk, "_async_client", None) is not None
+        if self._is_async:
+            self._validator = AsyncSchemaValidator(sdk)  # type: ignore[arg-type]
+        else:
+            self._validator = SchemaValidator(sdk)  # type: ignore[assignment]
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
@@ -87,15 +88,20 @@ class RecordUpdateWorkflow:
                 records_data[0].get("formId", 0)
             )
             if first_ref and not self._schema.variables_for_form(first_ref):
-                result = self._validator.refresh(study_key)
-                if inspect.isawaitable(result):
-                    await result
+                if self._is_async:
+                    # We know self._validator is an AsyncSchemaValidator when _is_async is True
+                    await cast(AsyncSchemaValidator, self._validator).refresh(study_key)
+                else:
+                    cast(SchemaValidator, self._validator).refresh(study_key)
                 if first_ref not in self._schema.forms:
                     raise ValueError(f"Form key '{first_ref}' not found")
 
-        result = self._validator.validate_batch(study_key, records_data)
-        if inspect.isawaitable(result):
-            await result
+        if self._is_async:
+            await cast(AsyncSchemaValidator, self._validator).validate_batch(
+                study_key, records_data
+            )
+        else:
+            cast(SchemaValidator, self._validator).validate_batch(study_key, records_data)
 
         if is_async:
             job = await self._sdk.records.async_create(study_key, records_data, schema=self._schema)

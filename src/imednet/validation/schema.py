@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 
-from .cache import BaseSchemaCache, SchemaValidator, validate_record_data
+from .cache import AsyncSchemaValidator, BaseSchemaCache, SchemaValidator, validate_record_data
 
 warnings.warn(
     "imednet.validation.schema is deprecated; use imednet.validation.cache",
@@ -13,5 +13,6 @@ warnings.warn(
 __all__ = [
     "BaseSchemaCache",
     "SchemaValidator",
+    "AsyncSchemaValidator",
     "validate_record_data",
 ]

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import inspect
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
 from ..core.exceptions import UnknownVariableTypeError, ValidationError
@@ -187,74 +186,81 @@ def validate_record_entry(
         validate_record_data(schema, fk, record.get("data", {}))
 
 
-class SchemaValidator(_ValidatorMixin):
-    """Validate record payloads using variable metadata from the API."""
+class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
+    """Base validator sharing logic between sync and async implementations."""
 
-    def __init__(self, sdk: "ImednetSDK | AsyncImednetSDK", *, is_async: bool = False) -> None:
-        self._sdk = sdk
-        self._is_async = is_async
-        self.schema: BaseSchemaCache[Any]
-        if self._is_async:
-            self.schema = AsyncSchemaCache()
-        else:
-            self.schema = SchemaCache()
+    schema: BaseSchemaCache[_TClient]
 
     def _refresh_common(self, variables: Iterable[Variable]) -> None:
         self.schema.populate(variables)
 
-    async def _refresh_async(self, study_key: str) -> None:
-        variables = await self._sdk.variables.async_list(study_key=study_key, refresh=True)
-        self._refresh_common(variables)
 
-    def _refresh_sync(self, study_key: str) -> None:
+class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
+    """Validate record payloads using variable metadata from the API (Synchronous)."""
+
+    def __new__(cls, sdk: "ImednetSDK", *args: Any, **kwargs: Any) -> Any:
+        if kwargs.get("is_async") or (args and args[0] is True):
+            import warnings
+            warnings.warn(
+                "Passing `is_async=True` to SchemaValidator is deprecated. Use `AsyncSchemaValidator` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return AsyncSchemaValidator(sdk) # type: ignore[arg-type]
+        return super().__new__(cls)
+
+    def __init__(self, sdk: ImednetSDK, *, is_async: bool = False) -> None:
+        """Initialize the synchronous schema validator."""
+        self._sdk = sdk
+        self.schema = SchemaCache()
+
+    def refresh(self, study_key: str) -> None:
+        """Populate the schema cache for ``study_key`` from the Variables endpoint.
+
+        This method never raises :class:`~imednet.core.exceptions.ValidationError`;
+        any API errors bubble up as :class:`~imednet.core.exceptions.ApiError`.
+        """
         variables = self._sdk.variables.list(study_key=study_key, refresh=True)
         self._refresh_common(variables)
 
-    def refresh(self, study_key: str) -> Any:
-        """Populate the schema cache for ``study_key`` from the Variables endpoint.
-
-        Returns ``None`` when used with a synchronous validator or a coroutine for
-        an asynchronous validator. This method never raises
-        :class:`~imednet.core.exceptions.ValidationError`; any API errors bubble up
-        as :class:`~imednet.core.exceptions.ApiError`.
-        """
-        if self._is_async:
-            return self._refresh_async(study_key)
-        return self._refresh_sync(study_key)
-
-    def _validate_record_common(
-        self, study_key: str, record: Dict[str, Any]
-    ) -> tuple[Optional[str], Any]:
+    def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
+        """Validate a single record payload."""
         form_key = self._resolve_form_key(record)
-        refresh_result: Any = None
         if form_key and not self.schema.variables_for_form(form_key):
-            refresh_result = self.refresh(study_key)
-        return form_key, refresh_result
-
-    async def _validate_record_async(self, study_key: str, record: Dict[str, Any]) -> None:
-        form_key, result = self._validate_record_common(study_key, record)
-        if inspect.isawaitable(result):
-            result = await result
-            if inspect.isawaitable(result):
-                await result
+            self.refresh(study_key)
         self._validate_cached(form_key, record.get("data", {}))
 
-    def _validate_record_sync(self, study_key: str, record: Dict[str, Any]) -> None:
-        form_key, _ = self._validate_record_common(study_key, record)
-        self._validate_cached(form_key, record.get("data", {}))
-
-    def validate_record(self, study_key: str, record: Dict[str, Any]) -> Any:
-        if self._is_async:
-            return self._validate_record_async(study_key, record)
-        return self._validate_record_sync(study_key, record)
-
-    def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> Any:
-        if self._is_async:
-
-            async def _run() -> None:
-                for rec in records:
-                    await self.validate_record(study_key, rec)
-
-            return _run()
+    def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
+        """Validate a batch of record payloads."""
         for rec in records:
             self.validate_record(study_key, rec)
+
+
+class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetSDK"]):
+    """Validate record payloads using variable metadata from the API (Asynchronous)."""
+
+    def __init__(self, sdk: AsyncImednetSDK) -> None:
+        """Initialize the asynchronous schema validator."""
+        self._sdk = sdk
+        self.schema = AsyncSchemaCache()
+
+    async def refresh(self, study_key: str) -> None:
+        """Populate the schema cache for ``study_key`` from the Variables endpoint.
+
+        This method never raises :class:`~imednet.core.exceptions.ValidationError`;
+        any API errors bubble up as :class:`~imednet.core.exceptions.ApiError`.
+        """
+        variables = await self._sdk.variables.async_list(study_key=study_key, refresh=True)
+        self._refresh_common(variables)
+
+    async def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
+        """Validate a single record payload asynchronously."""
+        form_key = self._resolve_form_key(record)
+        if form_key and not self.schema.variables_for_form(form_key):
+            await self.refresh(study_key)
+        self._validate_cached(form_key, record.get("data", {}))
+
+    async def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
+        """Validate a batch of record payloads asynchronously."""
+        for rec in records:
+            await self.validate_record(study_key, rec)
