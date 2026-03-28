@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Optional
 
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.operations.filter_get import FilterGetOperation
 from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
@@ -66,14 +67,14 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         item_id: Any,
     ) -> T:
         filters = {self._id_param: item_id}
-        result = self._list_sync(
-            client,
-            paginator_cls,
+        operation = FilterGetOperation[T](
             study_key=study_key,
-            refresh=True,
-            **filters,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_sync_func=self._list_sync,
         )
-        return self._validate_get_result(result, study_key, item_id)
+        return operation.execute_sync(client, paginator_cls)
 
     async def _get_async(
         self,
@@ -84,14 +85,14 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         item_id: Any,
     ) -> T:
         filters = {self._id_param: item_id}
-        result = await self._list_async(
-            client,
-            paginator_cls,
+        operation = FilterGetOperation[T](
             study_key=study_key,
-            refresh=True,
-            **filters,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_async_func=self._list_async,
         )
-        return self._validate_get_result(result, study_key, item_id)
+        return await operation.execute_async(client, paginator_cls)
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
         """Get an item by ID using filtering."""
