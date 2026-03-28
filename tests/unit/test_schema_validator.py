@@ -5,7 +5,7 @@ import pytest
 
 from imednet.core.exceptions import ValidationError
 from imednet.models.variables import Variable
-from imednet.validation.cache import SchemaValidator
+from imednet.validation.cache import AsyncSchemaValidator, SchemaValidator
 
 
 def _build_sdk(variable: Variable, async_mode: bool) -> MagicMock:
@@ -21,7 +21,10 @@ def _build_sdk(variable: Variable, async_mode: bool) -> MagicMock:
 def test_validate_record_unknown_variable(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk, is_async=async_mode)
+    if async_mode:
+        validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
+    else:
+        validator = SchemaValidator(sdk)  # type: ignore[assignment]
 
     with pytest.raises(ValidationError):
         if async_mode:
@@ -39,7 +42,10 @@ def test_validate_record_unknown_variable(async_mode: bool) -> None:
 def test_validate_record_wrong_type(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk, is_async=async_mode)
+    if async_mode:
+        validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
+    else:
+        validator = SchemaValidator(sdk)  # type: ignore[assignment]
 
     with pytest.raises(ValidationError):
         if async_mode:
@@ -57,7 +63,10 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
 def test_validate_record_unknown_form(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk, is_async=async_mode)
+    if async_mode:
+        validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
+    else:
+        validator = SchemaValidator(sdk)  # type: ignore[assignment]
 
     with pytest.raises(ValidationError, match="Unknown form BAD"):
         if async_mode:
@@ -75,13 +84,14 @@ def test_validate_record_unknown_form(async_mode: bool) -> None:
 def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk, is_async=async_mode)
     if async_mode:
+        validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
         validator.refresh = AsyncMock(wraps=validator.refresh)  # type: ignore[assignment]
         asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}}))
         validator.refresh.assert_awaited_once_with("STUDY")
         sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
     else:
+        validator = SchemaValidator(sdk)  # type: ignore[assignment]
         validator.refresh = MagicMock(wraps=validator.refresh)  # type: ignore[assignment]
         validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
         validator.refresh.assert_called_once_with("STUDY")
@@ -92,7 +102,11 @@ def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
 def test_validate_record_cached(async_mode: bool) -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
-    validator = SchemaValidator(sdk, is_async=async_mode)
+    if async_mode:
+        validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
+    else:
+        validator = SchemaValidator(sdk)  # type: ignore[assignment]
+
     validator.schema._form_variables["F1"] = {"age": var}
 
     if async_mode:
