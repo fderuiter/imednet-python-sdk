@@ -115,3 +115,43 @@ def test_validate_record_cached(async_mode: bool) -> None:
     else:
         validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
         sdk.variables.list.assert_not_called()
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_validate_record_with_form_id_fallback(async_mode: bool) -> None:
+    var = Variable(variable_name="age", variable_type="integer", form_id=123, form_key="F1")
+    sdk = _build_sdk(var, async_mode)
+    if async_mode:
+        validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
+    else:
+        validator = SchemaValidator(sdk)  # type: ignore[assignment]
+
+    validator.schema._form_variables["F1"] = {"age": var}
+    validator.schema._form_id_to_key[123] = "F1"
+
+    if async_mode:
+        asyncio.run(validator.validate_record("STUDY", {"formId": 123, "data": {"age": 1}}))
+        sdk.variables.async_list.assert_not_awaited()
+    else:
+        validator.validate_record("STUDY", {"formId": 123, "data": {"age": 1}})
+        sdk.variables.list.assert_not_called()
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_validate_record_missing_form_identifier(async_mode: bool) -> None:
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    sdk = _build_sdk(var, async_mode)
+    if async_mode:
+        validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
+    else:
+        validator = SchemaValidator(sdk)  # type: ignore[assignment]
+
+    validator.schema._form_variables["F1"] = {"age": var}
+
+    # Missing formKey and formId entirely should just skip validation without error
+    if async_mode:
+        asyncio.run(validator.validate_record("STUDY", {"data": {"age": "bad"}}))
+        sdk.variables.async_list.assert_not_awaited()
+    else:
+        validator.validate_record("STUDY", {"data": {"age": "bad"}})
+        sdk.variables.list.assert_not_called()
