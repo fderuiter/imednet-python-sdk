@@ -27,12 +27,6 @@ class EdcListEndpoint(EdcEndpointMixin, GenericListEndpoint[T]):
     pass
 
 
-class ListEndpoint(EdcListEndpoint[T]):
-    """Endpoint base class implementing ``list`` helpers (Legacy)."""
-
-    pass
-
-
 class GenericListGetEndpoint(GenericListEndpoint[T], FilterGetEndpointMixin[T]):
     """Generic endpoint implementing ``list`` and ``get`` helpers."""
 
@@ -41,12 +35,6 @@ class GenericListGetEndpoint(GenericListEndpoint[T], FilterGetEndpointMixin[T]):
 
 class EdcListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[T]):
     """EDC-specific list/get endpoint."""
-
-    pass
-
-
-class ListGetEndpoint(EdcListGetEndpoint[T]):
-    """Endpoint base class implementing ``list`` and ``get`` helpers (Legacy)."""
 
     pass
 
@@ -63,12 +51,6 @@ class EdcListPathGetEndpoint(EdcEndpointMixin, GenericListPathGetEndpoint[T]):
     pass
 
 
-class ListPathGetEndpoint(EdcListPathGetEndpoint[T]):
-    """Endpoint base class implementing ``list`` and ``get`` (via path) helpers (Legacy)."""
-
-    pass
-
-
 class EdcStrictListGetEndpoint(EdcListGetEndpoint[T]):
     """
     Endpoint base class enforcing strict study key requirements (EDC).
@@ -80,12 +62,6 @@ class EdcStrictListGetEndpoint(EdcListGetEndpoint[T]):
     _missing_study_exception = KeyError
 
 
-class StrictListGetEndpoint(EdcStrictListGetEndpoint[T]):
-    """Endpoint base class enforcing strict study key requirements (Legacy)."""
-
-    pass
-
-
 class EdcMetadataListGetEndpoint(EdcStrictListGetEndpoint[T]):
     """
     Endpoint base class for metadata resources (EDC).
@@ -94,9 +70,3 @@ class EdcMetadataListGetEndpoint(EdcStrictListGetEndpoint[T]):
     """
 
     PAGE_SIZE = 500
-
-
-class MetadataListGetEndpoint(EdcMetadataListGetEndpoint[T]):
-    """Endpoint base class for metadata resources (Legacy)."""
-
-    pass

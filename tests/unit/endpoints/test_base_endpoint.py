@@ -4,7 +4,8 @@ import pytest
 
 from imednet.core.client import Client
 from imednet.core.context import Context
-from imednet.core.endpoint.base import BaseEndpoint
+from imednet.core.endpoint.base import GenericEndpoint
+from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.models.json_base import JsonModel
 
 
@@ -12,7 +13,7 @@ class MockModel(JsonModel):
     pass
 
 
-class MockEndpointImpl(BaseEndpoint[MockModel]):
+class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):
     PATH = "/test"
     MODEL = MockModel
 
