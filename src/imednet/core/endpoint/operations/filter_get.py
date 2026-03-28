@@ -29,12 +29,8 @@ class FilterGetOperation(Generic[T]):
         item_id: Any,
         filters: Dict[str, Any],
         validate_func: Callable[[List[T], Optional[str], Any], T],
-        list_sync_func: Optional[
-            Callable[..., List[T]]
-        ] = None,
-        list_async_func: Optional[
-            Callable[..., Awaitable[List[T]]]
-        ] = None,
+        list_sync_func: Optional[Callable[..., List[T]]] = None,
+        list_async_func: Optional[Callable[..., Awaitable[List[T]]]] = None,
     ) -> None:
         """
         Initialize the filter get operation.
