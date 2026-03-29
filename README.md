@@ -87,18 +87,23 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 
 ## Quick Start
 
+Set your credentials as environment variables before running the examples:
+
+```bash
+export IMEDNET_API_KEY="your_api_key"
+export IMEDNET_SECURITY_KEY="your_security_key"
+```
+
 ### Synchronous Example
 
 ```python
-from dotenv import load_dotenv
 from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
 # Optional: Configure structured JSON logging
 configure_json_logging()
 
-# Load credentials from environment variables (e.g. .env file)
-load_dotenv()
+# Load credentials from environment variables
 cfg = load_config()
 
 sdk = ImednetSDK(
@@ -117,7 +122,6 @@ for study in studies:
 
 ```python
 import asyncio
-from dotenv import load_dotenv
 from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -126,8 +130,7 @@ async def main() -> None:
     # Optional: Configure structured JSON logging
     configure_json_logging()
 
-    # Load credentials from environment variables (e.g. .env file)
-    load_dotenv()
+    # Load credentials from environment variables
     cfg = load_config()
 
     async with AsyncImednetSDK(
