@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, cast
 
 from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.endpoint.operations.filter_get import FilterGetOperation
@@ -8,6 +8,7 @@ from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
+from ..protocols import ListEndpointProtocol
 from .parsing import ParsingMixin, T
 
 
@@ -26,31 +27,6 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         """Return the configured async client."""
         raise NotImplementedError("Mixin must be used in a class providing _require_async_client")
 
-    # These should be provided by ListEndpointMixin or similar implementation
-    def _list_sync(
-        self,
-        client: RequestorProtocol,
-        paginator_cls: type[Paginator],
-        *,
-        study_key: Optional[str] = None,
-        refresh: bool = False,
-        extra_params: Optional[Dict[str, Any]] = None,
-        **filters: Any,
-    ) -> List[T]:
-        raise NotImplementedError
-
-    async def _list_async(
-        self,
-        client: AsyncRequestorProtocol,
-        paginator_cls: type[AsyncPaginator],
-        *,
-        study_key: Optional[str] = None,
-        refresh: bool = False,
-        extra_params: Optional[Dict[str, Any]] = None,
-        **filters: Any,
-    ) -> List[T]:
-        raise NotImplementedError
-
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
         if not items:
             if self.requires_study_key:
@@ -67,12 +43,15 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         item_id: Any,
     ) -> T:
         filters = {self._id_param: item_id}
+        # Explicitly cast self to ListEndpointProtocol[T] since this mixin depends on
+        # a list endpoint being mixed in (like ListEndpointMixin).
+        list_endpoint = cast(ListEndpointProtocol[T], self)
         operation = FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,
             filters=filters,
             validate_func=self._validate_get_result,
-            list_sync_func=self._list_sync,
+            list_sync_func=list_endpoint._list_sync,
         )
         return operation.execute_sync(client, paginator_cls)
 
@@ -85,12 +64,15 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         item_id: Any,
     ) -> T:
         filters = {self._id_param: item_id}
+        # Explicitly cast self to ListEndpointProtocol[T] since this mixin depends on
+        # a list endpoint being mixed in (like ListEndpointMixin).
+        list_endpoint = cast(ListEndpointProtocol[T], self)
         operation = FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,
             filters=filters,
             validate_func=self._validate_get_result,
-            list_async_func=self._list_async,
+            list_async_func=list_endpoint._list_async,
         )
         return await operation.execute_async(client, paginator_cls)
 

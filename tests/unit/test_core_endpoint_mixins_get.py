@@ -215,7 +215,7 @@ async def test_path_get_async():
         assert result == {"id": 123}
 
 
-def test_list_sync_raises():
+def test_get_sync_raises_when_no_list_endpoint():
     class IncompleteEndpoint(FilterGetEndpointMixin):
         MODEL = MockModel
         PATH = "dummy"
@@ -226,13 +226,16 @@ def test_list_sync_raises():
         def _build_path(self, *args):
             return ""
 
+        def _require_sync_client(self):
+            return None
+
     ep = IncompleteEndpoint()
-    with pytest.raises(NotImplementedError):
-        ep._list_sync(None, None)
+    with pytest.raises(AttributeError):
+        ep.get("study", 1)
 
 
 @pytest.mark.asyncio
-async def test_list_async_raises():
+async def test_get_async_raises_when_no_list_endpoint():
     class IncompleteEndpoint(FilterGetEndpointMixin):
         MODEL = MockModel
         PATH = "dummy"
@@ -243,9 +246,12 @@ async def test_list_async_raises():
         def _build_path(self, *args):
             return ""
 
+        def _require_async_client(self):
+            return None
+
     ep = IncompleteEndpoint()
-    with pytest.raises(NotImplementedError):
-        await ep._list_async(None, None)
+    with pytest.raises(AttributeError):
+        await ep.async_get("study", 1)
 
 
 def test_validate_get_result_found():
