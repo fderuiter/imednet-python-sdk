@@ -1,18 +1,20 @@
 """Pagination helpers for iterating through API responses."""
 
-from typing import Any, AsyncIterator, Dict, Iterator, Optional, cast
+from typing import Any, AsyncIterator, Dict, Generic, Iterator, Optional, TypeVar
 
 import httpx
 
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
+ClientT = TypeVar("ClientT", RequestorProtocol, AsyncRequestorProtocol)
 
-class BasePaginator:
+
+class BasePaginator(Generic[ClientT]):
     """Shared paginator implementation."""
 
     def __init__(
         self,
-        client: RequestorProtocol | AsyncRequestorProtocol,
+        client: ClientT,
         path: str,
         params: Optional[Dict[str, Any]] = None,
         page_size: int = 100,
@@ -21,7 +23,7 @@ class BasePaginator:
         data_key: str = "data",
         metadata_key: str = "metadata",
     ) -> None:
-        self.client = client
+        self.client: ClientT = client
         self.path = path
         self.params = params.copy() if params else {}
         self.page_size = page_size
@@ -58,57 +60,47 @@ class BasePaginator:
             return None
         return page + 1
 
-    def _iter_sync(self) -> Iterator[Any]:
-        client = cast(RequestorProtocol, self.client)
-        page = 0
-        while True:
-            params = self._build_params(page)
-            response: httpx.Response = client.get(self.path, params=params)
-            payload = response.json()
-            for item in self._extract_items(payload):
-                yield item
-            next_page = self._next_page(payload, page)
-            if next_page is None:
-                break
-            page = next_page
 
-    async def _iter_async(self) -> AsyncIterator[Any]:
-        client = cast(AsyncRequestorProtocol, self.client)
-        page = 0
-        while True:
-            params = self._build_params(page)
-            response: httpx.Response = await client.get(self.path, params=params)
-            payload = response.json()
-            for item in self._extract_items(payload):
-                yield item
-            next_page = self._next_page(payload, page)
-            if next_page is None:
-                break
-            page = next_page
-
-
-class Paginator(BasePaginator):
+class Paginator(BasePaginator[RequestorProtocol]):
     """Iterate synchronously over paginated API results."""
 
     def __iter__(self) -> Iterator[Any]:
-        yield from self._iter_sync()
+        page = 0
+        while True:
+            params = self._build_params(page)
+            response: httpx.Response = self.client.get(self.path, params=params)
+            payload = response.json()
+            for item in self._extract_items(payload):
+                yield item
+            next_page = self._next_page(payload, page)
+            if next_page is None:
+                break
+            page = next_page
 
 
-class AsyncPaginator(BasePaginator):
+class AsyncPaginator(BasePaginator[AsyncRequestorProtocol]):
     """Asynchronous variant of :class:`Paginator`."""
 
     async def __aiter__(self) -> AsyncIterator[Any]:
-        async for item in self._iter_async():
-            yield item
+        page = 0
+        while True:
+            params = self._build_params(page)
+            response: httpx.Response = await self.client.get(self.path, params=params)
+            payload = response.json()
+            for item in self._extract_items(payload):
+                yield item
+            next_page = self._next_page(payload, page)
+            if next_page is None:
+                break
+            page = next_page
 
 
 class JsonListPaginator(Paginator):
     """Paginator for endpoints returning a raw list."""
 
-    def _iter_sync(self) -> Iterator[Any]:
-        client = cast(RequestorProtocol, self.client)
+    def __iter__(self) -> Iterator[Any]:
         # Raw list endpoints do not support pagination params
-        response: httpx.Response = client.get(self.path, params=self.params)
+        response: httpx.Response = self.client.get(self.path, params=self.params)
         payload = response.json()
         if not isinstance(payload, list):
             raise TypeError(f"API response must be a list, got {type(payload).__name__}")
@@ -118,10 +110,9 @@ class JsonListPaginator(Paginator):
 class AsyncJsonListPaginator(AsyncPaginator):
     """Asynchronous variant of :class:`JsonListPaginator`."""
 
-    async def _iter_async(self) -> AsyncIterator[Any]:
-        client = cast(AsyncRequestorProtocol, self.client)
+    async def __aiter__(self) -> AsyncIterator[Any]:
         # Raw list endpoints do not support pagination params
-        response: httpx.Response = await client.get(self.path, params=self.params)
+        response: httpx.Response = await self.client.get(self.path, params=self.params)
         payload = response.json()
         if not isinstance(payload, list):
             raise TypeError(f"API response must be a list, got {type(payload).__name__}")
