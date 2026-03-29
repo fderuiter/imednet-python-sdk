@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Optional, cast
+from typing import Any, Iterable, List, Optional, cast
 
 from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.endpoint.operations.filter_get import FilterGetOperation
