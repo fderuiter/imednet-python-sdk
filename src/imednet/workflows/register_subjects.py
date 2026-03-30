@@ -6,7 +6,7 @@ It provides a simple, robust interface for registering one or more subjects.
 
 from typing import TYPE_CHECKING, List, Optional
 
-from imednet.core.exceptions import ApiError
+from imednet.errors import ApiError
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 

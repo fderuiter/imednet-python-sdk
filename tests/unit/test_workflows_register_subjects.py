@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from imednet.core.exceptions import ApiError
+from imednet.errors import ApiError
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 from imednet.models.sites import Site

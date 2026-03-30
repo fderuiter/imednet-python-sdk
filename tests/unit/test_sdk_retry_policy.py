@@ -2,7 +2,7 @@ import httpx
 import pytest
 import respx
 
-from imednet.core import exceptions
+from imednet import errors
 from imednet.core.retry import RetryPolicy, RetryState
 from imednet.sdk import ImednetSDK
 
@@ -70,8 +70,8 @@ def test_default_retry_policy_retries_connection_error(respx_mock_external) -> N
     )
 
     # Note: RequestExecutor configures tenacity with reraise=False, so the underlying
-    # httpx.ConnectError is wrapped in exceptions.RequestError.
-    with pytest.raises(exceptions.RequestError) as exc_info:
+    # httpx.ConnectError is wrapped in errors.RequestError.
+    with pytest.raises(errors.RequestError) as exc_info:
         sdk._client.get("/test")
 
     assert isinstance(exc_info.value.__cause__, httpx.ConnectError)
@@ -85,7 +85,7 @@ def test_default_retry_policy_retries_on_500(respx_mock_external) -> None:
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(500))
 
-    with pytest.raises(exceptions.ServerError):
+    with pytest.raises(errors.ServerError):
         sdk._client.get("/test")
 
     # Should attempt 3 times
@@ -97,7 +97,7 @@ def test_default_retry_policy_retries_on_429(respx_mock_external) -> None:
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(429))
 
-    with pytest.raises(exceptions.RateLimitError):
+    with pytest.raises(errors.RateLimitError):
         sdk._client.get("/test")
 
     # Should attempt 3 times
@@ -118,7 +118,7 @@ async def test_default_retry_policy_async_retries_on_500(respx_mock_external) ->
 
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(500))
 
-    with pytest.raises(exceptions.ServerError):
+    with pytest.raises(errors.ServerError):
         await sdk._async_client.get("/test")
 
     # Should attempt 3 times

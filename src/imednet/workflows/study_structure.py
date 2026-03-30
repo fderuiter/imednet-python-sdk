@@ -2,7 +2,7 @@ import asyncio
 from typing import TYPE_CHECKING, Dict, List
 
 # Import potential exceptions
-from imednet.core.exceptions import ImednetError
+from imednet.errors import ImednetError
 
 # Import the models we need
 from imednet.models.forms import Form

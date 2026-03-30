@@ -2,8 +2,8 @@ import httpx
 import pytest
 
 from imednet.core.client import Client
-from imednet.core.exceptions import ServerError
 from imednet.core.retry import DefaultRetryPolicy, RetryState
+from imednet.errors import ServerError
 
 
 def test_default_policy_request_error():

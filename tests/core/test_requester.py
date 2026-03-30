@@ -2,8 +2,8 @@ import httpx
 import pytest
 import respx
 
-from imednet.core.exceptions import NotFoundError
 from imednet.core.http.executor import AsyncRequestExecutor, SyncRequestExecutor
+from imednet.errors import NotFoundError
 
 
 @respx.mock

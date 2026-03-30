@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from imednet.core.exceptions import ServerError
+from imednet.errors import ServerError
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval
