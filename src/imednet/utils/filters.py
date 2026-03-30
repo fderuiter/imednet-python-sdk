@@ -37,7 +37,9 @@ def _format_filter_value(val: Any) -> str:
     return str(val)
 
 
-def _build_filter_part(key: str, value: Union[Any, Tuple[str, Any], List[Any]], or_connector: str = ",") -> str:
+def _build_filter_part(
+    key: str, value: Union[Any, Tuple[str, Any], List[Any]], or_connector: str = ","
+) -> str:
     """
     Build a single filter string part from a key and value.
     """
