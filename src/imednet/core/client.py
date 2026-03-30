@@ -5,7 +5,7 @@ This module defines the `Client` class which handles:
 - Authentication headers (API key and security key).
 - Configuration of base URL, timeouts, and retry logic.
 - Making HTTP GET and POST requests.
-- Error mapping to custom exceptions.
+- Error mapping to custom errors.
 - Context-manager support for automatic cleanup.
 """
 

@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 
+from imednet import errors
 from imednet.constants import DEFAULT_BASE_URL
-from imednet.core import exceptions
 from imednet.core.client import Client
 from imednet.core.retry import RetryPolicy
 
@@ -53,14 +53,14 @@ def test_retry_logic_retries_request_errors(monkeypatch) -> None:
 @pytest.mark.parametrize(
     "status,exc",
     [
-        (400, exceptions.BadRequestError),
-        (401, exceptions.UnauthorizedError),
-        (403, exceptions.ForbiddenError),
-        (404, exceptions.NotFoundError),
-        (409, exceptions.ConflictError),
-        (429, exceptions.RateLimitError),
-        (500, exceptions.ServerError),
-        (418, exceptions.ApiError),
+        (400, errors.BadRequestError),
+        (401, errors.UnauthorizedError),
+        (403, errors.ForbiddenError),
+        (404, errors.NotFoundError),
+        (409, errors.ConflictError),
+        (429, errors.RateLimitError),
+        (500, errors.ServerError),
+        (418, errors.ApiError),
     ],
 )
 def test_request_error_mapping(monkeypatch, status, exc) -> None:

@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from imednet.core.exceptions import UnknownVariableTypeError, ValidationError
+from imednet.errors import UnknownVariableTypeError, ValidationError
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache, SchemaValidator, _check_type, validate_record_data
 

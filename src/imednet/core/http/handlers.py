@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import httpx
 
-from imednet.core.exceptions import (
+from imednet.errors import (
     ApiError,
     BadRequestError,
     ConflictError,

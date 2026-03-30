@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, NoReturn, Optional
 import httpx
 from tenacity import RetryError
 
-from imednet.core.exceptions import RequestError
+from imednet.errors import RequestError
 from imednet.utils.url import redact_url_query
 
 if TYPE_CHECKING:

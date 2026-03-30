@@ -9,7 +9,7 @@ import pytest
 from typer.testing import CliRunner
 
 import imednet.cli as cli
-from imednet.core.exceptions import ApiError
+from imednet.errors import ApiError
 from imednet.integrations import export as export_mod
 
 

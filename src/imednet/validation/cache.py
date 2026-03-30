@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
-from ..core.exceptions import UnknownVariableTypeError, ValidationError
+from imednet.errors import UnknownVariableTypeError, ValidationError
+
 from ..models.variables import Variable
 from ._base import _ValidatorMixin
 
@@ -219,8 +220,8 @@ class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
     def refresh(self, study_key: str) -> None:
         """Populate the schema cache for ``study_key`` from the Variables endpoint.
 
-        This method never raises :class:`~imednet.core.exceptions.ValidationError`;
-        any API errors bubble up as :class:`~imednet.core.exceptions.ApiError`.
+        This method never raises :class:`~imednet.errors.ValidationError`;
+        any API errors bubble up as :class:`~imednet.errors.ApiError`.
         """
         variables = self._sdk.variables.list(study_key=study_key, refresh=True)
         self._refresh_common(variables)
@@ -249,8 +250,8 @@ class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetSDK"]):
     async def refresh(self, study_key: str) -> None:
         """Populate the schema cache for ``study_key`` from the Variables endpoint.
 
-        This method never raises :class:`~imednet.core.exceptions.ValidationError`;
-        any API errors bubble up as :class:`~imednet.core.exceptions.ApiError`.
+        This method never raises :class:`~imednet.errors.ValidationError`;
+        any API errors bubble up as :class:`~imednet.errors.ApiError`.
         """
         variables = await self._sdk.variables.async_list(study_key=study_key, refresh=True)
         self._refresh_common(variables)

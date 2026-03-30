@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 import httpx
 import pytest
 
-from imednet.core import exceptions
+from imednet import errors
 from imednet.core.async_client import AsyncClient
 
 
@@ -28,13 +28,13 @@ async def test_async_request_retries(monkeypatch):
 @pytest.mark.parametrize(
     "status,exc",
     [
-        (400, exceptions.ValidationError),
-        (401, exceptions.AuthenticationError),
-        (403, exceptions.AuthorizationError),
-        (404, exceptions.NotFoundError),
-        (429, exceptions.RateLimitError),
-        (500, exceptions.ServerError),
-        (418, exceptions.ApiError),
+        (400, errors.ValidationError),
+        (401, errors.AuthenticationError),
+        (403, errors.AuthorizationError),
+        (404, errors.NotFoundError),
+        (429, errors.RateLimitError),
+        (500, errors.ServerError),
+        (418, errors.ApiError),
     ],
 )
 async def test_async_request_error_mapping(monkeypatch, status, exc):

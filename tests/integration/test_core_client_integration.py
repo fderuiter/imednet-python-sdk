@@ -4,7 +4,7 @@ import httpx
 import pytest
 import respx
 
-from imednet.core import exceptions
+from imednet import errors
 from imednet.core.client import Client
 
 
@@ -23,7 +23,7 @@ def test_successful_get_sync_client():
 def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
     class Policy:
         def should_retry(self, state) -> bool:
-            return isinstance(state.exception, exceptions.ServerError)
+            return isinstance(state.exception, errors.ServerError)
 
     client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=Policy())
     calls = {"count": 0}
@@ -31,7 +31,7 @@ def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
         calls["count"] += 1
         if calls["count"] < 3:
-            raise exceptions.ServerError({}, status_code=500)
+            raise errors.ServerError({}, status_code=500)
         return httpx.Response(200, json={"ok": True})
 
     monkeypatch.setattr(client._executor, "send", request)
@@ -47,7 +47,7 @@ def test_authentication_error():
     client = Client("k", "s", base_url="https://api.test")
     respx.get("https://api.test/protected").respond(status_code=401, json={})
 
-    with pytest.raises(exceptions.UnauthorizedError):
+    with pytest.raises(errors.UnauthorizedError):
         client.get("/protected")
 
 
@@ -60,7 +60,7 @@ def test_timeout_handling():
 
     respx.get("https://api.test/slow").mock(side_effect=slow)
 
-    with pytest.raises(exceptions.RequestError) as exc_info:
+    with pytest.raises(errors.RequestError) as exc_info:
         client.get("/slow")
     assert isinstance(exc_info.value.__cause__, httpx.ReadTimeout)
 

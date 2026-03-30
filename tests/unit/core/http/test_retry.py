@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, Mock
 import httpx
 import pytest
 
-from imednet.core.exceptions import RequestError
 from imednet.core.http.executor import AsyncRequestExecutor, SyncRequestExecutor
+from imednet.errors import RequestError
 
 
 def test_retry_exhaustion_sync():

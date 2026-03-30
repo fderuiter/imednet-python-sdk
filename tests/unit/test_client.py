@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from imednet.core.exceptions import (
+from imednet.errors import (
     BadRequestError,
     ConflictError,
     ForbiddenError,

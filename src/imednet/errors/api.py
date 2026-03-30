@@ -1,34 +1,8 @@
-"""
-Custom exceptions for the iMednet SDK.
-
-Defines a hierarchy of exceptions corresponding to HTTP and validation errors.
-"""
+"""API-level errors."""
 
 from typing import Any, Dict, Optional, Union
 
-
-class ImednetError(Exception):
-    """
-    Base exception for all iMednet SDK errors.
-    """
-
-    pass
-
-
-class RequestError(ImednetError):
-    """
-    Raised when a network request fails after retries.
-    """
-
-    pass
-
-
-class ClientError(ImednetError):
-    """
-    Raised for client-side errors (validation, configuration, misuse).
-    """
-
-    pass
+from .base import ImednetError
 
 
 class ApiError(ImednetError):
@@ -60,55 +34,31 @@ class ApiError(ImednetError):
 
 
 class AuthenticationError(ApiError):
-    """
-    Raised when authentication to the API fails (HTTP 401).
-    """
+    """Raised when authentication to the API fails (HTTP 401)."""
 
     pass
 
 
 class AuthorizationError(ApiError):
-    """
-    Raised when access to the API is forbidden (HTTP 403).
-    """
+    """Raised when access to the API is forbidden (HTTP 403)."""
 
     pass
 
 
 class NotFoundError(ApiError):
-    """
-    Raised when a requested resource is not found (HTTP 404).
-    """
+    """Raised when a requested resource is not found (HTTP 404)."""
 
     pass
 
 
 class RateLimitError(ApiError):
-    """
-    Raised when the API rate limit is exceeded (HTTP 429).
-    """
+    """Raised when the API rate limit is exceeded (HTTP 429)."""
 
     pass
 
 
 class ServerError(ApiError):
-    """
-    Raised when the API returns a server error (HTTP 5xx).
-    """
-
-    pass
-
-
-class ValidationError(ApiError):
-    """
-    Raised when a request is malformed or validation fails (HTTP 400).
-    """
-
-    pass
-
-
-class BadRequestError(ValidationError):
-    """Raised for HTTP 400 bad requests."""
+    """Raised when the API returns a server error (HTTP 5xx)."""
 
     pass
 
@@ -127,11 +77,5 @@ class ForbiddenError(AuthorizationError):
 
 class ConflictError(ApiError):
     """Raised for HTTP 409 conflict errors."""
-
-    pass
-
-
-class UnknownVariableTypeError(ValidationError):
-    """Raised when an unrecognized variable type is encountered."""
 
     pass
