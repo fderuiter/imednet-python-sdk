@@ -16,7 +16,7 @@ Requires:
   (IMEDNET_API_KEY, IMEDNET_SECURITY_KEY).
 
 Usage:
-1. Ensure your .env file is configured correctly.
+1. Ensure your environment variables are set correctly (e.g. `export IMEDNET_API_KEY="..."`).
 2. Run the script.
 
 The script will output:

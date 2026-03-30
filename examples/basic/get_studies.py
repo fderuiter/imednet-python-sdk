@@ -5,11 +5,10 @@ from imednet.utils import configure_json_logging
 """
 Example script demonstrating how to list available studies using the iMednet SDK.
 
-This script initializes the ImednetClient with credentials loaded from environment variables
-(e.g., .env file). It then calls the `studies.list()` method to retrieve
-a list of studies accessible with the provided credentials. Finally, it prints
-the name and key of the first 5 studies found. If any error occurs during the
-process, it prints an error message.
+This script initializes the ImednetClient with credentials loaded from environment variables.
+It then calls the `studies.list()` method to retrieve a list of studies accessible
+with the provided credentials. Finally, it prints the name and key of the first 5
+studies found. If any error occurs during the process, it prints an error message.
 
 Prerequisites:
 - An active iMednet account with API access.
@@ -17,7 +16,7 @@ Prerequisites:
   (IMEDNET_API_KEY, IMEDNET_SECURITY_KEY).
 
 Usage:
-1. Ensure your .env file is configured correctly.
+1. Ensure your environment variables are set correctly (e.g. `export IMEDNET_API_KEY="..."`).
 2. Run the script: `python examples/basic/get_studies.py`
 """
 
