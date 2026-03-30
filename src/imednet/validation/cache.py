@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 
 from imednet.errors import UnknownVariableTypeError, ValidationError
+
 from ..models.variables import Variable
 from ._base import _ValidatorMixin
 

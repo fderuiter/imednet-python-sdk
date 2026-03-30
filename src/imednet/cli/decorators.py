@@ -9,6 +9,7 @@ from rich import print
 from rich.markup import escape
 
 from imednet.errors import ApiError
+
 from ..sdk import ImednetSDK
 
 P = ParamSpec("P")

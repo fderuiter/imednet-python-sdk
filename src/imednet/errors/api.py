@@ -32,34 +32,50 @@ class ApiError(ImednetError):
             return f"{base} ({', '.join(details)})"
         return base
 
+
 class AuthenticationError(ApiError):
     """Raised when authentication to the API fails (HTTP 401)."""
+
     pass
+
 
 class AuthorizationError(ApiError):
     """Raised when access to the API is forbidden (HTTP 403)."""
+
     pass
+
 
 class NotFoundError(ApiError):
     """Raised when a requested resource is not found (HTTP 404)."""
+
     pass
+
 
 class RateLimitError(ApiError):
     """Raised when the API rate limit is exceeded (HTTP 429)."""
+
     pass
+
 
 class ServerError(ApiError):
     """Raised when the API returns a server error (HTTP 5xx)."""
+
     pass
+
 
 class UnauthorizedError(AuthenticationError):
     """Raised for HTTP 401 unauthorized errors."""
+
     pass
+
 
 class ForbiddenError(AuthorizationError):
     """Raised for HTTP 403 forbidden errors."""
+
     pass
+
 
 class ConflictError(ApiError):
     """Raised for HTTP 409 conflict errors."""
+
     pass
