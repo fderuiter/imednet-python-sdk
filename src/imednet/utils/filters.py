@@ -37,6 +37,23 @@ def _format_filter_value(val: Any) -> str:
     return str(val)
 
 
+def _build_filter_part(
+    key: str, value: Union[Any, Tuple[str, Any], List[Any]], or_connector: str = ","
+) -> str:
+    """
+    Build a single filter string part from a key and value.
+    """
+    camel_key = _snake_to_camel(key)
+    if isinstance(value, tuple) and len(value) == 2:
+        op, val = value
+        return f"{camel_key}{op}{_format_filter_value(val)}"
+    elif isinstance(value, list):
+        subparts = [f"{camel_key}=={_format_filter_value(v)}" for v in value]
+        return or_connector.join(subparts)
+    else:
+        return f"{camel_key}=={_format_filter_value(value)}"
+
+
 def build_filter_string(
     filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]],
     and_connector: str = ";",
@@ -57,17 +74,7 @@ def build_filter_string(
     'type==A,type==B'
     """
 
-    parts: List[str] = []
-    for key, value in filters.items():
-        camel_key = _snake_to_camel(key)
-        if isinstance(value, tuple) and len(value) == 2:
-            op, val = value
-            parts.append(f"{camel_key}{op}{_format_filter_value(val)}")
-        elif isinstance(value, list):
-            subparts = [f"{camel_key}=={_format_filter_value(v)}" for v in value]
-            parts.append(or_connector.join(subparts))
-        else:
-            parts.append(f"{camel_key}=={_format_filter_value(value)}")
+    parts = [_build_filter_part(key, value, or_connector) for key, value in filters.items()]
     return and_connector.join(parts)
 
 
