@@ -1,8 +1,11 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
-from imednet.sdk import ImednetSDK
-from imednet.core.client import Client
+
 from imednet.core.async_client import AsyncClient
+from imednet.core.client import Client
+from imednet.sdk import ImednetSDK
+
 
 # Mock environment variables to avoid API key requirement issues
 @pytest.fixture(autouse=True)
