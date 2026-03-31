@@ -74,6 +74,8 @@ class ParamMixin:
         if special_params:
             if extra_params is None:
                 extra_params = {}
+            else:
+                extra_params = extra_params.copy()
             extra_params.update(special_params)
 
         if study_key:
