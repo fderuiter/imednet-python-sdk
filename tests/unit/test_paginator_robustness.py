@@ -64,3 +64,29 @@ def test_paginator_raises_type_error_on_invalid_pagination_field():
     # Before the fix, this raises AttributeError because it tries to call .get() on a string
     with pytest.raises(TypeError, match="Response field 'pagination' must be a dictionary"):
         list(paginator)
+
+
+def test_paginator_infinite_loop_protection():
+    """
+    Test that the Paginator halts if totalPages is returned as a string,
+    preventing an exception when calculating `total_pages - 1` and ensuring we don't
+    get stuck in an infinite loop due to a badly typed response.
+    """
+    client = MockClient({"data": [{"id": 1}], "pagination": {"totalPages": "not an integer"}})
+    paginator = Paginator(client, "/path")
+
+    with pytest.raises(TypeError):
+        list(paginator)
+
+
+def test_paginator_returns_empty_list_on_null_data():
+    """
+    Test that when the expected data key maps to None rather than a list,
+    the Paginator handles it safely (interprets as an empty list).
+    """
+    client = MockClient({"data": None})
+    paginator = Paginator(client, "/path")
+
+    # Due to `items = payload.get(self.data_key, []) or []`, it handles None gracefully
+    # and returns an empty list, so iteration finishes instantly without yielding anything.
+    assert list(paginator) == []
