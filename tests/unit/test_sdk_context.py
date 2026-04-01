@@ -40,9 +40,12 @@ def test_close_without_running_loop():
     client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
 
+    def mock_run_side_effect(coro):
+        coro.close()
+
     # Use patch directly to avoid unawaited coroutines
     with patch("asyncio.get_running_loop", side_effect=RuntimeError("no running event loop")):
-        with patch("asyncio.run") as mock_run:
+        with patch("asyncio.run", side_effect=mock_run_side_effect) as mock_run:
             sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
             sdk.close()
 
@@ -54,12 +57,15 @@ def test_close_with_running_loop():
     client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
 
+    def mock_run_side_effect(coro):
+        coro.close()
+
     class MockLoop:
         def is_closed(self):
             return True
 
     with patch("asyncio.get_running_loop", return_value=MockLoop()):
-        with patch("asyncio.run") as mock_run:
+        with patch("asyncio.run", side_effect=mock_run_side_effect) as mock_run:
             sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
             sdk.close()
 
@@ -73,7 +79,7 @@ def test_close_with_running_loop_not_closed():
 
     class MockLoop:
         def __init__(self):
-            self.run_until_complete = MagicMock()
+            self.run_until_complete = MagicMock(side_effect=lambda coro: coro.close())
 
         def is_closed(self):
             return False
