@@ -19,14 +19,6 @@ class FilterGetEndpointMixin(EndpointABC[T]):
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
 
-    def _require_sync_client(self) -> RequestorProtocol:
-        """Return the configured sync client."""
-        raise NotImplementedError("Mixin must be used in a class providing _require_sync_client")
-
-    def _require_async_client(self) -> AsyncRequestorProtocol:
-        """Return the configured async client."""
-        raise NotImplementedError("Mixin must be used in a class providing _require_async_client")
-
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
         if not items:
             if self.requires_study_key:
@@ -99,14 +91,6 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     """Mixin implementing ``get`` via direct path."""
 
     # PATH is inherited from EndpointABC as abstract
-
-    def _require_sync_client(self) -> RequestorProtocol:
-        """Return the configured sync client."""
-        raise NotImplementedError("Mixin must be used in a class providing _require_sync_client")
-
-    def _require_async_client(self) -> AsyncRequestorProtocol:
-        """Return the configured async client."""
-        raise NotImplementedError("Mixin must be used in a class providing _require_async_client")
 
     def _get_path_for_id(self, study_key: Optional[str], item_id: Any) -> str:
         segments: Iterable[Any]
