@@ -2,7 +2,12 @@ from typing import Any, Dict, List
 
 import pytest
 
-from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.paginator import (
+    AsyncJsonListPaginator,
+    AsyncPaginator,
+    JsonListPaginator,
+    Paginator,
+)
 
 
 class DummyClient:
@@ -92,3 +97,62 @@ def test_pagination_key_is_null() -> None:
     client = DummyClient([{"data": [1, 2], "pagination": None}])
     paginator = Paginator(client, "/p")
     assert list(paginator) == [1, 2]
+
+
+def test_invalid_payload_type_raises_error() -> None:
+    """Test TypeError is raised when the API response payload is not a dictionary."""
+    client = DummyClient([["this is a list, not a dict"]])  # type: ignore
+    paginator = Paginator(client, "/p")
+    with pytest.raises(TypeError, match="API response must be a dictionary"):
+        list(paginator)
+
+
+def test_invalid_data_type_raises_error() -> None:
+    """Test TypeError is raised when the 'data' field is not a list."""
+    client = DummyClient([{"data": "not a list"}])
+    paginator = Paginator(client, "/p")
+    with pytest.raises(TypeError, match="Expected a list of items under key 'data'"):
+        list(paginator)
+
+
+def test_invalid_pagination_type_raises_error() -> None:
+    """Test TypeError is raised when the 'pagination' field is not a dictionary."""
+    client = DummyClient([{"data": [1, 2], "pagination": "not a dict"}])
+    paginator = Paginator(client, "/p")
+    with pytest.raises(TypeError, match="Response field 'pagination' must be a dictionary"):
+        list(paginator)
+
+
+def test_json_list_paginator_invalid_payload_type_raises_error() -> None:
+    """Test TypeError is raised in JsonListPaginator when the response is not a list."""
+    client = DummyClient([{"not a": "list"}])
+    paginator = JsonListPaginator(client, "/p")
+    with pytest.raises(TypeError, match="API response must be a list"):
+        # explicitly consume the generator to trigger the exception
+        list(paginator)
+
+
+@pytest.mark.asyncio
+async def test_async_json_list_paginator_invalid_payload_type_raises_error() -> None:
+    """Test TypeError is raised in AsyncJsonListPaginator when the response is not a list."""
+    client = AsyncDummyClient([{"not a": "list"}])
+    paginator = AsyncJsonListPaginator(client, "/p")  # type: ignore
+    with pytest.raises(TypeError, match="API response must be a list"):
+        # explicitly consume the async generator to trigger the exception
+        [item async for item in paginator]
+
+
+def test_json_list_paginator_valid_list() -> None:
+    """Test JsonListPaginator yields items correctly from a list."""
+    client = DummyClient([[1, 2, 3]])
+    paginator = JsonListPaginator(client, "/p")
+    assert list(paginator) == [1, 2, 3]
+
+
+@pytest.mark.asyncio
+async def test_async_json_list_paginator_valid_list() -> None:
+    """Test AsyncJsonListPaginator yields items correctly from a list."""
+    client = AsyncDummyClient([[1, 2, 3]])
+    paginator = AsyncJsonListPaginator(client, "/p")  # type: ignore
+    items = [item async for item in paginator]
+    assert items == [1, 2, 3]
