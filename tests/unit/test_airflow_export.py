@@ -1,7 +1,9 @@
 import sys
 from types import ModuleType
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+
 
 # Setup dummy airflow modules to prevent import errors if airflow is not installed
 def _setup_airflow(monkeypatch):
@@ -33,6 +35,7 @@ def _setup_airflow(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_mod)
     monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
 
+
 EXPORT_FUNCTIONS = [
     "export_to_csv",
     "export_to_parquet",
@@ -42,13 +45,15 @@ EXPORT_FUNCTIONS = [
     "export_to_sql_by_form",
 ]
 
+
 @pytest.fixture(autouse=True)
 def setup_airflow_mock(monkeypatch):
     _setup_airflow(monkeypatch)
 
+
 @pytest.mark.parametrize("func_name", EXPORT_FUNCTIONS)
 def test_airflow_export_forwards_arguments(func_name: str) -> None:
-    """Test that each airflow export function correctly forwards arguments to the base export module."""
+    """Test that each airflow export function forwards arguments to the base export module."""
     # We import the export module inside the test to ensure the mock airflow modules are picked up.
     from imednet.integrations.airflow import export
 
