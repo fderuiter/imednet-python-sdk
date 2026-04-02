@@ -17,7 +17,7 @@ Example::
 
     export IMEDNET_API_KEY="your_api_key"
     export IMEDNET_SECURITY_KEY="your_security_key"
-    python examples/async_quick_start.py
+    poetry run python examples/async_quick_start.py
 """
 
 

@@ -17,7 +17,7 @@ Prerequisites:
 
 Usage:
 1. Ensure your environment variables are set correctly (e.g. `export IMEDNET_API_KEY="..."`).
-2. Run the script: `python examples/basic/get_studies.py`
+2. Run the script: `poetry run python examples/basic/get_studies.py`
 """
 
 

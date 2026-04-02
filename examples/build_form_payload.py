@@ -4,7 +4,8 @@ Hybrid Entry Point for iMedNet Form Builder.
 
 Usage:
   # Headless Mode (CLI)
-  python examples/build_form_payload.py --preset "Demo Form" --form-id 123 --revision 5 ...
+  poetry run python examples/build_form_payload.py \
+      --preset "Demo Form" --form-id 123 --revision 5
 """
 
 import argparse
