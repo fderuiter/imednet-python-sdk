@@ -5,7 +5,6 @@ Core endpoint abstractions and mixins.
 from .mixins import (
     FilterGetEndpointMixin,
     ListEndpointMixin,
-    ListGetEndpointMixin,
     ParsingMixin,
     PathGetEndpointMixin,
 )
@@ -13,7 +12,6 @@ from .mixins import (
 __all__ = [
     "FilterGetEndpointMixin",
     "ListEndpointMixin",
-    "ListGetEndpointMixin",
     "ParsingMixin",
     "PathGetEndpointMixin",
 ]
