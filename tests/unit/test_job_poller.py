@@ -72,3 +72,17 @@ def test_job_poller_failed(async_mode: bool, monkeypatch: pytest.MonkeyPatch) ->
             asyncio.run(poller.run_async("S", "1", interval=0, timeout=5))
         else:
             poller.run("S", "1", interval=0, timeout=5)
+
+
+def test_job_poller_run_sync_in_async_mode() -> None:
+    get_job = AsyncMock()
+    poller = JobPoller(get_job, True)
+    with pytest.raises(RuntimeError, match="Use run_async for asynchronous polling"):
+        poller.run("S", "1", interval=0, timeout=5)
+
+
+def test_job_poller_run_async_in_sync_mode() -> None:
+    get_job = MagicMock()
+    poller = JobPoller(get_job, False)
+    with pytest.raises(RuntimeError, match="Use run for synchronous polling"):
+        asyncio.run(poller.run_async("S", "1", interval=0, timeout=5))
