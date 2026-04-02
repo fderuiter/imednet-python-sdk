@@ -1,7 +1,7 @@
 import httpx
-import pytest
 
 from imednet.core.retry import DefaultRetryPolicy, RetryState
+
 
 def test_default_retry_policy_retries_on_network_errors():
     policy = DefaultRetryPolicy()
@@ -13,6 +13,7 @@ def test_default_retry_policy_retries_on_network_errors():
 
     assert policy.should_retry(state) is True
 
+
 def test_default_retry_policy_retries_on_rate_limits():
     policy = DefaultRetryPolicy()
 
@@ -22,6 +23,7 @@ def test_default_retry_policy_retries_on_rate_limits():
     state = RetryState(attempt_number=1, result=response)
 
     assert policy.should_retry(state) is True
+
 
 def test_default_retry_policy_retries_on_server_errors():
     policy = DefaultRetryPolicy()
@@ -34,6 +36,7 @@ def test_default_retry_policy_retries_on_server_errors():
         state = RetryState(attempt_number=1, result=response)
         assert policy.should_retry(state) is True
 
+
 def test_default_retry_policy_does_not_retry_on_client_errors():
     policy = DefaultRetryPolicy()
 
@@ -44,6 +47,7 @@ def test_default_retry_policy_does_not_retry_on_client_errors():
         response = httpx.Response(status_code, request=request)
         state = RetryState(attempt_number=1, result=response)
         assert policy.should_retry(state) is False
+
 
 def test_default_retry_policy_does_not_retry_on_success():
     policy = DefaultRetryPolicy()
@@ -56,6 +60,7 @@ def test_default_retry_policy_does_not_retry_on_success():
         state = RetryState(attempt_number=1, result=response)
         assert policy.should_retry(state) is False
 
+
 def test_default_retry_policy_does_not_retry_on_unrelated_exceptions():
     policy = DefaultRetryPolicy()
 
@@ -64,6 +69,7 @@ def test_default_retry_policy_does_not_retry_on_unrelated_exceptions():
     state = RetryState(attempt_number=1, exception=error)
 
     assert policy.should_retry(state) is False
+
 
 def test_default_retry_policy_with_no_result_or_exception():
     policy = DefaultRetryPolicy()
