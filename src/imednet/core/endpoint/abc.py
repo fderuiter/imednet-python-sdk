@@ -5,12 +5,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, Type, TypeVar
 
+from imednet.core.protocols import ClientProvider
 from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
 
 
-class EndpointABC(ABC, Generic[T]):
+class EndpointABC(ABC, ClientProvider, Generic[T]):
     """
     Abstract base class defining the contract for all API endpoints.
 

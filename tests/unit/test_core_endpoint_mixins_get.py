@@ -111,44 +111,6 @@ def test_path_get_endpoint_raise_not_found():
         ep._raise_not_found(study_key="TEST", item_id=123)
 
 
-def test_filter_get_require_sync_client_raises():
-    class IncompleteEndpoint(FilterGetEndpointMixin):
-        MODEL = MockModel
-        PATH = "dummy"
-
-        def _auto_filter(self, filters):
-            return filters
-
-        def _build_path(self, *args):
-            return ""
-
-    ep = IncompleteEndpoint()
-    with pytest.raises(NotImplementedError):
-        ep._require_sync_client()
-
-    with pytest.raises(NotImplementedError):
-        ep._require_async_client()
-
-
-def test_path_get_require_sync_client_raises():
-    class IncompletePathEndpoint(PathGetEndpointMixin):
-        MODEL = MockModel
-        PATH = "dummy"
-
-        def _auto_filter(self, filters):
-            return filters
-
-        def _build_path(self, *args):
-            return ""
-
-    ep = IncompletePathEndpoint()
-    with pytest.raises(NotImplementedError):
-        ep._require_sync_client()
-
-    with pytest.raises(NotImplementedError):
-        ep._require_async_client()
-
-
 def test_validate_get_result_not_found():
     ep = DummyFilterGetEndpoint([])
     # Test require_study_key = True

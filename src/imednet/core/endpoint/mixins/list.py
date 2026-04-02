@@ -23,14 +23,6 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
 
-    def _require_sync_client(self) -> RequestorProtocol:
-        """Return the configured sync client."""
-        raise NotImplementedError("Mixin must be used in a class providing _require_sync_client")
-
-    def _require_async_client(self) -> AsyncRequestorProtocol:
-        """Return the configured async client."""
-        raise NotImplementedError("Mixin must be used in a class providing _require_async_client")
-
     def _get_path(self, study: Optional[str]) -> str:
         segments: Iterable[Any]
         if self.requires_study_key:
