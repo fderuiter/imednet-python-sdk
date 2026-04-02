@@ -1,10 +1,17 @@
 """Endpoint for managing studies in the iMedNet system."""
 
-from imednet.core.endpoint.mixins import EdcListGetEndpoint
+from imednet.core.endpoint.base import GenericEndpoint
+from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
 from imednet.models.studies import Study
 
 
-class StudiesEndpoint(EdcListGetEndpoint[Study]):
+class StudiesEndpoint(
+    EdcEndpointMixin,
+    GenericEndpoint[Study],
+    ListEndpointMixin[Study],
+    FilterGetEndpointMixin[Study],
+):
     """
     API endpoint for interacting with studies in the iMedNet system.
 

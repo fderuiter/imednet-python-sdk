@@ -2,12 +2,19 @@
 
 from typing import Any, Optional
 
-from imednet.core.endpoint.mixins import EdcListPathGetEndpoint
+from imednet.core.endpoint.base import GenericEndpoint
+from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.mixins import ListEndpointMixin, PathGetEndpointMixin
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 from imednet.models.jobs import JobStatus
 
 
-class JobsEndpoint(EdcListPathGetEndpoint[JobStatus]):
+class JobsEndpoint(
+    EdcEndpointMixin,
+    GenericEndpoint[JobStatus],
+    ListEndpointMixin[JobStatus],
+    PathGetEndpointMixin[JobStatus],
+):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
 
