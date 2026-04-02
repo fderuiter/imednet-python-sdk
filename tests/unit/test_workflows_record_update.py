@@ -242,3 +242,41 @@ def test_update_scheduled_record_invalid_interval_identifier_type() -> None:
             data={"x": 1},
             interval_identifier_type="invalid_type",  # type: ignore
         )
+
+
+def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
+    sdk = MagicMock()
+    sdk._async_client = None
+
+    # Return a job with no batch_id
+    job = Job(batch_id="", state="PROCESSING")
+    sdk.records.create.return_value = job
+
+    # Provide variable so form validation passes
+    var = Variable(variable_name="a", variable_type="integer", form_id=1, form_key="F1")
+    sdk.variables.list.return_value = [var]
+
+    wf = RecordUpdateWorkflow(sdk)
+
+    with pytest.raises(ValueError, match="Submission successful but no batch_id received."):
+        wf.create_or_update_records(
+            "STUDY",
+            [{"formKey": "F1", "data": {"a": 1}}],
+            wait_for_completion=True,
+        )
+
+
+def test_create_or_update_records_form_key_not_found() -> None:
+    sdk = MagicMock()
+    sdk._async_client = None
+
+    # Return empty list for variables so the form key is not found even after refresh
+    sdk.variables.list.return_value = []
+
+    wf = RecordUpdateWorkflow(sdk)
+
+    with pytest.raises(ValueError, match="Form key 'UNKNOWN_FORM' not found"):
+        wf.create_or_update_records(
+            "STUDY",
+            [{"formKey": "UNKNOWN_FORM", "data": {"a": 1}}],
+        )
