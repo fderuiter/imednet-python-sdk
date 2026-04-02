@@ -45,7 +45,7 @@ For CI/CD or automated workflows, use the example script:
 
 .. code-block:: console
 
-    python examples/build_form_payload.py --preset "Demo Form" \
+    poetry run python examples/build_form_payload.py --preset "Demo Form" \
         --base-url "https://your.imednet.com" \
         --phpsessid "YOUR_SESSION_ID" \
         --csrf "YOUR_CSRF_KEY" \

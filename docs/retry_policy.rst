@@ -67,4 +67,4 @@ transport:
 
    export IMEDNET_API_KEY=dummy
    export IMEDNET_SECURITY_KEY=dummy
-   python examples/custom_retry.py
+   poetry run python examples/custom_retry.py

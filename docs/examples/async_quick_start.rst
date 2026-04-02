@@ -14,9 +14,9 @@ Environment variables
 
    export IMEDNET_API_KEY
    export IMEDNET_SECURITY_KEY
-   export IMEDNET_BASE_URL (optional)
-   export IMEDNET_JOB_STUDY_KEY (optional)
-   export IMEDNET_BATCH_ID (optional)
+   # export IMEDNET_BASE_URL
+   # export IMEDNET_JOB_STUDY_KEY
+   # export IMEDNET_BATCH_ID
 
 Description
 -----------

@@ -12,7 +12,7 @@ Set ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY`` before running this script.
 Optionally set ``IMEDNET_BASE_URL`` for non-default instances.
 
 Usage:
-    python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB
+    poetry run python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB
 
 The ``OUTPUT_DB`` path is used to build the SQLite connection string.
 """
@@ -23,7 +23,7 @@ def main() -> None:
 
     if len(sys.argv) != 4:
         print(
-            "Usage: python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB",
+            "Usage: poetry run python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB",
             file=sys.stderr,
         )
         sys.exit(1)

@@ -15,7 +15,7 @@ Environment variables
    export IMEDNET_API_KEY
    export IMEDNET_SECURITY_KEY
    export IMEDNET_STUDY_KEY
-   export IMEDNET_BASE_URL (optional)
+   # export IMEDNET_BASE_URL
 
 Description
 -----------
