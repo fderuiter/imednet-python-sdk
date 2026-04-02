@@ -90,7 +90,7 @@ def test_create_or_update_records_validation() -> None:
         variableName="age",
         variableType="integer",
         formId=1,
-        formKey="F1"
+        formKey="F1",
     )
     sdk.variables.list.return_value = [var]
     wf = RecordUpdateWorkflow(sdk)
@@ -288,7 +288,7 @@ def test_create_or_update_records_no_batch_id() -> None:
         variableName="a",
         variableType="integer",
         formId=1,
-        formKey="F1"
+        formKey="F1",
     )
     sdk.variables.list.return_value = [var]
 
