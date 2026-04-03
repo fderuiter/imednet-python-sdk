@@ -7,8 +7,8 @@ from collections.abc import Iterator
 import httpx
 
 from imednet.core.client import Client
-from imednet.errors import RateLimitError, ServerError
 from imednet.core.retry import RetryPolicy, RetryState
+from imednet.errors import RateLimitError, ServerError
 from imednet.utils import configure_json_logging
 
 """Demonstrate custom retry logic with simulated rate limit and server errors.
@@ -49,6 +49,7 @@ def responder(_: httpx.Request) -> httpx.Response:
 
 
 from imednet.auth.strategy import AuthStrategy
+
 
 class MockClient(Client):
     def _create_client(self, auth: AuthStrategy) -> httpx.Client:  # type: ignore[override]
