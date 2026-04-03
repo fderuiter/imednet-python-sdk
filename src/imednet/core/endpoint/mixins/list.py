@@ -54,9 +54,8 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         result: List[T],
         study: Optional[str],
         has_filters: bool,
-        cache: Any,
     ) -> List[T]:
-        self._update_local_cache(result, study, has_filters, cache)
+        self._update_local_cache(result, study, has_filters)
         return result
 
     def _prepare_list_request(
@@ -123,7 +122,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         )
 
         result = operation.execute_sync(client, paginator_cls)
-        return self._process_list_result(result, state.study, state.has_filters, state.cache)
+        return self._process_list_result(result, state.study, state.has_filters)
 
     async def _list_async(
         self,
@@ -148,7 +147,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         )
 
         result = await operation.execute_async(client, paginator_cls)
-        return self._process_list_result(result, state.study, state.has_filters, state.cache)
+        return self._process_list_result(result, state.study, state.has_filters)
 
     def list(
         self,
