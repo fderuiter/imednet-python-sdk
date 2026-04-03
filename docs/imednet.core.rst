@@ -59,13 +59,6 @@ HTTPX requests used by the SDK:
    :show-inheritance:
    :noindex:
 
-imednet.core.exceptions module
-------------------------------
-
-.. automodule:: imednet.core.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 imednet.core.paginator module
 -----------------------------
@@ -87,7 +80,7 @@ requests should be retried. The SDK uses
 
    from imednet.core.client import Client
    from imednet.core.retry import RetryPolicy, RetryState
-   from imednet.core.exceptions import ServerError
+   from imednet.errors import ServerError
 
    class ServerRetry(RetryPolicy):
        def should_retry(self, state: RetryState) -> bool:

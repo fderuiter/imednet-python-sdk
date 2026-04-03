@@ -7,7 +7,7 @@ submitting it to the API. The validator checks that all variables exist,
 required fields are present, and that values match the expected types.
 If the variable metadata for a form is missing, ``SchemaValidator`` automatically
 loads it from the API using :class:`~imednet.endpoints.variables.VariablesEndpoint`.
-Any problems raise :class:`~imednet.core.exceptions.ValidationError` before the
+Any problems raise :class:`~imednet.errors.ValidationError` before the
 record is sent to the server.
 
 ``SchemaValidator`` works with both synchronous and asynchronous SDK clients.

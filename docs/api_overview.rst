@@ -29,12 +29,12 @@ HTTP methods and errors
 The API primarily supports ``GET`` and ``POST`` requests. Non‐successful status
 codes raise typed exceptions:
 
-* ``400`` – :class:`~imednet.core.exceptions.ValidationError`
-* ``401`` – :class:`~imednet.core.exceptions.AuthenticationError`
-* ``403`` – :class:`~imednet.core.exceptions.AuthorizationError`
-* ``404`` – :class:`~imednet.core.exceptions.NotFoundError`
-* ``429`` – :class:`~imednet.core.exceptions.RateLimitError`
-* ``5xx`` – :class:`~imednet.core.exceptions.ServerError`
+* ``400`` – :class:`~imednet.errors.ValidationError`
+* ``401`` – :class:`~imednet.errors.AuthenticationError`
+* ``403`` – :class:`~imednet.errors.AuthorizationError`
+* ``404`` – :class:`~imednet.errors.NotFoundError`
+* ``429`` – :class:`~imednet.errors.RateLimitError`
+* ``5xx`` – :class:`~imednet.errors.ServerError`
 
 See :doc:`retry_policy` for examples of handling these errors and configuring
 custom retry logic.
