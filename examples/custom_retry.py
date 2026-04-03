@@ -6,6 +6,7 @@ from collections.abc import Iterator
 
 import httpx
 
+from imednet.auth.strategy import AuthStrategy
 from imednet.core.client import Client
 from imednet.core.retry import RetryPolicy, RetryState
 from imednet.errors import RateLimitError, ServerError
@@ -46,9 +47,6 @@ responses: Iterator[httpx.Response] = iter(
 
 def responder(_: httpx.Request) -> httpx.Response:
     return next(responses)
-
-
-from imednet.auth.strategy import AuthStrategy
 
 
 class MockClient(Client):
