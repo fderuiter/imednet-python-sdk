@@ -13,7 +13,7 @@ Use typed exceptions to respond to different failure modes:
 .. code-block:: python
 
    from imednet import ImednetSDK
-   from imednet.core.exceptions import RateLimitError, ServerError, NotFoundError
+   from imednet.errors import RateLimitError, ServerError, NotFoundError
 
    sdk = ImednetSDK()
    try:
@@ -35,7 +35,7 @@ Retry policies decide if a request should be retried. To retry on
 
    from imednet.core.client import Client
    from imednet.core.retry import RetryPolicy, RetryState
-   from imednet.core.exceptions import RateLimitError, ServerError
+   from imednet.errors import RateLimitError, ServerError
 
    class RateLimitServerRetry(RetryPolicy):
        def should_retry(self, state: RetryState) -> bool:

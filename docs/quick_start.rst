@@ -47,7 +47,7 @@ Custom retry logic can be provided via a ``RetryPolicy``:
 .. code-block:: python
 
    from imednet.core.retry import RetryPolicy, RetryState
-   from imednet.core.exceptions import ServerError
+   from imednet.errors import ServerError
 
    class ServerRetry(RetryPolicy):
        def should_retry(self, state: RetryState) -> bool:
