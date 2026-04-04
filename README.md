@@ -106,16 +106,15 @@ configure_json_logging()
 # Load credentials from environment variables
 cfg = load_config()
 
-sdk = ImednetSDK(
+with ImednetSDK(
     api_key=cfg.api_key,
     security_key=cfg.security_key,
     base_url=cfg.base_url,
-)
-
-# List all studies available to the user
-studies = sdk.studies.list()
-for study in studies:
-    print(f"{study.study_name} ({study.study_key})")
+) as sdk:
+    # List all studies available to the user
+    studies = sdk.studies.list()
+    for study in studies:
+        print(f"{study.study_name} ({study.study_key})")
 ```
 
 ### Asynchronous Example

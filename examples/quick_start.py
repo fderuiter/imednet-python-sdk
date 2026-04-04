@@ -28,12 +28,12 @@ def main() -> None:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
-    sdk = ImednetSDK(
+    with ImednetSDK(
         api_key=cfg.api_key,
         security_key=cfg.security_key,
         base_url=cfg.base_url,
-    )
-    print(sdk.studies.list())
+    ) as sdk:
+        print(sdk.studies.list())
 
 
 if __name__ == "__main__":

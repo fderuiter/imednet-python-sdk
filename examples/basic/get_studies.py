@@ -26,14 +26,13 @@ def main():
 
     try:
         cfg = load_config()
-        client = ImednetClient(
+        with ImednetClient(
             api_key=cfg.api_key, security_key=cfg.security_key, base_url=cfg.base_url
-        )
-
-        studies = client.studies.list()
-        print("Studies found:")
-        for study in studies[:5]:
-            print(f"- Name: {study.study_name}, Key: {study.study_key}")
+        ) as client:
+            studies = client.studies.list()
+            print("Studies found:")
+            for study in studies[:5]:
+                print(f"- Name: {study.study_name}, Key: {study.study_key}")
 
     except Exception as e:
         print(f"Error: {e}")
