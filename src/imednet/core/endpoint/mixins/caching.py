@@ -20,7 +20,6 @@ class CacheMixin:
         result: Any,
         study: str | None,
         has_filters: bool,
-        cache: Any,
     ) -> None:
         if has_filters or not self._enable_cache:
             return
