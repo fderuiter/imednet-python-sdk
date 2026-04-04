@@ -75,9 +75,9 @@ def test_create_or_update_records_validation(async_mode: bool) -> None:
 
     # Mock the validator's validate_batch to raise ValidationError directly to simulate the cache validation correctly
     if async_mode:
-        wf._validator.validate_batch = AsyncMock(side_effect=[ValidationError("Mocked validation error"), None]) # type: ignore[method-assign]
+        wf._validator.validate_batch = AsyncMock(side_effect=[ValidationError("Mocked validation error"), None])  # type: ignore[method-assign]
     else:
-        wf._validator.validate_batch = MagicMock(side_effect=[ValidationError("Mocked validation error"), None]) # type: ignore[method-assign]
+        wf._validator.validate_batch = MagicMock(side_effect=[ValidationError("Mocked validation error"), None])  # type: ignore[method-assign]
 
     # Bolt: Changed to type error test since required field check was removed
     with pytest.raises(ValidationError):
