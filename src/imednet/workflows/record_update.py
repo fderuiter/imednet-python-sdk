@@ -1,6 +1,5 @@
 """Utilities for submitting and updating records in iMedNet studies."""
 
-import asyncio
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 
