@@ -1,4 +1,5 @@
 import pytest
+import typer
 
 from imednet.cli import parse_filter_args
 
@@ -13,13 +14,15 @@ def test_parse_filter_args_types():
 
 
 def test_parse_filter_args_invalid():
-    with pytest.raises(Exception):
+    with pytest.raises(typer.Exit) as exc_info:
         parse_filter_args(["bad"])
+    assert exc_info.value.exit_code == 1
 
 
 def test_parse_filter_args_invalid_escaped(capfd: pytest.CaptureFixture[str]):
-    with pytest.raises(Exception):
+    with pytest.raises(typer.Exit) as exc_info:
         parse_filter_args(["[red]bad[/red]"])
+    assert exc_info.value.exit_code == 1
 
     captured = capfd.readouterr()
     # Rich renders escaped markup as literal text.
