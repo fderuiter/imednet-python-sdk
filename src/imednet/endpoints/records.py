@@ -27,7 +27,6 @@ class RecordsEndpoint(
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"
-    _pop_study_filter = False
     PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
 
     def create(
