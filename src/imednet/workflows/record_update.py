@@ -1,6 +1,5 @@
 """Utilities for submitting and updating records in iMedNet studies."""
 
-import asyncio
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 
@@ -40,17 +39,25 @@ class RecordUpdateWorkflow:
         poll_interval: int = 5,
     ) -> Job:
         """Submit records for creation or update and optionally wait for completion."""
-
-        return asyncio.run(
-            self._create_or_update_common(
-                study_key,
-                records_data,
-                wait_for_completion,
-                timeout,
-                poll_interval,
-                is_async=False,
+        if records_data:
+            first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
+                records_data[0].get("formId", 0)
             )
-        )
+            if first_ref and not self._schema.variables_for_form(first_ref):
+                cast(SchemaValidator, self._validator).refresh(study_key)
+                if first_ref not in self._schema.forms:
+                    raise ValueError(f"Form key '{first_ref}' not found")
+
+        cast(SchemaValidator, self._validator).validate_batch(study_key, records_data)
+        job = self._sdk.records.create(study_key, records_data, schema=self._schema)
+
+        if not wait_for_completion:
+            return job
+        if not job.batch_id:
+            raise ValueError("Submission successful but no batch_id received.")
+
+        poller = JobPoller(self._sdk.jobs.get, is_async=False)
+        return poller.run(study_key, job.batch_id, poll_interval, timeout)
 
     async def async_create_or_update_records(
         self,
@@ -61,64 +68,25 @@ class RecordUpdateWorkflow:
         poll_interval: int = 5,
     ) -> Job:
         """Asynchronous variant of :meth:`create_or_update_records`."""
-
-        return await self._create_or_update_common(
-            study_key,
-            records_data,
-            wait_for_completion,
-            timeout,
-            poll_interval,
-            is_async=True,
-        )
-
-    async def _create_or_update_common(
-        self,
-        study_key: str,
-        records_data: List[Dict[str, Any]],
-        wait_for_completion: bool,
-        timeout: int,
-        poll_interval: int,
-        *,
-        is_async: bool,
-    ) -> Job:
-        """Shared logic for submitting records synchronously or asynchronously."""
-
         if records_data:
             first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
                 records_data[0].get("formId", 0)
             )
             if first_ref and not self._schema.variables_for_form(first_ref):
-                if self._is_async:
-                    # We know self._validator is an AsyncSchemaValidator when _is_async is True
-                    await cast(AsyncSchemaValidator, self._validator).refresh(study_key)
-                else:
-                    cast(SchemaValidator, self._validator).refresh(study_key)
+                await cast(AsyncSchemaValidator, self._validator).refresh(study_key)
                 if first_ref not in self._schema.forms:
                     raise ValueError(f"Form key '{first_ref}' not found")
 
-        if self._is_async:
-            await cast(AsyncSchemaValidator, self._validator).validate_batch(
-                study_key, records_data
-            )
-        else:
-            cast(SchemaValidator, self._validator).validate_batch(study_key, records_data)
-
-        if is_async:
-            job = await self._sdk.records.async_create(study_key, records_data, schema=self._schema)
-        else:
-            job = self._sdk.records.create(study_key, records_data, schema=self._schema)
+        await cast(AsyncSchemaValidator, self._validator).validate_batch(study_key, records_data)
+        job = await self._sdk.records.async_create(study_key, records_data, schema=self._schema)
 
         if not wait_for_completion:
             return job
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        poller = JobPoller(self._sdk.jobs.async_get if is_async else self._sdk.jobs.get, is_async)
-
-        if is_async:
-            return await poller.run_async(study_key, job.batch_id, poll_interval, timeout)
-
-        return poller.run(study_key, job.batch_id, poll_interval, timeout)
+        poller = JobPoller(self._sdk.jobs.async_get, is_async=True)
+        return await poller.run_async(study_key, job.batch_id, poll_interval, timeout)
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
         warnings.warn(
