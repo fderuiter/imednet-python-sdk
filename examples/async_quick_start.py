@@ -4,6 +4,8 @@ import asyncio
 import os
 import sys
 
+from dotenv import load_dotenv
+
 from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -24,6 +26,9 @@ Example::
 async def main() -> None:
     """Run a minimal async SDK example using environment variables."""
     configure_json_logging()
+
+    # Load environment variables from .env file if it exists
+    load_dotenv()
 
     try:
         cfg = load_config()

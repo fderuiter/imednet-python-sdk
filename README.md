@@ -97,11 +97,16 @@ export IMEDNET_SECURITY_KEY="your_security_key"
 ### Synchronous Example
 
 ```python
+from dotenv import load_dotenv
+
 from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
 # Optional: Configure structured JSON logging
 configure_json_logging()
+
+# Load environment variables from .env file if it exists
+load_dotenv()
 
 # Load credentials from environment variables
 cfg = load_config()
@@ -121,6 +126,7 @@ with ImednetSDK(
 
 ```python
 import asyncio
+from dotenv import load_dotenv
 from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -128,6 +134,9 @@ from imednet.utils import configure_json_logging
 async def main() -> None:
     # Optional: Configure structured JSON logging
     configure_json_logging()
+
+    # Load environment variables from .env file if it exists
+    load_dotenv()
 
     # Load credentials from environment variables
     cfg = load_config()
@@ -154,8 +163,6 @@ See [docs/async_quick_start.rst](docs/async_quick_start.rst) for more details.
 The SDK and CLI read credentials from environment variables such as
 `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. You can set these in your shell or
 use a `.env` file. Copy `.env.example` to `.env` to get started.
-
-> **Note**: `imednet.load_config()` only reads from existing environment variables (`os.getenv`). While the CLI automatically loads `.env` files, standalone Python scripts must explicitly call `load_dotenv()` from the `python-dotenv` package to read from a `.env` file before calling `load_config()`.
 
 See [configuration](docs/configuration.rst) for the complete list of options.
 Use `imednet.config.load_config()` to access these values in your code.
