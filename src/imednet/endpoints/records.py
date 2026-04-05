@@ -6,7 +6,7 @@ from imednet.core.endpoint.base import GenericEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
 from imednet.core.endpoint.operations import RecordCreateOperation
-from imednet.core.endpoint.strategies import MappingParamProcessor
+from imednet.core.endpoint.strategies import KeepStudyKeyStrategy, MappingParamProcessor
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache
@@ -27,7 +27,7 @@ class RecordsEndpoint(
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"
-    _pop_study_filter = False
+    STUDY_KEY_STRATEGY = KeepStudyKeyStrategy()
     PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
 
     def create(
