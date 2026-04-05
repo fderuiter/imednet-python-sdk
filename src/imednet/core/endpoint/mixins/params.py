@@ -63,6 +63,9 @@ class ParamMixin:
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
     ) -> ParamState:
+        # Prevent hidden mutable state by safely copying the dictionary
+        filters = filters.copy()
+
         # This method handles filter normalization and cache retrieval preparation
         # Assuming _auto_filter is available via self (EndpointProtocol)
         filters = cast(EndpointProtocol, self)._auto_filter(filters)
