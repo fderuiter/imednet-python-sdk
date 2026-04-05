@@ -25,14 +25,14 @@ Enable structured logging and list studies:
 
    configure_json_logging()
    cfg = load_config()
-   sdk = ImednetSDK(
+   with ImednetSDK(
        api_key=cfg.api_key,
        security_key=cfg.security_key,
        base_url=cfg.base_url,
-   )
-   studies = sdk.studies.list()
-   for study in studies:
-       print(f"{study.study_name} ({study.study_key})")
+   ) as sdk:
+       studies = sdk.studies.list()
+       for study in studies:
+           print(f"{study.study_name} ({study.study_key})")
 
 The example script :doc:`examples/quick_start` provides a runnable version that
 validates required environment variables.
