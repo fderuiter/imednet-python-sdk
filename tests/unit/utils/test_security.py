@@ -1,6 +1,6 @@
 import pytest
 
-from imednet.utils.security import sanitize_csv_formula
+from imednet.utils.security import sanitize_csv_formula, validate_header_value
 
 
 @pytest.mark.parametrize(
@@ -30,3 +30,35 @@ from imednet.utils.security import sanitize_csv_formula
 )
 def test_sanitize_csv_formula(input_val, expected):
     assert sanitize_csv_formula(input_val) == expected
+
+
+@pytest.mark.parametrize(
+    "input_val",
+    [
+        "application/json",
+        "Bearer my-token-123",
+        "Mozilla/5.0",
+        "en-US,en;q=0.5",
+        "",
+        "custom_header_value",
+    ],
+)
+def test_validate_header_value_valid(input_val):
+    validate_header_value(input_val)
+
+
+@pytest.mark.parametrize(
+    "input_val",
+    [
+        "invalid\nvalue",
+        "invalid\rvalue",
+        "invalid\r\nvalue",
+        "\n",
+        "\r",
+        "Bearer \nmy-token",
+        "Bearer my-token\n",
+    ],
+)
+def test_validate_header_value_invalid(input_val):
+    with pytest.raises(ValueError, match="Header value must not contain newlines"):
+        validate_header_value(input_val)
