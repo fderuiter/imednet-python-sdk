@@ -6,7 +6,6 @@ from imednet.core.endpoint.strategies import (
     DefaultParamProcessor,
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
-    PopStudyKeyStrategy,
     StudyKeyStrategy,
 )
 from imednet.core.endpoint.structs import ParamState
