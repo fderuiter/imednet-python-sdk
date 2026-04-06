@@ -6,7 +6,6 @@ from imednet.core.endpoint.strategies import (
     DefaultParamProcessor,
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
-    PopStudyKeyStrategy,
     StudyKeyStrategy,
 )
 from imednet.core.endpoint.structs import ParamState
@@ -20,8 +19,6 @@ class ParamMixin:
     """Mixin for handling endpoint parameters and filters."""
 
     requires_study_key: bool = True
-    _pop_study_filter: bool = False
-    _missing_study_exception: type[Exception] = ValueError
 
     PARAM_PROCESSOR: Optional[ParamProcessor] = None
     PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
@@ -38,11 +35,8 @@ class ParamMixin:
         if self.STUDY_KEY_STRATEGY:
             return self.STUDY_KEY_STRATEGY
 
-        # Backward compatibility logic
         if self.requires_study_key:
-            if self._pop_study_filter:
-                return PopStudyKeyStrategy(exception_cls=self._missing_study_exception)
-            return KeepStudyKeyStrategy(exception_cls=self._missing_study_exception)
+            return KeepStudyKeyStrategy()
         return OptionalStudyKeyStrategy()
 
     @property
