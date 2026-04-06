@@ -97,3 +97,79 @@ def test_export_operator_calls_helper(monkeypatch):
 
     export_mock.assert_called_once_with(sdk, "S", "/tmp/out.csv")
     assert result == "/tmp/out.csv"
+
+
+def test_imednet_hook_non_dict_extras(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    conn.login = "KEY"
+    conn.password = "SEC"
+    conn.extra_dejson = "not-a-dict"
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from imednet.integrations.airflow.hooks import ImednetHook
+
+    hook = ImednetHook()
+    sdk = hook.get_conn()
+
+    assert sdk._client._client.headers["x-api-key"] == "KEY"
+    assert sdk._client._client.headers["x-imn-security-key"] == "SEC"
+
+
+def test_imednet_hook_non_string_login(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    conn.login = 123
+    conn.password = "SEC"
+    conn.extra_dejson = {"base_url": "https://example.com", "api_key": "FALLBACK_KEY"}
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from imednet.integrations.airflow.hooks import ImednetHook
+
+    hook = ImednetHook()
+    sdk = hook.get_conn()
+    assert sdk._client._client.headers["x-api-key"] == "FALLBACK_KEY"
+    assert sdk._client._client.headers["x-imn-security-key"] == "SEC"
+
+
+def test_imednet_hook_non_string_password(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    conn.login = "KEY"
+    conn.password = 123
+    conn.extra_dejson = {
+        "base_url": "https://example.com",
+        "security_key": "FALLBACK_SEC",
+    }
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from imednet.integrations.airflow.hooks import ImednetHook
+
+    hook = ImednetHook()
+    sdk = hook.get_conn()
+    assert sdk._client._client.headers["x-api-key"] == "KEY"
+    assert sdk._client._client.headers["x-imn-security-key"] == "FALLBACK_SEC"
