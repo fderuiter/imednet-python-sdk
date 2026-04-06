@@ -17,8 +17,6 @@ class EndpointProtocol(Protocol):
     _enable_cache: bool
     requires_study_key: bool
     PAGE_SIZE: int
-    _pop_study_filter: bool
-    _missing_study_exception: type[Exception]
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """Apply automatic filters (e.g., default study key)."""
