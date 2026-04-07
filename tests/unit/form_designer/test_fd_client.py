@@ -1,6 +1,7 @@
 import httpx
 import pytest
 
+from imednet.errors import ApiError
 from imednet.form_designer.client import FormDesignerClient
 from imednet.form_designer.models import Layout, Page
 
@@ -36,7 +37,7 @@ def test_save_form_server_error(mock_layout, respx_mock):
         f"{base_url}/app/formdez/formdez_save.php",
     ).mock(return_value=httpx.Response(200, json={"error": "Concurrency Error"}))
 
-    with pytest.raises(ValueError, match="Server Error: Concurrency Error"):
+    with pytest.raises(ApiError, match="Server Error: Concurrency Error"):
         client.save_form("csrf", 1, 1, 1, mock_layout)
 
 
@@ -50,3 +51,23 @@ def test_save_form_http_error(mock_layout, respx_mock):
 
     with pytest.raises(httpx.HTTPStatusError):
         client.save_form("csrf", 1, 1, 1, mock_layout)
+
+
+def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
+    """
+    Simulate a legacy PHP endpoint returning HTML instead of JSON.
+    The client should catch json.JSONDecodeError and raise ApiError instead of returning text.
+    """
+    base_url = "https://test.imednet.com"
+    client = FormDesignerClient(base_url, "fake_sessid")
+
+    html_response = "<html><body>Error</body></html>"
+    respx_mock.post(
+        f"{base_url}/app/formdez/formdez_save.php",
+    ).mock(return_value=httpx.Response(200, text=html_response))
+
+    with pytest.raises(ApiError) as exc_info:
+        client.save_form("csrf", 1, 1, 1, mock_layout)
+
+    assert str(exc_info.value.response) == html_response
+    assert exc_info.value.status_code == 200
