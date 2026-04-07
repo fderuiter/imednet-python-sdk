@@ -3,7 +3,7 @@
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
-from imednet.core.endpoint.strategies import MappingParamProcessor
+from imednet.core.endpoint.strategies import MappingParamProcessor, PopStudyKeyStrategy
 from imednet.models.users import User
 
 
@@ -22,7 +22,7 @@ class UsersEndpoint(
     PATH = "users"
     MODEL = User
     _id_param = "userId"
-    _pop_study_filter = True
+    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=ValueError)
     PARAM_PROCESSOR = MappingParamProcessor(
         mapping={"include_inactive": "includeInactive"},
         defaults={"include_inactive": False},
