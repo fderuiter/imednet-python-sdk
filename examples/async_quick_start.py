@@ -26,6 +26,7 @@ Example::
 async def main() -> None:
     """Run a minimal async SDK example using environment variables."""
     configure_json_logging()
+    load_dotenv()
 
     # Load environment variables from .env file if it exists
     load_dotenv()

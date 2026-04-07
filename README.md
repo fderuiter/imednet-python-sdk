@@ -105,10 +105,8 @@ from imednet.utils import configure_json_logging
 # Optional: Configure structured JSON logging
 configure_json_logging()
 
-# Load environment variables from .env file if it exists
+# Load credentials from .env file or environment variables
 load_dotenv()
-
-# Load credentials from environment variables
 cfg = load_config()
 
 with ImednetSDK(
@@ -126,7 +124,9 @@ with ImednetSDK(
 
 ```python
 import asyncio
+
 from dotenv import load_dotenv
+
 from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -135,10 +135,8 @@ async def main() -> None:
     # Optional: Configure structured JSON logging
     configure_json_logging()
 
-    # Load environment variables from .env file if it exists
+    # Load credentials from .env file or environment variables
     load_dotenv()
-
-    # Load credentials from environment variables
     cfg = load_config()
 
     async with AsyncImednetSDK(

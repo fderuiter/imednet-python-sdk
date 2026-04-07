@@ -21,11 +21,13 @@ List studies asynchronously and poll a job:
 .. code-block:: python
 
    import asyncio
+   from dotenv import load_dotenv
    from imednet import AsyncImednetSDK, load_config
    from imednet.utils import configure_json_logging
 
    async def main() -> None:
        configure_json_logging()
+       load_dotenv()
        cfg = load_config()
        async with AsyncImednetSDK(
            api_key=cfg.api_key,

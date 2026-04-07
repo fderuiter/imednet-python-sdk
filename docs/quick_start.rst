@@ -20,10 +20,12 @@ Enable structured logging and list studies:
 
 .. code-block:: python
 
+   from dotenv import load_dotenv
    from imednet import ImednetSDK, load_config
    from imednet.utils import configure_json_logging
 
    configure_json_logging()
+   load_dotenv()
    cfg = load_config()
    with ImednetSDK(
        api_key=cfg.api_key,
