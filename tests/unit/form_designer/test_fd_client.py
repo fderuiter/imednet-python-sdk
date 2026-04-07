@@ -69,5 +69,5 @@ def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
     with pytest.raises(ApiError) as exc_info:
         client.save_form("csrf", 1, 1, 1, mock_layout)
 
-    assert exc_info.value.response == html_response
+    assert str(exc_info.value.response) == html_response
     assert exc_info.value.status_code == 200

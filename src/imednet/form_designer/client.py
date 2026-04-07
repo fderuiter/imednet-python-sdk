@@ -3,6 +3,7 @@ import json
 import httpx
 
 from imednet.errors import ApiError, ClientError
+
 from .models import Layout
 
 
@@ -110,7 +111,9 @@ class FormDesignerClient:
             # Example success: {"success": true, ...}
             # Example error: {"error": "..."}
             if isinstance(resp_data, dict) and resp_data.get("error"):
-                raise ApiError(f"Server Error: {resp_data['error']}", status_code=response.status_code)
+                raise ApiError(
+                    f"Server Error: {resp_data['error']}", status_code=response.status_code
+                )
         except json.JSONDecodeError as exc:
             # Fallback if not JSON (legacy endpoints sometimes return HTML on error)
             raise ApiError(response.text, status_code=response.status_code) from exc
