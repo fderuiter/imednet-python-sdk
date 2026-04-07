@@ -25,6 +25,9 @@ def main() -> None:
     configure_json_logging()
     load_dotenv()
 
+    # Load environment variables from .env file if it exists
+    load_dotenv()
+
     try:
         cfg = load_config()
     except ValueError as e:

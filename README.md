@@ -162,8 +162,6 @@ The SDK and CLI read credentials from environment variables such as
 `IMEDNET_API_KEY` and `IMEDNET_SECURITY_KEY`. You can set these in your shell or
 use a `.env` file. Copy `.env.example` to `.env` to get started.
 
-> **Note**: `imednet.load_config()` only reads from existing environment variables (`os.getenv`). While the CLI automatically loads `.env` files, standalone Python scripts must explicitly call `load_dotenv()` from the `python-dotenv` package to read from a `.env` file before calling `load_config()`.
-
 See [configuration](docs/configuration.rst) for the complete list of options.
 Use `imednet.config.load_config()` to access these values in your code.
 
