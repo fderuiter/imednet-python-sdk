@@ -97,13 +97,16 @@ export IMEDNET_SECURITY_KEY="your_security_key"
 ### Synchronous Example
 
 ```python
+from dotenv import load_dotenv
+
 from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
 # Optional: Configure structured JSON logging
 configure_json_logging()
 
-# Load credentials from environment variables
+# Load credentials from .env file or environment variables
+load_dotenv()
 cfg = load_config()
 
 with ImednetSDK(
@@ -121,6 +124,9 @@ with ImednetSDK(
 
 ```python
 import asyncio
+
+from dotenv import load_dotenv
+
 from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -129,7 +135,8 @@ async def main() -> None:
     # Optional: Configure structured JSON logging
     configure_json_logging()
 
-    # Load credentials from environment variables
+    # Load credentials from .env file or environment variables
+    load_dotenv()
     cfg = load_config()
 
     async with AsyncImednetSDK(

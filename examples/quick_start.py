@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import sys
 
+from dotenv import load_dotenv
+
 from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
@@ -21,6 +23,7 @@ Example:
 def main() -> None:
     """Run a minimal SDK example using environment variables."""
     configure_json_logging()
+    load_dotenv()
 
     try:
         cfg = load_config()
