@@ -1,5 +1,6 @@
 import pytest
 
+from imednet.errors import ClientError
 from imednet.form_designer.client import FormDesignerClient
 from imednet.form_designer.models import Layout
 from imednet.models.jobs import Job
@@ -71,9 +72,9 @@ def test_form_designer_validation():
     layout = Layout(pages=[])
 
     # Test invalid form_id
-    with pytest.raises(ValueError, match="Invalid form_id"):
+    with pytest.raises(ClientError, match="Invalid form_id"):
         client.save_form("csrf", 0, 500, 1, layout)
 
     # Test empty CSRF
-    with pytest.raises(ValueError, match="CSRF Key"):
+    with pytest.raises(ClientError, match="CSRF Key"):
         client.save_form("", 100, 500, 1, layout)

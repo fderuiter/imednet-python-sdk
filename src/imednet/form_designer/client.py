@@ -2,6 +2,7 @@ import json
 
 import httpx
 
+from imednet.errors import ApiError, ClientError
 from .models import Layout
 
 
@@ -50,20 +51,21 @@ class FormDesignerClient:
 
         Raises:
             httpx.HTTPStatusError: If the server returns a non-2xx status code.
-            ValueError: If the server returns an error.
+            ClientError: If validation fails for the provided arguments.
+            ApiError: If the server returns an error.
         """
         # --- Validation Logic Migrated from TUI ---
         if not csrf_key or not csrf_key.strip():
-            raise ValueError("CSRF Key cannot be empty.")
+            raise ClientError("CSRF Key cannot be empty.")
 
         if form_id <= 0:
-            raise ValueError(f"Invalid form_id: {form_id}. Must be a positive integer.")
+            raise ClientError(f"Invalid form_id: {form_id}. Must be a positive integer.")
 
         if community_id <= 0:
-            raise ValueError(f"Invalid community_id: {community_id}. Must be a positive integer.")
+            raise ClientError(f"Invalid community_id: {community_id}. Must be a positive integer.")
 
         if revision < 0:
-            raise ValueError(f"Invalid revision: {revision}. Must be non-negative.")
+            raise ClientError(f"Invalid revision: {revision}. Must be non-negative.")
         # ------------------------------------------
 
         url = f"{self.base_url}/app/formdez/formdez_save.php"
@@ -108,9 +110,9 @@ class FormDesignerClient:
             # Example success: {"success": true, ...}
             # Example error: {"error": "..."}
             if isinstance(resp_data, dict) and resp_data.get("error"):
-                raise ValueError(f"Server Error: {resp_data['error']}")
-        except json.JSONDecodeError:
+                raise ApiError(f"Server Error: {resp_data['error']}", status_code=response.status_code)
+        except json.JSONDecodeError as exc:
             # Fallback if not JSON (legacy endpoints sometimes return HTML on error)
-            pass
+            raise ApiError(response.text, status_code=response.status_code) from exc
 
         return response.text
