@@ -50,3 +50,40 @@ def test_save_form_http_error(mock_layout, respx_mock):
 
     with pytest.raises(httpx.HTTPStatusError):
         client.save_form("csrf", 1, 1, 1, mock_layout)
+
+
+@pytest.mark.parametrize(
+    "csrf, form_id, community_id, revision, expected_error",
+    [
+        ("", 1, 1, 1, "CSRF Key cannot be empty."),
+        ("  ", 1, 1, 1, "CSRF Key cannot be empty."),
+        ("csrf", 0, 1, 1, "Invalid form_id: 0. Must be a positive integer."),
+        ("csrf", -1, 1, 1, "Invalid form_id: -1. Must be a positive integer."),
+        ("csrf", 1, 0, 1, "Invalid community_id: 0. Must be a positive integer."),
+        ("csrf", 1, -1, 1, "Invalid community_id: -1. Must be a positive integer."),
+        ("csrf", 1, 1, -1, "Invalid revision: -1. Must be non-negative."),
+    ],
+)
+def test_save_form_validation_errors(
+    csrf, form_id, community_id, revision, expected_error, mock_layout
+):
+    base_url = "https://test.imednet.com"
+    client = FormDesignerClient(base_url, "fake_sessid")
+
+    with pytest.raises(ValueError, match=expected_error):
+        client.save_form(csrf, form_id, community_id, revision, mock_layout)
+
+
+def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
+    base_url = "https://test.imednet.com"
+    client = FormDesignerClient(base_url, "fake_sessid")
+
+    html_response = "<html><body>Some HTML response</body></html>"
+
+    respx_mock.post(
+        f"{base_url}/app/formdez/formdez_save.php",
+    ).mock(return_value=httpx.Response(200, text=html_response))
+
+    resp = client.save_form("csrf", 1, 1, 1, mock_layout)
+
+    assert resp == html_response
