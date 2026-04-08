@@ -30,6 +30,32 @@ class RecordUpdateWorkflow:
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
+    def _validate_form_key(self, study_key: str, records_data: List[Dict[str, Any]]) -> None:
+        """Refresh schema if the form key is missing from cache."""
+        if not records_data:
+            return
+        first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
+            records_data[0].get("formId", 0)
+        )
+        if first_ref and not self._schema.variables_for_form(first_ref):
+            cast(SchemaValidator, self._validator).refresh(study_key)
+            if first_ref not in self._schema.forms:
+                raise ValueError(f"Form key '{first_ref}' not found")
+
+    async def _async_validate_form_key(
+        self, study_key: str, records_data: List[Dict[str, Any]]
+    ) -> None:
+        """Asynchronous variant of :meth:`_validate_form_key`."""
+        if not records_data:
+            return
+        first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
+            records_data[0].get("formId", 0)
+        )
+        if first_ref and not self._schema.variables_for_form(first_ref):
+            await cast(AsyncSchemaValidator, self._validator).refresh(study_key)
+            if first_ref not in self._schema.forms:
+                raise ValueError(f"Form key '{first_ref}' not found")
+
     def create_or_update_records(
         self,
         study_key: str,
@@ -39,14 +65,7 @@ class RecordUpdateWorkflow:
         poll_interval: int = 5,
     ) -> Job:
         """Submit records for creation or update and optionally wait for completion."""
-        if records_data:
-            first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
-                records_data[0].get("formId", 0)
-            )
-            if first_ref and not self._schema.variables_for_form(first_ref):
-                cast(SchemaValidator, self._validator).refresh(study_key)
-                if first_ref not in self._schema.forms:
-                    raise ValueError(f"Form key '{first_ref}' not found")
+        self._validate_form_key(study_key, records_data)
 
         cast(SchemaValidator, self._validator).validate_batch(study_key, records_data)
         job = self._sdk.records.create(study_key, records_data, schema=self._schema)
@@ -68,14 +87,7 @@ class RecordUpdateWorkflow:
         poll_interval: int = 5,
     ) -> Job:
         """Asynchronous variant of :meth:`create_or_update_records`."""
-        if records_data:
-            first_ref = records_data[0].get("formKey") or self._schema.form_key_from_id(
-                records_data[0].get("formId", 0)
-            )
-            if first_ref and not self._schema.variables_for_form(first_ref):
-                await cast(AsyncSchemaValidator, self._validator).refresh(study_key)
-                if first_ref not in self._schema.forms:
-                    raise ValueError(f"Form key '{first_ref}' not found")
+        await self._async_validate_form_key(study_key, records_data)
 
         await cast(AsyncSchemaValidator, self._validator).validate_batch(study_key, records_data)
         job = await self._sdk.records.async_create(study_key, records_data, schema=self._schema)
