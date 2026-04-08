@@ -86,3 +86,22 @@ def test_job_poller_run_async_in_sync_mode() -> None:
     poller = JobPoller(get_job, False)
     with pytest.raises(RuntimeError, match="Use run for synchronous polling"):
         asyncio.run(poller.run_async("S", "1", interval=0, timeout=5))
+
+
+@pytest.mark.parametrize("async_mode", [False, True])
+def test_job_poller_cancelled(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
+    states = [
+        JobStatus(batch_id="1", state="PROCESSING", progress=50),
+        JobStatus(batch_id="1", state="CANCELLED", progress=50),
+    ]
+    if async_mode:
+        get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
+        monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+        poller = JobPoller(get_job, True)
+        result = asyncio.run(poller.run_async("ST", "1", interval=0, timeout=5))
+    else:
+        get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
+        monkeypatch.setattr("time.sleep", lambda *_: None)
+        poller = JobPoller(get_job, False)
+        result = poller.run("ST", "1", interval=0, timeout=5)
+    assert result.state == "CANCELLED"
