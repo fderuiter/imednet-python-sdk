@@ -87,6 +87,7 @@ def test_job_poller_run_async_in_sync_mode() -> None:
     with pytest.raises(RuntimeError, match="Use run for synchronous polling"):
         asyncio.run(poller.run_async("S", "1", interval=0, timeout=5))
 
+
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_job_poller_cancelled(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
     states = [
