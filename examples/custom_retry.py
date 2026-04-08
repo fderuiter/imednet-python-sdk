@@ -50,7 +50,7 @@ def responder(_: httpx.Request) -> httpx.Response:
 
 
 class MockClient(Client):
-    def _create_client(self, auth: AuthStrategy) -> httpx.Client:  # type: ignore[override]
+    def _create_client(self, auth: AuthStrategy) -> httpx.Client:
         return httpx.Client(
             base_url=self.base_url,
             headers={

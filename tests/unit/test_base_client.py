@@ -1,15 +1,15 @@
-from typing import Any
 from unittest.mock import MagicMock
 
 import httpx
 
 import imednet.core.base_client as base_client
+from imednet.auth.strategy import AuthStrategy
 from imednet.constants import HEADER_API_KEY, HEADER_SECURITY_KEY
 from imednet.core.base_client import BaseClient
 
 
 class DummyClient(BaseClient):
-    def _create_client(self, auth: Any) -> httpx.Client:
+    def _create_client(self, auth: AuthStrategy) -> httpx.Client:
         headers = auth.get_headers()
         return httpx.Client(headers=headers)
 
