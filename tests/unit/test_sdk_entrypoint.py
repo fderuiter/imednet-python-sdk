@@ -88,7 +88,7 @@ def test_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
     sdk = _create_sdk()
     calls = {}
 
-    def fake_studies_list(**kw):
+    def fake_studies_list(study_key=None, **kw):
         calls["studies"] = kw
         return ["STUDY"]
 
