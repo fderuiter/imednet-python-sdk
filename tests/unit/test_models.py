@@ -95,3 +95,112 @@ def test_invalid_int_defaults(model_cls: type[BaseModel]) -> None:
     data[field.alias or name] = "notanint"
     model = model_cls.model_validate(data)
     assert getattr(model, name) == 0
+
+
+def test_job_properties() -> None:
+    from imednet.models.jobs import Job
+
+    job_completed = Job(batchId="1", state="COMPLETED")
+    assert job_completed.is_terminal
+    assert job_completed.is_successful
+    assert not job_completed.is_failed
+
+    job_failed = Job(batchId="1", state="FAILED")
+    assert job_failed.is_terminal
+    assert not job_failed.is_successful
+    assert job_failed.is_failed
+
+    job_cancelled = Job(batchId="1", state="CANCELLED")
+    assert job_cancelled.is_terminal
+    assert not job_cancelled.is_successful
+    assert job_cancelled.is_failed
+
+    job_processing = Job(batchId="1", state="PROCESSING")
+    assert not job_processing.is_terminal
+    assert not job_processing.is_successful
+    assert not job_processing.is_failed
+
+    job_success = Job(batchId="1", state="SUCCESS")
+    assert job_success.is_terminal
+    assert job_success.is_successful
+    assert not job_success.is_failed
+
+
+def test_job_status_progress_parsing() -> None:
+    from imednet.models.jobs import JobStatus
+
+    js_valid = JobStatus(batchId="1", state="PROCESSING", progress="50")
+    assert js_valid.progress == 50
+
+    js_invalid = JobStatus(batchId="1", state="PROCESSING", progress="invalid")
+    assert js_invalid.progress == 0
+
+    js_none = JobStatus(batchId="1", state="PROCESSING", progress=None)
+    assert js_none.progress == 0
+
+
+def test_study_structure_methods() -> None:
+    from datetime import datetime
+
+    from imednet.models.forms import Form
+    from imednet.models.intervals import Interval
+    from imednet.models.study_structure import FormStructure, IntervalStructure
+
+    form = Form(
+        formId=1,
+        formKey="TEST_FORM",
+        formName="Test Form",
+        formType="CRF",
+        revision=1,
+        disabled=False,
+        eproForm=False,
+        allowCopy=True,
+        dateCreated=datetime(2024, 1, 1),
+        dateModified=datetime(2024, 1, 2),
+    )
+
+    form_struct = FormStructure.from_form(form, variables=[])
+    assert form_struct.form_id == 1
+    assert form_struct.form_key == "TEST_FORM"
+    assert len(form_struct.variables) == 0
+
+    interval = Interval(
+        intervalId=10,
+        intervalName="Baseline",
+        intervalSequence=1,
+        intervalDescription="Baseline Visit",
+        intervalGroupName="Visits",
+        disabled=False,
+        dateCreated=datetime(2024, 1, 1),
+        dateModified=datetime(2024, 1, 2),
+        forms=[{"formId": 1, "formKey": "TEST_FORM", "formName": "Test Form"}],
+    )
+
+    interval_struct = IntervalStructure.from_interval(interval, forms=[form_struct])
+    assert interval_struct.interval_id == 10
+    assert interval_struct.interval_name == "Baseline"
+    assert len(interval_struct.forms) == 1
+    assert interval_struct.forms[0].form_id == 1
+
+
+def test_visit_clean_empty_dates() -> None:
+    from imednet.models.visits import Visit
+
+    # Valid date
+    v1 = Visit(startDate="2024-01-01T00:00:00Z")
+    assert v1.start_date is not None
+
+    # Empty date string
+    v2 = Visit(startDate="")
+    assert v2.start_date is None
+
+    # None date
+    v3 = Visit(startDate=None)
+    assert v3.start_date is None
+
+
+def test_study_structure_study() -> None:
+    from imednet.models.study_structure import StudyStructure
+
+    study = StudyStructure(studyKey="ST1", intervals=[])
+    assert study.study_key == "ST1"
