@@ -6,21 +6,9 @@ This module contains high-level helper methods that delegate to specific endpoin
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Protocol, Union
 
-from imednet.models.codings import Coding
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
 from imednet.models.jobs import Job, JobStatus
-from imednet.models.queries import Query
-from imednet.models.record_revisions import RecordRevision
-from imednet.models.records import Record
-from imednet.models.sites import Site
-from imednet.models.studies import Study
-from imednet.models.subjects import Subject
-from imednet.models.users import User
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
 from imednet.workflows.job_poller import JobPoller
 
 if TYPE_CHECKING:
@@ -64,30 +52,35 @@ class SDKConvenienceMixin:
     These methods wrap endpoint calls to provide a flatter API surface.
     """
 
-    def get_studies(self: SDKProtocol, **filters: Any) -> List[Study]:
-        """Return all studies accessible by the current API key."""
-        return self.studies.list(**filters)
+    def __getattr__(self, name: str) -> Any:
+        """
+        Dynamically resolve get_* methods to their corresponding endpoint list() or get() calls.
+        """
+        if name.startswith("get_"):
+            target_name = name[4:]
 
-    def get_records(
-        self: SDKProtocol,
-        study_key: str,
-        record_data_filter: Optional[str] = None,
-        **filters: Any,
-    ) -> List[Record]:
-        """Return records for the specified study."""
-        return self.records.list(
-            study_key=study_key,
-            record_data_filter=record_data_filter,
-            **filters,
-        )
+            # Special case for get_job
+            if target_name == "job":
 
-    def get_sites(self: SDKProtocol, study_key: str, **filters: Any) -> List[Site]:
-        """Return sites for the specified study."""
-        return self.sites.list(study_key, **filters)
+                def _get_job_wrapper(study_key: str, batch_id: str) -> JobStatus:
+                    return self.jobs.get(study_key, batch_id)  # type: ignore
 
-    def get_subjects(self: SDKProtocol, study_key: str, **filters: Any) -> List[Subject]:
-        """Return subjects for the specified study."""
-        return self.subjects.list(study_key, **filters)
+                return _get_job_wrapper
+
+            # Special case for record_revisions
+            if target_name == "record_revisions":
+                target_endpoint = self.record_revisions  # type: ignore
+            else:
+                target_endpoint = getattr(self, target_name, None)
+
+            if target_endpoint is not None and hasattr(target_endpoint, "list"):
+
+                def _list_wrapper(*args: Any, **kwargs: Any) -> Any:
+                    return target_endpoint.list(*args, **kwargs)
+
+                return _list_wrapper
+
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
 
     def create_record(
         self: SDKProtocol,
@@ -101,44 +94,6 @@ class SDKConvenienceMixin:
             records_data,
             email_notify=email_notify,
         )
-
-    def get_forms(self: SDKProtocol, study_key: str, **filters: Any) -> List[Form]:
-        """Return forms for the specified study."""
-        return self.forms.list(study_key, **filters)
-
-    def get_intervals(self: SDKProtocol, study_key: str, **filters: Any) -> List[Interval]:
-        """Return intervals for the specified study."""
-        return self.intervals.list(study_key, **filters)
-
-    def get_variables(self: SDKProtocol, study_key: str, **filters: Any) -> List[Variable]:
-        """Return variables for the specified study."""
-        return self.variables.list(study_key, **filters)
-
-    def get_visits(self: SDKProtocol, study_key: str, **filters: Any) -> List[Visit]:
-        """Return visits for the specified study."""
-        return self.visits.list(study_key, **filters)
-
-    def get_codings(self: SDKProtocol, study_key: str, **filters: Any) -> List[Coding]:
-        """Return codings for the specified study."""
-        return self.codings.list(study_key, **filters)
-
-    def get_queries(self: SDKProtocol, study_key: str, **filters: Any) -> List[Query]:
-        """Return queries for the specified study."""
-        return self.queries.list(study_key, **filters)
-
-    def get_record_revisions(
-        self: SDKProtocol, study_key: str, **filters: Any
-    ) -> List[RecordRevision]:
-        """Return record revisions for the specified study."""
-        return self.record_revisions.list(study_key, **filters)
-
-    def get_users(self: SDKProtocol, study_key: str, include_inactive: bool = False) -> List[User]:
-        """Return users for the specified study."""
-        return self.users.list(study_key, include_inactive=include_inactive)
-
-    def get_job(self: SDKProtocol, study_key: str, batch_id: str) -> JobStatus:
-        """Return job details for the specified batch."""
-        return self.jobs.get(study_key, batch_id)
 
     def poll_job(
         self: SDKProtocol,

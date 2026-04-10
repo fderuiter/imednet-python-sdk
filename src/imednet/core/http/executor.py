@@ -67,6 +67,24 @@ class BaseRequestExecutor(ABC):
 
         return should_retry
 
+    def _process_result(
+        self, response: Optional[httpx.Response], monitor: RequestMonitor
+    ) -> httpx.Response:
+        """Process successful response or raise error if None."""
+        if response is not None:
+            monitor.on_success(response)
+            return handle_response(response)
+        raise RuntimeError("Request failed without response or exception")
+
+    def _process_retry_error(self, e: RetryError, monitor: RequestMonitor) -> httpx.Response:
+        """Handle RetryError, extracting successful result if present, else escalate."""
+        if e.last_attempt and not e.last_attempt.failed:
+            response: httpx.Response = e.last_attempt.result()
+            monitor.on_success(response)
+            return handle_response(response)
+        monitor.on_retry_error(e)
+        raise RuntimeError("Request failed without response or exception")  # Unreachable
+
     @abstractmethod
     def __call__(self, method: str, url: str, **kwargs: Any) -> Any:
         """Execute the request."""
@@ -97,24 +115,12 @@ class SyncRequestExecutor(BaseRequestExecutor):
             reraise=False,
         )
 
-        response: Optional[httpx.Response] = None
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response = retryer(send_fn)
-                if response is not None:
-                    monitor.on_success(response)
+                response: Optional[httpx.Response] = retryer(send_fn)
+                return self._process_result(response, monitor)
             except RetryError as e:
-                if e.last_attempt and not e.last_attempt.failed:
-                    response = e.last_attempt.result()
-                    monitor.on_success(response)
-                else:
-                    monitor.on_retry_error(e)
-
-        if response is None:
-            # Should be unreachable as on_retry_error raises
-            raise RuntimeError("Request failed without response or exception")
-
-        return handle_response(response)
+                return self._process_retry_error(e, monitor)
 
 
 class AsyncRequestExecutor(BaseRequestExecutor):
@@ -142,21 +148,9 @@ class AsyncRequestExecutor(BaseRequestExecutor):
             reraise=False,
         )
 
-        response: Optional[httpx.Response] = None
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response = await retryer(send_fn)
-                if response is not None:
-                    monitor.on_success(response)
+                response: Optional[httpx.Response] = await retryer(send_fn)
+                return self._process_result(response, monitor)
             except RetryError as e:
-                if e.last_attempt and not e.last_attempt.failed:
-                    response = e.last_attempt.result()
-                    monitor.on_success(response)
-                else:
-                    monitor.on_retry_error(e)
-
-        if response is None:
-            # Should be unreachable as on_retry_error raises
-            raise RuntimeError("Request failed without response or exception")
-
-        return handle_response(response)
+                return self._process_retry_error(e, monitor)
