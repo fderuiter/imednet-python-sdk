@@ -1,34 +1,35 @@
+import re
+
+with open("src/imednet/core/http/executor.py", "r") as f:
+    content = f.read()
+
+# I will replace SyncRequestExecutor and AsyncRequestExecutor with versions that use a helper
+# method in BaseRequestExecutor to handle the retry result and monitoring uniformly.
+
+base_addition = """
+    def _handle_retry_result(self, retry_result: Any, monitor: RequestMonitor) -> httpx.Response:
+        \"\"\"Extract the response from the retry execution and update the monitor.\"\"\"
+        if isinstance(retry_result, RetryError):
+            e = retry_result
+            if e.last_attempt and not e.last_attempt.failed:
+                response = e.last_attempt.result()
+                monitor.on_success(response)
+                return handle_response(response)
+            else:
+                monitor.on_retry_error(e)
+
+        if retry_result is not None:
+            monitor.on_success(retry_result)
+            return handle_response(retry_result)
+
+        raise RuntimeError("Request failed without response or exception")
 """
-HTTP request execution with retries and monitoring.
-"""
 
-from __future__ import annotations
+# Actually, the try/except block is around the retryer call.
+# Let's extract the execution into a _execute_with_monitor function.
 
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional
-
-import httpx
-from tenacity import (
-    AsyncRetrying,
-    RetryCallState,
-    RetryError,
-    Retrying,
-    stop_after_attempt,
-    wait_exponential,
-)
-
-from imednet.core.http.handlers import handle_response
-from imednet.core.http.monitor import RequestMonitor
-from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
-
-if TYPE_CHECKING:
-    from opentelemetry.trace import Tracer
-else:
-    Tracer = Any
-
-
-class BaseRequestExecutor(ABC):
-    """Abstract base for request executors."""
+replacement_base = """class BaseRequestExecutor(ABC):
+    \"\"\"Abstract base for request executors.\"\"\"
 
     def __init__(
         self,
@@ -45,7 +46,7 @@ class BaseRequestExecutor(ABC):
         self.retry_policy = retry_policy or DefaultRetryPolicy()
 
     def _get_retry_predicate(self, method: str) -> Callable[[RetryCallState], bool]:
-        """Return a retry predicate that includes the HTTP method in state."""
+        \"\"\"Return a retry predicate that includes the HTTP method in state.\"\"\"
         policy = self.retry_policy
 
         def should_retry(retry_state: RetryCallState) -> bool:
@@ -68,27 +69,27 @@ class BaseRequestExecutor(ABC):
         return should_retry
 
     def _process_result(self, response: Optional[httpx.Response], monitor: RequestMonitor) -> httpx.Response:
-        """Process successful response or raise error if None."""
+        \"\"\"Process successful response or raise error if None.\"\"\"
         if response is not None:
             monitor.on_success(response)
             return handle_response(response)
         raise RuntimeError("Request failed without response or exception")
 
-
-
     def _process_retry_error(self, e: RetryError, monitor: RequestMonitor) -> httpx.Response:
-        """Handle RetryError, extracting successful result if present, else escalate."""
+        \"\"\"Handle RetryError, extracting successful result if present, else escalate.\"\"\"
         if e.last_attempt and not e.last_attempt.failed:
-            response: httpx.Response = e.last_attempt.result()
+            response = e.last_attempt.result()
             monitor.on_success(response)
             return handle_response(response)
         monitor.on_retry_error(e)
-        raise RuntimeError("Request failed without response or exception") # Unreachable
+
     @abstractmethod
     def __call__(self, method: str, url: str, **kwargs: Any) -> Any:
-        """Execute the request."""
-class SyncRequestExecutor(BaseRequestExecutor):
-    """Execute synchronous HTTP requests with retry and error handling."""
+        \"\"\"Execute the request.\"\"\"
+"""
+
+replacement_sync = """class SyncRequestExecutor(BaseRequestExecutor):
+    \"\"\"Execute synchronous HTTP requests with retry and error handling.\"\"\"
 
     def __init__(
         self,
@@ -114,12 +115,14 @@ class SyncRequestExecutor(BaseRequestExecutor):
 
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = retryer(send_fn)
+                response = retryer(send_fn)
                 return self._process_result(response, monitor)
             except RetryError as e:
                 return self._process_retry_error(e, monitor)
-class AsyncRequestExecutor(BaseRequestExecutor):
-    """Execute asynchronous HTTP requests with retry and error handling."""
+"""
+
+replacement_async = """class AsyncRequestExecutor(BaseRequestExecutor):
+    \"\"\"Execute asynchronous HTTP requests with retry and error handling.\"\"\"
 
     def __init__(
         self,
@@ -145,8 +148,21 @@ class AsyncRequestExecutor(BaseRequestExecutor):
 
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = await retryer(send_fn)
+                response = await retryer(send_fn)
                 return self._process_result(response, monitor)
             except RetryError as e:
                 return self._process_retry_error(e, monitor)
+"""
 
+def replace_class(text, class_name, replacement):
+    pattern = r"class " + class_name + r"\(.*?\):\n.*?(?=class |$)"
+    return re.sub(pattern, replacement, text, flags=re.DOTALL)
+
+with open("src/imednet/core/http/executor.py", "w") as f:
+    # First replace BaseRequestExecutor
+    content = replace_class(content, "BaseRequestExecutor", replacement_base)
+    # Then Sync
+    content = replace_class(content, "SyncRequestExecutor", replacement_sync)
+    # Then Async
+    content = replace_class(content, "AsyncRequestExecutor", replacement_async)
+    f.write(content)
