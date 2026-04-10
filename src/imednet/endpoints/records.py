@@ -2,9 +2,8 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.core.endpoint.base import GenericEndpoint
+from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
 from imednet.core.endpoint.operations import RecordCreateOperation
 from imednet.core.endpoint.strategies import MappingParamProcessor
 from imednet.models.jobs import Job
@@ -14,9 +13,7 @@ from imednet.validation.cache import SchemaCache
 
 class RecordsEndpoint(
     EdcEndpointMixin,
-    GenericEndpoint[Record],
-    ListEndpointMixin[Record],
-    FilterGetEndpointMixin[Record],
+    GenericListGetEndpoint[Record],
 ):
     """
     API endpoint for interacting with records (eCRF instances) in an iMedNet study.

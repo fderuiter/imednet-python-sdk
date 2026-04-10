@@ -1,17 +1,14 @@
 """Endpoint for managing variables (data points on eCRFs) in a study."""
 
-from imednet.core.endpoint.base import GenericEndpoint
+from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
 from imednet.core.endpoint.strategies import PopStudyKeyStrategy
 from imednet.models.variables import Variable
 
 
 class VariablesEndpoint(
     EdcEndpointMixin,
-    GenericEndpoint[Variable],
-    ListEndpointMixin[Variable],
-    FilterGetEndpointMixin[Variable],
+    GenericListGetEndpoint[Variable],
 ):
     """
     API endpoint for interacting with variables (data points on eCRFs) in an iMedNet study.
