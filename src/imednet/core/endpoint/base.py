@@ -9,6 +9,7 @@ from urllib.parse import quote
 
 from imednet.core.context import Context
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.json_base import JsonModel
 
@@ -77,3 +78,18 @@ class GenericEndpoint(EndpointABC[T]):
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
         return self._async_client
+
+
+class GenericListGetEndpoint(
+    GenericEndpoint[T],
+    ListEndpointMixin[T],
+    FilterGetEndpointMixin[T],
+):
+    """
+    Generic base for endpoints that provide list and get-by-filter functionality.
+
+    Combines GenericEndpoint with ListEndpointMixin and FilterGetEndpointMixin
+    to provide standard CRUD read operations.
+    """
+
+    pass

@@ -1,17 +1,14 @@
 """Endpoint for managing codings (medical coding) in a study."""
 
-from imednet.core.endpoint.base import GenericEndpoint
+from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
 from imednet.core.endpoint.strategies import PopStudyKeyStrategy
 from imednet.models.codings import Coding
 
 
 class CodingsEndpoint(
     EdcEndpointMixin,
-    GenericEndpoint[Coding],
-    ListEndpointMixin[Coding],
-    FilterGetEndpointMixin[Coding],
+    GenericListGetEndpoint[Coding],
 ):
     """
     API endpoint for interacting with codings (medical coding) in an iMedNet study.
