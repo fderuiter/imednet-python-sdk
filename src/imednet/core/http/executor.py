@@ -67,14 +67,14 @@ class BaseRequestExecutor(ABC):
 
         return should_retry
 
-    def _process_result(self, response: Optional[httpx.Response], monitor: RequestMonitor) -> httpx.Response:
+    def _process_result(
+        self, response: Optional[httpx.Response], monitor: RequestMonitor
+    ) -> httpx.Response:
         """Process successful response or raise error if None."""
         if response is not None:
             monitor.on_success(response)
             return handle_response(response)
         raise RuntimeError("Request failed without response or exception")
-
-
 
     def _process_retry_error(self, e: RetryError, monitor: RequestMonitor) -> httpx.Response:
         """Handle RetryError, extracting successful result if present, else escalate."""
@@ -83,10 +83,13 @@ class BaseRequestExecutor(ABC):
             monitor.on_success(response)
             return handle_response(response)
         monitor.on_retry_error(e)
-        raise RuntimeError("Request failed without response or exception") # Unreachable
+        raise RuntimeError("Request failed without response or exception")  # Unreachable
+
     @abstractmethod
     def __call__(self, method: str, url: str, **kwargs: Any) -> Any:
         """Execute the request."""
+
+
 class SyncRequestExecutor(BaseRequestExecutor):
     """Execute synchronous HTTP requests with retry and error handling."""
 
@@ -118,6 +121,8 @@ class SyncRequestExecutor(BaseRequestExecutor):
                 return self._process_result(response, monitor)
             except RetryError as e:
                 return self._process_retry_error(e, monitor)
+
+
 class AsyncRequestExecutor(BaseRequestExecutor):
     """Execute asynchronous HTTP requests with retry and error handling."""
 
@@ -149,4 +154,3 @@ class AsyncRequestExecutor(BaseRequestExecutor):
                 return self._process_result(response, monitor)
             except RetryError as e:
                 return self._process_retry_error(e, monitor)
-

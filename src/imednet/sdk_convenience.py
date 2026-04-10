@@ -6,21 +6,9 @@ This module contains high-level helper methods that delegate to specific endpoin
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Protocol, Union
 
-from imednet.models.codings import Coding
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
 from imednet.models.jobs import Job, JobStatus
-from imednet.models.queries import Query
-from imednet.models.record_revisions import RecordRevision
-from imednet.models.records import Record
-from imednet.models.sites import Site
-from imednet.models.studies import Study
-from imednet.models.subjects import Subject
-from imednet.models.users import User
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
 from imednet.workflows.job_poller import JobPoller
 
 if TYPE_CHECKING:
@@ -73,8 +61,10 @@ class SDKConvenienceMixin:
 
             # Special case for get_job
             if target_name == "job":
+
                 def _get_job_wrapper(study_key: str, batch_id: str) -> JobStatus:
                     return self.jobs.get(study_key, batch_id)  # type: ignore
+
                 return _get_job_wrapper
 
             # Special case for record_revisions
@@ -84,8 +74,10 @@ class SDKConvenienceMixin:
                 target_endpoint = getattr(self, target_name, None)
 
             if target_endpoint is not None and hasattr(target_endpoint, "list"):
+
                 def _list_wrapper(*args: Any, **kwargs: Any) -> Any:
                     return target_endpoint.list(*args, **kwargs)
+
                 return _list_wrapper
 
         raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
