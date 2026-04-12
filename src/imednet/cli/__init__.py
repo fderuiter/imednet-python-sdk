@@ -58,7 +58,7 @@ app.add_typer(workflows_app)
 app.command("subject-data")(subject_data)
 
 
-@app.command()
+@app.command(hidden=True)
 def tui(ctx: typer.Context) -> None:
     """Launch the interactive terminal user interface (Dashboard)."""
     typer.echo("TUI mode has been removed. Please use the CLI commands.")
