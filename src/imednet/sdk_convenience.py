@@ -174,9 +174,7 @@ class SDKConvenienceMixin:
         """Asynchronously list sites."""
         return await self.sites.async_list(study_key, **filters)
 
-    async def async_get_studies(
-        self: SDKProtocol, **filters: Any
-    ) -> List[Study]:
+    async def async_get_studies(self: SDKProtocol, **filters: Any) -> List[Study]:
         """Asynchronously list studies."""
         return await self.studies.async_list(**filters)
 
