@@ -31,3 +31,18 @@ async def test_async_context_management(monkeypatch) -> None:
         assert isinstance(sdk, sdk_mod.ImednetSDK)
 
     assert called["close"]
+
+
+@pytest.mark.asyncio
+async def test_convenience_methods_delegate_to_endpoints_async(monkeypatch) -> None:
+    sdk = _create_async_sdk()
+    calls = {}
+
+    async def fake_async_studies_list(**kw):
+        calls["studies"] = kw
+        return ["STUDY"]
+
+    monkeypatch.setattr(sdk.studies, "async_list", fake_async_studies_list)
+
+    assert await sdk.async_get_studies(status="active") == ["STUDY"]
+    assert calls["studies"] == {"status": "active"}
