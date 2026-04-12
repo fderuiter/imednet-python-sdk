@@ -45,17 +45,15 @@ class JobPoller:
     ) -> JobStatus:
         start = time.monotonic()
 
-        result = self._get_job(study_key, batch_id)
-        status = self._check_complete(cast(JobStatus, result), batch_id)
-
-        while status.state.upper() not in TERMINAL_JOB_STATES:
-            self._check_timeout(start, timeout, batch_id)
-            time.sleep(interval)
-
+        while True:
             result = self._get_job(study_key, batch_id)
             status = self._check_complete(cast(JobStatus, result), batch_id)
 
-        return status
+            if status.state.upper() in TERMINAL_JOB_STATES:
+                return status
+
+            self._check_timeout(start, timeout, batch_id)
+            time.sleep(interval)
 
     async def _poll_async(
         self,
@@ -66,17 +64,15 @@ class JobPoller:
     ) -> JobStatus:
         start = time.monotonic()
 
-        result = await self._get_job(study_key, batch_id)
-        status = self._check_complete(cast(JobStatus, result), batch_id)
-
-        while status.state.upper() not in TERMINAL_JOB_STATES:
-            self._check_timeout(start, timeout, batch_id)
-            await asyncio.sleep(interval)
-
+        while True:
             result = await self._get_job(study_key, batch_id)
             status = self._check_complete(cast(JobStatus, result), batch_id)
 
-        return status
+            if status.state.upper() in TERMINAL_JOB_STATES:
+                return status
+
+            self._check_timeout(start, timeout, batch_id)
+            await asyncio.sleep(interval)
 
     def run(
         self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
