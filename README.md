@@ -130,7 +130,6 @@ from dotenv import load_dotenv
 from imednet import AsyncImednetSDK, load_config
 from imednet.utils import configure_json_logging
 
-
 async def main() -> None:
     # Optional: Configure structured JSON logging
     configure_json_logging()
@@ -147,7 +146,6 @@ async def main() -> None:
         studies = await sdk.studies.async_list()
         for study in studies:
             print(f"{study.study_name} ({study.study_key})")
-
 
 asyncio.run(main())
 ```
@@ -279,13 +277,6 @@ Contributions are welcome! See the
 **Missing required environment variable(s)**
 If you see an error like `Missing required environment variable(s): IMEDNET_API_KEY, IMEDNET_SECURITY_KEY` or an "Unauthorized" API error, ensure you have set these variables in your shell or in a `.env` file in the directory where you run the script. See [Configuration](#configuration).
 
-**`ModuleNotFoundError: No module named 'dotenv'` when running examples**
-The example scripts use `python-dotenv` to load environment variables from a `.env` file. If you haven't installed the SDK with development dependencies, or if you are running the examples in an isolated environment, install `python-dotenv` explicitly:
-
-```bash
-pip install python-dotenv
-```
-
 ---
 
 ## License
@@ -298,4 +289,3 @@ details.
 ## Acknowledgements
 
 Built with open source libraries including requests, httpx, pydantic and typer.
-
