@@ -2,12 +2,14 @@
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.strategies import PopStudyKeyStrategy
+from imednet.core.endpoint.mixins import CachedEndpointMixin, KeyErrorPopStudyKeyMixin
 from imednet.models.variables import Variable
 
 
 class VariablesEndpoint(
     EdcEndpointMixin,
+    KeyErrorPopStudyKeyMixin,
+    CachedEndpointMixin,
     GenericListGetEndpoint[Variable],
 ):
     """
@@ -19,6 +21,3 @@ class VariablesEndpoint(
     PATH = "variables"
     MODEL = Variable
     _id_param = "variableId"
-    _enable_cache = True
-    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=KeyError)
-    PAGE_SIZE = 500

@@ -1,16 +1,18 @@
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.utils.filters import build_filter_string
 
-from .caching import CacheMixin
+from .caching import CachedEndpointMixin, CacheMixin
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
 from .list import ListEndpointMixin
-from .params import ParamMixin
+from .params import KeyErrorPopStudyKeyMixin, ParamMixin
 from .parsing import ParsingMixin
 
 __all__ = [
     "AsyncPaginator",
+    "CachedEndpointMixin",
     "CacheMixin",
     "FilterGetEndpointMixin",
+    "KeyErrorPopStudyKeyMixin",
     "ListEndpointMixin",
     "Paginator",
     "ParamMixin",
