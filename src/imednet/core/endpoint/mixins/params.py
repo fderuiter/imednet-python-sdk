@@ -92,6 +92,8 @@ class ParamMixin:
 
         return ParamState(study=study, params=params, other_filters=other_filters)
 
+
 class KeyErrorPopStudyKeyMixin:
     """Mixin that configures the endpoint to pop the study key and raise KeyError if missing."""
+
     STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = PopStudyKeyStrategy(exception_cls=KeyError)
