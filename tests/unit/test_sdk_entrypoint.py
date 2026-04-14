@@ -188,3 +188,24 @@ def test_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
     assert calls["record_revisions"] == ("S1", {})
     assert calls["users"] == ("S1", True)
     assert calls["job"] == ("S1", "B1")
+
+
+def test_poll_job_convenience_sync(monkeypatch) -> None:
+    sdk = _create_sdk()
+    calls = {}
+
+    class FakePoller:
+        def __init__(self, get_func, is_async):
+            calls["init"] = (get_func, is_async)
+
+        def run(self, study_key, batch_id, interval, timeout):
+            calls["run"] = (study_key, batch_id, interval, timeout)
+            return "JOBOBJ"
+
+    import imednet.sdk_convenience
+
+    monkeypatch.setattr(imednet.sdk_convenience, "JobPoller", FakePoller)
+
+    assert sdk.poll_job("S1", "B1", interval=10, timeout=100) == "JOBOBJ"
+    assert calls["run"] == ("S1", "B1", 10, 100)
+    assert calls["init"][1] is False
