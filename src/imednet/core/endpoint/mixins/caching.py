@@ -48,3 +48,10 @@ class CacheMixin:
             if cache is not None and not other_filters and not refresh:
                 return cache
         return None
+
+
+class CachedEndpointMixin:
+    """Mixin that enables caching and sets the default page size for metadata endpoints."""
+
+    _enable_cache: bool = True
+    PAGE_SIZE: int = 500
