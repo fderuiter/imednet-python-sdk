@@ -101,3 +101,30 @@ def test_parse_datetime_parses_strings() -> None:
     iso = "2024-01-01T00:00:00Z"
     parsed = validators.parse_datetime(iso)
     assert parsed == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+
+
+def test_parse_datetime_numeric():
+    timestamp = 1704067200  # 2024-01-01 00:00:00 UTC
+    dt = validators.parse_datetime(timestamp)
+    assert dt == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+
+    dt_float = validators.parse_datetime(float(timestamp))
+    assert dt_float == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+
+
+def test_parse_bool_string_float():
+    assert validators.parse_bool("1.0") is True
+    assert validators.parse_bool("0.0") is False
+    assert validators.parse_bool("-1") is True
+    assert validators.parse_bool("+1") is True
+    assert validators.parse_bool(".5") is True
+    assert validators.parse_bool("nan") is True  # bool(float("nan")) is True
+    assert validators.parse_bool("inf") is True
+    assert validators.parse_bool("-inf") is True
+    assert validators.parse_bool("nope") is False
+    assert validators.parse_bool("invalid") is False
+
+
+def test_parse_bool_invalid_float():
+    # To cover the 'except (ValueError, TypeError)' block in parse_bool float fallback
+    assert validators.parse_bool("1invalid") is False
