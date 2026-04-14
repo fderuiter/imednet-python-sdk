@@ -57,20 +57,19 @@ def test_close_with_running_loop():
     client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
 
-    def mock_run_side_effect(coro):
-        coro.close()
-
     class MockLoop:
         def is_closed(self):
             return True
 
     with patch("asyncio.get_running_loop", return_value=MockLoop()):
-        with patch("asyncio.run", side_effect=mock_run_side_effect) as mock_run:
+        with pytest.warns(
+            RuntimeWarning,
+            match="Synchronously closing an SDK with an async client",
+        ):
             sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
             sdk.close()
 
-            client_mock.close.assert_called_once()
-            mock_run.assert_called_once()
+    client_mock.close.assert_called_once()
 
 
 def test_close_with_running_loop_not_closed():
@@ -87,11 +86,14 @@ def test_close_with_running_loop_not_closed():
     mock_loop = MockLoop()
 
     with patch("asyncio.get_running_loop", return_value=mock_loop):
-        sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
-        sdk.close()
+        with pytest.warns(
+            RuntimeWarning,
+            match="Synchronously closing an SDK with an async client",
+        ):
+            sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
+            sdk.close()
 
-        client_mock.close.assert_called_once()
-        mock_loop.run_until_complete.assert_called_once()
+    client_mock.close.assert_called_once()
 
 
 @pytest.mark.asyncio

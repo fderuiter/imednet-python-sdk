@@ -145,15 +145,22 @@ class ImednetSDK(SDKConvenienceMixin):
         self._client.close()
         if self._async_client is not None:
             try:
-                loop = asyncio.get_running_loop()
+                asyncio.get_running_loop()
             except RuntimeError:
                 # No running loop, safe to use asyncio.run
                 asyncio.run(self._async_client.aclose())
             else:
-                if loop.is_closed():
-                    asyncio.run(self._async_client.aclose())
-                else:
-                    loop.run_until_complete(self._async_client.aclose())
+                import warnings
+
+                warnings.warn(
+                    (
+                        "Synchronously closing an SDK with an async client from "
+                        "within an active event loop leaves the async client open. "
+                        "Use `await sdk.aclose()` to safely clean up both clients."
+                    ),
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
 
     async def aclose(self) -> None:
         if self._async_client is not None:
