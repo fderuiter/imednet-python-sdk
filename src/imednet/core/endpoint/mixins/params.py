@@ -91,5 +91,3 @@ class ParamMixin:
             params.update(extra_params)
 
         return ParamState(study=study, params=params, other_filters=other_filters)
-
-
