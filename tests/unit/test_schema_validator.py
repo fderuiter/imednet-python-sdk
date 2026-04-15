@@ -157,15 +157,6 @@ def test_validate_record_missing_form_identifier(async_mode: bool) -> None:
         sdk.variables.list.assert_not_called()
 
 
-from unittest.mock import MagicMock
-
-import pytest
-
-from imednet.models.variables import Variable
-from imednet.validation.cache import AsyncSchemaValidator, SchemaValidator
-from tests.unit.test_schema_validator import _build_sdk
-
-
 def test_schema_validator_is_async_deprecation_warning() -> None:
     sdk = MagicMock()
     with pytest.warns(
@@ -282,9 +273,6 @@ def test_validate_batch_coverage() -> None:
     )
 
 
-import asyncio
-
-
 def test_async_validate_batch_coverage() -> None:
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=True)
@@ -325,9 +313,6 @@ def test_base_schema_cache_refresh() -> None:
     cache.refresh(forms, variables, "STUDY")
     variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
     assert "F1" in cache.forms
-
-
-import pytest
 
 
 @pytest.mark.asyncio
