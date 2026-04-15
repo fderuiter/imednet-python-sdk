@@ -4,7 +4,7 @@ from imednet.utils.filters import build_filter_string
 from .caching import CachedEndpointMixin, CacheMixin
 from .get import FilterGetEndpointMixin, PathGetEndpointMixin
 from .list import ListEndpointMixin
-from .params import KeyErrorPopStudyKeyMixin, ParamMixin
+from .params import ParamMixin
 from .parsing import ParsingMixin
 
 __all__ = [
@@ -12,7 +12,6 @@ __all__ = [
     "CachedEndpointMixin",
     "CacheMixin",
     "FilterGetEndpointMixin",
-    "KeyErrorPopStudyKeyMixin",
     "ListEndpointMixin",
     "Paginator",
     "ParamMixin",
