@@ -23,7 +23,9 @@ class FilterGetEndpointMixin(EndpointABC[T]):
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
         if not items:
             if self.requires_study_key:
-                raise NotFoundError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
+                raise NotFoundError(
+                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
+                )
             raise NotFoundError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
 
