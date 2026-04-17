@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.intervals as intervals
+from imednet.errors import NotFoundError
 from imednet.models.intervals import Interval
 
 

@@ -1,11 +1,11 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 from imednet.core.endpoint.strategies import (
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
     PopStudyKeyStrategy,
 )
+from imednet.errors import ClientError
 
 
 class TestKeepStudyKeyStrategy:

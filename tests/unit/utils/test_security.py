@@ -1,6 +1,6 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
+from imednet.errors import ClientError
 from imednet.utils.security import sanitize_csv_formula, validate_header_value
 
 

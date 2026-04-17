@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.subjects as subjects
+from imednet.errors import NotFoundError
 from imednet.models.subjects import Subject
 
 

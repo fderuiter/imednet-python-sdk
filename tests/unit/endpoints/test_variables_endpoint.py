@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.variables as variables
+from imednet.errors import ClientError, NotFoundError
 from imednet.models.variables import Variable
 
 

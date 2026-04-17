@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock
 
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.codings as codings
 import imednet.endpoints.forms as forms
@@ -15,6 +14,7 @@ import imednet.endpoints.subjects as subjects
 import imednet.endpoints.users as users
 import imednet.endpoints.variables as variables
 import imednet.endpoints.visits as visits
+from imednet.errors import NotFoundError
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval

@@ -6,8 +6,8 @@ from imednet.core.endpoint.base import GenericEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.endpoint.mixins import ListEndpointMixin, PathGetEndpointMixin
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
-from imednet.models.jobs import JobStatus
 from imednet.errors import NotFoundError
+from imednet.models.jobs import JobStatus
 
 
 class JobsEndpoint(

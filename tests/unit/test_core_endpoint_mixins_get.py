@@ -1,9 +1,9 @@
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 from imednet.core.endpoint.mixins.get import FilterGetEndpointMixin, PathGetEndpointMixin
+from imednet.errors import ClientError, NotFoundError
 from imednet.models.json_base import JsonModel
 
 

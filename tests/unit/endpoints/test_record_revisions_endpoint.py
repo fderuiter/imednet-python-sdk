@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.record_revisions as record_revisions
+from imednet.errors import NotFoundError
 from imednet.models.record_revisions import RecordRevision
 
 

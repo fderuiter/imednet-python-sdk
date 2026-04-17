@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.jobs as jobs
+from imednet.errors import NotFoundError
 from imednet.models.jobs import JobStatus
 
 

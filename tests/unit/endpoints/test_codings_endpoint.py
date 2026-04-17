@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.codings as codings
+from imednet.errors import ClientError, NotFoundError
 from imednet.models.codings import Coding
 
 

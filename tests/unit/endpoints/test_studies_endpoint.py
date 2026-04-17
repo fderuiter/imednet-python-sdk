@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.studies as studies
+from imednet.errors import NotFoundError
 from imednet.models.studies import Study
 
 

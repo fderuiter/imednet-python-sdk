@@ -10,10 +10,10 @@ from imednet.core.endpoint.strategies import (
 )
 from imednet.core.endpoint.structs import ParamState
 from imednet.core.protocols import ParamProcessor
+from imednet.errors import ClientError
 from imednet.utils.filters import build_filter_string
 
 from ..protocols import EndpointProtocol
-from imednet.errors import ClientError
 
 
 class ParamMixin:

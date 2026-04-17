@@ -3,6 +3,7 @@ Security utilities.
 """
 
 from typing import Any
+
 from imednet.errors import ClientError
 
 

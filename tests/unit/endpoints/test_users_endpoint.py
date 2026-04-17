@@ -1,7 +1,7 @@
 import pytest
-from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.users as users
+from imednet.errors import ClientError, NotFoundError
 from imednet.models.users import User
 
 
