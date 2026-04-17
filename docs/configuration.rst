@@ -97,4 +97,4 @@ Troubleshooting
 
 **Missing required environment variable(s)**
 
-If you see an error like ``Missing required environment variable(s): IMEDNET_API_KEY, IMEDNET_SECURITY_KEY`` or an "Unauthorized" API error, ensure you have set these variables in your shell or in a ``.env`` file in the directory where you run the script. See `Using a .env File`_ for details.
+If you see an error like ``IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.`` or an "Unauthorized" API error, ensure you have set these variables in your shell or in a ``.env`` file in the directory where you run the script. See `Using a .env File`_ for details.
