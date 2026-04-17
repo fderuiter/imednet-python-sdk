@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from imednet.core.endpoint.mixins.get import FilterGetEndpointMixin, PathGetEndpointMixin
+from imednet.errors import ClientError, NotFoundError
 from imednet.models.json_base import JsonModel
 
 
@@ -42,14 +43,14 @@ class DummyFilterGetEndpoint(FilterGetEndpointMixin[MockModel]):
 
 def test_filter_get_endpoint_not_found_with_study_key():
     ep = DummyFilterGetEndpoint([])
-    with pytest.raises(ValueError, match="MockModel 123 not found in study TEST_STUDY"):
+    with pytest.raises(NotFoundError):
         ep.get(study_key="TEST_STUDY", item_id=123)
 
 
 @pytest.mark.asyncio
 async def test_filter_get_endpoint_async_not_found_with_study_key():
     ep = DummyFilterGetEndpoint([])
-    with pytest.raises(ValueError, match="MockModel 123 not found in study TEST_STUDY"):
+    with pytest.raises(NotFoundError):
         await ep.async_get(study_key="TEST_STUDY", item_id=123)
 
 
@@ -59,7 +60,7 @@ class DummyFilterGetEndpointNoStudy(DummyFilterGetEndpoint):
 
 def test_filter_get_endpoint_not_found_without_study_key():
     ep = DummyFilterGetEndpointNoStudy([])
-    with pytest.raises(ValueError, match="MockModel 123 not found"):
+    with pytest.raises(NotFoundError):
         ep.get(study_key=None, item_id=123)
 
 
@@ -90,7 +91,7 @@ class DummyPathGetEndpoint(PathGetEndpointMixin[MockModel]):
 
 def test_path_get_endpoint_requires_study_key():
     ep = DummyPathGetEndpoint()
-    with pytest.raises(ValueError, match="Study key must be provided"):
+    with pytest.raises(ClientError, match="Study key must be provided"):
         ep.get(study_key=None, item_id=123)
 
 
@@ -107,19 +108,19 @@ def test_path_get_endpoint_no_study_key_no_path():
 
 def test_path_get_endpoint_raise_not_found():
     ep = DummyPathGetEndpoint()
-    with pytest.raises(ValueError, match="MockModel not found"):
+    with pytest.raises(NotFoundError):
         ep._raise_not_found(study_key="TEST", item_id=123)
 
 
 def test_validate_get_result_not_found():
     ep = DummyFilterGetEndpoint([])
     # Test require_study_key = True
-    with pytest.raises(ValueError, match="MockModel 123 not found in study TEST_STUDY"):
+    with pytest.raises(NotFoundError):
         ep._validate_get_result([], "TEST_STUDY", 123)
 
     # Test require_study_key = False
     ep.requires_study_key = False
-    with pytest.raises(ValueError, match="MockModel 123 not found"):
+    with pytest.raises(NotFoundError):
         ep._validate_get_result([], None, 123)
 
 

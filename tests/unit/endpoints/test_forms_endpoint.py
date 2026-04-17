@@ -1,6 +1,7 @@
 import pytest
 
 import imednet.endpoints.forms as forms
+from imednet.errors import ClientError, NotFoundError
 from imednet.models.forms import Form
 
 
@@ -11,7 +12,7 @@ def test_list_requires_study_key_and_page_size(
     captured = paginator_factory(forms, [{"formId": 1}])
     filter_capture = patch_build_filter(forms)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ClientError):
         ep.list()
 
     context.set_default_study_key("S1")
@@ -50,7 +51,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(forms.FormsEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)
 
 

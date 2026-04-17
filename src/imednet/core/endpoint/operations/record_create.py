@@ -42,7 +42,7 @@ class RecordCreateOperation(Generic[T]):
 
         Raises:
             ValidationError: If record data is invalid against the schema.
-            ValueError: If email_notify contains invalid characters.
+            ClientError: If email_notify contains invalid characters.
         """
         self.path = path
         self.records_data = records_data
@@ -66,7 +66,7 @@ class RecordCreateOperation(Generic[T]):
             Dictionary of headers.
 
         Raises:
-            ValueError: If email_notify contains newlines.
+            ClientError: If email_notify contains newlines.
         """
         headers: Dict[str, str] = {}
         if self.email_notify is not None:

@@ -14,6 +14,7 @@ import imednet.endpoints.subjects as subjects
 import imednet.endpoints.users as users
 import imednet.endpoints.variables as variables
 import imednet.endpoints.visits as visits
+from imednet.errors import NotFoundError
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval
@@ -183,7 +184,7 @@ async def test_async_get_record_not_found(monkeypatch, dummy_client, context, re
 
     monkeypatch.setattr(records.RecordsEndpoint, "_list_async", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         await ep.async_get("S1", 1)
 
 

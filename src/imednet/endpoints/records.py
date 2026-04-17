@@ -49,7 +49,7 @@ class RecordsEndpoint(
             Job object with information about the created job
 
         Raises:
-            ValueError: If email_notify contains invalid characters
+            ClientError: If email_notify contains invalid characters
         """
         path = self._build_path(study_key, self.PATH)
         operation = RecordCreateOperation[Job](
@@ -88,7 +88,7 @@ class RecordsEndpoint(
             Job object with information about the created job
 
         Raises:
-            ValueError: If email_notify contains invalid characters
+            ClientError: If email_notify contains invalid characters
         """
         path = self._build_path(study_key, self.PATH)
         operation = RecordCreateOperation[Job](

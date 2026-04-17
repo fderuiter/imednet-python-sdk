@@ -7,6 +7,7 @@ from imednet.core.endpoint.operations.filter_get import FilterGetOperation
 from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.endpoint.operations.list import ListOperation
 from imednet.core.endpoint.operations.record_create import RecordCreateOperation
+from imednet.errors import ClientError, NotFoundError
 
 
 def dummy_parse_func(data):
@@ -38,13 +39,13 @@ def test_path_get_operation_execute_sync_not_found():
     response.json.return_value = None
     client.get.return_value = response
 
-    not_found_func = MagicMock(side_effect=ValueError("Not found"))
+    not_found_func = MagicMock(side_effect=NotFoundError("Not found"))
 
     operation = PathGetOperation(
         path="/test", parse_func=dummy_parse_func, not_found_func=not_found_func
     )
 
-    with pytest.raises(ValueError, match="Not found"):
+    with pytest.raises(NotFoundError, match="Not found"):
         operation.execute_sync(client)
 
     client.get.assert_called_once_with("/test")
@@ -78,13 +79,13 @@ async def test_path_get_operation_execute_async_not_found():
     response.json.return_value = None
     client.get.return_value = response
 
-    not_found_func = MagicMock(side_effect=ValueError("Not found"))
+    not_found_func = MagicMock(side_effect=NotFoundError("Not found"))
 
     operation = PathGetOperation(
         path="/test", parse_func=dummy_parse_func, not_found_func=not_found_func
     )
 
-    with pytest.raises(ValueError, match="Not found"):
+    with pytest.raises(NotFoundError, match="Not found"):
         await operation.execute_async(client)
 
     client.get.assert_called_once_with("/test")
@@ -229,7 +230,7 @@ def test_record_create_operation_sync():
 
 
 def test_record_create_operation_header_validation_failure():
-    with pytest.raises(ValueError, match="Header value must not contain newlines"):
+    with pytest.raises(ClientError, match="Header value must not contain newlines"):
         RecordCreateOperation(
             path="/create",
             records_data=[{"field1": "val1"}],
@@ -243,10 +244,10 @@ def test_record_create_operation_schema_validation_failure():
     with pytest.MonkeyPatch.context() as m:
         m.setattr(
             "imednet.core.endpoint.operations.record_create.validate_record_entry",
-            MagicMock(side_effect=ValueError("Invalid record data")),
+            MagicMock(side_effect=ClientError("Invalid record data")),
         )
 
-        with pytest.raises(ValueError, match="Invalid record data"):
+        with pytest.raises(ClientError, match="Invalid record data"):
             RecordCreateOperation(
                 path="/create", records_data=[{"invalid": "data"}], schema=schema_mock
             )

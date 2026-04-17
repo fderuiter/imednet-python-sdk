@@ -1,6 +1,7 @@
 import pytest
 
 import imednet.endpoints.studies as studies
+from imednet.errors import NotFoundError
 from imednet.models.studies import Study
 
 
@@ -35,7 +36,7 @@ def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patc
 def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
     ep = studies.StudiesEndpoint(dummy_client, context)
     paginator_factory(studies, [])
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get(None, "missing")
 
 

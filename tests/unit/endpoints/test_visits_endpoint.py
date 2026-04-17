@@ -1,6 +1,7 @@
 import pytest
 
 import imednet.endpoints.visits as visits
+from imednet.errors import NotFoundError
 from imednet.models.visits import Visit
 
 
@@ -26,5 +27,5 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(visits.VisitsEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)

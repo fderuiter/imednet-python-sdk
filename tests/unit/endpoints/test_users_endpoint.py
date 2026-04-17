@@ -1,6 +1,7 @@
 import pytest
 
 import imednet.endpoints.users as users
+from imednet.errors import ClientError, NotFoundError
 from imednet.models.users import User
 
 
@@ -8,7 +9,7 @@ def test_list_requires_study_key_and_include_inactive(dummy_client, context, pag
     ep = users.UsersEndpoint(dummy_client, context)
     capture = paginator_factory(users, [{"userId": 1}])
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ClientError):
         ep.list()
 
     result = ep.list(study_key="S1", include_inactive=True)
@@ -26,5 +27,5 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(users.UsersEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)

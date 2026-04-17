@@ -5,6 +5,7 @@ from imednet.core.endpoint.strategies import (
     OptionalStudyKeyStrategy,
     PopStudyKeyStrategy,
 )
+from imednet.errors import ClientError
 
 
 class TestKeepStudyKeyStrategy:
@@ -22,7 +23,7 @@ class TestKeepStudyKeyStrategy:
         strategy = KeepStudyKeyStrategy()
         filters = {"other": "param"}
 
-        with pytest.raises(ValueError, match="Study key must be provided"):
+        with pytest.raises(ClientError, match="Study key must be provided"):
             strategy.process(filters)
 
     def test_process_custom_exception(self):
@@ -39,7 +40,7 @@ class TestKeepStudyKeyStrategy:
         strategy = KeepStudyKeyStrategy()
         filters = {"studyKey": "", "other": "param"}
 
-        with pytest.raises(ValueError, match="Study key must be provided"):
+        with pytest.raises(ClientError, match="Study key must be provided"):
             strategy.process(filters)
 
 
@@ -57,7 +58,7 @@ class TestPopStudyKeyStrategy:
         strategy = PopStudyKeyStrategy()
         filters = {"other": "param"}
 
-        with pytest.raises(ValueError, match="Study key must be provided"):
+        with pytest.raises(ClientError, match="Study key must be provided"):
             strategy.process(filters)
 
     def test_process_custom_exception(self):

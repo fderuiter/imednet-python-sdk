@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 import imednet.endpoints.jobs as jobs
+from imednet.errors import NotFoundError
 from imednet.models.jobs import JobStatus
 
 
@@ -27,5 +28,5 @@ async def test_async_get_not_found(dummy_client, context, response_factory):
 
     ep = jobs.JobsEndpoint(dummy_client, context, async_client=async_client)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         await ep.async_get("S1", "B1")

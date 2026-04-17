@@ -1,6 +1,7 @@
 import pytest
 
 import imednet.endpoints.jobs as jobs
+from imednet.errors import NotFoundError
 from imednet.models.jobs import JobStatus
 
 
@@ -17,5 +18,5 @@ def test_get_success(dummy_client, context, response_factory):
 def test_get_not_found(dummy_client, context, response_factory):
     ep = jobs.JobsEndpoint(dummy_client, context)
     dummy_client.get.return_value = response_factory({})
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", "B1")

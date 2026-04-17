@@ -1,6 +1,7 @@
 import pytest
 
 import imednet.endpoints.intervals as intervals
+from imednet.errors import NotFoundError
 from imednet.models.intervals import Interval
 
 
@@ -29,7 +30,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(intervals.IntervalsEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)
 
 
