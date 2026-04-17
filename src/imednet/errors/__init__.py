@@ -14,9 +14,11 @@ from .api import (
 from .base import ImednetError
 from .client import ClientError
 from .network import RequestError
+from .registry import get_error_class
 from .validation import BadRequestError, UnknownVariableTypeError, ValidationError
 
 __all__ = [
+    "get_error_class",
     "ImednetError",
     "RequestError",
     "ClientError",
