@@ -4,6 +4,8 @@ HTTP response handling and error mapping.
 
 from __future__ import annotations
 
+import json
+
 import httpx
 
 from imednet.errors import (
@@ -33,7 +35,7 @@ def handle_response(response: httpx.Response) -> httpx.Response:
         status = response.status_code
         try:
             body = response.json()
-        except Exception:
+        except json.JSONDecodeError:
             body = response.text
         exc_cls = STATUS_TO_ERROR.get(status)
         if exc_cls:
