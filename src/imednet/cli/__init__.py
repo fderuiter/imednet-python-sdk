@@ -21,11 +21,29 @@ from .utils import get_sdk, parse_filter_args  # noqa: F401
 
 load_dotenv()
 
+
+def version_callback(value: bool):
+    if value:
+        from imednet import __version__
+
+        typer.echo(f"imednet, version {__version__}")
+        raise typer.Exit()
+
+
 app = typer.Typer(help="iMednet SDK Command Line Interface")
 
 
 @app.callback()
-def main(ctx: typer.Context) -> None:  # pragma: no cover - simple passthrough
+def main(
+    ctx: typer.Context,
+    version: bool = typer.Option(
+        None,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show the version and exit.",
+    ),
+) -> None:  # pragma: no cover - simple passthrough
     """iMednet SDK CLI entry point."""
     pass
 
