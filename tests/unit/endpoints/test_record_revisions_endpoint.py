@@ -1,4 +1,5 @@
 import pytest
+from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.record_revisions as record_revisions
 from imednet.models.record_revisions import RecordRevision
@@ -26,5 +27,5 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(record_revisions.RecordRevisionsEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)

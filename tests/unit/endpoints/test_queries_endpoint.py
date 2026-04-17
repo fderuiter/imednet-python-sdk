@@ -1,4 +1,5 @@
 import pytest
+from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.queries as queries
 from imednet.models.queries import Query
@@ -26,5 +27,5 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(queries.QueriesEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)

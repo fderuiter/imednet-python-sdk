@@ -3,6 +3,7 @@
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.endpoint.strategies import PopStudyKeyStrategy
+from imednet.errors import ClientError
 from imednet.models.codings import Coding
 
 
@@ -19,4 +20,4 @@ class CodingsEndpoint(
     PATH = "codings"
     MODEL = Coding
     _id_param = "codingId"
-    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=KeyError)
+    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=ClientError)

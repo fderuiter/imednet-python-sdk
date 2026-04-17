@@ -1,4 +1,5 @@
 import pytest
+from imednet.errors import ClientError, NotFoundError
 
 from imednet.utils.security import sanitize_csv_formula, validate_header_value
 
@@ -60,5 +61,5 @@ def test_validate_header_value_valid(input_val):
     ],
 )
 def test_validate_header_value_invalid(input_val):
-    with pytest.raises(ValueError, match="Header value must not contain newlines"):
+    with pytest.raises(ClientError, match="Header value must not contain newlines"):
         validate_header_value(input_val)

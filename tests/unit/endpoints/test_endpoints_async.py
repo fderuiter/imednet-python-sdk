@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock
 
 import pytest
+from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.codings as codings
 import imednet.endpoints.forms as forms
@@ -183,7 +184,7 @@ async def test_async_get_record_not_found(monkeypatch, dummy_client, context, re
 
     monkeypatch.setattr(records.RecordsEndpoint, "_list_async", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         await ep.async_get("S1", 1)
 
 

@@ -8,6 +8,7 @@ to customize how filters are processed and special parameters are extracted.
 from typing import Any, Dict, Optional, Protocol, Tuple, Type, runtime_checkable
 
 from imednet.core.protocols import ParamProcessor
+from imednet.errors import ClientError
 
 
 class DefaultParamProcessor(ParamProcessor):
@@ -108,7 +109,7 @@ class KeepStudyKeyStrategy:
     Used when the API expects 'studyKey' as a query parameter.
     """
 
-    def __init__(self, exception_cls: Type[Exception] = ValueError) -> None:
+    def __init__(self, exception_cls: Type[Exception] = ClientError) -> None:
         self._exception_cls = exception_cls
 
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
@@ -138,7 +139,7 @@ class PopStudyKeyStrategy:
     not sent as a query parameter.
     """
 
-    def __init__(self, exception_cls: Type[Exception] = ValueError) -> None:
+    def __init__(self, exception_cls: Type[Exception] = ClientError) -> None:
         self._exception_cls = exception_cls
 
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:

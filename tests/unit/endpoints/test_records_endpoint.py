@@ -1,7 +1,7 @@
 import pytest
 
 import imednet.endpoints.records as records
-from imednet.errors import ValidationError
+from imednet.errors import ClientError, NotFoundError, ValidationError
 from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache
@@ -51,7 +51,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(records.RecordsEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)
 
 
@@ -117,5 +117,5 @@ def test_create_validates_data_with_snake_case_keys(dummy_client, context, respo
 
 def test_create_raises_on_header_injection(dummy_client, context):
     ep = records.RecordsEndpoint(dummy_client, context)
-    with pytest.raises(ValueError, match="Header value must not contain newlines"):
+    with pytest.raises(ClientError, match="Header value must not contain newlines"):
         ep.create("S1", [{"data": {}}], email_notify="test\n@example.com")

@@ -1,4 +1,5 @@
 import pytest
+from imednet.errors import ClientError, NotFoundError
 
 import imednet.endpoints.variables as variables
 from imednet.models.variables import Variable
@@ -11,7 +12,7 @@ def test_list_requires_study_key_page_size(
     capture = paginator_factory(variables, [{"variableId": 1}])
     patch = patch_build_filter(variables)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ClientError):
         ep.list()
 
     result = ep.list(study_key="S1", name="x")
@@ -31,7 +32,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
     monkeypatch.setattr(variables.VariablesEndpoint, "_list_sync", fake_impl)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         ep.get("S1", 1)
 
 

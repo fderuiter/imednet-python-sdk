@@ -3,6 +3,7 @@ Security utilities.
 """
 
 from typing import Any
+from imednet.errors import ClientError
 
 
 def sanitize_csv_formula(value: Any) -> Any:
@@ -24,7 +25,7 @@ def validate_header_value(value: str) -> None:
         value: The header value to validate.
 
     Raises:
-        ValueError: If the value contains newline characters.
+        ClientError: If the value contains newline characters.
     """
     if "\n" in value or "\r" in value:
-        raise ValueError(f"Header value must not contain newlines: {value!r}")
+        raise ClientError(f"Header value must not contain newlines: {value!r}")

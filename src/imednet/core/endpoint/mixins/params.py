@@ -13,6 +13,7 @@ from imednet.core.protocols import ParamProcessor
 from imednet.utils.filters import build_filter_string
 
 from ..protocols import EndpointProtocol
+from imednet.errors import ClientError
 
 
 class ParamMixin:
@@ -36,7 +37,7 @@ class ParamMixin:
             return self.STUDY_KEY_STRATEGY
 
         if self.requires_study_key:
-            return KeepStudyKeyStrategy(exception_cls=ValueError)
+            return KeepStudyKeyStrategy(exception_cls=ClientError)
         return OptionalStudyKeyStrategy()
 
     @property
