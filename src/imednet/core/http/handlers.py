@@ -8,25 +8,7 @@ import json
 
 import httpx
 
-from imednet.errors import (
-    ApiError,
-    BadRequestError,
-    ConflictError,
-    ForbiddenError,
-    NotFoundError,
-    RateLimitError,
-    ServerError,
-    UnauthorizedError,
-)
-
-STATUS_TO_ERROR: dict[int, type[ApiError]] = {
-    400: BadRequestError,
-    401: UnauthorizedError,
-    403: ForbiddenError,
-    404: NotFoundError,
-    409: ConflictError,
-    429: RateLimitError,
-}
+from imednet.errors import get_error_class
 
 
 def handle_response(response: httpx.Response) -> httpx.Response:
@@ -37,10 +19,7 @@ def handle_response(response: httpx.Response) -> httpx.Response:
             body = response.json()
         except json.JSONDecodeError:
             body = response.text
-        exc_cls = STATUS_TO_ERROR.get(status)
-        if exc_cls:
-            raise exc_cls(body, status_code=status)
-        if 500 <= status < 600:
-            raise ServerError(body, status_code=status)
-        raise ApiError(body, status_code=status)
+
+        exc_cls = get_error_class(status)
+        raise exc_cls(body, status_code=status)
     return response
