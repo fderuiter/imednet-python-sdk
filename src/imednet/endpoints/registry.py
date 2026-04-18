@@ -25,18 +25,20 @@ from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
 
-ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType({
-    "codings": CodingsEndpoint,
-    "forms": FormsEndpoint,
-    "intervals": IntervalsEndpoint,
-    "jobs": JobsEndpoint,
-    "queries": QueriesEndpoint,
-    "record_revisions": RecordRevisionsEndpoint,
-    "records": RecordsEndpoint,
-    "sites": SitesEndpoint,
-    "studies": StudiesEndpoint,
-    "subjects": SubjectsEndpoint,
-    "users": UsersEndpoint,
-    "variables": VariablesEndpoint,
-    "visits": VisitsEndpoint,
-})
+ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType(
+    {
+        "codings": CodingsEndpoint,
+        "forms": FormsEndpoint,
+        "intervals": IntervalsEndpoint,
+        "jobs": JobsEndpoint,
+        "queries": QueriesEndpoint,
+        "record_revisions": RecordRevisionsEndpoint,
+        "records": RecordsEndpoint,
+        "sites": SitesEndpoint,
+        "studies": StudiesEndpoint,
+        "subjects": SubjectsEndpoint,
+        "users": UsersEndpoint,
+        "variables": VariablesEndpoint,
+        "visits": VisitsEndpoint,
+    }
+)
