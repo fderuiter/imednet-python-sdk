@@ -12,6 +12,14 @@ from datetime import datetime, timezone
 _IS_PY311_OR_GREATER = sys.version_info >= (3, 11)
 
 # Pre-compile regex for older python versions
+# Breakdown of _ISO8601_FRAC_REGEX:
+# \.               - Matches the literal dot preceding fractional seconds
+# (\d+)            - Captures one or more digits (the fractional seconds)
+# (?=              - Positive lookahead to ensure the fraction is followed by:
+#   [+-]\d{2}:\d{2} - A timezone offset (e.g., +00:00, -05:00)
+#   |               - OR
+#   $               - The end of the string (e.g., implicitly UTC if 'Z' was stripped)
+# )
 _ISO8601_FRAC_REGEX = re.compile(r"\.(\d+)(?=[+-]\d{2}:\d{2}|$)")
 
 
