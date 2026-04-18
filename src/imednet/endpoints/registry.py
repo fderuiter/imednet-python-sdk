@@ -7,7 +7,8 @@ allowing for easier extension and maintenance.
 
 from __future__ import annotations
 
-from typing import Dict, Type
+from types import MappingProxyType
+from typing import Mapping, Type
 
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.endpoints.codings import CodingsEndpoint
@@ -24,7 +25,7 @@ from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
 
-ENDPOINT_REGISTRY: Dict[str, Type[GenericEndpoint]] = {
+ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType({
     "codings": CodingsEndpoint,
     "forms": FormsEndpoint,
     "intervals": IntervalsEndpoint,
@@ -38,4 +39,4 @@ ENDPOINT_REGISTRY: Dict[str, Type[GenericEndpoint]] = {
     "users": UsersEndpoint,
     "variables": VariablesEndpoint,
     "visits": VisitsEndpoint,
-}
+})
