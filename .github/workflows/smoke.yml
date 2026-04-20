@@ -7,6 +7,9 @@ on:
   schedule:
     - cron: '0 8 * * *' # Runs every day at 8am
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   smoke:
     if: github.actor == github.repository_owner

@@ -56,9 +56,7 @@ def test_save_form_invalid_json_fallback(form_designer_client, empty_layout):
 
     # Mock a 200 OK response with HTML content
     respx.post(url).respond(
-        status_code=200,
-        content=html_error.encode("utf-8"),
-        headers={"Content-Type": "text/html"}
+        status_code=200, content=html_error.encode("utf-8"), headers={"Content-Type": "text/html"}
     )
 
     with pytest.raises(ApiError) as exc_info:
