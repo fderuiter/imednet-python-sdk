@@ -34,9 +34,8 @@ def test_parse_datetime_negative_timestamp():
 
 
 def test_parse_datetime_zero_timestamp():
-    """Test that parse_datetime treats 0 (epoch) as empty/sentinel due to legacy falsy check."""
+    """Test that parse_datetime treats 0 (epoch) correctly."""
     ts = 0
     result = parse_datetime(ts)
-    # Current behavior: 0 is falsy -> Sentinel.
-    # This documents existing behavior rather than enforcing a change.
-    assert result == datetime(1969, 4, 20, 16, 20)
+    # The behavior has been updated to treat 0 and 0.0 correctly as epoch, not as sentinel
+    assert result == datetime(1970, 1, 1, 0, 0, tzinfo=timezone.utc)

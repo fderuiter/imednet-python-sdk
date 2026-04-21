@@ -25,6 +25,12 @@ def test_parse_datetime_handles_numeric_timestamps():
     assert parse_datetime(int(ts)) == dt
 
 
+def test_parse_datetime_handles_zero_timestamps():
+    dt = datetime(1970, 1, 1, 0, 0, tzinfo=timezone.utc)
+    assert parse_datetime(0) == dt
+    assert parse_datetime(0.0) == dt
+
+
 def test_parse_bool_handles_various_representations():
     assert parse_bool(True) is True
     assert parse_bool("true") is True

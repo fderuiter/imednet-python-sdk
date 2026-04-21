@@ -30,7 +30,7 @@ def parse_datetime(v: str | int | float | datetime) -> datetime:
         v: Date string, numeric timestamp (seconds since epoch), or datetime object.
            Numeric values are assumed to be UTC timestamps.
     """
-    if not v:
+    if v is None or v == "":
         return _SENTINEL_DATETIME
     if isinstance(v, str):
         return parse_iso_datetime(v)
