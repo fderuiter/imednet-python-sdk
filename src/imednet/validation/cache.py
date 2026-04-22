@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, Tuple, TypeVar
 
 from imednet.errors import UnknownVariableTypeError, ValidationError
 
@@ -195,6 +195,17 @@ class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
     def _refresh_common(self, variables: Iterable[Variable]) -> None:
         self.schema.populate(variables)
 
+    def _needs_refresh(self, record: Dict[str, Any]) -> Tuple[Optional[str], bool]:
+        """
+        Determine if the schema cache needs refreshing for the given record.
+
+        Returns:
+            A tuple of (form_key, needs_refresh).
+        """
+        form_key = self._resolve_form_key(record)
+        needs_refresh = bool(form_key and not self.schema.variables_for_form(form_key))
+        return form_key, needs_refresh
+
 
 class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
     """Validate record payloads using variable metadata from the API (Synchronous)."""
@@ -228,8 +239,8 @@ class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
 
     def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
         """Validate a single record payload."""
-        form_key = self._resolve_form_key(record)
-        if form_key and not self.schema.variables_for_form(form_key):
+        form_key, needs_refresh = self._needs_refresh(record)
+        if needs_refresh:
             self.refresh(study_key)
         self._validate_cached(form_key, record.get("data", {}))
 
@@ -258,8 +269,8 @@ class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetSDK"]):
 
     async def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
         """Validate a single record payload asynchronously."""
-        form_key = self._resolve_form_key(record)
-        if form_key and not self.schema.variables_for_form(form_key):
+        form_key, needs_refresh = self._needs_refresh(record)
+        if needs_refresh:
             await self.refresh(study_key)
         self._validate_cached(form_key, record.get("data", {}))
 
