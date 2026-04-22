@@ -171,7 +171,7 @@ The package installs an `imednet` command with subcommands for studies, sites,
 subjects, records, jobs, queries and more. Use `imednet --help` to explore all
 options.
 
-*(Note: If you are running the project from source or a local clone, prefix commands with `poetry run`, e.g., `poetry run imednet --help`)*
+*(Note: If you are running the project from source or a local clone, make sure to first install dependencies with `poetry install`. Then, prefix commands with `poetry run`, e.g., `poetry run imednet --help`)*
 
 ### Data Export
 
