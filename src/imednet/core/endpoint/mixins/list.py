@@ -99,6 +99,23 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
             cache=cache,
         )
 
+    def _create_list_operation(self, state: ListRequestState[T]) -> ListOperation[T]:
+        """
+        Create a ListOperation instance from the request state.
+
+        Args:
+            state: The current list request state.
+
+        Returns:
+            An instantiated ListOperation.
+        """
+        return ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        )
+
     def _list_sync(
         self,
         client: RequestorProtocol,
@@ -114,12 +131,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         if state.cached_result is not None:
             return state.cached_result
 
-        operation = ListOperation[T](
-            path=state.path,
-            params=state.params,
-            page_size=self.PAGE_SIZE,
-            parse_func=self._resolve_parse_func(),
-        )
+        operation = self._create_list_operation(state)
 
         result = operation.execute_sync(client, paginator_cls)
         return self._process_list_result(result, state.study, state.has_filters)
@@ -139,12 +151,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
         if state.cached_result is not None:
             return state.cached_result
 
-        operation = ListOperation[T](
-            path=state.path,
-            params=state.params,
-            page_size=self.PAGE_SIZE,
-            parse_func=self._resolve_parse_func(),
-        )
+        operation = self._create_list_operation(state)
 
         result = await operation.execute_async(client, paginator_cls)
         return self._process_list_result(result, state.study, state.has_filters)
