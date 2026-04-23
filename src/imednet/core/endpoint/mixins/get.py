@@ -29,6 +29,32 @@ class FilterGetEndpointMixin(EndpointABC[T]):
             raise NotFoundError(f"{self.MODEL.__name__} {item_id} not found")
         return items[0]
 
+    def _create_filter_operation(
+        self, study_key: Optional[str], item_id: Any
+    ) -> FilterGetOperation[T]:
+        """
+        Create a FilterGetOperation instance.
+
+        Args:
+            study_key: The study key, if applicable.
+            item_id: The ID of the item to retrieve.
+
+        Returns:
+            An instantiated FilterGetOperation.
+        """
+        filters = {self._id_param: item_id}
+        # Explicitly cast self to ListEndpointProtocol[T] since this mixin depends on
+        # a list endpoint being mixed in (like ListEndpointMixin).
+        list_endpoint = cast(ListEndpointProtocol[T], self)
+        return FilterGetOperation[T](
+            study_key=study_key,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_sync_func=list_endpoint._list_sync,
+            list_async_func=list_endpoint._list_async,
+        )
+
     def _get_sync(
         self,
         client: RequestorProtocol,
@@ -37,17 +63,7 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        filters = {self._id_param: item_id}
-        # Explicitly cast self to ListEndpointProtocol[T] since this mixin depends on
-        # a list endpoint being mixed in (like ListEndpointMixin).
-        list_endpoint = cast(ListEndpointProtocol[T], self)
-        operation = FilterGetOperation[T](
-            study_key=study_key,
-            item_id=item_id,
-            filters=filters,
-            validate_func=self._validate_get_result,
-            list_sync_func=list_endpoint._list_sync,
-        )
+        operation = self._create_filter_operation(study_key, item_id)
         return operation.execute_sync(client, paginator_cls)
 
     async def _get_async(
@@ -58,17 +74,7 @@ class FilterGetEndpointMixin(EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        filters = {self._id_param: item_id}
-        # Explicitly cast self to ListEndpointProtocol[T] since this mixin depends on
-        # a list endpoint being mixed in (like ListEndpointMixin).
-        list_endpoint = cast(ListEndpointProtocol[T], self)
-        operation = FilterGetOperation[T](
-            study_key=study_key,
-            item_id=item_id,
-            filters=filters,
-            validate_func=self._validate_get_result,
-            list_async_func=list_endpoint._list_async,
-        )
+        operation = self._create_filter_operation(study_key, item_id)
         return await operation.execute_async(client, paginator_cls)
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
@@ -110,6 +116,24 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise NotFoundError(f"{self.MODEL.__name__} not found")
 
+    def _create_path_operation(self, study_key: Optional[str], item_id: Any) -> PathGetOperation[T]:
+        """
+        Create a PathGetOperation instance.
+
+        Args:
+            study_key: The study key, if applicable.
+            item_id: The ID of the item to retrieve.
+
+        Returns:
+            An instantiated PathGetOperation.
+        """
+        path = self._get_path_for_id(study_key, item_id)
+        return PathGetOperation[T](
+            path=path,
+            parse_func=self._parse_item,
+            not_found_func=lambda: self._raise_not_found(study_key, item_id),
+        )
+
     def _get_path_sync(
         self,
         client: RequestorProtocol,
@@ -117,12 +141,7 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        path = self._get_path_for_id(study_key, item_id)
-        operation = PathGetOperation[T](
-            path=path,
-            parse_func=self._parse_item,
-            not_found_func=lambda: self._raise_not_found(study_key, item_id),
-        )
+        operation = self._create_path_operation(study_key, item_id)
         return operation.execute_sync(client)
 
     async def _get_path_async(
@@ -132,12 +151,7 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
         study_key: Optional[str],
         item_id: Any,
     ) -> T:
-        path = self._get_path_for_id(study_key, item_id)
-        operation = PathGetOperation[T](
-            path=path,
-            parse_func=self._parse_item,
-            not_found_func=lambda: self._raise_not_found(study_key, item_id),
-        )
+        operation = self._create_path_operation(study_key, item_id)
         return await operation.execute_async(client)
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
