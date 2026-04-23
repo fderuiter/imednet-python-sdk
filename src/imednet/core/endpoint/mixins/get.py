@@ -116,9 +116,7 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
     def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
         raise NotFoundError(f"{self.MODEL.__name__} not found")
 
-    def _create_path_operation(
-        self, study_key: Optional[str], item_id: Any
-    ) -> PathGetOperation[T]:
+    def _create_path_operation(self, study_key: Optional[str], item_id: Any) -> PathGetOperation[T]:
         """
         Create a PathGetOperation instance.
 
