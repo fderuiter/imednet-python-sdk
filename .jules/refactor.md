@@ -1,3 +1,0 @@
-## 2024-05-18 - ClientError Imports
-**Debt:** Hardcoded `ValueError` and `KeyError` in `imednet/core/endpoint/strategies.py`, `imednet/core/endpoint/mixins/params.py`, `imednet/core/endpoint/mixins/get.py`, `imednet/core/endpoint/operations/record_create.py`, `imednet/endpoints/users.py`, `imednet/endpoints/jobs.py`, `imednet/endpoints/records.py`, `imednet/endpoints/variables.py`, `imednet/endpoints/forms.py`, `imednet/endpoints/intervals.py`, `imednet/endpoints/codings.py`, and `imednet/endpoints/sites.py` instead of the centralized `ClientError`.
-**Obstacle:** Legacy code before the centralized `ClientError` hierarchy was enforced.
