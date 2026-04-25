@@ -6,6 +6,7 @@ from imednet.core.endpoint.strategies import (
     DefaultParamProcessor,
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
+    PopStudyKeyStrategy,
     StudyKeyStrategy,
 )
 from imednet.core.endpoint.structs import ParamState
@@ -91,3 +92,17 @@ class ParamMixin:
             params.update(extra_params)
 
         return ParamState(study=study, params=params, other_filters=other_filters)
+
+
+class PopStudyKeyMixin(ParamMixin):
+    """
+    Mixin for endpoints that require a study key in the path but not in filters.
+
+    This explicitly sets the study key strategy to :class:`PopStudyKeyStrategy`,
+    which enforces that a study key must be provided but removes it from the
+    filters dictionary, typically because it will be injected into the URL path.
+    """
+
+    STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = PopStudyKeyStrategy(
+        exception_cls=ClientError
+    )
