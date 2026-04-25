@@ -2,15 +2,14 @@
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.mixins import CachedEndpointMixin
-from imednet.core.endpoint.strategies import PopStudyKeyStrategy
-from imednet.errors import ClientError
+from imednet.core.endpoint.mixins import CachedEndpointMixin, PopStudyKeyMixin
 from imednet.models.intervals import Interval
 
 
 class IntervalsEndpoint(
     EdcEndpointMixin,
     CachedEndpointMixin,
+    PopStudyKeyMixin,
     GenericListGetEndpoint[Interval],
 ):
     """
@@ -22,4 +21,3 @@ class IntervalsEndpoint(
     PATH = "intervals"
     MODEL = Interval
     _id_param = "intervalId"
-    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=ClientError)
