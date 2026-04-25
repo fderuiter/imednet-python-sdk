@@ -1,12 +1,16 @@
 from unittest.mock import AsyncMock, MagicMock
+
 import pytest
+
 from imednet.core.endpoint.mixins.list import ListEndpointMixin
-from imednet.models.json_base import JsonModel
 from imednet.core.endpoint.structs import ParamState
+from imednet.models.json_base import JsonModel
+
 
 class MockModel(JsonModel):
     id: int
     name: str = ""
+
 
 class DummyListEndpoint(ListEndpointMixin[MockModel]):
     MODEL = MockModel
@@ -42,15 +46,18 @@ class DummyListEndpoint(ListEndpointMixin[MockModel]):
     def _update_local_cache(self, result, study, has_filters):
         pass
 
+
 def test_list_by_attribute_filters_correctly():
     """Test that list_by_attribute successfully filters items based on the provided attribute."""
     endpoint = DummyListEndpoint()
     # Mock the public `list` method which list_by_attribute calls internally
-    endpoint.list = MagicMock(return_value=[
-        MockModel(id=1, name="first"),
-        MockModel(id=2, name="second"),
-        MockModel(id=3, name="first")
-    ])
+    endpoint.list = MagicMock(
+        return_value=[
+            MockModel(id=1, name="first"),
+            MockModel(id=2, name="second"),
+            MockModel(id=3, name="first"),
+        ]
+    )
 
     result = endpoint.list_by_attribute("name", "first", study_key="test_study")
 
@@ -58,6 +65,7 @@ def test_list_by_attribute_filters_correctly():
     assert result[0].id == 1
     assert result[1].id == 3
     endpoint.list.assert_called_once_with("test_study")
+
 
 @pytest.mark.asyncio
 async def test_async_list_by_attribute_filters_correctly():
@@ -69,7 +77,7 @@ async def test_async_list_by_attribute_filters_correctly():
         return [
             MockModel(id=4, name="async_first"),
             MockModel(id=5, name="async_second"),
-            MockModel(id=6, name="async_first")
+            MockModel(id=6, name="async_first"),
         ]
 
     endpoint.async_list = mock_async_list
