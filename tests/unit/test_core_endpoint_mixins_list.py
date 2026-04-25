@@ -69,7 +69,7 @@ def test_list_by_attribute_filters_correctly():
 
 @pytest.mark.asyncio
 async def test_async_list_by_attribute_filters_correctly():
-    """Test that async_list_by_attribute successfully filters items based on the provided attribute."""
+    """Test that async_list_by_attribute filters items successfully."""
     endpoint = DummyListEndpoint()
 
     # Mock the public `async_list` method
