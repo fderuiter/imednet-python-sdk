@@ -103,6 +103,4 @@ class PopStudyKeyMixin(ParamMixin):
     filters dictionary, typically because it will be injected into the URL path.
     """
 
-    STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = PopStudyKeyStrategy(
-        exception_cls=ClientError
-    )
+    STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = PopStudyKeyStrategy(exception_cls=ClientError)
