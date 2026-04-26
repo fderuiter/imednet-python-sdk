@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from imednet.errors import ApiError
+from imednet.errors import ApiError, ClientError
 from imednet.form_designer.client import FormDesignerClient
 from imednet.form_designer.models import Layout, Page
 
@@ -71,3 +71,23 @@ def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
 
     assert str(exc_info.value.response) == html_response
     assert exc_info.value.status_code == 200
+
+
+@pytest.mark.parametrize(
+    "csrf,form_id,comm_id,rev,expected_error",
+    [
+        ("", 1, 1, 1, "CSRF Key cannot be empty."),
+        ("   ", 1, 1, 1, "CSRF Key cannot be empty."),
+        ("csrf", 0, 1, 1, "Invalid form_id: 0. Must be a positive integer."),
+        ("csrf", -1, 1, 1, "Invalid form_id: -1. Must be a positive integer."),
+        ("csrf", 1, 0, 1, "Invalid community_id: 0. Must be a positive integer."),
+        ("csrf", 1, -1, 1, "Invalid community_id: -1. Must be a positive integer."),
+        ("csrf", 1, 1, -1, "Invalid revision: -1. Must be non-negative."),
+    ],
+)
+def test_save_form_validation_sad_paths(mock_layout, csrf, form_id, comm_id, rev, expected_error):
+    base_url = "https://test.imednet.com"
+    client = FormDesignerClient(base_url, "fake_sessid")
+
+    with pytest.raises(ClientError, match=expected_error):
+        client.save_form(csrf, form_id, comm_id, rev, mock_layout)
