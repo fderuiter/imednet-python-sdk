@@ -7,7 +7,7 @@ from imednet.core.endpoint.operations.filter_get import FilterGetOperation
 from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
-from imednet.errors import ClientError, NotFoundError
+from imednet.errors import NotFoundError
 
 from ..protocols import ListEndpointProtocol
 from .parsing import ParsingMixin, T
