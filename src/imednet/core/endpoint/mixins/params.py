@@ -20,7 +20,7 @@ from ..protocols import EndpointProtocol
 class ParamMixin:
     """Mixin for handling endpoint parameters and filters."""
 
-    requires_study_key: bool = True
+    requires_study_key: bool
 
     PARAM_PROCESSOR: Optional[ParamProcessor] = None
     PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
@@ -82,6 +82,7 @@ class ParamMixin:
 
         # Delegate study key handling to the strategy
         study, filters = self.study_key_strategy.process(filters)
+        self._validate_study_key(study)  # type: ignore[attr-defined]
 
         other_filters = {k: v for k, v in filters.items() if k != "studyKey"}
 
