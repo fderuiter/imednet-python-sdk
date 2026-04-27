@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
-import pandas as pd
-
+try:
+    import pandas as pd
+except ImportError:
+    pd = None  # type: ignore
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 
@@ -51,6 +53,10 @@ def _records_df(
     form_whitelist: Optional[List[int]] = None,
 ) -> pd.DataFrame:
     """Return a DataFrame of study records with duplicate columns removed."""
+    if pd is None:
+        raise ImportError(
+            "pandas is required for _records_df. Install with 'pip install \"imednet[pandas]\"'."
+        )
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
         study_key,
         use_labels_as_columns=use_labels_as_columns,
@@ -280,6 +286,10 @@ def export_to_long_sql(
     chunk_size: int = 1000,
 ) -> None:
     """Export records to a normalized long-format SQL table."""
+    if pd is None:
+        raise ImportError(
+            "pandas is required for export_to_long_sql. Install with 'pip install \"imednet[pandas]\"'."
+        )
     from sqlalchemy import create_engine
 
     engine = create_engine(conn_str)
