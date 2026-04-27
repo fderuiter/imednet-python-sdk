@@ -6,6 +6,7 @@ from imednet.core.endpoint.strategies import (
     DefaultParamProcessor,
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
+    PopStudyKeyStrategy,
     StudyKeyStrategy,
 )
 from imednet.core.endpoint.structs import ParamState
@@ -91,3 +92,9 @@ class ParamMixin:
             params.update(extra_params)
 
         return ParamState(study=study, params=params, other_filters=other_filters)
+
+
+class PopStudyKeyMixin(ParamMixin):
+    """Mixin that configures the endpoint to require and pop the study key."""
+
+    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=ClientError)

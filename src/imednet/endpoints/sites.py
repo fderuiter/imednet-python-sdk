@@ -2,13 +2,13 @@
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.strategies import PopStudyKeyStrategy
-from imednet.errors import ClientError
+from imednet.core.endpoint.mixins import PopStudyKeyMixin
 from imednet.models.sites import Site
 
 
 class SitesEndpoint(
     EdcEndpointMixin,
+    PopStudyKeyMixin,
     GenericListGetEndpoint[Site],
 ):
     """
@@ -20,4 +20,3 @@ class SitesEndpoint(
     PATH = "sites"
     MODEL = Site
     _id_param = "siteId"
-    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=ClientError)
