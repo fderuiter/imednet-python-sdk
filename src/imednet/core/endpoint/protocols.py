@@ -26,6 +26,10 @@ class EndpointProtocol(Protocol):
         """Build the API path."""
         ...
 
+    def _validate_study_key(self, study_key: Optional[str]) -> None:
+        """Validate that a study key is provided if required."""
+        ...
+
 
 @runtime_checkable
 class ListEndpointProtocol(Protocol[T]):
