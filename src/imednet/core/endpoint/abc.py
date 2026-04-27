@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, Type, TypeVar
+from typing import Any, Dict, Generic, Optional, Type, TypeVar
 
 from imednet.core.protocols import ClientProvider
 from imednet.models.json_base import JsonModel
@@ -70,3 +70,10 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
         Must be implemented by the base endpoint logic.
         """
         pass
+
+    def _validate_study_key(self, study_key: Optional[str]) -> None:
+        """Validate that a study key is provided if required."""
+        if self.requires_study_key and not study_key:
+            from imednet.errors import ClientError
+
+            raise ClientError("Study key must be provided or set in the context")

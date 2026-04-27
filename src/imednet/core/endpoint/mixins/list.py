@@ -25,6 +25,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T])
 
     def _get_path(self, study: Optional[str]) -> str:
         segments: Iterable[Any]
+        self._validate_study_key(study)
         if self.requires_study_key:
             segments = (study, self.PATH)
         else:

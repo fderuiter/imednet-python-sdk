@@ -22,6 +22,7 @@ class FilterGetEndpointMixin(EndpointABC[T]):
 
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
         if not items:
+            self._validate_study_key(study_key)
             if self.requires_study_key:
                 raise NotFoundError(
                     f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
@@ -103,9 +104,8 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
 
     def _get_path_for_id(self, study_key: Optional[str], item_id: Any) -> str:
         segments: Iterable[Any]
+        self._validate_study_key(study_key)
         if self.requires_study_key:
-            if not study_key:
-                raise ClientError("Study key must be provided")
             segments = (study_key, self.PATH, item_id)
         else:
             segments = (self.PATH, item_id) if self.PATH else (item_id,)
