@@ -42,6 +42,13 @@ def export_csv(
     path: Path = typer.Argument(..., help="Destination CSV file."),
 ) -> None:
     """Export study records to a CSV file."""
+    if importlib.util.find_spec("pandas") is None:
+        print(
+            "[bold red]Error:[/bold red] pandas is required for CSV export. "
+            "Install with 'pip install \"imednet[pandas]\"'."
+        )
+        raise typer.Exit(code=1)
+
     from .. import export_to_csv
 
     with fetching_status("records for CSV export", study_key):
@@ -56,6 +63,13 @@ def export_excel(
     path: Path = typer.Argument(..., help="Destination Excel workbook."),
 ) -> None:
     """Export study records to an Excel workbook."""
+    if importlib.util.find_spec("pandas") is None or importlib.util.find_spec("openpyxl") is None:
+        print(
+            "[bold red]Error:[/bold red] pandas and openpyxl are required for Excel export. "
+            "Install with 'pip install \"imednet[excel]\"'."
+        )
+        raise typer.Exit(code=1)
+
     from .. import export_to_excel
 
     with fetching_status("records for Excel export", study_key):
