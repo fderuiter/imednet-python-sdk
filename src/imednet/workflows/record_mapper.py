@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    pd = None  # type: ignore
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 from imednet.endpoints.records import Record as RecordModel  # type: ignore[attr-defined]
@@ -181,6 +186,10 @@ class RecordMapper:
         form_whitelist: Optional[List[int]] = None,
     ) -> pd.DataFrame:
         """Return a :class:`pandas.DataFrame` of records for a study."""
+        if pd is None:
+            raise ImportError(
+                "pandas is required for RecordMapper.dataframe. Install with 'pip install \"imednet[pandas]\"'."
+            )
         variable_keys, label_map = self._fetch_variable_metadata(
             study_key,
             variable_whitelist=variable_whitelist,
