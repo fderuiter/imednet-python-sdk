@@ -58,9 +58,15 @@ def paginator_factory(monkeypatch):
 
         monkeypatch.setattr(mixins_module, "Paginator", DummyPaginator)
         monkeypatch.setattr(mixins_list_module.ListEndpointMixin, "PAGINATOR_CLS", DummyPaginator)
+        # Patch any specific endpoint classes in the provided module
+        for attr_name in dir(module):
+            if attr_name.endswith("Endpoint"):
+                endpoint_cls = getattr(module, attr_name)
+                if hasattr(endpoint_cls, "PAGINATOR_CLS"):
+                    monkeypatch.setattr(endpoint_cls, "PAGINATOR_CLS", DummyPaginator)
         # Also patch the class attribute since it's now used
-        if hasattr(mixins_module, "ListEndpointMixin"):
-            monkeypatch.setattr(mixins_module.ListEndpointMixin, "PAGINATOR_CLS", DummyPaginator)
+        if hasattr(mixins_list_module, "ListEndpointMixin"):
+            monkeypatch.setattr(mixins_list_module.ListEndpointMixin, "PAGINATOR_CLS", DummyPaginator)
         return captured
 
     return factory
@@ -88,12 +94,14 @@ def async_paginator_factory(monkeypatch):
         import imednet.core.endpoint.mixins.list as mixins_list_module
 
         monkeypatch.setattr(mixins_module, "AsyncPaginator", DummyPaginator)
-        monkeypatch.setattr(mixins_list_module.ListEndpointMixin, "ASYNC_PAGINATOR_CLS", DummyPaginator)
-        # Also patch the class attribute since it's now used
-        if hasattr(mixins_module, "ListEndpointMixin"):
-            monkeypatch.setattr(
-                mixins_module.ListEndpointMixin, "ASYNC_PAGINATOR_CLS", DummyPaginator
-            )
+        monkeypatch.setattr(
+            mixins_list_module.ListEndpointMixin, "ASYNC_PAGINATOR_CLS", DummyPaginator
+        )
+        for attr_name in dir(module):
+            if attr_name.endswith("Endpoint"):
+                endpoint_cls = getattr(module, attr_name)
+                if hasattr(endpoint_cls, "ASYNC_PAGINATOR_CLS"):
+                    monkeypatch.setattr(endpoint_cls, "ASYNC_PAGINATOR_CLS", DummyPaginator)
         return captured
 
     return factory

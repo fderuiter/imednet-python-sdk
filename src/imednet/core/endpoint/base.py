@@ -81,9 +81,9 @@ class GenericEndpoint(EndpointABC[T]):
 
 
 class GenericListGetEndpoint(
-    GenericEndpoint[T],
-    ListEndpointMixin[T],
     FilterGetEndpointMixin[T],
+    ListEndpointMixin[T],
+    GenericEndpoint[T],
 ):
     """
     Generic base for endpoints that provide list and get-by-filter functionality.
