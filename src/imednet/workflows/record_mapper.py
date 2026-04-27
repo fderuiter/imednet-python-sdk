@@ -188,7 +188,10 @@ class RecordMapper:
         """Return a :class:`pandas.DataFrame` of records for a study."""
         if pd is None:
             raise ImportError(
-                "pandas is required for RecordMapper.dataframe. Install with 'pip install \"imednet[pandas]\"'."
+                (
+                "pandas is required for RecordMapper.dataframe. Install "
+                "with 'pip install \"imednet[pandas]\"'."
+            )
             )
         variable_keys, label_map = self._fetch_variable_metadata(
             study_key,

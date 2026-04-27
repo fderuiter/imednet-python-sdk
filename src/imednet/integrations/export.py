@@ -55,7 +55,10 @@ def _records_df(
     """Return a DataFrame of study records with duplicate columns removed."""
     if pd is None:
         raise ImportError(
-            "pandas is required for _records_df. Install with 'pip install \"imednet[pandas]\"'."
+            (
+            "pandas is required for _records_df. Install with "
+            "'pip install \"imednet[pandas]\"'."
+        )
         )
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
         study_key,
@@ -288,7 +291,10 @@ def export_to_long_sql(
     """Export records to a normalized long-format SQL table."""
     if pd is None:
         raise ImportError(
-            "pandas is required for export_to_long_sql. Install with 'pip install \"imednet[pandas]\"'."
+            (
+            "pandas is required for export_to_long_sql. Install with "
+            "'pip install \"imednet[pandas]\"'."
+        )
         )
     from sqlalchemy import create_engine
 
