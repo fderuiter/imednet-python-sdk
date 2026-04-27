@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 class CacheMixin:
     """Mixin for handling endpoint caching."""
 
-    requires_study_key: bool = True  # Default, can be overridden
+    requires_study_key: bool
     _enable_cache: bool = False  # Default, overridden by EndpointABC/subclasses
     _cache: Any = None  # Default, overridden by GenericEndpoint
 
