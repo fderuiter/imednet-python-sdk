@@ -48,7 +48,7 @@ jobs:
         run: |
           poetry run pip install pip-audit
           for i in 1 2 3; do
-            poetry run pip-audit -s osv --ignore-vuln CVE-2026-4539 --ignore-vuln CVE-2025-71176 --ignore-vuln CVE-2026-28684 --timeout 60 && exit 0
+            poetry run pip-audit -s osv --timeout 60 && exit 0
             echo "Attempt $i failed. Retrying in 10s..."
             sleep 10
           done
