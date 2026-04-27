@@ -25,7 +25,10 @@ def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.
     """
     if pd is None:
         raise ImportError(
-            "pandas is required for records_to_dataframe. Install with 'pip install \"imednet[pandas]\"'."
+            (
+            "pandas is required for records_to_dataframe. Install "
+            "with 'pip install \"imednet[pandas]\"'."
+        )
         )
 
     rows = [r.model_dump(by_alias=False) for r in records]
@@ -47,7 +50,10 @@ def export_records_csv(
     """
     if pd is None:
         raise ImportError(
-            "pandas is required for export_records_csv. Install with 'pip install \"imednet[pandas]\"'."
+            (
+            "pandas is required for export_records_csv. Install with "
+            "'pip install \"imednet[pandas]\"'."
+        )
         )
 
     records = sdk.records.list(study_key=study_key)
