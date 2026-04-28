@@ -280,3 +280,102 @@ def test_create_or_update_records_form_key_not_found() -> None:
             "STUDY",
             [{"formKey": "UNKNOWN_FORM", "data": {"a": 1}}],
         )
+
+
+from unittest.mock import AsyncMock
+
+
+@pytest.mark.asyncio
+async def test_async_create_or_update_records_no_wait() -> None:
+    sdk = MagicMock()
+    sdk._async_client = True
+    job = Job(batch_id="1", state="PROCESSING")
+    sdk.records.async_create = AsyncMock(return_value=job)
+
+    wf = RecordUpdateWorkflow(sdk)
+    result = await wf.async_create_or_update_records("STUDY", [{"a": 1}])
+
+    sdk.records.async_create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    assert result == job
+
+
+@pytest.mark.asyncio
+async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -> None:
+    sdk = MagicMock()
+    sdk._async_client = True
+    initial_job = Job(batch_id="1", state="PROCESSING")
+    completed_job = Job(batch_id="1", state="COMPLETED")
+    sdk.records.async_create = AsyncMock(return_value=initial_job)
+    sdk.jobs.async_get = AsyncMock(side_effect=[initial_job, completed_job])
+
+    wf = RecordUpdateWorkflow(sdk)
+    import anyio
+
+    monkeypatch.setattr(anyio, "sleep", AsyncMock())
+    result = await wf.async_create_or_update_records(
+        "STUDY",
+        [{"a": 1}],
+        wait_for_completion=True,
+        poll_interval=0,
+        timeout=5,
+    )
+
+    sdk.records.async_create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    sdk.jobs.async_get.assert_called_with("STUDY", "1")
+    assert result.state == "COMPLETED"
+
+
+@pytest.mark.asyncio
+async def test_async_create_or_update_records_validation() -> None:
+    sdk = MagicMock()
+    sdk._async_client = True
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    sdk.variables.async_list = AsyncMock(return_value=[var])
+    sdk.records.async_create = AsyncMock()
+
+    wf = RecordUpdateWorkflow(sdk)
+
+    with pytest.raises(ValidationError):
+        await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
+    sdk.records.async_create.assert_not_called()
+
+    sdk.records.async_create.return_value = Job(batch_id="1", state="PROCESSING")
+    await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
+    sdk.variables.async_list.assert_called_once_with(study_key="STUDY", refresh=True)
+    sdk.records.async_create.assert_called_once_with(
+        "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
+    )
+
+
+@pytest.mark.asyncio
+async def test_async_create_or_update_records_wait_for_completion_no_batch_id() -> None:
+    sdk = MagicMock()
+    sdk._async_client = True
+    job = Job(batch_id="", state="PROCESSING")
+    sdk.records.async_create = AsyncMock(return_value=job)
+    var = Variable(variable_name="a", variable_type="integer", form_id=1, form_key="F1")
+    sdk.variables.async_list = AsyncMock(return_value=[var])
+
+    wf = RecordUpdateWorkflow(sdk)
+
+    with pytest.raises(ValueError, match="Submission successful but no batch_id received."):
+        await wf.async_create_or_update_records(
+            "STUDY",
+            [{"formKey": "F1", "data": {"a": 1}}],
+            wait_for_completion=True,
+        )
+
+
+@pytest.mark.asyncio
+async def test_async_create_or_update_records_form_key_not_found() -> None:
+    sdk = MagicMock()
+    sdk._async_client = True
+    sdk.variables.async_list = AsyncMock(return_value=[])
+
+    wf = RecordUpdateWorkflow(sdk)
+
+    with pytest.raises(ValueError, match="Form key 'UNKNOWN_FORM' not found"):
+        await wf.async_create_or_update_records(
+            "STUDY",
+            [{"formKey": "UNKNOWN_FORM", "data": {"a": 1}}],
+        )
