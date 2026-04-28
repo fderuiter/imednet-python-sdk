@@ -117,3 +117,34 @@ def test_parse_datetime_handles_datetime_objects():
 def test_parse_datetime_handles_string_timestamps():
     dt = datetime(2024, 1, 1, 12, 0, tzinfo=timezone.utc)
     assert parse_datetime("2024-01-01T12:00:00Z") == dt
+
+
+def test_parse_bool_handles_unusual_strings():
+    # Test cases that trigger the float fallback
+    assert parse_bool("inf") is True
+    assert parse_bool("nan") is True
+    assert parse_bool("1.5") is True
+    assert parse_bool("100") is True
+    assert parse_bool("-1") is True
+    # Test edge cases for float fallback that should return False
+    assert parse_bool(".") is False
+    assert parse_bool("+") is False
+    assert parse_bool("-") is False
+    assert parse_bool("n") is False  # 'n' is in _FALSE_LOWER, explicitly False
+    assert parse_bool("i") is False  # 'i' not in TRUE/FALSE sets, but triggers float fallback check
+
+
+def test_parse_bool_handles_non_string_types():
+    # Non-truthy values according to rationale should return False
+    assert parse_bool(None) is False
+    assert parse_bool([]) is False
+    assert parse_bool({}) is False
+    assert parse_bool(object()) is False
+
+
+def test_parse_bool_handles_extra_numeric_values():
+    # Numeric types are truthy if non-zero
+    assert parse_bool(float("inf")) is True
+    assert parse_bool(float("nan")) is True
+    assert parse_bool(100) is True
+    assert parse_bool(-1) is True
