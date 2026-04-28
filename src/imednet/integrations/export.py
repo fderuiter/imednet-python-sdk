@@ -232,10 +232,20 @@ def export_to_sql_by_form(
     mapper = RecordMapper(sdk)
     engine = create_engine(conn_str)
     forms = sdk.forms.list(study_key=study_key)
+
+    # Fetch all variables for the study once to avoid N+1 queries
+    all_variables = sdk.variables.list(
+        study_key=study_key,
+        **({"formIds": form_whitelist} if form_whitelist else {}),
+    )
+    variables_by_form: dict[int, list[Any]] = {}
+    for v in all_variables:
+        variables_by_form.setdefault(v.form_id, []).append(v)
+
     for form in forms:
         if form_whitelist is not None and form.form_id not in form_whitelist:
             continue
-        variables = sdk.variables.list(study_key=study_key, formId=form.form_id)
+        variables = variables_by_form.get(form.form_id, [])
         variable_keys = [
             v.variable_name
             for v in variables
