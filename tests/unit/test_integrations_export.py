@@ -191,9 +191,9 @@ def test_export_to_sql_by_form(monkeypatch):
     form1 = MagicMock(form_id=1, form_key="F1")
     form2 = MagicMock(form_id=2, form_key="F2")
     sdk.forms.list.return_value = [form1, form2]
-    sdk.variables.list.side_effect = [
-        [MagicMock(variable_name="A", label="A")],
-        [MagicMock(variable_name="B", label="B")],
+    sdk.variables.list.return_value = [
+        MagicMock(variable_name="A", label="A", form_id=1),
+        MagicMock(variable_name="B", label="B", form_id=2),
     ]
 
     mapper_inst = MagicMock()
@@ -216,7 +216,7 @@ def test_export_to_sql_by_form(monkeypatch):
     export_mod.export_to_sql_by_form(sdk, "STUDY", "sqlite://")
 
     mapper_cls.assert_called_once_with(sdk)
-    assert sdk.variables.list.call_count == 2
+    assert sdk.variables.list.call_count == 1
     df1.to_sql.assert_called_once_with("F1", engine, if_exists="replace", index=False)
     df2.to_sql.assert_called_once_with("F2", engine, if_exists="replace", index=False)
 
