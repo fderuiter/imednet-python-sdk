@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
-import pandas as pd
-
+try:
+    import pandas as pd
+except ImportError:
+    pd = None  # type: ignore
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 
@@ -51,6 +53,13 @@ def _records_df(
     form_whitelist: Optional[List[int]] = None,
 ) -> pd.DataFrame:
     """Return a DataFrame of study records with duplicate columns removed."""
+    if pd is None:
+        raise ImportError(
+            (
+                "pandas is required for _records_df. Install with "
+                "'pip install \"imednet[pandas]\"'."
+            )
+        )
     df: pd.DataFrame = RecordMapper(sdk).dataframe(
         study_key,
         use_labels_as_columns=use_labels_as_columns,
@@ -60,6 +69,28 @@ def _records_df(
     if isinstance(df, pd.DataFrame):
         df.columns = df.columns.astype(str)
         df = df.loc[:, ~df.columns.str.lower().duplicated()]
+    return df
+
+
+def _prepare_export_df(
+    sdk: ImednetSDK,
+    study_key: str,
+    *,
+    use_labels_as_columns: bool = False,
+    variable_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
+    sanitize: bool = False,
+) -> pd.DataFrame:
+    """Prepare a DataFrame for export by fetching records and optionally sanitizing."""
+    df = _records_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
+        variable_whitelist=variable_whitelist,
+        form_whitelist=form_whitelist,
+    )
+    if sanitize:
+        df = _sanitize_df(df)
     return df
 
 
@@ -79,7 +110,7 @@ def export_to_parquet(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df = _records_df(
+    df = _prepare_export_df(
         sdk,
         study_key,
         use_labels_as_columns=use_labels_as_columns,
@@ -118,12 +149,12 @@ def export_to_csv(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df = _records_df(
+    df = _prepare_export_df(
         sdk,
         study_key,
         use_labels_as_columns=use_labels_as_columns,
+        sanitize=True,
     )
-    df = _sanitize_df(df)
     df.to_csv(path, index=False, **kwargs)
 
 
@@ -143,12 +174,12 @@ def export_to_excel(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df = _records_df(
+    df = _prepare_export_df(
         sdk,
         study_key,
         use_labels_as_columns=use_labels_as_columns,
+        sanitize=True,
     )
-    df = _sanitize_df(df)
     df.to_excel(path, index=False, **kwargs)
 
 
@@ -168,7 +199,7 @@ def export_to_json(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df = _records_df(
+    df = _prepare_export_df(
         sdk,
         study_key,
         use_labels_as_columns=use_labels_as_columns,
@@ -198,7 +229,7 @@ def export_to_sql(
     """
     from sqlalchemy import create_engine
 
-    df = _records_df(
+    df = _prepare_export_df(
         sdk,
         study_key,
         use_labels_as_columns=use_labels_as_columns,
@@ -290,6 +321,13 @@ def export_to_long_sql(
     chunk_size: int = 1000,
 ) -> None:
     """Export records to a normalized long-format SQL table."""
+    if pd is None:
+        raise ImportError(
+            (
+                "pandas is required for export_to_long_sql. Install with "
+                "'pip install \"imednet[pandas]\"'."
+            )
+        )
     from sqlalchemy import create_engine
 
     engine = create_engine(conn_str)

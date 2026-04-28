@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List
 
-import pandas as pd
-
+try:
+    import pandas as pd
+except ImportError:
+    pd = None  # type: ignore
 from ..models.records import Record
 from .security import sanitize_csv_formula
 
@@ -21,6 +23,13 @@ def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.
     expanded using :func:`pandas.json_normalize` so that each variable becomes a
     column in the resulting DataFrame.
     """
+    if pd is None:
+        raise ImportError(
+            (
+                "pandas is required for records_to_dataframe. Install "
+                "with 'pip install \"imednet[pandas]\"'."
+            )
+        )
 
     rows = [r.model_dump(by_alias=False) for r in records]
     df = pd.DataFrame(rows)
@@ -39,6 +48,13 @@ def export_records_csv(
     DataFrame is written with :meth:`pandas.DataFrame.to_csv` using
     ``index=False``.
     """
+    if pd is None:
+        raise ImportError(
+            (
+                "pandas is required for export_records_csv. Install with "
+                "'pip install \"imednet[pandas]\"'."
+            )
+        )
 
     records = sdk.records.list(study_key=study_key)
     df = records_to_dataframe(records, flatten=flatten)
