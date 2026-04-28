@@ -12,9 +12,9 @@ from imednet.models.jobs import JobStatus
 
 class JobsEndpoint(
     EdcEndpointMixin,
-    GenericEndpoint[JobStatus],
     ListEndpointMixin[JobStatus],
     PathGetEndpointMixin[JobStatus],
+    GenericEndpoint[JobStatus],
 ):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
