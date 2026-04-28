@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 from typing import Any, List, Literal, Optional, cast
 
@@ -49,14 +49,14 @@ class FormBuilder:
     def _generate_new_fld_id(self) -> int:
         """Generate a random unique integer for new fields."""
         while True:
-            new_id = random.randint(10000, 99999)
+            new_id = secrets.randbelow(90000) + 10000
             if new_id not in self._generated_ids:
                 self._generated_ids.add(new_id)
                 return new_id
 
     def _generate_dom_id(self) -> str:
         """Generate a random DOM ID (e.g., lfdiv_38492)."""
-        suffix = "".join(random.choices(string.digits, k=5))
+        suffix = "".join((secrets.choice(string.digits) for _ in range(5)))
         return f"lfdiv_{suffix}"
 
     def _create_entity(self, props: EntityProps, rows: Optional[List[Row]] = None) -> Entity:
