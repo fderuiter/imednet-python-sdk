@@ -274,8 +274,8 @@ Contributions are welcome! See the
 
 ## Troubleshooting
 
-**Missing required environment variable(s)**
-If you see an error like `Error: IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.` (CLI) or `API key and security key are required` (SDK), or an "Unauthorized" API error, ensure you have set these variables in your shell or in a `.env` file in the directory where you run the script. See [Configuration](#configuration).
+**Missing or invalid required environment variable(s)**
+If you see an error like `Error: IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.` (CLI) or `API key and security key are required` (SDK), or an "Unauthorized" or "Forbidden" (403) API error, ensure you have set valid keys in your shell or in a `.env` file in the directory where you run the script (avoid using "dummy" keys). See [Configuration](#configuration).
 
 **ModuleNotFoundError when running the CLI locally**
 If you are running the `imednet` CLI from source (e.g., `poetry run imednet`) and see a `ModuleNotFoundError` (such as `No module named 'imednet'`), ensure you have installed the project dependencies by running `poetry install` in the project root.
