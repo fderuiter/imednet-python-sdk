@@ -31,13 +31,11 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
         """The model class associated with this endpoint."""
         pass
 
-    @property
-    def requires_study_key(self) -> bool:
-        """
-        Whether this endpoint requires a study key.
-        Defaults to True. Override in subclasses if needed.
-        """
-        return True
+    requires_study_key: bool = True
+    """
+    Whether this endpoint requires a study key.
+    Defaults to True. Override in subclasses if needed.
+    """
 
     @property
     def _id_param(self) -> str:
