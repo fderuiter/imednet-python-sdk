@@ -46,18 +46,18 @@ def test_list_and_get(dummy_client, context, paginator_factory, cls, module, mod
     ep = cls(dummy_client, context)
     capture = paginator_factory(module, [{cls._id_param: item_id}])
 
-    list_kwargs = {"study_key": "S1"} if getattr(cls, "requires_study_key", True) else {}
+    list_kwargs = {"study_key": "S1"} if getattr(ep, "requires_study_key", True) else {}
     result = ep.list(**list_kwargs)
 
     expected_path = "/api/v1/edc/studies"
-    if getattr(cls, "requires_study_key", True):
+    if getattr(ep, "requires_study_key", True):
         expected_path += f"/S1/{cls.PATH}"
     elif cls.PATH:
         expected_path += f"/{cls.PATH}"
     assert capture["path"] == expected_path
     assert isinstance(result[0], model)
 
-    get_args = ("S1", item_id) if getattr(cls, "requires_study_key", True) else (None, item_id)
+    get_args = ("S1", item_id) if getattr(ep, "requires_study_key", True) else (None, item_id)
     got = ep.get(*get_args)
     assert isinstance(got, model)
 
@@ -76,17 +76,17 @@ async def test_async_list_and_get(
     ep = cls(dummy_client, context, async_client=dummy_client)
     capture = async_paginator_factory(module, [{cls._id_param: item_id}])
 
-    list_kwargs = {"study_key": "S1"} if getattr(cls, "requires_study_key", True) else {}
+    list_kwargs = {"study_key": "S1"} if getattr(ep, "requires_study_key", True) else {}
     result = await ep.async_list(**list_kwargs)
 
     expected_path = "/api/v1/edc/studies"
-    if getattr(cls, "requires_study_key", True):
+    if getattr(ep, "requires_study_key", True):
         expected_path += f"/S1/{cls.PATH}"
     elif cls.PATH:
         expected_path += f"/{cls.PATH}"
     assert capture["path"] == expected_path
     assert isinstance(result[0], model)
 
-    get_args = ("S1", item_id) if getattr(cls, "requires_study_key", True) else (None, item_id)
+    get_args = ("S1", item_id) if getattr(ep, "requires_study_key", True) else (None, item_id)
     got = await ep.async_get(*get_args)
     assert isinstance(got, model)
