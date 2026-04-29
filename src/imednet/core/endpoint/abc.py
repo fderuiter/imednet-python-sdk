@@ -37,21 +37,17 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
     Defaults to True. Override in subclasses if needed.
     """
 
-    @property
-    def _id_param(self) -> str:
-        """
-        The query parameter name for the ID.
-        Defaults to "id". Override in subclasses if needed.
-        """
-        return "id"
+    _id_param: str = "id"
+    """
+    The query parameter name for the ID.
+    Defaults to "id". Override in subclasses if needed.
+    """
 
-    @property
-    def _enable_cache(self) -> bool:
-        """
-        Whether this endpoint supports caching.
-        Defaults to False. Override in subclasses if needed.
-        """
-        return False
+    _enable_cache: bool = False
+    """
+    Whether this endpoint supports caching.
+    Defaults to False. Override in subclasses if needed.
+    """
 
     @abstractmethod
     def _build_path(self, *segments: Any) -> str:
