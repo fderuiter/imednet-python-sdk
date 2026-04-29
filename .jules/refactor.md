@@ -1,0 +1,3 @@
+## 2025-04-29 - [Refactor] Generic Endpoints Abstraction
+**Debt:** Multiple endpoints duplicate the inheritance of both `GenericListGetEndpoint` and `EdcEndpointMixin`.
+**Obstacle:** We attempted to resolve this by creating `EdcListGetEndpoint` (combining `EdcEndpointMixin` and `GenericListGetEndpoint`). However, due to Python's Method Resolution Order (MRO), combining them breaks endpoints that inject behavior *between* them (like `PopStudyKeyMixin` or `CachedEndpointMixin`). A single combined class prevents injecting mixins that override methods in `GenericListGetEndpoint` but need to run after `EdcEndpointMixin`. We are journaling this to document why this pattern is rejected.
