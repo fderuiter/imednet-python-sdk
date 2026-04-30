@@ -1,0 +1,6 @@
+🛡️ Shield: Add sad path validation tests for register_subjects
+
+🛑 Vulnerability: The `register_subjects` workflow lacked coverage for its "sad path" logic involving validation errors (missing or invalid site names and subject keys), resulting in a gap in automated confidence.
+🛡️ Defense: Added `test_register_subjects_validation_errors` which strictly asserts the output error messages matching all invalid parameters simultaneously while mocking `subjects.get` exceptions correctly.
+🔬 Verification: Run `poetry run pytest tests/workflows/test_register_subjects.py`
+📊 Impact: Increases test coverage in `src/imednet/workflows/register_subjects.py` to 100% and guarantees changes to validation logic will be safely caught.
