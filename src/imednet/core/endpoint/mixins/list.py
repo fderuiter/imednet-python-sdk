@@ -16,7 +16,7 @@ from .params import ParamMixin
 from .parsing import ParsingMixin, T
 
 
-class ListEndpointMixin(ParamMixin, CacheMixin, ParsingMixin[T], EndpointABC[T]):
+class ListEndpointMixin(ParamMixin, CacheMixin[T], ParsingMixin[T], EndpointABC[T]):
     """Mixin implementing ``list`` helpers."""
 
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
