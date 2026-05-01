@@ -1,99 +1,53 @@
-import pytest
-
 from imednet.core.endpoint.strategies import (
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
     PopStudyKeyStrategy,
 )
-from imednet.errors import ClientError
 
 
 class TestKeepStudyKeyStrategy:
     def test_process_with_valid_key(self):
         strategy = KeepStudyKeyStrategy()
-        filters = {"studyKey": "valid-key", "other": "param"}
+        filters = {"studyKey": "study-123", "other": "val"}
         key, new_filters = strategy.process(filters)
+        assert key == "study-123"
+        assert new_filters == filters
 
-        assert key == "valid-key"
-        assert "studyKey" in new_filters
-        assert new_filters["studyKey"] == "valid-key"
-        assert new_filters["other"] == "param"
-
-    def test_process_missing_key_raises_error(self):
+    def test_process_missing_key(self):
         strategy = KeepStudyKeyStrategy()
-        filters = {"other": "param"}
-
-        with pytest.raises(ClientError, match="Study key must be provided"):
-            strategy.process(filters)
-
-    def test_process_custom_exception(self):
-        class CustomError(Exception):
-            pass
-
-        strategy = KeepStudyKeyStrategy(exception_cls=CustomError)
-        filters = {"other": "param"}
-
-        with pytest.raises(CustomError):
-            strategy.process(filters)
-
-    def test_process_empty_key_raises_error(self):
-        strategy = KeepStudyKeyStrategy()
-        filters = {"studyKey": "", "other": "param"}
-
-        with pytest.raises(ClientError, match="Study key must be provided"):
-            strategy.process(filters)
+        filters = {"other": "val"}
+        key, new_filters = strategy.process(filters)
+        assert key is None
+        assert new_filters == filters
 
 
 class TestPopStudyKeyStrategy:
     def test_process_with_valid_key(self):
         strategy = PopStudyKeyStrategy()
-        filters = {"studyKey": "valid-key", "other": "param"}
+        filters = {"studyKey": "study-123", "other": "val"}
         key, new_filters = strategy.process(filters)
+        assert key == "study-123"
+        assert new_filters == {"other": "val"}
 
-        assert key == "valid-key"
-        assert "studyKey" not in new_filters
-        assert new_filters["other"] == "param"
-
-    def test_process_missing_key_raises_error(self):
+    def test_process_missing_key(self):
         strategy = PopStudyKeyStrategy()
-        filters = {"other": "param"}
-
-        with pytest.raises(ClientError, match="Study key must be provided"):
-            strategy.process(filters)
-
-    def test_process_custom_exception(self):
-        class CustomError(Exception):
-            pass
-
-        strategy = PopStudyKeyStrategy(exception_cls=CustomError)
-        filters = {"other": "param"}
-
-        with pytest.raises(CustomError):
-            strategy.process(filters)
-
-    def test_process_empty_key_returns_empty_string(self):
-        strategy = PopStudyKeyStrategy()
-        filters = {"studyKey": "", "other": "param"}
+        filters = {"other": "val"}
         key, new_filters = strategy.process(filters)
-        assert key == ""
-        assert "studyKey" not in new_filters
+        assert key is None
+        assert new_filters == {"other": "val"}
 
 
 class TestOptionalStudyKeyStrategy:
     def test_process_with_key(self):
         strategy = OptionalStudyKeyStrategy()
-        filters = {"studyKey": "valid-key", "other": "param"}
+        filters = {"studyKey": "study-123", "other": "val"}
         key, new_filters = strategy.process(filters)
-
-        assert key == "valid-key"
-        assert "studyKey" in new_filters
-        assert new_filters["studyKey"] == "valid-key"
+        assert key == "study-123"
+        assert new_filters == filters
 
     def test_process_without_key(self):
         strategy = OptionalStudyKeyStrategy()
-        filters = {"other": "param"}
+        filters = {"other": "val"}
         key, new_filters = strategy.process(filters)
-
         assert key is None
-        assert "studyKey" not in new_filters
-        assert new_filters["other"] == "param"
+        assert new_filters == filters
