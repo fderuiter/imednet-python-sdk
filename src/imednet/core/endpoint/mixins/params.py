@@ -11,7 +11,6 @@ from imednet.core.endpoint.strategies import (
 )
 from imednet.core.endpoint.structs import ParamState
 from imednet.core.protocols import ParamProcessor
-from imednet.errors import ClientError
 from imednet.utils.filters import build_filter_string
 
 from ..protocols import EndpointProtocol
@@ -38,7 +37,7 @@ class ParamMixin:
             return self.STUDY_KEY_STRATEGY
 
         if self.requires_study_key:
-            return KeepStudyKeyStrategy(exception_cls=ClientError)
+            return KeepStudyKeyStrategy()
         return OptionalStudyKeyStrategy()
 
     @property
@@ -98,4 +97,4 @@ class ParamMixin:
 class PopStudyKeyMixin(ParamMixin):
     """Mixin that configures the endpoint to require and pop the study key."""
 
-    STUDY_KEY_STRATEGY = PopStudyKeyStrategy(exception_cls=ClientError)
+    STUDY_KEY_STRATEGY = PopStudyKeyStrategy()

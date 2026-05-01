@@ -5,10 +5,9 @@ This module implements the ParamProcessor strategy pattern, allowing endpoints
 to customize how filters are processed and special parameters are extracted.
 """
 
-from typing import Any, Dict, Optional, Protocol, Tuple, Type, runtime_checkable
+from typing import Any, Dict, Optional, Protocol, Tuple, runtime_checkable
 
 from imednet.core.protocols import ParamProcessor
-from imednet.errors import ClientError
 
 
 class DefaultParamProcessor(ParamProcessor):
@@ -109,25 +108,17 @@ class KeepStudyKeyStrategy:
     Used when the API expects 'studyKey' as a query parameter.
     """
 
-    def __init__(self, exception_cls: Type[Exception] = ClientError) -> None:
-        self._exception_cls = exception_cls
-
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
         """
-        Extract study key, validate presence, and keep in filters.
+        Extract study key and keep in filters.
 
         Args:
             filters: The filters dictionary.
 
         Returns:
             Tuple of (study_key, filters).
-
-        Raises:
-            Exception: If study key is missing (type determined by exception_cls).
         """
         study_key = filters.get("studyKey")
-        if not study_key:
-            raise self._exception_cls("Study key must be provided or set in the context")
         return study_key, filters
 
 
@@ -139,32 +130,18 @@ class PopStudyKeyStrategy:
     not sent as a query parameter.
     """
 
-    def __init__(self, exception_cls: Type[Exception] = ClientError) -> None:
-        self._exception_cls = exception_cls
-
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
         """
-        Extract study key, validate presence, and remove from filters.
+        Extract study key and remove from filters.
 
         Args:
             filters: The filters dictionary.
 
         Returns:
             Tuple of (study_key, modified_filters).
-
-        Raises:
-            Exception: If study key is missing (type determined by exception_cls).
         """
-        # Ensure we work on a copy if we are modifying it,
-        # but the mixin usually passes a copy or we should copy here.
-        # ParamProcessor returns a copy, so filters here might be that copy.
-        # But to be safe and pure:
         filters_copy = filters.copy()
-
-        if "studyKey" not in filters_copy:
-            raise self._exception_cls("Study key must be provided or set in the context")
-
-        study_key = filters_copy.pop("studyKey")
+        study_key = filters_copy.pop("studyKey", None)
         return study_key, filters_copy
 
 
