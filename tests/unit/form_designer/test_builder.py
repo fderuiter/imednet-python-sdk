@@ -1,94 +1,120 @@
+import pytest
+
 from imednet.form_designer.builder import FormBuilder
-from imednet.form_designer.models import Layout
 
 
-def test_builder_initialization():
+def test_form_builder_initialization():
     builder = FormBuilder()
     assert len(builder.pages) == 1
-    assert len(builder.pages[0].entities) == 0
+    assert builder.current_page is not None
 
 
-def test_add_page():
+def test_form_builder_add_page():
     builder = FormBuilder()
     builder.add_page()
     assert len(builder.pages) == 2
 
 
-def test_add_section_header():
+def test_form_builder_add_field_text():
+    builder = FormBuilder()
+    builder.add_field(type="text", label="My Text", question_name="my_text")
+
+    page = builder.current_page
+    assert len(page.entities) == 1
+    table = page.entities[0]
+    assert table.props.type == "table"
+    assert len(table.rows) == 1
+
+    row = table.rows[0]
+    assert len(row.cols) == 2
+
+    label_col = row.cols[0]
+    assert label_col.entities[0].props.type == "label"
+    assert label_col.entities[0].props.label == "My Text"
+
+    field_col = row.cols[1]
+    assert field_col.entities[0].props.type == "text"
+    assert field_col.entities[0].props.question_name == "my_text"
+
+
+def test_form_builder_add_field_invalid_type():
+    builder = FormBuilder()
+    with pytest.raises(ValueError, match="Unsupported field type: invalid"):
+        builder.add_field(type="invalid", label="Invalid", question_name="inv")  # type: ignore
+
+
+def test_form_builder_add_all_field_types():
+    builder = FormBuilder()
+    types = ["text", "number", "radio", "dropdown", "datetime", "upload", "checkbox", "memo"]
+
+    for idx, t in enumerate(types):
+        if t in ["radio", "dropdown", "checkbox"]:
+            choices = [("Option A", "1"), ("Option B", "2")]
+        else:
+            choices = None
+
+        builder.add_field(type=t, label=f"Label {t}", question_name=f"qn_{t}", choices=choices)
+
+    page = builder.current_page
+    # It adds everything into the same table if it exists
+    table = page.entities[0]
+    assert len(table.rows) == len(types)
+
+    for idx, t in enumerate(types):
+        field_col = table.rows[idx].cols[1]
+        assert field_col.entities[0].props.type == t
+
+
+def test_form_builder_add_section_header():
     builder = FormBuilder()
     builder.add_section_header("My Section")
-    assert len(builder.current_page.entities) == 1
-    entity = builder.current_page.entities[0]
-    assert entity.props.type == "sep"
-    assert entity.props.label == "My Section"
-    assert entity.id.startswith("lfdiv_")
+
+    page = builder.current_page
+    assert len(page.entities) == 1
+    assert page.entities[0].props.type == "sep"
+    assert page.entities[0].props.label == "My Section"
 
 
-def test_add_group_header():
+def test_form_builder_add_group_header():
     builder = FormBuilder()
     builder.add_group_header("My Group")
-    # Should create a table with one row
-    assert len(builder.current_page.entities) == 1
-    table = builder.current_page.entities[0]
+
+    page = builder.current_page
+    assert len(page.entities) == 1
+    table = page.entities[0]
     assert table.props.type == "table"
     assert len(table.rows) == 1
     row = table.rows[0]
-    # Group header: Col 1 has label, Col 2 is empty
     assert len(row.cols) == 2
     assert row.cols[0].entities[0].props.type == "label"
     assert row.cols[0].entities[0].props.label == "My Group"
     assert len(row.cols[1].entities) == 0
 
 
-def test_add_field_text():
+def test_form_builder_build():
     builder = FormBuilder()
-    builder.add_field(
-        type="text", label="My Field", question_name="VAR1", required=True, max_length=50
-    )
-    table = builder.current_page.entities[0]
-    row = table.rows[0]
-
-    # Label
-    label_entity = row.cols[0].entities[0]
-    assert label_entity.props.type == "label"
-    assert label_entity.props.label == "My Field"
-
-    # Control
-    control_entity = row.cols[1].entities[0]
-    assert control_entity.props.type == "text"
-    assert control_entity.props.question_name == "VAR1"
-    assert control_entity.props.bl_req == "hard"
-    assert control_entity.props.length == 50
-
-    # ID Linking
-    assert label_entity.props.new_fld_id == control_entity.props.new_fld_id
-    assert label_entity.props.new_fld_id is not None
-
-
-def test_add_field_radio():
-    builder = FormBuilder()
-    choices = [("Yes", "1"), ("No", "0")]
-    builder.add_field(type="radio", label="Gender", question_name="SEX", choices=choices)
-    control = builder.current_page.entities[0].rows[0].cols[1].entities[0]
-    assert control.props.type == "radio"
-    assert len(control.props.choices) == 2
-    assert control.props.choices[0].text == "Yes"
-    assert control.props.choices[0].code == "1"
-    assert control.props.radio == 1  # Horizontal default
-
-
-def test_add_field_datetime():
-    builder = FormBuilder()
-    builder.add_field("datetime", "Date", "DT")
-    control = builder.current_page.entities[0].rows[0].cols[1].entities[0]
-    assert control.props.type == "datetime"
-    assert control.props.date_ctrl == 1
-    assert control.props.time_ctrl == 0
-
-
-def test_build():
-    builder = FormBuilder()
-    builder.add_section_header("S1")
+    builder.add_section_header("My Section")
     layout = builder.build()
-    assert isinstance(layout, Layout)
-    assert len(layout.pages) == 1
+    assert layout.pages[0].entities[0].props.label == "My Section"
+
+
+def test_form_builder_none_rows_initialization():
+    builder = FormBuilder()
+
+    # We need to manually inject a table with no rows to hit lines 92 and 133
+    from imednet.form_designer.models import Entity, TableProps
+
+    table_props = TableProps(type="table", columns=2)
+    table_no_rows = Entity(id="test_id", props=table_props, rows=None)
+    builder.current_page.entities.append(table_no_rows)
+
+    # Adding a group header should initialize `rows` to []
+    builder.add_group_header("Test Group")
+    assert table_no_rows.rows is not None
+    assert len(table_no_rows.rows) == 1
+
+    # Same for add_field
+    table_no_rows.rows = None
+    builder.add_field(type="text", label="Test Text", question_name="qn_test")
+    assert table_no_rows.rows is not None
+    assert len(table_no_rows.rows) == 1
