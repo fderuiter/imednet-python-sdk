@@ -5,7 +5,14 @@ This directory contains examples demonstrating how to use the iMednet Python SDK
 ## Prerequisites
 
 Before running the examples, you need to set up your environment with your iMednet API credentials.
-Set your credentials as environment variables in your shell:
+You can use a `.env` file:
+
+```bash
+cp .env.example .env
+# Edit .env with your keys
+```
+
+Or export them directly:
 
 ```bash
 export IMEDNET_API_KEY="your_api_key_here"

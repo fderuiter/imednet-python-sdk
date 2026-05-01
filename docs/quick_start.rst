@@ -9,7 +9,14 @@ Install the package from PyPI:
 
    pip install imednet
 
-Set your credentials as environment variables (see :doc:`configuration` for details):
+Set your credentials before running the examples (see :doc:`configuration` for details). You can use a `.env` file:
+
+.. code-block:: bash
+
+   cp .env.example .env
+   # Edit .env with your keys
+
+Or export them directly:
 
 .. code-block:: bash
 

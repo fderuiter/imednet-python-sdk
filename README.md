@@ -87,7 +87,14 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 
 ## Quick Start
 
-Set your credentials as environment variables before running the examples:
+Set your credentials before running the examples. You can use a `.env` file:
+
+```bash
+cp .env.example .env
+# Edit .env with your keys
+```
+
+Or export them directly:
 
 ```bash
 export IMEDNET_API_KEY="your_api_key"
