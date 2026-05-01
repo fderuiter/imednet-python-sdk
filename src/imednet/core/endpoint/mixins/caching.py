@@ -11,8 +11,8 @@ class CacheMixin(Generic[T]):
     """Mixin for handling endpoint caching."""
 
     requires_study_key: bool
-    _enable_cache: bool = False  # Default, overridden by EndpointABC/subclasses
-    _cache: Optional[Union[List[T], Dict[str, List[T]]]] = None
+    _enable_cache: bool  # Overridden by EndpointABC/subclasses
+    _cache: Optional[Union[List[T], Dict[str, List[T]]]]
     # Default, overridden by GenericEndpoint
 
     def _get_local_cache(self) -> Optional[Union[List[T], Dict[str, List[T]]]]:
