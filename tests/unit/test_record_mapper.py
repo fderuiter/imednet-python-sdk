@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Any
 from unittest.mock import MagicMock
 
+import pytest
 from pydantic import BaseModel, ValidationError
 
 from imednet.models.records import Record
@@ -229,3 +230,10 @@ def test_parse_records_counts_errors() -> None:
 
     assert rows == []
     assert count == 2
+
+
+def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
+    monkeypatch.setattr("imednet.workflows.record_mapper.pd", None)
+    mapper = RecordMapper(MagicMock())
+    with pytest.raises(ImportError, match="pandas is required for RecordMapper.dataframe"):
+        mapper.dataframe("STUDY")
