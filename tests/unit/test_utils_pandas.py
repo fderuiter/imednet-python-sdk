@@ -2,6 +2,7 @@ import ast
 from unittest.mock import MagicMock
 
 import pandas as pd
+import pytest
 
 from imednet.models.records import Record
 from imednet.utils.pandas import export_records_csv, records_to_dataframe
@@ -62,3 +63,15 @@ def test_export_records_csv_no_flatten(tmp_path) -> None:
     assert "record_data" in df.columns
     assert ast.literal_eval(str(df.loc[0, "record_data"])) == {"AGE": 30}
     sdk.records.list.assert_called_once_with(study_key="STUDY")
+
+
+def test_records_to_dataframe_import_error(monkeypatch) -> None:
+    monkeypatch.setattr("imednet.utils.pandas.pd", None)
+    with pytest.raises(ImportError, match="pandas is required for records_to_dataframe"):
+        records_to_dataframe([])
+
+
+def test_export_records_csv_import_error(monkeypatch) -> None:
+    monkeypatch.setattr("imednet.utils.pandas.pd", None)
+    with pytest.raises(ImportError, match="pandas is required for export_records_csv"):
+        export_records_csv(None, "STUDY", "out.csv")
