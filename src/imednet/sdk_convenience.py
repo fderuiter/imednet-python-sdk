@@ -21,7 +21,7 @@ from imednet.models.subjects import Subject
 from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
-from imednet.workflows.job_poller import JobPoller
+from imednet.workflows.job_poller import AsyncJobPoller, JobPoller
 
 if TYPE_CHECKING:
     from imednet.endpoints.codings import CodingsEndpoint
@@ -225,7 +225,7 @@ class SDKConvenienceMixin:
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
 
-        return JobPoller(self.jobs.get, False).run(study_key, batch_id, interval, timeout)
+        return JobPoller(self.jobs.get).run(study_key, batch_id, interval, timeout)
 
     async def async_poll_job(
         self: SDKProtocol,
@@ -237,6 +237,4 @@ class SDKConvenienceMixin:
     ) -> JobStatus:
         """Asynchronously poll a job until it reaches a terminal state."""
 
-        return await JobPoller(self.jobs.async_get, True).run_async(
-            study_key, batch_id, interval, timeout
-        )
+        return await AsyncJobPoller(self.jobs.async_get).run(study_key, batch_id, interval, timeout)

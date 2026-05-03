@@ -4,39 +4,39 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from imednet.models.jobs import JobStatus
-from imednet.workflows.job_poller import JobPoller, JobTimeoutError
+from imednet.workflows.job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
 
 
-@pytest.mark.parametrize("async_mode", [False, True])
-def test_job_poller_success(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None:
     states = [
-        JobStatus(batch_id="1", state="PROCESSING", progress=10),
-        JobStatus(batch_id="1", state="COMPLETED", progress=100),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
     ]
-    if async_mode:
-        get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
-        monkeypatch.setattr(asyncio, "sleep", AsyncMock())
-        poller = JobPoller(get_job, True)
-        result = asyncio.run(poller.run_async("ST", "1", interval=0, timeout=5))
-    else:
-        get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
-        monkeypatch.setattr("time.sleep", lambda *_: None)
-        poller = JobPoller(get_job, False)
-        result = poller.run("ST", "1", interval=0, timeout=5)
+    get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
+    monkeypatch.setattr("time.sleep", lambda *_: None)
+    poller = JobPoller(get_job)
+    result = poller.run("ST", "1", interval=0, timeout=5)
     assert result.state == "COMPLETED"
 
 
-@pytest.mark.parametrize("async_mode", [False, True])
-def test_job_poller_timeout(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
-    job = JobStatus(batch_id="1", state="PROCESSING")
-    if async_mode:
-        get_job = AsyncMock(return_value=job)
-        monkeypatch.setattr(asyncio, "sleep", AsyncMock())
-        poller = JobPoller(get_job, True)
-    else:
-        get_job = MagicMock(return_value=job)
-        monkeypatch.setattr("time.sleep", lambda *_: None)
-        poller = JobPoller(get_job, False)
+@pytest.mark.asyncio
+async def test_async_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    states = [
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
+    ]
+    get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+    poller = AsyncJobPoller(get_job)
+    result = await poller.run("ST", "1", interval=0, timeout=5)
+    assert result.state == "COMPLETED"
+
+
+def test_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    job = JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl="")
+    get_job = MagicMock(return_value=job)
+    monkeypatch.setattr("time.sleep", lambda *_: None)
+    poller = JobPoller(get_job)
 
     tick = {"v": 0}
 
@@ -46,62 +46,74 @@ def test_job_poller_timeout(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -
 
     monkeypatch.setattr("time.monotonic", monotonic)
     with pytest.raises(JobTimeoutError):
-        if async_mode:
-            asyncio.run(poller.run_async("S", "1", interval=0, timeout=2))
-        else:
-            poller.run("S", "1", interval=0, timeout=2)
+        poller.run("S", "1", interval=0, timeout=2)
 
 
-@pytest.mark.parametrize("async_mode", [False, True])
-def test_job_poller_failed(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.asyncio
+async def test_async_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    job = JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl="")
+    get_job = AsyncMock(return_value=job)
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+    poller = AsyncJobPoller(get_job)
+
+    tick = {"v": 0}
+
+    def monotonic() -> int:
+        tick["v"] += 1
+        return tick["v"]
+
+    monkeypatch.setattr("time.monotonic", monotonic)
+    with pytest.raises(JobTimeoutError):
+        await poller.run("S", "1", interval=0, timeout=2)
+
+
+def test_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     states = [
-        JobStatus(batch_id="1", state="PROCESSING"),
-        JobStatus(batch_id="1", state="FAILED"),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="FAILED", progress=10, jobId="1", resultUrl=""),
     ]
-    if async_mode:
-        get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
-        monkeypatch.setattr(asyncio, "sleep", AsyncMock())
-        poller = JobPoller(get_job, True)
-    else:
-        get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
-        monkeypatch.setattr("time.sleep", lambda *_: None)
-        poller = JobPoller(get_job, False)
+    get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
+    monkeypatch.setattr("time.sleep", lambda *_: None)
+    poller = JobPoller(get_job)
 
     with pytest.raises(RuntimeError):
-        if async_mode:
-            asyncio.run(poller.run_async("S", "1", interval=0, timeout=5))
-        else:
-            poller.run("S", "1", interval=0, timeout=5)
-
-
-def test_job_poller_run_sync_in_async_mode() -> None:
-    get_job = AsyncMock()
-    poller = JobPoller(get_job, True)
-    with pytest.raises(RuntimeError, match="Use run_async for asynchronous polling"):
         poller.run("S", "1", interval=0, timeout=5)
 
 
-def test_job_poller_run_async_in_sync_mode() -> None:
-    get_job = MagicMock()
-    poller = JobPoller(get_job, False)
-    with pytest.raises(RuntimeError, match="Use run for synchronous polling"):
-        asyncio.run(poller.run_async("S", "1", interval=0, timeout=5))
-
-
-@pytest.mark.parametrize("async_mode", [False, True])
-def test_job_poller_cancelled(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.asyncio
+async def test_async_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     states = [
-        JobStatus(batch_id="1", state="PROCESSING", progress=50),
-        JobStatus(batch_id="1", state="CANCELLED", progress=50),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="FAILED", progress=10, jobId="1", resultUrl=""),
     ]
-    if async_mode:
-        get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
-        monkeypatch.setattr(asyncio, "sleep", AsyncMock())
-        poller = JobPoller(get_job, True)
-        result = asyncio.run(poller.run_async("ST", "1", interval=0, timeout=5))
-    else:
-        get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
-        monkeypatch.setattr("time.sleep", lambda *_: None)
-        poller = JobPoller(get_job, False)
-        result = poller.run("ST", "1", interval=0, timeout=5)
+    get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+    poller = AsyncJobPoller(get_job)
+
+    with pytest.raises(RuntimeError):
+        await poller.run("S", "1", interval=0, timeout=5)
+
+
+def test_job_poller_cancelled(monkeypatch: pytest.MonkeyPatch) -> None:
+    states = [
+        JobStatus(batchId="1", state="PROCESSING", progress=50, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="CANCELLED", progress=50, jobId="1", resultUrl=""),
+    ]
+    get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
+    monkeypatch.setattr("time.sleep", lambda *_: None)
+    poller = JobPoller(get_job)
+    result = poller.run("ST", "1", interval=0, timeout=5)
+    assert result.state == "CANCELLED"
+
+
+@pytest.mark.asyncio
+async def test_async_job_poller_cancelled(monkeypatch: pytest.MonkeyPatch) -> None:
+    states = [
+        JobStatus(batchId="1", state="PROCESSING", progress=50, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="CANCELLED", progress=50, jobId="1", resultUrl=""),
+    ]
+    get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+    poller = AsyncJobPoller(get_job)
+    result = await poller.run("ST", "1", interval=0, timeout=5)
     assert result.state == "CANCELLED"
