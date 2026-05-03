@@ -1,6 +1,6 @@
 """Workflow helpers built on top of the iMednet SDK."""
 
-from .job_poller import JobPoller, JobTimeoutError
+from .job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
 from .record_update import RecordUpdateWorkflow
@@ -12,6 +12,7 @@ __all__ = [
     "QueryManagementWorkflow",
     "RecordMapper",
     "RecordUpdateWorkflow",
+    "AsyncJobPoller",
     "JobPoller",
     "JobTimeoutError",
     "RegisterSubjectsWorkflow",

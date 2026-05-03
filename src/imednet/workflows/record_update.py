@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 
 from ..models import Job
 from ..validation.cache import AsyncSchemaValidator, SchemaCache, SchemaValidator
-from .job_poller import JobPoller
+from .job_poller import AsyncJobPoller, JobPoller
 
 if TYPE_CHECKING:
     from ..sdk import ImednetSDK
@@ -75,7 +75,7 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        poller = JobPoller(self._sdk.jobs.get, is_async=False)
+        poller = JobPoller(self._sdk.jobs.get)
         return poller.run(study_key, job.batch_id, poll_interval, timeout)
 
     async def async_create_or_update_records(
@@ -97,8 +97,8 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        poller = JobPoller(self._sdk.jobs.async_get, is_async=True)
-        return await poller.run_async(study_key, job.batch_id, poll_interval, timeout)
+        poller = AsyncJobPoller(self._sdk.jobs.async_get)
+        return await poller.run(study_key, job.batch_id, poll_interval, timeout)
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
         warnings.warn(

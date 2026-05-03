@@ -195,8 +195,8 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
     calls = {}
 
     class FakePoller:
-        def __init__(self, get_func, is_async):
-            calls["init"] = (get_func, is_async)
+        def __init__(self, get_func):
+            calls["init"] = get_func
 
         def run(self, study_key, batch_id, interval, timeout):
             calls["run"] = (study_key, batch_id, interval, timeout)
@@ -208,4 +208,3 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
 
     assert sdk.poll_job("S1", "B1", interval=10, timeout=100) == "JOBOBJ"
     assert calls["run"] == ("S1", "B1", 10, 100)
-    assert calls["init"][1] is False

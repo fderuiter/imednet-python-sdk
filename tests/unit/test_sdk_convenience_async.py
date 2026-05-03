@@ -113,17 +113,16 @@ async def test_async_poll_job_convenience(monkeypatch) -> None:
     calls = {}
 
     class FakePoller:
-        def __init__(self, get_func, is_async):
-            calls["init"] = (get_func, is_async)
+        def __init__(self, get_func):
+            calls["init"] = get_func
 
-        async def run_async(self, study_key, batch_id, interval, timeout):
+        async def run(self, study_key, batch_id, interval, timeout):
             calls["run"] = (study_key, batch_id, interval, timeout)
             return "JOBOBJ"
 
     import imednet.sdk_convenience
 
-    monkeypatch.setattr(imednet.sdk_convenience, "JobPoller", FakePoller)
+    monkeypatch.setattr(imednet.sdk_convenience, "AsyncJobPoller", FakePoller)
 
     assert await sdk.async_poll_job("S1", "B1", interval=10, timeout=100) == "JOBOBJ"
     assert calls["run"] == ("S1", "B1", 10, 100)
-    assert calls["init"][1] is True
