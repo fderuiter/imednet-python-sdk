@@ -27,8 +27,8 @@ class SubjectsEndpoint(
 
         Migrated from TUI logic to core SDK to support filtering.
         """
-        return self.list_by_attribute("site_id", site_id, study_key=study_key)
+        return self.list(study_key=study_key, site_id=site_id)
 
     async def async_list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
         """Asynchronously list subjects filtered by a specific site ID."""
-        return await self.async_list_by_attribute("site_id", site_id, study_key=study_key)
+        return await self.async_list(study_key=study_key, site_id=site_id)

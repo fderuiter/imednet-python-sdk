@@ -9,7 +9,6 @@ from imednet.core.endpoint.structs import ListRequestState
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
-from imednet.utils.filters import filter_by_attribute
 
 from .caching import CacheMixin
 from .params import ParamMixin
@@ -169,28 +168,6 @@ class ListEndpointMixin(ParamMixin, CacheMixin[T], ParsingMixin[T], EndpointABC[
             study_key=study_key,
             **filters,
         )
-
-    def list_by_attribute(
-        self,
-        attr_name: str,
-        target_value: Any,
-        study_key: Optional[str] = None,
-        **filters: Any,
-    ) -> List[T]:
-        """List items filtered by a specific attribute."""
-        all_items = self.list(study_key, **filters)
-        return filter_by_attribute(all_items, attr_name, target_value)
-
-    async def async_list_by_attribute(
-        self,
-        attr_name: str,
-        target_value: Any,
-        study_key: Optional[str] = None,
-        **filters: Any,
-    ) -> List[T]:
-        """Asynchronously list items filtered by a specific attribute."""
-        all_items = await self.async_list(study_key, **filters)
-        return filter_by_attribute(all_items, attr_name, target_value)
 
     async def async_list(
         self,
