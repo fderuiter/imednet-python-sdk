@@ -45,5 +45,3 @@ class DummyListEndpoint(ListEndpointMixin[MockModel]):
 
     def _update_local_cache(self, result, study, has_filters):
         pass
-
-
