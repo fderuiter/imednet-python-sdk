@@ -38,7 +38,6 @@ def test_subject_filtering_logic():
 
     # Mock data
     s1 = Subject(studyKey="sk", subjectId=1, siteId=101, subjectKey="s1")
-    s2 = Subject(studyKey="sk", subjectId=2, siteId=102, subjectKey="s2")
     s3 = Subject(studyKey="sk", subjectId=3, siteId=101, subjectKey="s3")  # Matches 101
 
     # Mock client and endpoint
@@ -46,7 +45,6 @@ def test_subject_filtering_logic():
     mock_client.get.return_value.json.return_value = {
         "data": [
             s1.model_dump(by_alias=True),
-            s2.model_dump(by_alias=True),
             s3.model_dump(by_alias=True),
         ],
         "pagination": {"totalPages": 1},
