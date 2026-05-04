@@ -17,6 +17,8 @@ Provide ``IMEDNET_JOB_STUDY_KEY`` and ``IMEDNET_BATCH_ID`` to poll a job.
 
 Example::
 
+    cp .env.example .env
+    # Or export directly:
     export IMEDNET_API_KEY="your_api_key"
     export IMEDNET_SECURITY_KEY="your_security_key"
     poetry run python examples/async_quick_start.py
@@ -26,8 +28,6 @@ Example::
 async def main() -> None:
     """Run a minimal async SDK example using environment variables."""
     configure_json_logging()
-    load_dotenv()
-
     # Load environment variables from .env file if it exists
     load_dotenv()
 

@@ -14,6 +14,8 @@ script. Optionally set ``IMEDNET_BASE_URL`` for non-default instances.
 
 Example:
 
+    cp .env.example .env
+    # Or export directly:
     export IMEDNET_API_KEY="your_api_key"
     export IMEDNET_SECURITY_KEY="your_security_key"
     poetry run python examples/quick_start.py
@@ -23,8 +25,6 @@ Example:
 def main() -> None:
     """Run a minimal SDK example using environment variables."""
     configure_json_logging()
-    load_dotenv()
-
     # Load environment variables from .env file if it exists
     load_dotenv()
 
