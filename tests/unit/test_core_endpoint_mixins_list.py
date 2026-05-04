@@ -1,7 +1,5 @@
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
-
 from imednet.core.endpoint.mixins.list import ListEndpointMixin
 from imednet.core.endpoint.structs import ParamState
 from imednet.models.json_base import JsonModel
