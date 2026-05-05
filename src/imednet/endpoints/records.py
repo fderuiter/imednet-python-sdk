@@ -51,7 +51,7 @@ class RecordsEndpoint(
         Raises:
             ClientError: If email_notify contains invalid characters
         """
-        path = self._build_path(study_key, self.PATH)
+        path = self._get_endpoint_path(study_key)
         operation = RecordCreateOperation[Job](
             path=path,
             records_data=records_data,
@@ -90,7 +90,7 @@ class RecordsEndpoint(
         Raises:
             ClientError: If email_notify contains invalid characters
         """
-        path = self._build_path(study_key, self.PATH)
+        path = self._get_endpoint_path(study_key)
         operation = RecordCreateOperation[Job](
             path=path,
             records_data=records_data,

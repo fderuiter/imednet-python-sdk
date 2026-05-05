@@ -103,7 +103,7 @@ class DummyPathGetEndpointNoStudy(DummyPathGetEndpoint):
 def test_path_get_endpoint_no_study_key_no_path():
     ep = DummyPathGetEndpointNoStudy()
     # It should generate path with just item_id
-    assert ep._get_path_for_id(None, 123) == "/123"
+    assert ep._get_endpoint_path(None, 123) == "/123"
 
 
 def test_path_get_endpoint_raise_not_found():

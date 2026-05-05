@@ -30,6 +30,14 @@ class EndpointProtocol(Protocol):
         """Validate that a study key is provided if required."""
         ...
 
+    def _get_endpoint_path(self, study_key: Optional[str], *extra_segments: Any) -> str:
+        """Build the API path with optional study key and extra segments."""
+        ...
+
+    def _raise_not_found(self, study_key: Optional[str], item_id: Any = None) -> None:
+        """Raise a standardized NotFoundError."""
+        ...
+
 
 @runtime_checkable
 class ListEndpointProtocol(Protocol[T]):
