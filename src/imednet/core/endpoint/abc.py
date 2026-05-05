@@ -71,3 +71,12 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
             from imednet.errors import ClientError
 
             raise ClientError("Study key must be provided or set in the context")
+
+    def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
+        """Raise a NotFoundError formatted with model, ID, and study if applicable."""
+        from imednet.errors import NotFoundError
+
+        self._validate_study_key(study_key)
+        if self.requires_study_key:
+            raise NotFoundError(f"{self.MODEL.__name__} {item_id} not found in study {study_key}")
+        raise NotFoundError(f"{self.MODEL.__name__} {item_id} not found")

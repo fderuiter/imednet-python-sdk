@@ -7,7 +7,6 @@ from imednet.core.endpoint.operations.filter_get import FilterGetOperation
 from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
-from imednet.errors import NotFoundError
 
 from ..protocols import ListEndpointProtocol
 from .parsing import ParsingMixin, T
@@ -22,12 +21,7 @@ class FilterGetEndpointMixin(EndpointABC[T]):
 
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
         if not items:
-            self._validate_study_key(study_key)
-            if self.requires_study_key:
-                raise NotFoundError(
-                    f"{self.MODEL.__name__} {item_id} not found in study {study_key}"
-                )
-            raise NotFoundError(f"{self.MODEL.__name__} {item_id} not found")
+            self._raise_not_found(study_key, item_id)
         return items[0]
 
     def _create_filter_operation(
@@ -112,9 +106,6 @@ class PathGetEndpointMixin(ParsingMixin[T], EndpointABC[T]):
 
         # No cast needed as we inherit EndpointABC which defines _build_path
         return self._build_path(*segments)
-
-    def _raise_not_found(self, study_key: Optional[str], item_id: Any) -> None:
-        raise NotFoundError(f"{self.MODEL.__name__} not found")
 
     def _create_path_operation(self, study_key: Optional[str], item_id: Any) -> PathGetOperation[T]:
         """
