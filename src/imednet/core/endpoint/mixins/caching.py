@@ -12,8 +12,7 @@ class CacheMixin(Generic[T]):
 
     requires_study_key: bool
     _enable_cache: bool  # Overridden by EndpointABC/subclasses
-    _cache: Optional[Union[List[T], Dict[str, List[T]]]]
-    # Default, overridden by GenericEndpoint
+    _cache: Optional[Union[List[T], Dict[str, List[T]]]] = None
 
     def _get_local_cache(self) -> Optional[Union[List[T], Dict[str, List[T]]]]:
         """
@@ -23,7 +22,9 @@ class CacheMixin(Generic[T]):
             The cached data, which can be a list of items or a dictionary mapping
             study keys to lists of items. Returns None if caching is disabled.
         """
-        if self._enable_cache:
+        if getattr(self, "_enable_cache", False):
+            if getattr(self, "requires_study_key", False) and self._cache is None:
+                self._cache = {}
             return self._cache
         return None
 
@@ -44,7 +45,9 @@ class CacheMixin(Generic[T]):
         if has_filters or not self._enable_cache:
             return
 
-        if self.requires_study_key:
+        if getattr(self, "requires_study_key", False):
+            if self._cache is None:
+                self._cache = {}
             if isinstance(self._cache, dict) and study is not None:
                 self._cache[study] = result
         else:
