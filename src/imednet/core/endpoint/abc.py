@@ -71,3 +71,31 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
             from imednet.errors import ClientError
 
             raise ClientError("Study key must be provided or set in the context")
+
+    def _get_endpoint_path(self, study_key: Optional[str], *extra_segments: Any) -> str:
+        """
+        Build the endpoint path with optional study key and extra segments.
+        """
+        self._validate_study_key(study_key)
+        segments = []
+        if self.requires_study_key:
+            segments.append(study_key)
+        if self.PATH:
+            segments.append(self.PATH)
+        segments.extend(extra_segments)
+        return self._build_path(*segments)
+
+    def _raise_not_found(self, study_key: Optional[str], item_id: Any = None) -> None:
+        """
+        Raise a standardized NotFoundError.
+        """
+        from imednet.errors import NotFoundError
+
+        msg_parts = [f"{self.MODEL.__name__}"]
+        if item_id is not None:
+            msg_parts.append(str(item_id))
+        msg_parts.append("not found")
+        if self.requires_study_key and study_key:
+            msg_parts.append(f"in study {study_key}")
+
+        raise NotFoundError(" ".join(msg_parts))

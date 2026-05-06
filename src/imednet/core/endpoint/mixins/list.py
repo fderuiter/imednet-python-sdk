@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Iterable, List, Optional, cast
+from typing import Any, Callable, Dict, List, Optional, cast
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -21,15 +21,6 @@ class ListEndpointMixin(ParamMixin, CacheMixin[T], ParsingMixin[T], EndpointABC[
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
-
-    def _get_path(self, study: Optional[str]) -> str:
-        segments: Iterable[Any]
-        self._validate_study_key(study)
-        if self.requires_study_key:
-            segments = (study, self.PATH)
-        else:
-            segments = (self.PATH,) if self.PATH else ()
-        return self._build_path(*segments)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
         """
@@ -90,7 +81,7 @@ class ListEndpointMixin(ParamMixin, CacheMixin[T], ParsingMixin[T], EndpointABC[
                 cached_result=cast(List[T], cached_result),
             )
 
-        path = self._get_path(study)
+        path = self._get_endpoint_path(study)
         return ListRequestState(
             path=path,
             params=params,
