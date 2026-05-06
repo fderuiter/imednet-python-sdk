@@ -4,6 +4,7 @@ from types import ModuleType
 from unittest.mock import MagicMock
 
 import pandas as pd
+import pytest
 
 import imednet.integrations.export as export_mod
 
@@ -260,3 +261,27 @@ def test_export_to_long_sql(monkeypatch):
         {"record_id": 3, "form_id": 12, "variable_name": "D", "value": 4, "timestamp": dt3},
     ]
     assert captured[1][1] == "append"
+
+
+def test_records_df_missing_pandas(monkeypatch):
+    monkeypatch.setattr(export_mod, "pd", None)
+    with pytest.raises(
+        ImportError,
+        match=(
+            "pandas is required for _records_df. Install with "
+            "'pip install \"imednet\\[pandas\\]\"'"
+        ),
+    ):
+        export_mod._records_df(MagicMock(), "STUDY")
+
+
+def test_export_to_long_sql_missing_pandas(monkeypatch):
+    monkeypatch.setattr(export_mod, "pd", None)
+    with pytest.raises(
+        ImportError,
+        match=(
+            "pandas is required for export_to_long_sql. Install with "
+            "'pip install \"imednet\\[pandas\\]\"'"
+        ),
+    ):
+        export_mod.export_to_long_sql(MagicMock(), "STUDY", "table", "sqlite://")
