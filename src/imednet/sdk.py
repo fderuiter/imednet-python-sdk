@@ -9,7 +9,6 @@ This module provides the ImednetSDK class which:
 
 from __future__ import annotations
 
-import asyncio
 from importlib import import_module
 from typing import TYPE_CHECKING, Any, Optional
 
@@ -172,37 +171,24 @@ class ImednetSDK(SDKConvenienceMixin):
         """Support for context manager protocol."""
         return self
 
-    async def __aenter__(self) -> "ImednetSDK":
-        return self
-
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """Cleanup resources when exiting context."""
         self.close()
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        await self.aclose()
-
     def close(self) -> None:
-        """Close the client connection and free resources."""
-        self._client.close()
-        if self._async_client is not None:
-            try:
-                asyncio.get_running_loop()
-            except RuntimeError:
-                # No running loop, safe to use asyncio.run
-                asyncio.run(self._async_client.aclose())
-            else:
-                import warnings
+        """Close the synchronous client connection and free resources.
 
-                warnings.warn(
-                    (
-                        "Synchronously closing an SDK with an async client from "
-                        "within an active event loop leaves the async client open. "
-                        "Use `await sdk.aclose()` to safely clean up both clients."
-                    ),
-                    RuntimeWarning,
-                    stacklevel=2,
-                )
+        Raises:
+            RuntimeError: If an asynchronous client is active. Use
+                ``await sdk.aclose()`` (or an ``async with`` block) instead.
+        """
+        if self._async_client is not None:
+            raise RuntimeError(
+                "This SDK instance has an active asynchronous client. "
+                "Call `await sdk.aclose()` or use `async with AsyncImednetSDK(...)` "
+                "to properly clean up async resources."
+            )
+        self._client.close()
 
     async def aclose(self) -> None:
         if self._async_client is not None:
@@ -224,18 +210,34 @@ class ImednetSDK(SDKConvenienceMixin):
 
 
 class AsyncImednetSDK(ImednetSDK):
-    """Async variant of :class:`ImednetSDK` using the async HTTP client."""
+    """Async variant of :class:`ImednetSDK` using the async HTTP client.
+
+    Always use this class with ``async with`` or call ``await sdk.aclose()``
+    explicitly when done. Using the synchronous context manager (``with``) or
+    synchronous ``close()`` on this class will raise a :exc:`TypeError`.
+    """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover - thin wrapper
         kwargs["enable_async"] = True
         super().__init__(*args, **kwargs)
 
+    def __enter__(self) -> "AsyncImednetSDK":
+        raise TypeError(
+            "AsyncImednetSDK does not support the synchronous context manager protocol. "
+            "Use `async with AsyncImednetSDK(...)` instead."
+        )
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        raise TypeError(
+            "AsyncImednetSDK does not support the synchronous context manager protocol. "
+            "Use `async with AsyncImednetSDK(...)` instead."
+        )
+
     async def __aenter__(self) -> "AsyncImednetSDK":
-        await super().__aenter__()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        await super().__aexit__(exc_type, exc_val, exc_tb)
+        await self.aclose()
 
 
 __all__ = ["ImednetSDK", "AsyncImednetSDK"]
