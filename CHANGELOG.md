@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.2](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.1...v0.5.2) (2026-05-07)
+
+
+### Bug Fixes
+
+* address PR review thread issues for plugin loading and docs refs ([2c841e0](https://github.com/fderuiter/imednet-python-sdk/commit/2c841e0288a206af737891904ee00c4b7fc666a4))
+* tighten workflow init errors and airflow s3 fallback messaging ([b706b3c](https://github.com/fderuiter/imednet-python-sdk/commit/b706b3c04691566b5fd6c632a93eaea30307e419))
+
+
+### Documentation
+
+* fix sub-package path consistency in AGENTS.md ([00c4847](https://github.com/fderuiter/imednet-python-sdk/commit/00c4847f19fdc39ebf51a498182aeb387d96fb5e))
+* rewrite AGENTS.md per issue phases 1-5 ([b242550](https://github.com/fderuiter/imednet-python-sdk/commit/b24255051bffa6aed2aa111928b575eae6ba10bb))
+
 ## [0.5.1](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.0...v0.5.1) (2026-05-07)
 
 
