@@ -9,6 +9,7 @@ packages = [{ include = "apache_airflow_providers_imednet", from = "src" }]
 python = "^3.10"
 imednet = ">=0.5.1,<1.0.0"
 apache-airflow = ">=2.8.0"
+apache-airflow-providers-amazon = ">=8.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

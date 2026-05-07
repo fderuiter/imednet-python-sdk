@@ -63,11 +63,14 @@ def _register_workflow_commands() -> None:
 
 
 try:  # pragma: no cover - optional workflows plugin
-    workflows_module = import_module("imednet_workflows")
-    DataExtractionWorkflow = workflows_module.DataExtractionWorkflow  # noqa: F401
-    SubjectDataWorkflow = workflows_module.SubjectDataWorkflow  # noqa: F401
+    DataExtractionWorkflow = import_module(  # noqa: F401
+        "imednet_workflows.data_extraction"
+    ).DataExtractionWorkflow
+    SubjectDataWorkflow = import_module(
+        "imednet_workflows.subject_data"
+    ).SubjectDataWorkflow  # noqa: F401
     _register_workflow_commands()
-except (ImportError, ModuleNotFoundError):
+except (ImportError, ModuleNotFoundError, AttributeError):
     # Re-export for tests and local fallback behavior.
     from ..workflows.data_extraction import DataExtractionWorkflow  # noqa: F401
     from ..workflows.subject_data import SubjectDataWorkflow  # noqa: F401

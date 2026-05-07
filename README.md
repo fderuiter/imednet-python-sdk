@@ -77,7 +77,7 @@ pip install "imednet[excel]"       # For Excel export
 pip install imednet-workflows
 
 # Airflow provider package
-pip install apache-airflow-providers-imednet
+pip install apache-airflow-providers-imednet apache-airflow-providers-amazon
 ```
 
 ### Development Version

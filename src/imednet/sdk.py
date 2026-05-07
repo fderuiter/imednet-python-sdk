@@ -128,11 +128,8 @@ class ImednetSDK(SDKConvenienceMixin):
 
     def _init_workflows(self) -> Any:
         """Instantiate workflow namespace when optional workflows plugin is available."""
-        try:
-            workflows_module = import_module("imednet_workflows.namespace")
-            workflows_cls = getattr(workflows_module, "Workflows")
-            return workflows_cls(self)
-        except (ImportError, ModuleNotFoundError):
+
+        def _init_local_workflows() -> Any:
             try:
                 from .workflows.namespace import Workflows
 
@@ -150,6 +147,24 @@ class ImednetSDK(SDKConvenienceMixin):
                         )
 
                 return _MissingWorkflows()
+
+        try:
+            workflows_module = import_module("imednet_workflows.namespace")
+        except ModuleNotFoundError as error:
+            if error.name and error.name.startswith("imednet_workflows"):
+                return _init_local_workflows()
+            raise
+
+        workflows_cls = getattr(workflows_module, "Workflows", None)
+        if workflows_cls is None:
+            raise ImportError(
+                "The optional 'imednet-workflows' package is installed but does not "
+                "export 'Workflows' from 'imednet_workflows.namespace'."
+            )
+        try:
+            return workflows_cls(self)
+        except AttributeError as error:
+            raise ImportError("Failed to initialize workflows from 'imednet-workflows'.") from error
 
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""

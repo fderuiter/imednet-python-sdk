@@ -38,7 +38,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   apache_airflow_providers_imednet
+   imednet.integrations.airflow
 
 Submodules
 ----------
