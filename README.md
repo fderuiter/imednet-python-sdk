@@ -48,7 +48,7 @@ graph TD
     CLI[CLI] --> |invokes| Workflows
     Workflows --> |coordinate| Endpoints
     Endpoints --> |use| Client["(HTTP Client)"]
-    Client --> |requests| API
+    Client --> |httpx| API
 ```
 
 ---
@@ -297,4 +297,4 @@ details.
 
 ## Acknowledgements
 
-Built with open source libraries including requests, httpx, pydantic and typer.
+Built with open source libraries including httpx, pydantic and typer.

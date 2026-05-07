@@ -4,6 +4,8 @@ API Overview
 This page summarizes the core concepts of the Mednet EDC REST API and how the
 SDK interacts with it.
 
+The SDK uses ``httpx`` for both synchronous and asynchronous HTTP transport.
+
 Base URL
 --------
 
@@ -117,4 +119,3 @@ Error codes
 
 ``9001``
   Unauthorized error. Insufficient permission to retrieve data.
-

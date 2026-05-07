@@ -14,14 +14,15 @@ Components
        CLI[CLI] --> |invokes| Workflows
        Workflows --> |coordinate| Endpoints
        Endpoints --> |use| Client["(HTTP Client)"]
-       Client --> |requests| API
+       Client --> |httpx| API
 
 Core Client
 -----------
 
 The synchronous :class:`~imednet.core.client.Client` implements authentication,
 retry handling, and JSON serialization for each API request. It inherits from
-``HTTPClientBase`` and is shared by all endpoint classes.
+``HTTPClientBase`` and is shared by all endpoint classes. HTTP transport is
+handled by ``httpx``.
 
 Async Client
 ------------
@@ -102,4 +103,3 @@ Adding New Workflows
 * Instantiate the workflow in ``Workflows`` inside :mod:`imednet.sdk`.
 * Add CLI commands or examples that demonstrate the workflow.
 * Update documentation and tests.
-
