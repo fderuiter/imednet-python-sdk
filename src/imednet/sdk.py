@@ -179,14 +179,15 @@ class ImednetSDK(SDKConvenienceMixin):
         """Close the synchronous client connection and free resources.
 
         Raises:
-            RuntimeError: If an asynchronous client is active. Use
-                ``await sdk.aclose()`` (or an ``async with`` block) instead.
+            RuntimeError: If an asynchronous client is active. Call
+                ``await sdk.aclose()`` instead, or use
+                ``async with AsyncImednetSDK(...)`` to manage the lifecycle.
         """
         if self._async_client is not None:
             raise RuntimeError(
                 "This SDK instance has an active asynchronous client. "
                 "Call `await sdk.aclose()` to properly clean up async resources, "
-                "or manage the SDK lifecycle with `async with`."
+                "or use `async with AsyncImednetSDK(...)` to manage the lifecycle."
             )
         self._client.close()
 
@@ -220,6 +221,13 @@ class AsyncImednetSDK(ImednetSDK):
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover - thin wrapper
         kwargs["enable_async"] = True
         super().__init__(*args, **kwargs)
+
+    def close(self) -> None:
+        """Raises :exc:`TypeError` — use ``await sdk.aclose()`` instead."""
+        raise TypeError(
+            "AsyncImednetSDK does not support the synchronous close() method. "
+            "Use `await sdk.aclose()` or `async with AsyncImednetSDK(...)` instead."
+        )
 
     def __enter__(self) -> "AsyncImednetSDK":
         raise TypeError(

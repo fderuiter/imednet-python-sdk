@@ -30,9 +30,7 @@ async def test_async_context_manager():
     async_client_mock.aclose = AsyncMock()
 
     with patch("imednet.sdk.ClientFactory.create_client", return_value=client_mock):
-        with patch(
-            "imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock
-        ):
+        with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
             async with AsyncImednetSDK() as sdk:
                 assert isinstance(sdk, AsyncImednetSDK)
 
@@ -57,6 +55,19 @@ def test_close_with_async_client_raises_runtime_error():
         sdk.close()
 
     client_mock.close.assert_not_called()
+
+
+def test_async_sdk_close_raises_type_error():
+    """AsyncImednetSDK.close() raises TypeError — sync close is forbidden."""
+    with patch("imednet.sdk.load_config"):
+        with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
+            with patch(
+                "imednet.sdk.ClientFactory.create_async_client",
+                return_value=MagicMock(spec=AsyncClient),
+            ):
+                sdk = AsyncImednetSDK()
+                with pytest.raises(TypeError, match="await sdk.aclose"):
+                    sdk.close()
 
 
 def test_async_sdk_sync_context_manager_raises_type_error():
