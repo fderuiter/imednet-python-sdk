@@ -14,7 +14,8 @@ using Sphinx. It sets up the project information, extensions, and theme settings
 Attributes:
     project (str): The name of the project ("imednet")
     author (str): The author's name ("Frederick de Ruiter")
-    release (str): The version of the project ("0.1.0")
+    release (str): The full project version from ``imednet.__version__``
+    version (str): The short project version from ``imednet.__version__``
     extensions (list): List of Sphinx extensions to be used
     templates_path (list[str]): Path to custom templates
     exclude_patterns (list[str]): Patterns to exclude from documentation
