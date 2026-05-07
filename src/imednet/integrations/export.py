@@ -11,7 +11,6 @@ except ImportError:
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 
-from .. import ImednetClient
 from ..sdk import ImednetSDK
 from ..workflows.record_mapper import RecordMapper
 
@@ -285,17 +284,15 @@ def export_to_sql_by_form(
         label_map = {
             v.variable_name: v.label for v in variables if v.variable_name in variable_keys
         }
-        record_model = mapper._build_record_model(variable_keys, label_map)
-        records = mapper._fetch_records(
+        records = mapper.fetch_records(
             study_key,
             extra_filters={
                 "formId": form.form_id,
                 **({"variableNames": variable_whitelist} if variable_whitelist else {}),
             },
         )
-        rows, _ = mapper._parse_records(records, record_model)
-        df = mapper._build_dataframe(
-            rows,
+        df = mapper.map_records_to_dataframe(
+            records,
             variable_keys,
             label_map,
             use_labels_as_columns,
@@ -313,7 +310,7 @@ def export_to_sql_by_form(
 
 
 def export_to_long_sql(
-    sdk: ImednetClient,
+    sdk: ImednetSDK,
     study_key: str,
     table_name: str,
     conn_str: str,
@@ -332,7 +329,7 @@ def export_to_long_sql(
 
     engine = create_engine(conn_str)
     mapper = RecordMapper(sdk)
-    records = mapper._fetch_records(study_key)
+    records = mapper.fetch_records(study_key)
 
     rows: List[dict[str, Any]] = []
     first = True

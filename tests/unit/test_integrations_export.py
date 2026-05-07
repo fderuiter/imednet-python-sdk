@@ -198,12 +198,10 @@ def test_export_to_sql_by_form(monkeypatch):
     ]
 
     mapper_inst = MagicMock()
-    mapper_inst._build_record_model.return_value = object()
-    mapper_inst._fetch_records.side_effect = [MagicMock(), MagicMock()]
-    mapper_inst._parse_records.side_effect = [([], 0), ([], 0)]
+    mapper_inst.fetch_records.side_effect = [MagicMock(), MagicMock()]
     df1 = MagicMock()
     df2 = MagicMock()
-    mapper_inst._build_dataframe.side_effect = [df1, df2]
+    mapper_inst.map_records_to_dataframe.side_effect = [df1, df2]
     mapper_cls = MagicMock(return_value=mapper_inst)
     monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
 
@@ -232,7 +230,7 @@ def test_export_to_long_sql(monkeypatch):
         MagicMock(record_id=2, form_id=11, record_data={"C": 3}, date_modified=dt2),
         MagicMock(record_id=3, form_id=12, record_data={"D": 4}, date_modified=dt3),
     ]
-    mapper_inst = MagicMock(_fetch_records=MagicMock(return_value=records))
+    mapper_inst = MagicMock(fetch_records=MagicMock(return_value=records))
     mapper_cls = MagicMock(return_value=mapper_inst)
     monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
 

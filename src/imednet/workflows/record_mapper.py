@@ -87,7 +87,7 @@ class RecordMapper:
             )
         return create_model("RecordData", __base__=BaseModel, **fields)  # type: ignore
 
-    def _fetch_records(
+    def fetch_records(
         self,
         study_key: str,
         visit_key: Optional[str] = None,
@@ -177,6 +177,22 @@ class RecordMapper:
             df = df.rename(columns=rename_map)
         return df
 
+    def map_records_to_dataframe(
+        self,
+        records: List[RecordModel],
+        variable_keys: List[str],
+        label_map: Dict[str, str],
+        use_labels: bool = True,
+    ) -> pd.DataFrame:
+        """Convert a list of raw records into a DataFrame."""
+        if not variable_keys:
+            return pd.DataFrame()
+        record_model = self._build_record_model(variable_keys, label_map)
+        rows, errors = self._parse_records(records, record_model)
+        if errors:
+            logger.warning("Encountered %s errors while parsing record data.", errors)
+        return self._build_dataframe(rows, variable_keys, label_map, use_labels)
+
     def dataframe(
         self,
         study_key: str,
@@ -208,7 +224,7 @@ class RecordMapper:
         if form_whitelist is not None:
             extra_filters["formIds"] = form_whitelist
 
-        records = self._fetch_records(
+        records = self.fetch_records(
             study_key,
             visit_key,
             extra_filters=extra_filters or None,
