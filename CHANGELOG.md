@@ -22,3 +22,4 @@
 - Adopted PEP 621 project metadata as the single source of truth in `pyproject.toml`.
 - Removed redundant metadata fields from `[tool.poetry]`.
 - Added automated semantic versioning and release PR generation via `release-please`.
+- Removed the redundant `requests` dependency and standardized SDK HTTP transport on `httpx`.
