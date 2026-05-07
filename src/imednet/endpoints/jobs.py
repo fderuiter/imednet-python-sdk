@@ -25,18 +25,24 @@ class JobsEndpoint(
     PAGINATOR_CLS = JsonListPaginator
     ASYNC_PAGINATOR_CLS = AsyncJsonListPaginator
 
-    def get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+    def _create_path_get_operation(
+        self,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> PathGetOperation[JobStatus]:
         path = self._get_endpoint_path(study_key, item_id)
         return PathGetOperation[JobStatus](
             path=path,
             parse_func=self._parse_item,
             not_found_func=lambda: self._raise_not_found(study_key, item_id),
-        ).execute_sync(self._require_sync_client())
+        )
+
+    def get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+        return self._create_path_get_operation(study_key, item_id).execute_sync(
+            self._require_sync_client()
+        )
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
-        path = self._get_endpoint_path(study_key, item_id)
-        return await PathGetOperation[JobStatus](
-            path=path,
-            parse_func=self._parse_item,
-            not_found_func=lambda: self._raise_not_found(study_key, item_id),
-        ).execute_async(self._require_async_client())
+        return await self._create_path_get_operation(study_key, item_id).execute_async(
+            self._require_async_client()
+        )

@@ -100,6 +100,15 @@ class GenericListGetEndpoint(
     STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = None
     _cache: Optional[List[T] | Dict[str, List[T]]] = None
 
+    def __init__(
+        self,
+        client: RequestorProtocol,
+        ctx: Context,
+        async_client: Optional[AsyncRequestorProtocol] = None,
+    ) -> None:
+        super().__init__(client, ctx, async_client)
+        self._cache = None
+
     @property
     def study_key_strategy(self) -> StudyKeyStrategy:
         if self.STUDY_KEY_STRATEGY:
@@ -119,7 +128,7 @@ class GenericListGetEndpoint(
         return parse_func(item)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
-        if self._parse_item.__func__ is not GenericListGetEndpoint._parse_item:  # type: ignore[attr-defined]
+        if type(self)._parse_item is not GenericListGetEndpoint._parse_item:
             return self._parse_item
         return get_model_parser(self.MODEL)
 
