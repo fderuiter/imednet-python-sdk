@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.3](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.2...v0.5.3) (2026-05-07)
+
+
+### Bug Fixes
+
+* address code review - improve close() error message and add __exit__ test coverage ([deb45c7](https://github.com/fderuiter/imednet-python-sdk/commit/deb45c797e7e486b35cbed13fcb714c490186c7a))
+* clarify close() error message, override close() in AsyncImednetSDK to raise TypeError, add test, fix black formatting ([91c5f58](https://github.com/fderuiter/imednet-python-sdk/commit/91c5f58db1c6c318fc7ecec15d83c5e227774a18))
+* enforce strict async/sync lifecycle separation in SDK (remove asyncio bridging anti-pattern) ([38c93a7](https://github.com/fderuiter/imednet-python-sdk/commit/38c93a7950d0137a648123b37e46a7b7ebf0d9df))
+
 ## [0.5.2](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.1...v0.5.2) (2026-05-07)
 
 
