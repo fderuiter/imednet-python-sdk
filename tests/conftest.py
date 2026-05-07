@@ -51,14 +51,9 @@ def paginator_factory(monkeypatch):
             def __iter__(self):
                 yield from self._items
 
-        # We patch the mixin module because that's where Paginator is now resolved.
-        # 'module' arg is kept for compatibility but ignored for patching target.
-        import imednet.core.endpoint.mixins as mixins_module
-
-        monkeypatch.setattr(mixins_module, "Paginator", DummyPaginator)
-        # Also patch the class attribute since it's now used
-        if hasattr(mixins_module, "ListEndpointMixin"):
-            monkeypatch.setattr(mixins_module.ListEndpointMixin, "PAGINATOR_CLS", DummyPaginator)
+        for obj in module.__dict__.values():
+            if isinstance(obj, type) and hasattr(obj, "PAGINATOR_CLS"):
+                monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
         return captured
 
     return factory
@@ -82,14 +77,9 @@ def async_paginator_factory(monkeypatch):
                 for item in self._items:
                     yield item
 
-        import imednet.core.endpoint.mixins as mixins_module
-
-        monkeypatch.setattr(mixins_module, "AsyncPaginator", DummyPaginator)
-        # Also patch the class attribute since it's now used
-        if hasattr(mixins_module, "ListEndpointMixin"):
-            monkeypatch.setattr(
-                mixins_module.ListEndpointMixin, "ASYNC_PAGINATOR_CLS", DummyPaginator
-            )
+        for obj in module.__dict__.values():
+            if isinstance(obj, type) and hasattr(obj, "ASYNC_PAGINATOR_CLS"):
+                monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
         return captured
 
     return factory
@@ -107,9 +97,9 @@ def patch_build_filter(monkeypatch):
         if hasattr(module, "build_filter_string"):
             monkeypatch.setattr(module, "build_filter_string", fake)
         else:
-            import imednet.core.endpoint.mixins.params as params_mixin
+            import imednet.core.endpoint.base as endpoint_base
 
-            monkeypatch.setattr(params_mixin, "build_filter_string", fake)
+            monkeypatch.setattr(endpoint_base, "build_filter_string", fake)
         return captured
 
     return patch

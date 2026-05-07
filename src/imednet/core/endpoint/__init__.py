@@ -1,17 +1,14 @@
 """
-Core endpoint abstractions and mixins.
+Core endpoint abstractions and protocols.
 """
 
-from .mixins import (
-    FilterGetEndpointMixin,
-    ListEndpointMixin,
-    ParsingMixin,
-    PathGetEndpointMixin,
-)
+from .base import GenericEndpoint, GenericListGetEndpoint
+from .protocols import SupportsCreate, SupportsGet, SupportsList
 
 __all__ = [
-    "FilterGetEndpointMixin",
-    "ListEndpointMixin",
-    "ParsingMixin",
-    "PathGetEndpointMixin",
+    "GenericEndpoint",
+    "GenericListGetEndpoint",
+    "SupportsCreate",
+    "SupportsGet",
+    "SupportsList",
 ]

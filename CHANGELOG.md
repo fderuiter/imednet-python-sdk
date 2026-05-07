@@ -46,3 +46,4 @@
 - Removed redundant metadata fields from `[tool.poetry]`.
 - Added automated semantic versioning and release PR generation via `release-please`.
 - Removed the redundant `requests` dependency and standardized SDK HTTP transport on `httpx`.
+- Refactored endpoint read architecture from inheritance-heavy mixins to composition-based operations while preserving public `list`/`get` endpoint methods.

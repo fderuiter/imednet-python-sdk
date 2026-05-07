@@ -36,8 +36,13 @@ Endpoints
 ---------
 
 Each endpoint, such as :class:`~imednet.endpoints.studies.StudiesEndpoint`,
-wraps a related set of API operations. Endpoints can cache responses when called
-without filters and expose ``list``/``get`` methods that return typed models.
+wraps a related set of API operations. Endpoints now use **composition**:
+`GenericListGetEndpoint` composes operation classes (for example
+``ListOperation`` and ``FilterGetOperation``) rather than inheriting deep
+operation mixin chains. This keeps method resolution straightforward, improves
+IDE autocomplete, and avoids MRO-related typing ambiguity. Endpoints can cache
+responses when called without filters and expose ``list``/``get`` methods that
+return typed models.
 
 Workflows
 ---------
@@ -90,7 +95,8 @@ Extension Points
 Adding New Endpoints
 --------------------
 
-* Subclass :class:`~imednet.endpoints.base.BaseEndpoint`.
+* Subclass :class:`~imednet.core.endpoint.base.GenericEndpoint` or
+  :class:`~imednet.core.endpoint.base.GenericListGetEndpoint`.
 * Register the class in ``_ENDPOINT_REGISTRY`` within
   :mod:`imednet.sdk` so ``ImednetSDK`` exposes it.
 * Document the endpoint in ``docs/endpoints/`` and add tests.

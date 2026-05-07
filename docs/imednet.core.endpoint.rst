@@ -7,7 +7,6 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   imednet.core.endpoint.mixins
    imednet.core.endpoint.operations
 
 Submodules
