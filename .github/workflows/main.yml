@@ -15,6 +15,32 @@ env:
 
 jobs:
   # ------------------------------------------------------------------
+  # JOB 0: PR TITLE LINT (Pull requests only)
+  # ------------------------------------------------------------------
+  semantic-pr-title:
+    name: Semantic PR Title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            chore
+            docs
+            ci
+            test
+            refactor
+            perf
+            revert
+
+  # ------------------------------------------------------------------
   # JOB 1: QUALITY GATE (Runs once)
   # ------------------------------------------------------------------
   quality:

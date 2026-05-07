@@ -25,9 +25,11 @@ Run these commands and ensure **≥90%** test coverage before opening a pull req
 
 Release workflow
 ----------------
-Use this workflow for new releases:
+Releases are fully automated and driven by merged PR titles:
 
-1. Run validation locally:
+1. Ensure the PR title uses a Conventional Commit prefix (for example, ``feat:``, ``fix:``,
+   ``chore:``, or ``docs:``). CI enforces this via the ``Semantic PR Title`` check.
+2. Run validation locally:
 
    .. code-block:: bash
 
@@ -37,35 +39,21 @@ Use this workflow for new releases:
       poetry run mypy src/imednet
       poetry run pytest -q
 
-2. Bump the version:
-
-   .. code-block:: bash
-
-      poetry run bump-my-version patch
-
-   Use ``minor`` or ``major`` when appropriate.
-
-3. Build docs and package artifacts:
-
-   .. code-block:: bash
-
-      make docs
-      poetry build
-
-4. Push the release commit and tags:
-
-   .. code-block:: bash
-
-      git push origin <branch-name>
-      git push origin --tags
-
-5. Confirm GitHub Actions is green. Publishing is triggered by ``vX.Y.Z`` tags.
+3. Merge to ``main`` with **Squash and merge** so the PR title becomes the merged commit message.
+4. The ``Automated Release`` workflow runs ``release-please`` on ``main`` pushes and opens/updates
+   a Release PR with semantic version and changelog updates.
+5. Maintainers trigger publication by approving and merging the bot-created Release PR.
+6. ``project.version`` in ``pyproject.toml`` must never be edited manually.
+7. Publishing requires ``PYPI_API_TOKEN`` in repository secrets (or migration to PyPI Trusted
+   Publishers/OIDC).
+8. Configure branch protection on ``main`` to require pull request reviews and required checks,
+   including ``Semantic PR Title``.
 
 Conventions
 -----------
 - Apply DRY and SOLID principles.
 - Limit lines to 100 characters.
-- Use Conventional Commit messages.
+- Use Conventional Commit prefixes in PR titles.
 
 Pull request process
 --------------------
