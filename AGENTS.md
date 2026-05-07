@@ -48,12 +48,12 @@ Before proposing any solution, execute and pass all CI quality gates locally.
 ### Application Layer (`src/imednet/`)
 | Sub-package | Responsibility | Rules |
 |---|---|---|
-| `http/` | Low-level HTTP transport | Retries (idempotent + jitter via `tenacity`), timeouts, rate-limit headers (`Retry-After`). Map status codes to `imednet.errors`. Redact secrets before logging. |
-| `auth/` | Credential management | Never log or print tokens. Mask values in all representations. Thread- and async-safe. |
-| `errors/` | Exception hierarchy | `ImednetError` → `AuthError`, `RateLimitError`, `ApiError`. No imports from sibling sub-packages. |
-| `pagination/` | Cursor/page iteration | Lazy iteration, bounded memory. Expose page size and cursor. |
-| `utils/` | Pure helpers | No side effects, no network I/O, no imports from `http/` or `workflows/`. |
-| `workflows/` | Higher-level orchestration | Batching, retries, transforms. Inject client via constructor. Fail loudly with typed errors. |
+| `src/imednet/http/` | Low-level HTTP transport | Retries (idempotent + jitter via `tenacity`), timeouts, rate-limit headers (`Retry-After`). Map status codes to `imednet.errors`. Redact secrets before logging. |
+| `src/imednet/auth/` | Credential management | Never log or print tokens. Mask values in all representations. Thread- and async-safe. |
+| `src/imednet/errors/` | Exception hierarchy | `ImednetError` → `AuthError`, `RateLimitError`, `ApiError`. No imports from sibling sub-packages. |
+| `src/imednet/pagination/` | Cursor/page iteration | Lazy iteration, bounded memory. Expose page size and cursor. |
+| `src/imednet/utils/` | Pure helpers | No side effects, no network I/O, no imports from `src/imednet/http/` or `src/imednet/workflows/`. |
+| `src/imednet/workflows/` | Higher-level orchestration | Batching, retries, transforms. Inject client via constructor. Fail loudly with typed errors. |
 
 New endpoints must be typed methods on the appropriate resource class. Shared logic belongs in `utils/`. Breaking API changes require a major version bump.
 
