@@ -9,7 +9,9 @@ def test_list_operation_sync_uses_paginator():
     client = MagicMock()
     paginator_cls = MagicMock(return_value=[{"id": 1}, {"id": 2}])
 
-    operation = ListOperation(path="/records", params={"q": "x"}, page_size=50, parse_func=lambda x: x)
+    operation = ListOperation(
+        path="/records", params={"q": "x"}, page_size=50, parse_func=lambda x: x
+    )
     result = operation.execute_sync(client, paginator_cls)
 
     assert result == [{"id": 1}, {"id": 2}]
