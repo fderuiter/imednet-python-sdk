@@ -128,18 +128,26 @@ warnings.filterwarnings("ignore", message="Failed guarded type import", category
 # function signatures concise in the rendered documentation.
 autodoc_typehints = "description"
 
+# Autodoc default options applied to all automodule/autoclass directives.
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
+}
+autodoc_class_signature = "separated"
+
+# Force sphinx-autodoc-typehints to evaluate TYPE_CHECKING blocks so that
+# forward references used only under `if TYPE_CHECKING:` are resolved.
+set_type_checking_flag = True
+
+# Napoleon – enforce Google-style docstrings.
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = True
+
 # Templates and static paths
 templates_path: list[str] = ["_templates"]
-exclude_patterns: list[str] = [
-    "imednet.airflow.rst",
-    "imednet.cli.rst",
-    "imednet.cli.*.rst",
-    "imednet.integrations.rst",
-    "imednet.integrations.*.rst",
-    "imednet.integrations.airflow.rst",
-    "imednet.testing.rst",
-    "imednet.errors.rst",
-]  # annotated per mypy requirement
+exclude_patterns: list[str] = []  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 
 

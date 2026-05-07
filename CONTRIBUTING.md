@@ -64,6 +64,54 @@ Configuration requirements:
   `test:`, `refactor:`, `perf:`, `revert:`).
 - Add tests, docs, and examples for any public change.
 
+## Docstring standards
+
+All public APIs must be documented using **Google-style docstrings** so that `sphinx.ext.napoleon`
+can parse them correctly.
+
+Key rules:
+
+1. **Type hints belong in the function signature only.** Do not duplicate type information inside
+   the docstring body.
+2. **Google format sections** use four-space indentation and the exact keywords `Args:`, `Returns:`,
+   `Raises:`, `Example:`, etc. Writing `Arguments:` or `Parameters:` instead of `Args:` will cause
+   malformed output.
+3. **Mypy compliance is a prerequisite for documentation.** `sphinx-autodoc-typehints` evaluates
+   actual Python type annotations; broken or missing annotations will render incorrectly.
+4. **Static `.rst` files are reserved for architectural overviews and tutorials only.**
+   Do not create manually maintained `.rst` files for individual modules, classes, or CLI commands.
+   API reference documentation is generated automatically by `sphinx-apidoc` into `docs/api/`
+   (excluded from version control via `.gitignore`).
+
+### Docstring example
+
+```python
+def fetch_records(study_key: str, page: int = 0) -> list[Record]:
+    """Retrieve a page of records for the given study.
+
+    Args:
+        study_key: Unique identifier for the study.
+        page: Zero-based page index.
+
+    Returns:
+        A list of Record objects for the requested page.
+
+    Raises:
+        ApiError: If the server returns a non-2xx status code.
+    """
+```
+
+### Pre-merge documentation checklist
+
+Before opening a pull request that adds or modifies public APIs:
+
+1. Run `poetry run mypy src/imednet` and confirm zero errors.
+2. Run `make docs` locally. This command regenerates `docs/api/` via `sphinx-apidoc` and then
+   compiles the HTML with `-W --keep-going`, treating every Sphinx warning as an error.
+3. Open `docs/_build/html/index.html` and verify that type hints appear in the parameter
+   descriptions with no raw reStructuredText syntax leaking into the rendered page.
+
+
 ## Pull requests
 1. Fork the repository and create a feature branch.
 2. Include validation output in the PR description.

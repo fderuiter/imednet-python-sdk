@@ -12,11 +12,9 @@ Welcome to imednet's documentation!
    logging_and_tracing
    quick_start
    configuration
-   imednet.config
    async_quick_start
    api_overview
    rest_api_reference
-   endpoints/index
    form_builder
    architecture
    parsing
@@ -34,7 +32,7 @@ Welcome to imednet's documentation!
    live_tests
    examples/index
    contributing
-   modules
+   api/index
 
 
 Indices and tables
