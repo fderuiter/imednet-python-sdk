@@ -10,10 +10,6 @@ license = {text = "MIT"}
 imednet = "imednet.cli:app"
 
 [tool.poetry]
-name = "imednet"
-version = "0.4.2"
-description = "Unofficial Python SDK for the iMednet clinical trials API"
-readme = "README.md"
 keywords = ["imednet", "clinical trials", "sdk", "api"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -28,7 +24,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
     "Typing :: Typed",
 ]
-authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
 maintainers = ["Frederick de Ruiter <fpderuiter@gmail.com>"]
 packages = [{ include = "imednet", from = "src" }]
 include = [
@@ -37,7 +32,6 @@ include = [
     "src/imednet/py.typed",
     { path = "examples", format = "sdist" } # Include examples only in sdist
 ]
-license = "MIT"
 repository = "https://github.com/fderuiter/imednet-python-sdk"
 homepage = "https://github.com/fderuiter/imednet-python-sdk"
 
@@ -81,6 +75,7 @@ respx = "^0.22.0"
 pytest-asyncio = ">=0.24.0"
 faker = "^24.9"
 pre-commit = "^4.2.0"
+bump-my-version = "^1.1.3"
 virtualenv = "^20.36.1"
 isort = "^6.0.1"
 werkzeug = "^3.1.6"

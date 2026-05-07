@@ -28,6 +28,16 @@ poetry run pytest -q
 ```
 Coverage must stay ≥ 90%.
 
+## Package metadata and versioning
+- The `[project]` block in `pyproject.toml` is the single source of truth for package metadata.
+- Do not edit version strings manually in multiple places.
+
+Use `bump-my-version` for releases:
+
+```bash
+poetry run bump-my-version patch
+```
+
 ## Conventions
 - DRY + SOLID. Line length 100.
 - Use Conventional Commits.
@@ -38,4 +48,3 @@ Coverage must stay ≥ 90%.
 2. Include validation output in the PR description.
 3. Keep PRs scoped; one change per PR.
 4. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
-
