@@ -98,7 +98,7 @@ class GenericListGetEndpoint(
     PARAM_PROCESSOR: Optional[ParamProcessor] = None
     PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
     STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = None
-    _cache: Optional[List[T] | Dict[str, List[T]]] = None
+    _cache: Optional[List[T] | Dict[str, List[T]]]
 
     def __init__(
         self,
@@ -128,7 +128,11 @@ class GenericListGetEndpoint(
         return parse_func(item)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
-        if type(self)._parse_item is not GenericListGetEndpoint._parse_item:
+        parse_method = self._parse_item
+        if (
+            getattr(parse_method, "__func__", parse_method)
+            is not GenericListGetEndpoint._parse_item
+        ):
             return self._parse_item
         return get_model_parser(self.MODEL)
 

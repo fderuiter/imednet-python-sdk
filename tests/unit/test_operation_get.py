@@ -45,10 +45,13 @@ def test_path_get_operation_not_found_callback():
     response.json.return_value = None
     client.get.return_value = response
 
+    def raise_not_found() -> None:
+        raise NotFoundError("missing")
+
     operation = PathGetOperation(
         path="/studies/S1/jobs/123",
         parse_func=lambda data: data,
-        not_found_func=lambda: (_ for _ in ()).throw(NotFoundError("missing")),
+        not_found_func=raise_not_found,
     )
 
     with pytest.raises(NotFoundError, match="missing"):
