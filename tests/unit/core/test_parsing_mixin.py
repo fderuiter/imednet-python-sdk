@@ -1,7 +1,8 @@
+from unittest.mock import MagicMock
+
 from imednet.core.context import Context
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.models.json_base import JsonModel
-from unittest.mock import MagicMock
 
 
 class MockModel(JsonModel):

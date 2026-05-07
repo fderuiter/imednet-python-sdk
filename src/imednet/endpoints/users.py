@@ -2,8 +2,7 @@
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.strategies import PopStudyKeyStrategy
-from imednet.core.endpoint.strategies import MappingParamProcessor
+from imednet.core.endpoint.strategies import MappingParamProcessor, PopStudyKeyStrategy
 from imednet.models.users import User
 
 

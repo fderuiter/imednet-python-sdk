@@ -18,8 +18,8 @@ from imednet.core.endpoint.strategies import (
     StudyKeyStrategy,
 )
 from imednet.core.endpoint.structs import ListRequestState, ParamState
-from imednet.core.parsing import get_model_parser
 from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, ParamProcessor, RequestorProtocol
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
@@ -91,6 +91,7 @@ class GenericListGetEndpoint(
 
     Uses composable operations to provide standard list/get read operations.
     """
+
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator

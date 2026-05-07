@@ -1,10 +1,22 @@
-from typing import Any, Dict, Generic, List, Optional, Protocol, Type, TypeVar, runtime_checkable
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Protocol,
+    Sequence,
+    Type,
+    TypeVar,
+    runtime_checkable,
+)
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
+T_co = TypeVar("T_co", covariant=True)
 
 
 @runtime_checkable
@@ -70,59 +82,59 @@ class ListEndpointProtocol(Protocol[T]):
         ...
 
 
-class SupportsGet(Protocol[T]):
+class SupportsGet(Protocol[T_co]):
     """Protocol for resources that support ``get`` operations."""
 
-    def get(self, study_key: Optional[str], item_id: Any) -> T:
+    def get(self, study_key: Optional[str], item_id: Any) -> T_co:
         """Get a single item synchronously."""
         ...
 
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> T_co:
         """Get a single item asynchronously."""
         ...
 
 
-class SupportsList(Protocol[T]):
+class SupportsList(Protocol[T_co]):
     """Protocol for resources that support ``list`` operations."""
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> Sequence[T_co]:
         """List items synchronously."""
         ...
 
-    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> Sequence[T_co]:
         """List items asynchronously."""
         ...
 
 
-class SupportsCreate(Protocol[T]):
+class SupportsCreate(Protocol[T_co]):
     """Protocol for resources that support ``create`` operations."""
 
-    def create(self, *args: Any, **kwargs: Any) -> T:
+    def create(self, *args: Any, **kwargs: Any) -> T_co:
         """Create an item synchronously."""
         ...
 
-    async def async_create(self, *args: Any, **kwargs: Any) -> T:
+    async def async_create(self, *args: Any, **kwargs: Any) -> T_co:
         """Create an item asynchronously."""
         ...
 
 
-class SyncOperationProtocol(Protocol, Generic[T]):
+class SyncOperationProtocol(Protocol, Generic[T_co]):
     """Protocol for sync operation executors requiring explicit transport injection."""
 
-    def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
-        ...
+    def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None: ...
 
-    def execute(self) -> T:
+    def execute(self) -> T_co:
         """Execute synchronously."""
         ...
 
 
-class AsyncOperationProtocol(Protocol, Generic[T]):
+class AsyncOperationProtocol(Protocol, Generic[T_co]):
     """Protocol for async operation executors requiring explicit transport injection."""
 
-    def __init__(self, client: AsyncRequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
-        ...
+    def __init__(
+        self, client: AsyncRequestorProtocol, path: str, *args: Any, **kwargs: Any
+    ) -> None: ...
 
-    async def execute(self) -> T:
+    async def execute(self) -> T_co:
         """Execute asynchronously."""
         ...
