@@ -30,20 +30,14 @@ Coverage must stay ≥ 90%.
 
 ## Package metadata and versioning
 - The `[project]` block in `pyproject.toml` is the single source of truth for package metadata.
-- Do not edit version strings manually in multiple places.
-
-Use `bump-my-version` for releases:
-
-```bash
-poetry run bump-my-version patch
-```
-
-Replace `patch` with `minor` or `major` as needed for the release type.
+- Never manually edit `project.version` in `pyproject.toml`.
 
 ## Release workflow
-Use this workflow for all new releases:
+Releases are fully automated and driven by merged PR titles:
 
-1. Ensure your branch is up to date and all validation checks pass:
+1. Ensure your PR title follows Conventional Commits (for example, `feat: ...`, `fix: ...`,
+   `chore: ...`, `docs: ...`). The CI `Semantic PR Title` check enforces this.
+2. Ensure your branch is up to date and all validation checks pass:
    ```bash
    poetry run ruff check --fix .
    poetry run black --check .
@@ -51,26 +45,19 @@ Use this workflow for all new releases:
    poetry run mypy src/imednet
    poetry run pytest -q
    ```
-2. Bump the version with `bump-my-version`:
-   ```bash
-   poetry run bump-my-version patch
-   ```
-   Use `minor` or `major` when appropriate.
-3. Build docs and distribution artifacts:
-   ```bash
-   make docs
-   poetry build
-   ```
-4. Push the version-bump commit and tag:
-   ```bash
-   git push origin <branch-name>
-   git push origin --tags
-   ```
-5. Confirm GitHub Actions passes; publishing is triggered by tags matching `vX.Y.Z`.
+3. Merge to `main` using **Squash and merge** so the PR title becomes the merged commit message.
+4. The `Automated Release` workflow runs `release-please` on `main` pushes and opens/updates a
+   Release PR with calculated semantic version, changelog updates, and `pyproject.toml` version
+   updates.
+5. Maintainers trigger publication by approving and merging the bot-created Release PR.
+6. Publishing requires `PYPI_API_TOKEN` in repository secrets (or migration to PyPI Trusted
+   Publishers/OIDC).
+7. Configure branch protection on `main` to require pull request reviews and required status checks,
+   including `Semantic PR Title`.
 
 ## Conventions
 - DRY + SOLID. Line length 100.
-- Use Conventional Commits.
+- Use Conventional Commit prefixes in PR titles (at minimum `feat:`, `fix:`, `chore:`, `docs:`).
 - Add tests, docs, and examples for any public change.
 
 ## Pull requests
