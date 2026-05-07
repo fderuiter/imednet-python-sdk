@@ -56,3 +56,22 @@ def test_path_get_operation_not_found_callback():
 
     with pytest.raises(NotFoundError, match="missing"):
         operation.execute_sync(client)
+
+
+def test_path_get_operation_calls_parse_func():
+    client = MagicMock()
+    response = MagicMock()
+    response.json.return_value = {"jobId": "1"}
+    client.get.return_value = response
+    parse = MagicMock(return_value={"job_id": "1"})
+
+    operation = PathGetOperation(
+        path="/studies/S1/jobs/123",
+        parse_func=parse,
+        not_found_func=MagicMock(),
+    )
+
+    result = operation.execute_sync(client)
+
+    assert result == {"job_id": "1"}
+    parse.assert_called_once_with({"jobId": "1"})

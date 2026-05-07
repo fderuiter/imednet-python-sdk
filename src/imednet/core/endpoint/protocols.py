@@ -119,7 +119,13 @@ class SupportsCreate(Protocol[T_co]):
 
 
 class SyncOperationProtocol(Protocol, Generic[T_co]):
-    """Protocol for sync operation executors requiring explicit transport injection."""
+    """
+    Protocol for sync operation executors requiring explicit transport injection.
+
+    Note:
+        These operation protocols are intentionally generic extension points for
+        future endpoint operation bindings.
+    """
 
     def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None: ...
 
@@ -129,7 +135,13 @@ class SyncOperationProtocol(Protocol, Generic[T_co]):
 
 
 class AsyncOperationProtocol(Protocol, Generic[T_co]):
-    """Protocol for async operation executors requiring explicit transport injection."""
+    """
+    Protocol for async operation executors requiring explicit transport injection.
+
+    Note:
+        These operation protocols are intentionally generic extension points for
+        future endpoint operation bindings.
+    """
 
     def __init__(
         self, client: AsyncRequestorProtocol, path: str, *args: Any, **kwargs: Any
