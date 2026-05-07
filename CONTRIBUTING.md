@@ -38,6 +38,8 @@ Use `bump-my-version` for releases:
 poetry run bump-my-version patch
 ```
 
+Replace `patch` with `minor` or `major` as needed for the release type.
+
 ## Conventions
 - DRY + SOLID. Line length 100.
 - Use Conventional Commits.
