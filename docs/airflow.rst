@@ -1,16 +1,16 @@
 Airflow Integration
 ===================
 
-The SDK ships with operators and sensors for building Airflow pipelines.
+Airflow support is provided via a standalone provider package.
 
 Installation
 ------------
 
-Install the SDK along with Airflow dependencies manually (due to version conflicts, the Airflow packages cannot be managed automatically):
+Install the provider package:
 
 .. code-block:: bash
 
-   pip install imednet apache-airflow apache-airflow-providers-amazon
+   pip install apache-airflow-providers-imednet
 
 Example DAG
 -----------
@@ -19,7 +19,7 @@ Example DAG
 
    from datetime import datetime
    from airflow import DAG
-   from imednet.integrations.airflow import ImednetToS3Operator, ImednetJobSensor
+   from apache_airflow_providers_imednet import ImednetToS3Operator, ImednetJobSensor
 
    default_args = {"start_date": datetime(2024, 1, 1)}
 

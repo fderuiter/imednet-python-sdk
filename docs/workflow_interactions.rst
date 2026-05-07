@@ -1,7 +1,7 @@
 Workflow Interactions
 =====================
 
-The helpers in :mod:`imednet.workflows` combine multiple endpoint calls to
+The helpers in :mod:`imednet_workflows` combine multiple endpoint calls to
 automate common tasks. The diagrams below outline the main steps in each workflow.
 
 Data Extraction

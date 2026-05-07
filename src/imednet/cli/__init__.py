@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from importlib import import_module
+
 import typer
 from dotenv import load_dotenv
 
@@ -11,8 +13,6 @@ from ..integrations.export import export_to_long_sql  # noqa: F401
 from ..integrations.export import export_to_parquet  # noqa: F401
 from ..integrations.export import export_to_sql  # noqa: F401
 from ..integrations.export import export_to_sql_by_form  # noqa: F401
-from ..workflows.data_extraction import DataExtractionWorkflow  # noqa: F401
-from ..workflows.subject_data import SubjectDataWorkflow  # noqa: F401
 from .decorators import with_sdk  # noqa: F401
 from .utils import get_sdk, parse_filter_args  # noqa: F401
 
@@ -42,7 +42,6 @@ from .studies import app as studies_app  # noqa: E402
 from .subject_data import subject_data  # noqa: E402
 from .subjects import app as subjects_app  # noqa: E402
 from .variables import app as variables_app  # noqa: E402
-from .workflows import app as workflows_app  # noqa: E402
 
 app.add_typer(studies_app)
 app.add_typer(queries_app)
@@ -54,8 +53,22 @@ app.add_typer(subjects_app)
 app.add_typer(intervals_app)
 app.add_typer(jobs_app)
 app.add_typer(records_app)
-app.add_typer(workflows_app)
-app.command("subject-data")(subject_data)
+
+try:  # pragma: no cover - optional workflows plugin
+    workflows_module = import_module("imednet_workflows")
+    DataExtractionWorkflow = workflows_module.DataExtractionWorkflow  # noqa: F401
+    SubjectDataWorkflow = workflows_module.SubjectDataWorkflow  # noqa: F401
+    from .workflows import app as workflows_app  # noqa: E402
+
+    app.add_typer(workflows_app)
+    app.command("subject-data")(subject_data)
+except Exception:
+    from ..workflows.data_extraction import DataExtractionWorkflow  # noqa: F401
+    from ..workflows.subject_data import SubjectDataWorkflow  # noqa: F401
+    from .workflows import app as workflows_app  # noqa: E402
+
+    app.add_typer(workflows_app)
+    app.command("subject-data")(subject_data)
 
 
 @app.command(hidden=True)

@@ -62,7 +62,7 @@ pip install imednet
 
 ### Optional Dependencies
 
-To use data export features (SQL, Parquet, Excel) or integrations (Airflow), install the relevant extras:
+To use export features, workflow plugins, or Airflow provider integrations, install the relevant extras/packages:
 
 ```bash
 # Install all export dependencies
@@ -73,8 +73,11 @@ pip install "imednet[sqlalchemy]"  # For SQL export
 pip install "imednet[pyarrow]"     # For Parquet export
 pip install "imednet[excel]"       # For Excel export
 
-# For Airflow integration (must be installed manually due to version conflicts)
-pip install imednet apache-airflow apache-airflow-providers-amazon
+# Workflow plugin package
+pip install imednet-workflows
+
+# Airflow provider package
+pip install apache-airflow-providers-imednet
 ```
 
 ### Development Version

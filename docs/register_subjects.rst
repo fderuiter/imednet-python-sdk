@@ -10,7 +10,7 @@ Example
 
     from imednet import ImednetSDK
     from imednet.models.records import RegisterSubjectRequest
-    from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
+    from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
 
     sdk = ImednetSDK(api_key="API_KEY", security_key="SECURITY_KEY")
     workflow = RegisterSubjectsWorkflow(sdk)

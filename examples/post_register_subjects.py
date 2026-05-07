@@ -1,9 +1,10 @@
 import json
 import os
 
+from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
+
 from imednet import ImednetSDK
 from imednet.models.records import RegisterSubjectRequest
-from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
 
 """
 Example script demonstrating how to register multiple subjects in an iMednet study.

@@ -1,37 +1,37 @@
-imednet.workflows package
+imednet_workflows package
 =========================
 
 Submodules
 ----------
 
-imednet.workflows.data\_extraction module
+imednet_workflows.data\_extraction module
 -----------------------------------------
 
-.. automodule:: imednet.workflows.data_extraction
+.. automodule:: imednet_workflows.data_extraction
    :members:
    :undoc-members:
    :show-inheritance:
 
-imednet.workflows.query\_management module
+imednet_workflows.query\_management module
 ------------------------------------------
 
-.. automodule:: imednet.workflows.query_management
+.. automodule:: imednet_workflows.query_management
    :members:
    :undoc-members:
    :show-inheritance:
 
-imednet.workflows.record\_mapper module
+imednet_workflows.record\_mapper module
 ---------------------------------------
 
-.. automodule:: imednet.workflows.record_mapper
+.. automodule:: imednet_workflows.record_mapper
    :members:
    :undoc-members:
    :show-inheritance:
 
-imednet.workflows.record\_update module
+imednet_workflows.record\_update module
 ---------------------------------------
 
-.. automodule:: imednet.workflows.record_update
+.. automodule:: imednet_workflows.record_update
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,18 +39,18 @@ imednet.workflows.record\_update module
 ``RecordUpdateWorkflow`` uses ``SchemaCache`` to validate record data before
 submission when provided.
 
-imednet.workflows.register_subjects module
+imednet_workflows.register_subjects module
 -------------------------------------------
 
-.. automodule:: imednet.workflows.register_subjects
+.. automodule:: imednet_workflows.register_subjects
    :members:
    :undoc-members:
    :show-inheritance:
 
-imednet.workflows.subject\_data module
+imednet_workflows.subject\_data module
 --------------------------------------
 
-.. automodule:: imednet.workflows.subject_data
+.. automodule:: imednet_workflows.subject_data
    :members:
    :undoc-members:
    :show-inheritance:

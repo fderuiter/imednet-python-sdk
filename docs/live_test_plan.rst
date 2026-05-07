@@ -55,7 +55,7 @@ Common convenience methods on :class:`ImednetSDK` also deserve coverage:
 Workflow Helpers
 ----------------
 
-The workflow utilities in ``imednet.workflows`` should be tested using small,
+The workflow utilities in ``imednet_workflows`` should be tested using small,
 non-destructive calls. Each bullet corresponds to a separate live test.
 
 - ``get_study_structure`` and ``async_get_study_structure``
@@ -102,7 +102,7 @@ The integration helpers require validation using temporary files or buckets:
 - ``export_to_json``
 - ``export_to_parquet``
 - ``export_to_sql``
-- ``ImednetToS3Operator`` and ``ImednetJobSensor`` from ``imednet.integrations.airflow``
-- ``ImednetExportOperator`` from ``imednet.integrations.airflow``
+- ``ImednetToS3Operator`` and ``ImednetJobSensor`` from ``apache_airflow_providers_imednet``
+- ``ImednetExportOperator`` from ``apache_airflow_providers_imednet``
 - ``ImednetHook`` for connection retrieval
 

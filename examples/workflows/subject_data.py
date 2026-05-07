@@ -1,5 +1,6 @@
+from imednet_workflows.subject_data import SubjectDataWorkflow
+
 from imednet import ImednetSDK
-from imednet.workflows.subject_data import SubjectDataWorkflow
 
 """Example retrieving all data for a single subject via ``SubjectDataWorkflow``.
 

@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "packages/core",
+  "packages/providers-airflow",
+  "packages/plugins-workflows",
+]
