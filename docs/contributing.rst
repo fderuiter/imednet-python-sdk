@@ -27,8 +27,9 @@ Release workflow
 ----------------
 Releases are fully automated and driven by merged PR titles:
 
-1. Ensure the PR title uses a Conventional Commit prefix (for example, ``feat:``, ``fix:``,
-   ``chore:``, or ``docs:``). CI enforces this via the ``Semantic PR Title`` check.
+1. Ensure the PR title uses a Conventional Commit prefix. Supported prefixes are ``feat:``,
+   ``fix:``, ``chore:``, ``docs:``, ``ci:``, ``test:``, ``refactor:``, ``perf:``, and
+   ``revert:``. CI enforces this via the ``Semantic PR Title`` check.
 2. Run validation locally:
 
    .. code-block:: bash
@@ -43,11 +44,14 @@ Releases are fully automated and driven by merged PR titles:
 4. The ``Automated Release`` workflow runs ``release-please`` on ``main`` pushes and opens/updates
    a Release PR with semantic version and changelog updates.
 5. Maintainers trigger publication by approving and merging the bot-created Release PR.
-6. ``project.version`` in ``pyproject.toml`` must never be edited manually.
-7. Publishing requires ``PYPI_API_TOKEN`` in repository secrets (or migration to PyPI Trusted
-   Publishers/OIDC).
-8. Configure branch protection on ``main`` to require pull request reviews and required checks,
-   including ``Semantic PR Title``.
+
+Configuration requirements:
+- ``project.version`` in ``pyproject.toml`` must never be edited manually; ``release-please``
+  updates it automatically in the generated Release PR changeset.
+- Publishing requires ``PYPI_API_TOKEN`` in repository secrets (or migration to PyPI Trusted
+  Publishers/OIDC).
+- Configure branch protection on ``main`` to require pull request reviews and required checks,
+  including ``Semantic PR Title``.
 
 Conventions
 -----------
