@@ -6,6 +6,22 @@ SDK interacts with it.
 
 The SDK uses ``httpx`` for both synchronous and asynchronous HTTP transport.
 
+Lifecycle Management
+--------------------
+
+:class:`~imednet.sdk.ImednetSDK` and :class:`~imednet.sdk.AsyncImednetSDK`
+have **distinct, mutually exclusive** lifecycle management methods:
+
+* ``ImednetSDK`` – synchronous only.  Use ``with ImednetSDK(...) as sdk:`` or
+  call ``sdk.close()``.  Calling ``close()`` on an instance that has an active
+  async client raises :exc:`RuntimeError`; use ``await sdk.aclose()`` in that
+  case.
+
+* ``AsyncImednetSDK`` – asynchronous only.  Always use
+  ``async with AsyncImednetSDK(...) as sdk:`` or call
+  ``await sdk.aclose()`` explicitly.  Using the synchronous context manager
+  (``with AsyncImednetSDK(...)``) raises :exc:`TypeError`.
+
 Base URL
 --------
 

@@ -3,6 +3,18 @@ Async Quick Start
 
 This page shows a minimal asynchronous example using ``AsyncImednetSDK``.
 
+.. important::
+
+   ``AsyncImednetSDK`` and ``ImednetSDK`` have **strictly separate lifecycles**.
+   Bridging synchronous code with async teardowns is **not supported**.
+
+   * Always manage ``AsyncImednetSDK`` with ``async with`` or by explicitly
+     calling ``await sdk.aclose()`` within an active event loop.
+   * Calling the synchronous ``close()`` method on an SDK instance that has an
+     active async client raises a :exc:`RuntimeError`.
+   * Using ``with AsyncImednetSDK(...)`` (the synchronous context manager)
+     raises a :exc:`TypeError`.
+
 Install the package from PyPI:
 
 .. code-block:: console

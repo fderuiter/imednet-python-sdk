@@ -4,7 +4,7 @@ import pytest
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
-from imednet.sdk import ImednetSDK
+from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
 # Mock environment variables to avoid API key requirement issues
@@ -29,71 +29,47 @@ async def test_async_context_manager():
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
-    async with ImednetSDK(client=client_mock, async_client=async_client_mock) as sdk:
-        assert isinstance(sdk, ImednetSDK)
+    with patch("imednet.sdk.ClientFactory.create_client", return_value=client_mock):
+        with patch(
+            "imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock
+        ):
+            async with AsyncImednetSDK() as sdk:
+                assert isinstance(sdk, AsyncImednetSDK)
 
     client_mock.close.assert_called_once()
     async_client_mock.aclose.assert_awaited_once()
 
 
-def test_close_without_running_loop():
+def test_close_without_async_client():
     client_mock = MagicMock(spec=Client)
-    async_client_mock = MagicMock(spec=AsyncClient)
-
-    def mock_run_side_effect(coro):
-        coro.close()
-
-    # Use patch directly to avoid unawaited coroutines
-    with patch("asyncio.get_running_loop", side_effect=RuntimeError("no running event loop")):
-        with patch("asyncio.run", side_effect=mock_run_side_effect) as mock_run:
-            sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
-            sdk.close()
-
-            client_mock.close.assert_called_once()
-            mock_run.assert_called_once()
-
-
-def test_close_with_running_loop():
-    client_mock = MagicMock(spec=Client)
-    async_client_mock = MagicMock(spec=AsyncClient)
-
-    class MockLoop:
-        def is_closed(self):
-            return True
-
-    with patch("asyncio.get_running_loop", return_value=MockLoop()):
-        with pytest.warns(
-            RuntimeWarning,
-            match="Synchronously closing an SDK with an async client",
-        ):
-            sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
-            sdk.close()
-
+    sdk = ImednetSDK(client=client_mock)
+    sdk.close()
     client_mock.close.assert_called_once()
 
 
-def test_close_with_running_loop_not_closed():
+def test_close_with_async_client_raises_runtime_error():
     client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
 
-    class MockLoop:
-        def __init__(self):
-            self.run_until_complete = MagicMock(side_effect=lambda coro: coro.close())
+    sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
 
-        def is_closed(self):
-            return False
+    with pytest.raises(RuntimeError, match="await sdk.aclose"):
+        sdk.close()
 
-    mock_loop = MockLoop()
+    client_mock.close.assert_not_called()
 
-    with patch("asyncio.get_running_loop", return_value=mock_loop):
-        with pytest.warns(
-            RuntimeWarning,
-            match="Synchronously closing an SDK with an async client",
-        ):
-            sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
-            sdk.close()
 
-    client_mock.close.assert_called_once()
+def test_async_sdk_sync_context_manager_raises_type_error():
+    with patch("imednet.sdk.load_config"):
+        with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
+            with patch(
+                "imednet.sdk.ClientFactory.create_async_client",
+                return_value=MagicMock(spec=AsyncClient),
+            ):
+                sdk = AsyncImednetSDK()
+                with pytest.raises(TypeError, match="async with AsyncImednetSDK"):
+                    with sdk:
+                        pass  # pragma: no cover
 
 
 @pytest.mark.asyncio
@@ -163,8 +139,6 @@ def test_retry_policy_property_without_async_client():
 
 @pytest.mark.asyncio
 async def test_async_sdk_aenter_aexit():
-    from imednet.sdk import AsyncImednetSDK
-
     client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
@@ -182,8 +156,6 @@ async def test_async_sdk_aenter_aexit():
 
 
 def test_async_sdk_sync_init():
-    from imednet.sdk import AsyncImednetSDK
-
     client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
 
