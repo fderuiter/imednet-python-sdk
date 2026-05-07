@@ -54,21 +54,25 @@ app.add_typer(intervals_app)
 app.add_typer(jobs_app)
 app.add_typer(records_app)
 
+
+def _register_workflow_commands() -> None:
+    from .workflows import app as workflows_app  # noqa: E402
+
+    app.add_typer(workflows_app)
+    app.command("subject-data")(subject_data)
+
+
 try:  # pragma: no cover - optional workflows plugin
     workflows_module = import_module("imednet_workflows")
     DataExtractionWorkflow = workflows_module.DataExtractionWorkflow  # noqa: F401
     SubjectDataWorkflow = workflows_module.SubjectDataWorkflow  # noqa: F401
-    from .workflows import app as workflows_app  # noqa: E402
-
-    app.add_typer(workflows_app)
-    app.command("subject-data")(subject_data)
-except Exception:
+    _register_workflow_commands()
+except (ImportError, ModuleNotFoundError):
+    # Re-export for tests and local fallback behavior.
     from ..workflows.data_extraction import DataExtractionWorkflow  # noqa: F401
     from ..workflows.subject_data import SubjectDataWorkflow  # noqa: F401
-    from .workflows import app as workflows_app  # noqa: E402
 
-    app.add_typer(workflows_app)
-    app.command("subject-data")(subject_data)
+    _register_workflow_commands()
 
 
 @app.command(hidden=True)

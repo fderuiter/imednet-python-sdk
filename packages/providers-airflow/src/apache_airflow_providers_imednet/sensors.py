@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable
 try:  # pragma: no cover - optional Airflow dependency
     from airflow.exceptions import AirflowException
     from airflow.sensors.base import BaseSensorOperator
-except Exception:  # pragma: no cover - placeholder fallback
+except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
     AirflowException = Exception
 
     class BaseSensorOperator:  # type: ignore
@@ -52,11 +52,9 @@ class ImednetJobSensor(BaseSensorOperator):
         state = job.state.upper()
         if state in TERMINAL_STATES:
             if state != "COMPLETED":
-                from .operators import AirflowException
-
                 raise AirflowException(f"Job {self.batch_id} ended in state {state}")
             return True
         return False
 
 
-__all__ = ["ImednetJobSensor", "ImednetHook"]
+__all__ = ["ImednetJobSensor"]
