@@ -35,8 +35,9 @@ Coverage must stay ≥ 90%.
 ## Release workflow
 Releases are fully automated and driven by merged PR titles:
 
-1. Ensure your PR title follows Conventional Commits (for example, `feat: ...`, `fix: ...`,
-   `chore: ...`, `docs: ...`). The CI `Semantic PR Title` check enforces this.
+1. Ensure your PR title follows Conventional Commits. Supported prefixes are `feat:`, `fix:`,
+   `chore:`, `docs:`, `ci:`, `test:`, `refactor:`, `perf:`, and `revert:`. The CI
+   `Semantic PR Title` check enforces this.
 2. Ensure your branch is up to date and all validation checks pass:
    ```bash
    poetry run ruff check --fix .
@@ -50,14 +51,17 @@ Releases are fully automated and driven by merged PR titles:
    Release PR with calculated semantic version, changelog updates, and `pyproject.toml` version
    updates.
 5. Maintainers trigger publication by approving and merging the bot-created Release PR.
-6. Publishing requires `PYPI_API_TOKEN` in repository secrets (or migration to PyPI Trusted
-   Publishers/OIDC).
-7. Configure branch protection on `main` to require pull request reviews and required status checks,
-   including `Semantic PR Title`.
+
+Configuration requirements:
+- Publishing requires `PYPI_API_TOKEN` in repository secrets (or migration to PyPI Trusted
+  Publishers/OIDC).
+- Configure branch protection on `main` to require pull request reviews and required status checks,
+  including `Semantic PR Title`.
 
 ## Conventions
 - DRY + SOLID. Line length 100.
-- Use Conventional Commit prefixes in PR titles (at minimum `feat:`, `fix:`, `chore:`, `docs:`).
+- Use Conventional Commit prefixes in PR titles (`feat:`, `fix:`, `chore:`, `docs:`, `ci:`,
+  `test:`, `refactor:`, `perf:`, `revert:`).
 - Add tests, docs, and examples for any public change.
 
 ## Pull requests
