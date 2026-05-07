@@ -185,8 +185,8 @@ class ImednetSDK(SDKConvenienceMixin):
         if self._async_client is not None:
             raise RuntimeError(
                 "This SDK instance has an active asynchronous client. "
-                "Call `await sdk.aclose()` or use `async with AsyncImednetSDK(...)` "
-                "to properly clean up async resources."
+                "Call `await sdk.aclose()` to properly clean up async resources, "
+                "or manage the SDK lifecycle with `async with`."
             )
         self._client.close()
 
