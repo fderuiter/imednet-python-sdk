@@ -5,6 +5,12 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, Iterable, Optional
 
+_MISSING_AMAZON_PROVIDER_MESSAGE = (
+    "apache-airflow-providers-amazon package is required for "
+    "ImednetToS3Operator. Install with: "
+    "pip install apache-airflow-providers-amazon"
+)
+
 try:  # pragma: no cover - optional Airflow dependency
     from airflow.exceptions import AirflowException  # type: ignore
     from airflow.models import BaseOperator  # type: ignore
@@ -20,19 +26,15 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
 
     class S3Hook:  # type: ignore
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
-            raise ImportError(
-                "apache-airflow-providers-amazon is required for ImednetToS3Operator."
-            )
+            raise ImportError(_MISSING_AMAZON_PROVIDER_MESSAGE)
 
         def load_string(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
-            raise ImportError(
-                "apache-airflow-providers-amazon is required for ImednetToS3Operator."
-            )
+            raise ImportError(_MISSING_AMAZON_PROVIDER_MESSAGE)
 
 
-from imednet.sdk import ImednetSDK
+from imednet.sdk import ImednetSDK  # noqa: E402 - imported after optional Airflow stubs
 
-from ..hooks import ImednetHook
+from ..hooks import ImednetHook  # noqa: E402 - imported after optional Airflow stubs
 
 
 class ImednetToS3Operator(BaseOperator):
