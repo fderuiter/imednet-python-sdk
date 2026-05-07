@@ -62,7 +62,6 @@ def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
     for name, cls in endpoints.items():
         assert isinstance(getattr(sdk, name), cls)
 
-    assert isinstance(sdk.workflows, sdk_mod.Workflows)
     assert isinstance(sdk.workflows.data_extraction, DataExtractionWorkflow)
     assert isinstance(sdk.workflows.query_management, QueryManagementWorkflow)
     assert isinstance(sdk.workflows.record_mapper, RecordMapper)

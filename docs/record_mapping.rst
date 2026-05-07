@@ -1,7 +1,7 @@
 Record Mapping Process
 ======================
 
-:class:`~imednet.workflows.record_mapper.RecordMapper` turns raw record payloads
+:class:`~imednet_workflows.record_mapper.RecordMapper` turns raw record payloads
 into a :class:`pandas.DataFrame`. It loads variable metadata, builds a dynamic
 model, parses the records, and assembles the final table.
 

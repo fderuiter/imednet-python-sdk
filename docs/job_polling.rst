@@ -1,7 +1,7 @@
 Job Polling Mechanism
 =====================
 
-:class:`~imednet.workflows.job_poller.JobPoller` waits for background jobs to
+:class:`~imednet_workflows.job_poller.JobPoller` waits for background jobs to
 finish. It repeatedly checks the job status until a terminal state is reached or
 a timeout occurs.
 

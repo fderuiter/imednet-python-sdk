@@ -10,6 +10,7 @@ This module provides the ImednetSDK class which:
 from __future__ import annotations
 
 import asyncio
+from importlib import import_module
 from typing import TYPE_CHECKING, Any, Optional
 
 from .config import Config, load_config
@@ -18,7 +19,6 @@ from .core.factory import ClientFactory
 from .core.retry import RetryPolicy
 from .endpoints.registry import ENDPOINT_REGISTRY
 from .sdk_convenience import SDKConvenienceMixin
-from .workflows.namespace import Workflows
 
 if TYPE_CHECKING:
     from .core.async_client import AsyncClient
@@ -109,7 +109,7 @@ class ImednetSDK(SDKConvenienceMixin):
             self._async_client = None
 
         self._init_endpoints()
-        self.workflows = Workflows(self)
+        self.workflows = self._init_workflows()
 
     @property
     def retry_policy(self) -> RetryPolicy:
@@ -125,6 +125,31 @@ class ImednetSDK(SDKConvenienceMixin):
         """Instantiate endpoint clients."""
         for attr, endpoint_cls in ENDPOINT_REGISTRY.items():
             setattr(self, attr, endpoint_cls(self._client, self.ctx, self._async_client))
+
+    def _init_workflows(self) -> Any:
+        """Instantiate workflow namespace when optional workflows plugin is available."""
+        try:
+            workflows_module = import_module("imednet_workflows.namespace")
+            workflows_cls = getattr(workflows_module, "Workflows")
+            return workflows_cls(self)
+        except Exception:
+            try:
+                from .workflows.namespace import Workflows
+
+                return Workflows(self)
+            except Exception:
+
+                class _MissingWorkflows:
+                    def __getattr__(self, name: str) -> Any:
+                        raise ImportError(
+                            (
+                                "Workflow support now lives in the optional "
+                                "'imednet-workflows' package. "
+                                "Install with `pip install imednet-workflows`."
+                            )
+                        )
+
+                return _MissingWorkflows()
 
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""

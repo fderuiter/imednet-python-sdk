@@ -2866,7 +2866,6 @@ files = [
 test = ["pytest", "pytest-cov"]
 
 [extras]
-airflow = []
 excel = ["openpyxl", "pandas"]
 pandas = ["pandas"]
 pyarrow = ["pyarrow"]
@@ -2875,4 +2874,4 @@ sqlalchemy = ["SQLAlchemy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "17587bd75463a9b7bc4052e54f33a2d3503c803db13fb6ebc7fc20c92ad63907"
+content-hash = "142d26d8d3a6300d905a52eb9e2893fe609a64c8eef16658f6364f9580056d4e"

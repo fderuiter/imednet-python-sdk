@@ -43,7 +43,7 @@ Workflows
 ---------
 
 Workflows orchestrate several endpoints to perform higher level tasks. For
-example, :class:`~imednet.workflows.record_update.RecordUpdateWorkflow` validates
+example, :class:`~imednet_workflows.record_update.RecordUpdateWorkflow` validates
 record payloads, submits them, and polls resulting jobs. Workflows have sync and
 async variants and are available under ``sdk.workflows``.
 

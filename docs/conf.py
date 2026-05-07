@@ -28,9 +28,12 @@ Note:
 """
 
 
-# Add project root directory to sys.path so `imednet` can be imported
-# The path must point to 'src' so 'imednet' is importable from there.
-sys.path.insert(0, os.path.abspath("../src"))
+# Add package source roots so API modules can be imported for docs builds.
+sys.path[:0] = [
+    os.path.abspath("../src"),
+    os.path.abspath("../packages/providers-airflow/src"),
+    os.path.abspath("../packages/plugins-workflows/src"),
+]
 warnings.filterwarnings("ignore", message="duplicate object description*")
 warnings.filterwarnings("ignore", message="Failed guarded type import*")
 
@@ -133,7 +136,7 @@ exclude_patterns: list[str] = [
     "imednet.cli.*.rst",
     "imednet.integrations.rst",
     "imednet.integrations.*.rst",
-    "imednet.integrations.airflow.rst",
+    "apache_airflow_providers_imednet.rst",
     "imednet.testing.rst",
     "imednet.errors.rst",
 ]  # annotated per mypy requirement

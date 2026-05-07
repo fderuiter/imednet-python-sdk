@@ -1,10 +1,10 @@
-imednet.integrations.airflow.hooks package
+apache_airflow_providers_imednet.hooks package
 ==========================================
 
 Module contents
 ---------------
 
-.. automodule:: imednet.integrations.airflow.hooks
+.. automodule:: apache_airflow_providers_imednet.hooks
    :members:
    :undoc-members:
    :show-inheritance:

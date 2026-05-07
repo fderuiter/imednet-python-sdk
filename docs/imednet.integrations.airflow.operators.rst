@@ -1,21 +1,21 @@
-imednet.integrations.airflow.operators package
+apache_airflow_providers_imednet.operators package
 ==============================================
 
 Submodules
 ----------
 
-imednet.integrations.airflow.operators.export module
+apache_airflow_providers_imednet.operators.export module
 ----------------------------------------------------
 
-.. automodule:: imednet.integrations.airflow.operators.export
+.. automodule:: apache_airflow_providers_imednet.operators.export
    :members:
    :undoc-members:
    :show-inheritance:
 
-imednet.integrations.airflow.operators.to\_s3 module
+apache_airflow_providers_imednet.operators.to\_s3 module
 ----------------------------------------------------
 
-.. automodule:: imednet.integrations.airflow.operators.to_s3
+.. automodule:: apache_airflow_providers_imednet.operators.to_s3
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ imednet.integrations.airflow.operators.to\_s3 module
 Module contents
 ---------------
 
-.. automodule:: imednet.integrations.airflow.operators
+.. automodule:: apache_airflow_providers_imednet.operators
    :members:
    :undoc-members:
    :show-inheritance:

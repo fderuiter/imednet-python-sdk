@@ -1,20 +1,20 @@
-imednet.integrations.airflow package
+apache_airflow_providers_imednet package
 ====================================
 
 Subpackages
 -----------
 
-.. automodule:: imednet.integrations.airflow.operators
+.. automodule:: apache_airflow_providers_imednet.operators
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: imednet.integrations.airflow.sensors
+.. automodule:: apache_airflow_providers_imednet.sensors
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: imednet.integrations.airflow.hooks
+.. automodule:: apache_airflow_providers_imednet.hooks
    :members:
    :undoc-members:
    :show-inheritance:
@@ -22,7 +22,7 @@ Subpackages
 Module contents
 ---------------
 
-.. automodule:: imednet.integrations.airflow
+.. automodule:: apache_airflow_providers_imednet
    :members:
    :undoc-members:
    :show-inheritance:
