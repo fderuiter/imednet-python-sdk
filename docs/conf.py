@@ -92,6 +92,7 @@ from imednet import __version__ as imednet_version  # noqa: E402
 project = "imednet"
 author = "Frederick de Ruiter"
 release = imednet_version
+version = imednet_version
 
 # Sphinx extensions
 extensions = [
