@@ -22,7 +22,7 @@ Subpackages
    imednet.pagination
    imednet.utils
    imednet.validation
-   imednet_workflows
+   imednet.workflows
 
 Submodules
 ----------

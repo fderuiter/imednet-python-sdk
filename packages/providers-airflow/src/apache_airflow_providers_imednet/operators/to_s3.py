@@ -20,10 +20,14 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
 
     class S3Hook:  # type: ignore
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
-            pass
+            raise ImportError(
+                "apache-airflow-providers-amazon is required for ImednetToS3Operator."
+            )
 
         def load_string(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
-            pass
+            raise ImportError(
+                "apache-airflow-providers-amazon is required for ImednetToS3Operator."
+            )
 
 
 from imednet.sdk import ImednetSDK
