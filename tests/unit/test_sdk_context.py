@@ -72,6 +72,19 @@ def test_async_sdk_sync_context_manager_raises_type_error():
                         pass  # pragma: no cover
 
 
+def test_async_sdk_exit_raises_type_error():
+    """__exit__ on AsyncImednetSDK raises TypeError when called directly."""
+    with patch("imednet.sdk.load_config"):
+        with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
+            with patch(
+                "imednet.sdk.ClientFactory.create_async_client",
+                return_value=MagicMock(spec=AsyncClient),
+            ):
+                sdk = AsyncImednetSDK()
+                with pytest.raises(TypeError, match="async with AsyncImednetSDK"):
+                    sdk.__exit__(None, None, None)
+
+
 @pytest.mark.asyncio
 async def test_aclose():
     client_mock = MagicMock(spec=Client)
