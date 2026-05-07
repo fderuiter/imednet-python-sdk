@@ -1,4 +1,5 @@
 [tool.poetry]
+# Core workspace member reserved for future standalone packaging.
 package-mode = false
 
 [tool.poetry.dependencies]

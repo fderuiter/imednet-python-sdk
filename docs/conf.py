@@ -136,7 +136,7 @@ exclude_patterns: list[str] = [
     "imednet.cli.*.rst",
     "imednet.integrations.rst",
     "imednet.integrations.*.rst",
-    "apache_airflow_providers_imednet.rst",
+    "imednet.integrations.airflow.rst",
     "imednet.testing.rst",
     "imednet.errors.rst",
 ]  # annotated per mypy requirement

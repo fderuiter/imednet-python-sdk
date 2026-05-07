@@ -1,14 +1,13 @@
-[project]
+[tool.poetry]
 name = "imednet-workflows"
 version = "0.5.1"
 description = "Workflow plugin package for the iMednet Python SDK"
-requires-python = ">=3.10,<4.0"
-dependencies = [
-  "imednet>=0.5.1",
-]
-
-[tool.poetry]
+authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
 packages = [{ include = "imednet_workflows", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+imednet = ">=0.5.1,<1.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

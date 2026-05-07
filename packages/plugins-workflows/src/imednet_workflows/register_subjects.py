@@ -51,7 +51,7 @@ class RegisterSubjectsWorkflow:
         """
         # Validate sites and subjects before posting
         sites = {s.site_name for s in self._sdk.sites.list(study_key=study_key)}
-        errors: list[str] = []
+        errors: List[str] = []
         for idx, subj in enumerate(subjects):
             if not subj.site_name:
                 errors.append(f"Index {idx}: siteName is required")
