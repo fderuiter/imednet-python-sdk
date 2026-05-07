@@ -39,7 +39,6 @@ jobs:
             refactor
             perf
             revert
-            🏛️ Architect
 
   # ------------------------------------------------------------------
   # JOB 1: QUALITY GATE (Runs once)

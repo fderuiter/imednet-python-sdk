@@ -183,6 +183,7 @@ class RecordMapper:
         variable_keys: List[str],
         label_map: Dict[str, str],
         use_labels: bool = True,
+        include_metadata: bool = True,
     ) -> pd.DataFrame:
         """Convert a list of raw records into a DataFrame."""
         if not variable_keys:
@@ -191,7 +192,21 @@ class RecordMapper:
         rows, errors = self._parse_records(records, record_model)
         if errors:
             logger.warning("Encountered %s errors while parsing record data.", errors)
-        return self._build_dataframe(rows, variable_keys, label_map, use_labels)
+
+        df = self._build_dataframe(rows, variable_keys, label_map, use_labels)
+        if not include_metadata and not df.empty:
+            meta_cols = [
+                "recordId",
+                "subjectKey",
+                "visitId",
+                "formId",
+                "recordStatus",
+                "dateCreated",
+            ]
+            drop_cols = [c for c in meta_cols if c in df.columns]
+            if drop_cols:
+                df = df.drop(columns=drop_cols)
+        return df
 
     def dataframe(
         self,
