@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Protocol, Type, TypeVar, runtime_checkable
+from typing import Any, Dict, Generic, List, Optional, Protocol, Type, TypeVar, runtime_checkable
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
@@ -67,4 +67,62 @@ class ListEndpointProtocol(Protocol[T]):
         **filters: Any,
     ) -> List[T]:
         """List items asynchronously."""
+        ...
+
+
+class SupportsGet(Protocol[T]):
+    """Protocol for resources that support ``get`` operations."""
+
+    def get(self, study_key: Optional[str], item_id: Any) -> T:
+        """Get a single item synchronously."""
+        ...
+
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+        """Get a single item asynchronously."""
+        ...
+
+
+class SupportsList(Protocol[T]):
+    """Protocol for resources that support ``list`` operations."""
+
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        """List items synchronously."""
+        ...
+
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        """List items asynchronously."""
+        ...
+
+
+class SupportsCreate(Protocol[T]):
+    """Protocol for resources that support ``create`` operations."""
+
+    def create(self, *args: Any, **kwargs: Any) -> T:
+        """Create an item synchronously."""
+        ...
+
+    async def async_create(self, *args: Any, **kwargs: Any) -> T:
+        """Create an item asynchronously."""
+        ...
+
+
+class SyncOperationProtocol(Protocol, Generic[T]):
+    """Protocol for sync operation executors requiring explicit transport injection."""
+
+    def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
+        ...
+
+    def execute(self) -> T:
+        """Execute synchronously."""
+        ...
+
+
+class AsyncOperationProtocol(Protocol, Generic[T]):
+    """Protocol for async operation executors requiring explicit transport injection."""
+
+    def __init__(self, client: AsyncRequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
+        ...
+
+    async def execute(self) -> T:
+        """Execute asynchronously."""
         ...

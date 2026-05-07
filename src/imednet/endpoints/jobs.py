@@ -1,17 +1,17 @@
 """Endpoint for checking job status in a study."""
 
-from imednet.core.endpoint.base import GenericEndpoint
+from typing import Any, Optional
+
+from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.core.endpoint.mixins import ListEndpointMixin, PathGetEndpointMixin
+from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 from imednet.models.jobs import JobStatus
 
 
 class JobsEndpoint(
     EdcEndpointMixin,
-    ListEndpointMixin[JobStatus],
-    PathGetEndpointMixin[JobStatus],
-    GenericEndpoint[JobStatus],
+    GenericListGetEndpoint[JobStatus],
 ):
     """
     API endpoint for retrieving status and details of jobs in an iMedNet study.
@@ -24,3 +24,19 @@ class JobsEndpoint(
     MODEL = JobStatus
     PAGINATOR_CLS = JsonListPaginator
     ASYNC_PAGINATOR_CLS = AsyncJsonListPaginator
+
+    def get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+        path = self._get_endpoint_path(study_key, item_id)
+        return PathGetOperation[JobStatus](
+            path=path,
+            parse_func=self._parse_item,
+            not_found_func=lambda: self._raise_not_found(study_key, item_id),
+        ).execute_sync(self._require_sync_client())
+
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+        path = self._get_endpoint_path(study_key, item_id)
+        return await PathGetOperation[JobStatus](
+            path=path,
+            parse_func=self._parse_item,
+            not_found_func=lambda: self._raise_not_found(study_key, item_id),
+        ).execute_async(self._require_async_client())

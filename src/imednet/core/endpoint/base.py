@@ -4,14 +4,25 @@ Base endpoint mix-in for all API resource endpoints.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, TypeVar
+from typing import Any, Callable, Dict, List, Optional, TypeVar, cast
 from urllib.parse import quote
 
+from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.context import Context
 from imednet.core.endpoint.abc import EndpointABC
-from imednet.core.endpoint.mixins import FilterGetEndpointMixin, ListEndpointMixin
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.core.endpoint.operations import FilterGetOperation, ListOperation
+from imednet.core.endpoint.strategies import (
+    DefaultParamProcessor,
+    KeepStudyKeyStrategy,
+    OptionalStudyKeyStrategy,
+    StudyKeyStrategy,
+)
+from imednet.core.endpoint.structs import ListRequestState, ParamState
+from imednet.core.parsing import get_model_parser
+from imednet.core.paginator import AsyncPaginator, Paginator
+from imednet.core.protocols import AsyncRequestorProtocol, ParamProcessor, RequestorProtocol
 from imednet.models.json_base import JsonModel
+from imednet.utils.filters import build_filter_string
 
 T = TypeVar("T", bound=JsonModel)
 
@@ -73,15 +84,272 @@ class GenericEndpoint(EndpointABC[T]):
 
 
 class GenericListGetEndpoint(
-    ListEndpointMixin[T],
-    FilterGetEndpointMixin[T],
     GenericEndpoint[T],
 ):
     """
     Generic base for endpoints that provide list and get-by-filter functionality.
 
-    Combines GenericEndpoint with ListEndpointMixin and FilterGetEndpointMixin
-    to provide standard CRUD read operations.
+    Uses composable operations to provide standard list/get read operations.
     """
+    PAGE_SIZE: int = DEFAULT_PAGE_SIZE
+    PAGINATOR_CLS: type[Paginator] = Paginator
+    ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
+    PARAM_PROCESSOR: Optional[ParamProcessor] = None
+    PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
+    STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = None
+    _cache: Optional[List[T] | Dict[str, List[T]]] = None
 
-    pass
+    @property
+    def study_key_strategy(self) -> StudyKeyStrategy:
+        if self.STUDY_KEY_STRATEGY:
+            return self.STUDY_KEY_STRATEGY
+        if self.requires_study_key:
+            return KeepStudyKeyStrategy()
+        return OptionalStudyKeyStrategy()
+
+    @property
+    def param_processor(self) -> ParamProcessor:
+        if self.PARAM_PROCESSOR:
+            return self.PARAM_PROCESSOR
+        return self.PARAM_PROCESSOR_CLS()
+
+    def _parse_item(self, item: Any) -> T:
+        parse_func = get_model_parser(self.MODEL)
+        return parse_func(item)
+
+    def _resolve_parse_func(self) -> Callable[[Any], T]:
+        if self._parse_item.__func__ is not GenericListGetEndpoint._parse_item:  # type: ignore[attr-defined]
+            return self._parse_item
+        return get_model_parser(self.MODEL)
+
+    def _resolve_params(
+        self,
+        study_key: Optional[str],
+        extra_params: Optional[Dict[str, Any]],
+        filters: Dict[str, Any],
+    ) -> ParamState:
+        filters = self._auto_filter(filters.copy())
+
+        processed_filters, special_params = self.param_processor.process_filters(filters)
+        if special_params:
+            if extra_params is None:
+                extra_params = {}
+            else:
+                extra_params = extra_params.copy()
+            extra_params.update(special_params)
+
+        if study_key:
+            processed_filters["studyKey"] = study_key
+
+        study, processed_filters = self.study_key_strategy.process(processed_filters)
+        self._validate_study_key(study)
+
+        other_filters = {k: v for k, v in processed_filters.items() if k != "studyKey"}
+
+        params: Dict[str, Any] = {}
+        if processed_filters:
+            params["filter"] = build_filter_string(processed_filters)
+        if extra_params:
+            params.update(extra_params)
+
+        return ParamState(study=study, params=params, other_filters=other_filters)
+
+    def _get_local_cache(self) -> Optional[List[T] | Dict[str, List[T]]]:
+        if not self._enable_cache:
+            return None
+
+        if self.requires_study_key and self._cache is None:
+            self._cache = {}
+        return self._cache
+
+    def _update_local_cache(self, result: List[T], study: str | None, has_filters: bool) -> None:
+        if has_filters or not self._enable_cache:
+            return
+
+        if self.requires_study_key:
+            if self._cache is None:
+                self._cache = {}
+            if isinstance(self._cache, dict) and study is not None:
+                self._cache[study] = result
+            return
+
+        self._cache = result
+
+    def _check_cache_hit(
+        self,
+        study: Optional[str],
+        refresh: bool,
+        other_filters: Dict[str, Any],
+        cache: Optional[List[T] | Dict[str, List[T]]],
+    ) -> Optional[List[T]]:
+        if not self._enable_cache:
+            return None
+
+        if self.requires_study_key:
+            if (
+                isinstance(cache, dict)
+                and study is not None
+                and not other_filters
+                and not refresh
+                and study in cache
+            ):
+                return cache[study]
+            return None
+
+        if isinstance(cache, list) and not other_filters and not refresh:
+            return cache
+        return None
+
+    def _prepare_list_request(
+        self,
+        study_key: Optional[str],
+        extra_params: Optional[Dict[str, Any]],
+        filters: Dict[str, Any],
+        refresh: bool,
+    ) -> ListRequestState[T]:
+        param_state = self._resolve_params(study_key, extra_params, filters)
+        study = param_state.study
+        params = param_state.params
+        other_filters = param_state.other_filters
+
+        cache = self._get_local_cache()
+        cached_result = self._check_cache_hit(study, refresh, other_filters, cache)
+        if cached_result is not None:
+            return ListRequestState(
+                path="",
+                params={},
+                study=study,
+                has_filters=False,
+                cache=None,
+                cached_result=cast(List[T], cached_result),
+            )
+
+        path = self._get_endpoint_path(study)
+        return ListRequestState(
+            path=path,
+            params=params,
+            study=study,
+            has_filters=bool(other_filters),
+            cache=cache,
+        )
+
+    def _list_sync(
+        self,
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]:
+        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
+        if state.cached_result is not None:
+            return state.cached_result
+
+        result = ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        ).execute_sync(client, paginator_cls)
+        self._update_local_cache(result, state.study, state.has_filters)
+        return result
+
+    async def _list_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        refresh: bool = False,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]:
+        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
+        if state.cached_result is not None:
+            return state.cached_result
+
+        result = await ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        ).execute_async(client, paginator_cls)
+        self._update_local_cache(result, state.study, state.has_filters)
+        return result
+
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        return self._list_sync(
+            self._require_sync_client(),
+            self.PAGINATOR_CLS,
+            study_key=study_key,
+            **filters,
+        )
+
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        return await self._list_async(
+            self._require_async_client(),
+            self.ASYNC_PAGINATOR_CLS,
+            study_key=study_key,
+            **filters,
+        )
+
+    def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
+        if not items:
+            self._raise_not_found(study_key, item_id)
+        return items[0]
+
+    def _get_sync(
+        self,
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T:
+        filters = {self._id_param: item_id}
+        operation = FilterGetOperation[T](
+            study_key=study_key,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_sync_func=self._list_sync,
+            list_async_func=self._list_async,
+        )
+        return operation.execute_sync(client, paginator_cls)
+
+    async def _get_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T:
+        filters = {self._id_param: item_id}
+        operation = FilterGetOperation[T](
+            study_key=study_key,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_sync_func=self._list_sync,
+            list_async_func=self._list_async,
+        )
+        return await operation.execute_async(client, paginator_cls)
+
+    def get(self, study_key: Optional[str], item_id: Any) -> T:
+        return self._get_sync(
+            self._require_sync_client(),
+            self.PAGINATOR_CLS,
+            study_key=study_key,
+            item_id=item_id,
+        )
+
+    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+        return await self._get_async(
+            self._require_async_client(),
+            self.ASYNC_PAGINATOR_CLS,
+            study_key=study_key,
+            item_id=item_id,
+        )
