@@ -5,7 +5,7 @@ from typing import Any, Optional, Protocol, runtime_checkable
 
 import httpx
 
-#: HTTP methods that are safe to retry automatically.  Mutating methods such as
+#: HTTP methods that are safe to retry automatically. Mutating methods such as
 #: POST and PATCH are intentionally excluded because a server may have already
 #: processed the request before the connection dropped, and retrying would risk
 #: creating duplicate records or corrupting state.
@@ -52,7 +52,7 @@ class DefaultRetryPolicy:
         from imednet.core.retry import RetryPolicy, RetryState, IDEMPOTENT_METHODS
         import httpx
 
-        class IdempotentPostPolicy:
+        class IdempotentPostPolicy(RetryPolicy):
             def should_retry(self, state: RetryState) -> bool:
                 method = (state.method or "").upper()
                 if state.exception:
