@@ -36,7 +36,6 @@ def test_endpoint_abc_properties():
     assert endpoint.MODEL == MockModel
     assert endpoint.requires_study_key is True
     assert endpoint._id_param == "id"
-    assert endpoint._enable_cache is False
 
 
 def test_endpoint_abc_methods():

@@ -1,11 +1,13 @@
 """Endpoint for managing studies in the iMedNet system."""
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
+from imednet.core.endpoint.cache_mixin import CachedEndpointMixin
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.models.studies import Study
 
 
 class StudiesEndpoint(
+    CachedEndpointMixin[Study],
     EdcEndpointMixin,
     GenericListGetEndpoint[Study],
 ):

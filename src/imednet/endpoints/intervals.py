@@ -1,12 +1,14 @@
 """Endpoint for managing intervals (visit definitions) in a study."""
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
+from imednet.core.endpoint.cache_mixin import CachedEndpointMixin
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
 from imednet.core.endpoint.strategies import PopStudyKeyStrategy
 from imednet.models.intervals import Interval
 
 
 class IntervalsEndpoint(
+    CachedEndpointMixin[Interval],
     EdcEndpointMixin,
     GenericListGetEndpoint[Interval],
 ):
