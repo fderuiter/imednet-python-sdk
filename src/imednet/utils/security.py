@@ -12,9 +12,14 @@ def sanitize_csv_formula(value: Any) -> Any:
     Sanitize a value to prevent CSV/Excel Formula Injection.
 
     Prefixes strings starting with =, +, -, or @ (even after whitespace) with a single quote.
+    Lists and tuples are recursively sanitized.
     """
     if isinstance(value, str) and value.lstrip().startswith(("=", "+", "-", "@")):
         return f"'{value}"
+    elif isinstance(value, list):
+        return [sanitize_csv_formula(v) for v in value]
+    elif isinstance(value, tuple):
+        return tuple(sanitize_csv_formula(v) for v in value)
     return value
 
 
