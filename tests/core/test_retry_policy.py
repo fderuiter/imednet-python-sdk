@@ -9,7 +9,9 @@ from imednet.errors import ServerError
 def test_default_policy_request_error():
     policy = DefaultRetryPolicy()
     state = RetryState(
-        1, exception=httpx.RequestError("boom", request=httpx.Request("GET", "https://x"))
+        1,
+        exception=httpx.RequestError("boom", request=httpx.Request("GET", "https://x")),
+        method="GET",
     )
     assert policy.should_retry(state)
     assert not policy.should_retry(RetryState(1))
@@ -18,12 +20,12 @@ def test_default_policy_request_error():
 def test_default_policy_retry_behavior():
     policy = DefaultRetryPolicy()
 
-    # Retryable responses (Server Errors & Rate Limits)
-    assert policy.should_retry(RetryState(1, result=httpx.Response(500)))
-    assert policy.should_retry(RetryState(1, result=httpx.Response(502)))
-    assert policy.should_retry(RetryState(1, result=httpx.Response(503)))
-    assert policy.should_retry(RetryState(1, result=httpx.Response(504)))
-    assert policy.should_retry(RetryState(1, result=httpx.Response(429)))
+    # Retryable responses for idempotent methods (Server Errors & Rate Limits)
+    assert policy.should_retry(RetryState(1, result=httpx.Response(500), method="GET"))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(502), method="GET"))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(503), method="GET"))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(504), method="GET"))
+    assert policy.should_retry(RetryState(1, result=httpx.Response(429), method="GET"))
 
     # Non-retryable responses (Client Errors & Success)
     assert not policy.should_retry(RetryState(1, result=httpx.Response(400)))
