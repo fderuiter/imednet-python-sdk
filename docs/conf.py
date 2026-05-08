@@ -153,9 +153,8 @@ def setup(app: Any) -> None:  # pragma: no cover
     """
     # Sphinx wraps every internal logger as `sphinx.<module>`, e.g.
     # sphinx.domains.python becomes sphinx.sphinx.domains.python.
-    logging.getLogger("sphinx.sphinx.domains.python").addFilter(
-        _SuppressDuplicateDescriptions()
-    )
+    logging.getLogger("sphinx.sphinx.domains.python").addFilter(_SuppressDuplicateDescriptions())
+
 
 # Ignore noisy pydantic schema generation warnings.
 warnings.filterwarnings("ignore", message="Failed guarded type import", category=UserWarning)
