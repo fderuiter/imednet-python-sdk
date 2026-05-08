@@ -2,29 +2,12 @@ from unittest.mock import MagicMock
 
 import httpx
 import pytest
+import respx
 
 from imednet import errors
 from imednet.constants import DEFAULT_BASE_URL
 from imednet.core.client import Client
 from imednet.core.retry import RetryPolicy
-
-
-class DummyResponse:
-    def __init__(self, data, status=200):
-        self._data = data
-        self.status_code = status
-        self.request = httpx.Request("GET", "https://example.com")
-
-    def json(self):
-        return self._data
-
-    @property
-    def text(self):
-        return str(self._data)
-
-    @property
-    def is_error(self):
-        return self.status_code >= 400
 
 
 def test_initialization_sets_defaults() -> None:
@@ -34,18 +17,20 @@ def test_initialization_sets_defaults() -> None:
     assert client._client.headers["x-imn-security-key"] == "B"
 
 
-def test_retry_logic_retries_request_errors(monkeypatch) -> None:
-    client = Client(api_key="A", security_key="B", retries=2)
+def test_retry_logic_retries_request_errors() -> None:
+    client = Client(api_key="A", security_key="B", base_url="https://api.test", retries=2)
     call_count = {"count": 0}
 
-    def side_effect(method: str, url: str, **kwargs):
+    def side_effect(request: httpx.Request) -> httpx.Response:
         call_count["count"] += 1
         if call_count["count"] == 1:
-            raise httpx.RequestError("boom", request=httpx.Request(method, url))
-        return DummyResponse({"ok": True})
+            raise httpx.RequestError("boom", request=request)
+        return httpx.Response(200, json={"ok": True})
 
-    monkeypatch.setattr(client._client, "request", side_effect)
-    response = client.get("/path")
+    with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
+        respx_mock.get("https://api.test/path").mock(side_effect=side_effect)
+        response = client.get("/path")
+
     assert call_count["count"] == 2
     assert response.json() == {"ok": True}
 
@@ -63,26 +48,28 @@ def test_retry_logic_retries_request_errors(monkeypatch) -> None:
         (418, errors.ApiError),
     ],
 )
-def test_request_error_mapping(monkeypatch, status, exc) -> None:
-    client = Client(api_key="A", security_key="B")
-    resp = DummyResponse({"error": status}, status)
-    monkeypatch.setattr(client._client, "request", lambda *a, **kw: resp)
-    with pytest.raises(exc):
-        client.get("/some")
+def test_request_error_mapping(status, exc) -> None:
+    client = Client(api_key="A", security_key="B", base_url="https://api.test")
+
+    with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
+        respx_mock.get("https://api.test/some").respond(status_code=status, json={"error": status})
+
+        with pytest.raises(exc):
+            client.get("/some")
 
 
-def test_tracer_records_span(monkeypatch) -> None:
+def test_tracer_records_span() -> None:
     tracer = MagicMock()
     span_cm = MagicMock()
     span = MagicMock()
     span_cm.__enter__.return_value = span
     tracer.start_as_current_span.return_value = span_cm
 
-    client = Client(api_key="A", security_key="B", tracer=tracer)
-    resp = DummyResponse({"ok": True}, 200)
-    monkeypatch.setattr(client._client, "request", lambda *a, **kw: resp)
+    client = Client(api_key="A", security_key="B", base_url="https://api.test", tracer=tracer)
 
-    client.get("/trace")
+    with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
+        respx_mock.get("https://api.test/trace").respond(status_code=200, json={"ok": True})
+        client.get("/trace")
 
     tracer.start_as_current_span.assert_called_with(
         "http_request", attributes={"endpoint": "/trace", "method": "GET"}

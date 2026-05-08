@@ -24,13 +24,8 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
     def _create_executor(
         self, client: httpx.AsyncClient, retry_policy: Optional[RetryPolicy] = None
     ) -> AsyncRequestExecutor:
-
-        # Use wrapper to allow mocking client.request after initialization
-        async def send_wrapper(method: str, url: str, **kwargs: Any) -> httpx.Response:
-            return await client.request(method, url, **kwargs)
-
         return AsyncRequestExecutor(
-            send=send_wrapper,
+            send=client.request,
             retries=self.retries,
             backoff_factor=self.backoff_factor,
             tracer=self._tracer,

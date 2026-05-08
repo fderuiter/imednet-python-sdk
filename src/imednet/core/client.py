@@ -42,13 +42,8 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
     def _create_executor(
         self, client: httpx.Client, retry_policy: Optional[RetryPolicy] = None
     ) -> SyncRequestExecutor:
-
-        # Use wrapper to allow mocking client.request after initialization
-        def send_wrapper(method: str, url: str, **kwargs: Any) -> httpx.Response:
-            return client.request(method, url, **kwargs)
-
         return SyncRequestExecutor(
-            send=send_wrapper,
+            send=client.request,
             retries=self.retries,
             backoff_factor=self.backoff_factor,
             tracer=self._tracer,
