@@ -58,40 +58,6 @@ for mod in ["numpy", "matplotlib"]:
     if mod not in sys.modules:
         sys.modules[mod] = types.ModuleType(mod)
 
-
-class _DummyModule(types.ModuleType):
-    """Simple module that auto-creates nested modules."""
-
-    def __getattr__(self, name: str) -> types.ModuleType:  # pragma: no cover - docs
-        fullname = f"{self.__name__}.{name}"
-        mod = _DummyModule(fullname)
-        sys.modules[fullname] = mod
-        return mod
-
-
-if "airflow" not in sys.modules:
-    airflow_stub = _DummyModule("airflow")
-    airflow_stub.models = _DummyModule("airflow.models")
-    airflow_stub.models.BaseOperator = object
-    airflow_stub.hooks = _DummyModule("airflow.hooks")
-    airflow_stub.hooks.base = _DummyModule("airflow.hooks.base")
-    airflow_stub.hooks.base.BaseHook = object
-    airflow_stub.operators = _DummyModule("airflow.operators")
-    airflow_stub.exceptions = _DummyModule("airflow.exceptions")
-    airflow_stub.exceptions.AirflowException = Exception
-    airflow_stub.providers = _DummyModule("airflow.providers")
-    sys.modules.update(
-        {
-            "airflow": airflow_stub,
-            "airflow.models": airflow_stub.models,
-            "airflow.hooks": airflow_stub.hooks,
-            "airflow.hooks.base": airflow_stub.hooks.base,
-            "airflow.operators": airflow_stub.operators,
-            "airflow.exceptions": airflow_stub.exceptions,
-            "airflow.providers": airflow_stub.providers,
-        }
-    )
-
 from imednet import __version__ as imednet_version  # noqa: E402
 
 project = "imednet"
