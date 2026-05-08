@@ -1,4 +1,5 @@
 # Configuration file for the Sphinx documentation builder.
+import logging
 import os
 import sys
 import types
@@ -57,40 +58,6 @@ for mod in ["numpy", "matplotlib"]:
     if mod not in sys.modules:
         sys.modules[mod] = types.ModuleType(mod)
 
-
-class _DummyModule(types.ModuleType):
-    """Simple module that auto-creates nested modules."""
-
-    def __getattr__(self, name: str) -> types.ModuleType:  # pragma: no cover - docs
-        fullname = f"{self.__name__}.{name}"
-        mod = _DummyModule(fullname)
-        sys.modules[fullname] = mod
-        return mod
-
-
-if "airflow" not in sys.modules:
-    airflow_stub = _DummyModule("airflow")
-    airflow_stub.models = _DummyModule("airflow.models")
-    airflow_stub.models.BaseOperator = object
-    airflow_stub.hooks = _DummyModule("airflow.hooks")
-    airflow_stub.hooks.base = _DummyModule("airflow.hooks.base")
-    airflow_stub.hooks.base.BaseHook = object
-    airflow_stub.operators = _DummyModule("airflow.operators")
-    airflow_stub.exceptions = _DummyModule("airflow.exceptions")
-    airflow_stub.exceptions.AirflowException = Exception
-    airflow_stub.providers = _DummyModule("airflow.providers")
-    sys.modules.update(
-        {
-            "airflow": airflow_stub,
-            "airflow.models": airflow_stub.models,
-            "airflow.hooks": airflow_stub.hooks,
-            "airflow.hooks.base": airflow_stub.hooks.base,
-            "airflow.operators": airflow_stub.operators,
-            "airflow.exceptions": airflow_stub.exceptions,
-            "airflow.providers": airflow_stub.providers,
-        }
-    )
-
 from imednet import __version__ as imednet_version  # noqa: E402
 
 project = "imednet"
@@ -108,10 +75,20 @@ extensions = [
     "sphinxcontrib.mermaid",
 ]
 
-autosummary_generate = True
+autosummary_generate = False
 
-# Mock heavy optional dependencies so autodoc does not import them
-autodoc_mock_imports = ["pandas", "numpy", "matplotlib", "pydantic", "airflow"]
+# Mock heavy optional dependencies so autodoc does not import them.
+# opentelemetry is listed here so that `if TYPE_CHECKING: from opentelemetry…`
+# blocks (evaluated when set_type_checking_flag=True) do not cause
+# ModuleNotFoundError during the docs build.
+autodoc_mock_imports = [
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "pydantic",
+    "airflow",
+    "opentelemetry",
+]
 
 suppress_warnings = [
     "ref.ref",
@@ -119,7 +96,31 @@ suppress_warnings = [
     "autodoc.import",
     "autodoc",
     "sphinx_autodoc_typehints",
+    "app.add_directive",
 ]
+
+# Sphinx 6.x does not assign a filterable type code to "duplicate object
+# description" warnings, so suppress_warnings cannot catch them.  These
+# duplicates arise because __init__.py files re-export symbols that are also
+# documented in their own sub-module stubs.  The filter below silences them
+# so the strict (-W) build is not broken by this benign re-export pattern.
+
+
+class _SuppressDuplicateDescriptions(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:  # pragma: no cover
+        return "duplicate object description" not in record.getMessage()
+
+
+def setup(app: Any) -> None:  # pragma: no cover
+    """Install the duplicate-description log filter after Sphinx initialises.
+
+    Args:
+        app: The Sphinx application instance (provided by Sphinx at startup).
+    """
+    # Sphinx wraps every internal logger as `sphinx.<module>`, e.g.
+    # sphinx.domains.python becomes sphinx.sphinx.domains.python.
+    logging.getLogger("sphinx.sphinx.domains.python").addFilter(_SuppressDuplicateDescriptions())
+
 
 # Ignore noisy pydantic schema generation warnings.
 warnings.filterwarnings("ignore", message="Failed guarded type import", category=UserWarning)
@@ -128,18 +129,26 @@ warnings.filterwarnings("ignore", message="Failed guarded type import", category
 # function signatures concise in the rendered documentation.
 autodoc_typehints = "description"
 
+# Autodoc default options applied to all automodule/autoclass directives.
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
+}
+autodoc_class_signature = "separated"
+
+# Force sphinx-autodoc-typehints to evaluate TYPE_CHECKING blocks so that
+# forward references used only under `if TYPE_CHECKING:` are resolved.
+set_type_checking_flag = True
+
+# Napoleon – enforce Google-style docstrings.
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = True
+
 # Templates and static paths
 templates_path: list[str] = ["_templates"]
-exclude_patterns: list[str] = [
-    "imednet.airflow.rst",
-    "imednet.cli.rst",
-    "imednet.cli.*.rst",
-    "imednet.integrations.rst",
-    "imednet.integrations.*.rst",
-    "imednet.integrations.airflow.rst",
-    "imednet.testing.rst",
-    "imednet.errors.rst",
-]  # annotated per mypy requirement
+exclude_patterns: list[str] = []  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 
 

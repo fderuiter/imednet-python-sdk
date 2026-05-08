@@ -1,7 +1,16 @@
 .PHONY: docs
 
+SPHINXOPTS    ?= -W --keep-going
+SPHINXBUILD   ?= sphinx-build
+SPHINXAPIDOC  ?= sphinx-apidoc
+APIDIR        = docs/api
+
 docs:
-	poetry install --with dev
-	poetry run sphinx-apidoc -o docs src/imednet \
-	    src/imednet/errors/__init__.py src/imednet/models/base.py
-	poetry run sphinx-build -b html --keep-going docs docs/_build/html
+	@echo "Cleaning old API docs..."
+	rm -rf $(APIDIR)
+	@echo "Generating new API docs..."
+	poetry run $(SPHINXAPIDOC) -o $(APIDIR) src/imednet -f -M --tocfile index
+	poetry run $(SPHINXAPIDOC) -o $(APIDIR) packages/providers-airflow/src/apache_airflow_providers_imednet -f -M --tocfile apache_airflow_providers_imednet
+	poetry run $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-workflows/src/imednet_workflows -f -M --tocfile imednet_workflows
+	@echo "Building HTML..."
+	poetry run $(SPHINXBUILD) -b html $(SPHINXOPTS) docs docs/_build/html

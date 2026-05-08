@@ -78,6 +78,4 @@ API Reference
 .. toctree::
    :maxdepth: 2
 
-   imednet.form_designer.models
-   imednet.form_designer.builder
-   imednet.form_designer.client
+   api/imednet.form_designer

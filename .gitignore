@@ -73,6 +73,9 @@ logs/
 # Sphinx documentation build
 /docs/_build/
 
+# Auto-generated Sphinx API documentation (produced by sphinx-apidoc in Makefile)
+/docs/api/
+
 # pip wheel metadata
 pip-wheel-metadata/
 

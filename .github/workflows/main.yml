@@ -161,7 +161,7 @@ jobs:
       - run: poetry install --with dev
 
       - name: Build HTML
-        run: poetry run sphinx-build -b html docs docs/_build/html
+        run: make docs
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3

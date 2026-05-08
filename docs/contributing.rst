@@ -46,10 +46,13 @@ Releases are fully automated and driven by merged PR titles:
 5. Maintainers trigger publication by approving and merging the bot-created Release PR.
 
 Configuration requirements:
+
 - ``project.version`` in ``pyproject.toml`` must never be edited manually; ``release-please``
   updates it automatically in the generated Release PR changeset.
+
 - Publishing requires ``PYPI_API_TOKEN`` in repository secrets (or migration to PyPI Trusted
   Publishers/OIDC).
+
 - Configure branch protection on ``main`` to require pull request reviews and required checks,
   including ``Semantic PR Title``.
 
