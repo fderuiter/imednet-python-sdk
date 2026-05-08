@@ -108,7 +108,12 @@ suppress_warnings = [
 
 class _SuppressDuplicateDescriptions(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:  # pragma: no cover
-        return "duplicate object description" not in record.getMessage()
+        message = record.getMessage()
+        return (
+            "duplicate object description" not in message
+            and "Failed guarded type import" not in message
+            and "more than one target found for cross-reference" not in message
+        )
 
 
 def setup(app: Any) -> None:  # pragma: no cover
@@ -119,7 +124,10 @@ def setup(app: Any) -> None:  # pragma: no cover
     """
     # Sphinx wraps every internal logger as `sphinx.<module>`, e.g.
     # sphinx.domains.python becomes sphinx.sphinx.domains.python.
-    logging.getLogger("sphinx.sphinx.domains.python").addFilter(_SuppressDuplicateDescriptions())
+    suppressor = _SuppressDuplicateDescriptions()
+    logging.getLogger("sphinx").addFilter(suppressor)
+    logging.getLogger("sphinx.sphinx.domains.python").addFilter(suppressor)
+    logging.getLogger("sphinx.sphinx_autodoc_typehints").addFilter(suppressor)
 
 
 # Ignore noisy pydantic schema generation warnings.
