@@ -123,3 +123,27 @@ async def test_default_retry_policy_async_retries_on_500(respx_mock_external) ->
 
     # Should attempt 3 times
     assert route.call_count == 3
+
+
+def test_default_retry_policy_post_does_not_retry_on_server_error(respx_mock_external) -> None:
+    """Verify that POST requests receiving 5xx do NOT retry (non-idempotent)."""
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
+    route = respx_mock_external.post("/test").mock(return_value=httpx.Response(503))
+
+    with pytest.raises(errors.ServerError):
+        sdk._client.post("/test", json={})
+
+    # Must fail fast: only one attempt, no retries
+    assert route.call_count == 1
+
+
+def test_default_retry_policy_post_retries_on_rate_limit(respx_mock_external) -> None:
+    """Verify that POST requests receiving 429 DO retry (server rejected before processing)."""
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
+    route = respx_mock_external.post("/test").mock(return_value=httpx.Response(429))
+
+    with pytest.raises(errors.RateLimitError):
+        sdk._client.post("/test", json={})
+
+    # Should attempt 3 times (rate limit is safe to retry for any method)
+    assert route.call_count == 3
