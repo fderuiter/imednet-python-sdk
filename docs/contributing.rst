@@ -23,6 +23,41 @@ Run these commands and ensure **≥90%** test coverage before opening a pull req
    poetry run mypy src/imednet
    poetry run pytest -q
 
+HTTP transport mocking
+----------------------
+Use ``respx`` for any test that exercises ``Client`` or ``AsyncClient`` HTTP behavior.
+Do not patch ``Client._client.request``, ``AsyncClient._client.request``, or executor
+``send`` callables just to intercept outbound ``httpx`` traffic; mock at the transport
+layer instead.
+
+When using ``respx``, prefer strict routers so tests cannot leak live requests and stale
+routes fail fast:
+
+.. code-block:: python
+
+   import httpx
+   import respx
+
+   @respx.mock(assert_all_called=True, assert_all_mocked=True)
+   def test_retry_and_query_params() -> None:
+       calls = {"count": 0}
+
+       def handler(request: httpx.Request) -> httpx.Response:
+           calls["count"] += 1
+           assert request.url.params["page"] == "2"
+           if calls["count"] == 1:
+               raise httpx.RequestError("boom", request=request)
+           return httpx.Response(200, json={"items": []})
+
+       route = respx.route(
+           method="GET",
+           url__regex=r"https://api\.test/items(?:\?.*)?$",
+       )
+       route.mock(side_effect=handler)
+
+This keeps production clients free of test-only wrappers while still validating request
+construction, retry behavior, dynamic URLs, and query parameters.
+
 Release workflow
 ----------------
 Releases are fully automated and driven by merged PR titles:

@@ -28,6 +28,16 @@ poetry run pytest -q
 ```
 Coverage must stay ≥ 90%.
 
+## HTTP transport mocking
+- Use `respx` for tests that exercise `Client` or `AsyncClient` HTTP behavior.
+- Do not patch `Client._client.request`, `AsyncClient._client.request`, or executor
+  `send` callables just to intercept outbound `httpx` traffic.
+- Prefer strict routers such as
+  `@respx.mock(assert_all_called=True, assert_all_mocked=True)` so unmocked requests
+  fail fast and unused routes are caught.
+- Validate request construction inside the route handler when needed (for example,
+  query parameters, dynamic URLs, and retry behavior).
+
 ## Package metadata and versioning
 - The `[project]` block in `pyproject.toml` is the single source of truth for package metadata.
 - Never manually edit `project.version` in `pyproject.toml`.
