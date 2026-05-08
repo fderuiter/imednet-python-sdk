@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.4](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.3...v0.5.4) (2026-05-08)
+
+
+### Documentation
+
+* fix docs warning failures from generated API toctrees ([#895](https://github.com/fderuiter/imednet-python-sdk/issues/895)) ([78a5707](https://github.com/fderuiter/imednet-python-sdk/commit/78a5707f6351971308b5377af248026b73ce6f89))
+* replace static API reference RST files with sphinx-apidoc automation ([#889](https://github.com/fderuiter/imednet-python-sdk/issues/889)) ([645918b](https://github.com/fderuiter/imednet-python-sdk/commit/645918bf8c3bd622dc84b43764a11afdf5ebd866))
+
 ## [0.5.3](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.2...v0.5.3) (2026-05-07)
 
 
