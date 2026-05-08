@@ -8,7 +8,7 @@ execute against a real iMednet environment and are skipped unless
 interacting with a running server.
 
 The suite can auto-discover required IDs when environment variables are unset.
-See :doc:`imednet.discovery` for details on locating study, form, site, subject,
+See :doc:`api/imednet.discovery` for details on locating study, form, site, subject,
 and interval identifiers at runtime.
 
 See :doc:`test_skip_conditions` for a summary of all variables and optional
