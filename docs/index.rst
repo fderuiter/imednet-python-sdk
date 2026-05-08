@@ -33,8 +33,6 @@ Welcome to imednet's documentation!
    examples/index
    contributing
    api/index
-   api/apache_airflow_providers_imednet
-   api/imednet_workflows
 
 
 Indices and tables
