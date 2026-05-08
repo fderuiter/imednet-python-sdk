@@ -37,6 +37,7 @@ jobs:
             ci
             test
             refactor
+            🛠️ Refactor
             perf
             revert
 
