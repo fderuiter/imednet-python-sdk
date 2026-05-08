@@ -63,3 +63,15 @@ def test_validate_header_value_valid(input_val):
 def test_validate_header_value_invalid(input_val):
     with pytest.raises(ClientError, match="Header value must not contain newlines"):
         validate_header_value(input_val)
+
+
+@pytest.mark.parametrize(
+    "input_val, expected",
+    [
+        (["=cmd", "safe"], ["'=cmd", "safe"]),
+        (("unsafe", "+1"), ("unsafe", "'+1")),
+        ([["-nested"], "@also_nested"], [["'-nested"], "'@also_nested"]),
+    ],
+)
+def test_sanitize_csv_formula_collections(input_val, expected):
+    assert sanitize_csv_formula(input_val) == expected
