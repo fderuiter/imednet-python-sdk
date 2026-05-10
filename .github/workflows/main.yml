@@ -39,6 +39,10 @@ jobs:
             refactor
             perf
             revert
+            🏗️ Architect
+            🛠️ Refactor
+            🛡️ Shield
+            ✍️ Scribe
 
   # ------------------------------------------------------------------
   # JOB 1: QUALITY GATE (Runs once)
