@@ -8,7 +8,7 @@ from imednet.models.variables import Variable
 
 
 class VariablesEndpoint(
-    CachedEndpointMixin,
+    CachedEndpointMixin[Variable],
     EdcEndpointMixin,
     GenericListGetEndpoint[Variable],
 ):

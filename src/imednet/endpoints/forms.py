@@ -8,7 +8,7 @@ from imednet.models.forms import Form
 
 
 class FormsEndpoint(
-    CachedEndpointMixin,
+    CachedEndpointMixin[Form],
     EdcEndpointMixin,
     GenericListGetEndpoint[Form],
 ):

@@ -7,7 +7,7 @@ from imednet.models.studies import Study
 
 
 class StudiesEndpoint(
-    CachedEndpointMixin,
+    CachedEndpointMixin[Study],
     EdcEndpointMixin,
     GenericListGetEndpoint[Study],
 ):

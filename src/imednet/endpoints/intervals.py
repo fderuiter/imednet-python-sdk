@@ -8,7 +8,7 @@ from imednet.models.intervals import Interval
 
 
 class IntervalsEndpoint(
-    CachedEndpointMixin,
+    CachedEndpointMixin[Interval],
     EdcEndpointMixin,
     GenericListGetEndpoint[Interval],
 ):
