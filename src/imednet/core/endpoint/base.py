@@ -10,6 +10,7 @@ from urllib.parse import quote
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.context import Context
 from imednet.core.endpoint.abc import EndpointABC
+from imednet.core.endpoint.cache_mixin import CacheMixin
 from imednet.core.endpoint.operations import FilterGetOperation, ListOperation
 from imednet.core.endpoint.strategies import (
     DefaultParamProcessor,
@@ -84,6 +85,7 @@ class GenericEndpoint(EndpointABC[T]):
 
 
 class GenericListGetEndpoint(
+    CacheMixin[T],
     GenericEndpoint[T],
 ):
     """
@@ -98,15 +100,6 @@ class GenericListGetEndpoint(
     PARAM_PROCESSOR: Optional[ParamProcessor] = None
     PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
     STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = None
-
-    def __init__(
-        self,
-        client: RequestorProtocol,
-        ctx: Context,
-        async_client: Optional[AsyncRequestorProtocol] = None,
-    ) -> None:
-        super().__init__(client, ctx, async_client)
-        self._cache: Optional[List[T] | Dict[str, List[T]]] = None
 
     @property
     def study_key_strategy(self) -> StudyKeyStrategy:
@@ -160,52 +153,6 @@ class GenericListGetEndpoint(
             params.update(extra_params)
 
         return ParamState(study=study, params=params, other_filters=other_filters)
-
-    def _get_local_cache(self) -> Optional[List[T] | Dict[str, List[T]]]:
-        if not self._enable_cache:
-            return None
-
-        if self.requires_study_key and self._cache is None:
-            self._cache = {}
-        return self._cache
-
-    def _update_local_cache(self, result: List[T], study: str | None, has_filters: bool) -> None:
-        if has_filters or not self._enable_cache:
-            return
-
-        if self.requires_study_key:
-            if self._cache is None:
-                self._cache = {}
-            if isinstance(self._cache, dict) and study is not None:
-                self._cache[study] = result
-            return
-
-        self._cache = result
-
-    def _check_cache_hit(
-        self,
-        study: Optional[str],
-        refresh: bool,
-        other_filters: Dict[str, Any],
-        cache: Optional[List[T] | Dict[str, List[T]]],
-    ) -> Optional[List[T]]:
-        if not self._enable_cache:
-            return None
-
-        if self.requires_study_key:
-            if (
-                isinstance(cache, dict)
-                and study is not None
-                and not other_filters
-                and not refresh
-                and study in cache
-            ):
-                return cache[study]
-            return None
-
-        if isinstance(cache, list) and not other_filters and not refresh:
-            return cache
-        return None
 
     def _prepare_list_request(
         self,
