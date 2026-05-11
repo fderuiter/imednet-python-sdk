@@ -4,7 +4,7 @@ Base endpoint mix-in for all API resource endpoints.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Optional, TypeVar, cast
+from typing import Any, Callable, Dict, List, Optional, TypeVar
 from urllib.parse import quote
 
 from imednet.constants import DEFAULT_PAGE_SIZE
@@ -106,7 +106,6 @@ class GenericListGetEndpoint(
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
         super().__init__(client, ctx, async_client)
-        self._cache: Optional[List[T] | Dict[str, List[T]]] = None
 
     @property
     def study_key_strategy(self) -> StudyKeyStrategy:
@@ -161,83 +160,21 @@ class GenericListGetEndpoint(
 
         return ParamState(study=study, params=params, other_filters=other_filters)
 
-    def _get_local_cache(self) -> Optional[List[T] | Dict[str, List[T]]]:
-        if not self._enable_cache:
-            return None
-
-        if self.requires_study_key and self._cache is None:
-            self._cache = {}
-        return self._cache
-
-    def _update_local_cache(self, result: List[T], study: str | None, has_filters: bool) -> None:
-        if has_filters or not self._enable_cache:
-            return
-
-        if self.requires_study_key:
-            if self._cache is None:
-                self._cache = {}
-            if isinstance(self._cache, dict) and study is not None:
-                self._cache[study] = result
-            return
-
-        self._cache = result
-
-    def _check_cache_hit(
-        self,
-        study: Optional[str],
-        refresh: bool,
-        other_filters: Dict[str, Any],
-        cache: Optional[List[T] | Dict[str, List[T]]],
-    ) -> Optional[List[T]]:
-        if not self._enable_cache:
-            return None
-
-        if self.requires_study_key:
-            if (
-                isinstance(cache, dict)
-                and study is not None
-                and not other_filters
-                and not refresh
-                and study in cache
-            ):
-                return cache[study]
-            return None
-
-        if isinstance(cache, list) and not other_filters and not refresh:
-            return cache
-        return None
-
     def _prepare_list_request(
         self,
         study_key: Optional[str],
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
-        refresh: bool,
     ) -> ListRequestState[T]:
         param_state = self._resolve_params(study_key, extra_params, filters)
         study = param_state.study
         params = param_state.params
-        other_filters = param_state.other_filters
-
-        cache = self._get_local_cache()
-        cached_result = self._check_cache_hit(study, refresh, other_filters, cache)
-        if cached_result is not None:
-            return ListRequestState(
-                path="",
-                params={},
-                study=study,
-                has_filters=False,
-                cache=None,
-                cached_result=cast(List[T], cached_result),
-            )
 
         path = self._get_endpoint_path(study)
         return ListRequestState(
             path=path,
             params=params,
             study=study,
-            has_filters=bool(other_filters),
-            cache=cache,
         )
 
     def _list_sync(
@@ -250,18 +187,14 @@ class GenericListGetEndpoint(
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
-        if state.cached_result is not None:
-            return state.cached_result
+        state = self._prepare_list_request(study_key, extra_params, filters)
 
-        result = ListOperation[T](
+        return ListOperation[T](
             path=state.path,
             params=state.params,
             page_size=self.PAGE_SIZE,
             parse_func=self._resolve_parse_func(),
         ).execute_sync(client, paginator_cls)
-        self._update_local_cache(result, state.study, state.has_filters)
-        return result
 
     async def _list_async(
         self,
@@ -273,18 +206,14 @@ class GenericListGetEndpoint(
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        state = self._prepare_list_request(study_key, extra_params, filters, refresh)
-        if state.cached_result is not None:
-            return state.cached_result
+        state = self._prepare_list_request(study_key, extra_params, filters)
 
-        result = await ListOperation[T](
+        return await ListOperation[T](
             path=state.path,
             params=state.params,
             page_size=self.PAGE_SIZE,
             parse_func=self._resolve_parse_func(),
         ).execute_async(client, paginator_cls)
-        self._update_local_cache(result, state.study, state.has_filters)
-        return result
 
     def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
         return self._list_sync(

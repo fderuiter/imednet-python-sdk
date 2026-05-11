@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Dict, Generic, Optional, TypeVar
 
 from imednet.models.json_base import JsonModel
 
@@ -41,6 +41,3 @@ class ListRequestState(Generic[T]):
     path: str
     params: Dict[str, Any]
     study: Optional[str]
-    has_filters: bool
-    cache: Any
-    cached_result: Optional[List[T]] = None
