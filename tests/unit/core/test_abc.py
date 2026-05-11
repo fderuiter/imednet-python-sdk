@@ -57,3 +57,47 @@ def test_endpoint_abc_pass_coverage():
     assert EndpointABC.MODEL.fget(None) is None
     assert EndpointABC._build_path(None) is None
     assert EndpointABC._auto_filter(None, {}) is None
+
+
+def test_endpoint_abc_validate_study_key_raises():
+    from imednet.errors import ClientError
+
+    endpoint = ConcreteEndpoint()
+    with pytest.raises(ClientError, match="Study key must be provided"):
+        endpoint._validate_study_key(None)
+
+
+def test_endpoint_abc_validate_study_key_passes():
+    endpoint = ConcreteEndpoint()
+    endpoint._validate_study_key("STUDY123")  # Should not raise
+
+
+def test_endpoint_abc_get_endpoint_path():
+    endpoint = ConcreteEndpoint()
+    path = endpoint._get_endpoint_path("STUDY123", "extra", 1)
+    assert path == "mock/STUDY123/mock/extra/1"
+
+
+def test_endpoint_abc_raise_not_found():
+    from imednet.errors import NotFoundError
+
+    endpoint = ConcreteEndpoint()
+    with pytest.raises(NotFoundError, match="MockModel 1 not found in study STUDY123"):
+        endpoint._raise_not_found("STUDY123", 1)
+
+
+def test_endpoint_abc_raise_not_found_no_id():
+    from imednet.errors import NotFoundError
+
+    endpoint = ConcreteEndpoint()
+    with pytest.raises(NotFoundError, match="MockModel not found in study STUDY123"):
+        endpoint._raise_not_found("STUDY123")
+
+
+def test_endpoint_abc_raise_not_found_no_study():
+    from imednet.errors import NotFoundError
+
+    endpoint = ConcreteEndpoint()
+    endpoint.requires_study_key = False
+    with pytest.raises(NotFoundError, match="MockModel 1 not found"):
+        endpoint._raise_not_found(None, 1)
