@@ -1,7 +1,8 @@
 import pytest
 
 import imednet.endpoints.sites as sites
-from imednet.errors import ClientError, NotFoundError
+from imednet.errors import NotFoundError
+from imednet.errors.validation import ConfigurationError
 from imednet.models.sites import Site
 
 
@@ -10,7 +11,7 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
     paginator_capture = paginator_factory(sites, [{"siteId": 1}])
     patch = patch_build_filter(sites)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(ConfigurationError):
         ep.list()
 
     result = ep.list(study_key="S1", status="ok")

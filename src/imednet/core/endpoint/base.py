@@ -4,6 +4,8 @@ Base endpoint mix-in for all API resource endpoints.
 
 from __future__ import annotations
 
+import re
+from functools import lru_cache
 from typing import Any, Callable, Dict, List, Optional, TypeVar, cast
 from urllib.parse import quote
 
@@ -345,7 +347,42 @@ class GenericListGetEndpoint(
         )
         return await operation.execute_async(client, paginator_cls)
 
-    def get(self, study_key: Optional[str], item_id: Any) -> T:
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _camel_to_snake(name: str) -> str:
+        first_pass = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+        return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", first_pass).lower()
+
+    def _resolve_get_args(
+        self,
+        study_key: Optional[str],
+        item_id: Any,
+        kwargs: Dict[str, Any],
+    ) -> tuple[Optional[str], Any]:
+        if study_key is None and "study_key" in kwargs:
+            study_key = kwargs.pop("study_key")
+
+        if item_id is None and "item_id" in kwargs:
+            item_id = kwargs.pop("item_id")
+
+        if item_id is None and self._id_param in kwargs:
+            item_id = kwargs.pop(self._id_param)
+
+        snake_case_id_param = self._camel_to_snake(self._id_param)
+        if item_id is None and snake_case_id_param in kwargs:
+            item_id = kwargs.pop(snake_case_id_param)
+
+        if kwargs:
+            extra_args = ", ".join(sorted(kwargs.keys()))
+            raise TypeError(f"Unexpected keyword argument(s): {extra_args}")
+
+        if item_id is None:
+            raise TypeError("Missing required argument: item_id")
+
+        return study_key, item_id
+
+    def get(self, study_key: Optional[str] = None, item_id: Any = None, **kwargs: Any) -> T:
+        study_key, item_id = self._resolve_get_args(study_key, item_id, kwargs)
         return self._get_sync(
             self._require_sync_client(),
             self.PAGINATOR_CLS,
@@ -353,7 +390,10 @@ class GenericListGetEndpoint(
             item_id=item_id,
         )
 
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+    async def async_get(
+        self, study_key: Optional[str] = None, item_id: Any = None, **kwargs: Any
+    ) -> T:
+        study_key, item_id = self._resolve_get_args(study_key, item_id, kwargs)
         return await self._get_async(
             self._require_async_client(),
             self.ASYNC_PAGINATOR_CLS,

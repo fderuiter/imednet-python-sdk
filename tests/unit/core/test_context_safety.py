@@ -2,13 +2,16 @@ import asyncio
 
 import pytest
 
-from imednet.core.context import get_current_study, set_study_context
+from imednet.core.context import get_current_study, reset_study_context, set_study_context
 
 
 async def async_worker(study_key: str, delay: float) -> str:
-    set_study_context(study_key)
-    await asyncio.sleep(delay)
-    return get_current_study()
+    token = set_study_context(study_key)
+    try:
+        await asyncio.sleep(delay)
+        return get_current_study()
+    finally:
+        reset_study_context(token)
 
 
 @pytest.mark.asyncio
