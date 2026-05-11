@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.5](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.4...v0.5.5) (2026-05-08)
+
+
+### Bug Fixes
+
+* enforce idempotency check in DefaultRetryPolicy to prevent unsafe retries ([#898](https://github.com/fderuiter/imednet-python-sdk/issues/898)) ([74c33cb](https://github.com/fderuiter/imednet-python-sdk/commit/74c33cbb0b5d4630d8f7f2362550fc3cc4e6f15b))
+* remove test-only client request wrappers ([#896](https://github.com/fderuiter/imednet-python-sdk/issues/896)) ([7e5fa99](https://github.com/fderuiter/imednet-python-sdk/commit/7e5fa99620389c9fd1c3c39a47d314e892b83b67))
+
 ## [0.5.4](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.3...v0.5.4) (2026-05-08)
 
 
