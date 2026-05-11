@@ -175,6 +175,18 @@ class ImednetSDK(SDKConvenienceMixin):
         """Cleanup resources when exiting context."""
         self.close()
 
+    async def __aenter__(self) -> "ImednetSDK":
+        """Prevent accidental ``async with`` usage on the synchronous client."""
+        raise TypeError(
+            "ImednetSDK is a synchronous client. "
+            "Use 'with ImednetSDK(...):' instead of 'async with'. "
+            "If you require async execution, use AsyncImednetSDK."
+        )
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Unreachable; defined to complete the async context manager interface."""
+        pass  # pragma: no cover
+
     def close(self) -> None:
         """Close the synchronous client connection and free resources.
 
