@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 
 import pytest
 import pytest_asyncio
-import respx
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
@@ -11,12 +10,17 @@ from imednet.core.context import Context
 
 @pytest.fixture(autouse=True)
 def block_external_requests(request: pytest.FixtureRequest):
-    """Block real network calls in all non-live tests."""
+    """Block real network calls in all non-live tests.
+
+    Uses the ``respx_mock`` pytest-plugin fixture so that all non-live tests
+    share a single strict router; tests cannot bypass the guard by opening
+    their own ``respx.mock`` context or decorator.
+    """
     if request.node.get_closest_marker("live"):
         yield
         return
-    with respx.mock(assert_all_mocked=True, assert_all_called=False):
-        yield
+    request.getfixturevalue("respx_mock")
+    yield
 
 
 class DummyResponse:
