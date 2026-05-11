@@ -8,6 +8,21 @@ from imednet.core.client import Client
 from imednet.core.context import Context
 
 
+@pytest.fixture(autouse=True)
+def block_external_requests(request: pytest.FixtureRequest):
+    """Block real network calls in all non-live tests.
+
+    Uses the ``respx_mock`` pytest-plugin fixture so that all non-live tests
+    share a single strict router; tests cannot bypass the guard by opening
+    their own ``respx.mock`` context or decorator.
+    """
+    if request.node.get_closest_marker("live"):
+        yield
+        return
+    request.getfixturevalue("respx_mock")
+    yield
+
+
 class DummyResponse:
     def __init__(self, data):
         self._data = data

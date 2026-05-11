@@ -1,6 +1,6 @@
 [project]
 name = "imednet"
-version = "0.5.4"
+version = "0.5.5"
 description = "Unofficial Python SDK for the iMednet clinical trials API"
 authors = [{name = "Frederick de Ruiter", email = "127706008+fderuiter@users.noreply.github.com"}]
 readme = "README.md"
@@ -51,7 +51,7 @@ tenacity = "^9.1.2"
 python-dotenv = ">=1.2.2"
 typer = {extras = ["all"], version = "^0.15.2"}
 python-json-logger = "^2.0.7"
-urllib3 = "^2.6.3"
+urllib3 = "^2.7.0"
 filelock = "^3.20.3"
 pygments = "^2.19.2"
 cryptography = ">=46.0.7"

@@ -142,7 +142,7 @@ jobs:
           IMEDNET_SECURITY_KEY: dummy
         # Note: We run pytest against the installed package
         run: |
-          pytest -q --cov=imednet --cov-report=xml --cov-fail-under=90
+          pytest -q --cov=imednet --cov-report=xml --cov-fail-under=90 -m "not live" --ignore=tests/live/
 
   # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
