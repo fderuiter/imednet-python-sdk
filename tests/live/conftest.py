@@ -9,6 +9,8 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 from imednet.testing import typed_values
 from tests.live.helpers import get_form_key, get_study_key
 
+pytestmark = pytest.mark.live
+
 API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
