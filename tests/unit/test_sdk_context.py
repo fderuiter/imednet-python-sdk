@@ -190,3 +190,22 @@ def test_async_sdk_sync_init():
             ):
                 sdk = AsyncImednetSDK()
                 assert sdk._async_client == async_client_mock
+
+
+@pytest.mark.asyncio
+async def test_sync_sdk_rejects_async_context():
+    """ImednetSDK.__aenter__ raises TypeError — async with is forbidden."""
+    client_mock = MagicMock(spec=Client)
+    sdk = ImednetSDK(client=client_mock)
+    with pytest.raises(TypeError, match="synchronous client"):
+        await sdk.__aenter__()
+
+
+@pytest.mark.asyncio
+async def test_sync_sdk_rejects_async_context_via_async_with():
+    """'async with ImednetSDK(...)' raises TypeError before entering the block."""
+    client_mock = MagicMock(spec=Client)
+    sdk = ImednetSDK(client=client_mock)
+    with pytest.raises(TypeError, match="synchronous client"):
+        async with sdk:
+            pass  # pragma: no cover
