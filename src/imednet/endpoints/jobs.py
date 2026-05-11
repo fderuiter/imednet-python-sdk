@@ -37,12 +37,16 @@ class JobsEndpoint(
             not_found_func=lambda: self._raise_not_found(study_key, item_id),
         )
 
-    def get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+    def get(self, study_key: Optional[str] = None, item_id: Any = None, **kwargs: Any) -> JobStatus:
+        study_key, item_id = self._resolve_get_args(study_key, item_id, kwargs)
         return self._create_path_get_operation(study_key, item_id).execute_sync(
             self._require_sync_client()
         )
 
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+    async def async_get(
+        self, study_key: Optional[str] = None, item_id: Any = None, **kwargs: Any
+    ) -> JobStatus:
+        study_key, item_id = self._resolve_get_args(study_key, item_id, kwargs)
         return await self._create_path_get_operation(study_key, item_id).execute_async(
             self._require_async_client()
         )

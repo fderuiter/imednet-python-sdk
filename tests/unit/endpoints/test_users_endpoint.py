@@ -1,7 +1,8 @@
 import pytest
 
 import imednet.endpoints.users as users
-from imednet.errors import ClientError, NotFoundError
+from imednet.errors import NotFoundError
+from imednet.errors.validation import ConfigurationError
 from imednet.models.users import User
 
 
@@ -9,7 +10,7 @@ def test_list_requires_study_key_and_include_inactive(dummy_client, context, pag
     ep = users.UsersEndpoint(dummy_client, context)
     capture = paginator_factory(users, [{"userId": 1}])
 
-    with pytest.raises(ClientError):
+    with pytest.raises(ConfigurationError):
         ep.list()
 
     result = ep.list(study_key="S1", include_inactive=True)

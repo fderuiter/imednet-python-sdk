@@ -33,7 +33,7 @@ def get_current_study() -> str:
     if not study:
         raise ConfigurationError(
             "No study key provided. You must either pass 'study_key' explicitly "
-            "to the endpoint method or set it using the client's study context manager."
+            "to the endpoint method or set it using ImednetSDK.study_context(...)."
         )
     return study
 

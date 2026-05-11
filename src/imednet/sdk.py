@@ -215,7 +215,12 @@ class ImednetSDK(SDKConvenienceMixin):
 
     @contextmanager
     def study_context(self, study_key: str) -> Iterator[ImednetSDK]:
-        """Set a temporary default study key for the current thread/task context."""
+        """Set a temporary default study key for the current thread/task context.
+
+        Example:
+            with sdk.study_context("S1"):
+                sdk.records.get(record_id=123)
+        """
         token = set_study_context(study_key)
         try:
             yield self

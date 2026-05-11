@@ -1,7 +1,8 @@
 import pytest
 
 import imednet.endpoints.variables as variables
-from imednet.errors import ClientError, NotFoundError
+from imednet.errors import NotFoundError
+from imednet.errors.validation import ConfigurationError
 from imednet.models.variables import Variable
 
 
@@ -12,7 +13,7 @@ def test_list_requires_study_key_page_size(
     capture = paginator_factory(variables, [{"variableId": 1}])
     patch = patch_build_filter(variables)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(ConfigurationError):
         ep.list()
 
     result = ep.list(study_key="S1", name="x")

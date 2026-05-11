@@ -72,7 +72,7 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
 
             raise ConfigurationError(
                 "No study key provided. You must either pass 'study_key' explicitly "
-                "to the endpoint method or set it using the client's study context manager."
+                "to the endpoint method or set it using ImednetSDK.study_context(...)."
             )
 
     def _get_endpoint_path(self, study_key: Optional[str], *extra_segments: Any) -> str:
