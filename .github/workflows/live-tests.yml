@@ -1,0 +1,37 @@
+name: Live Integration Tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  live-validation:
+    name: Live Integration Tests
+    runs-on: ubuntu-latest
+    environment: live-testing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install Dependencies
+        run: poetry install --with dev
+
+      - name: Execute Live Test Suite
+        env:
+          IMEDNET_API_KEY: ${{ secrets.IMEDNET_API_KEY }}
+          IMEDNET_SECURITY_KEY: ${{ secrets.IMEDNET_SECURITY_KEY }}
+          IMEDNET_RUN_E2E: "1"
+        run: |
+          poetry run pytest tests/live/ -m "live" -v
