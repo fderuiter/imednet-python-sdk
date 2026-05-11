@@ -4,6 +4,8 @@ import pytest
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
+from imednet.core.context import get_current_study
+from imednet.errors.validation import ConfigurationError
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
@@ -121,15 +123,34 @@ async def test_aclose_without_async_client():
     client_mock.close.assert_called_once()
 
 
-def test_study_methods():
+def test_study_context_manager_sets_and_resets_context():
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
-    sdk.set_default_study("study-key-123")
-    assert sdk.ctx.default_study_key == "study-key-123"
+    with sdk.study_context("study-key-123"):
+        assert get_current_study() == "study-key-123"
 
-    sdk.clear_default_study()
-    assert sdk.ctx.default_study_key is None
+    with pytest.raises(ConfigurationError):
+        get_current_study()
+
+
+def test_study_context_manager_resets_on_exception():
+    client_mock = MagicMock(spec=Client)
+    sdk = ImednetSDK(client=client_mock)
+
+    with pytest.raises(ValueError):
+        with sdk.study_context("study-key-123"):
+            raise ValueError("boom")
+
+    with pytest.raises(ConfigurationError):
+        get_current_study()
+
+
+def test_default_study_mutation_methods_removed():
+    client_mock = MagicMock(spec=Client)
+    sdk = ImednetSDK(client=client_mock)
+    assert not hasattr(sdk, "set_default_study")
+    assert not hasattr(sdk, "clear_default_study")
 
 
 def test_retry_policy_property():

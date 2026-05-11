@@ -68,9 +68,12 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
     def _validate_study_key(self, study_key: Optional[str]) -> None:
         """Validate that a study key is provided if required."""
         if self.requires_study_key and not study_key:
-            from imednet.errors import ClientError
+            from imednet.errors.validation import ConfigurationError
 
-            raise ClientError("Study key must be provided or set in the context")
+            raise ConfigurationError(
+                "No study key provided. You must either pass 'study_key' explicitly "
+                "to the endpoint method or set it using the client's study context manager."
+            )
 
     def _get_endpoint_path(self, study_key: Optional[str], *extra_segments: Any) -> str:
         """
