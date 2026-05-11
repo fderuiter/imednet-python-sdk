@@ -1,6 +1,7 @@
 """Validation errors."""
 
 from .api import ApiError
+from .client import ClientError
 
 
 class ValidationError(ApiError):
@@ -17,5 +18,11 @@ class BadRequestError(ValidationError):
 
 class UnknownVariableTypeError(ValidationError):
     """Raised when an unrecognized variable type is encountered."""
+
+    pass
+
+
+class ConfigurationError(ClientError):
+    """Raised when required SDK/client configuration is missing."""
 
     pass

@@ -15,7 +15,12 @@ from .base import ImednetError
 from .client import ClientError
 from .network import RequestError
 from .registry import get_error_class
-from .validation import BadRequestError, UnknownVariableTypeError, ValidationError
+from .validation import (
+    BadRequestError,
+    ConfigurationError,
+    UnknownVariableTypeError,
+    ValidationError,
+)
 
 __all__ = [
     "get_error_class",
@@ -29,6 +34,7 @@ __all__ = [
     "RateLimitError",
     "ServerError",
     "ValidationError",
+    "ConfigurationError",
     "BadRequestError",
     "UnauthorizedError",
     "ForbiddenError",

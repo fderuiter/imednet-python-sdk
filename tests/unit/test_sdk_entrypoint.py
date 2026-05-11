@@ -1,6 +1,5 @@
 import imednet.sdk as sdk_mod
 from imednet.core.client import Client
-from imednet.core.context import Context
 from imednet.endpoints.codings import CodingsEndpoint
 from imednet.endpoints.forms import FormsEndpoint
 from imednet.endpoints.intervals import IntervalsEndpoint
@@ -41,7 +40,6 @@ def test_env_var_credentials(monkeypatch) -> None:
 def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
     sdk = _create_sdk()
 
-    assert isinstance(sdk.ctx, Context)
     assert isinstance(sdk._client, Client)
 
     endpoints = {

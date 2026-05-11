@@ -9,11 +9,12 @@ This module provides the ImednetSDK class which:
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from importlib import import_module
 from typing import TYPE_CHECKING, Any, Optional
 
 from .config import Config, load_config
-from .core.context import Context
+from .core.context import Context, reset_study_context, set_study_context
 from .core.factory import ClientFactory
 from .core.retry import RetryPolicy
 from .endpoints.registry import ENDPOINT_REGISTRY
@@ -81,7 +82,7 @@ class ImednetSDK(SDKConvenienceMixin):
         self._security_key = config.security_key
         self._base_url = config.base_url
 
-        self.ctx = Context()
+        endpoint_context = Context()
 
         if client:
             self._client = client
@@ -107,7 +108,7 @@ class ImednetSDK(SDKConvenienceMixin):
         else:
             self._async_client = None
 
-        self._init_endpoints()
+        self._init_endpoints(endpoint_context)
         self.workflows = self._init_workflows()
 
     @property
@@ -120,10 +121,10 @@ class ImednetSDK(SDKConvenienceMixin):
         if self._async_client is not None:
             self._async_client.retry_policy = policy
 
-    def _init_endpoints(self) -> None:
+    def _init_endpoints(self, ctx: Context) -> None:
         """Instantiate endpoint clients."""
         for attr, endpoint_cls in ENDPOINT_REGISTRY.items():
-            setattr(self, attr, endpoint_cls(self._client, self.ctx, self._async_client))
+            setattr(self, attr, endpoint_cls(self._client, ctx, self._async_client))
 
     def _init_workflows(self) -> Any:
         """Instantiate workflow namespace when optional workflows plugin is available."""
@@ -212,18 +213,14 @@ class ImednetSDK(SDKConvenienceMixin):
             await self._async_client.aclose()
         self._client.close()
 
-    def set_default_study(self, study_key: str) -> None:
-        """
-        Set the default study key for subsequent API calls.
-
-        Args:
-            study_key: The study key to use as default.
-        """
-        self.ctx.set_default_study_key(study_key)
-
-    def clear_default_study(self) -> None:
-        """Clear the default study key."""
-        self.ctx.clear_default_study_key()
+    @contextmanager
+    def study_context(self, study_key: str):
+        """Set a temporary default study key for the current thread/task context."""
+        token = set_study_context(study_key)
+        try:
+            yield self
+        finally:
+            reset_study_context(token)
 
 
 class AsyncImednetSDK(ImednetSDK):

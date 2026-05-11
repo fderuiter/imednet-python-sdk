@@ -5,7 +5,7 @@ import pytest_asyncio
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
-from imednet.core.context import Context
+from imednet.core.context import Context, clear_study_context
 
 
 @pytest.fixture(autouse=True)
@@ -21,6 +21,13 @@ def block_external_requests(request: pytest.FixtureRequest):
         return
     request.getfixturevalue("respx_mock")
     yield
+
+
+@pytest.fixture(autouse=True)
+def reset_study_context_between_tests():
+    clear_study_context()
+    yield
+    clear_study_context()
 
 
 class DummyResponse:
