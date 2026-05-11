@@ -2,11 +2,13 @@
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.mixins.cache import CachedEndpointMixin
 from imednet.models.studies import Study
 
 
 class StudiesEndpoint(
     EdcEndpointMixin,
+    CachedEndpointMixin[Study],
     GenericListGetEndpoint[Study],
 ):
     """
@@ -18,5 +20,4 @@ class StudiesEndpoint(
     PATH = ""
     MODEL = Study
     _id_param = "studyKey"
-    _enable_cache = True
     requires_study_key: bool = False

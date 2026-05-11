@@ -2,12 +2,14 @@
 
 from imednet.core.endpoint.base import GenericListGetEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.mixins.cache import CachedEndpointMixin
 from imednet.core.endpoint.strategies import PopStudyKeyStrategy
 from imednet.models.forms import Form
 
 
 class FormsEndpoint(
     EdcEndpointMixin,
+    CachedEndpointMixin[Form],
     GenericListGetEndpoint[Form],
 ):
     """
@@ -20,5 +22,4 @@ class FormsEndpoint(
     MODEL = Form
     _id_param = "formId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
-    _enable_cache = True
     PAGE_SIZE = 500
