@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.6](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.5...v0.5.6) (2026-05-11)
+
+
+### Bug Fixes
+
+* address PR review-thread follow-up issues ([efdd101](https://github.com/fderuiter/imednet-python-sdk/commit/efdd1012832f039119c5debaf4d55d07b9bbfe35))
+* apply review feedback on respx mock and live-tests marker ([0346164](https://github.com/fderuiter/imednet-python-sdk/commit/0346164a7f149ac076020c5a53d7cb7ffaf9fde9))
+* make ImednetSDK.__aexit__ raise TypeError to fully poison async protocol ([7416247](https://github.com/fderuiter/imednet-python-sdk/commit/7416247fba6c9803bb641e50c0de1c7e17174a08))
+* poison async context manager protocol on ImednetSDK and add tests ([f6917a6](https://github.com/fderuiter/imednet-python-sdk/commit/f6917a6ab953567d0d4f5fb061d564841dd59835))
+* remove mutable study state from SDK client ([d4fa361](https://github.com/fderuiter/imednet-python-sdk/commit/d4fa3612067dd837d894297af51e230e5f5c3753))
+* upgrade urllib3 to 2.7.0 to resolve CVE-2026-44432 and CVE-2026-44431 ([d837e5a](https://github.com/fderuiter/imednet-python-sdk/commit/d837e5abfeede6a203c65bae8bc84b6a49b54028))
+
 ## [0.5.5](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.4...v0.5.5) (2026-05-08)
 
 
