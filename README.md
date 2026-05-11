@@ -100,7 +100,7 @@ cp .env.example .env
 export IMEDNET_API_KEY="your_api_key"
 export IMEDNET_SECURITY_KEY="your_security_key"
 # Optional: Custom base URL for the API endpoint
-# export IMEDNET_BASE_URL="https://example.com"
+# export IMEDNET_BASE_URL="https://edc.prod.imednetapi.com"
 ```
 
 ### Synchronous Example
