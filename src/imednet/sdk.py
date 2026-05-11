@@ -184,8 +184,12 @@ class ImednetSDK(SDKConvenienceMixin):
         )
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Unreachable; defined to complete the async context manager interface."""
-        pass  # pragma: no cover
+        """Prevent direct or indirect invocation of the async exit on the sync client."""
+        raise TypeError(
+            "ImednetSDK is a synchronous client. "
+            "Use 'with ImednetSDK(...):' instead of 'async with'. "
+            "If you require async execution, use AsyncImednetSDK."
+        )
 
     def close(self) -> None:
         """Close the synchronous client connection and free resources.
