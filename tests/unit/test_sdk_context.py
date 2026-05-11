@@ -202,6 +202,15 @@ async def test_sync_sdk_rejects_async_context():
 
 
 @pytest.mark.asyncio
+async def test_sync_sdk_rejects_async_aexit():
+    """ImednetSDK.__aexit__ raises TypeError when called directly."""
+    client_mock = MagicMock(spec=Client)
+    sdk = ImednetSDK(client=client_mock)
+    with pytest.raises(TypeError, match="synchronous client"):
+        await sdk.__aexit__(None, None, None)
+
+
+@pytest.mark.asyncio
 async def test_sync_sdk_rejects_async_context_via_async_with():
     """'async with ImednetSDK(...)' raises TypeError before entering the block."""
     client_mock = MagicMock(spec=Client)
