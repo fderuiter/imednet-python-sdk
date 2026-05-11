@@ -52,7 +52,7 @@ Edit the file to add your keys::
 
     IMEDNET_API_KEY=your_api_key
     IMEDNET_SECURITY_KEY=your_security_key
-    IMEDNET_BASE_URL=https://example.com
+    IMEDNET_BASE_URL=https://edc.prod.imednetapi.com
 
 The CLI loads this file automatically. Other scripts can call
 ``dotenv.load_dotenv()`` to mimic this behaviour.
