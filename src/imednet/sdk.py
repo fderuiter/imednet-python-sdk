@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from importlib import import_module
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Iterator, Optional
 
 from .config import Config, load_config
 from .core.context import Context, reset_study_context, set_study_context
@@ -214,7 +214,7 @@ class ImednetSDK(SDKConvenienceMixin):
         self._client.close()
 
     @contextmanager
-    def study_context(self, study_key: str):
+    def study_context(self, study_key: str) -> Iterator[ImednetSDK]:
         """Set a temporary default study key for the current thread/task context."""
         token = set_study_context(study_key)
         try:
