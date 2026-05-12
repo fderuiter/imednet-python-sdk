@@ -150,7 +150,7 @@ def test_user_ignores_undocumented_fields():
 
 
 def test_study_structure_ignores_undocumented_fields():
-    """Injecting undocumented API keys into a StudyStructure payload must not raise a ValidationError."""
+    """Injecting undocumented API keys into a StudyStructure payload must not raise a ValidationError."""  # noqa: E501
     payload = {"studyKey": "ST1", "intervals": [], **_EXTRA_FIELDS}
     study = StudyStructure.model_validate(payload)
     assert study.study_key == "ST1"
