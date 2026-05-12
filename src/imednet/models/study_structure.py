@@ -81,4 +81,4 @@ class StudyStructure(BaseModel):
     intervals: List[IntervalStructure] = Field(default_factory=list)
 
     # Use ConfigDict for model configuration
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")

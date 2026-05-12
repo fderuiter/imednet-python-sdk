@@ -10,6 +10,18 @@ from pydantic import Field
 from imednet.models.json_base import JsonModel
 
 
+class ImednetBaseModel(JsonModel):
+    """
+    Core base model for all iMedNet API responses.
+
+    Design Philosophy:
+    - extra='ignore': Silently drops any new, undocumented fields the API introduces.
+    - populate_by_name: Allows models to be instantiated using either pythonic
+      snake_case names or the original API camelCase names (via Field aliases).
+    - str_strip_whitespace: Strips leading/trailing whitespace from string values.
+    """
+
+
 class SortField(JsonModel):
     """Sorting information for a field in a paginated response."""
 
