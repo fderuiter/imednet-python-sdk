@@ -6,11 +6,13 @@ from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
 
+
 class CachedEndpointMixin(Generic[T]):
     """
     Mixin that adds caching capabilities to endpoint classes.
     Intercepts _list_sync and _list_async to cache the results.
     """
+
     _cache_internal: Optional[List[T] | Dict[str, List[T]]] = None
 
     @property
@@ -72,7 +74,7 @@ class CachedEndpointMixin(Generic[T]):
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        param_state = self._resolve_params(study_key, extra_params, filters) # type: ignore
+        param_state = self._resolve_params(study_key, extra_params, filters)  # type: ignore
         study = param_state.study
         other_filters = param_state.other_filters
 
@@ -81,7 +83,7 @@ class CachedEndpointMixin(Generic[T]):
         if cached_result is not None:
             return cached_result
 
-        result = super()._list_sync( # type: ignore
+        result = super()._list_sync(  # type: ignore
             client,
             paginator_cls,
             study_key=study_key,
@@ -102,7 +104,7 @@ class CachedEndpointMixin(Generic[T]):
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
-        param_state = self._resolve_params(study_key, extra_params, filters) # type: ignore
+        param_state = self._resolve_params(study_key, extra_params, filters)  # type: ignore
         study = param_state.study
         other_filters = param_state.other_filters
 
@@ -111,7 +113,7 @@ class CachedEndpointMixin(Generic[T]):
         if cached_result is not None:
             return cached_result
 
-        result = await super()._list_async( # type: ignore
+        result = await super()._list_async(  # type: ignore
             client,
             paginator_cls,
             study_key=study_key,
