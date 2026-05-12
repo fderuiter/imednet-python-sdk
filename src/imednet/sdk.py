@@ -14,7 +14,7 @@ from importlib import import_module
 from typing import TYPE_CHECKING, Any, Iterator, Optional
 
 from .config import Config, load_config
-from .core.context import Context, reset_study_context, set_study_context
+from .core.context import study_context
 from .core.factory import ClientFactory
 from .core.retry import RetryPolicy
 from .endpoints.registry import ENDPOINT_REGISTRY
@@ -82,8 +82,6 @@ class ImednetSDK(SDKConvenienceMixin):
         self._security_key = config.security_key
         self._base_url = config.base_url
 
-        endpoint_context = Context()
-
         if client:
             self._client = client
         else:
@@ -108,7 +106,7 @@ class ImednetSDK(SDKConvenienceMixin):
         else:
             self._async_client = None
 
-        self._init_endpoints(endpoint_context)
+        self._init_endpoints()
         self.workflows = self._init_workflows()
 
     @property
@@ -121,10 +119,10 @@ class ImednetSDK(SDKConvenienceMixin):
         if self._async_client is not None:
             self._async_client.retry_policy = policy
 
-    def _init_endpoints(self, ctx: Context) -> None:
+    def _init_endpoints(self) -> None:
         """Instantiate endpoint clients."""
         for attr, endpoint_cls in ENDPOINT_REGISTRY.items():
-            setattr(self, attr, endpoint_cls(self._client, ctx, self._async_client))
+            setattr(self, attr, endpoint_cls(self._client, async_client=self._async_client))
 
     def _init_workflows(self) -> Any:
         """Instantiate workflow namespace when optional workflows plugin is available."""
@@ -221,11 +219,8 @@ class ImednetSDK(SDKConvenienceMixin):
             with sdk.study_context("S1"):
                 sdk.records.get(record_id=123)
         """
-        token = set_study_context(study_key)
-        try:
+        with study_context(study_key):
             yield self
-        finally:
-            reset_study_context(token)
 
 
 class AsyncImednetSDK(ImednetSDK):
