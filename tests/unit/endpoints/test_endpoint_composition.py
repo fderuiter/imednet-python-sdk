@@ -71,6 +71,6 @@ def test_no_endpoint_directly_inherits_edc_mixin():
     """EdcEndpointMixin must not appear as a direct base of any concrete endpoint."""
     for endpoint_cls in ALL_ENDPOINT_CLASSES:
         direct_base_names = {b.__name__ for b in endpoint_cls.__bases__}
-        assert "EdcEndpointMixin" not in direct_base_names, (
-            f"{endpoint_cls.__name__} still directly inherits EdcEndpointMixin"
-        )
+        assert (
+            "EdcEndpointMixin" not in direct_base_names
+        ), f"{endpoint_cls.__name__} still directly inherits EdcEndpointMixin"
