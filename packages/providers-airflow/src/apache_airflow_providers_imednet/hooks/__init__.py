@@ -16,11 +16,7 @@ class ImednetHook(BaseHook):
     def get_conn(self) -> ImednetSDK:  # type: ignore[override]
         from airflow.hooks.base import BaseHook as CurrentBaseHook
 
-        global BaseHook
-        if BaseHook is not CurrentBaseHook:
-            BaseHook = CurrentBaseHook
-
-        conn = BaseHook.get_connection(self.imednet_conn_id)
+        conn = CurrentBaseHook.get_connection(self.imednet_conn_id)
         extras = getattr(conn, "extra_dejson", {}) or {}
         if not isinstance(extras, dict):
             extras = {}

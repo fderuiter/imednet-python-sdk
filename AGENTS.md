@@ -32,7 +32,11 @@ Before proposing any solution, execute and pass all CI quality gates locally.
    poetry run mypy packages/core/src/imednet
    poetry run mypy packages/plugins-workflows/src/imednet_workflows
    poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-   poetry run pytest -q --cov=imednet --cov=imednet_workflows --cov=apache_airflow_providers_imednet --cov-fail-under=90
+   poetry run pytest -q \
+     --cov=imednet \
+     --cov=imednet_workflows \
+     --cov=apache_airflow_providers_imednet \
+     --cov-fail-under=90
    ```
 3. Fix every reported error before marking a task complete. Re-run until the entire sequence exits 0.
 4. Build documentation and confirm zero warnings:
