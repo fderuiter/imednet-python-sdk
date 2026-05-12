@@ -11,15 +11,16 @@ The SDK has a **solid architectural foundation** with good separation of concern
 ## Endpoint Composition Standard
 
 Endpoint read operations are implemented with composition, not deep operation mixin inheritance.
-Use `GenericListGetEndpoint` (or `GenericEndpoint`) and let the base class compose operation objects internally.
+Concrete endpoints inherit **only** from `EdcGenericListGetEndpoint` — a single base class that
+combines the EDC path prefix and study-key injection with the full list/get composition provided
+by `GenericListGetEndpoint`.
 
 ```python
-from imednet.core.endpoint.base import GenericListGetEndpoint
-from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.edc_mixin import EdcGenericListGetEndpoint
 from imednet.models.records import Record
 
 
-class RecordsEndpoint(EdcEndpointMixin, GenericListGetEndpoint[Record]):
+class RecordsEndpoint(EdcGenericListGetEndpoint[Record]):
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"

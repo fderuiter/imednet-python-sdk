@@ -1,14 +1,10 @@
 """Endpoint for managing visits (interval instances) in a study."""
 
-from imednet.core.endpoint.base import GenericListGetEndpoint
-from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.edc_mixin import EdcGenericListGetEndpoint
 from imednet.models.visits import Visit
 
 
-class VisitsEndpoint(
-    EdcEndpointMixin,
-    GenericListGetEndpoint[Visit],
-):
+class VisitsEndpoint(EdcGenericListGetEndpoint[Visit]):
     """
     API endpoint for interacting with visits (interval instances) in an iMedNet study.
 
