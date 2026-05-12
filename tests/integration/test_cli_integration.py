@@ -64,7 +64,9 @@ def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> 
 
     workflow = MagicMock()
     workflow.extract_records_by_criteria.return_value = [1]
-    monkeypatch.setattr("imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow))
+    monkeypatch.setattr(
+        "imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow)
+    )
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock()))
 
     result = runner.invoke(

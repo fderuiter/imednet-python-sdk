@@ -12,7 +12,9 @@ from imednet.integrations import export as export_mod
 def test_export_to_csv(tmp_path, monkeypatch):
     df = pd.DataFrame({"a": [1, 2]})
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
-    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
+    monkeypatch.setattr(
+        export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
+    )
 
     out_csv = tmp_path / "out.csv"
     export_mod.export_to_csv(MagicMock(), "S", str(out_csv))
@@ -24,7 +26,9 @@ def test_export_to_csv(tmp_path, monkeypatch):
 def test_export_to_sql(tmp_path, monkeypatch):
     df = pd.DataFrame({"a": [1, 2]})
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
-    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
+    monkeypatch.setattr(
+        export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
+    )
 
     db_file = tmp_path / "db.sqlite"
     export_mod.export_to_sql(MagicMock(), "S", "t", f"sqlite:///{db_file}")
@@ -63,8 +67,8 @@ def test_imednet_export_operator(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
     monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
 
-    from apache_airflow_providers_imednet import ImednetExportOperator
     import apache_airflow_providers_imednet.operators.export as export_ops
+    from apache_airflow_providers_imednet import ImednetExportOperator
 
     hook = MagicMock(get_conn=MagicMock(return_value=MagicMock()))
     monkeypatch.setattr(export_ops, "ImednetHook", MagicMock(return_value=hook))

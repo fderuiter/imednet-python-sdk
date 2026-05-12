@@ -36,7 +36,9 @@ def extract_records(
     visit_filter: Optional[List[str]] = typer.Option(
         None,
         "--visit-filter",
-        help=("Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters."),
+        help=(
+            "Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters."
+        ),
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""

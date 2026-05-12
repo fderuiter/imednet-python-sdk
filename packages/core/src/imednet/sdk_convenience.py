@@ -22,6 +22,7 @@ from imednet.models.subjects import Subject
 from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
+
 if TYPE_CHECKING:
     from imednet.endpoints.codings import CodingsEndpoint
     from imednet.endpoints.forms import FormsEndpoint
@@ -51,11 +52,11 @@ def _workflow_poller(name: str) -> Any:
     return getattr(module, name)
 
 
-def JobPoller(*args: Any, **kwargs: Any) -> Any:
+def JobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
     return _workflow_poller("JobPoller")(*args, **kwargs)
 
 
-def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:
+def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
     return _workflow_poller("AsyncJobPoller")(*args, **kwargs)
 
 

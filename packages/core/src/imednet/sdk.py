@@ -126,6 +126,7 @@ class ImednetSDK(SDKConvenienceMixin):
 
     def _init_workflows(self) -> Any:
         """Instantiate workflow namespace when optional workflows plugin is available."""
+
         class _MissingWorkflows:
             def __getattr__(self, name: str) -> Any:
                 raise ImportError(
