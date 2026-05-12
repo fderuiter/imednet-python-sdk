@@ -14,11 +14,11 @@ class ImednetBaseModel(JsonModel):
     """
     Core base model for all iMedNet API responses.
 
-    Design Philosophy:
-    - extra='ignore': Silently drops any new, undocumented fields the API introduces.
-    - populate_by_name: Allows models to be instantiated using either pythonic
-      snake_case names or the original API camelCase names (via Field aliases).
-    - str_strip_whitespace: Strips leading/trailing whitespace from string values.
+    Design philosophy:
+    extra='ignore' silently drops new undocumented fields the API introduces.
+    populate_by_name allows models to be instantiated using either pythonic
+    snake_case names or original API camelCase names via Field aliases.
+    str_strip_whitespace trims leading and trailing whitespace from string values.
     """
 
 
