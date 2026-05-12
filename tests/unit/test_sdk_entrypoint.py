@@ -205,3 +205,77 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
 
     assert sdk.poll_job("S1", "B1", interval=10, timeout=100) == "JOBOBJ"
     assert calls["run"] == ("S1", "B1", 10, 100)
+
+
+def test_missing_workflow_exports_no_workflows(monkeypatch) -> None:
+    def fake_import_module(name):
+        if name == "imednet_workflows.namespace":
+
+            class FakeModule:
+                pass
+
+            return FakeModule()
+        import importlib
+
+        return importlib.import_module(name)
+
+    monkeypatch.setattr("imednet.sdk.import_module", fake_import_module)
+
+    import pytest
+
+    with pytest.raises(ImportError, match="does not export 'Workflows'"):
+        _create_sdk()
+
+
+def test_missing_workflow_exports_bad_workflows(monkeypatch) -> None:
+    def fake_import_module(name):
+        if name == "imednet_workflows.namespace":
+
+            class FakeModule:
+                pass
+
+            class FakeWorkflows:
+                def __init__(self, sdk):
+                    raise AttributeError("simulated error")
+
+            FakeModule.Workflows = FakeWorkflows
+            return FakeModule()
+        import importlib
+
+        return importlib.import_module(name)
+
+    monkeypatch.setattr("imednet.sdk.import_module", fake_import_module)
+
+    import pytest
+
+    with pytest.raises(ImportError, match="Failed to instantiate Workflows"):
+        _create_sdk()
+
+
+def test_missing_workflow_exports_unexpected_module_not_found(monkeypatch) -> None:
+    def fake_import_module(name):
+        raise ModuleNotFoundError("Some other module not found", name="other_module")
+
+    monkeypatch.setattr("imednet.sdk.import_module", fake_import_module)
+
+    import pytest
+
+    with pytest.raises(ModuleNotFoundError, match="Some other module not found"):
+        _create_sdk()
+
+
+def test_missing_workflow_exports_fallback(monkeypatch) -> None:
+    import sys
+
+    monkeypatch.setitem(sys.modules, "imednet.workflows.namespace", None)
+
+    def fake_import_module(name):
+        raise ModuleNotFoundError("mocked missing", name=name)
+
+    monkeypatch.setattr("imednet.sdk.import_module", fake_import_module)
+
+    sdk = _create_sdk()
+    import pytest
+
+    with pytest.raises(ImportError, match="requires the optional 'imednet-workflows' package"):
+        _ = sdk.workflows.some_workflow

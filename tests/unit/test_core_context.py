@@ -1,10 +1,6 @@
 import pytest
 
-from imednet.core.context import (
-    get_current_study,
-    reset_study_context,
-    set_study_context,
-)
+from imednet.core.context import get_current_study, reset_study_context, set_study_context
 from imednet.errors.validation import ConfigurationError
 
 
