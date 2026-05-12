@@ -78,7 +78,11 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
 class JsonModel(BaseModel):
     """Base model with shared JSON parsing helpers."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(
+        extra="ignore",
+        populate_by_name=True,
+        str_strip_whitespace=True,
+    )
 
     @classmethod
     def from_json(cls, data: Any) -> Self:

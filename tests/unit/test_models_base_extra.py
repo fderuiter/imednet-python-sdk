@@ -1,6 +1,24 @@
+"""Tests verifying that SDK models tolerate unexpected or null API fields."""
+
+from __future__ import annotations
+
 import datetime
 
-from imednet.models.base import ApiResponse, Error, Metadata, Pagination, SortField
+from imednet.models.base import (
+    ApiResponse,
+    Error,
+    ImednetBaseModel,
+    Metadata,
+    Pagination,
+    SortField,
+)
+from imednet.models.jobs import Job, JobStatus
+from imednet.models.records import Record
+from imednet.models.sites import Site
+from imednet.models.studies import Study
+from imednet.models.study_structure import StudyStructure
+from imednet.models.subjects import Subject
+from imednet.models.users import User
 
 
 def test_sort_field_defaults():
@@ -50,3 +68,137 @@ def test_api_response_generic():
         }
     )
     assert resp.data == 5
+
+
+# ---------------------------------------------------------------------------
+# ImednetBaseModel existence
+# ---------------------------------------------------------------------------
+
+
+def test_imednet_base_model_exists():
+    """ImednetBaseModel must be importable and carry extra='ignore' config."""
+    assert ImednetBaseModel.model_config.get("extra") == "ignore"
+    assert ImednetBaseModel.model_config.get("populate_by_name") is True
+    assert ImednetBaseModel.model_config.get("str_strip_whitespace") is True
+
+
+# ---------------------------------------------------------------------------
+# Core resilience contract: every model must ignore unknown fields
+# ---------------------------------------------------------------------------
+
+_EXTRA_FIELDS = {
+    "undocumented_telemetry_tracker": "12345XYZ",
+    "new_feature_flag": True,
+    "vendor_internal_id": 9999,
+    "future_field": None,
+    "nested_unknown": {"key": "value"},
+}
+
+
+def test_study_ignores_undocumented_fields():
+    """Injecting undocumented API keys must not raise a ValidationError."""
+    payload = {"studyKey": "PHARMADEMO", "studyId": 100, **_EXTRA_FIELDS}
+    study = Study.model_validate(payload)
+    assert study.study_key == "PHARMADEMO"
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(study, field)
+
+
+def test_site_ignores_undocumented_fields():
+    """Injecting undocumented API keys into a Site payload must not raise a ValidationError."""
+    payload = {"studyKey": "PHARMADEMO", "siteId": 1, **_EXTRA_FIELDS}
+    site = Site.model_validate(payload)
+    assert site.study_key == "PHARMADEMO"
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(site, field)
+
+
+def test_subject_ignores_undocumented_fields():
+    """Injecting undocumented API keys into a Subject payload must not raise a ValidationError."""
+    payload = {"studyKey": "PHARMADEMO", "subjectId": 42, **_EXTRA_FIELDS}
+    subject = Subject.model_validate(payload)
+    assert subject.study_key == "PHARMADEMO"
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(subject, field)
+
+
+def test_record_ignores_undocumented_fields():
+    """Injecting undocumented API keys into a Record payload must not raise a ValidationError."""
+    payload = {"studyKey": "PHARMADEMO", "recordId": 7, **_EXTRA_FIELDS}
+    record = Record.model_validate(payload)
+    assert record.study_key == "PHARMADEMO"
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(record, field)
+
+
+def test_job_ignores_undocumented_fields():
+    """Injecting undocumented API keys into a Job payload must not raise a ValidationError."""
+    payload = {"jobId": "abc", "batchId": "batch1", "state": "PROCESSING", **_EXTRA_FIELDS}
+    job = Job.model_validate(payload)
+    assert job.job_id == "abc"
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(job, field)
+
+
+def test_user_ignores_undocumented_fields():
+    """Injecting undocumented API keys into a User payload must not raise a ValidationError."""
+    payload = {"userId": "u1", "login": "alice", **_EXTRA_FIELDS}
+    user = User.model_validate(payload)
+    assert user.user_id == "u1"
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(user, field)
+
+
+def test_study_structure_ignores_undocumented_fields():
+    """Injecting undocumented API keys into a StudyStructure payload must not raise a ValidationError."""
+    payload = {"studyKey": "ST1", "intervals": [], **_EXTRA_FIELDS}
+    study = StudyStructure.model_validate(payload)
+    assert study.study_key == "ST1"
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(study, field)
+
+
+def test_job_status_ignores_undocumented_fields():
+    """Injecting undocumented API keys into a JobStatus payload must not raise a ValidationError."""
+    payload = {
+        "jobId": "j1",
+        "batchId": "b1",
+        "state": "SUCCESS",
+        "progress": "75",
+        **_EXTRA_FIELDS,
+    }
+    js = JobStatus.model_validate(payload)
+    assert js.progress == 75
+    for field in _EXTRA_FIELDS:
+        assert not hasattr(js, field)
+
+
+# ---------------------------------------------------------------------------
+# Null / missing optional field resilience
+# ---------------------------------------------------------------------------
+
+
+def test_study_survives_null_informational_fields():
+    """Fields that default to '' must handle None gracefully."""
+    payload = {
+        "studyKey": "PHARMADEMO",
+        "studyId": 100,
+        "studyDescription": None,
+        "studyType": {"complex": "object_unexpected"},
+    }
+    study = Study.model_validate(payload)
+    assert study.study_key == "PHARMADEMO"
+
+
+def test_site_survives_null_site_name():
+    """siteName returning null must not crash the parser."""
+    payload = {"studyKey": "PHARMADEMO", "siteId": 1, "siteName": None}
+    site = Site.model_validate(payload)
+    assert site.study_key == "PHARMADEMO"
+
+
+def test_subject_survives_null_status():
+    """subjectStatus returning null must not crash the parser."""
+    payload = {"studyKey": "PHARMADEMO", "subjectId": 42, "subjectStatus": None}
+    subject = Subject.model_validate(payload)
+    assert subject.study_key == "PHARMADEMO"
