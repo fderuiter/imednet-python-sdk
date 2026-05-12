@@ -18,9 +18,16 @@ def test_set_and_reset_study_context() -> None:
         get_current_study()
 
 
-def test_study_context_manager_resets_value() -> None:
+def test_study_context_manager_resets_to_none() -> None:
     with study_context("S1"):
         assert get_current_study() == "S1"
         assert get_study_context() == "S1"
 
     assert get_study_context() is None
+
+
+def test_study_context_manager_restores_previous_context() -> None:
+    with study_context("OUTER"):
+        with study_context("INNER"):
+            assert get_current_study() == "INNER"
+        assert get_current_study() == "OUTER"

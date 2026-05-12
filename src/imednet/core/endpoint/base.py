@@ -5,6 +5,7 @@ Base endpoint mix-in for all API resource endpoints.
 from __future__ import annotations
 
 import re
+import warnings
 from functools import lru_cache
 from typing import Any, Callable, Dict, List, Optional, TypeVar, cast
 from urllib.parse import quote
@@ -43,10 +44,16 @@ class GenericEndpoint(EndpointABC[T]):
     def __init__(
         self,
         client: RequestorProtocol,
-        ctx: Any = None,
+        ctx: object | None = None,
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
-        del ctx
+        if ctx is not None:
+            warnings.warn(
+                "The 'ctx' constructor argument is deprecated and ignored. "
+                "Pass study_key explicitly or use ImednetSDK.study_context(...).",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         self._client = client
         self._async_client = async_client
 
@@ -103,7 +110,7 @@ class GenericListGetEndpoint(
     def __init__(
         self,
         client: RequestorProtocol,
-        ctx: Any = None,
+        ctx: object | None = None,
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
         super().__init__(client, ctx, async_client)
