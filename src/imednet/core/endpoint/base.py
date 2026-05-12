@@ -10,7 +10,6 @@ from typing import Any, Callable, Dict, List, Optional, TypeVar, cast
 from urllib.parse import quote
 
 from imednet.constants import DEFAULT_PAGE_SIZE
-from imednet.core.context import Context
 from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.endpoint.operations import FilterGetOperation, ListOperation
 from imednet.core.endpoint.strategies import (
@@ -44,12 +43,12 @@ class GenericEndpoint(EndpointABC[T]):
     def __init__(
         self,
         client: RequestorProtocol,
-        ctx: Context,
+        ctx: Any = None,
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
+        del ctx
         self._client = client
         self._async_client = async_client
-        self._ctx = ctx
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """Pass-through for filters in generic endpoints."""
@@ -104,7 +103,7 @@ class GenericListGetEndpoint(
     def __init__(
         self,
         client: RequestorProtocol,
-        ctx: Context,
+        ctx: Any = None,
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
         super().__init__(client, ctx, async_client)

@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import contextvars
-from typing import Optional
+from contextlib import contextmanager
+from typing import Iterator, Optional
 
 from imednet.errors.validation import ConfigurationError
 
@@ -27,6 +28,11 @@ def clear_study_context() -> None:
     _active_study.set(None)
 
 
+def get_study_context() -> Optional[str]:
+    """Get the current study key for the active thread/task context."""
+    return _active_study.get()
+
+
 def get_current_study() -> str:
     """Get the current study key or raise when no study context is set."""
     study = _active_study.get()
@@ -36,6 +42,16 @@ def get_current_study() -> str:
             "to the endpoint method or set it using ImednetSDK.study_context(...)."
         )
     return study
+
+
+@contextmanager
+def study_context(study_key: str) -> Iterator[None]:
+    """Temporarily set the active study key for the current thread/task context."""
+    token = set_study_context(study_key)
+    try:
+        yield
+    finally:
+        reset_study_context(token)
 
 
 class Context:

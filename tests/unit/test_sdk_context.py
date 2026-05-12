@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -180,6 +181,23 @@ def test_retry_policy_property_without_async_client():
     # Test setter when async_client is None
     sdk.retry_policy = policy
     assert client_mock.retry_policy == policy
+
+
+@pytest.mark.asyncio
+async def test_study_context_isolation_on_shared_sdk_instance():
+    shared_sdk = ImednetSDK(client=MagicMock(spec=Client))
+
+    async def worker(study_key: str, delay: float) -> str:
+        with shared_sdk.study_context(study_key):
+            await asyncio.sleep(delay)
+            return get_current_study()
+
+    results = await asyncio.gather(
+        worker("STUDY_A", 0.2),
+        worker("STUDY_B", 0.1),
+        worker("STUDY_C", 0.3),
+    )
+    assert results == ["STUDY_A", "STUDY_B", "STUDY_C"]
 
 
 @pytest.mark.asyncio

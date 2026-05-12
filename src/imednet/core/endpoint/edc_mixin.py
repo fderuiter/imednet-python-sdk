@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict
 
-if TYPE_CHECKING:
-    from imednet.core.context import Context
+from imednet.core.context import get_study_context
 
 
 class EdcEndpointMixin:
@@ -18,9 +17,6 @@ class EdcEndpointMixin:
 
     BASE_PATH = "/api/v1/edc/studies"
 
-    if TYPE_CHECKING:
-        _ctx: Context
-
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """
         Inject default studyKey if missing.
@@ -31,6 +27,7 @@ class EdcEndpointMixin:
         Returns:
             The filters dictionary with studyKey injected if applicable.
         """
-        if "studyKey" not in filters and self._ctx.default_study_key:
-            filters["studyKey"] = self._ctx.default_study_key
+        study_key = get_study_context()
+        if "studyKey" not in filters and study_key:
+            filters["studyKey"] = study_key
         return filters
