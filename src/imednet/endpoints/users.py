@@ -1,15 +1,11 @@
 """Endpoint for managing users in a study."""
 
-from imednet.core.endpoint.base import GenericListGetEndpoint
-from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.edc_mixin import EdcGenericListGetEndpoint
 from imednet.core.endpoint.strategies import MappingParamProcessor, PopStudyKeyStrategy
 from imednet.models.users import User
 
 
-class UsersEndpoint(
-    EdcEndpointMixin,
-    GenericListGetEndpoint[User],
-):
+class UsersEndpoint(EdcGenericListGetEndpoint[User]):
     """
     API endpoint for interacting with users in an iMedNet study.
 

@@ -1,14 +1,10 @@
 """Endpoint for retrieving record revision history in a study."""
 
-from imednet.core.endpoint.base import GenericListGetEndpoint
-from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
+from imednet.core.endpoint.edc_mixin import EdcGenericListGetEndpoint
 from imednet.models.record_revisions import RecordRevision
 
 
-class RecordRevisionsEndpoint(
-    EdcEndpointMixin,
-    GenericListGetEndpoint[RecordRevision],
-):
+class RecordRevisionsEndpoint(EdcGenericListGetEndpoint[RecordRevision]):
     """
     API endpoint for accessing record revision history in an iMedNet study.
 
