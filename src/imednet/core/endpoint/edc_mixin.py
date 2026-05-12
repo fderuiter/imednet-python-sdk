@@ -2,14 +2,23 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, TypeVar
+from typing import Any, Dict, TypeVar
 
 from imednet.core.context import get_study_context
 from imednet.core.endpoint.base import GenericListGetEndpoint
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
+
+_EDC_BASE_PATH = "/api/v1/edc/studies"
+
+
+def _inject_study_key(filters: Dict[str, Any]) -> Dict[str, Any]:
+    """Inject the default study key from context into filters if absent."""
+    study_key = get_study_context()
+    if "studyKey" not in filters and study_key:
+        filters["studyKey"] = study_key
+    return filters
 
 
 class EdcEndpointMixin:
@@ -20,7 +29,7 @@ class EdcEndpointMixin:
     of the default study key into filters.
     """
 
-    BASE_PATH = "/api/v1/edc/studies"
+    BASE_PATH = _EDC_BASE_PATH
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -32,10 +41,7 @@ class EdcEndpointMixin:
         Returns:
             The filters dictionary with studyKey injected if applicable.
         """
-        study_key = get_study_context()
-        if "studyKey" not in filters and study_key:
-            filters["studyKey"] = study_key
-        return filters
+        return _inject_study_key(filters)
 
 
 class EdcGenericListGetEndpoint(GenericListGetEndpoint[T]):
@@ -58,15 +64,7 @@ class EdcGenericListGetEndpoint(GenericListGetEndpoint[T]):
             _id_param = "recordId"
     """
 
-    BASE_PATH = "/api/v1/edc/studies"
-
-    def __init__(
-        self,
-        client: RequestorProtocol,
-        ctx: object | None = None,
-        async_client: Optional[AsyncRequestorProtocol] = None,
-    ) -> None:
-        super().__init__(client, ctx, async_client)
+    BASE_PATH = _EDC_BASE_PATH
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -78,7 +76,4 @@ class EdcGenericListGetEndpoint(GenericListGetEndpoint[T]):
         Returns:
             The filters dictionary with studyKey injected if applicable.
         """
-        study_key = get_study_context()
-        if "studyKey" not in filters and study_key:
-            filters["studyKey"] = study_key
-        return filters
+        return _inject_study_key(filters)
