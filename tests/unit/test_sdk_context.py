@@ -5,7 +5,7 @@ import pytest
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
-from imednet.core.context import get_current_study
+from imednet.core.context import get_current_study, get_study_context
 from imednet.errors.validation import ConfigurationError
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
@@ -198,6 +198,7 @@ async def test_study_context_isolation_on_shared_sdk_instance():
         worker("STUDY_C", 0.3),
     )
     assert results == ["STUDY_A", "STUDY_B", "STUDY_C"]
+    assert get_study_context() is None
 
 
 @pytest.mark.asyncio
