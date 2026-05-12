@@ -126,31 +126,21 @@ class ImednetSDK(SDKConvenienceMixin):
 
     def _init_workflows(self) -> Any:
         """Instantiate workflow namespace when optional workflows plugin is available."""
-
-        def _init_local_workflows() -> Any:
-            try:
-                from .workflows.namespace import Workflows
-
-                return Workflows(self)
-            except (ImportError, ModuleNotFoundError):
-
-                class _MissingWorkflows:
-                    def __getattr__(self, name: str) -> Any:
-                        raise ImportError(
-                            (
-                                f"Workflow '{name}' requires the optional "
-                                "'imednet-workflows' package. "
-                                "Install with `pip install imednet-workflows`."
-                            )
-                        )
-
-                return _MissingWorkflows()
+        class _MissingWorkflows:
+            def __getattr__(self, name: str) -> Any:
+                raise ImportError(
+                    (
+                        f"Workflow '{name}' requires the optional "
+                        "'imednet-workflows' package. "
+                        "Install with `pip install imednet-workflows`."
+                    )
+                )
 
         try:
             workflows_module = import_module("imednet_workflows.namespace")
         except ModuleNotFoundError as error:
             if error.name and error.name.startswith("imednet_workflows"):
-                return _init_local_workflows()
+                return _MissingWorkflows()
             raise
 
         workflows_cls = getattr(workflows_module, "Workflows", None)

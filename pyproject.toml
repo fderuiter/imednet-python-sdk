@@ -1,66 +1,9 @@
-[project]
-name = "imednet"
-version = "0.6.0"
-description = "Unofficial Python SDK for the iMednet clinical trials API"
-authors = [{name = "Frederick de Ruiter", email = "127706008+fderuiter@users.noreply.github.com"}]
-readme = "README.md"
-license = {text = "MIT"}
-
-[project.scripts]
-imednet = "imednet.cli:app"
-
 [tool.poetry]
-keywords = ["imednet", "clinical trials", "sdk", "api"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "Topic :: Scientific/Engineering :: Medical Science Apps.",
-    "Typing :: Typed",
-]
-maintainers = ["Frederick de Ruiter <fpderuiter@gmail.com>"]
-packages = [{ include = "imednet", from = "src" }]
-include = [
-    "README.md",
-    "LICENSE",
-    "src/imednet/py.typed",
-    { path = "examples", format = "sdist" } # Include examples only in sdist
-]
-repository = "https://github.com/fderuiter/imednet-python-sdk"
-homepage = "https://github.com/fderuiter/imednet-python-sdk"
-
-[tool.poetry.scripts]
-imednet = "imednet.cli:app"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
-h11 = "0.16.0"
-pandas = { version = ">=2.2.3,<3.0.0", optional = true }
-pyarrow = { version = ">=17.0.0", optional = true }
-SQLAlchemy = { version = ">=2.0.0,<3.0.0", optional = true }
-openpyxl = { version = "^3.1", optional = true }
-pydantic = "^2.11.3"
-httpx = "^0.28.1"
-tenacity = "^9.1.2"
-python-dotenv = ">=1.2.2"
-typer = {extras = ["all"], version = "^0.15.2"}
-python-json-logger = "^2.0.7"
-urllib3 = "^2.7.0"
-filelock = "^3.20.3"
-pygments = "^2.19.2"
-cryptography = ">=46.0.7"
-
-[tool.poetry.extras]
-pandas = ["pandas"]
-excel = ["pandas", "openpyxl"]
-pyarrow = ["pyarrow"]
-sqlalchemy = ["SQLAlchemy"]
+imednet = { path = "packages/core", develop = true }
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"
@@ -92,19 +35,16 @@ pip = "^26.0"
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-# ------------------------
-# Formatting / lint config
-# ------------------------
 [tool.black]
 line-length = 100
 target-version = ["py310"]
 
 [tool.ruff]
 line-length = 100
-src = ["src", "tests"]
+src = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "tests"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["imednet"]
+known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N"]
@@ -116,8 +56,8 @@ classmethod-decorators = ["field_validator", "model_validator"]
 [tool.isort]
 profile = "black"
 line_length = 100
-known_first_party = ["imednet"]
-src_paths = ["src", "tests"]
+known_first_party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet"]
+src_paths = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "tests"]
 
 [tool.doc8]
 max_line_length = 400
@@ -128,6 +68,4 @@ python_version = "3.10"
 strict = false
 ignore_missing_imports = true
 plugins = []
-# ────────────────────────────────────────────────────────────────
-# Ignore all files under examples/
-exclude                = '^examples/.*$'
+exclude = '^examples/.*$'

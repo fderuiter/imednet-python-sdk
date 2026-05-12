@@ -14,7 +14,7 @@ def mock_record_mapper(monkeypatch):
 
     def _setup(df: pd.DataFrame):
         mapper_inst.dataframe.return_value = df
-        monkeypatch.setattr(export_mod, "RecordMapper", MagicMock(return_value=mapper_inst))
+        monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
         return mapper_inst
 
     return _setup

@@ -7,7 +7,7 @@ from pydantic import BaseModel, ValidationError
 
 from imednet.models.records import Record
 from imednet.models.variables import Variable
-from imednet.workflows.record_mapper import RecordMapper
+from imednet_workflows.record_mapper import RecordMapper
 
 
 def test_dataframe_builds_expected_structure() -> None:
@@ -188,7 +188,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
         def __init__(self, **kwargs):
             raise ValidationError([], DummyModel)
 
-    monkeypatch.setattr("imednet.workflows.record_mapper.create_model", lambda *a, **k: DummyModel)
+    monkeypatch.setattr("imednet_workflows.record_mapper.create_model", lambda *a, **k: DummyModel)
 
     mapper = RecordMapper(sdk)
     with caplog.at_level("WARNING"):
@@ -233,7 +233,7 @@ def test_parse_records_counts_errors() -> None:
 
 
 def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
-    monkeypatch.setattr("imednet.workflows.record_mapper.pd", None)
+    monkeypatch.setattr("imednet_workflows.record_mapper.pd", None)
     mapper = RecordMapper(MagicMock())
     with pytest.raises(ImportError, match="pandas is required for RecordMapper.dataframe"):
         mapper.dataframe("STUDY")

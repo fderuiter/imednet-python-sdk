@@ -12,7 +12,7 @@ from imednet.integrations import export as export_mod
 def test_export_to_csv(tmp_path, monkeypatch):
     df = pd.DataFrame({"a": [1, 2]})
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
-    monkeypatch.setattr(export_mod, "RecordMapper", MagicMock(return_value=mapper_inst))
+    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
 
     out_csv = tmp_path / "out.csv"
     export_mod.export_to_csv(MagicMock(), "S", str(out_csv))
@@ -24,7 +24,7 @@ def test_export_to_csv(tmp_path, monkeypatch):
 def test_export_to_sql(tmp_path, monkeypatch):
     df = pd.DataFrame({"a": [1, 2]})
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
-    monkeypatch.setattr(export_mod, "RecordMapper", MagicMock(return_value=mapper_inst))
+    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
 
     db_file = tmp_path / "db.sqlite"
     export_mod.export_to_sql(MagicMock(), "S", "t", f"sqlite:///{db_file}")
@@ -63,10 +63,11 @@ def test_imednet_export_operator(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
     monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
 
-    from imednet.integrations.airflow import ImednetExportOperator
+    from apache_airflow_providers_imednet import ImednetExportOperator
+    import apache_airflow_providers_imednet.operators.export as export_ops
 
     hook = MagicMock(get_conn=MagicMock(return_value=MagicMock()))
-    monkeypatch.setattr("imednet.integrations.airflow.ImednetHook", MagicMock(return_value=hook))
+    monkeypatch.setattr(export_ops, "ImednetHook", MagicMock(return_value=hook))
     monkeypatch.setattr(export_mod, "export_to_csv", MagicMock())
 
     op = ImednetExportOperator(task_id="t", study_key="S", output_path="p")
@@ -74,7 +75,7 @@ def test_imednet_export_operator(monkeypatch):
 
     export_mod.export_to_csv.assert_called_once_with(hook.get_conn(), "S", "p")
     assert result == "p"
-    sys.modules.pop("imednet.integrations.airflow", None)
+    sys.modules.pop("apache_airflow_providers_imednet", None)
 
 
 def test_imednet_hook_returns_sdk(monkeypatch):
@@ -106,7 +107,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
     monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
 
-    from imednet.integrations.airflow import ImednetHook
+    from apache_airflow_providers_imednet import ImednetHook
 
     hook = ImednetHook()
     sdk = hook.get_conn()
@@ -114,7 +115,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
     assert sdk._client._client.headers["x-api-key"] == "KEY"
     assert sdk._client._client.headers["x-imn-security-key"] == "SEC"
     assert sdk._client.base_url == "https://x"
-    sys.modules.pop("imednet.integrations.airflow", None)
+    sys.modules.pop("apache_airflow_providers_imednet", None)
 
 
 @mock_aws
@@ -197,14 +198,18 @@ def test_to_s3_operator_uploads(monkeypatch):
 
     import importlib
 
-    from imednet.integrations.airflow import operators as ops
+    from apache_airflow_providers_imednet import operators as ops
 
     importlib.reload(ops)
 
     sdk = MagicMock()
     sdk.records.list.return_value = [SimpleNamespace(model_dump=lambda: {"id": 1})]
     hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
-    monkeypatch.setattr(ops, "ImednetHook", MagicMock(return_value=hook_inst))
+    import apache_airflow_providers_imednet.operators.to_s3 as to_s3_ops
+
+    hook_cls = MagicMock(return_value=hook_inst)
+    monkeypatch.setattr(to_s3_ops, "ImednetHook", hook_cls)
+    monkeypatch.setattr(to_s3_ops, "S3Hook", DummyS3Hook)
 
     op = ops.ImednetToS3Operator(task_id="t", study_key="S", s3_bucket="bucket", s3_key="k")
     result = op.execute({})
@@ -212,6 +217,6 @@ def test_to_s3_operator_uploads(monkeypatch):
     assert result == "k"
     body = s3.get_object(Bucket="bucket", Key="k")["Body"].read().decode()
     assert "id" in body
-    ops.ImednetHook.assert_called_once_with("imednet_default")
+    hook_cls.assert_called_once_with("imednet_default")
     hook_inst.get_conn.assert_called_once_with()
-    sys.modules.pop("imednet.integrations.airflow.operators", None)
+    sys.modules.pop("apache_airflow_providers_imednet.operators", None)

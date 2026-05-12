@@ -238,7 +238,7 @@ the specified table name. See ``docs/cli.rst`` for full examples.
 poetry run ruff check --fix .
 poetry run black --check .
 poetry run isort --check --profile black .
-poetry run mypy src/imednet
+poetry run mypy packages/core/src/imednet
 poetry run pytest -q
 ```
 

@@ -13,11 +13,11 @@ from imednet.endpoints.subjects import SubjectsEndpoint
 from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
-from imednet.workflows.data_extraction import DataExtractionWorkflow
-from imednet.workflows.query_management import QueryManagementWorkflow
-from imednet.workflows.record_mapper import RecordMapper
-from imednet.workflows.record_update import RecordUpdateWorkflow
-from imednet.workflows.subject_data import SubjectDataWorkflow
+from imednet_workflows.data_extraction import DataExtractionWorkflow
+from imednet_workflows.query_management import QueryManagementWorkflow
+from imednet_workflows.record_mapper import RecordMapper
+from imednet_workflows.record_update import RecordUpdateWorkflow
+from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
 def _create_sdk() -> sdk_mod.ImednetSDK:

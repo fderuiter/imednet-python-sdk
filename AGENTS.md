@@ -29,8 +29,10 @@ Before proposing any solution, execute and pass all CI quality gates locally.
    poetry run black --check .
    poetry run isort --check --profile black .
    poetry run ruff check .
-   poetry run mypy src/imednet
-   poetry run pytest -q --cov=imednet --cov-fail-under=90
+   poetry run mypy packages/core/src/imednet
+   poetry run mypy packages/plugins-workflows/src/imednet_workflows
+   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+   poetry run pytest -q --cov=imednet --cov=imednet_workflows --cov=apache_airflow_providers_imednet --cov-fail-under=90
    ```
 3. Fix every reported error before marking a task complete. Re-run until the entire sequence exits 0.
 4. Build documentation and confirm zero warnings:
@@ -40,24 +42,24 @@ Before proposing any solution, execute and pass all CI quality gates locally.
 
 ## 3. Architectural Separation of Concerns
 
-### Data Layer (`src/imednet/models/`)
+### Data Layer (`packages/core/src/imednet/models/`)
 - Define all data schemas here as Pydantic v2 models.
-- No business logic, no HTTP calls, no imports from `imednet.http` or `imednet.workflows`.
+- No business logic, no HTTP calls, no imports from `imednet.http` or `imednet_workflows`.
 - Provide stable deserialization; field aliases are permitted, computed properties are not.
 
-### Application Layer (`src/imednet/`)
+### Application Layer (`packages/core/src/imednet/`)
 | Sub-package | Responsibility | Rules |
 |---|---|---|
-| `src/imednet/http/` | Low-level HTTP transport | Retries (idempotent + jitter via `tenacity`), timeouts, rate-limit headers (`Retry-After`). Map status codes to `imednet.errors`. Redact secrets before logging. |
-| `src/imednet/auth/` | Credential management | Never log or print tokens. Mask values in all representations. Thread- and async-safe. |
-| `src/imednet/errors/` | Exception hierarchy | `ImednetError` → `AuthError`, `RateLimitError`, `ApiError`. No imports from sibling sub-packages. |
-| `src/imednet/pagination/` | Cursor/page iteration | Lazy iteration, bounded memory. Expose page size and cursor. |
-| `src/imednet/utils/` | Pure helpers | No side effects, no network I/O, no imports from `src/imednet/http/` or `src/imednet/workflows/`. |
-| `src/imednet/workflows/` | Higher-level orchestration | Batching, retries, transforms. Inject client via constructor. Fail loudly with typed errors. |
+| `packages/core/src/imednet/http/` | Low-level HTTP transport | Retries (idempotent + jitter via `tenacity`), timeouts, rate-limit headers (`Retry-After`). Map status codes to `imednet.errors`. Redact secrets before logging. |
+| `packages/core/src/imednet/auth/` | Credential management | Never log or print tokens. Mask values in all representations. Thread- and async-safe. |
+| `packages/core/src/imednet/errors/` | Exception hierarchy | `ImednetError` → `AuthError`, `RateLimitError`, `ApiError`. No imports from sibling sub-packages. |
+| `packages/core/src/imednet/pagination/` | Cursor/page iteration | Lazy iteration, bounded memory. Expose page size and cursor. |
+| `packages/core/src/imednet/utils/` | Pure helpers | No side effects, no network I/O, no imports from `packages/core/src/imednet/http/` or `packages/plugins-workflows/src/imednet_workflows/`. |
+| `packages/plugins-workflows/src/imednet_workflows/` | Higher-level orchestration | Batching, retries, transforms. Inject client via constructor. Fail loudly with typed errors. |
 
 New endpoints must be typed methods on the appropriate resource class. Shared logic belongs in `utils/`. Breaking API changes require a major version bump.
 
-### Presentation Layer (`src/imednet/cli/`)
+### Presentation Layer (`packages/core/src/imednet/cli/`)
 - The CLI handles argument parsing and terminal output **only**.
 - No SDK logic, HTTP calls, or data transformation may reside in CLI modules.
 - Log to stderr at INFO by default; support `--verbose` / `--quiet`.
@@ -87,14 +89,14 @@ New endpoints must be typed methods on the appropriate resource class. Shared lo
 - Changes that affect the public API, CLI interface, or environment variables must be noted in the PR description for Render deployment review.
 
 ### Release Process
-- Do **not** manually edit `project.version` in `pyproject.toml`. Versions are managed automatically by `release-please`.
+- Do **not** manually edit package versions in `packages/*/pyproject.toml`. Versions are managed automatically by `release-please`.
 - Releases are triggered by merging the bot-created Release PR into `main`; publishing to PyPI is handled by the tag-triggered `publish` job in `.github/workflows/main.yml`.
 
 ## 5. Area Guidelines
 
-### SDK Core (`src/imednet/`)
+### SDK Core (`packages/core/src/imednet/`)
 - **Change Policy**: New endpoints → typed methods. Shared logic → utilities. Breaking changes → major bump.
-- **Scope**: Python 3.10–3.12. Work in `src/imednet/`, `tests/`, `docs/`, `examples/`, `scripts/`, `.github/`.
+- **Scope**: Python 3.10–3.12. Work in `packages/core/src/imednet/`, `tests/`, `docs/`, `examples/`, `scripts/`, `.github/`.
 
 ### Docs (`docs/`)
 - **Tools**: Sphinx (`make docs`). Zero warnings.

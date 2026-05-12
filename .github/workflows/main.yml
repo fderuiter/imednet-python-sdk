@@ -68,7 +68,10 @@ jobs:
         run: poetry run ruff check .
 
       - name: Type Check (MyPy)
-        run: poetry run mypy src/imednet
+        run: |
+          poetry run mypy packages/core/src/imednet
+          poetry run mypy packages/plugins-workflows/src/imednet_workflows
+          poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
 
       - name: Security Audit
         run: |
@@ -95,14 +98,23 @@ jobs:
           python-version: "3.10"
       - uses: abatilo/actions-poetry@v2
 
-      - name: Build Wheel and Sdist
-        run: poetry build
+      - name: Install Dependencies
+        run: poetry install --with dev
+
+      - name: Build Workspace Packages
+        run: |
+          poetry build -C packages/core
+          poetry build -C packages/plugins-workflows
+          poetry build -C packages/providers-airflow
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist/
+          path: |
+            packages/core/dist/
+            packages/plugins-workflows/dist/
+            packages/providers-airflow/dist/
           retention-days: 1
 
   # ------------------------------------------------------------------
@@ -122,27 +134,24 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Download the artifact we built in the previous job
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
+      - uses: abatilo/actions-poetry@v2
 
-      # CRITICAL: Install the .whl, not the source!
-      # We install test dependencies manually because we aren't using 'poetry install'
-      - name: Install Library & Test Deps
-        run: |
-          pip install dist/*.whl
-          pip install pytest pytest-cov responses respx pytest-asyncio faker boto3 moto pandas sqlalchemy openpyxl
+      - name: Install Dependencies
+        run: poetry install --with dev
 
       - name: Run Tests
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
-        # Note: We run pytest against the installed package
         run: |
-          pytest -q --cov=imednet --cov-report=xml --cov-fail-under=90 -m "not live" --ignore=tests/live/
+          poetry run pytest -q \
+            --cov=imednet \
+            --cov=imednet_workflows \
+            --cov=apache_airflow_providers_imednet \
+            --cov-report=xml \
+            --cov-fail-under=90 \
+            -m "not live" \
+            --ignore=tests/live/
 
   # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)

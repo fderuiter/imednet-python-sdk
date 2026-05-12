@@ -6,6 +6,7 @@ This module contains high-level helper methods that delegate to specific endpoin
 
 from __future__ import annotations
 
+from importlib import import_module
 from typing import TYPE_CHECKING, Any, Dict, List, Protocol, Union
 
 from imednet.models.codings import Coding
@@ -21,8 +22,6 @@ from imednet.models.subjects import Subject
 from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
-from imednet.workflows.job_poller import AsyncJobPoller, JobPoller
-
 if TYPE_CHECKING:
     from imednet.endpoints.codings import CodingsEndpoint
     from imednet.endpoints.forms import FormsEndpoint
@@ -37,6 +36,27 @@ if TYPE_CHECKING:
     from imednet.endpoints.users import UsersEndpoint
     from imednet.endpoints.variables import VariablesEndpoint
     from imednet.endpoints.visits import VisitsEndpoint
+
+
+def _workflow_poller(name: str) -> Any:
+    try:
+        module = import_module("imednet_workflows.job_poller")
+    except ModuleNotFoundError as error:
+        if error.name and error.name.startswith("imednet_workflows"):
+            raise ImportError(
+                "Job polling requires the optional 'imednet-workflows' package. "
+                "Install with `pip install imednet-workflows`."
+            ) from error
+        raise
+    return getattr(module, name)
+
+
+def JobPoller(*args: Any, **kwargs: Any) -> Any:
+    return _workflow_poller("JobPoller")(*args, **kwargs)
+
+
+def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:
+    return _workflow_poller("AsyncJobPoller")(*args, **kwargs)
 
 
 class SDKProtocol(Protocol):
@@ -224,7 +244,6 @@ class SDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
-
         return JobPoller(self.jobs.get).run(study_key, batch_id, interval, timeout)
 
     async def async_poll_job(
@@ -236,5 +255,4 @@ class SDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Asynchronously poll a job until it reaches a terminal state."""
-
         return await AsyncJobPoller(self.jobs.async_get).run(study_key, batch_id, interval, timeout)

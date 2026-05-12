@@ -5,7 +5,7 @@ from imednet.models.records import Record
 from imednet.models.subjects import Subject
 from imednet.models.visits import Visit
 from imednet.testing import fake_data
-from imednet.workflows.subject_data import SubjectComprehensiveData, SubjectDataWorkflow
+from imednet_workflows.subject_data import SubjectComprehensiveData, SubjectDataWorkflow
 
 
 def test_get_all_subject_data_aggregates_across_endpoints(schema) -> None:

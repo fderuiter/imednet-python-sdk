@@ -6,10 +6,10 @@ import pytest
 import respx
 
 from imednet.sdk import ImednetSDK
-from imednet.workflows.data_extraction import DataExtractionWorkflow
-from imednet.workflows.query_management import QueryManagementWorkflow
-from imednet.workflows.record_update import RecordUpdateWorkflow
-from imednet.workflows.subject_data import SubjectDataWorkflow
+from imednet_workflows.data_extraction import DataExtractionWorkflow
+from imednet_workflows.query_management import QueryManagementWorkflow
+from imednet_workflows.record_update import RecordUpdateWorkflow
+from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
 @respx.mock

@@ -4,7 +4,7 @@ from imednet.models.queries import Query
 from imednet.models.records import Record
 from imednet.models.subjects import Subject
 from imednet.models.visits import Visit
-from imednet.workflows.subject_data import SubjectDataWorkflow
+from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
 def test_get_all_subject_data_aggregates_across_endpoints() -> None:

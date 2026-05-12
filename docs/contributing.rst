@@ -20,7 +20,7 @@ Run these commands and ensure **≥90%** test coverage before opening a pull req
    poetry run ruff check --fix .
    poetry run black --check .
    poetry run isort --check --profile black .
-   poetry run mypy src/imednet
+   poetry run mypy packages/core/src/imednet
    poetry run pytest -q
 
 HTTP transport mocking
@@ -72,7 +72,7 @@ Releases are fully automated and driven by merged PR titles:
       poetry run ruff check --fix .
       poetry run black --check .
       poetry run isort --check --profile black .
-      poetry run mypy src/imednet
+      poetry run mypy packages/core/src/imednet
       poetry run pytest -q
 
 3. Merge to ``main`` with **Squash and merge** so the PR title becomes the merged commit message.
@@ -82,7 +82,7 @@ Releases are fully automated and driven by merged PR titles:
 
 Configuration requirements:
 
-- ``project.version`` in ``pyproject.toml`` must never be edited manually; ``release-please``
+- Package versions in ``packages/*/pyproject.toml`` must never be edited manually; ``release-please``
   updates it automatically in the generated Release PR changeset.
 
 - Publishing requires ``PYPI_API_TOKEN`` in repository secrets (or migration to PyPI Trusted

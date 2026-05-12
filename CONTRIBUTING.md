@@ -23,7 +23,7 @@ Run before committing:
 poetry run ruff check --fix .
 poetry run black --check .
 poetry run isort --check --profile black .
-poetry run mypy src/imednet
+poetry run mypy packages/core/src/imednet
 poetry run pytest -q
 ```
 Coverage must stay ≥ 90%.
@@ -39,8 +39,8 @@ Coverage must stay ≥ 90%.
   query parameters, dynamic URLs, and retry behavior).
 
 ## Package metadata and versioning
-- The `[project]` block in `pyproject.toml` is the single source of truth for package metadata.
-- Never manually edit `project.version` in `pyproject.toml`.
+- The package metadata lives in `packages/*/pyproject.toml`.
+- Never manually edit package versions in `packages/*/pyproject.toml`.
 
 ## Release workflow
 Releases are fully automated and driven by merged PR titles:
@@ -53,7 +53,7 @@ Releases are fully automated and driven by merged PR titles:
    poetry run ruff check --fix .
    poetry run black --check .
    poetry run isort --check --profile black .
-   poetry run mypy src/imednet
+   poetry run mypy packages/core/src/imednet
    poetry run pytest -q
    ```
 3. Merge to `main` using **Squash and merge** so the PR title becomes the merged commit message.
@@ -115,7 +115,7 @@ def fetch_records(study_key: str, page: int = 0) -> list[Record]:
 
 Before opening a pull request that adds or modifies public APIs:
 
-1. Run `poetry run mypy src/imednet` and confirm zero errors.
+1. Run `poetry run mypy packages/core/src/imednet` and confirm zero errors.
 2. Run `make docs` locally. This command regenerates `docs/api/` via `sphinx-apidoc` and then
    compiles the HTML with `-W --keep-going`, treating every Sphinx warning as an error.
 3. Open `docs/_build/html/index.html` and verify that type hints appear in the parameter

@@ -56,7 +56,7 @@ def test_export_to_sql_handles_column_limit(
 
 def test_imednet_hook() -> None:
     pytest.importorskip("airflow")
-    from imednet.integrations.airflow import ImednetHook
+    from apache_airflow_providers_imednet import ImednetHook
 
     hook = ImednetHook()
     conn = hook.get_conn()
@@ -65,7 +65,7 @@ def test_imednet_hook() -> None:
 
 def test_imednet_export_operator(study_key: str, tmp_path) -> None:
     pytest.importorskip("airflow")
-    from imednet.integrations.airflow import ImednetExportOperator  # type: ignore[attr-defined]
+    from apache_airflow_providers_imednet import ImednetExportOperator  # type: ignore[attr-defined]
 
     op = ImednetExportOperator(study_key=study_key, output_path=str(tmp_path / "x.csv"))
     assert op.execute({})
@@ -73,7 +73,7 @@ def test_imednet_export_operator(study_key: str, tmp_path) -> None:
 
 def test_imednet_to_s3_operator(study_key: str) -> None:
     pytest.importorskip("airflow")
-    from imednet.integrations.airflow import ImednetToS3Operator  # type: ignore[attr-defined]
+    from apache_airflow_providers_imednet import ImednetToS3Operator  # type: ignore[attr-defined]
 
     op = ImednetToS3Operator(study_key=study_key, s3_bucket="bucket", s3_key="key")
     assert op.execute({}) == "key"
@@ -81,7 +81,7 @@ def test_imednet_to_s3_operator(study_key: str) -> None:
 
 def test_imednet_job_sensor(study_key: str) -> None:
     pytest.importorskip("airflow")
-    from imednet.integrations.airflow import ImednetJobSensor  # type: ignore[attr-defined]
+    from apache_airflow_providers_imednet import ImednetJobSensor  # type: ignore[attr-defined]
 
     sensor = ImednetJobSensor(study_key=study_key, batch_id="ID")
     with pytest.raises(Exception):

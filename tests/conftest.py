@@ -1,7 +1,17 @@
+import sys
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
 import pytest_asyncio
+
+ROOT = Path(__file__).resolve().parents[1]
+for source_root in (
+    ROOT / "packages" / "core" / "src",
+    ROOT / "packages" / "plugins-workflows" / "src",
+    ROOT / "packages" / "providers-airflow" / "src",
+):
+    sys.path.insert(0, str(source_root))
 
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client

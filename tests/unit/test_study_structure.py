@@ -6,7 +6,7 @@ import pytest
 from imednet.models.forms import Form
 from imednet.models.intervals import FormSummary, Interval
 from imednet.models.variables import Variable
-from imednet.workflows.study_structure import async_get_study_structure, get_study_structure
+from imednet_workflows.study_structure import async_get_study_structure, get_study_structure
 
 
 @pytest.mark.parametrize("async_mode", [False, True])

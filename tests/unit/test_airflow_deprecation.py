@@ -1,8 +1,6 @@
 import sys
 from types import ModuleType
 
-import pytest
-
 
 def _setup_airflow(monkeypatch):
     airflow_mod = ModuleType("airflow")
@@ -34,23 +32,18 @@ def _setup_airflow(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
 
 
-def test_airflow_shim_warns_and_re_exports(monkeypatch):
+def test_airflow_provider_exports_public_api(monkeypatch):
     _setup_airflow(monkeypatch)
     for mod in [
-        "imednet.airflow",
-        "imednet.integrations.airflow",
-        "imednet.integrations.airflow.hooks",
-        "imednet.integrations.airflow.operators",
-        "imednet.integrations.airflow.sensors",
+        "apache_airflow_providers_imednet",
+        "apache_airflow_providers_imednet.hooks",
+        "apache_airflow_providers_imednet.operators",
+        "apache_airflow_providers_imednet.sensors",
     ]:
         monkeypatch.delitem(sys.modules, mod, raising=False)
 
-    with pytest.warns(DeprecationWarning):
-        import imednet.airflow as shim
+    import apache_airflow_providers_imednet as provider
 
-    from imednet.integrations import airflow as new
-
-    assert shim.ImednetHook is new.ImednetHook
-    assert shim.ImednetJobSensor is new.ImednetJobSensor
-    assert shim.ImednetExportOperator is new.ImednetExportOperator
-    assert shim.ImednetToS3Operator is new.ImednetToS3Operator
+    assert provider.ImednetHook is not None
+    assert provider.ImednetExportOperator is not None
+    assert provider.ImednetToS3Operator is not None

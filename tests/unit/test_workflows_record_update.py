@@ -5,7 +5,7 @@ import pytest
 from imednet.errors import ValidationError
 from imednet.models.jobs import Job
 from imednet.models.variables import Variable
-from imednet.workflows.record_update import RecordUpdateWorkflow
+from imednet_workflows.record_update import RecordUpdateWorkflow
 
 
 def test_create_or_update_records_no_wait() -> None:

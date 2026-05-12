@@ -7,7 +7,7 @@ from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 from imednet.models.sites import Site
 from imednet.models.subjects import Subject
-from imednet.workflows.register_subjects import RegisterSubjectsWorkflow
+from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
 
 
 def test_register_subjects_passes_records_correctly() -> None:

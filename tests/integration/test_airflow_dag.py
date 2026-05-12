@@ -14,7 +14,7 @@ def test_dag_runs(monkeypatch):
     from airflow.models import DAG, TaskInstance
     from airflow.utils.state import State
 
-    from imednet.integrations.airflow import ImednetJobSensor, ImednetToS3Operator
+    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetToS3Operator
 
     # isort: on
 
