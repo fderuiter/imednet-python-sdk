@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from airflow import DAG
+
 from apache_airflow_providers_imednet import ImednetToS3Operator
 
 """Example DAG using :class:`ImednetToS3Operator` to export data to S3.

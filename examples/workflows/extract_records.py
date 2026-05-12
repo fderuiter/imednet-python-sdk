@@ -1,8 +1,7 @@
 from typing import Any, Dict
 
-from imednet_workflows.data_extraction import DataExtractionWorkflow
-
 from imednet import ImednetSDK
+from imednet_workflows.data_extraction import DataExtractionWorkflow
 
 """Example using :class:`DataExtractionWorkflow.extract_records_by_criteria`.
 

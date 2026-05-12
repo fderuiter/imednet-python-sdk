@@ -1,6 +1,5 @@
-from imednet_workflows import JobPoller, RecordUpdateWorkflow
-
 from imednet import ImednetSDK
+from imednet_workflows import JobPoller, RecordUpdateWorkflow
 
 """Example script for creating a new record and waiting for job completion.
 

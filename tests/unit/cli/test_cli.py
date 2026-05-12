@@ -138,7 +138,9 @@ def test_extract_records_calls_workflow(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     workflow = MagicMock()
-    monkeypatch.setattr("imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow))
+    monkeypatch.setattr(
+        "imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow)
+    )
     workflow.extract_records_by_criteria.return_value = [1]
     result = runner.invoke(
         cli.app,
@@ -159,7 +161,9 @@ def test_extract_records_api_error(
     """CLI surfaces workflow errors."""
     workflow = MagicMock()
     workflow.extract_records_by_criteria.side_effect = ApiError("fail")
-    monkeypatch.setattr("imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow))
+    monkeypatch.setattr(
+        "imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow)
+    )
     result = runner.invoke(cli.app, ["workflows", "extract-records", "STUDY"])
     assert result.exit_code == 1
     assert "API Error" in result.stdout
@@ -489,7 +493,9 @@ def test_subject_data_calls_workflow(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     workflow = MagicMock()
-    monkeypatch.setattr("imednet_workflows.cli.SubjectDataWorkflow", MagicMock(return_value=workflow))
+    monkeypatch.setattr(
+        "imednet_workflows.cli.SubjectDataWorkflow", MagicMock(return_value=workflow)
+    )
     workflow.get_all_subject_data.return_value = MagicMock()
     result = runner.invoke(cli.app, ["subject-data", "STUDY", "SUBJ"])
     assert result.exit_code == 0

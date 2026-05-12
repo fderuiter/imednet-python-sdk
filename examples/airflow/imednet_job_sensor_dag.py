@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from airflow import DAG
+
 from apache_airflow_providers_imednet import ImednetJobSensor
 
 """Example DAG demonstrating :class:`ImednetJobSensor` to monitor an iMednet job.

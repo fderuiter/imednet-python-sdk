@@ -2,9 +2,8 @@ import csv
 import json
 import os
 
-from imednet_workflows.study_structure import get_study_structure
-
 from imednet import ImednetSDK
+from imednet_workflows.study_structure import get_study_structure
 
 """
 This script demonstrates how to retrieve the structure of a specific study
