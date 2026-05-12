@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from typing import Any, List, Optional
 
 try:
@@ -13,7 +14,18 @@ from imednet.utils import sanitize_csv_formula
 
 from .. import ImednetClient
 from ..sdk import ImednetSDK
-from ..workflows.record_mapper import RecordMapper
+
+
+def _record_mapper() -> Any:
+    try:
+        return import_module("imednet_workflows.record_mapper").RecordMapper
+    except ModuleNotFoundError as error:
+        if error.name and error.name.startswith("imednet_workflows"):
+            raise ImportError(
+                "Record export requires the optional 'imednet-workflows' package. "
+                "Install with `pip install imednet-workflows`."
+            ) from error
+        raise
 
 
 def _to_sql_with_chunking(
@@ -57,10 +69,10 @@ def _records_df(
         raise ImportError(
             (
                 "pandas is required for _records_df. Install with "
-                "'pip install \"imednet[pandas]\"'."
+                "'pip install pandas imednet-workflows'."
             )
         )
-    df: pd.DataFrame = RecordMapper(sdk).dataframe(
+    df: pd.DataFrame = _record_mapper()(sdk).dataframe(
         study_key,
         use_labels_as_columns=use_labels_as_columns,
         variable_whitelist=variable_whitelist,
@@ -260,7 +272,7 @@ def export_to_sql_by_form(
     """Export records to separate SQL tables for each form."""
     from sqlalchemy import create_engine
 
-    mapper = RecordMapper(sdk)
+    mapper = _record_mapper()(sdk)
     engine = create_engine(conn_str)
     forms = sdk.forms.list(study_key=study_key)
 
@@ -325,13 +337,13 @@ def export_to_long_sql(
         raise ImportError(
             (
                 "pandas is required for export_to_long_sql. Install with "
-                "'pip install \"imednet[pandas]\"'."
+                "'pip install pandas imednet-workflows'."
             )
         )
     from sqlalchemy import create_engine
 
     engine = create_engine(conn_str)
-    mapper = RecordMapper(sdk)
+    mapper = _record_mapper()(sdk)
     records = mapper._fetch_records(study_key)
 
     rows: List[dict[str, Any]] = []

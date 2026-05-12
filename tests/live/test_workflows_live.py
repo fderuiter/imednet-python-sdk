@@ -4,7 +4,7 @@ import pytest
 
 from imednet.models.records import RegisterSubjectRequest
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
-from imednet.workflows import (
+from imednet_workflows import (
     RegisterSubjectsWorkflow,
     async_get_study_structure,
     get_study_structure,

@@ -39,7 +39,6 @@ from .record_revisions import app as record_revisions_app  # noqa: E402
 from .records import app as records_app  # noqa: E402
 from .sites import app as sites_app  # noqa: E402
 from .studies import app as studies_app  # noqa: E402
-from .subject_data import subject_data  # noqa: E402
 from .subjects import app as subjects_app  # noqa: E402
 from .variables import app as variables_app  # noqa: E402
 
@@ -55,27 +54,46 @@ app.add_typer(jobs_app)
 app.add_typer(records_app)
 
 
-def _register_workflow_commands() -> None:
-    from .workflows import app as workflows_app  # noqa: E402
+def _register_missing_workflow_commands() -> None:
+    workflows_app = typer.Typer(
+        name="workflows",
+        help="Execute opinionated business logic (requires imednet-workflows).",
+    )
+
+    def _missing_plugin() -> None:
+        typer.secho(
+            "The workflows plugin is not installed. Run: pip install imednet-workflows",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1)
+
+    @workflows_app.command("extract-records")
+    def missing_extract_records() -> None:
+        """Execute opinionated business logic (missing plugin)."""
+        _missing_plugin()
+
+    @app.command("subject-data")
+    def missing_subject_data() -> None:
+        """Retrieve all data for a single subject (missing plugin)."""
+        _missing_plugin()
 
     app.add_typer(workflows_app)
-    app.command("subject-data")(subject_data)
 
 
 try:  # pragma: no cover - optional workflows plugin
+    workflows_cli = import_module("imednet_workflows.cli")
     DataExtractionWorkflow = import_module(  # noqa: F401
         "imednet_workflows.data_extraction"
     ).DataExtractionWorkflow
     SubjectDataWorkflow = import_module(
         "imednet_workflows.subject_data"
     ).SubjectDataWorkflow  # noqa: F401
-    _register_workflow_commands()
-except (ImportError, ModuleNotFoundError, AttributeError):
-    # Re-export for tests and local fallback behavior.
-    from ..workflows.data_extraction import DataExtractionWorkflow  # noqa: F401
-    from ..workflows.subject_data import SubjectDataWorkflow  # noqa: F401
-
-    _register_workflow_commands()
+    app.add_typer(workflows_cli.app)
+    app.command("subject-data")(workflows_cli.subject_data)
+except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover - optional plugin
+    DataExtractionWorkflow = None  # type: ignore[assignment]
+    SubjectDataWorkflow = None  # type: ignore[assignment]
+    _register_missing_workflow_commands()
 
 
 @app.command(hidden=True)

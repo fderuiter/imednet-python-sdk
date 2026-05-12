@@ -51,7 +51,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
         classmethod(lambda cls, cid: conn),
     )
 
-    import imednet.integrations.airflow as airflow_mod
+    import apache_airflow_providers_imednet as airflow_mod
 
     hook = airflow_mod.ImednetHook()
     sdk = hook.get_conn()
@@ -63,8 +63,8 @@ def test_imednet_hook_returns_sdk(monkeypatch):
 
 
 def test_export_operator_calls_helper(monkeypatch):
-    if "imednet.integrations.airflow" in sys.modules:
-        del sys.modules["imednet.integrations.airflow"]
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
 
     _setup_airflow(monkeypatch)
 
@@ -80,9 +80,10 @@ def test_export_operator_calls_helper(monkeypatch):
     sdk = MagicMock()
     hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
 
-    import imednet.integrations.airflow as airflow_mod
+    import apache_airflow_providers_imednet as airflow_mod
+    import apache_airflow_providers_imednet.operators.export as export_ops
 
-    monkeypatch.setattr(airflow_mod, "ImednetHook", MagicMock(return_value=hook_inst))
+    monkeypatch.setattr(export_ops, "ImednetHook", MagicMock(return_value=hook_inst))
     export_mock = MagicMock()
     monkeypatch.setattr(airflow_mod.export, "export_to_csv", export_mock)
 
@@ -115,7 +116,7 @@ def test_imednet_hook_non_dict_extras(monkeypatch):
         classmethod(lambda cls, cid: conn),
     )
 
-    from imednet.integrations.airflow.hooks import ImednetHook
+    from apache_airflow_providers_imednet.hooks import ImednetHook
 
     hook = ImednetHook()
     sdk = hook.get_conn()
@@ -140,7 +141,7 @@ def test_imednet_hook_non_string_login(monkeypatch):
         classmethod(lambda cls, cid: conn),
     )
 
-    from imednet.integrations.airflow.hooks import ImednetHook
+    from apache_airflow_providers_imednet.hooks import ImednetHook
 
     hook = ImednetHook()
     sdk = hook.get_conn()
@@ -167,7 +168,7 @@ def test_imednet_hook_non_string_password(monkeypatch):
         classmethod(lambda cls, cid: conn),
     )
 
-    from imednet.integrations.airflow.hooks import ImednetHook
+    from apache_airflow_providers_imednet.hooks import ImednetHook
 
     hook = ImednetHook()
     sdk = hook.get_conn()

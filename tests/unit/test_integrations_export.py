@@ -14,7 +14,7 @@ def _setup_mapper(monkeypatch):
     mapper_inst = MagicMock()
     mapper_inst.dataframe.return_value = df
     mapper_cls = MagicMock(return_value=mapper_inst)
-    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
     return df, mapper_cls, mapper_inst
 
 
@@ -23,7 +23,7 @@ def _setup_real_mapper(monkeypatch):
     mapper_inst = MagicMock()
     mapper_inst.dataframe.return_value = df
     mapper_cls = MagicMock(return_value=mapper_inst)
-    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
     return df, mapper_cls, mapper_inst
 
 
@@ -123,7 +123,7 @@ def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
         lambda self, path, index=False, **kwargs: open(path, "wb").close(),
     )
     mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
-    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
     sdk = MagicMock()
 
     out_json = tmp_path / "d.json"
@@ -147,7 +147,7 @@ def test_export_functions_handle_case_insensitive_duplicates(tmp_path, monkeypat
         lambda self, path, index=False, **kwargs: open(path, "wb").close(),
     )
     mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
-    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
     sdk = MagicMock()
 
     out_json = tmp_path / "case.json"
@@ -172,7 +172,7 @@ def test_export_sql_too_many_columns(monkeypatch):
     mock_to_sql = MagicMock()
     monkeypatch.setattr(pd.DataFrame, "to_sql", mock_to_sql)
     mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
-    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
 
     engine = MagicMock()
     engine.dialect.name = "sqlite"
@@ -205,7 +205,7 @@ def test_export_to_sql_by_form(monkeypatch):
     df2 = MagicMock()
     mapper_inst._build_dataframe.side_effect = [df1, df2]
     mapper_cls = MagicMock(return_value=mapper_inst)
-    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
 
     sa_module = ModuleType("sqlalchemy")
     engine = MagicMock()
@@ -234,7 +234,7 @@ def test_export_to_long_sql(monkeypatch):
     ]
     mapper_inst = MagicMock(_fetch_records=MagicMock(return_value=records))
     mapper_cls = MagicMock(return_value=mapper_inst)
-    monkeypatch.setattr(export_mod, "RecordMapper", mapper_cls)
+    monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
 
     sa_module = ModuleType("sqlalchemy")
     engine = MagicMock()
@@ -269,7 +269,7 @@ def test_records_df_missing_pandas(monkeypatch):
         ImportError,
         match=(
             "pandas is required for _records_df. Install with "
-            "'pip install \"imednet\\[pandas\\]\"'"
+            "'pip install pandas imednet-workflows'"
         ),
     ):
         export_mod._records_df(MagicMock(), "STUDY")
@@ -281,7 +281,7 @@ def test_export_to_long_sql_missing_pandas(monkeypatch):
         ImportError,
         match=(
             "pandas is required for export_to_long_sql. Install with "
-            "'pip install \"imednet\\[pandas\\]\"'"
+            "'pip install pandas imednet-workflows'"
         ),
     ):
         export_mod.export_to_long_sql(MagicMock(), "STUDY", "table", "sqlite://")

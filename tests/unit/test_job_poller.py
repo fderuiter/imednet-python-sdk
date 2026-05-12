@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from imednet.models.jobs import JobStatus
-from imednet.workflows.job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
+from imednet_workflows.job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
 
 
 def test_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None:

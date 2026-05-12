@@ -40,7 +40,7 @@ def _setup_per_form_mapper(monkeypatch: pytest.MonkeyPatch) -> None:
     rows2 = [{f"w{i}": i for i in range(600)}]
     mapper_inst._parse_records.side_effect = [(rows1, 0), (rows2, 0)]
     mapper_inst._build_dataframe.side_effect = [pd.DataFrame(rows1), pd.DataFrame(rows2)]
-    monkeypatch.setattr(export_mod, "RecordMapper", MagicMock(return_value=mapper_inst))
+    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
     monkeypatch.setattr(pd.DataFrame, "to_sql", MagicMock())
 
@@ -49,7 +49,7 @@ def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     columns = [f"c{i}" for i in range(2100)]
     df = pd.DataFrame([range(2100)], columns=columns)
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
-    monkeypatch.setattr(export_mod, "RecordMapper", MagicMock(return_value=mapper_inst))
+    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock()))
     mock_to_sql = MagicMock()
     monkeypatch.setattr(pd.DataFrame, "to_sql", mock_to_sql)

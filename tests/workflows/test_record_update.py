@@ -9,7 +9,7 @@ from imednet.models.jobs import Job
 from imednet.models.variables import Variable
 from imednet.testing import fake_data
 from imednet.validation.cache import SchemaCache
-from imednet.workflows.record_update import RecordUpdateWorkflow
+from imednet_workflows.record_update import RecordUpdateWorkflow
 
 
 def _build_schema() -> tuple[SchemaCache, Variable]:

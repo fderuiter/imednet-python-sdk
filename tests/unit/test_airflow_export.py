@@ -55,7 +55,7 @@ def setup_airflow_mock(monkeypatch):
 def test_airflow_export_forwards_arguments(func_name: str) -> None:
     """Test that each airflow export function forwards arguments to the base export module."""
     # We import the export module inside the test to ensure the mock airflow modules are picked up.
-    from imednet.integrations.airflow import export
+    from apache_airflow_providers_imednet import export
 
     # Arrange
     airflow_func = getattr(export, func_name)

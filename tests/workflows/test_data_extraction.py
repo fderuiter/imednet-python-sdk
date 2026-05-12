@@ -5,7 +5,7 @@ from imednet.models.records import Record
 from imednet.models.subjects import Subject
 from imednet.models.visits import Visit
 from imednet.testing import fake_data
-from imednet.workflows.data_extraction import DataExtractionWorkflow
+from imednet_workflows.data_extraction import DataExtractionWorkflow
 
 
 def test_extract_records_by_criteria_filters_subject_and_visit(schema) -> None:

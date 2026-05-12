@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from imednet.models.queries import Query, QueryComment
 from imednet.models.subjects import Subject
 from imednet.testing import fake_data
-from imednet.workflows.query_management import QueryManagementWorkflow
+from imednet_workflows.query_management import QueryManagementWorkflow
 
 
 def make_query(sequence_closed: list[tuple[int, bool]]) -> Query:
