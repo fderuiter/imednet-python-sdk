@@ -19,21 +19,6 @@ class QueryManagementWorkflow:
     def __init__(self, sdk: "ImednetSDK"):
         self._sdk = sdk
 
-    @staticmethod
-    def _is_query_open(query: Query) -> Optional[bool]:
-        """
-        Determines if a query is open based on its comments.
-        Returns None if the state cannot be determined (no comments).
-        """
-        if not query.query_comments:
-            return None
-
-        # Find the comment with the highest sequence number
-        latest_comment = max(query.query_comments, key=lambda c: c.sequence)
-
-        # Check if the latest comment indicates the query is open (closed=False)
-        return not latest_comment.closed
-
     def get_open_queries(
         self,
         study_key: str,
@@ -64,7 +49,7 @@ class QueryManagementWorkflow:
 
         open_queries: List[Query] = []
         for query in all_matching_queries:
-            if self._is_query_open(query) is True:
+            if query.is_open is True:
                 open_queries.append(query)
 
         return open_queries
@@ -150,7 +135,7 @@ class QueryManagementWorkflow:
         state_counts: Dict[str, int] = {"open": 0, "closed": 0, "unknown": 0}
 
         for query in all_queries:
-            is_open = self._is_query_open(query)
+            is_open = query.is_open
             if is_open is None:
                 state_counts["unknown"] += 1
             elif is_open:

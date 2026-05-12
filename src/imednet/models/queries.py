@@ -38,4 +38,19 @@ class Query(JsonModel):
     date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
     query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
 
+    @property
+    def is_open(self) -> Optional[bool]:
+        """
+        Determines if a query is open based on its comments.
+        Returns None if the state cannot be determined (no comments).
+        """
+        if not self.query_comments:
+            return None
+
+        # Find the comment with the highest sequence number
+        latest_comment = max(self.query_comments, key=lambda c: c.sequence)
+
+        # Check if the latest comment indicates the query is open (closed=False)
+        return not latest_comment.closed
+
     pass
