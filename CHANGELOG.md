@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.0](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.6...v0.6.0) (2026-05-12)
+
+
+### Features
+
+* add resilient Pydantic base model with extra=ignore for all SDK models ([26b2aa6](https://github.com/fderuiter/imednet-python-sdk/commit/26b2aa6876325026076e72dcd9ae68dd3199a0f8))
+
+
+### Bug Fixes
+
+* remove shared endpoint context dependency for study resolution ([44b94ee](https://github.com/fderuiter/imednet-python-sdk/commit/44b94ee6f67b5ea440f55e65389cdb90d2a13577))
+* rewrite ImednetBaseModel docstring to valid RST (no bullet list) ([e38a3d0](https://github.com/fderuiter/imednet-python-sdk/commit/e38a3d06e8447fd3436d05699c03739286c1e1d0))
+* wrap long docstring in test to satisfy ruff E501 ([0d66e6a](https://github.com/fderuiter/imednet-python-sdk/commit/0d66e6af0aa74c810059174285d3bb764e7fd581))
+
+
+### Documentation
+
+* Replace dummy URLs in docs with grounded defaults ([7cad35c](https://github.com/fderuiter/imednet-python-sdk/commit/7cad35caa900c736a35f37c9173475439dfd1ff0))
+
 ## [0.5.6](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.5...v0.5.6) (2026-05-11)
 
 
