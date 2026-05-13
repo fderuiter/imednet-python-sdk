@@ -21,7 +21,7 @@ classifiers = [
 ]
 maintainers = ["Frederick de Ruiter <fpderuiter@gmail.com>"]
 packages = [{ include = "imednet", from = "src" }]
-include = ["src/imednet/py.typed"]
+include = [{ path = "src/imednet/py.typed", format = ["sdist", "wheel"] }]
 repository = "https://github.com/fderuiter/imednet-python-sdk"
 homepage = "https://github.com/fderuiter/imednet-python-sdk"
 

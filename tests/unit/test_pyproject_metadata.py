@@ -19,6 +19,12 @@ def test_project_version_is_single_source_of_truth() -> None:
     assert version_match is not None
     assert version_match.group(1) == imednet.__version__
 
+    readme_match = re.search(r'^\s*readme\s*=\s*"([^"]+)"', poetry_section, flags=re.MULTILINE)
+    assert readme_match is not None
+    readme_path = pyproject_path.parent / readme_match.group(1)
+    assert readme_path.exists()
+    assert readme_path.parent == pyproject_path.parent
+
     for required_key in ("name", "description", "readme", "authors", "license"):
         assert (
             re.search(rf"^\s*{re.escape(required_key)}\s*=", poetry_section, flags=re.MULTILINE)
