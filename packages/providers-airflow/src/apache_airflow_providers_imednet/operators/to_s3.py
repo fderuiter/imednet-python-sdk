@@ -14,10 +14,10 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
         from airflow.exceptions import AirflowException
     except (ImportError, ModuleNotFoundError):
 
-        class _AirflowError(Exception):
+        class _FallbackAirflowError(Exception):
             pass
 
-        AirflowException = _AirflowError
+        AirflowException = _FallbackAirflowError
 
 
 _MISSING_AMAZON_PROVIDER_MESSAGE = (

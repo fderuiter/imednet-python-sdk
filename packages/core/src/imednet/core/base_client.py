@@ -10,12 +10,6 @@ if TYPE_CHECKING:
 else:  # pragma: no cover - typing fallback for optional dependency
     Tracer = Any
 
-try:
-    from opentelemetry import trace as otel_trace
-
-    trace: Any = otel_trace
-except Exception:  # pragma: no cover - optional dependency
-    trace = None
 import httpx
 
 from imednet.auth.api_key import ApiKeyAuth
@@ -29,6 +23,13 @@ from imednet.constants import (
 )
 from imednet.utils import sanitize_base_url
 
+trace: Any = None
+try:
+    from opentelemetry import trace as _trace
+except Exception:  # pragma: no cover - optional dependency
+    pass
+else:
+    trace = _trace
 logger = logging.getLogger(__name__)
 
 
