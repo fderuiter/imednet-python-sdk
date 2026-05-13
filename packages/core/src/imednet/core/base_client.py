@@ -60,7 +60,7 @@ class BaseClient:
             self.auth = ApiKeyAuth(config.api_key or "", config.security_key or "")
 
         self._client = self._create_client(self.auth)
-        self._tracer: Optional[Tracer]
+        self._tracer: Optional[Tracer] = None
 
         if tracer is not None:
             self._tracer = tracer
