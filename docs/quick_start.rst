@@ -14,7 +14,7 @@ Optional plugin packages:
 .. code-block:: console
 
    pip install imednet-workflows
-   pip install apache-airflow-providers-imednet
+   pip install "apache-airflow>=3.2.0" apache-airflow-providers-imednet
 
 Set your credentials by copying the environment template or exporting them directly (see :doc:`configuration` for details):
 
