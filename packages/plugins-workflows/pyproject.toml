@@ -7,7 +7,7 @@ packages = [{ include = "imednet_workflows", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-imednet = ">=0.6.0,<1.0.0"
+imednet = { path = "../core", develop = true }
 pandas = ">=2.2.3,<3.0.0"
 typer = { extras = ["all"], version = "^0.15.2" }
 

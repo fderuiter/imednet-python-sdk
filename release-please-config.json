@@ -1,0 +1,16 @@
+{
+  "packages": {
+    "packages/core": {
+      "release-type": "python",
+      "package-name": "imednet"
+    },
+    "packages/providers-airflow": {
+      "release-type": "python",
+      "package-name": "apache-airflow-providers-imednet"
+    },
+    "packages/plugins-workflows": {
+      "release-type": "python",
+      "package-name": "imednet-workflows"
+    }
+  }
+}

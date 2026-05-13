@@ -57,9 +57,9 @@ Releases are fully automated and driven by merged PR titles:
    poetry run pytest -q
    ```
 3. Merge to `main` using **Squash and merge** so the PR title becomes the merged commit message.
-4. The `Automated Release` workflow runs `release-please` on `main` pushes and opens/updates a
-   Release PR with calculated semantic version, changelog updates, and `packages/core/pyproject.toml`
-   version updates.
+4. The `Automated Release` workflow runs `release-please` in manifest mode on `main` pushes and
+   opens/updates a Release PR with calculated semantic version and changelog updates for the package
+   manifests under `packages/`.
 5. Maintainers trigger publication by approving and merging the bot-created Release PR.
 
 Configuration requirements:
