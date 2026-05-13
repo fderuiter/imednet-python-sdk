@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
+
+if TYPE_CHECKING:
+    from opentelemetry.trace import Tracer
+else:  # pragma: no cover - typing fallback for optional dependency
+    Tracer = Any
 
 try:
     from opentelemetry import trace
-    from opentelemetry.trace import Tracer
 except Exception:  # pragma: no cover - optional dependency
     trace = None
-    Tracer = None
 import httpx
 
 from imednet.auth.api_key import ApiKeyAuth
