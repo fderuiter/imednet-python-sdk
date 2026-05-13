@@ -77,7 +77,8 @@ Releases are fully automated and driven by merged PR titles:
 
 3. Merge to ``main`` with **Squash and merge** so the PR title becomes the merged commit message.
 4. The ``Automated Release`` workflow runs ``release-please`` on ``main`` pushes and opens/updates
-   a Release PR with semantic version and changelog updates.
+   a Release PR with semantic version, changelog updates, and ``packages/core/pyproject.toml``
+   version updates.
 5. Maintainers trigger publication by approving and merging the bot-created Release PR.
 
 Configuration requirements:
