@@ -2,13 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Sequence
-
-if TYPE_CHECKING:
-    from airflow.utils.context import Context
-else:  # pragma: no cover - typing fallback for optional Airflow dependency
-    Context = Dict[str, Any]
-
+from typing import Any, Sequence
 
 try:  # pragma: no cover - optional Airflow dependency
     from airflow.sensors.base import BaseSensorOperator
@@ -23,8 +17,8 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
 
 from imednet.sdk import ImednetSDK
 
+from ._airflow_compat import AirflowException, Context
 from .hooks import ImednetHook
-from .operators import AirflowException
 
 TERMINAL_STATES = {"COMPLETED", "FAILED", "CANCELLED"}
 
