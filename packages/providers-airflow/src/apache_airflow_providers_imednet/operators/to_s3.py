@@ -3,7 +3,22 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
+
+if TYPE_CHECKING:
+    from airflow.exceptions import AirflowException
+    from airflow.utils.context import Context
+else:  # pragma: no cover - typing fallback for optional Airflow dependency
+    Context = Dict[str, Any]
+    try:
+        from airflow.exceptions import AirflowException
+    except (ImportError, ModuleNotFoundError):
+
+        class _AirflowError(Exception):
+            pass
+
+        AirflowException = _AirflowError
+
 
 _MISSING_AMAZON_PROVIDER_MESSAGE = (
     "apache-airflow-providers-amazon package is required for "
@@ -12,14 +27,12 @@ _MISSING_AMAZON_PROVIDER_MESSAGE = (
 )
 
 try:  # pragma: no cover - optional Airflow dependency
-    from airflow.exceptions import AirflowException  # type: ignore
     from airflow.models import BaseOperator  # type: ignore
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook  # type: ignore
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
-    AirflowException = Exception
 
     class BaseOperator:  # type: ignore
-        template_fields: Iterable[str] = ()
+        template_fields: Sequence[str] = ()
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
             pass
@@ -40,7 +53,7 @@ from ..hooks import ImednetHook  # noqa: E402 - imported after optional Airflow 
 class ImednetToS3Operator(BaseOperator):
     """Fetch data from iMednet and store it in S3 as JSON."""
 
-    template_fields: Iterable[str] = ("study_key", "s3_key")
+    template_fields: Sequence[str] = ("study_key", "s3_key")
 
     def __init__(
         self,
@@ -66,7 +79,7 @@ class ImednetToS3Operator(BaseOperator):
     def _get_sdk(self) -> ImednetSDK:
         return ImednetHook(self.imednet_conn_id).get_conn()
 
-    def execute(self, context: Dict[str, Any]) -> str:
+    def execute(self, context: Context) -> str:
         sdk = self._get_sdk()
         endpoint_obj = getattr(sdk, self.endpoint)
         if hasattr(endpoint_obj, "list"):

@@ -11,7 +11,9 @@ else:  # pragma: no cover - typing fallback for optional dependency
     Tracer = Any
 
 try:
-    from opentelemetry import trace
+    from opentelemetry import trace as otel_trace
+
+    trace: Any = otel_trace
 except Exception:  # pragma: no cover - optional dependency
     trace = None
 import httpx
@@ -58,6 +60,7 @@ class BaseClient:
             self.auth = ApiKeyAuth(config.api_key or "", config.security_key or "")
 
         self._client = self._create_client(self.auth)
+        self._tracer: Optional[Tracer]
 
         if tracer is not None:
             self._tracer = tracer

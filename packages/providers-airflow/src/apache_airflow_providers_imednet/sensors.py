@@ -2,16 +2,29 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable
+from typing import TYPE_CHECKING, Any, Dict, Sequence
+
+if TYPE_CHECKING:
+    from airflow.exceptions import AirflowException
+    from airflow.utils.context import Context
+else:  # pragma: no cover - typing fallback for optional Airflow dependency
+    Context = Dict[str, Any]
+    try:
+        from airflow.exceptions import AirflowException
+    except (ImportError, ModuleNotFoundError):
+
+        class _AirflowError(Exception):
+            pass
+
+        AirflowException = _AirflowError
+
 
 try:  # pragma: no cover - optional Airflow dependency
-    from airflow.exceptions import AirflowException
     from airflow.sensors.base import BaseSensorOperator
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
-    AirflowException = Exception
 
     class BaseSensorOperator:  # type: ignore
-        template_fields: Iterable[str] = ()
+        template_fields: Sequence[str] = ()
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
             pass
@@ -27,7 +40,7 @@ TERMINAL_STATES = {"COMPLETED", "FAILED", "CANCELLED"}
 class ImednetJobSensor(BaseSensorOperator):
     """Poll iMednet for job completion."""
 
-    template_fields: Iterable[str] = ("study_key", "batch_id")
+    template_fields: Sequence[str] = ("study_key", "batch_id")
 
     def __init__(
         self,
@@ -46,13 +59,15 @@ class ImednetJobSensor(BaseSensorOperator):
     def _get_sdk(self) -> ImednetSDK:
         return ImednetHook(self.imednet_conn_id).get_conn()
 
-    def poke(self, context: Dict[str, Any]) -> bool:
+    def poke(self, context: Context) -> bool:
         sdk = self._get_sdk()
         job = sdk.jobs.get(self.study_key, self.batch_id)
         state = job.state.upper()
         if state in TERMINAL_STATES:
             if state != "COMPLETED":
-                raise AirflowException(f"Job {self.batch_id} ended in state {state}")
+                from . import operators
+
+                raise operators.AirflowException(f"Job {self.batch_id} ended in state {state}")
             return True
         return False
 
