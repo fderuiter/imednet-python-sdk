@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
+
+if TYPE_CHECKING:
+    from airflow.utils.context import Context
+else:  # pragma: no cover - typing fallback for optional Airflow dependency
+    Context = Dict[str, Any]
 
 from airflow.models import BaseOperator
 
@@ -13,7 +18,7 @@ from ..hooks import ImednetHook
 class ImednetExportOperator(BaseOperator):
     """Export study records using helpers from :mod:`imednet.integrations.export`."""
 
-    template_fields: Iterable[str] = ("study_key", "output_path")
+    template_fields: Sequence[str] = ("study_key", "output_path")
 
     def __init__(
         self,
@@ -32,7 +37,7 @@ class ImednetExportOperator(BaseOperator):
         self.export_kwargs = export_kwargs or {}
         self.imednet_conn_id = imednet_conn_id
 
-    def execute(self, context: Dict[str, Any]) -> str:
+    def execute(self, context: Context) -> str:
         hook = ImednetHook(self.imednet_conn_id)
         sdk = hook.get_conn()
         export_callable = getattr(export, self.export_func)
