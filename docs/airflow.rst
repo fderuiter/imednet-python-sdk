@@ -10,7 +10,7 @@ Install the provider package:
 
 .. code-block:: bash
 
-   pip install apache-airflow-providers-imednet
+   pip install "apache-airflow>=3.2.0" apache-airflow-providers-imednet
 
 Example DAG
 -----------
