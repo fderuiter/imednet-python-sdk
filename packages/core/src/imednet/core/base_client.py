@@ -26,10 +26,10 @@ from imednet.utils import sanitize_base_url
 trace: Any = None
 try:
     from opentelemetry import trace as _trace
+
+    trace = _trace
 except Exception:  # pragma: no cover - optional dependency
     pass
-else:
-    trace = _trace
 logger = logging.getLogger(__name__)
 
 

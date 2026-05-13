@@ -3,22 +3,9 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
-if TYPE_CHECKING:
-    from airflow.exceptions import AirflowException
-    from airflow.utils.context import Context
-else:  # pragma: no cover - typing fallback for optional Airflow dependency
-    Context = Dict[str, Any]
-    try:
-        from airflow.exceptions import AirflowException
-    except (ImportError, ModuleNotFoundError):
-
-        class _FallbackAirflowError(Exception):
-            pass
-
-        AirflowException = _FallbackAirflowError
-
+from .._airflow_compat import AirflowException, Context
 
 _MISSING_AMAZON_PROVIDER_MESSAGE = (
     "apache-airflow-providers-amazon package is required for "
