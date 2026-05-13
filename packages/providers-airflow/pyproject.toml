@@ -7,7 +7,7 @@ packages = [{ include = "apache_airflow_providers_imednet", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-imednet = ">=0.6.0,<1.0.0"
+imednet = { path = "../core", develop = true }
 apache-airflow = ">=2.8.0"
 apache-airflow-providers-amazon = ">=8.0.0"
 

@@ -17,6 +17,4 @@ jobs:
         id: release
         uses: googleapis/release-please-action@v4
         with:
-          release-type: python
-          package-name: imednet
-          version-file: packages/core/pyproject.toml
+          command: manifest
