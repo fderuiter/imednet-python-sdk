@@ -18,6 +18,8 @@ Example:
     # Or export directly:
     export IMEDNET_API_KEY="your_api_key"
     export IMEDNET_SECURITY_KEY="your_security_key"
+    # Optional: Custom base URL for the API endpoint
+    # export IMEDNET_BASE_URL="https://edc.prod.imednetapi.com"
     poetry run python examples/quick_start.py
 """
 
