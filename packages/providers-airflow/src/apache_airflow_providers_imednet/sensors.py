@@ -5,18 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Dict, Sequence
 
 if TYPE_CHECKING:
-    from airflow.exceptions import AirflowException
     from airflow.utils.context import Context
 else:  # pragma: no cover - typing fallback for optional Airflow dependency
     Context = Dict[str, Any]
-    try:
-        from airflow.exceptions import AirflowException
-    except (ImportError, ModuleNotFoundError):
-
-        class _AirflowError(Exception):
-            pass
-
-        AirflowException = _AirflowError
 
 
 try:  # pragma: no cover - optional Airflow dependency
@@ -33,6 +24,7 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
 from imednet.sdk import ImednetSDK
 
 from .hooks import ImednetHook
+from .operators import AirflowException
 
 TERMINAL_STATES = {"COMPLETED", "FAILED", "CANCELLED"}
 
@@ -65,9 +57,7 @@ class ImednetJobSensor(BaseSensorOperator):
         state = job.state.upper()
         if state in TERMINAL_STATES:
             if state != "COMPLETED":
-                from . import operators
-
-                raise operators.AirflowException(f"Job {self.batch_id} ended in state {state}")
+                raise AirflowException(f"Job {self.batch_id} ended in state {state}")
             return True
         return False
 
