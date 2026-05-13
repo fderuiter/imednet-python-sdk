@@ -105,7 +105,10 @@ jobs:
         run: |
           for package in packages/*; do
             if [ -f "$package/pyproject.toml" ]; then
-              poetry build -C "$package"
+              (
+                cd "$package"
+                poetry build
+              )
             fi
           done
 
