@@ -148,9 +148,7 @@ def test_filter_get_operation_sync():
     result = operation.execute_sync(client, paginator_cls)
 
     assert result == {"id": 1}
-    list_sync_func.assert_called_once_with(
-        client, paginator_cls, study_key="STUDY1", name="test"
-    )
+    list_sync_func.assert_called_once_with(client, paginator_cls, study_key="STUDY1", name="test")
     validate_func.assert_called_once_with([{"id": 1}], "STUDY1", 1)
 
 
@@ -187,9 +185,7 @@ async def test_filter_get_operation_async():
     result = await operation.execute_async(client, paginator_cls)
 
     assert result == {"id": 1}
-    list_async_func.assert_called_once_with(
-        client, paginator_cls, study_key="STUDY1", name="test"
-    )
+    list_async_func.assert_called_once_with(client, paginator_cls, study_key="STUDY1", name="test")
     validate_func.assert_called_once_with([{"id": 1}], "STUDY1", 1)
 
 
@@ -270,5 +266,7 @@ async def test_record_create_operation_async():
 
     assert result == {"status": "created"}
     client.post.assert_called_once_with(
-        "/create", json=[{"field1": "val1"}], headers={HEADER_EMAIL_NOTIFY: "user@example.com"}
+        "/create",
+        json=[{"field1": "val1"}],
+        headers={HEADER_EMAIL_NOTIFY: "user@example.com"},
     )
