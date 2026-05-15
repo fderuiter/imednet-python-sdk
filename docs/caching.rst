@@ -1,24 +1,22 @@
 Caching Behavior
 ================
 
-This page explains how the SDK caches data to reduce unnecessary API calls.
+This page explains how the SDK handles data caching.
 
-Endpoint Caches
----------------
+Endpoint Caching
+----------------
 
-The endpoints for studies, forms, variables and intervals maintain simple in-memory
-caches. When `list()` or `async_list()` is called without any filters, the
-results are stored on the endpoint instance. Subsequent calls return the cached
-list instead of performing another request. Passing ``refresh=True`` bypasses the
-cache and stores the fresh response.
+The SDK no longer maintains any stateful in-memory cache on endpoint instances.
+Every call to ``list()`` or ``async_list()`` performs a fresh API request,
+ensuring that concurrent requests from different application contexts cannot
+contaminate each other's data.
 
-The caches live on the endpoint instances as dictionaries keyed by study. They
-are not shared across SDK instances and are discarded when the SDK is garbage
-collected.
+If your application needs to reduce redundant API calls, implement caching at
+the application layer using a library such as `cachetools`_, a request-level
+cache middleware (e.g. ``httpx-cache``), or your framework's own cache
+primitives (e.g. Django's cache framework or FastAPI dependency injection).
 
-``get()`` methods use ``list(refresh=True)`` to ensure the most recent data is
-returned. If your application needs to clear cached data manually you may call
-``list(refresh=True)`` or create a new SDK instance.
+.. _cachetools: https://cachetools.readthedocs.io/
 
 Schema Cache
 ------------
@@ -36,11 +34,3 @@ on demand if it has not been cached yet.
 For offline tests, ``imednet.testing.fake_data`` includes helpers to generate
 forms, variables and records. These objects can be used with
 ``SchemaCache.refresh`` to validate payloads without hitting the API.
-
-Limitations
------------
-
-The caching layer is purely in memory and is not thread-safe. It is intended to
-minimize repeated requests in short-lived scripts or during interactive sessions.
-Long running applications should periodically refresh or recreate the SDK to
-avoid using stale data.

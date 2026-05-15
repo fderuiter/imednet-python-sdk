@@ -30,9 +30,8 @@ def test_get_success(monkeypatch, dummy_client, context):
     ep = forms.FormsEndpoint(dummy_client, context)
     called = {}
 
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, paginator, *, study_key=None, **filters):
         called["study_key"] = study_key
-        called["refresh"] = refresh
         called["filters"] = filters
         return [Form(form_id=1)]
 
@@ -40,14 +39,14 @@ def test_get_success(monkeypatch, dummy_client, context):
 
     res = ep.get("S1", 1)
 
-    assert called == {"study_key": "S1", "refresh": True, "filters": {"formId": 1}}
+    assert called == {"study_key": "S1", "filters": {"formId": 1}}
     assert isinstance(res, Form)
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     ep = forms.FormsEndpoint(dummy_client, context)
 
-    def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+    def fake_impl(self, client, paginator, *, study_key=None, **filters):
         return []
 
     monkeypatch.setattr(forms.FormsEndpoint, "_list_sync", fake_impl)
@@ -56,26 +55,21 @@ def test_get_not_found(monkeypatch, dummy_client, context):
         ep.get("S1", 1)
 
 
-def test_list_caches_by_study_key(dummy_client, context, paginator_factory):
-    ep = forms.FormsEndpoint(dummy_client, context)
-    capture = paginator_factory(forms, [{"formId": 1}])
-
-    first = ep.list(study_key="S1")
-    second = ep.list(study_key="S1")
-
-    assert capture["count"] == 1
-    assert first == second
-
-    ep.list(study_key="S2")
-
-    assert capture["count"] == 2
-
-
-def test_list_refresh_bypasses_cache(dummy_client, context, paginator_factory):
+def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
     ep = forms.FormsEndpoint(dummy_client, context)
     capture = paginator_factory(forms, [{"formId": 1}])
 
     ep.list(study_key="S1")
-    ep.list(study_key="S1", refresh=True)
+    ep.list(study_key="S1")
+
+    assert capture["count"] == 2
+
+
+def test_list_different_study_keys_make_separate_requests(dummy_client, context, paginator_factory):
+    ep = forms.FormsEndpoint(dummy_client, context)
+    capture = paginator_factory(forms, [{"formId": 1}])
+
+    ep.list(study_key="S1")
+    ep.list(study_key="S2")
 
     assert capture["count"] == 2

@@ -40,22 +40,11 @@ def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
         ep.get(None, "missing")
 
 
-def test_list_caches_results(dummy_client, context, paginator_factory):
-    ep = studies.StudiesEndpoint(dummy_client, context)
-    captured = paginator_factory(studies, [{"studyKey": "S1"}])
-
-    first = ep.list()
-    second = ep.list()
-
-    assert captured["count"] == 1
-    assert first == second
-
-
-def test_list_refresh_bypasses_cache(dummy_client, context, paginator_factory):
+def test_list_each_call_makes_request(dummy_client, context, paginator_factory):
     ep = studies.StudiesEndpoint(dummy_client, context)
     captured = paginator_factory(studies, [{"studyKey": "S1"}])
 
     ep.list()
-    ep.list(refresh=True)
+    ep.list()
 
     assert captured["count"] == 2

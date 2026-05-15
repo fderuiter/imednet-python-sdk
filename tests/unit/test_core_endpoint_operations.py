@@ -149,7 +149,7 @@ def test_filter_get_operation_sync():
 
     assert result == {"id": 1}
     list_sync_func.assert_called_once_with(
-        client, paginator_cls, study_key="STUDY1", refresh=True, name="test"
+        client, paginator_cls, study_key="STUDY1", name="test"
     )
     validate_func.assert_called_once_with([{"id": 1}], "STUDY1", 1)
 
@@ -188,7 +188,7 @@ async def test_filter_get_operation_async():
 
     assert result == {"id": 1}
     list_async_func.assert_called_once_with(
-        client, paginator_cls, study_key="STUDY1", refresh=True, name="test"
+        client, paginator_cls, study_key="STUDY1", name="test"
     )
     validate_func.assert_called_once_with([{"id": 1}], "STUDY1", 1)
 
