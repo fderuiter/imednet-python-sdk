@@ -191,7 +191,7 @@ def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None
         asyncio.run(
             wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
         )
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
         wf._validator.validate_batch.assert_awaited_once_with(
             "STUDY",
             [{"formKey": "F1", "data": {"age": 5}}],
@@ -204,7 +204,7 @@ def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None
     else:
         wf._validator.validate_batch = MagicMock()  # type: ignore[method-assign]
         wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
-        sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.list.assert_called_once_with(study_key="STUDY")
         wf._validator.validate_batch.assert_called_once_with(
             "STUDY",
             [{"formKey": "F1", "data": {"age": 5}}],

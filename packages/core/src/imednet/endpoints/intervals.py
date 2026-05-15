@@ -16,5 +16,4 @@ class IntervalsEndpoint(EdcGenericListGetEndpoint[Interval]):
     MODEL = Interval
     _id_param = "intervalId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
-    _enable_cache = True
     PAGE_SIZE = 500

@@ -16,5 +16,4 @@ class VariablesEndpoint(EdcGenericListGetEndpoint[Variable]):
     MODEL = Variable
     _id_param = "variableId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
-    _enable_cache = True
     PAGE_SIZE = 500

@@ -29,7 +29,7 @@ async def test_async_schema_cache_refresh() -> None:
 
     assert validator.schema.form_key_from_id(1) == "F1"
     assert validator.schema.variables_for_form("F1")["age"] is var
-    variables.async_list.assert_awaited_once_with(study_key="ST", refresh=True)
+    variables.async_list.assert_awaited_once_with(study_key="ST")
 
 
 @pytest.mark.asyncio
@@ -41,7 +41,7 @@ async def test_validate_record_and_batch_async() -> None:
 
     record = {"formKey": "F1", "data": {"age": 1}}
     await validator.validate_record("ST", record)
-    sdk.variables.async_list.assert_awaited_once_with(study_key="ST", refresh=True)
+    sdk.variables.async_list.assert_awaited_once_with(study_key="ST")
 
     validator.validate_record = AsyncMock()  # type: ignore[assignment]
     await validator.validate_batch("ST", [record, record])
@@ -57,4 +57,4 @@ async def test_unknown_form_refreshes_and_raises() -> None:
 
     with pytest.raises(ValidationError, match="Unknown form BAD"):
         await validator.validate_record("ST", {"formKey": "BAD", "data": {}})
-    sdk.variables.async_list.assert_awaited_once_with(study_key="ST", refresh=True)
+    sdk.variables.async_list.assert_awaited_once_with(study_key="ST")

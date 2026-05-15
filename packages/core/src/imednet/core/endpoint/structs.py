@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Dict, Generic, Optional, TypeVar
 
 from imednet.models.json_base import JsonModel
 
@@ -30,17 +30,11 @@ class ListRequestState(Generic[T]):
     Encapsulates the state required to execute a list request.
 
     Attributes:
-        cached_result: The result from cache, if any.
         path: The API path for the request.
         params: The query parameters.
         study: The study key.
-        has_filters: Whether filters other than study key are present.
-        cache: The cache object used for this request.
     """
 
     path: str
     params: Dict[str, Any]
     study: Optional[str]
-    has_filters: bool
-    cache: Any
-    cached_result: Optional[List[T]] = None

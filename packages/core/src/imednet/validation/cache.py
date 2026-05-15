@@ -37,7 +37,7 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: VariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
-        vars_list = await variables.async_list(study_key=study_key, refresh=True)
+        vars_list = await variables.async_list(study_key=study_key)
         self.populate(vars_list)
 
     def _refresh_sync(
@@ -46,7 +46,7 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: VariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
-        vars_list = variables.list(study_key=study_key, refresh=True)
+        vars_list = variables.list(study_key=study_key)
         self.populate(vars_list)
 
     def refresh(
@@ -234,7 +234,7 @@ class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
         This method never raises :class:`~imednet.errors.ValidationError`;
         any API errors bubble up as :class:`~imednet.errors.ApiError`.
         """
-        variables = self._sdk.variables.list(study_key=study_key, refresh=True)
+        variables = self._sdk.variables.list(study_key=study_key)
         self._refresh_common(variables)
 
     def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
@@ -264,7 +264,7 @@ class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetSDK"]):
         This method never raises :class:`~imednet.errors.ValidationError`;
         any API errors bubble up as :class:`~imednet.errors.ApiError`.
         """
-        variables = await self._sdk.variables.async_list(study_key=study_key, refresh=True)
+        variables = await self._sdk.variables.async_list(study_key=study_key)
         self._refresh_common(variables)
 
     async def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:

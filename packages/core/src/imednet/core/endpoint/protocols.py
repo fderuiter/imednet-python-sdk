@@ -26,7 +26,6 @@ class EndpointProtocol(Protocol):
     PATH: str
     MODEL: Type[JsonModel]
     _id_param: str
-    _enable_cache: bool
     requires_study_key: bool
     PAGE_SIZE: int
 
@@ -61,7 +60,6 @@ class ListEndpointProtocol(Protocol[T]):
         paginator_cls: type[Paginator],
         *,
         study_key: Optional[str] = None,
-        refresh: bool = False,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:
@@ -74,7 +72,6 @@ class ListEndpointProtocol(Protocol[T]):
         paginator_cls: type[AsyncPaginator],
         *,
         study_key: Optional[str] = None,
-        refresh: bool = False,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> List[T]:

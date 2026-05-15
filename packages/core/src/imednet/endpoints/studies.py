@@ -14,5 +14,4 @@ class StudiesEndpoint(EdcGenericListGetEndpoint[Study]):
     PATH = ""
     MODEL = Study
     _id_param = "studyKey"
-    _enable_cache = True
     requires_study_key: bool = False

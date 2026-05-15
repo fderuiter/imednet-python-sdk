@@ -72,7 +72,6 @@ class FilterGetOperation(Generic[T]):
             client,
             paginator_cls,
             study_key=self.study_key,
-            refresh=True,
             **self.filters,
         )
         return self.validate_func(result, self.study_key, self.item_id)
@@ -99,7 +98,6 @@ class FilterGetOperation(Generic[T]):
             client,
             paginator_cls,
             study_key=self.study_key,
-            refresh=True,
             **self.filters,
         )
         return self.validate_func(result, self.study_key, self.item_id)

@@ -43,12 +43,6 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
     Defaults to "id". Override in subclasses if needed.
     """
 
-    _enable_cache: bool = False
-    """
-    Whether this endpoint supports caching.
-    Defaults to False. Override in subclasses if needed.
-    """
-
     @abstractmethod
     def _build_path(self, *segments: Any) -> str:
         """

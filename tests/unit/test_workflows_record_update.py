@@ -101,7 +101,7 @@ def test_create_or_update_records_validation() -> None:
 
     sdk.records.create.return_value = Job(jobId="1", batchId="1", state="PROCESSING")
     wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
-    sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+    sdk.variables.list.assert_called_once_with(study_key="STUDY")
     sdk.records.create.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
     )
@@ -383,7 +383,7 @@ async def test_async_create_or_update_records_validation() -> None:
 
     sdk.records.async_create.return_value = Job(jobId="1", batchId="1", state="PROCESSING")
     await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
-    sdk.variables.async_list.assert_called_once_with(study_key="STUDY", refresh=True)
+    sdk.variables.async_list.assert_called_once_with(study_key="STUDY")
     sdk.records.async_create.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
     )

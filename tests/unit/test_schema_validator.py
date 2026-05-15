@@ -33,9 +33,9 @@ def test_validate_record_unknown_variable(async_mode: bool) -> None:
             validator.validate_record("STUDY", {"formKey": "F1", "data": {"bad": 1}})
 
     if async_mode:
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
     else:
-        sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.list.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -54,9 +54,9 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
             validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": "x"}})
 
     if async_mode:
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
     else:
-        sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.list.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -75,9 +75,9 @@ def test_validate_record_unknown_form(async_mode: bool) -> None:
             validator.validate_record("STUDY", {"formKey": "BAD", "data": {}})
 
     if async_mode:
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
     else:
-        sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.list.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -89,13 +89,13 @@ def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
         validator.refresh = AsyncMock(wraps=validator.refresh)  # type: ignore[assignment]
         asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}}))
         validator.refresh.assert_awaited_once_with("STUDY")
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
     else:
         validator = SchemaValidator(sdk)  # type: ignore[assignment]
         validator.refresh = MagicMock(wraps=validator.refresh)  # type: ignore[assignment]
         validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
         validator.refresh.assert_called_once_with("STUDY")
-        sdk.variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+        sdk.variables.list.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -311,7 +311,7 @@ def test_base_schema_cache_refresh() -> None:
     variables.list.return_value = [var]
 
     cache.refresh(forms, variables, "STUDY")
-    variables.list.assert_called_once_with(study_key="STUDY", refresh=True)
+    variables.list.assert_called_once_with(study_key="STUDY")
     assert "F1" in cache.forms
 
 
@@ -329,5 +329,5 @@ async def test_base_schema_cache_async_refresh() -> None:
     variables.async_list = AsyncMock(return_value=[var])
 
     await cache.refresh(forms, variables, "STUDY")
-    variables.async_list.assert_awaited_once_with(study_key="STUDY", refresh=True)
+    variables.async_list.assert_awaited_once_with(study_key="STUDY")
     assert "F1" in cache.forms

@@ -16,5 +16,4 @@ class FormsEndpoint(EdcGenericListGetEndpoint[Form]):
     MODEL = Form
     _id_param = "formId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
-    _enable_cache = True
     PAGE_SIZE = 500

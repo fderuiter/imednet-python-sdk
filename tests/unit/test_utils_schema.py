@@ -23,7 +23,7 @@ def test_schema_cache_refresh() -> None:
     assert cache.form_key_from_id(1) == "F1"
     assert cache.variables_for_form("F1")["age"] is var
     forms.list.assert_not_called()
-    variables.list.assert_called_once_with(study_key="S", refresh=True)
+    variables.list.assert_called_once_with(study_key="S")
 
 
 def test_check_type_int() -> None:
