@@ -226,7 +226,10 @@ the specified table name. See ``docs/cli.rst`` for full examples.
 .
 ├── docs/       - Sphinx documentation
 ├── examples/   - Usage samples
-├── imednet/    - SDK package
+├── packages/   - Workspace packages
+│   ├── core/              - Main SDK package
+│   ├── plugins-workflows/ - Workflow plugins package
+│   └── providers-airflow/ - Airflow providers package
 ├── scripts/    - Helper scripts
 └── tests/      - Unit and integration tests
 ```
