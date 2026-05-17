@@ -38,6 +38,7 @@ Enable structured logging and list studies:
    from imednet.utils import configure_json_logging
 
    configure_json_logging()
+   # Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
    load_dotenv()
    cfg = load_config()
    with ImednetSDK(
