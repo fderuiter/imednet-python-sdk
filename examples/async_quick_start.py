@@ -31,6 +31,7 @@ async def main() -> None:
     """Run a minimal async SDK example using environment variables."""
     configure_json_logging()
     # Load environment variables from .env file if it exists
+    # Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
     load_dotenv()
 
     try:

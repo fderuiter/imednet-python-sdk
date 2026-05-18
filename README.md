@@ -115,6 +115,7 @@ from imednet.utils import configure_json_logging
 configure_json_logging()
 
 # Load credentials from .env file or environment variables
+# Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
 load_dotenv()
 cfg = load_config()
 
@@ -144,6 +145,7 @@ async def main() -> None:
     configure_json_logging()
 
     # Load credentials from .env file or environment variables
+    # Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
     load_dotenv()
     cfg = load_config()
 
@@ -226,7 +228,10 @@ the specified table name. See ``docs/cli.rst`` for full examples.
 .
 ├── docs/       - Sphinx documentation
 ├── examples/   - Usage samples
-├── imednet/    - SDK package
+├── packages/   - Workspace packages
+│   ├── core/              - Main SDK package
+│   ├── plugins-workflows/ - Workflow plugins package
+│   └── providers-airflow/ - Airflow providers package
 ├── scripts/    - Helper scripts
 └── tests/      - Unit and integration tests
 ```
@@ -285,6 +290,9 @@ Contributions are welcome! See the
 
 **Missing or invalid required environment variable(s)**
 If you see an error like `Error: IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.` (CLI) or `API key and security key are required` (SDK), or an "Unauthorized" or "Forbidden" (403) API error, ensure you have set valid keys in your shell or in a `.env` file in the directory where you run the script (avoid using "dummy" keys). See [Configuration](#configuration).
+
+**Command not found: sphinx-apidoc when running make docs**
+If building documentation with `make docs` fails with `Command not found: sphinx-apidoc`, run `poetry install --all-extras` first to install all necessary documentation plugins and dependencies.
 
 **ModuleNotFoundError when running the CLI locally**
 If you are running the `imednet` CLI from source (e.g., `poetry run imednet`) and see a `ModuleNotFoundError` (such as `No module named 'imednet'`), ensure you have installed the project dependencies by running `poetry install` in the project root.
