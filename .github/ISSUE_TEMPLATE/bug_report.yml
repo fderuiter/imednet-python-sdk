@@ -1,0 +1,156 @@
+name: Bug report
+description: Report a defect in existing SDK, CLI, or plugin behavior
+title: "bug(<area>): "
+labels: ["type:bug", "status:triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report. Please fill in every section below.
+        **Do not include API keys, security keys, tokens, or any other credentials.** Redact all sensitive values before submitting.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - core
+        - models
+        - http
+        - auth
+        - pagination
+        - cli
+        - docs
+        - tests
+        - ci
+        - release
+        - workflows-plugin
+        - airflow-provider
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package
+      options:
+        - core (imednet)
+        - plugins-workflows (imednet-workflows)
+        - providers-airflow (apache-airflow-providers-imednet)
+        - docs
+        - ci / tooling
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - p0 — data loss or security issue
+        - p1 — production breakage, no workaround
+        - p2 — incorrect behavior, workaround exists
+        - p3 — minor / cosmetic
+    validations:
+      required: true
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Is this a regression?
+      options:
+        - "Yes — worked in a previous version"
+        - "No — never worked"
+        - "Unknown"
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      placeholder: What actually happened? Include any error messages or tracebacks (redact secrets).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: What should have happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Install `imednet==x.y.z`
+        2. Configure auth with `APIKeyAuth(api_key="REDACTED", security_key="REDACTED")`
+        3. Call `sdk.records.list(study_key="STUDY")`
+        4. Observe exception …
+    validations:
+      required: true
+  - type: textarea
+    id: minimal_example
+    attributes:
+      label: Minimal reproducing example
+      render: python
+      placeholder: |
+        from imednet import ImednetSDK
+        from imednet.auth import APIKeyAuth
+
+        auth = APIKeyAuth(api_key="REDACTED", security_key="REDACTED")
+        sdk = ImednetSDK(auth=auth)
+        sdk.records.list(study_key="STUDY")  # raises …
+    validations:
+      required: false
+  - type: input
+    id: python_version
+    attributes:
+      label: Python version
+      placeholder: "e.g. 3.11.9"
+    validations:
+      required: true
+  - type: input
+    id: package_version
+    attributes:
+      label: Package version(s)
+      placeholder: "e.g. imednet==0.5.2, imednet-workflows==0.2.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Installation method
+      options:
+        - pip (PyPI)
+        - poetry add
+        - installed from source / git clone
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - other / container
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      render: text
+      placeholder: |
+        Paste sanitized logs here. Remove all credential values, tokens, and PII.
+        Set logging level to DEBUG with:
+          import logging
+          logging.basicConfig(level=logging.DEBUG)
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      placeholder: Anything else that might help diagnose the issue (network proxy, Airflow version, etc.).
+    validations:
+      required: false
