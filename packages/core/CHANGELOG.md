@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/fderuiter/imednet-python-sdk/compare/imednet-v0.6.1...imednet-v0.6.2) (2026-05-19)
+
+
+### Bug Fixes
+
+* remove stateful instance caching from endpoints for thread-safety ([1b8acb4](https://github.com/fderuiter/imednet-python-sdk/commit/1b8acb4e0244090f3034dc3d8057f191d1d0cdb4))
+
 ## [0.6.1](https://github.com/fderuiter/imednet-python-sdk/compare/imednet-v0.6.0...imednet-v0.6.1) (2026-05-13)
 
 
