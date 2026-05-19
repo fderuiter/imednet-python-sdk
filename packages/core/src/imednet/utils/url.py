@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, Set
+from typing import Any, Optional, Set
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-__all__ = ["sanitize_base_url", "redact_url_query"]
+import httpx
+
+__all__ = ["sanitize_base_url", "redact_url_query", "build_safe_path"]
+_DUMMY_BASE_URL = "http://dummy/"
 
 
 def sanitize_base_url(url: str) -> str:
@@ -30,3 +33,28 @@ def redact_url_query(url: str, sensitive_params: Optional[Set[str]] = None) -> s
 
     new_query = urlencode(new_query_params, safe="*")
     return urlunparse(parsed._replace(query=new_query))
+
+
+def build_safe_path(base_path: str, *segments: Any) -> str:
+    """
+    Build a normalized relative path using HTTPX URL joining.
+
+    Args:
+        base_path: Base path segment to start from.
+        *segments: Additional path segments. Non-string values are stringified.
+
+    Returns:
+        A slash-normalized relative path with URL-encoded segments decoded
+        (for example, ``"a%2Fb"`` becomes ``"a/b"``).
+    """
+    parts: list[str] = []
+    for segment in (base_path, *segments):
+        for part in str(segment).split("/"):
+            if part:
+                parts.append(part)
+
+    if not parts:
+        return ""
+
+    normalized = "/".join(parts)
+    return httpx.URL(_DUMMY_BASE_URL).join(normalized).path.strip("/")
