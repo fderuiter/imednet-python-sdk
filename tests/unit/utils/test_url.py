@@ -1,6 +1,6 @@
 import pytest
 
-from imednet.utils.url import redact_url_query, sanitize_base_url
+from imednet.utils.url import build_safe_path, redact_url_query, sanitize_base_url
 
 
 @pytest.mark.parametrize(
@@ -33,3 +33,16 @@ def test_redact_url_query() -> None:
 
     # Test empty params
     assert redact_url_query("https://example.com") == "https://example.com"
+
+
+@pytest.mark.parametrize(
+    ("base_path", "segments", "expected"),
+    [
+        ("/api/v1", ("records", 123), "api/v1/records/123"),
+        ("/api//v1//", ("records//", "/123/"), "api/v1/records/123"),
+        ("api", ("a%2Fb",), "api/a/b"),
+        ("/", tuple(), ""),
+    ],
+)
+def test_build_safe_path(base_path: str, segments: tuple[object, ...], expected: str) -> None:
+    assert build_safe_path(base_path, *segments) == expected

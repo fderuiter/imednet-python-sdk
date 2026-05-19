@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, Set
+from typing import Any, Optional, Set
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-__all__ = ["sanitize_base_url", "redact_url_query"]
+import httpx
+
+__all__ = ["sanitize_base_url", "redact_url_query", "build_safe_path"]
 
 
 def sanitize_base_url(url: str) -> str:
@@ -30,3 +32,10 @@ def redact_url_query(url: str, sensitive_params: Optional[Set[str]] = None) -> s
 
     new_query = urlencode(new_query_params, safe="*")
     return urlunparse(parsed._replace(query=new_query))
+
+
+def build_safe_path(base_path: str, *segments: Any) -> str:
+    """Build a normalized relative path using HTTPX URL joining."""
+    combined = "/".join(text for value in (base_path, *segments) if (text := str(value).strip("/")))
+    normalized = re.sub(r"/{2,}", "/", combined)
+    return httpx.URL("http://dummy/").join(normalized).path.lstrip("/")
