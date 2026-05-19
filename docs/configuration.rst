@@ -98,3 +98,7 @@ Troubleshooting
 **Missing required environment variable(s)**
 
 If you see an error like ``Error: IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.`` (CLI) or ``API key and security key are required`` (SDK), or an "Unauthorized" API error, ensure you have set these variables in your shell or in a ``.env`` file in the directory where you run the script. See `Using a .env File`_ for details.
+
+**Silent .env load failures**
+
+If you are using ``dotenv.load_dotenv()`` and your keys are not loaded, ensure you actually created the file via ``cp .env.example .env``. The ``load_dotenv()`` function fails silently if the file is missing or in the wrong directory, leading to required keys errors.

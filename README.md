@@ -291,6 +291,9 @@ Contributions are welcome! See the
 **Missing or invalid required environment variable(s)**
 If you see an error like `Error: IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.` (CLI) or `API key and security key are required` (SDK), or an "Unauthorized" or "Forbidden" (403) API error, ensure you have set valid keys in your shell or in a `.env` file in the directory where you run the script (avoid using "dummy" keys). See [Configuration](#configuration).
 
+**Silent `.env` load failures**
+If you are using `dotenv.load_dotenv()` and it seems your keys are not being loaded despite having a `.env` file, ensure you have actually copied the example file (`cp .env.example .env`). The `load_dotenv()` function will silently do nothing if the `.env` file is missing or in a different directory, leading to "missing required keys" errors.
+
 **Command not found: sphinx-apidoc when running make docs**
 If building documentation with `make docs` fails with `Command not found: sphinx-apidoc`, run `poetry install --all-extras` first to install all necessary documentation plugins and dependencies.
 
