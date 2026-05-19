@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import httpx
 
 __all__ = ["sanitize_base_url", "redact_url_query", "build_safe_path"]
+_DUMMY_BASE_URL = "http://dummy/"
 
 
 def sanitize_base_url(url: str) -> str:
@@ -56,4 +57,4 @@ def build_safe_path(base_path: str, *segments: Any) -> str:
         return ""
 
     normalized = "/".join(parts)
-    return httpx.URL("http://dummy/").join(normalized).path.strip("/")
+    return httpx.URL(_DUMMY_BASE_URL).join(normalized).path.strip("/")
