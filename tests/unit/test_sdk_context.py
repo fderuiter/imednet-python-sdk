@@ -108,9 +108,10 @@ async def test_aclose_without_async_client():
 
     sdk = ImednetSDK(client=client_mock)
 
-    await sdk.aclose()
+    with pytest.raises(TypeError, match="synchronous client"):
+        await sdk.aclose()
 
-    client_mock.close.assert_called_once()
+    client_mock.close.assert_not_called()
 
 
 def test_study_context_manager_sets_and_resets_context():
