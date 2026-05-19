@@ -32,6 +32,9 @@ Welcome to imednet's documentation!
    live_tests
    examples/index
    contributing
+   issue_management
+   project_standards
+   triage_playbook
    api/index
    api/apache_airflow_providers_imednet_api
    api/imednet_workflows_api

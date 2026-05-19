@@ -16,15 +16,34 @@ The SDK targets Python 3.10–3.12 and includes:
 ./scripts/setup.sh
 ```
 
+## Issue reporting and triage
+The repository uses a documented issue operating model for intake, prioritization,
+and decomposition. Before opening or triaging an issue, review:
+
+- `docs/issue_management.rst` for title conventions, label taxonomy, and hierarchy
+- `docs/project_standards.rst` for engineering and verification standards
+- `docs/triage_playbook.rst` for maintainer triage workflow
+
+Issue titles should use the format `<type>(<area>): <concise outcome>`, for example
+`bug(http): delegate URL path construction to httpx` or
+`refactor(core): decouple async and sync client hierarchies`.
+
 ## Validation
 Run before committing:
 
 ```bash
-poetry run ruff check --fix .
 poetry run black --check .
 poetry run isort --check --profile black .
+poetry run ruff check .
 poetry run mypy packages/core/src/imednet
-poetry run pytest -q
+poetry run mypy packages/plugins-workflows/src/imednet_workflows
+poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+poetry run pytest -q \
+  --cov=imednet \
+  --cov=imednet_workflows \
+  --cov=apache_airflow_providers_imednet \
+  --cov-fail-under=90
+make docs
 ```
 Coverage must stay ≥ 90%.
 
@@ -50,11 +69,18 @@ Releases are fully automated and driven by merged PR titles:
    `Semantic PR Title` check enforces this.
 2. Ensure your branch is up to date and all validation checks pass:
    ```bash
-   poetry run ruff check --fix .
    poetry run black --check .
    poetry run isort --check --profile black .
+   poetry run ruff check .
    poetry run mypy packages/core/src/imednet
-   poetry run pytest -q
+   poetry run mypy packages/plugins-workflows/src/imednet_workflows
+   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+   poetry run pytest -q \
+     --cov=imednet \
+     --cov=imednet_workflows \
+     --cov=apache_airflow_providers_imednet \
+     --cov-fail-under=90
+   make docs
    ```
 3. Merge to `main` using **Squash and merge** so the PR title becomes the merged commit message.
 4. The `Automated Release` workflow runs `release-please` in manifest mode on `main` pushes and
@@ -116,9 +142,11 @@ def fetch_records(study_key: str, page: int = 0) -> list[Record]:
 Before opening a pull request that adds or modifies public APIs:
 
 1. Run `poetry run mypy packages/core/src/imednet` and confirm zero errors.
-2. Run `make docs` locally. This command regenerates `docs/api/` via `sphinx-apidoc` and then
+2. Run `poetry run mypy packages/plugins-workflows/src/imednet_workflows`.
+3. Run `poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet`.
+4. Run `make docs` locally. This command regenerates `docs/api/` via `sphinx-apidoc` and then
    compiles the HTML with `-W --keep-going`, treating every Sphinx warning as an error.
-3. Open `docs/_build/html/index.html` and verify that type hints appear in the parameter
+5. Open `docs/_build/html/index.html` and verify that type hints appear in the parameter
    descriptions with no raw reStructuredText syntax leaking into the rendered page.
 
 

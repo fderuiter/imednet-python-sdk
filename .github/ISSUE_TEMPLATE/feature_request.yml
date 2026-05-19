@@ -1,0 +1,146 @@
+name: Feature request
+description: Propose a new user-facing capability or workflow
+title: "feature(<area>): "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use a normalized title such as `feature(cli): add export filtering presets`.
+        Capture the user problem first; implementation details can follow.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - core
+        - models
+        - http
+        - auth
+        - pagination
+        - cli
+        - docs
+        - tests
+        - ci
+        - release
+        - workflows-plugin
+        - airflow-provider
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package
+      options:
+        - core
+        - plugins-workflows
+        - providers-airflow
+        - docs
+        - ci
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested priority
+      options:
+        - p0
+        - p1
+        - p2
+        - p3
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk
+      options:
+        - low
+        - medium
+        - high
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: API surface impact
+      options:
+        - internal only
+        - public SDK
+        - CLI
+        - docs-only
+    validations:
+      required: true
+  - type: dropdown
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+      options:
+        - patch
+        - minor
+        - major
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      placeholder: What user problem does this feature solve?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      placeholder: What capability should exist when the issue is complete?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and non-goals
+      placeholder: What is in scope, and what should explicitly remain out of scope?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: What alternatives were evaluated?
+    validations:
+      required: false
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test impact
+      placeholder: What tests need to be added or updated?
+    validations:
+      required: true
+  - type: textarea
+    id: docs
+    attributes:
+      label: Docs impact
+      placeholder: Which docs, examples, or help text need updates?
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification requirements
+      value: |
+        - black --check
+        - isort --check --profile black
+        - ruff check
+        - mypy (affected packages)
+        - pytest with coverage >= 90%
+        - make docs when docs or public API surface is affected
+    validations:
+      required: true

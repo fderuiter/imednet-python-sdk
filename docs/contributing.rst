@@ -5,11 +5,29 @@ This guide summarizes how to set up your environment, validate changes, and subm
 pull requests. Please review our `Code of Conduct <../CODE_OF_CONDUCT.md>`__ and
 see `CONTRIBUTING.md <../CONTRIBUTING.md>`__ for complete details.
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Contributor Guides
+
+   issue_management
+   project_standards
+   triage_playbook
+
 Setup
 -----
 .. code-block:: bash
 
    ./scripts/setup.sh
+
+Issue reporting and triage
+--------------------------
+The project uses a documented issue operating model so epics, work items, and
+maintainer triage follow the same rules across the repository.
+
+- Use ``<type>(<area>): <concise outcome>`` issue titles.
+- Capture acceptance criteria, test impact, docs impact, and compatibility notes.
+- Apply the label taxonomy and lifecycle in ``issue_management``.
+- Follow the intake and rewrite workflow in ``triage_playbook``.
 
 Validation
 ----------
@@ -17,11 +35,18 @@ Run these commands and ensure **≥90%** test coverage before opening a pull req
 
 .. code-block:: bash
 
-   poetry run ruff check --fix .
    poetry run black --check .
    poetry run isort --check --profile black .
+   poetry run ruff check .
    poetry run mypy packages/core/src/imednet
-   poetry run pytest -q
+   poetry run mypy packages/plugins-workflows/src/imednet_workflows
+   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+   poetry run pytest -q \
+     --cov=imednet \
+     --cov=imednet_workflows \
+     --cov=apache_airflow_providers_imednet \
+     --cov-fail-under=90
+   make docs
 
 HTTP transport mocking
 ----------------------
@@ -69,11 +94,18 @@ Releases are fully automated and driven by merged PR titles:
 
    .. code-block:: bash
 
-      poetry run ruff check --fix .
       poetry run black --check .
       poetry run isort --check --profile black .
+      poetry run ruff check .
       poetry run mypy packages/core/src/imednet
-      poetry run pytest -q
+      poetry run mypy packages/plugins-workflows/src/imednet_workflows
+      poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+      poetry run pytest -q \
+        --cov=imednet \
+        --cov=imednet_workflows \
+        --cov=apache_airflow_providers_imednet \
+        --cov-fail-under=90
+      make docs
 
 3. Merge to ``main`` with **Squash and merge** so the PR title becomes the merged commit message.
 4. The ``Automated Release`` workflow runs ``release-please`` in manifest mode on ``main`` pushes

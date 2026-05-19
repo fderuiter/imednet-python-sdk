@@ -1,0 +1,92 @@
+name: Epic
+description: Track a multi-issue effort with linked child work
+title: "epic(<area>): "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use epics for multi-PR efforts only. Track the objective here and link child issues instead of encoding sequence in titles.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - core
+        - models
+        - http
+        - auth
+        - pagination
+        - cli
+        - docs
+        - tests
+        - ci
+        - release
+        - workflows-plugin
+        - airflow-provider
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested priority
+      options:
+        - p0
+        - p1
+        - p2
+        - p3
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk
+      options:
+        - low
+        - medium
+        - high
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      placeholder: What program-level outcome should this epic deliver?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      placeholder: What work belongs inside this epic?
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      placeholder: What is explicitly out of scope?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: children
+    attributes:
+      label: Linked child issues
+      placeholder: List child issues or planned work items here.
+    validations:
+      required: true
+  - type: textarea
+    id: sequencing
+    attributes:
+      label: Sequencing and dependencies
+      placeholder: Note ordering constraints or upstream dependencies.
+    validations:
+      required: false
