@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-from imednet.core.endpoint.edc_mixin import EdcGenericListGetEndpoint
+from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.core.endpoint.operations import RecordCreateOperation
 from imednet.core.endpoint.strategies import MappingParamProcessor
 from imednet.models.jobs import Job
@@ -10,7 +10,7 @@ from imednet.models.records import Record
 from imednet.validation.cache import SchemaCache
 
 
-class RecordsEndpoint(EdcGenericListGetEndpoint[Record]):
+class RecordsEndpoint(EdcSyncListGetEndpoint[Record]):
     """
     API endpoint for interacting with records (eCRF instances) in an iMedNet study.
 
@@ -58,6 +58,13 @@ class RecordsEndpoint(EdcGenericListGetEndpoint[Record]):
             self._require_sync_client(),
             parse_func=Job.from_json,
         )
+
+
+class AsyncRecordsEndpoint(EdcAsyncListGetEndpoint[Record]):
+    PATH = "records"
+    MODEL = Record
+    _id_param = "recordId"
+    PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
 
     async def async_create(
         self,

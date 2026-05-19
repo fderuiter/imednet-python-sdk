@@ -17,112 +17,29 @@ from .config import Config, load_config
 from .core.context import study_context
 from .core.factory import ClientFactory
 from .core.retry import RetryPolicy
-from .endpoints.registry import ENDPOINT_REGISTRY
+from .endpoints.registry import ASYNC_ENDPOINT_REGISTRY, ENDPOINT_REGISTRY
 from .sdk_convenience import SDKConvenienceMixin
 
 if TYPE_CHECKING:
     from .core.async_client import AsyncClient
     from .core.client import Client
-    from .endpoints.codings import CodingsEndpoint
-    from .endpoints.forms import FormsEndpoint
-    from .endpoints.intervals import IntervalsEndpoint
-    from .endpoints.jobs import JobsEndpoint
-    from .endpoints.queries import QueriesEndpoint
-    from .endpoints.record_revisions import RecordRevisionsEndpoint
-    from .endpoints.records import RecordsEndpoint
-    from .endpoints.sites import SitesEndpoint
-    from .endpoints.studies import StudiesEndpoint
-    from .endpoints.subjects import SubjectsEndpoint
-    from .endpoints.users import UsersEndpoint
-    from .endpoints.variables import VariablesEndpoint
-    from .endpoints.visits import VisitsEndpoint
+    from .endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
+    from .endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
+    from .endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
+    from .endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
+    from .endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
+    from .endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
+    from .endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
+    from .endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
+    from .endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint
+    from .endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
+    from .endpoints.users import AsyncUsersEndpoint, UsersEndpoint
+    from .endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
+    from .endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
-class ImednetSDK(SDKConvenienceMixin):
-    """
-    Public entry-point for library users.
-
-    Provides access to all iMednet API endpoints and maintains configuration.
-    """
-
-    codings: CodingsEndpoint
-    forms: FormsEndpoint
-    intervals: IntervalsEndpoint
-    jobs: JobsEndpoint
-    queries: QueriesEndpoint
-    record_revisions: RecordRevisionsEndpoint
-    records: RecordsEndpoint
-    sites: SitesEndpoint
-    studies: StudiesEndpoint
-    subjects: SubjectsEndpoint
-    users: UsersEndpoint
-    variables: VariablesEndpoint
-    visits: VisitsEndpoint
+class _BaseSDK:
     config: Config
-
-    def __init__(
-        self,
-        api_key: Optional[str] = None,
-        security_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        timeout: float = 30.0,
-        retries: int = 3,
-        backoff_factor: float = 1.0,
-        retry_policy: RetryPolicy | None = None,
-        enable_async: bool = False,
-        client: Optional[Client] = None,
-        async_client: Optional[AsyncClient] = None,
-    ) -> None:
-        """Initialize the SDK with credentials and configuration."""
-
-        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
-
-        self.config = config
-        self._api_key = config.api_key
-        self._security_key = config.security_key
-        self._base_url = config.base_url
-
-        if client:
-            self._client = client
-        else:
-            self._client = ClientFactory.create_client(
-                config=config,
-                timeout=timeout,
-                retries=retries,
-                backoff_factor=backoff_factor,
-                retry_policy=retry_policy,
-            )
-
-        if async_client:
-            self._async_client: Optional[AsyncClient] = async_client
-        elif enable_async:
-            self._async_client = ClientFactory.create_async_client(
-                config=config,
-                timeout=timeout,
-                retries=retries,
-                backoff_factor=backoff_factor,
-                retry_policy=retry_policy,
-            )
-        else:
-            self._async_client = None
-
-        self._init_endpoints()
-        self.workflows = self._init_workflows()
-
-    @property
-    def retry_policy(self) -> RetryPolicy:
-        return self._client.retry_policy
-
-    @retry_policy.setter
-    def retry_policy(self, policy: RetryPolicy) -> None:
-        self._client.retry_policy = policy
-        if self._async_client is not None:
-            self._async_client.retry_policy = policy
-
-    def _init_endpoints(self) -> None:
-        """Instantiate endpoint clients."""
-        for attr, endpoint_cls in ENDPOINT_REGISTRY.items():
-            setattr(self, attr, endpoint_cls(self._client, async_client=self._async_client))
 
     def _init_workflows(self) -> Any:
         """Instantiate workflow namespace when optional workflows plugin is available."""
@@ -157,6 +74,82 @@ class ImednetSDK(SDKConvenienceMixin):
                 "Failed to instantiate Workflows from imednet_workflows.namespace."
             ) from error
 
+    @contextmanager
+    def study_context(self, study_key: str) -> Iterator[Any]:
+        """Set a temporary default study key for the current thread/task context."""
+        with study_context(study_key):
+            yield self
+
+
+class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
+    """
+    Public entry-point for library users.
+
+    Provides access to all iMednet API endpoints and maintains configuration.
+    """
+
+    codings: CodingsEndpoint
+    forms: FormsEndpoint
+    intervals: IntervalsEndpoint
+    jobs: JobsEndpoint
+    queries: QueriesEndpoint
+    record_revisions: RecordRevisionsEndpoint
+    records: RecordsEndpoint
+    sites: SitesEndpoint
+    studies: StudiesEndpoint
+    subjects: SubjectsEndpoint
+    users: UsersEndpoint
+    variables: VariablesEndpoint
+    visits: VisitsEndpoint
+    config: Config
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        security_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        timeout: float = 30.0,
+        retries: int = 3,
+        backoff_factor: float = 1.0,
+        retry_policy: RetryPolicy | None = None,
+        client: Optional[Client] = None,
+    ) -> None:
+        """Initialize the SDK with credentials and configuration."""
+
+        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
+
+        self.config = config
+        self._api_key = config.api_key
+        self._security_key = config.security_key
+        self._base_url = config.base_url
+
+        if client:
+            self._client = client
+        else:
+            self._client = ClientFactory.create_client(
+                config=config,
+                timeout=timeout,
+                retries=retries,
+                backoff_factor=backoff_factor,
+                retry_policy=retry_policy,
+            )
+
+        self._init_endpoints()
+        self.workflows = self._init_workflows()
+
+    @property
+    def retry_policy(self) -> RetryPolicy:
+        return self._client.retry_policy
+
+    @retry_policy.setter
+    def retry_policy(self, policy: RetryPolicy) -> None:
+        self._client.retry_policy = policy
+
+    def _init_endpoints(self) -> None:
+        """Instantiate endpoint clients."""
+        for attr, endpoint_cls in ENDPOINT_REGISTRY.items():
+            setattr(self, attr, endpoint_cls(self._client))
+
     def __enter__(self) -> ImednetSDK:
         """Support for context manager protocol."""
         return self
@@ -182,39 +175,18 @@ class ImednetSDK(SDKConvenienceMixin):
         )
 
     def close(self) -> None:
-        """Close the synchronous client connection and free resources.
-
-        Raises:
-            RuntimeError: If an asynchronous client is active. Call
-                ``await sdk.aclose()`` instead, or use
-                ``async with AsyncImednetSDK(...)`` to manage the lifecycle.
-        """
-        if self._async_client is not None:
-            raise RuntimeError(
-                "This SDK instance has an active asynchronous client. "
-                "Call `await sdk.aclose()` to properly clean up async resources, "
-                "or use `async with AsyncImednetSDK(...)` to manage the lifecycle."
-            )
+        """Close the synchronous client connection and free resources."""
         self._client.close()
 
     async def aclose(self) -> None:
-        if self._async_client is not None:
-            await self._async_client.aclose()
-        self._client.close()
-
-    @contextmanager
-    def study_context(self, study_key: str) -> Iterator[ImednetSDK]:
-        """Set a temporary default study key for the current thread/task context.
-
-        Example:
-            with sdk.study_context("S1"):
-                sdk.records.get(record_id=123)
-        """
-        with study_context(study_key):
-            yield self
+        raise TypeError(
+            "ImednetSDK is a synchronous client. "
+            "Use `sdk.close()` or `with ImednetSDK(...)` instead. "
+            "If you require async execution, use AsyncImednetSDK."
+        )
 
 
-class AsyncImednetSDK(ImednetSDK):
+class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
     """Async variant of :class:`ImednetSDK` using the async HTTP client.
 
     Always use this class with ``async with`` or call ``await sdk.aclose()``
@@ -222,9 +194,59 @@ class AsyncImednetSDK(ImednetSDK):
     synchronous ``close()`` on this class will raise a :exc:`TypeError`.
     """
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover - thin wrapper
-        kwargs["enable_async"] = True
-        super().__init__(*args, **kwargs)
+    codings: AsyncCodingsEndpoint
+    forms: AsyncFormsEndpoint
+    intervals: AsyncIntervalsEndpoint
+    jobs: AsyncJobsEndpoint
+    queries: AsyncQueriesEndpoint
+    record_revisions: AsyncRecordRevisionsEndpoint
+    records: AsyncRecordsEndpoint
+    sites: AsyncSitesEndpoint
+    studies: AsyncStudiesEndpoint
+    subjects: AsyncSubjectsEndpoint
+    users: AsyncUsersEndpoint
+    variables: AsyncVariablesEndpoint
+    visits: AsyncVisitsEndpoint
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        security_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        timeout: float = 30.0,
+        retries: int = 3,
+        backoff_factor: float = 1.0,
+        retry_policy: RetryPolicy | None = None,
+        async_client: Optional[AsyncClient] = None,
+    ) -> None:
+        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
+        self.config = config
+        self._api_key = config.api_key
+        self._security_key = config.security_key
+        self._base_url = config.base_url
+
+        self._async_client = async_client or ClientFactory.create_async_client(
+            config=config,
+            timeout=timeout,
+            retries=retries,
+            backoff_factor=backoff_factor,
+            retry_policy=retry_policy,
+        )
+
+        self._init_endpoints()
+        self.workflows = self._init_workflows()
+
+    @property
+    def retry_policy(self) -> RetryPolicy:
+        return self._async_client.retry_policy
+
+    @retry_policy.setter
+    def retry_policy(self, policy: RetryPolicy) -> None:
+        self._async_client.retry_policy = policy
+
+    def _init_endpoints(self) -> None:
+        for attr, endpoint_cls in ASYNC_ENDPOINT_REGISTRY.items():
+            setattr(self, attr, endpoint_cls(self._async_client))  # type: ignore[arg-type]
 
     def close(self) -> None:
         """Raises :exc:`TypeError` — use ``await sdk.aclose()`` instead."""
@@ -250,6 +272,9 @@ class AsyncImednetSDK(ImednetSDK):
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         await self.aclose()
+
+    async def aclose(self) -> None:
+        await self._async_client.aclose()
 
 
 __all__ = ["ImednetSDK", "AsyncImednetSDK"]

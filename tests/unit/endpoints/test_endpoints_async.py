@@ -33,7 +33,7 @@ from imednet.models.visits import Visit
 async def test_async_list_records(
     dummy_client, context, async_paginator_factory, patch_build_filter
 ):
-    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = records.AsyncRecordsEndpoint(dummy_client, context)
     captured = async_paginator_factory(records, [{"recordId": 1}])
     filter_capture = patch_build_filter(records)
     result = await ep.async_list(study_key="S1", record_data_filter="x")
@@ -45,7 +45,7 @@ async def test_async_list_records(
 
 @pytest.mark.asyncio
 async def test_async_list_codings(dummy_client, context, async_paginator_factory):
-    ep = codings.CodingsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = codings.AsyncCodingsEndpoint(dummy_client, context)
     captured = async_paginator_factory(codings, [{"codingId": 1}])
     result = await ep.async_list(study_key="S1")
     assert captured["path"] == "/api/v1/edc/studies/S1/codings"
@@ -55,7 +55,7 @@ async def test_async_list_codings(dummy_client, context, async_paginator_factory
 @pytest.mark.asyncio
 async def test_async_list_forms(dummy_client, context, async_paginator_factory):
     context.set_default_study_key("S1")
-    ep = forms.FormsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = forms.AsyncFormsEndpoint(dummy_client, context)
     captured = async_paginator_factory(forms, [{"formId": 1}])
     result = await ep.async_list()
     assert captured["path"] == "/api/v1/edc/studies/S1/forms"
@@ -65,7 +65,7 @@ async def test_async_list_forms(dummy_client, context, async_paginator_factory):
 @pytest.mark.asyncio
 async def test_async_list_intervals(dummy_client, context, async_paginator_factory):
     context.set_default_study_key("S1")
-    ep = intervals.IntervalsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = intervals.AsyncIntervalsEndpoint(dummy_client, context)
     captured = async_paginator_factory(intervals, [{"intervalId": 1}])
     result = await ep.async_list()
     assert captured["path"] == "/api/v1/edc/studies/S1/intervals"
@@ -75,7 +75,7 @@ async def test_async_list_intervals(dummy_client, context, async_paginator_facto
 @pytest.mark.asyncio
 async def test_async_list_queries(dummy_client, context, async_paginator_factory):
     context.set_default_study_key("S1")
-    ep = queries.QueriesEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = queries.AsyncQueriesEndpoint(dummy_client, context)
     captured = async_paginator_factory(queries, [{"annotationId": 1}])
     result = await ep.async_list(status="new")
     assert captured["path"] == "/api/v1/edc/studies/S1/queries"
@@ -85,11 +85,7 @@ async def test_async_list_queries(dummy_client, context, async_paginator_factory
 @pytest.mark.asyncio
 async def test_async_list_record_revisions(dummy_client, context, async_paginator_factory):
     context.set_default_study_key("S1")
-    ep = record_revisions.RecordRevisionsEndpoint(
-        dummy_client,
-        context,
-        async_client=dummy_client,
-    )
+    ep = record_revisions.AsyncRecordRevisionsEndpoint(dummy_client, context)
     captured = async_paginator_factory(record_revisions, [{"recordRevisionId": 1}])
     result = await ep.async_list(status="x")
     assert captured["path"] == "/api/v1/edc/studies/S1/recordRevisions"
@@ -98,7 +94,7 @@ async def test_async_list_record_revisions(dummy_client, context, async_paginato
 
 @pytest.mark.asyncio
 async def test_async_list_sites(dummy_client, context, async_paginator_factory):
-    ep = sites.SitesEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = sites.AsyncSitesEndpoint(dummy_client, context)
     captured = async_paginator_factory(sites, [{"siteId": 1}])
     result = await ep.async_list(study_key="S1")
     assert captured["path"] == "/api/v1/edc/studies/S1/sites"
@@ -108,7 +104,7 @@ async def test_async_list_sites(dummy_client, context, async_paginator_factory):
 @pytest.mark.asyncio
 async def test_async_list_subjects(dummy_client, context, async_paginator_factory):
     context.set_default_study_key("S1")
-    ep = subjects.SubjectsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = subjects.AsyncSubjectsEndpoint(dummy_client, context)
     captured = async_paginator_factory(subjects, [{"subjectKey": "x"}])
     result = await ep.async_list()
     assert captured["path"] == "/api/v1/edc/studies/S1/subjects"
@@ -117,7 +113,7 @@ async def test_async_list_subjects(dummy_client, context, async_paginator_factor
 
 @pytest.mark.asyncio
 async def test_async_list_users(dummy_client, context, async_paginator_factory):
-    ep = users.UsersEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = users.AsyncUsersEndpoint(dummy_client, context)
     captured = async_paginator_factory(users, [{"userId": 1}])
     result = await ep.async_list(study_key="S1", include_inactive=True)
     assert captured["path"] == "/api/v1/edc/studies/S1/users"
@@ -127,7 +123,7 @@ async def test_async_list_users(dummy_client, context, async_paginator_factory):
 
 @pytest.mark.asyncio
 async def test_async_list_variables(dummy_client, context, async_paginator_factory):
-    ep = variables.VariablesEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = variables.AsyncVariablesEndpoint(dummy_client, context)
     captured = async_paginator_factory(variables, [{"variableId": 1}])
     result = await ep.async_list(study_key="S1")
     assert captured["path"] == "/api/v1/edc/studies/S1/variables"
@@ -137,7 +133,7 @@ async def test_async_list_variables(dummy_client, context, async_paginator_facto
 @pytest.mark.asyncio
 async def test_async_list_visits(dummy_client, context, async_paginator_factory):
     context.set_default_study_key("S1")
-    ep = visits.VisitsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = visits.AsyncVisitsEndpoint(dummy_client, context)
     captured = async_paginator_factory(visits, [{"visitId": 1}])
     result = await ep.async_list(status="x")
     assert captured["path"] == "/api/v1/edc/studies/S1/visits"
@@ -146,7 +142,7 @@ async def test_async_list_visits(dummy_client, context, async_paginator_factory)
 
 @pytest.mark.asyncio
 async def test_async_get_job(dummy_client, context, response_factory):
-    ep = jobs.JobsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = jobs.AsyncJobsEndpoint(dummy_client, context)
 
     async def fake_get(path):
         assert path == "/api/v1/edc/studies/S1/jobs/B1"
@@ -159,7 +155,7 @@ async def test_async_get_job(dummy_client, context, response_factory):
 
 @pytest.mark.asyncio
 async def test_async_get_record(monkeypatch, dummy_client, context, response_factory):
-    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = records.AsyncRecordsEndpoint(dummy_client, context)
     called = {}
 
     async def fake_impl(self, client, paginator, *, study_key=None, **filters):
@@ -167,7 +163,7 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
         called["filters"] = filters
         return [Record(record_id=1)]
 
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_async", fake_impl)
+    monkeypatch.setattr(records.AsyncRecordsEndpoint, "_list_async", fake_impl)
 
     rec = await ep.async_get("S1", 1)
 
@@ -177,12 +173,12 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
 
 @pytest.mark.asyncio
 async def test_async_get_record_not_found(monkeypatch, dummy_client, context, response_factory):
-    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = records.AsyncRecordsEndpoint(dummy_client, context)
 
     async def fake_impl(self, client, paginator, *, study_key=None, **filters):
         return []
 
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_async", fake_impl)
+    monkeypatch.setattr(records.AsyncRecordsEndpoint, "_list_async", fake_impl)
 
     with pytest.raises(NotFoundError):
         await ep.async_get("S1", 1)
@@ -190,7 +186,7 @@ async def test_async_get_record_not_found(monkeypatch, dummy_client, context, re
 
 @pytest.mark.asyncio
 async def test_async_create_record(dummy_client, context, response_factory, monkeypatch):
-    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
     monkeypatch.setattr(records.Job, "from_json", lambda d: d)

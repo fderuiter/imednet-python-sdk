@@ -1,6 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable, Optional, Tuple, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    Tuple,
+    TypeVar,
+    cast,
+)
 
 from imednet.errors import UnknownVariableTypeError, ValidationError
 
@@ -8,8 +19,8 @@ from ..models.variables import Variable
 from ._base import _ValidatorMixin
 
 if TYPE_CHECKING:
-    from ..endpoints.forms import FormsEndpoint
-    from ..endpoints.variables import VariablesEndpoint
+    from ..endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
+    from ..endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
     from ..sdk import AsyncImednetSDK, ImednetSDK
 
 _TClient = TypeVar("_TClient")
@@ -33,8 +44,8 @@ class BaseSchemaCache(Generic[_TClient]):
 
     async def _refresh_async(
         self,
-        forms: FormsEndpoint,
-        variables: VariablesEndpoint,
+        forms: AsyncFormsEndpoint,
+        variables: AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
         vars_list = await variables.async_list(study_key=study_key)
@@ -51,13 +62,21 @@ class BaseSchemaCache(Generic[_TClient]):
 
     def refresh(
         self,
-        forms: FormsEndpoint,
-        variables: VariablesEndpoint,
+        forms: FormsEndpoint | AsyncFormsEndpoint,
+        variables: VariablesEndpoint | AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> Any:
         if self._is_async:
-            return self._refresh_async(forms, variables, study_key)
-        return self._refresh_sync(forms, variables, study_key)
+            return self._refresh_async(
+                cast("AsyncFormsEndpoint", forms),
+                cast("AsyncVariablesEndpoint", variables),
+                study_key,
+            )
+        return self._refresh_sync(
+            cast("FormsEndpoint", forms),
+            cast("VariablesEndpoint", variables),
+            study_key,
+        )
 
     def variables_for_form(self, form_key: str) -> Dict[str, Variable]:
         return self._form_variables.get(form_key, {})
