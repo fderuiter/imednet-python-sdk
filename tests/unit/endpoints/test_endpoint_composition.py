@@ -1,17 +1,17 @@
 import imednet.endpoints.records as records_module
-from imednet.endpoints.codings import CodingsEndpoint
-from imednet.endpoints.forms import FormsEndpoint
-from imednet.endpoints.intervals import IntervalsEndpoint
-from imednet.endpoints.jobs import JobsEndpoint
-from imednet.endpoints.queries import QueriesEndpoint
-from imednet.endpoints.record_revisions import RecordRevisionsEndpoint
-from imednet.endpoints.records import RecordsEndpoint
-from imednet.endpoints.sites import SitesEndpoint
-from imednet.endpoints.studies import StudiesEndpoint
-from imednet.endpoints.subjects import SubjectsEndpoint
-from imednet.endpoints.users import UsersEndpoint
-from imednet.endpoints.variables import VariablesEndpoint
-from imednet.endpoints.visits import VisitsEndpoint
+from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
+from imednet.endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
+from imednet.endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
+from imednet.endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
+from imednet.endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
+from imednet.endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
+from imednet.endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
+from imednet.endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
+from imednet.endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint
+from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
+from imednet.endpoints.users import AsyncUsersEndpoint, UsersEndpoint
+from imednet.endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
+from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 ALL_ENDPOINT_CLASSES = [
     CodingsEndpoint,
@@ -27,6 +27,22 @@ ALL_ENDPOINT_CLASSES = [
     UsersEndpoint,
     VariablesEndpoint,
     VisitsEndpoint,
+]
+
+ALL_ASYNC_ENDPOINT_CLASSES = [
+    AsyncCodingsEndpoint,
+    AsyncFormsEndpoint,
+    AsyncIntervalsEndpoint,
+    AsyncJobsEndpoint,
+    AsyncQueriesEndpoint,
+    AsyncRecordRevisionsEndpoint,
+    AsyncRecordsEndpoint,
+    AsyncSitesEndpoint,
+    AsyncStudiesEndpoint,
+    AsyncSubjectsEndpoint,
+    AsyncUsersEndpoint,
+    AsyncVariablesEndpoint,
+    AsyncVisitsEndpoint,
 ]
 
 
@@ -74,3 +90,12 @@ def test_no_endpoint_directly_inherits_edc_mixin():
         assert (
             "EdcEndpointMixin" not in direct_base_names
         ), f"{endpoint_cls.__name__} still directly inherits EdcEndpointMixin"
+
+
+def test_all_async_endpoints_inherit_from_single_edc_base():
+    """Async endpoints must have EdcAsyncListGetEndpoint as their sole direct parent."""
+    for endpoint_cls in ALL_ASYNC_ENDPOINT_CLASSES:
+        base_names = {b.__name__ for b in endpoint_cls.__bases__}
+        assert base_names == {
+            "EdcAsyncListGetEndpoint"
+        }, f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"

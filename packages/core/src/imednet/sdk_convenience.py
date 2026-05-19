@@ -29,7 +29,10 @@ if TYPE_CHECKING:
     from imednet.endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
     from imednet.endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
     from imednet.endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
-    from imednet.endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
+    from imednet.endpoints.record_revisions import (
+        AsyncRecordRevisionsEndpoint,
+        RecordRevisionsEndpoint,
+    )
     from imednet.endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
     from imednet.endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
     from imednet.endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint

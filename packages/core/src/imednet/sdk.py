@@ -179,7 +179,11 @@ class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
         self._client.close()
 
     async def aclose(self) -> None:
-        self.close()
+        raise TypeError(
+            "ImednetSDK is a synchronous client. "
+            "Use `sdk.close()` or `with ImednetSDK(...)` instead. "
+            "If you require async execution, use AsyncImednetSDK."
+        )
 
 
 class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
@@ -190,7 +194,6 @@ class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
     synchronous ``close()`` on this class will raise a :exc:`TypeError`.
     """
 
-    config: Config
     codings: AsyncCodingsEndpoint
     forms: AsyncFormsEndpoint
     intervals: AsyncIntervalsEndpoint
