@@ -43,11 +43,17 @@ def build_safe_path(base_path: str, *segments: Any) -> str:
         *segments: Additional path segments. Non-string values are stringified.
 
     Returns:
-        A slash-normalized relative path with URL-encoded segments unquoted.
+        A slash-normalized relative path with URL-encoded segments decoded
+        (for example, ``"a%2Fb"`` becomes ``"a/b"``).
     """
-    url = httpx.URL("http://dummy/")
+    parts: list[str] = []
     for segment in (base_path, *segments):
         for part in str(segment).split("/"):
             if part:
-                url = url.join(f"{part}/")
-    return url.path.strip("/")
+                parts.append(part)
+
+    if not parts:
+        return ""
+
+    normalized = "/".join(parts)
+    return httpx.URL("http://dummy/").join(normalized).path.strip("/")
