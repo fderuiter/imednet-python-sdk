@@ -35,7 +35,19 @@ def redact_url_query(url: str, sensitive_params: Optional[Set[str]] = None) -> s
 
 
 def build_safe_path(base_path: str, *segments: Any) -> str:
-    """Build a normalized relative path using HTTPX URL joining."""
-    combined = "/".join(text for value in (base_path, *segments) if (text := str(value).strip("/")))
-    normalized = re.sub(r"/{2,}", "/", combined)
-    return httpx.URL("http://dummy/").join(normalized).path.lstrip("/")
+    """
+    Build a normalized relative path using HTTPX URL joining.
+
+    Args:
+        base_path: Base path segment to start from.
+        *segments: Additional path segments. Non-string values are stringified.
+
+    Returns:
+        A slash-normalized relative path with URL-encoded segments unquoted.
+    """
+    url = httpx.URL("http://dummy/")
+    for segment in (base_path, *segments):
+        for part in str(segment).split("/"):
+            if part:
+                url = url.join(f"{part}/")
+    return url.path.strip("/")
