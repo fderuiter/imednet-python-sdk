@@ -85,10 +85,10 @@ def paginator_factory(monkeypatch):
             def __iter__(self):
                 yield from self._items
 
-        from imednet.core.endpoint.base import GenericListGetEndpoint
+        from imednet.core.endpoint.base import SyncListGetEndpoint
 
         for obj in module.__dict__.values():
-            if isinstance(obj, type) and issubclass(obj, GenericListGetEndpoint):
+            if isinstance(obj, type) and issubclass(obj, SyncListGetEndpoint):
                 monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
         return captured
 
@@ -113,10 +113,10 @@ def async_paginator_factory(monkeypatch):
                 for item in self._items:
                     yield item
 
-        from imednet.core.endpoint.base import GenericListGetEndpoint
+        from imednet.core.endpoint.base import AsyncListGetEndpoint
 
         for obj in module.__dict__.values():
-            if isinstance(obj, type) and issubclass(obj, GenericListGetEndpoint):
+            if isinstance(obj, type) and issubclass(obj, AsyncListGetEndpoint):
                 monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
         return captured
 

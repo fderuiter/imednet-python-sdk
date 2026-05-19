@@ -4,7 +4,7 @@ import respx
 
 from imednet import errors
 from imednet.core.retry import RetryPolicy, RetryState
-from imednet.sdk import ImednetSDK
+from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
 class NamedPolicy(RetryPolicy):
@@ -16,12 +16,11 @@ class NamedPolicy(RetryPolicy):
 
 
 @pytest.fixture()
-def sdk() -> ImednetSDK:
-    return ImednetSDK(
+def async_sdk() -> AsyncImednetSDK:
+    return AsyncImednetSDK(
         api_key="key",
         security_key="secret",
         base_url="https://example.com",
-        enable_async=True,
     )
 
 
@@ -31,34 +30,26 @@ def respx_mock_external():
         yield mock
 
 
-def test_initial_retry_policy_propagates_to_clients() -> None:
+def test_initial_retry_policy_propagates_to_async_client() -> None:
     policy = NamedPolicy("init")
-    sdk = ImednetSDK(
+    sdk = AsyncImednetSDK(
         api_key="key",
         security_key="secret",
         base_url="https://example.com",
-        enable_async=True,
         retry_policy=policy,
     )
 
-    assert sdk._client.retry_policy is policy
-    assert sdk._async_client is not None
     assert sdk._async_client.retry_policy is policy
 
 
-def test_retry_policy_propagates_to_clients(sdk: ImednetSDK) -> None:
-    assert sdk._async_client is not None
-
-    client_policy = NamedPolicy("client")
+def test_retry_policy_propagates_to_async_client(async_sdk: AsyncImednetSDK) -> None:
     async_policy = NamedPolicy("async")
-    sdk._client.retry_policy = client_policy
-    sdk._async_client.retry_policy = async_policy
+    async_sdk._async_client.retry_policy = async_policy
 
     new_policy = NamedPolicy("new")
-    sdk.retry_policy = new_policy
+    async_sdk.retry_policy = new_policy
 
-    assert sdk._client.retry_policy is new_policy
-    assert sdk._async_client.retry_policy is new_policy
+    assert async_sdk._async_client.retry_policy is new_policy
 
 
 def test_default_retry_policy_retries_connection_error(respx_mock_external) -> None:
@@ -107,14 +98,12 @@ def test_default_retry_policy_retries_on_429(respx_mock_external) -> None:
 @pytest.mark.asyncio
 async def test_default_retry_policy_async_retries_on_500(respx_mock_external) -> None:
     """Verify that server errors (500) trigger retries in async client."""
-    sdk = ImednetSDK(
+    sdk = AsyncImednetSDK(
         api_key="k",
         security_key="s",
         base_url="https://example.com",
-        enable_async=True,
         retries=3,
     )
-    assert sdk._async_client is not None
 
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(500))
 

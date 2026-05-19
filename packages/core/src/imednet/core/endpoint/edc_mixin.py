@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, TypeVar
 
 from imednet.core.context import get_study_context
-from imednet.core.endpoint.base import GenericListGetEndpoint
+from imednet.core.endpoint.base import AsyncListGetEndpoint, SyncListGetEndpoint
 from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
@@ -44,7 +44,7 @@ class EdcEndpointMixin:
         return _inject_study_key(filters)
 
 
-class EdcGenericListGetEndpoint(GenericListGetEndpoint[T]):
+class _EdcEndpointBase:
     """
     Single base class for EDC API endpoints with list and get operations.
 
@@ -64,8 +64,6 @@ class EdcGenericListGetEndpoint(GenericListGetEndpoint[T]):
             _id_param = "recordId"
     """
 
-    BASE_PATH = _EDC_BASE_PATH
-
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """
         Inject the default study key from context if not already present.
@@ -77,3 +75,19 @@ class EdcGenericListGetEndpoint(GenericListGetEndpoint[T]):
             The filters dictionary with studyKey injected if applicable.
         """
         return _inject_study_key(filters)
+
+
+class EdcSyncListGetEndpoint(_EdcEndpointBase, SyncListGetEndpoint[T]):
+    """Sync EDC list/get endpoint base."""
+
+    BASE_PATH = _EDC_BASE_PATH
+
+
+class EdcAsyncListGetEndpoint(_EdcEndpointBase, AsyncListGetEndpoint[T]):
+    """Async EDC list/get endpoint base."""
+
+    BASE_PATH = _EDC_BASE_PATH
+
+
+# Backward-compatible alias. New code should use EdcSyncListGetEndpoint / EdcAsyncListGetEndpoint.
+EdcGenericListGetEndpoint = EdcSyncListGetEndpoint

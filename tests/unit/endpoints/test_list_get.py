@@ -40,6 +40,21 @@ CASES = [
     (visits.VisitsEndpoint, visits, Visit, 1),
 ]
 
+ASYNC_CASES = [
+    (codings.AsyncCodingsEndpoint, codings, Coding, "C1"),
+    (forms.AsyncFormsEndpoint, forms, Form, 1),
+    (intervals.AsyncIntervalsEndpoint, intervals, Interval, 1),
+    (queries.AsyncQueriesEndpoint, queries, Query, 1),
+    (record_revisions.AsyncRecordRevisionsEndpoint, record_revisions, RecordRevision, 1),
+    (records.AsyncRecordsEndpoint, records, Record, 1),
+    (sites.AsyncSitesEndpoint, sites, Site, 1),
+    (studies.AsyncStudiesEndpoint, studies, Study, "S1"),
+    (subjects.AsyncSubjectsEndpoint, subjects, Subject, "SUB"),
+    (users.AsyncUsersEndpoint, users, User, 1),
+    (variables.AsyncVariablesEndpoint, variables, Variable, 1),
+    (visits.AsyncVisitsEndpoint, visits, Visit, 1),
+]
+
 
 @pytest.mark.parametrize("cls,module,model,item_id", CASES)
 def test_list_and_get(dummy_client, context, paginator_factory, cls, module, model, item_id):
@@ -63,7 +78,7 @@ def test_list_and_get(dummy_client, context, paginator_factory, cls, module, mod
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("cls,module,model,item_id", CASES)
+@pytest.mark.parametrize("cls,module,model,item_id", ASYNC_CASES)
 async def test_async_list_and_get(
     dummy_client,
     context,
@@ -73,7 +88,7 @@ async def test_async_list_and_get(
     model,
     item_id,
 ):
-    ep = cls(dummy_client, context, async_client=dummy_client)
+    ep = cls(dummy_client, context)
     capture = async_paginator_factory(module, [{cls._id_param: item_id}])
 
     list_kwargs = {"study_key": "S1"} if getattr(ep, "requires_study_key", True) else {}

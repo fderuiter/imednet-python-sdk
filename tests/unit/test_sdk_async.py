@@ -17,6 +17,29 @@ def test_async_sdk_initializes_async_client() -> None:
     assert isinstance(sdk._async_client, AsyncClient)
 
 
+def test_async_sdk_is_not_subclass_of_sync_sdk() -> None:
+    assert not issubclass(sdk_mod.AsyncImednetSDK, sdk_mod.ImednetSDK)
+
+
+def test_sync_and_async_endpoints_expose_strict_method_surfaces() -> None:
+    sync_sdk = sdk_mod.ImednetSDK(
+        api_key="key",
+        security_key="secret",
+        base_url="https://example.com",
+    )
+    async_sdk = _create_async_sdk()
+
+    assert hasattr(sync_sdk.sites, "list")
+    assert hasattr(sync_sdk.sites, "get")
+    assert not hasattr(sync_sdk.sites, "async_list")
+    assert not hasattr(sync_sdk.sites, "async_get")
+
+    assert hasattr(async_sdk.sites, "async_list")
+    assert hasattr(async_sdk.sites, "async_get")
+    assert not hasattr(async_sdk.sites, "list")
+    assert not hasattr(async_sdk.sites, "get")
+
+
 @pytest.mark.asyncio
 async def test_async_context_management(monkeypatch) -> None:
     called = {"close": False}

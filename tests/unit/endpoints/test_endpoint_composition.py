@@ -58,12 +58,12 @@ def test_jobs_endpoint_keeps_public_read_api(dummy_client, context, response_fac
 
 
 def test_all_endpoints_inherit_from_single_edc_base():
-    """Endpoints must have EdcGenericListGetEndpoint as their sole direct parent."""
+    """Endpoints must have EdcSyncListGetEndpoint as their sole direct parent."""
     for endpoint_cls in ALL_ENDPOINT_CLASSES:
         direct_bases = endpoint_cls.__bases__
         base_names = {b.__name__ for b in direct_bases}
         assert base_names == {
-            "EdcGenericListGetEndpoint"
+            "EdcSyncListGetEndpoint"
         }, f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"
 
 
