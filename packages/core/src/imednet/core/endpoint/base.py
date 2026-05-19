@@ -38,12 +38,12 @@ class GenericEndpoint(EndpointABC[T]):
     """
 
     BASE_PATH = ""
-    _client: RequestorProtocol
+    _client: Optional[RequestorProtocol]
     _async_client: Optional[AsyncRequestorProtocol]
 
     def __init__(
         self,
-        client: RequestorProtocol,
+        client: Optional[RequestorProtocol] = None,
         ctx: object | None = None,
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
@@ -81,7 +81,9 @@ class GenericEndpoint(EndpointABC[T]):
         return "/" + "/".join(parts)
 
     def _require_sync_client(self) -> RequestorProtocol:
-        """Return the configured sync client."""
+        """Return the configured sync client or raise if missing."""
+        if self._client is None:
+            raise RuntimeError("Sync client not configured")
         return self._client
 
     def _require_async_client(self) -> AsyncRequestorProtocol:
@@ -91,9 +93,7 @@ class GenericEndpoint(EndpointABC[T]):
         return self._async_client
 
 
-class GenericListGetEndpoint(
-    GenericEndpoint[T],
-):
+class _ListGetEndpointBase(GenericEndpoint[T]):
     """
     Generic base for endpoints that provide list and get-by-filter functionality.
 
@@ -177,98 +177,10 @@ class GenericListGetEndpoint(
             study=study,
         )
 
-    def _list_sync(
-        self,
-        client: RequestorProtocol,
-        paginator_cls: type[Paginator],
-        *,
-        study_key: Optional[str] = None,
-        extra_params: Optional[Dict[str, Any]] = None,
-        **filters: Any,
-    ) -> List[T]:
-        state = self._prepare_list_request(study_key, extra_params, filters)
-        return ListOperation[T](
-            path=state.path,
-            params=state.params,
-            page_size=self.PAGE_SIZE,
-            parse_func=self._resolve_parse_func(),
-        ).execute_sync(client, paginator_cls)
-
-    async def _list_async(
-        self,
-        client: AsyncRequestorProtocol,
-        paginator_cls: type[AsyncPaginator],
-        *,
-        study_key: Optional[str] = None,
-        extra_params: Optional[Dict[str, Any]] = None,
-        **filters: Any,
-    ) -> List[T]:
-        state = self._prepare_list_request(study_key, extra_params, filters)
-        return await ListOperation[T](
-            path=state.path,
-            params=state.params,
-            page_size=self.PAGE_SIZE,
-            parse_func=self._resolve_parse_func(),
-        ).execute_async(client, paginator_cls)
-
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
-        return self._list_sync(
-            self._require_sync_client(),
-            self.PAGINATOR_CLS,
-            study_key=study_key,
-            **filters,
-        )
-
-    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
-        return await self._list_async(
-            self._require_async_client(),
-            self.ASYNC_PAGINATOR_CLS,
-            study_key=study_key,
-            **filters,
-        )
-
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
         if not items:
             self._raise_not_found(study_key, item_id)
         return items[0]
-
-    def _get_sync(
-        self,
-        client: RequestorProtocol,
-        paginator_cls: type[Paginator],
-        *,
-        study_key: Optional[str],
-        item_id: Any,
-    ) -> T:
-        filters = {self._id_param: item_id}
-        operation = FilterGetOperation[T](
-            study_key=study_key,
-            item_id=item_id,
-            filters=filters,
-            validate_func=self._validate_get_result,
-            list_sync_func=self._list_sync,
-            list_async_func=self._list_async,
-        )
-        return operation.execute_sync(client, paginator_cls)
-
-    async def _get_async(
-        self,
-        client: AsyncRequestorProtocol,
-        paginator_cls: type[AsyncPaginator],
-        *,
-        study_key: Optional[str],
-        item_id: Any,
-    ) -> T:
-        filters = {self._id_param: item_id}
-        operation = FilterGetOperation[T](
-            study_key=study_key,
-            item_id=item_id,
-            filters=filters,
-            validate_func=self._validate_get_result,
-            list_sync_func=self._list_sync,
-            list_async_func=self._list_async,
-        )
-        return await operation.execute_async(client, paginator_cls)
 
     @staticmethod
     @lru_cache(maxsize=None)
@@ -304,6 +216,58 @@ class GenericListGetEndpoint(
 
         return study_key, item_id
 
+
+class SyncListGetEndpoint(_ListGetEndpointBase[T]):
+    def __init__(
+        self,
+        client: RequestorProtocol,
+        ctx: object | None = None,
+    ) -> None:
+        super().__init__(client=client, ctx=ctx)
+
+    def _list_sync(
+        self,
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
+        *,
+        study_key: Optional[str] = None,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]:
+        state = self._prepare_list_request(study_key, extra_params, filters)
+        return ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        ).execute_sync(client, paginator_cls)
+
+    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        return self._list_sync(
+            self._require_sync_client(),
+            self.PAGINATOR_CLS,
+            study_key=study_key,
+            **filters,
+        )
+
+    def _get_sync(
+        self,
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T:
+        filters = {self._id_param: item_id}
+        operation = FilterGetOperation[T](
+            study_key=study_key,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_sync_func=self._list_sync,
+        )
+        return operation.execute_sync(client, paginator_cls)
+
     def get(self, study_key: Optional[str] = None, item_id: Any = None, **kwargs: Any) -> T:
         study_key, item_id = self._resolve_get_args(study_key, item_id, kwargs)
         return self._get_sync(
@@ -312,6 +276,58 @@ class GenericListGetEndpoint(
             study_key=study_key,
             item_id=item_id,
         )
+
+
+class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
+    def __init__(
+        self,
+        async_client: AsyncRequestorProtocol,
+        ctx: object | None = None,
+    ) -> None:
+        super().__init__(ctx=ctx, async_client=async_client)
+
+    async def _list_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> List[T]:
+        state = self._prepare_list_request(study_key, extra_params, filters)
+        return await ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        ).execute_async(client, paginator_cls)
+
+    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+        return await self._list_async(
+            self._require_async_client(),
+            self.ASYNC_PAGINATOR_CLS,
+            study_key=study_key,
+            **filters,
+        )
+
+    async def _get_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str],
+        item_id: Any,
+    ) -> T:
+        filters = {self._id_param: item_id}
+        operation = FilterGetOperation[T](
+            study_key=study_key,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_async_func=self._list_async,
+        )
+        return await operation.execute_async(client, paginator_cls)
 
     async def async_get(
         self, study_key: Optional[str] = None, item_id: Any = None, **kwargs: Any
@@ -323,3 +339,7 @@ class GenericListGetEndpoint(
             study_key=study_key,
             item_id=item_id,
         )
+
+
+# Backward-compatible alias. New code should use SyncListGetEndpoint / AsyncListGetEndpoint.
+GenericListGetEndpoint = SyncListGetEndpoint

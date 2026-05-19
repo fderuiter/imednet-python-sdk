@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from imednet.endpoints.subjects import SubjectsEndpoint
+from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
 
 
 def test_list_by_site_filtering():
@@ -24,7 +24,7 @@ async def test_async_list_by_site_filtering():
     mock_client = Mock()
     mock_ctx = Mock()
 
-    endpoint = SubjectsEndpoint(mock_client, mock_ctx)
+    endpoint = AsyncSubjectsEndpoint(mock_client, mock_ctx)
     endpoint.async_list = AsyncMock(return_value=[])
 
     await endpoint.async_list_by_site("sk", 101)

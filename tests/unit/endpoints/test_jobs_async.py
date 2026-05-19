@@ -13,7 +13,7 @@ async def test_async_get_success(dummy_client, context, response_factory):
     async_client = AsyncMock()
     async_client.get.return_value = response_factory({"jobId": "1"})
 
-    ep = jobs.JobsEndpoint(dummy_client, context, async_client=async_client)
+    ep = jobs.AsyncJobsEndpoint(async_client, context)
 
     result = await ep.async_get("S1", "B1")
 
@@ -26,7 +26,7 @@ async def test_async_get_not_found(dummy_client, context, response_factory):
     async_client = AsyncMock()
     async_client.get.return_value = response_factory({})
 
-    ep = jobs.JobsEndpoint(dummy_client, context, async_client=async_client)
+    ep = jobs.AsyncJobsEndpoint(async_client, context)
 
     with pytest.raises(NotFoundError):
         await ep.async_get("S1", "B1")

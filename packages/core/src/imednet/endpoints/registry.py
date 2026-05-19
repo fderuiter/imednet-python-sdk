@@ -11,19 +11,19 @@ from types import MappingProxyType
 from typing import Mapping, Type
 
 from imednet.core.endpoint.base import GenericEndpoint
-from imednet.endpoints.codings import CodingsEndpoint
-from imednet.endpoints.forms import FormsEndpoint
-from imednet.endpoints.intervals import IntervalsEndpoint
-from imednet.endpoints.jobs import JobsEndpoint
-from imednet.endpoints.queries import QueriesEndpoint
-from imednet.endpoints.record_revisions import RecordRevisionsEndpoint
-from imednet.endpoints.records import RecordsEndpoint
-from imednet.endpoints.sites import SitesEndpoint
-from imednet.endpoints.studies import StudiesEndpoint
-from imednet.endpoints.subjects import SubjectsEndpoint
-from imednet.endpoints.users import UsersEndpoint
-from imednet.endpoints.variables import VariablesEndpoint
-from imednet.endpoints.visits import VisitsEndpoint
+from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
+from imednet.endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
+from imednet.endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
+from imednet.endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
+from imednet.endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
+from imednet.endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
+from imednet.endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
+from imednet.endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
+from imednet.endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint
+from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
+from imednet.endpoints.users import AsyncUsersEndpoint, UsersEndpoint
+from imednet.endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
+from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType(
     {
@@ -40,5 +40,23 @@ ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType(
         "users": UsersEndpoint,
         "variables": VariablesEndpoint,
         "visits": VisitsEndpoint,
+    }
+)
+
+ASYNC_ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType(
+    {
+        "codings": AsyncCodingsEndpoint,
+        "forms": AsyncFormsEndpoint,
+        "intervals": AsyncIntervalsEndpoint,
+        "jobs": AsyncJobsEndpoint,
+        "queries": AsyncQueriesEndpoint,
+        "record_revisions": AsyncRecordRevisionsEndpoint,
+        "records": AsyncRecordsEndpoint,
+        "sites": AsyncSitesEndpoint,
+        "studies": AsyncStudiesEndpoint,
+        "subjects": AsyncSubjectsEndpoint,
+        "users": AsyncUsersEndpoint,
+        "variables": AsyncVariablesEndpoint,
+        "visits": AsyncVisitsEndpoint,
     }
 )

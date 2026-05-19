@@ -28,16 +28,13 @@ def test_sync_context_manager():
 
 @pytest.mark.asyncio
 async def test_async_context_manager():
-    client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
-    with patch("imednet.sdk.ClientFactory.create_client", return_value=client_mock):
-        with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
-            async with AsyncImednetSDK() as sdk:
-                assert isinstance(sdk, AsyncImednetSDK)
+    with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
+        async with AsyncImednetSDK() as sdk:
+            assert isinstance(sdk, AsyncImednetSDK)
 
-    client_mock.close.assert_called_once()
     async_client_mock.aclose.assert_awaited_once()
 
 
@@ -48,16 +45,10 @@ def test_close_without_async_client():
     client_mock.close.assert_called_once()
 
 
-def test_close_with_async_client_raises_runtime_error():
+def test_sync_sdk_does_not_create_async_client():
     client_mock = MagicMock(spec=Client)
-    async_client_mock = MagicMock(spec=AsyncClient)
-
-    sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
-
-    with pytest.raises(RuntimeError, match="await sdk.aclose"):
-        sdk.close()
-
-    client_mock.close.assert_not_called()
+    sdk = ImednetSDK(client=client_mock)
+    assert not hasattr(sdk, "_async_client")
 
 
 def test_async_sdk_close_raises_type_error():
@@ -101,15 +92,13 @@ def test_async_sdk_exit_raises_type_error():
 
 @pytest.mark.asyncio
 async def test_aclose():
-    client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
-    sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
+    sdk = AsyncImednetSDK(async_client=async_client_mock)
 
     await sdk.aclose()
 
-    client_mock.close.assert_called_once()
     async_client_mock.aclose.assert_awaited_once()
 
 
@@ -155,20 +144,18 @@ def test_default_study_mutation_methods_removed():
 
 
 def test_retry_policy_property():
-    client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
 
-    sdk = ImednetSDK(client=client_mock, async_client=async_client_mock)
+    sdk = AsyncImednetSDK(async_client=async_client_mock)
 
     policy = MagicMock()
 
     # Test setter
     sdk.retry_policy = policy
-    assert client_mock.retry_policy == policy
     assert async_client_mock.retry_policy == policy
 
     # Test getter
-    client_mock.retry_policy = policy
+    async_client_mock.retry_policy = policy
     assert sdk.retry_policy == policy
 
 
@@ -203,33 +190,24 @@ async def test_study_context_isolation_on_shared_sdk_instance():
 
 @pytest.mark.asyncio
 async def test_async_sdk_aenter_aexit():
-    client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
     with patch("imednet.sdk.load_config"):
-        with patch("imednet.sdk.ClientFactory.create_client", return_value=client_mock):
-            with patch(
-                "imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock
-            ):
-                async with AsyncImednetSDK() as sdk:
-                    assert isinstance(sdk, AsyncImednetSDK)
+        with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
+            async with AsyncImednetSDK() as sdk:
+                assert isinstance(sdk, AsyncImednetSDK)
 
-                client_mock.close.assert_called_once()
-                async_client_mock.aclose.assert_awaited_once()
+            async_client_mock.aclose.assert_awaited_once()
 
 
 def test_async_sdk_sync_init():
-    client_mock = MagicMock(spec=Client)
     async_client_mock = MagicMock(spec=AsyncClient)
 
     with patch("imednet.sdk.load_config"):
-        with patch("imednet.sdk.ClientFactory.create_client", return_value=client_mock):
-            with patch(
-                "imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock
-            ):
-                sdk = AsyncImednetSDK()
-                assert sdk._async_client == async_client_mock
+        with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
+            sdk = AsyncImednetSDK()
+            assert sdk._async_client == async_client_mock
 
 
 @pytest.mark.asyncio

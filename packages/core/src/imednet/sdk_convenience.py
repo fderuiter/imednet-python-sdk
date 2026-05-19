@@ -24,19 +24,19 @@ from imednet.models.variables import Variable
 from imednet.models.visits import Visit
 
 if TYPE_CHECKING:
-    from imednet.endpoints.codings import CodingsEndpoint
-    from imednet.endpoints.forms import FormsEndpoint
-    from imednet.endpoints.intervals import IntervalsEndpoint
-    from imednet.endpoints.jobs import JobsEndpoint
-    from imednet.endpoints.queries import QueriesEndpoint
-    from imednet.endpoints.record_revisions import RecordRevisionsEndpoint
-    from imednet.endpoints.records import RecordsEndpoint
-    from imednet.endpoints.sites import SitesEndpoint
-    from imednet.endpoints.studies import StudiesEndpoint
-    from imednet.endpoints.subjects import SubjectsEndpoint
-    from imednet.endpoints.users import UsersEndpoint
-    from imednet.endpoints.variables import VariablesEndpoint
-    from imednet.endpoints.visits import VisitsEndpoint
+    from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
+    from imednet.endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
+    from imednet.endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
+    from imednet.endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
+    from imednet.endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
+    from imednet.endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
+    from imednet.endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
+    from imednet.endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
+    from imednet.endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint
+    from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
+    from imednet.endpoints.users import AsyncUsersEndpoint, UsersEndpoint
+    from imednet.endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
+    from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
 def _workflow_poller(name: str) -> Any:
@@ -76,6 +76,22 @@ class SDKProtocol(Protocol):
     users: UsersEndpoint
     variables: VariablesEndpoint
     visits: VisitsEndpoint
+
+
+class AsyncSDKProtocol(Protocol):
+    codings: AsyncCodingsEndpoint
+    forms: AsyncFormsEndpoint
+    intervals: AsyncIntervalsEndpoint
+    jobs: AsyncJobsEndpoint
+    queries: AsyncQueriesEndpoint
+    record_revisions: AsyncRecordRevisionsEndpoint
+    records: AsyncRecordsEndpoint
+    sites: AsyncSitesEndpoint
+    studies: AsyncStudiesEndpoint
+    subjects: AsyncSubjectsEndpoint
+    users: AsyncUsersEndpoint
+    variables: AsyncVariablesEndpoint
+    visits: AsyncVisitsEndpoint
 
 
 class SDKConvenienceMixin:
@@ -150,75 +166,75 @@ class SDKConvenienceMixin:
         return self.visits.list(study_key, **filters)
 
     async def async_get_codings(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Coding]:
         """Asynchronously list codings."""
         return await self.codings.async_list(study_key, **filters)
 
     async def async_get_forms(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Form]:
         """Asynchronously list forms."""
         return await self.forms.async_list(study_key, **filters)
 
     async def async_get_intervals(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Interval]:
         """Asynchronously list intervals."""
         return await self.intervals.async_list(study_key, **filters)
 
-    async def async_get_job(self: SDKProtocol, study_key: str, batch_id: str) -> JobStatus:
+    async def async_get_job(self: AsyncSDKProtocol, study_key: str, batch_id: str) -> JobStatus:
         """Asynchronously get job status."""
         return await self.jobs.async_get(study_key, batch_id)  # type: ignore
 
     async def async_get_queries(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Query]:
         """Asynchronously list queries."""
         return await self.queries.async_list(study_key, **filters)
 
     async def async_get_record_revisions(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[RecordRevision]:
         """Asynchronously list record revisions."""
         return await self.record_revisions.async_list(study_key, **filters)
 
     async def async_get_records(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Record]:
         """Asynchronously list records."""
         return await self.records.async_list(study_key, **filters)
 
     async def async_get_sites(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Site]:
         """Asynchronously list sites."""
         return await self.sites.async_list(study_key, **filters)
 
-    async def async_get_studies(self: SDKProtocol, **filters: Any) -> List[Study]:
+    async def async_get_studies(self: AsyncSDKProtocol, **filters: Any) -> List[Study]:
         """Asynchronously list studies."""
         return await self.studies.async_list(**filters)
 
     async def async_get_subjects(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Subject]:
         """Asynchronously list subjects."""
         return await self.subjects.async_list(study_key, **filters)
 
     async def async_get_users(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[User]:
         """Asynchronously list users."""
         return await self.users.async_list(study_key, **filters)
 
     async def async_get_variables(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Variable]:
         """Asynchronously list variables."""
         return await self.variables.async_list(study_key, **filters)
 
     async def async_get_visits(
-        self: SDKProtocol, study_key: str | None = None, **filters: Any
+        self: AsyncSDKProtocol, study_key: str | None = None, **filters: Any
     ) -> List[Visit]:
         """Asynchronously list visits."""
         return await self.visits.async_list(study_key, **filters)
@@ -248,7 +264,7 @@ class SDKConvenienceMixin:
         return JobPoller(self.jobs.get).run(study_key, batch_id, interval, timeout)
 
     async def async_poll_job(
-        self: SDKProtocol,
+        self: AsyncSDKProtocol,
         study_key: str,
         batch_id: str,
         *,

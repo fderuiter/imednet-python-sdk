@@ -19,7 +19,7 @@ def schema():
 
 @pytest.mark.asyncio
 async def test_async_create_validates_data(dummy_client, context, response_factory, schema):
-    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
     # Validation error: unknown form
@@ -41,7 +41,7 @@ async def test_async_create_validates_data(dummy_client, context, response_facto
 async def test_async_create_validates_data_with_snake_case_keys(
     dummy_client, context, response_factory, schema
 ):
-    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
     # Should raise validation error because "bad" is not in schema
@@ -52,7 +52,7 @@ async def test_async_create_validates_data_with_snake_case_keys(
 
 @pytest.mark.asyncio
 async def test_async_create_resolves_form_id(dummy_client, context, response_factory, schema):
-    ep = records.RecordsEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
     # Valid data using formId instead of formKey

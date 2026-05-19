@@ -8,6 +8,8 @@ from ..models.variables import Variable
 from ._base import _ValidatorMixin
 
 if TYPE_CHECKING:
+    from ..endpoints.forms import AsyncFormsEndpoint
+    from ..endpoints.variables import AsyncVariablesEndpoint
     from ..endpoints.forms import FormsEndpoint
     from ..endpoints.variables import VariablesEndpoint
     from ..sdk import AsyncImednetSDK, ImednetSDK
@@ -33,8 +35,8 @@ class BaseSchemaCache(Generic[_TClient]):
 
     async def _refresh_async(
         self,
-        forms: FormsEndpoint,
-        variables: VariablesEndpoint,
+        forms: AsyncFormsEndpoint,
+        variables: AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
         vars_list = await variables.async_list(study_key=study_key)
@@ -51,8 +53,8 @@ class BaseSchemaCache(Generic[_TClient]):
 
     def refresh(
         self,
-        forms: FormsEndpoint,
-        variables: VariablesEndpoint,
+        forms: Any,
+        variables: Any,
         study_key: Optional[str] = None,
     ) -> Any:
         if self._is_async:

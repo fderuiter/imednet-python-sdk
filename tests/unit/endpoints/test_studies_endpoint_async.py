@@ -12,7 +12,7 @@ async def test_async_list_builds_path_and_filters(
     async_paginator_factory,
     patch_build_filter,
 ):
-    ep = studies.StudiesEndpoint(dummy_client, context, async_client=dummy_client)
+    ep = studies.AsyncStudiesEndpoint(dummy_client, context)
     captured = async_paginator_factory(studies, [{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
 
