@@ -75,7 +75,7 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         return cast(
             ClientT,
             client_cls(
-                base_url=self.base_url,
+                base_url=self._base_url,
                 headers=headers,
                 timeout=self.timeout,
             ),
