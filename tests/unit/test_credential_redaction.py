@@ -1,0 +1,86 @@
+from unittest.mock import MagicMock
+
+import pytest
+from typer.testing import CliRunner
+
+import imednet.cli as cli
+from imednet.auth.api_key import ApiKeyAuth
+from imednet.core.client import Client
+from imednet.errors import AuthenticationError, RateLimitError
+
+
+def test_api_key_auth_repr_and_str_mask_secrets() -> None:
+    auth = ApiKeyAuth(api_key="plain-api-key", security_key="plain-security-key")
+
+    assert "plain-api-key" not in repr(auth)
+    assert "plain-security-key" not in repr(auth)
+    assert "plain-api-key" not in str(auth)
+    assert "plain-security-key" not in str(auth)
+    assert "********" in repr(auth)
+
+
+@pytest.mark.parametrize("error_cls", [AuthenticationError, RateLimitError])
+def test_api_errors_mask_sensitive_values(error_cls: type[Exception]) -> None:
+    secret_api_key = "very-secret-api-key"
+    secret_token = "very-secret-token"
+    secret_auth = "Bearer very-secret-authorization"
+    error = error_cls(
+        {
+            "api_key": secret_api_key,
+            "token": secret_token,
+            "Authorization": secret_auth,
+            "nested": {"x-imn-security-key": "very-secret-security-key"},
+        },
+        status_code=401,
+    )
+
+    text = str(error)
+    assert secret_api_key not in text
+    assert secret_token not in text
+    assert secret_auth not in text
+    assert "x-imn-security-key" in text
+    assert "***" in text
+
+
+def test_http_client_never_logs_authorization_header(
+    caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("IMEDNET_API_KEY", "api")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "security")
+    caplog.set_level("DEBUG")
+    caplog.set_level("DEBUG", logger="httpx")
+    caplog.set_level("DEBUG", logger="httpcore")
+
+    with pytest.importorskip("respx").mock(
+        assert_all_mocked=True, assert_all_called=True
+    ) as router:
+        router.get("https://api.test/secure").respond(200, json={"ok": True})
+        client = Client(api_key="api", security_key="security", base_url="https://api.test")
+        client.get("/secure", headers={"Authorization": "Bearer leaked-token"})
+
+    messages = "\n".join(record.getMessage() for record in caplog.records)
+    assert "Authorization" not in messages
+    assert "leaked-token" not in messages
+
+
+def test_cli_error_output_redacts_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
+    runner = CliRunner()
+    monkeypatch.setenv("IMEDNET_API_KEY", "api")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "security")
+
+    sdk = MagicMock()
+    sdk.studies.list.side_effect = AuthenticationError(
+        {
+            "api_key": "very-secret-api-key",
+            "Authorization": "Bearer very-secret-authorization",
+        },
+        status_code=401,
+    )
+    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
+
+    result = runner.invoke(cli.app, ["studies", "list"])
+
+    assert result.exit_code == 1
+    assert "API Error" in result.stdout
+    assert "very-secret-api-key" not in result.stdout
+    assert "very-secret-authorization" not in result.stdout

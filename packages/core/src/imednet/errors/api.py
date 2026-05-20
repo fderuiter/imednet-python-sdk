@@ -1,8 +1,37 @@
 """API-level errors."""
 
+import re
 from typing import Any, Dict, Optional, Union
 
 from .base import ImednetError
+
+_SENSITIVE_KEYS = {
+    "api_key",
+    "security_key",
+    "token",
+    "authorization",
+    "x-api-key",
+    "x-imn-security-key",
+}
+_SENSITIVE_PATTERN = re.compile(
+    r"(?i)\b(api[_-]?key|security[_-]?key|token|authorization|x-api-key|x-imn-security-key)\b"
+    r"(\s*[:=]\s*)([^,\s;]+)"
+)
+
+
+def _redact_sensitive_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: ("***" if str(key).lower() in _SENSITIVE_KEYS else _redact_sensitive_value(val))
+            for key, val in value.items()
+        }
+    if isinstance(value, list):
+        return [_redact_sensitive_value(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_redact_sensitive_value(item) for item in value)
+    if isinstance(value, str):
+        return _SENSITIVE_PATTERN.sub(lambda match: f"{match.group(1)}{match.group(2)}***", value)
+    return value
 
 
 class ApiError(ImednetError):
@@ -17,9 +46,10 @@ class ApiError(ImednetError):
     def __init__(
         self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = None
     ) -> None:
-        super().__init__(str(response))
+        sanitized_response = _redact_sensitive_value(response)
+        super().__init__(str(sanitized_response))
         self.status_code = status_code
-        self.response = response
+        self.response = sanitized_response
 
     def __str__(self) -> str:
         base = super().__str__()

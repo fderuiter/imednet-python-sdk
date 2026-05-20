@@ -18,3 +18,8 @@ class ApiKeyAuth:
             HEADER_API_KEY: self.api_key,
             HEADER_SECURITY_KEY: self.security_key,
         }
+
+    def __repr__(self) -> str:
+        return "ApiKeyAuth(api_key='********', security_key='********')"
+
+    __str__ = __repr__
