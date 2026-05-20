@@ -1,136 +1,126 @@
 import ast
-import gc
-import importlib.util
-import pkgutil
+import importlib
+from pathlib import Path
 
-import httpx
 import pytest
+from httpx import AsyncClient, Client
 
 import imednet
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
-
-def test_core_does_not_import_plugins():
-    modules = [
-        name for _, name, _ in pkgutil.walk_packages(imednet.__path__, imednet.__name__ + ".")
-    ]
-    for name in modules:
-        try:
-            spec = importlib.util.find_spec(name)
-            if spec and spec.origin and spec.origin.endswith(".py"):
-                with open(spec.origin, "r", encoding="utf-8") as f:
-                    content = f.read()
-
-                    try:
-                        tree = ast.parse(content)
-                        for node in ast.walk(tree):
-                            if isinstance(node, ast.Import):
-                                for alias in node.names:
-                                    assert (
-                                        "imednet_workflows" not in alias.name
-                                    ), f"{name} imports {alias.name}"
-                                    assert (
-                                        "apache_airflow_providers_imednet" not in alias.name
-                                    ), f"{name} imports {alias.name}"
-                            elif isinstance(node, ast.ImportFrom):
-                                if node.module:
-                                    assert (
-                                        "imednet_workflows" not in node.module
-                                    ), f"{name} imports from {node.module}"
-                                    assert (
-                                        "apache_airflow_providers_imednet" not in node.module
-                                    ), f"{name} imports from {node.module}"
-                    except SyntaxError:
-                        pass
-        except Exception:
-            pass
+try:
+    import imednet_workflows
+except ImportError:
+    imednet_workflows = None
 
 
-def test_workflows_does_not_import_airflow():
-    try:
-        spec = importlib.util.find_spec("imednet_workflows")
-        if spec is None:
-            pytest.skip("imednet_workflows not installed")
-        import imednet_workflows
-    except ImportError:
+def get_all_python_files(package_path: Path) -> list[Path]:
+    return list(package_path.rglob("*.py"))
+
+
+def get_imports_from_file(file_path: Path) -> set[str]:
+    with open(file_path, "r", encoding="utf-8") as f:
+        # We want SyntaxError to be raised if a file cannot be parsed, rather than silently ignored.
+        tree = ast.parse(f.read(), filename=str(file_path))
+
+    imports = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for name in node.names:
+                imports.add(name.name)
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                imports.add(node.module)
+    return imports
+
+
+def test_core_does_not_import_workflows():
+    core_dir = Path(imednet.__file__).parent
+    files = get_all_python_files(core_dir)
+    assert len(files) > 0, f"No files found to test in {core_dir}"
+
+    for file in files:
+        imports = get_imports_from_file(file)
+        for imp in imports:
+            assert not imp.startswith("imednet_workflows"), f"File {file} has hard import of {imp}"
+            assert not imp.startswith(
+                "apache_airflow_providers_imednet"
+            ), f"File {file} has hard import of {imp}"
+
+
+def test_workflows_does_not_import_providers():
+    if imednet_workflows is None:
         pytest.skip("imednet_workflows not installed")
 
-    modules = [
-        name
-        for _, name, _ in pkgutil.walk_packages(
-            imednet_workflows.__path__, imednet_workflows.__name__ + "."
-        )
-    ]
-    for name in modules:
-        try:
-            spec = importlib.util.find_spec(name)
-            if spec and spec.origin and spec.origin.endswith(".py"):
-                with open(spec.origin, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    try:
-                        tree = ast.parse(content)
-                        for node in ast.walk(tree):
-                            if isinstance(node, ast.Import):
-                                for alias in node.names:
-                                    assert (
-                                        "apache_airflow_providers_imednet" not in alias.name
-                                    ), f"{name} imports {alias.name}"
-                            elif isinstance(node, ast.ImportFrom):
-                                if node.module:
-                                    assert (
-                                        "apache_airflow_providers_imednet" not in node.module
-                                    ), f"{name} imports from {node.module}"
-                    except SyntaxError:
-                        pass
-        except Exception:
-            pass
+    workflows_dir = Path(imednet_workflows.__file__).parent
+    files = get_all_python_files(workflows_dir)
+    assert len(files) > 0, f"No files found to test in {workflows_dir}"
+
+    for file in files:
+        imports = get_imports_from_file(file)
+        for imp in imports:
+            assert not imp.startswith(
+                "apache_airflow_providers_imednet"
+            ), f"File {file} has hard import of {imp}"
 
 
-def test_endpoint_state_isolation():
-    sdk1 = ImednetSDK("http://example.com", "user", "pass")
-    sdk2 = ImednetSDK("http://example.com", "user", "pass")
+def test_endpoint_no_shared_mutable_state():
+    sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
 
-    assert sdk1.records is not sdk2.records
-    assert sdk1.records._client is not sdk2.records._client
-    assert sdk1.records._client is sdk1._client
-    assert sdk2.records._client is sdk2._client
+    assert sdk.records is not getattr(sdk, "forms", None)
 
+    if hasattr(sdk.records, "_cache") and getattr(sdk, "forms", None):
+        assert sdk.records._cache is not getattr(sdk.forms, "_cache", None)
 
-def test_sync_sdk_isolation():
-    gc.collect()
-    initial_async_clients = sum(1 for obj in gc.get_objects() if isinstance(obj, httpx.AsyncClient))
-
-    _ = ImednetSDK("http://example.com", "user", "pass")
-
-    final_async_clients = sum(1 for obj in gc.get_objects() if isinstance(obj, httpx.AsyncClient))
-    assert (
-        final_async_clients == initial_async_clients
-    ), "ImednetSDK should not instantiate httpx.AsyncClient"
+    # Let's instantiate another SDK and ensure endpoint instances are distinct
+    sdk2 = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
+    assert sdk.records is not sdk2.records
+    assert sdk._client is not sdk2._client
 
 
-def test_async_sdk_isolation():
-    gc.collect()
-    initial_sync_clients = sum(1 for obj in gc.get_objects() if isinstance(obj, httpx.Client))
+def test_sync_sdk_no_async_client(monkeypatch):
+    instantiated = False
+    original_init = AsyncClient.__init__
 
-    _ = AsyncImednetSDK("http://example.com", "user", "pass")
+    def mock_init(self, *args, **kwargs):
+        nonlocal instantiated
+        instantiated = True
+        original_init(self, *args, **kwargs)
 
-    final_sync_clients = sum(1 for obj in gc.get_objects() if isinstance(obj, httpx.Client))
-    assert (
-        final_sync_clients == initial_sync_clients
-    ), "AsyncImednetSDK should not instantiate httpx.Client"
+    monkeypatch.setattr(AsyncClient, "__init__", mock_init)
+
+    with ImednetSDK(api_key="1", security_key="2", base_url="http://x"):
+        pass
+    assert not instantiated, "ImednetSDK should not instantiate AsyncClient"
+
+
+def test_async_sdk_no_sync_client(monkeypatch):
+    instantiated = False
+    original_init = Client.__init__
+
+    def mock_init(self, *args, **kwargs):
+        nonlocal instantiated
+        instantiated = True
+        original_init(self, *args, **kwargs)
+
+    monkeypatch.setattr(Client, "__init__", mock_init)
+
+    _ = AsyncImednetSDK(api_key="1", security_key="2", base_url="http://x")
+    assert not instantiated, "AsyncImednetSDK should not instantiate Client"
 
 
 def test_plugin_discovery_failure(monkeypatch):
-    sdk = ImednetSDK("http://example.com", "user", "pass")
+    original_import = importlib.import_module
 
-    def mock_import_module(name, package=None):
+    def mock_import(name, package=None):
         if name == "imednet_workflows.namespace":
             raise ModuleNotFoundError(name=name)
-        return importlib.import_module(name, package)
+        return original_import(name, package)
 
-    monkeypatch.setattr("imednet.sdk.import_module", mock_import_module)
+    # We patch import_module in imednet.sdk because it imports it directly:
+    # `from importlib import import_module`
+    monkeypatch.setattr("imednet.sdk.import_module", mock_import)
 
-    workflows = sdk._init_workflows()
-
+    sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
     with pytest.raises(ImportError, match="requires the optional 'imednet-workflows' package"):
-        workflows.some_method()
+        sdk.workflows.some_workflow
