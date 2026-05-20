@@ -52,21 +52,15 @@ class BaseRequestExecutor(ABC):
     @staticmethod
     @contextmanager
     def _suppress_httpx_request_logging() -> Iterator[None]:
-        logger_names = (
-            name
-            for name in logging.root.manager.loggerDict
-            if name in ("httpx", "httpcore") or name.startswith(("httpx.", "httpcore."))
-        )
-        logger_states: list[tuple[logging.Logger, int]] = []
+        logger_names = ("httpx", "httpcore", *logging.root.manager.loggerDict.keys())
+        loggers: dict[str, logging.Logger] = {}
         for name in logger_names:
-            logger = logging.getLogger(name)
-            logger_states.append((logger, logger.level))
+            if name in ("httpx", "httpcore") or name.startswith(("httpx.", "httpcore.")):
+                loggers[name] = logging.getLogger(name)
+
+        logger_states = [(logger, logger.level) for logger in loggers.values()]
+        for logger, _ in logger_states:
             logger.setLevel(logging.WARNING)
-        for name in ("httpx", "httpcore"):
-            logger = logging.getLogger(name)
-            if all(existing is not logger for existing, _ in logger_states):
-                logger_states.append((logger, logger.level))
-                logger.setLevel(logging.WARNING)
         try:
             yield
         finally:
