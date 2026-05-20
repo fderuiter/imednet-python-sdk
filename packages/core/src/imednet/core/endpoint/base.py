@@ -22,6 +22,7 @@ from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, ParamProcessor, RequestorProtocol
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
+from imednet.utils.typing import FilterValue, ItemId
 from imednet.utils.url import build_safe_path
 
 T = TypeVar("T", bound=JsonModel)
@@ -168,13 +169,13 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             study=study,
         )
 
-    def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: Any) -> T:
+    def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: ItemId) -> T:
         if not items:
             self._raise_not_found(study_key, item_id)
         return items[0]
 
     @staticmethod
-    def _require_item_id(item_id: Any) -> None:
+    def _require_item_id(item_id: ItemId) -> None:
         if item_id is None:
             raise TypeError("Missing required argument: item_id")
 
@@ -204,12 +205,12 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_sync(client, paginator_cls)
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> List[T]:
         return self._list_sync(
             self._require_sync_client(),
             self.PAGINATOR_CLS,
             study_key=study_key,
-            **filters,
+            **filters,  # type: ignore[arg-type]
         )
 
     def _get_sync(
@@ -218,9 +219,9 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         paginator_cls: type[Paginator],
         *,
         study_key: Optional[str],
-        item_id: Any,
+        item_id: ItemId,
     ) -> T:
-        filters = {self._id_param: item_id}
+        filters: Dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,
@@ -230,7 +231,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         )
         return operation.execute_sync(client, paginator_cls)
 
-    def get(self, study_key: Optional[str], item_id: Any) -> T:
+    def get(self, study_key: Optional[str], item_id: ItemId) -> T:
         self._require_item_id(item_id)
         return self._get_sync(
             self._require_sync_client(),
@@ -265,12 +266,12 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_async(client, paginator_cls)
 
-    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> List[T]:
+    async def async_list(self, study_key: Optional[str] = None, **filters: FilterValue) -> List[T]:
         return await self._list_async(
             self._require_async_client(),
             self.ASYNC_PAGINATOR_CLS,
             study_key=study_key,
-            **filters,
+            **filters,  # type: ignore[arg-type]
         )
 
     async def _get_async(
@@ -279,9 +280,9 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         paginator_cls: type[AsyncPaginator],
         *,
         study_key: Optional[str],
-        item_id: Any,
+        item_id: ItemId,
     ) -> T:
-        filters = {self._id_param: item_id}
+        filters: Dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,
@@ -291,7 +292,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         )
         return await operation.execute_async(client, paginator_cls)
 
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+    async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T:
         self._require_item_id(item_id)
         return await self._get_async(
             self._require_async_client(),

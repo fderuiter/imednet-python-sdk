@@ -1,12 +1,13 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.core.endpoint.operations import RecordCreateOperation
 from imednet.core.endpoint.strategies import MappingParamProcessor
 from imednet.models.jobs import Job
 from imednet.models.records import Record
+from imednet.utils.typing import JsonDict
 from imednet.validation.cache import SchemaCache
 
 
@@ -25,7 +26,7 @@ class RecordsEndpoint(EdcSyncListGetEndpoint[Record]):
     def create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: List[JsonDict],
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
@@ -69,7 +70,7 @@ class AsyncRecordsEndpoint(EdcAsyncListGetEndpoint[Record]):
     async def async_create(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: List[JsonDict],
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,

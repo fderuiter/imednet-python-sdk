@@ -7,7 +7,7 @@ from importlib import import_module
 from .dates import format_iso_datetime, parse_iso_datetime
 from .filters import build_filter_string
 from .json_logging import configure_json_logging
-from .typing import DataFrame, JsonDict
+from .typing import DataFrame, FilterValue, ItemId, JsonDict
 
 _LAZY_ATTRS: dict[str, tuple[str, str]] = {
     "records_to_dataframe": ("imednet.utils.pandas", "records_to_dataframe"),
@@ -43,6 +43,8 @@ __all__ = [
     "records_to_dataframe",
     "export_records_csv",
     "JsonDict",
+    "ItemId",
+    "FilterValue",
     "DataFrame",
     "parse_bool",
     "parse_datetime",

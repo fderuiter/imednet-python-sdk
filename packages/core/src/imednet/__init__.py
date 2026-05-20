@@ -4,6 +4,7 @@ from .config import Config, load_config
 from .core.base_client import BaseClient
 from .core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 from .sdk import AsyncImednetSDK, ImednetSDK
+from .utils.typing import FilterScalar, FilterValue, ItemId, JsonDict
 
 # Provide a backward-compatible alias
 ImednetClient = ImednetSDK
@@ -18,6 +19,10 @@ __all__ = [
     "DefaultRetryPolicy",
     "Config",
     "load_config",
+    "JsonDict",
+    "ItemId",
+    "FilterValue",
+    "FilterScalar",
     "__version__",
 ]
 

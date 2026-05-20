@@ -10,6 +10,8 @@ from ..utils import STUDY_KEY_ARG, display_list, fetching_status, parse_filter_a
 
 app = typer.Typer(name="subjects", help="Manage subjects within a study.")
 
+__all__ = ["app"]
+
 
 @app.command("list")
 @with_sdk
