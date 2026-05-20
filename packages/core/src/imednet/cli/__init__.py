@@ -4,6 +4,8 @@ import sys
 from importlib import import_module
 
 try:
+    # typer[all] also pulls in rich; checking both ensures a clear error
+    # if only the bare `typer` package (without extras) happens to be installed.
     import rich  # noqa: F401
     import typer
 except ImportError:  # pragma: no cover
