@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterator, Optional
 
 import httpx
 from tenacity import (
@@ -51,14 +51,11 @@ class BaseRequestExecutor(ABC):
 
     @staticmethod
     @contextmanager
-    def _suppress_httpx_request_logging() -> Any:
+    def _suppress_httpx_request_logging() -> Iterator[None]:
         logger_names = (
             name
             for name in logging.root.manager.loggerDict
-            if name == "httpx"
-            or name.startswith("httpx.")
-            or name == "httpcore"
-            or name.startswith("httpcore.")
+            if name in ("httpx", "httpcore") or name.startswith(("httpx.", "httpcore."))
         )
         logger_states: list[tuple[logging.Logger, int]] = []
         for name in logger_names:
