@@ -43,22 +43,15 @@ def test_get_success(monkeypatch, dummy_client, context):
     assert isinstance(res, Record)
 
 
-def test_get_with_context_and_record_id_alias(monkeypatch, dummy_client, context):
+def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
     context.set_default_study_key("S1")
     ep = records.RecordsEndpoint(dummy_client, context)
-    called = {}
+    monkeypatch.setattr(
+        records.RecordsEndpoint, "_list_sync", lambda *args, **kwargs: [Record(record_id=1)]
+    )
 
-    def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        called["study_key"] = study_key
-        called["filters"] = filters
-        return [Record(record_id=1)]
-
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_sync", fake_impl)
-
-    res = ep.get(record_id=1)
-
-    assert called == {"study_key": None, "filters": {"recordId": 1}}
-    assert isinstance(res, Record)
+    with pytest.raises(TypeError, match="unexpected keyword argument 'record_id'"):
+        ep.get(record_id=1)
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
