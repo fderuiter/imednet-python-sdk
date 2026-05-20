@@ -66,12 +66,12 @@ To use export features, workflow plugins, or Airflow provider integrations, inst
 
 ```bash
 # Install all export dependencies
-pip install "imednet[pandas,sqlalchemy,pyarrow,excel]"
+pip install pandas sqlalchemy pyarrow openpyxl
 
 # Or pick specific ones
-pip install "imednet[sqlalchemy]"  # For SQL export
-pip install "imednet[pyarrow]"     # For Parquet export
-pip install "imednet[excel]"       # For Excel export
+pip install sqlalchemy  # For SQL export
+pip install pyarrow     # For Parquet export
+pip install pandas openpyxl  # For Excel export
 
 # Workflow plugin package
 pip install imednet-workflows
