@@ -32,6 +32,39 @@ def test_retry_contract_by_method_class() -> None:
     assert post_rate_limited.call_count == 3
 
 
+@pytest.mark.asyncio
+@respx.mock(base_url="https://example.com")
+async def test_transport_clients_use_base_url_for_relative_paths() -> None:
+    sync_client = Client(api_key="k", security_key="s", base_url="https://example.com")
+    assert str(sync_client._client.base_url) == "https://example.com"
+
+    respx.get("/relative-get").mock(return_value=httpx.Response(200, json={"ok": True}))
+    respx.post("/relative-post").mock(return_value=httpx.Response(201, json={"created": True}))
+
+    get_response = sync_client.get("/relative-get")
+    post_response = sync_client.post("/relative-post", json={"x": 1})
+
+    assert get_response.status_code == 200
+    assert post_response.status_code == 201
+    sync_client.close()
+
+    async with AsyncClient(
+        api_key="k", security_key="s", base_url="https://example.com"
+    ) as async_client:
+        assert str(async_client._client.base_url) == "https://example.com"
+
+        respx.get("/async-relative-get").mock(return_value=httpx.Response(200, json={"ok": True}))
+        respx.post("/async-relative-post").mock(
+            return_value=httpx.Response(201, json={"created": True})
+        )
+
+        async_get_response = await async_client.get("/async-relative-get")
+        async_post_response = await async_client.post("/async-relative-post", json={"x": 1})
+
+    assert async_get_response.status_code == 200
+    assert async_post_response.status_code == 201
+
+
 @respx.mock(base_url="https://example.com")
 def test_retry_after_header_is_respected(monkeypatch: pytest.MonkeyPatch) -> None:
     import imednet.core.http.executor as executor_module
