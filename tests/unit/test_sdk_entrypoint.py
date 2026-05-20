@@ -1,3 +1,5 @@
+import pytest
+
 import imednet.sdk as sdk_mod
 from imednet.core.client import Client
 from imednet.endpoints.codings import CodingsEndpoint
@@ -20,33 +22,92 @@ from imednet_workflows.record_update import RecordUpdateWorkflow
 from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
+class _FakeEntryPoint:
+    def __init__(self, loader, value: str = "tests.fake_plugin:Workflows") -> None:
+        self._loader = loader
+        self.value = value
+
+    def load(self):
+        return self._loader()
+
+
 def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
     loaded = {"called": False}
 
-    class FakeEntryPoint:
-        value = "tests.fake_plugin:Workflows"
+    def load_workflows():
+        loaded["called"] = True
 
-        def load(self):
-            loaded["called"] = True
+        class FakeWorkflows:
+            def __init__(self, sdk_instance):
+                self.sdk_instance = sdk_instance
 
-            class FakeWorkflows:
-                def __init__(self, sdk_instance):
-                    self.sdk_instance = sdk_instance
+        return FakeWorkflows
 
-            return FakeWorkflows
-
-    class FakeEntryPoints(list):
-        def select(self, *, group: str, name: str):
-            assert group == "imednet.plugins"
-            assert name == "workflows"
-            return self
-
-    monkeypatch.setattr(sdk_mod, "entry_points", lambda: FakeEntryPoints([FakeEntryPoint()]))
+    monkeypatch.setattr(
+        sdk_mod,
+        "entry_points",
+        lambda *, group, name: (
+            [_FakeEntryPoint(load_workflows)]
+            if group == "imednet.plugins" and name == "workflows"
+            else []
+        ),
+    )
 
     sdk = _create_sdk()
 
     assert loaded["called"]
     assert sdk.workflows.sdk_instance is sdk
+
+
+@pytest.mark.parametrize("loader_error", [AttributeError, ImportError, ModuleNotFoundError])
+def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
+    monkeypatch, loader_error
+) -> None:
+    def failing_loader():
+        raise loader_error("boom")
+
+    monkeypatch.setattr(
+        sdk_mod,
+        "entry_points",
+        lambda *, group, name: (
+            [_FakeEntryPoint(failing_loader)]
+            if group == "imednet.plugins" and name == "workflows"
+            else []
+        ),
+    )
+
+    with pytest.raises(ImportError, match="Failed to load workflows plugin from entry point"):
+        _create_sdk()
+
+
+def test_sdk_workflows_entry_point_must_be_callable(monkeypatch) -> None:
+    monkeypatch.setattr(
+        sdk_mod,
+        "entry_points",
+        lambda *, group, name: (
+            [_FakeEntryPoint(lambda: object())]
+            if group == "imednet.plugins" and name == "workflows"
+            else []
+        ),
+    )
+
+    with pytest.raises(ImportError, match="must be a callable"):
+        _create_sdk()
+
+
+def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None:
+    monkeypatch.setattr(
+        sdk_mod,
+        "entry_points",
+        lambda *, group, name: (
+            [_FakeEntryPoint(lambda: object), _FakeEntryPoint(lambda: object)]
+            if group == "imednet.plugins" and name == "workflows"
+            else []
+        ),
+    )
+
+    with pytest.raises(ImportError, match="Multiple 'workflows' plugins were found"):
+        _create_sdk()
 
 
 def _create_sdk() -> sdk_mod.ImednetSDK:
