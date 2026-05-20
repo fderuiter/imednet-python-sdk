@@ -6,6 +6,8 @@ from ..utils import register_list_command
 
 app = typer.Typer(name="sites", help="Manage sites within a study.")
 
+__all__ = ["app"]
+
 register_list_command(
     app,
     "sites",

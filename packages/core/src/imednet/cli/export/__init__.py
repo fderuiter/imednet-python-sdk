@@ -12,6 +12,8 @@ from ..utils import STUDY_KEY_ARG, fetching_status
 
 app = typer.Typer(name="export", help="Export study data to various formats.")
 
+__all__ = ["app"]
+
 
 @app.command("parquet")
 @with_sdk

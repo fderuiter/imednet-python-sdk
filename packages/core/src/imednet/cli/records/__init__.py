@@ -12,6 +12,8 @@ from ..utils.export import export_list_to_file
 
 app = typer.Typer(name="records", help="Manage records within a study.")
 
+__all__ = ["app"]
+
 
 @app.command("list")
 @with_sdk
