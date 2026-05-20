@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+import httpx
 import pytest
 
 from imednet.core.async_client import AsyncClient
@@ -21,6 +22,7 @@ class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
 def test_client_strips_api_suffix() -> None:
     client = Client(api_key="k", security_key="s", base_url="https://x/api")
     assert client.base_url == "https://x"
+    assert client._client.base_url == httpx.URL("https://x")
 
 
 @pytest.mark.asyncio
@@ -31,6 +33,7 @@ async def test_async_client_strips_api_suffix() -> None:
         base_url="https://x/api",
     ) as client:
         assert client.base_url == "https://x"
+        assert client._client.base_url == httpx.URL("https://x")
 
 
 def test_build_safe_path_handles_special_characters() -> None:

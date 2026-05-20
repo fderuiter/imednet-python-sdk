@@ -50,6 +50,7 @@ class BaseClient:
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
         self.base_url = sanitize_base_url(config.base_url or DEFAULT_BASE_URL)
+        self._base_url = httpx.URL(self.base_url)
 
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
         self.retries = retries
