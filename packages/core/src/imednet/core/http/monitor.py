@@ -84,6 +84,9 @@ class RequestMonitor:
             self.span.set_attribute("status_code", response.status_code)
 
     def on_retry_error(self, e: RetryError) -> NoReturn:
-        logger.error("Request failed after retries: %s", e)
+        logger.error(
+            "Request failed after retries",
+            extra={"method": self.method, "url": self.safe_url},
+        )
         cause = e.last_attempt.exception() if e.last_attempt else e
         raise RequestError("Network request failed after retries") from cause
