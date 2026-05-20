@@ -206,11 +206,14 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         ).execute_sync(client, paginator_cls)
 
     def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> List[T]:
+        # Cast FilterValue → Any at the public/internal boundary to satisfy
+        # mypy's invariant dict type-checking on `_list_sync`'s **filters: Any.
+        _filters: Dict[str, Any] = dict(filters)
         return self._list_sync(
             self._require_sync_client(),
             self.PAGINATOR_CLS,
             study_key=study_key,
-            **filters,  # type: ignore[arg-type]
+            **_filters,
         )
 
     def _get_sync(
@@ -267,11 +270,13 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         ).execute_async(client, paginator_cls)
 
     async def async_list(self, study_key: Optional[str] = None, **filters: FilterValue) -> List[T]:
+        # Cast FilterValue → Any at the public/internal boundary.
+        _filters: Dict[str, Any] = dict(filters)
         return await self._list_async(
             self._require_async_client(),
             self.ASYNC_PAGINATOR_CLS,
             study_key=study_key,
-            **filters,  # type: ignore[arg-type]
+            **_filters,
         )
 
     async def _get_async(

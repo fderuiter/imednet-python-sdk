@@ -7,7 +7,7 @@ This module contains high-level helper methods that delegate to specific endpoin
 from __future__ import annotations
 
 from importlib import import_module
-from typing import TYPE_CHECKING, Any, List, Protocol, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Protocol, Union
 
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
@@ -153,7 +153,8 @@ class SDKConvenienceMixin:
 
     def get_studies(self: SDKProtocol, **filters: FilterValue) -> List[Study]:
         """List studies."""
-        return self.studies.list(**filters)  # type: ignore[arg-type]
+        _filters: Dict[str, Any] = dict(filters)
+        return self.studies.list(**_filters)
 
     def get_subjects(
         self: SDKProtocol, study_key: str | None = None, **filters: FilterValue
@@ -227,7 +228,8 @@ class SDKConvenienceMixin:
 
     async def async_get_studies(self: AsyncSDKProtocol, **filters: FilterValue) -> List[Study]:
         """Asynchronously list studies."""
-        return await self.studies.async_list(**filters)  # type: ignore[arg-type]
+        _filters: Dict[str, Any] = dict(filters)
+        return await self.studies.async_list(**_filters)
 
     async def async_get_subjects(
         self: AsyncSDKProtocol, study_key: str | None = None, **filters: FilterValue
