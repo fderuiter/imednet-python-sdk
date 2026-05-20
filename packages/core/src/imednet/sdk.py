@@ -68,9 +68,12 @@ class _BaseSDK:
         if not workflows_entry_points:
             return None
         if len(workflows_entry_points) > 1:
+            discovered_plugins = ", ".join(
+                sorted(entry_point.value for entry_point in workflows_entry_points)
+            )
             raise ImportError(
                 "Multiple 'workflows' plugins were found in the 'imednet.plugins' entry-point "
-                "group. Please keep only one workflows plugin installed."
+                f"group ({discovered_plugins}). Please keep only one workflows plugin installed."
             )
         return workflows_entry_points[0]
 
@@ -103,7 +106,7 @@ class _BaseSDK:
             raise ImportError(
                 "The workflows plugin entry point "
                 f"'{workflows_entry_point.value}' must be a callable that accepts an SDK "
-                "instance."
+                f"instance; got {type(workflows_plugin).__name__}."
             )
 
         try:
