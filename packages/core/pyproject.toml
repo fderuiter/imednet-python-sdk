@@ -43,6 +43,8 @@ pygments = "^2.19.2"
 cryptography = ">=46.0.7"
 
 [tool.poetry.extras]
+# Install via: pip install 'imednet[cli]'
+# typer[all] transitively includes rich and other CLI rendering dependencies.
 cli = ["typer"]
 
 [build-system]
