@@ -72,6 +72,7 @@ jobs:
           poetry run mypy packages/core/src/imednet
           poetry run mypy packages/plugins-workflows/src/imednet_workflows
           poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+          poetry run mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
 
       - name: Security Audit
         run: |

@@ -47,6 +47,32 @@ make docs
 ```
 Coverage must stay ≥ 90%.
 
+## Incremental typing ratchet
+Typing rigor is increased incrementally across workspace packages instead of one
+strict-mode migration.
+
+### Current baseline (captured 2026-05-20)
+- `packages/core/src/imednet`: **0** mypy errors
+- `packages/plugins-workflows/src/imednet_workflows`: **5** mypy errors
+- `packages/providers-airflow/src/apache_airflow_providers_imednet`: **0** mypy errors
+
+### Ratchet rules
+- Keep global mypy at non-strict while tightening module by module.
+- `imednet.models.*` and `imednet.errors.*` are strict targets and must remain
+  clean under `poetry run mypy --strict`.
+- `ignore_missing_imports` must stay scoped only to third-party modules that do
+  not currently ship complete typing information (`pandas`, `pythonjsonlogger`,
+  `opentelemetry`, `airflow`).
+- CI enforces the strict subset so previously clean strict modules cannot regress.
+
+### Top `Any` / dynamic typing hotspots (tracked TODOs)
+- TODO (#938): reduce `Any` leakage in dynamic endpoint interfaces used by core
+  generic endpoint patterns.
+- TODO (#873): tighten plugin loading and endpoint surface typing in workflow
+  orchestration paths.
+- TODO (#935): complete sync/async interface separation to remove ambiguous
+  endpoint capability typing.
+
 ## Credential redaction requirement
 - Never log, print, persist, or surface API credentials in plaintext.
 - Keep `ApiKeyAuth`/error message masking intact and add or update unit tests when
