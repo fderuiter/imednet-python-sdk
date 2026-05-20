@@ -1,8 +1,19 @@
 from __future__ import annotations
 
+import sys
 from importlib import import_module
 
-import typer
+try:
+    import rich  # noqa: F401
+    import typer
+except ImportError:  # pragma: no cover
+    print(
+        "CLI dependencies are not installed. "
+        "Please install the SDK with the CLI extra: pip install 'imednet[cli]'",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 from dotenv import load_dotenv
 
 # Re-export for tests
