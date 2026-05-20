@@ -58,14 +58,14 @@ class BaseRequestExecutor(ABC):
             "httpx": logging.getLogger("httpx"),
             "httpcore": logging.getLogger("httpcore"),
         }
-        logger_states = {logger: logger.level for logger in loggers.values()}
-        for logger in logger_states:
+        logger_states = {name: logger.level for name, logger in loggers.items()}
+        for logger in loggers.values():
             logger.setLevel(_SUPPRESSED_LOG_LEVEL)
         try:
             yield
         finally:
-            for logger, original_level in logger_states.items():
-                logger.setLevel(original_level)
+            for name, original_level in logger_states.items():
+                loggers[name].setLevel(original_level)
 
     def _get_retry_predicate(self, method: str) -> Callable[[RetryCallState], bool]:
         """Return a retry predicate that includes the HTTP method in state."""
