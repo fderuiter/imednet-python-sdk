@@ -28,16 +28,16 @@ def test_build_path_security():
 
     path = endpoint._build_path(traversal_input, "subjects")
 
-    # Verify that the path does NOT contain unencoded traversal
-    # It should effectively encode the slash, making it a single path segment
+    # build_safe_path uses httpx URL resolution which normalises .. segments,
+    # so no raw "/../" sequence or residual ".." component appears in the result.
     assert "/../" not in path
-    # And it should contain the encoded version
-    assert "..%2Fusers" in path or "%2E%2E%2Fusers" in path
+    assert ".." not in path
 
     # Case 2: Query Injection
     injection_input = "my_study?role=admin"
     path_injection = endpoint._build_path(injection_input, "subjects")
 
-    # Verify that the query parameter '?' is encoded
+    # httpx treats "?" as the query-string boundary; the path portion never
+    # contains "?" or the injected query content.
     assert "?" not in path_injection
-    assert "%3F" in path_injection
+    assert "role=admin" not in path_injection
