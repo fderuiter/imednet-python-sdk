@@ -277,10 +277,8 @@ def export_to_sql_by_form(
     forms = sdk.forms.list(study_key=study_key)
 
     # Fetch all variables for the study once to avoid N+1 queries
-    all_variables = sdk.variables.list(
-        study_key=study_key,
-        **({"formIds": form_whitelist} if form_whitelist else {}),  # type: ignore[arg-type]
-    )
+    _form_filter: dict[str, Any] = {"formIds": form_whitelist} if form_whitelist else {}
+    all_variables = sdk.variables.list(study_key=study_key, **_form_filter)
     variables_by_form: dict[int, list[Any]] = {}
     for v in all_variables:
         variables_by_form.setdefault(v.form_id, []).append(v)
