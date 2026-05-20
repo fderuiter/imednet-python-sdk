@@ -30,6 +30,7 @@ def test_api_errors_mask_sensitive_values(error_cls: type[Exception]) -> None:
             "api_key": secret_api_key,
             "token": secret_token,
             "Authorization": secret_auth,
+            "detail": f"Authorization: {secret_auth}",
             "nested": {"x-imn-security-key": "very-secret-security-key"},
         },
         status_code=401,
@@ -62,7 +63,7 @@ def test_http_client_never_logs_authorization_header(
     assert "leaked-token" not in messages
 
 
-def test_cli_error_output_redacts_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_cli_surfaces_redacted_authentication_errors(monkeypatch: pytest.MonkeyPatch) -> None:
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "api")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "security")

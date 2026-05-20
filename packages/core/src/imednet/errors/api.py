@@ -22,8 +22,12 @@ _SENSITIVE_PATTERN_KEYS = (
     "token",
 )
 _SENSITIVE_PATTERN = re.compile(
-    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"']?)([^,;\"'\s]+)\3"
+    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"']?)([^,;\r\n]*?)\3(?=,|;|$)"
 )
+
+
+def _replace_sensitive_match(match: re.Match[str]) -> str:
+    return f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}"
 
 
 def _redact_sensitive_value(value: Any) -> Any:
@@ -37,10 +41,7 @@ def _redact_sensitive_value(value: Any) -> Any:
     if isinstance(value, tuple):
         return tuple(_redact_sensitive_value(item) for item in value)
     if isinstance(value, str):
-        return _SENSITIVE_PATTERN.sub(
-            lambda match: f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}",
-            value,
-        )
+        return _SENSITIVE_PATTERN.sub(_replace_sensitive_match, value)
     return value
 
 
