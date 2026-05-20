@@ -52,19 +52,19 @@ class BaseRequestExecutor(ABC):
     @staticmethod
     @contextmanager
     def _suppress_httpx_request_logging() -> Iterator[None]:
-        logger_names = ("httpx", "httpcore", *logging.root.manager.loggerDict.keys())
+        logger_names = ("httpx", "httpcore", *list(logging.root.manager.loggerDict.keys()))
         loggers: dict[str, logging.Logger] = {}
         for name in logger_names:
             if name in ("httpx", "httpcore") or name.startswith(("httpx.", "httpcore.")):
                 loggers[name] = logging.getLogger(name)
 
-        logger_states = [(logger, logger.level) for logger in loggers.values()]
-        for logger, _ in logger_states:
+        logger_states = {logger: logger.level for logger in loggers.values()}
+        for logger in logger_states:
             logger.setLevel(logging.WARNING)
         try:
             yield
         finally:
-            for logger, original_level in logger_states:
+            for logger, original_level in logger_states.items():
                 logger.setLevel(original_level)
 
     def _get_retry_predicate(self, method: str) -> Callable[[RetryCallState], bool]:

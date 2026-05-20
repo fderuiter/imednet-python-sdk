@@ -13,10 +13,13 @@ _SENSITIVE_KEYS = {
     "x-api-key",
     "x-imn-security-key",
 }
-_SENSITIVE_PATTERN_KEYS = tuple(
-    sorted(
-        (re.escape(key).replace(r"\_", r"[_-]?") for key in _SENSITIVE_KEYS), key=len, reverse=True
-    )
+_SENSITIVE_PATTERN_KEYS = (
+    "x-imn-security-key",
+    "x-api-key",
+    "api[_-]?key",
+    "security[_-]?key",
+    "authorization",
+    "token",
 )
 _SENSITIVE_PATTERN = re.compile(
     rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"']?)([^,;\"'\s]+)\3"
