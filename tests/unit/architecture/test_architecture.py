@@ -1,19 +1,18 @@
 import ast
 import importlib
-import os
-import sys
 from pathlib import Path
 
 import pytest
 from httpx import AsyncClient, Client
 
 import imednet
-from imednet.sdk import ImednetSDK, AsyncImednetSDK
+from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 try:
     import imednet_workflows
 except ImportError:
     imednet_workflows = None
+
 
 def get_all_python_files(package_path: Path) -> list[Path]:
     return list(package_path.rglob("*.py"))
@@ -34,6 +33,7 @@ def get_imports_from_file(file_path: Path) -> set[str]:
                 imports.add(node.module)
     return imports
 
+
 def test_core_does_not_import_workflows():
     core_dir = Path(imednet.__file__).parent
     files = get_all_python_files(core_dir)
@@ -43,7 +43,10 @@ def test_core_does_not_import_workflows():
         imports = get_imports_from_file(file)
         for imp in imports:
             assert not imp.startswith("imednet_workflows"), f"File {file} has hard import of {imp}"
-            assert not imp.startswith("apache_airflow_providers_imednet"), f"File {file} has hard import of {imp}"
+            assert not imp.startswith(
+                "apache_airflow_providers_imednet"
+            ), f"File {file} has hard import of {imp}"
+
 
 def test_workflows_does_not_import_providers():
     if imednet_workflows is None:
@@ -56,7 +59,10 @@ def test_workflows_does_not_import_providers():
     for file in files:
         imports = get_imports_from_file(file)
         for imp in imports:
-            assert not imp.startswith("apache_airflow_providers_imednet"), f"File {file} has hard import of {imp}"
+            assert not imp.startswith(
+                "apache_airflow_providers_imednet"
+            ), f"File {file} has hard import of {imp}"
+
 
 def test_endpoint_no_shared_mutable_state():
     sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
@@ -71,9 +77,11 @@ def test_endpoint_no_shared_mutable_state():
     assert sdk.records is not sdk2.records
     assert sdk._client is not sdk2._client
 
+
 def test_sync_sdk_no_async_client(monkeypatch):
     instantiated = False
     original_init = AsyncClient.__init__
+
     def mock_init(self, *args, **kwargs):
         nonlocal instantiated
         instantiated = True
@@ -81,13 +89,15 @@ def test_sync_sdk_no_async_client(monkeypatch):
 
     monkeypatch.setattr(AsyncClient, "__init__", mock_init)
 
-    with ImednetSDK(api_key="1", security_key="2", base_url="http://x") as sdk:
+    with ImednetSDK(api_key="1", security_key="2", base_url="http://x"):
         pass
     assert not instantiated, "ImednetSDK should not instantiate AsyncClient"
+
 
 def test_async_sdk_no_sync_client(monkeypatch):
     instantiated = False
     original_init = Client.__init__
+
     def mock_init(self, *args, **kwargs):
         nonlocal instantiated
         instantiated = True
@@ -95,11 +105,13 @@ def test_async_sdk_no_sync_client(monkeypatch):
 
     monkeypatch.setattr(Client, "__init__", mock_init)
 
-    sdk = AsyncImednetSDK(api_key="1", security_key="2", base_url="http://x")
+    AsyncImednetSDK(api_key="1", security_key="2", base_url="http://x")
     assert not instantiated, "AsyncImednetSDK should not instantiate Client"
+
 
 def test_plugin_discovery_failure(monkeypatch):
     original_import = importlib.import_module
+
     def mock_import(name, package=None):
         if name == "imednet_workflows.namespace":
             raise ModuleNotFoundError(name=name)
