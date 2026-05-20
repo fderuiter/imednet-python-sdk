@@ -1,3 +1,5 @@
+from typing import Any, Callable
+
 import pytest
 
 import imednet.sdk as sdk_mod
@@ -23,7 +25,9 @@ from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
 class _FakeEntryPoint:
-    def __init__(self, loader, value: str = "tests.fake_plugin:Workflows") -> None:
+    def __init__(
+        self, loader: Callable[[], Any], value: str = "tests.fake_plugin:Workflows"
+    ) -> None:
         self._loader = loader
         self.value = value
 
@@ -59,12 +63,12 @@ def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
     assert sdk.workflows.sdk_instance is sdk
 
 
-@pytest.mark.parametrize("loader_error", [AttributeError, ImportError, ModuleNotFoundError])
+@pytest.mark.parametrize("exception_class", [AttributeError, ImportError, ModuleNotFoundError])
 def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
-    monkeypatch, loader_error
+    monkeypatch, exception_class
 ) -> None:
     def failing_loader():
-        raise loader_error("boom")
+        raise exception_class("boom")
 
     monkeypatch.setattr(
         sdk_mod,
