@@ -75,7 +75,7 @@ class GenericEndpoint(EndpointABC[T]):
             text = str(seg).strip("/")
             if text:
                 # Encode path segments to prevent traversal and injection
-                parts.append(quote(text, safe=""))
+                parts.append(quote(text, safe="@%"))
         return "/" + "/".join(parts)
 
     def _require_sync_client(self) -> RequestorProtocol:
