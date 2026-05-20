@@ -34,7 +34,7 @@ class Visit(JsonModel):
         "visit_date",
         mode="before",
     )
-    def _clean_empty_dates(cls, v):
+    def _clean_empty_dates(cls, v: object) -> object | None:
         if not v:
             return None
         return v
