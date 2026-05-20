@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import warnings
 from typing import Any, Callable, Dict, List, Optional, TypeVar
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -75,7 +75,7 @@ class GenericEndpoint(EndpointABC[T]):
             text = str(seg).strip("/")
             if text:
                 # Encode path segments to prevent traversal and injection
-                parts.append(quote(text, safe="@%"))
+                parts.append(quote(unquote(text), safe="@"))
         return "/" + "/".join(parts)
 
     def _require_sync_client(self) -> RequestorProtocol:
