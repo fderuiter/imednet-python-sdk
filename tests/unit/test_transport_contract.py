@@ -38,14 +38,22 @@ async def test_transport_clients_use_base_url_for_relative_paths() -> None:
     sync_client = Client(api_key="k", security_key="s", base_url="https://example.com")
     assert str(sync_client._client.base_url) == "https://example.com"
 
-    respx.get("/relative-get").mock(return_value=httpx.Response(200, json={"ok": True}))
-    respx.post("/relative-post").mock(return_value=httpx.Response(201, json={"created": True}))
+    sync_get_route = respx.get("/relative-get").mock(
+        return_value=httpx.Response(200, json={"ok": True})
+    )
+    sync_post_route = respx.post("/relative-post").mock(
+        return_value=httpx.Response(201, json={"created": True})
+    )
 
     get_response = sync_client.get("/relative-get")
     post_response = sync_client.post("/relative-post", json={"x": 1})
 
     assert get_response.status_code == 200
+    assert get_response.json() == {"ok": True}
     assert post_response.status_code == 201
+    assert post_response.json() == {"created": True}
+    assert sync_get_route.call_count == 1
+    assert sync_post_route.call_count == 1
     sync_client.close()
 
     async with AsyncClient(
@@ -53,16 +61,22 @@ async def test_transport_clients_use_base_url_for_relative_paths() -> None:
     ) as async_client:
         assert str(async_client._client.base_url) == "https://example.com"
 
-        respx.get("/async-relative-get").mock(return_value=httpx.Response(200, json={"ok": True}))
-        respx.post("/async-relative-post").mock(
+        async_get_route = respx.get("/async-relative-get").mock(
+            return_value=httpx.Response(200, json={"ok": True})
+        )
+        async_post_route = respx.post("/async-relative-post").mock(
             return_value=httpx.Response(201, json={"created": True})
         )
 
         async_get_response = await async_client.get("/async-relative-get")
         async_post_response = await async_client.post("/async-relative-post", json={"x": 1})
 
-    assert async_get_response.status_code == 200
-    assert async_post_response.status_code == 201
+        assert async_get_response.status_code == 200
+        assert async_get_response.json() == {"ok": True}
+        assert async_post_response.status_code == 201
+        assert async_post_response.json() == {"created": True}
+        assert async_get_route.call_count == 1
+        assert async_post_route.call_count == 1
 
 
 @respx.mock(base_url="https://example.com")
