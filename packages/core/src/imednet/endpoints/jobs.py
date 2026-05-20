@@ -34,6 +34,7 @@ class JobsEndpoint(EdcSyncListGetEndpoint[JobStatus]):
         )
 
     def get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+        self._require_item_id(item_id)
         return self._create_path_get_operation(study_key, item_id).execute_sync(
             self._require_sync_client()
         )
@@ -58,6 +59,7 @@ class AsyncJobsEndpoint(EdcAsyncListGetEndpoint[JobStatus]):
         )
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> JobStatus:
+        self._require_item_id(item_id)
         return await self._create_path_get_operation(study_key, item_id).execute_async(
             self._require_async_client()
         )
