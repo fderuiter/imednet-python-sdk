@@ -34,6 +34,23 @@ def get_imports_from_file(file_path: Path) -> set[str]:
     return imports
 
 
+def test_core_does_not_import_cli():
+    """Ensure no file outside of imednet/cli/ imports the cli module."""
+    core_dir = Path(imednet.__file__).parent
+    cli_dir = core_dir / "cli"
+
+    for file in get_all_python_files(core_dir):
+        # Skip CLI directory itself and its subdirectories
+        if cli_dir in file.parents or file.parent == cli_dir:
+            continue
+
+        imports = get_imports_from_file(file)
+        for imp in imports:
+            assert not imp.startswith(
+                "imednet.cli"
+            ), f"Architectural violation: {file} imports '{imp}' from the CLI layer"
+
+
 def test_core_does_not_import_workflows():
     core_dir = Path(imednet.__file__).parent
     files = get_all_python_files(core_dir)
