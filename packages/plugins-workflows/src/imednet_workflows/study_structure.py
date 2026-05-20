@@ -12,7 +12,7 @@ from imednet.models.variables import Variable
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
 def _build_study_structure(
@@ -69,7 +69,7 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
         ) from e
 
 
-async def async_get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
+async def async_get_study_structure(sdk: "AsyncImednetSDK", study_key: str) -> StudyStructure:
     """Asynchronous variant of :func:`get_study_structure`."""
     try:
         intervals, forms, variables = await asyncio.gather(
