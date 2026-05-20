@@ -54,6 +54,15 @@ class _BaseSDK:
     config: Config
 
     def _get_workflow_entry_point(self) -> EntryPoint | None:
+        """Return the configured workflows plugin entry point, if exactly one exists.
+
+        Returns:
+            The single discovered ``imednet.plugins:workflows`` entry point, or ``None``
+            when the optional workflows plugin is not installed.
+
+        Raises:
+            ImportError: If multiple workflows plugins are installed at once.
+        """
         workflows_entry_points = list(entry_points(group="imednet.plugins", name="workflows"))
 
         if not workflows_entry_points:
@@ -92,8 +101,9 @@ class _BaseSDK:
 
         if not callable(workflows_plugin):
             raise ImportError(
-                "The workflows plugin entry point must be a callable that accepts "
-                "an SDK instance."
+                "The workflows plugin entry point "
+                f"'{workflows_entry_point.value}' must be a callable that accepts an SDK "
+                "instance."
             )
 
         try:
