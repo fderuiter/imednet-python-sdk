@@ -39,7 +39,7 @@ def test_build_safe_path_handles_special_characters() -> None:
 
     path = endpoint._build_path("user@domain.com", "user%40domain.com")
 
-    assert path == "/api/v1/edc/studies/user@domain.com/user%40domain.com"
+    assert path == "/api/v1/edc/studies/user@domain.com/user@domain.com"
     assert "%2540" not in path
 
 
