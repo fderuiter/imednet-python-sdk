@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
     SDKLike = ImednetSDK | AsyncImednetSDK
+else:
+    SDKLike = Any
 
 
 class RecordUpdateWorkflow:
@@ -26,10 +28,11 @@ class RecordUpdateWorkflow:
     def __init__(self, sdk: "SDKLike"):
         self._sdk = sdk
         self._is_async = getattr(sdk, "_async_client", None) is not None
+        self._validator: SchemaValidator | AsyncSchemaValidator
         if self._is_async:
             self._validator = AsyncSchemaValidator(cast("AsyncImednetSDK", sdk))
         else:
-            self._validator = SchemaValidator(cast("ImednetSDK", sdk))  # type: ignore[assignment]
+            self._validator = SchemaValidator(cast("ImednetSDK", sdk))
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
