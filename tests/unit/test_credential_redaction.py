@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import MagicMock
 
 import pytest
@@ -52,6 +53,10 @@ def test_http_client_never_logs_authorization_header(
     caplog.set_level("DEBUG")
     caplog.set_level("DEBUG", logger="httpx")
     caplog.set_level("DEBUG", logger="httpcore")
+    httpx_logger = logging.getLogger("httpx")
+    httpcore_logger = logging.getLogger("httpcore")
+    original_httpx_level = httpx_logger.level
+    original_httpcore_level = httpcore_logger.level
 
     with respx.mock(assert_all_mocked=True, assert_all_called=True) as router:
         router.get("https://api.test/secure").respond(200, json={"ok": True})
@@ -61,6 +66,8 @@ def test_http_client_never_logs_authorization_header(
     messages = "\n".join(record.getMessage() for record in caplog.records)
     assert "Authorization" not in messages
     assert "leaked-token" not in messages
+    assert httpx_logger.level == original_httpx_level
+    assert httpcore_logger.level == original_httpcore_level
 
 
 def test_cli_surfaces_redacted_authentication_errors(monkeypatch: pytest.MonkeyPatch) -> None:
