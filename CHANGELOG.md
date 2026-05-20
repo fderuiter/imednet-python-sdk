@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+
+### Features
+
+* Define and enforce stable public SDK surface: all public namespaces now declare `__all__`; introduce `FilterValue`, `FilterScalar`, and `ItemId` type aliases for typed endpoint parameters; export new types from top-level `imednet` namespace.
+
+### Refactor
+
+* Replace `Any` in public endpoint method signatures (`item_id: Any` → `ItemId`, `**filters: Any` → `**filters: FilterValue`, `records_data: List[Dict[str, Any]]` → `List[JsonDict]`).
+* Add stability documentation to `docs/contributing.rst` with per-package stability table and deprecation policy.
+* Add mypy `ignore_missing_imports` overrides for optional extras (`typer`, `rich`, `faker`, `sqlalchemy`, `boto3`, `moto`, `openpyxl`) to eliminate spurious import errors.
+
+### Migration notes
+
+The following changes affect code that imports from internal implementation packages:
+
+* `imednet.core.endpoint.base.ItemId` has been moved to `imednet.utils.typing.ItemId` (and re-exported from `imednet`). Update any direct imports.
+* `imednet.core.endpoint.protocols.SupportsGet.get` now accepts `item_id: ItemId` instead of `item_id: Any`. Callers passing non-`str`/`int` item IDs will need to cast.
+* `imednet.core.endpoint.protocols.SupportsList.list` now accepts `**filters: FilterValue` instead of `**filters: Any`. Callers passing filter values that are not `FilterValue`-compatible will need to cast.
+
 ## [0.6.0](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.6...v0.6.0) (2026-05-12)
 
 

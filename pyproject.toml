@@ -77,5 +77,30 @@ plugins = []
 exclude = '^examples/.*$'
 
 [[tool.mypy.overrides]]
-module = ["pandas", "pythonjsonlogger.*", "opentelemetry", "opentelemetry.*", "airflow", "airflow.*"]
+module = [
+    "pandas",
+    "pythonjsonlogger.*",
+    "opentelemetry",
+    "opentelemetry.*",
+    "airflow",
+    "airflow.*",
+    "typer",
+    "typer.*",
+    "rich",
+    "rich.*",
+    "faker",
+    "faker.*",
+    "sqlalchemy",
+    "sqlalchemy.*",
+    "dotenv",
+    "dotenv.*",
+    "boto3",
+    "boto3.*",
+    "botocore",
+    "botocore.*",
+    "moto",
+    "moto.*",
+    "openpyxl",
+    "openpyxl.*",
+]
 ignore_missing_imports = true

@@ -6,6 +6,8 @@ from ..utils import register_list_command
 
 app = typer.Typer(name="intervals", help="Manage intervals within a study.")
 
+__all__ = ["app"]
+
 register_list_command(
     app,
     "intervals",

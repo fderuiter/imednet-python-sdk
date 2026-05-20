@@ -19,6 +19,89 @@ Setup
 
    ./scripts/setup.sh
 
+Public API stability
+--------------------
+
+The following table describes the stability contract for each sub-package.  Only
+symbols that appear in a module's ``__all__`` list are considered part of the public
+API.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Package
+     - Stability
+     - Notes
+   * - ``imednet`` (top-level)
+     - **Stable**
+     - All exports in ``__all__`` follow semantic versioning. Removals require a major version bump and a ``DeprecationWarning`` for at least one minor release.
+   * - ``imednet.models``
+     - **Stable**
+     - Pydantic v2 model schemas. Field additions are non-breaking; field removals or type changes are breaking.
+   * - ``imednet.errors``
+     - **Stable**
+     - Exception hierarchy. New sub-classes are non-breaking.
+   * - ``imednet.endpoints``
+     - **Stable**
+     - Typed resource endpoint classes. Method signatures follow ``FilterValue``/``ItemId`` contracts.
+   * - ``imednet.utils``
+     - **Stable** (exported symbols only)
+     - ``JsonDict``, ``ItemId``, ``FilterValue``, ``FilterScalar``, and utility functions in ``__all__``.
+   * - ``imednet.auth``
+     - **Stable**
+     - Authentication strategy classes.
+   * - ``imednet.validation``
+     - **Stable**
+     - Schema cache and validation helpers.
+   * - ``imednet.pagination``
+     - **Semi-stable**
+     - Paginator re-exports from ``imednet.core.paginator``.  Prefer using endpoint list methods rather than paginators directly.
+   * - ``imednet.core``
+     - **Internal**
+     - Implementation details. May change without notice. Prefer stable public packages.
+   * - ``imednet.core.http``
+     - **Internal**
+     - HTTP execution internals. No stability guarantees.
+   * - ``imednet.testing``
+     - **Unstable**
+     - Test-support utilities. API may change between minor releases.
+   * - ``imednet.cli``
+     - **Stable** (CLI commands)
+     - CLI command-line interface is stable; the Python module internals are not.
+   * - ``imednet.integrations``
+     - **Semi-stable**
+     - Export helpers. Functions in ``__all__`` are stable; internals may change.
+
+Deprecation policy
+~~~~~~~~~~~~~~~~~~
+
+Symbols removed from the public API follow this process:
+
+1. Issue a ``DeprecationWarning`` via :func:`warnings.warn` with ``stacklevel=2`` for
+   at least one minor release before removal.
+2. Document the migration path in ``CHANGELOG.md`` under a **Deprecated** heading.
+3. Remove the symbol in the next major version bump only.
+
+Internal modules
+~~~~~~~~~~~~~~~~
+
+Modules not listed as *Stable* above should **not** be imported directly in
+application code.  Import from the stable namespaces (e.g. ``imednet``,
+``imednet.models``, ``imednet.endpoints``) instead.
+
+Type aliases
+~~~~~~~~~~~~
+
+The following type aliases are exported from ``imednet`` and ``imednet.utils`` for use
+in downstream code:
+
+- ``JsonDict`` – ``Dict[str, Any]``: a generic JSON object.
+- ``ItemId`` – ``str | int``: an endpoint item identifier.
+- ``FilterScalar`` – ``str | int | float | bool | None``: a single filter value.
+- ``FilterValue`` – union of ``FilterScalar``, operator tuples, and lists: the full
+  filter value accepted by ``list()``/``async_list()`` endpoint methods.
+
 Issue reporting and triage
 --------------------------
 The project uses a documented issue operating model so epics, work items, and

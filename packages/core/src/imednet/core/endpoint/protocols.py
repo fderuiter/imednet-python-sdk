@@ -14,6 +14,7 @@ from typing import (
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.json_base import JsonModel
+from imednet.utils.typing import FilterValue, ItemId
 
 T = TypeVar("T", bound=JsonModel)
 T_co = TypeVar("T_co", covariant=True)
@@ -45,7 +46,7 @@ class EndpointProtocol(Protocol):
         """Build the API path with optional study key and extra segments."""
         ...
 
-    def _raise_not_found(self, study_key: Optional[str], item_id: Any = None) -> None:
+    def _raise_not_found(self, study_key: Optional[str], item_id: Optional[ItemId] = None) -> None:
         """Raise a standardized NotFoundError."""
         ...
 
@@ -82,11 +83,11 @@ class ListEndpointProtocol(Protocol[T]):
 class SupportsGet(Protocol[T_co]):
     """Protocol for resources that support ``get`` operations."""
 
-    def get(self, study_key: Optional[str], item_id: Any) -> T_co:
+    def get(self, study_key: Optional[str], item_id: ItemId) -> T_co:
         """Get a single item synchronously."""
         ...
 
-    async def async_get(self, study_key: Optional[str], item_id: Any) -> T_co:
+    async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T_co:
         """Get a single item asynchronously."""
         ...
 
@@ -94,11 +95,13 @@ class SupportsGet(Protocol[T_co]):
 class SupportsList(Protocol[T_co]):
     """Protocol for resources that support ``list`` operations."""
 
-    def list(self, study_key: Optional[str] = None, **filters: Any) -> Sequence[T_co]:
+    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Sequence[T_co]:
         """List items synchronously."""
         ...
 
-    async def async_list(self, study_key: Optional[str] = None, **filters: Any) -> Sequence[T_co]:
+    async def async_list(
+        self, study_key: Optional[str] = None, **filters: FilterValue
+    ) -> Sequence[T_co]:
         """List items asynchronously."""
         ...
 

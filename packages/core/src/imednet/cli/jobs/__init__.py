@@ -9,6 +9,8 @@ from ..utils import STUDY_KEY_ARG, fetching_status
 
 app = typer.Typer(name="jobs", help="Manage background jobs.")
 
+__all__ = ["app"]
+
 
 @app.command("status")
 @with_sdk
