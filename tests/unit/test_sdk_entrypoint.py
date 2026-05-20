@@ -25,6 +25,8 @@ from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
 class _FakeEntryPoint:
+    """Minimal importlib.metadata.EntryPoint stand-in for plugin loader tests."""
+
     def __init__(
         self, loader: Callable[[], Any], value: str = "tests.fake_plugin:Workflows"
     ) -> None:
@@ -111,6 +113,25 @@ def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None
     )
 
     with pytest.raises(ImportError, match="Multiple 'workflows' plugins were found"):
+        _create_sdk()
+
+
+def test_sdk_workflows_instantiation_failure_raises_import_error(monkeypatch) -> None:
+    class BrokenWorkflows:
+        def __init__(self, sdk_instance):
+            raise TypeError("broken")
+
+    monkeypatch.setattr(
+        sdk_mod,
+        "entry_points",
+        lambda *, group, name: (
+            [_FakeEntryPoint(lambda: BrokenWorkflows)]
+            if group == "imednet.plugins" and name == "workflows"
+            else []
+        ),
+    )
+
+    with pytest.raises(ImportError, match="Failed to instantiate workflows"):
         _create_sdk()
 
 
