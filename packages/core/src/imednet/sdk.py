@@ -112,7 +112,7 @@ class _BaseSDK:
         try:
             workflows_factory = cast(WorkflowPluginProtocol, workflows_plugin)
             return workflows_factory(self)
-        except (AttributeError, TypeError) as error:
+        except TypeError as error:
             raise ImportError(
                 "Failed to instantiate workflows from the discovered plugin entry point."
             ) from error
