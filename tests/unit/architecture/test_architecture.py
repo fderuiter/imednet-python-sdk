@@ -1,5 +1,4 @@
 import ast
-import importlib
 from pathlib import Path
 
 import pytest
@@ -127,16 +126,7 @@ def test_async_sdk_no_sync_client(monkeypatch):
 
 
 def test_plugin_discovery_failure(monkeypatch):
-    original_import = importlib.import_module
-
-    def mock_import(name, package=None):
-        if name == "imednet_workflows.namespace":
-            raise ModuleNotFoundError(name=name)
-        return original_import(name, package)
-
-    # We patch import_module in imednet.sdk because it imports it directly:
-    # `from importlib import import_module`
-    monkeypatch.setattr("imednet.sdk.import_module", mock_import)
+    monkeypatch.setattr("imednet.sdk.entry_points", lambda: {})
 
     sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
     with pytest.raises(ImportError, match="requires the optional 'imednet-workflows' package"):
