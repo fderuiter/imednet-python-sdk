@@ -17,6 +17,7 @@ from imednet.endpoints.subjects import SubjectsEndpoint
 from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
+from imednet.errors import PluginLoadError
 from imednet_workflows.data_extraction import DataExtractionWorkflow
 from imednet_workflows.query_management import QueryManagementWorkflow
 from imednet_workflows.record_mapper import RecordMapper
@@ -82,7 +83,7 @@ def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
         ),
     )
 
-    with pytest.raises(ImportError, match="Failed to load workflows plugin from entry point"):
+    with pytest.raises(PluginLoadError, match="Failed to load workflows plugin from entry point"):
         _create_sdk()
 
 
@@ -97,7 +98,7 @@ def test_sdk_workflows_entry_point_must_be_callable(monkeypatch) -> None:
         ),
     )
 
-    with pytest.raises(ImportError, match="must be a callable"):
+    with pytest.raises(PluginLoadError, match="must be a callable"):
         _create_sdk()
 
 
@@ -112,7 +113,7 @@ def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None
         ),
     )
 
-    with pytest.raises(ImportError, match="Multiple 'workflows' plugins were found"):
+    with pytest.raises(PluginLoadError, match="Multiple 'workflows' plugins were found"):
         _create_sdk()
 
 
@@ -131,7 +132,7 @@ def test_sdk_workflows_instantiation_failure_raises_import_error(monkeypatch) ->
         ),
     )
 
-    with pytest.raises(ImportError, match="Failed to instantiate workflows"):
+    with pytest.raises(PluginLoadError, match="Failed to instantiate workflows"):
         _create_sdk()
 
 
