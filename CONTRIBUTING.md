@@ -47,6 +47,13 @@ make docs
 ```
 Coverage must stay ≥ 90%.
 
+## Credential redaction requirement
+- Never log, print, persist, or surface API credentials in plaintext.
+- Keep `ApiKeyAuth`/error message masking intact and add or update unit tests when
+  touching auth, transport, logging, or CLI error paths.
+- HTTP transport intentionally suppresses `httpx`/`httpcore` request logs during
+  SDK calls to prevent accidental header/query leakage.
+
 ## HTTP transport mocking
 - Use `respx` for tests that exercise `Client` or `AsyncClient` HTTP behavior.
 - Do not patch `Client._client.request`, `AsyncClient._client.request`, or executor
