@@ -54,18 +54,7 @@ class _BaseSDK:
     config: Config
 
     def _get_workflow_entry_point(self) -> EntryPoint | None:
-        discovered_entry_points = entry_points()
-        workflows_entry_points: list[EntryPoint]
-        if hasattr(discovered_entry_points, "select"):
-            workflows_entry_points = list(
-                discovered_entry_points.select(group="imednet.plugins", name="workflows")
-            )
-        else:  # pragma: no cover - Python <3.10 compatibility
-            workflows_entry_points = [
-                entry_point
-                for entry_point in discovered_entry_points.get("imednet.plugins", [])
-                if entry_point.name == "workflows"
-            ]
+        workflows_entry_points = list(entry_points(group="imednet.plugins", name="workflows"))
 
         if not workflows_entry_points:
             return None
