@@ -10,8 +10,8 @@ This page shows a minimal asynchronous example using ``AsyncImednetSDK``.
 
    * Always manage ``AsyncImednetSDK`` with ``async with`` or by explicitly
      calling ``await sdk.aclose()`` within an active event loop.
-   * Calling the synchronous ``close()`` method on an SDK instance that has an
-     active async client raises a :exc:`RuntimeError`.
+   * Calling the synchronous ``close()`` method on
+     :class:`~imednet.sdk.AsyncImednetSDK` raises a :exc:`TypeError`.
    * Using ``with AsyncImednetSDK(...)`` (the synchronous context manager)
      raises a :exc:`TypeError`.
 
