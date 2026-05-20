@@ -25,6 +25,8 @@ from imednet.core.http.handlers import handle_response
 from imednet.core.http.monitor import RequestMonitor
 from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 
+_SUPPRESSED_LOG_LEVEL = logging.CRITICAL + 1
+
 if TYPE_CHECKING:
     from opentelemetry.trace import Tracer
 else:
@@ -58,7 +60,7 @@ class BaseRequestExecutor(ABC):
         }
         logger_states = {logger: logger.level for logger in loggers.values()}
         for logger in logger_states:
-            logger.setLevel(logging.WARNING)
+            logger.setLevel(_SUPPRESSED_LOG_LEVEL)
         try:
             yield
         finally:
