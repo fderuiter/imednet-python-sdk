@@ -20,6 +20,35 @@ from imednet_workflows.record_update import RecordUpdateWorkflow
 from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
+def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
+    loaded = {"called": False}
+
+    class FakeEntryPoint:
+        value = "tests.fake_plugin:Workflows"
+
+        def load(self):
+            loaded["called"] = True
+
+            class FakeWorkflows:
+                def __init__(self, sdk_instance):
+                    self.sdk_instance = sdk_instance
+
+            return FakeWorkflows
+
+    class FakeEntryPoints(list):
+        def select(self, *, group: str, name: str):
+            assert group == "imednet.plugins"
+            assert name == "workflows"
+            return self
+
+    monkeypatch.setattr(sdk_mod, "entry_points", lambda: FakeEntryPoints([FakeEntryPoint()]))
+
+    sdk = _create_sdk()
+
+    assert loaded["called"]
+    assert sdk.workflows.sdk_instance is sdk
+
+
 def _create_sdk() -> sdk_mod.ImednetSDK:
     return sdk_mod.ImednetSDK(
         api_key="key",
