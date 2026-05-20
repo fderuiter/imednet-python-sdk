@@ -180,6 +180,11 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             self._raise_not_found(study_key, item_id)
         return items[0]
 
+    @staticmethod
+    def _require_item_id(item_id: Any) -> None:
+        if item_id is None:
+            raise TypeError("Missing required argument: item_id")
+
 
 class SyncListGetEndpoint(_ListGetEndpointBase[T]):
     def __init__(
@@ -233,6 +238,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         return operation.execute_sync(client, paginator_cls)
 
     def get(self, study_key: Optional[str], item_id: Any) -> T:
+        self._require_item_id(item_id)
         return self._get_sync(
             self._require_sync_client(),
             self.PAGINATOR_CLS,
@@ -293,6 +299,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         return await operation.execute_async(client, paginator_cls)
 
     async def async_get(self, study_key: Optional[str], item_id: Any) -> T:
+        self._require_item_id(item_id)
         return await self._get_async(
             self._require_async_client(),
             self.ASYNC_PAGINATOR_CLS,

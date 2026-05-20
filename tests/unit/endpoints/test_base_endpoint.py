@@ -64,3 +64,9 @@ class TestBaseEndpoint:
         signature = inspect.signature(ep.get)
 
         assert list(signature.parameters.keys()) == ["study_key", "item_id"]
+
+    def test_get_requires_item_id(self, client, context):
+        ep = MockListGetEndpoint(client, context)
+
+        with pytest.raises(TypeError, match="Missing required argument: item_id"):
+            ep.get("S1", None)
