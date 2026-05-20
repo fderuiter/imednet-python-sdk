@@ -10,8 +10,8 @@ This module provides the ImednetSDK class which:
 from __future__ import annotations
 
 from contextlib import contextmanager
-from importlib import import_module
-from typing import TYPE_CHECKING, Any, Iterator, Optional
+from importlib.metadata import EntryPoint, entry_points
+from typing import TYPE_CHECKING, Any, Iterator, Optional, Protocol, cast
 
 from .config import Config, load_config
 from .core.context import study_context
@@ -38,10 +38,45 @@ if TYPE_CHECKING:
     from .endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
+class WorkflowPluginProtocol(Protocol):
+    def __call__(self, sdk_instance: _BaseSDK) -> "WorkflowsNamespaceProtocol": ...
+
+
+class WorkflowsNamespaceProtocol(Protocol):
+    data_extraction: Any
+    query_management: Any
+    record_mapper: Any
+    record_update: Any
+    subject_data: Any
+
+
 class _BaseSDK:
     config: Config
 
-    def _init_workflows(self) -> Any:
+    def _get_workflow_entry_point(self) -> EntryPoint | None:
+        discovered_entry_points = entry_points()
+        workflows_entry_points: list[EntryPoint]
+        if hasattr(discovered_entry_points, "select"):
+            workflows_entry_points = list(
+                discovered_entry_points.select(group="imednet.plugins", name="workflows")
+            )
+        else:  # pragma: no cover - Python <3.10 compatibility
+            workflows_entry_points = [
+                entry_point
+                for entry_point in discovered_entry_points.get("imednet.plugins", [])
+                if entry_point.name == "workflows"
+            ]
+
+        if not workflows_entry_points:
+            return None
+        if len(workflows_entry_points) > 1:
+            raise ImportError(
+                "Multiple 'workflows' plugins were found in the 'imednet.plugins' entry-point "
+                "group. Please keep only one workflows plugin installed."
+            )
+        return workflows_entry_points[0]
+
+    def _init_workflows(self) -> WorkflowsNamespaceProtocol:
         """Instantiate workflow namespace when optional workflows plugin is available."""
 
         class _MissingWorkflows:
@@ -54,24 +89,30 @@ class _BaseSDK:
                     )
                 )
 
-        try:
-            workflows_module = import_module("imednet_workflows.namespace")
-        except ModuleNotFoundError as error:
-            if error.name and error.name.startswith("imednet_workflows"):
-                return _MissingWorkflows()
-            raise
+        workflows_entry_point = self._get_workflow_entry_point()
+        if workflows_entry_point is None:
+            return cast(WorkflowsNamespaceProtocol, _MissingWorkflows())
 
-        workflows_cls = getattr(workflows_module, "Workflows", None)
-        if workflows_cls is None:
-            raise ImportError(
-                "The optional imednet-workflows package is installed, but its "
-                "'imednet_workflows.namespace' module does not export 'Workflows'."
-            )
         try:
-            return workflows_cls(self)
-        except AttributeError as error:
+            workflows_plugin = workflows_entry_point.load()
+        except (AttributeError, ImportError, ModuleNotFoundError) as error:
             raise ImportError(
-                "Failed to instantiate Workflows from imednet_workflows.namespace."
+                "Failed to load workflows plugin from entry point "
+                f"'{workflows_entry_point.value}'."
+            ) from error
+
+        if not callable(workflows_plugin):
+            raise ImportError(
+                "The workflows plugin entry point must be a callable that accepts "
+                "an SDK instance."
+            )
+
+        try:
+            workflows_factory = cast(WorkflowPluginProtocol, workflows_plugin)
+            return workflows_factory(self)
+        except (AttributeError, TypeError) as error:
+            raise ImportError(
+                "Failed to instantiate workflows from the discovered plugin entry point."
             ) from error
 
     @contextmanager
@@ -101,6 +142,7 @@ class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
     users: UsersEndpoint
     variables: VariablesEndpoint
     visits: VisitsEndpoint
+    workflows: WorkflowsNamespaceProtocol
     config: Config
 
     def __init__(
@@ -207,6 +249,7 @@ class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
     users: AsyncUsersEndpoint
     variables: AsyncVariablesEndpoint
     visits: AsyncVisitsEndpoint
+    workflows: WorkflowsNamespaceProtocol
 
     def __init__(
         self,
