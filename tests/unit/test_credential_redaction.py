@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
+import respx
 from typer.testing import CliRunner
 
 import imednet.cli as cli
@@ -51,9 +52,7 @@ def test_http_client_never_logs_authorization_header(
     caplog.set_level("DEBUG", logger="httpx")
     caplog.set_level("DEBUG", logger="httpcore")
 
-    with pytest.importorskip("respx").mock(
-        assert_all_mocked=True, assert_all_called=True
-    ) as router:
+    with respx.mock(assert_all_mocked=True, assert_all_called=True) as router:
         router.get("https://api.test/secure").respond(200, json={"ok": True})
         client = Client(api_key="api", security_key="security", base_url="https://api.test")
         client.get("/secure", headers={"Authorization": "Bearer leaked-token"})
