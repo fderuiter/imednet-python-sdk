@@ -21,6 +21,7 @@ _SENSITIVE_PATTERN_KEYS = (
     "authorization",
     "token",
 )
+# Groups: (1) sensitive key, (2) key/value separator, (3) optional quote, (4) raw value.
 _SENSITIVE_PATTERN = re.compile(
     rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"']?)([^,;\r\n]*?)\3(?=,|;|$)"
 )
