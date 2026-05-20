@@ -96,9 +96,15 @@ Async Client
 ------------
 
 :class:`~imednet.core.async_client.AsyncClient` provides the same features as the
-sync client but leverages ``async``/``await`` for concurrency. The
-:class:`~imednet.sdk.ImednetSDK` exposes both clients via ``sdk.client`` and
-``sdk.async_client``.
+sync client but leverages ``async``/``await`` for concurrency. The public SDK
+surface is split into two client classes:
+
+* :class:`~imednet.sdk.ImednetSDK` for synchronous usage only.
+* :class:`~imednet.sdk.AsyncImednetSDK` for asynchronous usage only.
+
+Migration note: if you previously used async behavior from ``ImednetSDK``, move
+to :class:`~imednet.sdk.AsyncImednetSDK` and manage lifecycle with
+``async with`` or ``await sdk.aclose()``.
 
 Endpoints
 ---------
