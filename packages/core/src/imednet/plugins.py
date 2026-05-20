@@ -1,0 +1,96 @@
+"""Plugin contracts for the iMednet SDK.
+
+This module defines the :class:`PluginProtocol` that any third-party plugin
+factory must satisfy in order to be discoverable via the ``imednet.plugins``
+entry-point group, together with the :class:`WorkflowsNamespaceProtocol` that
+the factory's return value must implement.
+
+Minimal plugin skeleton
+-----------------------
+
+A plugin package must:
+
+1. Expose a factory callable under the ``imednet.plugins`` entry-point group
+   with the name ``"workflows"`` (or another agreed name).
+2. The callable must accept a single argument — the :class:`~imednet.sdk.ImednetSDK`
+   (or :class:`~imednet.sdk.AsyncImednetSDK`) instance — and return an object
+   that satisfies :class:`WorkflowsNamespaceProtocol`.
+
+Example ``pyproject.toml`` snippet::
+
+    [tool.poetry.plugins."imednet.plugins"]
+    workflows = "myplugin.namespace:create_workflows"
+
+Example factory::
+
+    # myplugin/namespace.py
+    from imednet.sdk import ImednetSDK
+
+    class MyWorkflows:
+        def __init__(self, sdk: ImednetSDK) -> None:
+            self.data_extraction = ...
+            self.query_management = ...
+            self.record_mapper = ...
+            self.record_update = ...
+            self.subject_data = ...
+
+    def create_workflows(sdk: ImednetSDK) -> MyWorkflows:
+        return MyWorkflows(sdk)
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from .sdk import _BaseSDK
+
+
+@runtime_checkable
+class WorkflowsNamespaceProtocol(Protocol):
+    """Minimal interface that a workflows namespace object must expose.
+
+    Each attribute should be a workflow class instance wired to the SDK.
+    """
+
+    data_extraction: Any
+    query_management: Any
+    record_mapper: Any
+    record_update: Any
+    subject_data: Any
+
+
+@runtime_checkable
+class PluginProtocol(Protocol):
+    """Protocol that every iMednet plugin factory must satisfy.
+
+    A conforming factory is a callable that accepts an SDK instance and returns
+    an object implementing :class:`WorkflowsNamespaceProtocol`.
+
+    Example::
+
+        from imednet.plugins import PluginProtocol
+        from imednet.sdk import ImednetSDK
+
+        class MyWorkflows:
+            def __init__(self, sdk: ImednetSDK) -> None:
+                self.data_extraction = ...
+                self.query_management = ...
+                self.record_mapper = ...
+                self.record_update = ...
+                self.subject_data = ...
+
+        def create_workflows(sdk: ImednetSDK) -> MyWorkflows:
+            return MyWorkflows(sdk)
+
+        # Verify conformance at import time (optional, for development use):
+        assert isinstance(create_workflows, PluginProtocol)
+    """
+
+    def __call__(self, sdk_instance: "_BaseSDK") -> WorkflowsNamespaceProtocol: ...
+
+
+__all__ = [
+    "PluginProtocol",
+    "WorkflowsNamespaceProtocol",
+]

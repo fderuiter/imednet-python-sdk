@@ -22,6 +22,7 @@ Welcome to imednet's documentation!
    cli
    workflow_interactions
    register_subjects
+   plugins
    caching
    retry_policy
    job_polling

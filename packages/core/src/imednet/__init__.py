@@ -3,6 +3,8 @@ from importlib import metadata as _metadata
 from .config import Config, load_config
 from .core.base_client import BaseClient
 from .core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
+from .errors import PluginLoadError
+from .plugins import PluginProtocol, WorkflowsNamespaceProtocol
 from .sdk import AsyncImednetSDK, ImednetSDK
 from .utils.typing import FilterScalar, FilterValue, ItemId, JsonDict
 
@@ -23,6 +25,9 @@ __all__ = [
     "ItemId",
     "FilterValue",
     "FilterScalar",
+    "PluginLoadError",
+    "PluginProtocol",
+    "WorkflowsNamespaceProtocol",
     "__version__",
 ]
 

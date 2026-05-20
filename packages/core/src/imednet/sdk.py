@@ -11,13 +11,15 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from importlib.metadata import EntryPoint, entry_points
-from typing import TYPE_CHECKING, Any, Iterator, Optional, Protocol, cast
+from typing import TYPE_CHECKING, Any, Iterator, Optional, cast
 
 from .config import Config, load_config
 from .core.context import study_context
 from .core.factory import ClientFactory
 from .core.retry import RetryPolicy
 from .endpoints.registry import ASYNC_ENDPOINT_REGISTRY, ENDPOINT_REGISTRY
+from .errors import PluginLoadError
+from .plugins import PluginProtocol, WorkflowsNamespaceProtocol
 from .sdk_convenience import SDKConvenienceMixin
 
 if TYPE_CHECKING:
@@ -38,16 +40,8 @@ if TYPE_CHECKING:
     from .endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
-class WorkflowPluginProtocol(Protocol):
-    def __call__(self, sdk_instance: _BaseSDK) -> "WorkflowsNamespaceProtocol": ...
-
-
-class WorkflowsNamespaceProtocol(Protocol):
-    data_extraction: Any
-    query_management: Any
-    record_mapper: Any
-    record_update: Any
-    subject_data: Any
+class WorkflowPluginProtocol(PluginProtocol):
+    """Alias kept for backwards compatibility; use :class:`~imednet.plugins.PluginProtocol` instead."""  # noqa: E501
 
 
 class _BaseSDK:
@@ -61,7 +55,7 @@ class _BaseSDK:
             when the optional workflows plugin is not installed.
 
         Raises:
-            ImportError: If multiple workflows plugins are installed at once.
+            PluginLoadError: If multiple workflows plugins are installed at once.
         """
         workflows_entry_points = list(entry_points(group="imednet.plugins", name="workflows"))
 
@@ -71,7 +65,7 @@ class _BaseSDK:
             discovered_plugins = ", ".join(
                 sorted(entry_point.value for entry_point in workflows_entry_points)
             )
-            raise ImportError(
+            raise PluginLoadError(
                 "Multiple 'workflows' plugins were found in the 'imednet.plugins' entry-point "
                 f"group ({discovered_plugins}). Please keep only one workflows plugin installed."
             )
@@ -97,23 +91,23 @@ class _BaseSDK:
         try:
             workflows_plugin = workflows_entry_point.load()
         except (AttributeError, ImportError, ModuleNotFoundError) as error:
-            raise ImportError(
+            raise PluginLoadError(
                 "Failed to load workflows plugin from entry point "
                 f"'{workflows_entry_point.value}'."
             ) from error
 
         if not callable(workflows_plugin):
-            raise ImportError(
+            raise PluginLoadError(
                 "The workflows plugin entry point "
                 f"'{workflows_entry_point.value}' must be a callable that accepts an SDK "
                 f"instance; got {type(workflows_plugin).__name__}."
             )
 
         try:
-            workflows_factory = cast(WorkflowPluginProtocol, workflows_plugin)
+            workflows_factory = cast(PluginProtocol, workflows_plugin)
             return workflows_factory(self)
         except TypeError as error:
-            raise ImportError(
+            raise PluginLoadError(
                 "Failed to instantiate workflows from the discovered plugin entry point."
             ) from error
 
