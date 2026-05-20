@@ -5,6 +5,8 @@ HTTP request execution with retries and monitoring.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional
 
 import httpx
@@ -14,7 +16,7 @@ from tenacity import (
     RetryError,
     Retrying,
     stop_after_attempt,
-    wait_exponential,
+    wait_random_exponential,
 )
 
 from imednet.core.http.handlers import handle_response
@@ -43,6 +45,7 @@ class BaseRequestExecutor(ABC):
         self.backoff_factor = backoff_factor
         self.tracer = tracer
         self.retry_policy = retry_policy or DefaultRetryPolicy()
+        self._jitter_wait = wait_random_exponential(multiplier=self.backoff_factor)
 
     def _get_retry_predicate(self, method: str) -> Callable[[RetryCallState], bool]:
         """Return a retry predicate that includes the HTTP method in state."""
@@ -85,6 +88,36 @@ class BaseRequestExecutor(ABC):
         monitor.on_retry_error(e)
         raise RuntimeError("Request failed without response or exception")  # Unreachable
 
+    @staticmethod
+    def _parse_retry_after_seconds(response: httpx.Response) -> Optional[float]:
+        value = response.headers.get("Retry-After")
+        if not value:
+            return None
+
+        try:
+            delay = float(value)
+            return max(delay, 0.0)
+        except ValueError:
+            pass
+
+        try:
+            retry_time = parsedate_to_datetime(value)
+            if retry_time.tzinfo is None:
+                retry_time = retry_time.replace(tzinfo=timezone.utc)
+            delay = (retry_time - datetime.now(timezone.utc)).total_seconds()
+            return max(delay, 0.0)
+        except (TypeError, ValueError, OverflowError):
+            return None
+
+    def _wait_strategy(self, retry_state: RetryCallState) -> float:
+        if retry_state.outcome and not retry_state.outcome.failed:
+            result = retry_state.outcome.result()
+            if isinstance(result, httpx.Response):
+                retry_after_seconds = self._parse_retry_after_seconds(result)
+                if retry_after_seconds is not None:
+                    return retry_after_seconds
+        return float(self._jitter_wait(retry_state))
+
     @abstractmethod
     def __call__(self, method: str, url: str, **kwargs: Any) -> Any:
         """Execute the request."""
@@ -110,7 +143,7 @@ class SyncRequestExecutor(BaseRequestExecutor):
 
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
-            wait=wait_exponential(multiplier=self.backoff_factor),
+            wait=self._wait_strategy,
             retry=self._get_retry_predicate(method),
             reraise=False,
         )
@@ -143,7 +176,7 @@ class AsyncRequestExecutor(BaseRequestExecutor):
 
         retryer = AsyncRetrying(
             stop=stop_after_attempt(self.retries),
-            wait=wait_exponential(multiplier=self.backoff_factor),
+            wait=self._wait_strategy,
             retry=self._get_retry_predicate(method),
             reraise=False,
         )
