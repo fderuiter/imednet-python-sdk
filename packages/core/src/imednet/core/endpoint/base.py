@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import warnings
 from typing import Any, Callable, Dict, List, Optional, TypeVar
-from urllib.parse import quote, unquote
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -23,6 +22,7 @@ from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, ParamProcessor, RequestorProtocol
 from imednet.models.json_base import JsonModel
 from imednet.utils.filters import build_filter_string
+from imednet.utils.url import build_safe_path
 
 T = TypeVar("T", bound=JsonModel)
 
@@ -69,14 +69,7 @@ class GenericEndpoint(EndpointABC[T]):
         Returns:
             The full API path string.
         """
-        base = self.BASE_PATH.strip("/")
-        parts = [base] if base else []
-        for seg in segments:
-            text = str(seg).strip("/")
-            if text:
-                # Encode path segments to prevent traversal and injection
-                parts.append(quote(unquote(text), safe="@"))
-        return "/" + "/".join(parts)
+        return "/" + build_safe_path(self.BASE_PATH, *segments)
 
     def _require_sync_client(self) -> RequestorProtocol:
         """Return the configured sync client or raise if missing."""
