@@ -4,7 +4,9 @@ HTTP request execution with retries and monitoring.
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional
@@ -46,6 +48,33 @@ class BaseRequestExecutor(ABC):
         self.tracer = tracer
         self.retry_policy = retry_policy or DefaultRetryPolicy()
         self._jitter_wait = wait_random_exponential(multiplier=self.backoff_factor)
+
+    @staticmethod
+    @contextmanager
+    def _suppress_httpx_request_logging() -> Any:
+        logger_names = (
+            name
+            for name in logging.root.manager.loggerDict
+            if name == "httpx"
+            or name.startswith("httpx.")
+            or name == "httpcore"
+            or name.startswith("httpcore.")
+        )
+        logger_states: list[tuple[logging.Logger, int]] = []
+        for name in logger_names:
+            logger = logging.getLogger(name)
+            logger_states.append((logger, logger.level))
+            logger.setLevel(logging.WARNING)
+        for name in ("httpx", "httpcore"):
+            logger = logging.getLogger(name)
+            if all(existing is not logger for existing, _ in logger_states):
+                logger_states.append((logger, logger.level))
+                logger.setLevel(logging.WARNING)
+        try:
+            yield
+        finally:
+            for logger, original_level in logger_states:
+                logger.setLevel(original_level)
 
     def _get_retry_predicate(self, method: str) -> Callable[[RetryCallState], bool]:
         """Return a retry predicate that includes the HTTP method in state."""
@@ -139,7 +168,8 @@ class SyncRequestExecutor(BaseRequestExecutor):
 
     def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
         def send_fn() -> httpx.Response:
-            return self.send(method, url, **kwargs)
+            with self._suppress_httpx_request_logging():
+                return self.send(method, url, **kwargs)
 
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
@@ -172,7 +202,8 @@ class AsyncRequestExecutor(BaseRequestExecutor):
 
     async def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
         async def send_fn() -> httpx.Response:
-            return await self.send(method, url, **kwargs)
+            with self._suppress_httpx_request_logging():
+                return await self.send(method, url, **kwargs)
 
         retryer = AsyncRetrying(
             stop=stop_after_attempt(self.retries),
