@@ -3,9 +3,20 @@
 ## Project scope
 The SDK targets Python 3.10–3.12 and includes:
 
-- Core client and models under `imednet/`
-- Workflows in `imednet/workflows/`
+- Core SDK package under `packages/core/src/imednet/`
+- Workflow orchestration package under `packages/plugins-workflows/src/imednet_workflows/`
+- Airflow provider package under `packages/providers-airflow/src/apache_airflow_providers_imednet/`
 - Docs, tests, examples, and tooling in their directories
+
+`AGENTS.md` is the authoritative contributor contract for architecture boundaries,
+quality gates, and release expectations.
+
+## Workspace package boundaries
+- `packages/core/src/imednet/`: SDK transport, endpoints, models, CLI surface.
+- `packages/plugins-workflows/src/imednet_workflows/`: higher-level workflows built on the SDK.
+- `packages/providers-airflow/src/apache_airflow_providers_imednet/`: Airflow hooks/operators.
+
+For the architecture view, see `docs/architecture.rst`.
 
 ## Prerequisites
 - [Poetry](https://python-poetry.org/docs/) (for dependency management)
@@ -120,6 +131,7 @@ Releases are fully automated and driven by merged PR titles:
    opens/updates a Release PR with calculated semantic version and changelog updates for the package
    manifests under `packages/`.
 5. Maintainers trigger publication by approving and merging the bot-created Release PR.
+6. Do not run manual publish commands (`python -m build`, `twine upload`) from contributor branches.
 
 Configuration requirements:
 - Publishing requires `PYPI_API_TOKEN` in repository secrets (or migration to PyPI Trusted
