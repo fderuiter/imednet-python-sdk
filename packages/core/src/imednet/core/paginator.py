@@ -71,7 +71,8 @@ class BasePaginator(Generic[ClientT]):
             return None
         if not isinstance(total_pages, int) or isinstance(total_pages, bool):
             raise PaginationError(
-                f"Response pagination cursor 'totalPages' must be an integer, got {type(total_pages).__name__}."
+                "Response pagination cursor 'totalPages' must be an integer, "
+                f"got {type(total_pages).__name__}."
             )
         if total_pages < 0:
             raise PaginationError("Response pagination cursor 'totalPages' cannot be negative.")
