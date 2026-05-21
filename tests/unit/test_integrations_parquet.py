@@ -7,7 +7,7 @@ import pytest
 import imednet.integrations.parquet as parquet_mod
 
 
-def test_export_to_hive_parquet_creates_expected_layout_and_contents(tmp_path, monkeypatch) -> None:
+def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
@@ -54,7 +54,7 @@ def test_export_to_hive_parquet_creates_expected_layout_and_contents(tmp_path, m
     assert vitals_df.to_dict("records") == [{"weight": 73.5}]
 
 
-def test_export_to_hive_parquet_studies_do_not_conflict(tmp_path, monkeypatch) -> None:
+def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
