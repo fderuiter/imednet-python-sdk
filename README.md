@@ -84,6 +84,19 @@ pip install imednet-workflows
 pip install "apache-airflow>=3.2.0" apache-airflow-providers-imednet apache-airflow-providers-amazon
 ```
 
+### Version Pinning
+
+Each workspace package is versioned and released independently. To pin specific versions:
+
+```bash
+pip install "imednet==0.7.0"
+pip install "imednet-workflows==0.5.3"
+pip install "apache-airflow-providers-imednet==0.5.2"
+```
+
+See [GitHub Releases](https://github.com/fderuiter/imednet-python-sdk/releases) and each package's
+`CHANGELOG.md` for release history and version guidance.
+
 ### Development Version
 
 ```bash
@@ -282,6 +295,11 @@ Releases are automated with `release-please` in manifest mode:
 3. The `Automated Release` workflow updates or opens a Release PR with calculated
    version bumps and changelog updates for packages under `packages/`.
 4. Maintainers publish by merging the bot-created Release PR.
+
+Each workspace package has an **independent version and changelog**. Release-please creates
+package-specific tags (`imednet-v0.7.0`, `imednet-workflows-v0.5.3`,
+`apache-airflow-providers-imednet-v0.5.2`), and the CI publishes only the package whose tag
+was pushed.
 
 Do not manually edit versions in `packages/*/pyproject.toml` and do not publish
 with manual `build`/`twine` commands from contributor branches.

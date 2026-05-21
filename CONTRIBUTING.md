@@ -133,9 +133,56 @@ Releases are fully automated and driven by merged PR titles:
 5. Maintainers trigger publication by approving and merging the bot-created Release PR.
 6. Do not run manual publish commands (`python -m build`, `twine upload`) from contributor branches.
 
+### How releases work
+
+The repository uses [`release-please`](https://github.com/googleapis/release-please) in **manifest
+mode** (`release-please-config.json` + `.release-please-manifest.json`). Each workspace package
+has an independent version and changelog:
+
+| PyPI package | Workspace path | Config key |
+|---|---|---|
+| `imednet` | `packages/core/` | `packages/core` |
+| `imednet-workflows` | `packages/plugins-workflows/` | `packages/plugins-workflows` |
+| `apache-airflow-providers-imednet` | `packages/providers-airflow/` | `packages/providers-airflow` |
+
+**Tag format** — release-please creates package-specific Git tags when a Release PR is merged:
+
+| Package | Tag format | Example |
+|---|---|---|
+| `imednet` | `imednet-v<version>` | `imednet-v0.7.0` |
+| `imednet-workflows` | `imednet-workflows-v<version>` | `imednet-workflows-v0.5.3` |
+| `apache-airflow-providers-imednet` | `apache-airflow-providers-imednet-v<version>` | `apache-airflow-providers-imednet-v0.5.2` |
+
+**PyPI publishing** — the `Pipeline` workflow in `.github/workflows/main.yml` contains three
+separate publish jobs (`publish-core`, `publish-workflows`, `publish-providers`). Each job is gated
+on its own tag prefix so only the package whose tag was pushed is published:
+
+```
+imednet-v* tag         → publish-core    → uploads imednet to PyPI
+imednet-workflows-v*   → publish-workflows → uploads imednet-workflows to PyPI
+apache-airflow-*-v*    → publish-providers → uploads apache-airflow-providers-imednet to PyPI
+```
+
+Publishing uses PyPI Trusted Publishers (OIDC) via `pypa/gh-action-pypi-publish`. No API token
+configuration is required when Trusted Publishers are configured on PyPI.
+
+**Changelog** — each package has its own `CHANGELOG.md` (e.g., `packages/core/CHANGELOG.md`).
+Release-please writes per-package changelogs automatically.
+
+**Version pinning** — to pin a specific release of each package:
+
+```bash
+pip install "imednet==0.7.0"
+pip install "imednet-workflows==0.5.3"
+pip install "apache-airflow-providers-imednet==0.5.2"
+```
+
+Changelogs and release notes per package are available on
+[GitHub Releases](https://github.com/fderuiter/imednet-python-sdk/releases).
+
 Configuration requirements:
-- Publishing requires `PYPI_API_TOKEN` in repository secrets (or migration to PyPI Trusted
-  Publishers/OIDC).
+- Publishing requires PyPI Trusted Publishers (OIDC) configured for each package on PyPI, **or**
+  a `PYPI_API_TOKEN` repository secret as a fallback.
 - Configure branch protection on `main` to require pull request reviews and required status checks,
   including `Semantic PR Title`.
 
