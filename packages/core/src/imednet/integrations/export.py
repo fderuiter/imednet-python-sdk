@@ -17,7 +17,11 @@ from ..sdk import ImednetSDK
 
 
 def _quote_duckdb_identifier(name: str) -> str:
-    return f'"{name.replace(chr(34), chr(34) * 2)}"'
+    escaped_name = name.replace('"', '""')
+    return f'"{escaped_name}"'
+
+
+_DUCKDB_DF_ALIAS = "df"
 
 
 def _record_mapper() -> Any:
@@ -272,7 +276,30 @@ def export_to_duckdb(
     variable_whitelist: Optional[List[str]] = None,
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
-    """Export study records to a DuckDB table using native DataFrame registration."""
+    """Export study records to a DuckDB table using native DataFrame registration.
+
+    Parameters
+    ----------
+    sdk:
+        Authenticated SDK instance used to fetch study records.
+    study_key:
+        Study identifier to export.
+    db_path:
+        Path to the target ``.duckdb`` database file.
+    table_name:
+        Name of the destination DuckDB table.
+    use_labels_as_columns:
+        When ``True``, variable labels are used for DataFrame column names.
+    variable_whitelist:
+        Optional list of variable names to include.
+    form_whitelist:
+        Optional list of form IDs to include.
+
+    Raises
+    ------
+    ImportError
+        If the optional ``duckdb`` dependency is not installed.
+    """
     try:
         import duckdb
     except ImportError as error:
@@ -291,11 +318,12 @@ def export_to_duckdb(
 
     conn: Any = duckdb.connect(db_path)
     try:
-        conn.register("df", df)
+        conn.register(_DUCKDB_DF_ALIAS, df)
         conn.execute(
-            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} AS SELECT * FROM df"
+            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "
+            f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
         )
-        conn.unregister("df")
+        conn.unregister(_DUCKDB_DF_ALIAS)
     finally:
         conn.close()
 
@@ -309,7 +337,30 @@ def export_to_duckdb_by_form(
     variable_whitelist: Optional[List[str]] = None,
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
-    """Export records to separate DuckDB tables for each form."""
+    """Export records to separate DuckDB tables for each form.
+
+    Each form is exported to a table named after ``form.form_key``.
+
+    Parameters
+    ----------
+    sdk:
+        Authenticated SDK instance used to fetch study records.
+    study_key:
+        Study identifier to export.
+    db_path:
+        Path to the target ``.duckdb`` database file.
+    use_labels_as_columns:
+        When ``True``, variable labels are used for DataFrame column names.
+    variable_whitelist:
+        Optional list of variable names to include.
+    form_whitelist:
+        Optional list of form IDs to include.
+
+    Raises
+    ------
+    ImportError
+        If the optional ``duckdb`` dependency is not installed.
+    """
     try:
         import duckdb
     except ImportError as error:
@@ -332,12 +383,12 @@ def export_to_duckdb_by_form(
                 form_whitelist=[form.form_id],
             )
 
-            conn.register("df", df)
+            conn.register(_DUCKDB_DF_ALIAS, df)
             conn.execute(
                 f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "
-                "AS SELECT * FROM df"
+                f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
             )
-            conn.unregister("df")
+            conn.unregister(_DUCKDB_DF_ALIAS)
     finally:
         conn.close()
 

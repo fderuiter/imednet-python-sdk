@@ -130,7 +130,7 @@ def test_export_to_duckdb(monkeypatch):
 
     duckdb_module.connect.assert_called_once_with("out.duckdb")
     conn.register.assert_called_once_with("df", df)
-    conn.execute.assert_called_once_with('CREATE OR REPLACE TABLE "my table" AS SELECT * FROM df')
+    conn.execute.assert_called_once_with('CREATE OR REPLACE TABLE "my table" AS SELECT * FROM "df"')
     conn.unregister.assert_called_once_with("df")
     conn.close.assert_called_once_with()
 
@@ -148,7 +148,9 @@ def test_export_to_duckdb_handles_wide_dataframe(monkeypatch):
     export_mod.export_to_duckdb(sdk, "STUDY", "wide.duckdb", "wide_table")
 
     conn.register.assert_called_once_with("df", wide_df)
-    conn.execute.assert_called_once_with('CREATE OR REPLACE TABLE "wide_table" AS SELECT * FROM df')
+    conn.execute.assert_called_once_with(
+        'CREATE OR REPLACE TABLE "wide_table" AS SELECT * FROM "df"'
+    )
 
 
 def test_export_to_duckdb_import_error(monkeypatch):
@@ -319,8 +321,8 @@ def test_export_to_duckdb_by_form(monkeypatch):
     ]
     assert conn.register.call_args_list == [call("df", df1), call("df", df2)]
     assert conn.execute.call_args_list == [
-        call('CREATE OR REPLACE TABLE "F1" AS SELECT * FROM df'),
-        call('CREATE OR REPLACE TABLE "F2" AS SELECT * FROM df'),
+        call('CREATE OR REPLACE TABLE "F1" AS SELECT * FROM "df"'),
+        call('CREATE OR REPLACE TABLE "F2" AS SELECT * FROM "df"'),
     ]
     assert conn.unregister.call_args_list == [call("df"), call("df")]
     conn.close.assert_called_once_with()
