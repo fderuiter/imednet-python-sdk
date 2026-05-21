@@ -253,7 +253,7 @@ def test_export_to_duckdb(monkeypatch):
     )
     duckdb_module.connect.assert_called_once_with("study.duckdb")
     conn.register.assert_called_once_with("df", df)
-    conn.execute.assert_called_once_with("CREATE OR REPLACE TABLE records AS SELECT * FROM df")
+    conn.execute.assert_called_once_with('CREATE OR REPLACE TABLE "records" AS SELECT * FROM df')
     conn.close.assert_called_once_with()
 
 
@@ -273,7 +273,9 @@ def test_export_to_duckdb_wide_dataframe(monkeypatch):
     export_mod.export_to_duckdb(sdk, "STUDY", "study.duckdb", "wide_records")
 
     conn.register.assert_called_once_with("df", wide_df)
-    conn.execute.assert_called_once_with("CREATE OR REPLACE TABLE wide_records AS SELECT * FROM df")
+    conn.execute.assert_called_once_with(
+        'CREATE OR REPLACE TABLE "wide_records" AS SELECT * FROM df'
+    )
 
 
 def test_export_to_duckdb_by_form(monkeypatch):
@@ -285,8 +287,8 @@ def test_export_to_duckdb_by_form(monkeypatch):
 
     form_df_1 = pd.DataFrame({"A": [1]})
     form_df_2 = pd.DataFrame({"B": [2]})
-    records_df = MagicMock(side_effect=[form_df_1, form_df_2])
-    monkeypatch.setattr(export_mod, "_records_df", records_df)
+    mock_records_df = MagicMock(side_effect=[form_df_1, form_df_2])
+    monkeypatch.setattr(export_mod, "_records_df", mock_records_df)
 
     conn = MagicMock()
     duckdb_module = ModuleType("duckdb")
@@ -301,14 +303,14 @@ def test_export_to_duckdb_by_form(monkeypatch):
         variable_whitelist=["A", "B"],
     )
 
-    assert records_df.call_count == 2
-    assert records_df.call_args_list[0].kwargs["form_whitelist"] == [1]
-    assert records_df.call_args_list[1].kwargs["form_whitelist"] == [2]
+    assert mock_records_df.call_count == 2
+    assert mock_records_df.call_args_list[0].kwargs["form_whitelist"] == [1]
+    assert mock_records_df.call_args_list[1].kwargs["form_whitelist"] == [2]
     assert conn.register.call_count == 2
     assert conn.register.call_args_list[0].args == ("df", form_df_1)
     assert conn.register.call_args_list[1].args == ("df", form_df_2)
-    expected_stmt_1 = "CREATE OR REPLACE TABLE FORM_1 AS SELECT * FROM df"
-    expected_stmt_2 = "CREATE OR REPLACE TABLE FORM_2 AS SELECT * FROM df"
+    expected_stmt_1 = 'CREATE OR REPLACE TABLE "FORM_1" AS SELECT * FROM df'
+    expected_stmt_2 = 'CREATE OR REPLACE TABLE "FORM_2" AS SELECT * FROM df'
     assert conn.execute.call_args_list[0].args[0] == expected_stmt_1
     assert conn.execute.call_args_list[1].args[0] == expected_stmt_2
     conn.close.assert_called_once_with()
@@ -357,6 +359,15 @@ def test_export_to_duckdb_closes_connection_on_error(monkeypatch):
         export_mod.export_to_duckdb(MagicMock(), "STUDY", "study.duckdb", "records")
 
     conn.close.assert_called_once_with()
+
+
+def test_quote_duckdb_identifier():
+    assert export_mod._quote_duckdb_identifier('my"table') == '"my""table"'
+    assert export_mod._quote_duckdb_identifier("") == '""'
+    assert export_mod._quote_duckdb_identifier(" table name ") == '" table name "'
+    assert export_mod._quote_duckdb_identifier("table-name") == '"table-name"'
+    with pytest.raises(ValueError, match="cannot contain null bytes"):
+        export_mod._quote_duckdb_identifier("bad\x00name")
 
 
 def test_export_to_long_sql(monkeypatch):

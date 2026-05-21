@@ -106,6 +106,14 @@ def _prepare_export_df(
     return df
 
 
+def _quote_duckdb_identifier(identifier: str) -> str:
+    """Return a DuckDB identifier safely quoted for SQL string interpolation."""
+    if "\x00" in identifier:
+        raise ValueError("DuckDB table names cannot contain null bytes.")
+    escaped = identifier.replace('"', '""')
+    return f'"{escaped}"'
+
+
 def export_to_parquet(
     sdk: ImednetSDK,
     study_key: str,
@@ -332,7 +340,26 @@ def export_to_duckdb(
     variable_whitelist: Optional[List[str]] = None,
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
-    """Export study records to a DuckDB table using native DataFrame registration."""
+    """Export study records to a DuckDB table using native DataFrame registration.
+
+    Parameters
+    ----------
+    sdk:
+        SDK client used to fetch study records.
+    study_key:
+        Study identifier used for record export.
+    db_path:
+        Path to the target ``.duckdb`` database file.
+    table_name:
+        Target DuckDB table name.
+    use_labels_as_columns:
+        When ``True``, variable labels are used for column names instead of
+        variable names.
+    variable_whitelist:
+        Optional list of variable names to include.
+    form_whitelist:
+        Optional list of form IDs to include.
+    """
     try:
         import duckdb
     except ImportError as error:
@@ -349,10 +376,11 @@ def export_to_duckdb(
         form_whitelist=form_whitelist,
     )
 
+    quoted_table_name = _quote_duckdb_identifier(table_name)
     conn = duckdb.connect(db_path)
     try:
         conn.register("df", df)
-        conn.execute(f"CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM df")
+        conn.execute(f"CREATE OR REPLACE TABLE {quoted_table_name} AS SELECT * FROM df")
     finally:
         conn.close()
 
@@ -366,7 +394,24 @@ def export_to_duckdb_by_form(
     variable_whitelist: Optional[List[str]] = None,
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
-    """Export records to separate DuckDB tables for each form."""
+    """Export records to separate DuckDB tables for each form.
+
+    Parameters
+    ----------
+    sdk:
+        SDK client used to fetch study records.
+    study_key:
+        Study identifier used for record export.
+    db_path:
+        Path to the target ``.duckdb`` database file.
+    use_labels_as_columns:
+        When ``True``, variable labels are used for column names instead of
+        variable names.
+    variable_whitelist:
+        Optional list of variable names to include.
+    form_whitelist:
+        Optional list of form IDs to include.
+    """
     try:
         import duckdb
     except ImportError as error:
@@ -388,8 +433,9 @@ def export_to_duckdb_by_form(
                 variable_whitelist=variable_whitelist,
                 form_whitelist=[form.form_id],
             )
+            quoted_table_name = _quote_duckdb_identifier(form.form_key)
             conn.register("df", df)
-            conn.execute(f"CREATE OR REPLACE TABLE {form.form_key} AS SELECT * FROM df")
+            conn.execute(f"CREATE OR REPLACE TABLE {quoted_table_name} AS SELECT * FROM df")
     finally:
         conn.close()
 
