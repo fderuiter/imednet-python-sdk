@@ -3,7 +3,10 @@ name: Pipeline
 on:
   push:
     branches: [main]
-    tags: ["v*.*.*"]
+    tags:
+      - "imednet-v*.*.*"
+      - "imednet-workflows-v*.*.*"
+      - "apache-airflow-providers-imednet-v*.*.*"
   pull_request:
     branches: [main]
 
@@ -113,14 +116,25 @@ jobs:
             fi
           done
 
-      - name: Upload Artifacts
+      - name: Upload Core Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: |
-            packages/core/dist/
-            packages/plugins-workflows/dist/
-            packages/providers-airflow/dist/
+          name: dist-core
+          path: packages/core/dist/
+          retention-days: 1
+
+      - name: Upload Workflows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-workflows
+          path: packages/plugins-workflows/dist/
+          retention-days: 1
+
+      - name: Upload Providers Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-providers
+          path: packages/providers-airflow/dist/
           retention-days: 1
 
   # ------------------------------------------------------------------
@@ -203,20 +217,57 @@ jobs:
         uses: actions/deploy-pages@v4
 
   # ------------------------------------------------------------------
-  # JOB 6: PUBLISH TO PYPI (Only on Tags)
+  # JOB 6: PUBLISH TO PYPI (Only on package-specific tags)
+  # release-please manifest mode creates tags of the form
+  #   <package-name>-v<version>, e.g. imednet-v0.7.0
+  # Each job publishes exactly the package whose tag triggered the run.
   # ------------------------------------------------------------------
-  publish:
-    name: Publish to PyPI
-    needs: test # Only publish if tests passed
-    if: startsWith(github.ref, 'refs/tags/v')
+  publish-core:
+    name: Publish imednet to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/imednet-v')
     runs-on: ubuntu-latest
     permissions:
       id-token: write # Mandatory for trusted publishing
     steps:
-      - name: Download Artifacts
+      - name: Download Core Artifact
         uses: actions/download-artifact@v4
         with:
-          name: dist
+          name: dist-core
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-workflows:
+    name: Publish imednet-workflows to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/imednet-workflows-v')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Workflows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-workflows
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-providers:
+    name: Publish apache-airflow-providers-imednet to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/apache-airflow-providers-imednet-v')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Providers Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-providers
           path: dist
 
       - name: Publish to PyPI

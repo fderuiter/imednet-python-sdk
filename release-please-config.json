@@ -2,15 +2,18 @@
   "packages": {
     "packages/core": {
       "release-type": "python",
-      "package-name": "imednet"
+      "package-name": "imednet",
+      "changelog-path": "CHANGELOG.md"
     },
     "packages/providers-airflow": {
       "release-type": "python",
-      "package-name": "apache-airflow-providers-imednet"
+      "package-name": "apache-airflow-providers-imednet",
+      "changelog-path": "CHANGELOG.md"
     },
     "packages/plugins-workflows": {
       "release-type": "python",
-      "package-name": "imednet-workflows"
+      "package-name": "imednet-workflows",
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }

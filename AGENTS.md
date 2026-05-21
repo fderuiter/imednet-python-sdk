@@ -94,7 +94,17 @@ New endpoints must be typed methods on the appropriate resource class. Shared lo
 
 ### Release Process
 - Do **not** manually edit package versions in `packages/*/pyproject.toml`. Versions are managed automatically by `release-please`.
-- Releases are triggered by merging the bot-created Release PR into `main`; publishing to PyPI is handled by the tag-triggered `publish` job in `.github/workflows/main.yml`.
+- Releases are fully automated. After merging a Release PR, `release-please` creates a package-specific Git tag and the `Pipeline` workflow publishes the tagged package to PyPI.
+- Each workspace package has an **independent** version, changelog, and publish job:
+
+  | Package | Tag format | Publish job |
+  |---|---|---|
+  | `imednet` | `imednet-v<version>` | `publish-core` |
+  | `imednet-workflows` | `imednet-workflows-v<version>` | `publish-workflows` |
+  | `apache-airflow-providers-imednet` | `apache-airflow-providers-imednet-v<version>` | `publish-providers` |
+
+- Each publish job in `.github/workflows/main.yml` is gated on its own tag prefix, so only the package whose tag was pushed is published.
+- See `CONTRIBUTING.md` → "How releases work" for the full process and version-pinning guidance.
 
 ## 5. Area Guidelines
 
