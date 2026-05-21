@@ -1,5 +1,5 @@
 {
-  "packages/core": "0.6.2",
+  "packages/core": "0.7.0",
   "packages/providers-airflow": "0.5.2",
-  "packages/plugins-workflows": "0.5.2"
+  "packages/plugins-workflows": "0.5.3"
 }
