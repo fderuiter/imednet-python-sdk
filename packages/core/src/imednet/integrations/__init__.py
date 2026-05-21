@@ -2,6 +2,8 @@
 
 from .export import (
     export_to_csv,
+    export_to_duckdb,
+    export_to_duckdb_by_form,
     export_to_excel,
     export_to_json,
     export_to_long_sql,
@@ -12,6 +14,8 @@ from .export import (
 
 __all__ = [
     "export_to_csv",
+    "export_to_duckdb",
+    "export_to_duckdb_by_form",
     "export_to_excel",
     "export_to_json",
     "export_to_long_sql",
