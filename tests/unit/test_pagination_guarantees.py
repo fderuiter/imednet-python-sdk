@@ -27,7 +27,7 @@ def test_single_page_iteration() -> None:
     with httpx.Client(base_url="https://api.test") as client:
         paginator = Paginator(client, "/items", page_size=50)
         assert paginator.page_size == 50
-        assert paginator.cursor == 0
+        assert paginator.cursor is None
         assert list(paginator) == [1, 2]
         assert paginator.cursor is None
 
