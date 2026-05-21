@@ -41,11 +41,21 @@ urllib3 = "^2.7.0"
 filelock = "^3.20.3"
 pygments = "^2.19.2"
 cryptography = ">=46.0.7"
+pandas = { version = ">=2.2.3,<3.0.0", optional = true }
+sqlalchemy = { version = "^2.0", optional = true }
+openpyxl = { version = "^3.1", optional = true }
+pyarrow = { version = ">=14.0.0", optional = true }
+duckdb = { version = ">=1.0.0", optional = true }
 
 [tool.poetry.extras]
 # Install via: pip install 'imednet[cli]'
 # typer[all] transitively includes rich and other CLI rendering dependencies.
 cli = ["typer"]
+# Install via: pip install 'imednet[duckdb]'
+duckdb = ["duckdb"]
+# Install via: pip install 'imednet[export]'
+# Includes all export dependencies (CSV, Excel, Parquet, SQL, DuckDB)
+export = ["pandas", "sqlalchemy", "pyarrow", "openpyxl", "duckdb"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
