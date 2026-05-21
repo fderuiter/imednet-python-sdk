@@ -13,6 +13,7 @@ Welcome to imednet's documentation!
    quick_start
    configuration
    async_quick_start
+   pagination
    api_overview
    rest_api_reference
    form_builder
