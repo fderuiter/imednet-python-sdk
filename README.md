@@ -51,6 +51,10 @@ graph TD
     Client --> |httpx| API
 ```
 
+For workspace package boundaries (`packages/core`, `packages/plugins-workflows`,
+`packages/providers-airflow`), see [docs/architecture.rst](docs/architecture.rst)
+and the contributor contract in [AGENTS.md](AGENTS.md).
+
 ---
 
 ## Installation
@@ -240,11 +244,17 @@ the specified table name. See ``docs/cli.rst`` for full examples.
 
 ```bash
 ./scripts/setup.sh  # once
-poetry run ruff check --fix .
 poetry run black --check .
 poetry run isort --check --profile black .
+poetry run ruff check .
 poetry run mypy packages/core/src/imednet
-poetry run pytest -q
+poetry run mypy packages/plugins-workflows/src/imednet_workflows
+poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+poetry run pytest -q \
+  --cov=imednet \
+  --cov=imednet_workflows \
+  --cov=apache_airflow_providers_imednet \
+  --cov-fail-under=90
 ```
 
 After running tests, validate documentation builds cleanly (no warnings):
@@ -253,7 +263,7 @@ After running tests, validate documentation builds cleanly (no warnings):
 make docs
 ```
 
-See [AGENTS.md](AGENTS.md) for full documentation guidelines.
+See [AGENTS.md](AGENTS.md) for the full contributor workflow and quality gate contract.
 
 ### Smoke-test workflow
 
@@ -263,15 +273,18 @@ Use the workflow to confirm real API access on demand or via its nightly schedul
 INFO-level log messages stream to the terminal during these runs, making it easier to
 debug failures.
 
-### Building & Publishing
+### Release Process
 
-```bash
-python -m build
-python -m twine upload dist/*
-```
+Releases are automated with `release-please` in manifest mode:
 
-Pushing a Git tag like `v0.1.4` triggers the GitHub Actions workflow that builds
-and publishes the package to PyPI.
+1. Open a PR with a Conventional Commit title (`feat:`, `fix:`, `docs:`, etc.).
+2. Merge to `main` with **Squash and merge** once checks are green.
+3. The `Automated Release` workflow updates or opens a Release PR with calculated
+   version bumps and changelog updates for packages under `packages/`.
+4. Maintainers publish by merging the bot-created Release PR.
+
+Do not manually edit versions in `packages/*/pyproject.toml` and do not publish
+with manual `build`/`twine` commands from contributor branches.
 
 ### Versioning & Changelog
 
