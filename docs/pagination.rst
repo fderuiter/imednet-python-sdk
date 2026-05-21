@@ -9,7 +9,8 @@ Cursor model
 - The paginator uses a 0-based page cursor sent as the ``page`` query parameter.
 - ``size`` is the requested page size.
 - ``Paginator.page_size`` exposes the active page size (default: ``100``).
-- ``Paginator.cursor`` exposes the next page cursor and becomes ``None`` once iteration is exhausted.
+- ``Paginator.cursor`` is ``None`` before iteration starts, then exposes the next
+  page cursor while iterating, and returns to ``None`` once exhausted.
 - The SDK does not enforce a maximum page size value; API-side limits still apply.
 
 Iteration and memory behavior

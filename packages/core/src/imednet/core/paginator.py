@@ -32,7 +32,7 @@ class BasePaginator(Generic[ClientT]):
         self.size_param = size_param
         self.data_key = data_key
         self.metadata_key = metadata_key
-        self._cursor: Optional[int] = 0
+        self._cursor: Optional[int] = None
 
     @property
     def cursor(self) -> Optional[int]:
@@ -69,7 +69,7 @@ class BasePaginator(Generic[ClientT]):
                     "Response pagination metadata is missing required 'totalPages' cursor."
                 )
             return None
-        if not isinstance(total_pages, int) or isinstance(total_pages, bool):
+        if isinstance(total_pages, bool) or not isinstance(total_pages, int):
             raise PaginationError(
                 "Response pagination cursor 'totalPages' must be an integer, "
                 f"got {type(total_pages).__name__}."
