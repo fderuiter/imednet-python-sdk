@@ -16,6 +16,10 @@ from .. import ImednetClient
 from ..sdk import ImednetSDK
 
 
+def _quote_duckdb_identifier(name: str) -> str:
+    return f'"{name.replace(chr(34), chr(34) * 2)}"'
+
+
 def _record_mapper() -> Any:
     try:
         return import_module("imednet_workflows.record_mapper").RecordMapper
@@ -256,6 +260,86 @@ def export_to_sql(
         if_exists=if_exists,
         **kwargs,
     )  # type: ignore[arg-type]
+
+
+def export_to_duckdb(
+    sdk: ImednetSDK,
+    study_key: str,
+    db_path: str,
+    table_name: str,
+    *,
+    use_labels_as_columns: bool = False,
+    variable_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
+) -> None:
+    """Export study records to a DuckDB table using native DataFrame registration."""
+    try:
+        import duckdb
+    except ImportError as error:
+        raise ImportError(
+            "DuckDB export requires the optional 'duckdb' dependency. "
+            "Install with `pip install 'imednet[duckdb]'`."
+        ) from error
+
+    df = _prepare_export_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
+        variable_whitelist=variable_whitelist,
+        form_whitelist=form_whitelist,
+    )
+
+    conn: Any = duckdb.connect(db_path)
+    try:
+        conn.register("df", df)
+        conn.execute(
+            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} AS SELECT * FROM df"
+        )
+        conn.unregister("df")
+    finally:
+        conn.close()
+
+
+def export_to_duckdb_by_form(
+    sdk: ImednetSDK,
+    study_key: str,
+    db_path: str,
+    *,
+    use_labels_as_columns: bool = False,
+    variable_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
+) -> None:
+    """Export records to separate DuckDB tables for each form."""
+    try:
+        import duckdb
+    except ImportError as error:
+        raise ImportError(
+            "DuckDB export requires the optional 'duckdb' dependency. "
+            "Install with `pip install 'imednet[duckdb]'`."
+        ) from error
+
+    conn: Any = duckdb.connect(db_path)
+    try:
+        for form in sdk.forms.list(study_key=study_key):
+            if form_whitelist is not None and form.form_id not in form_whitelist:
+                continue
+
+            df = _records_df(
+                sdk,
+                study_key,
+                use_labels_as_columns=use_labels_as_columns,
+                variable_whitelist=variable_whitelist,
+                form_whitelist=[form.form_id],
+            )
+
+            conn.register("df", df)
+            conn.execute(
+                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "
+                "AS SELECT * FROM df"
+            )
+            conn.unregister("df")
+    finally:
+        conn.close()
 
 
 def export_to_sql_by_form(
