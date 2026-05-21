@@ -5,6 +5,7 @@ from typing import Any, AsyncIterator, Dict, Generic, Iterator, Optional, TypeVa
 import httpx
 
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.errors.client import PaginationError
 
 ClientT = TypeVar("ClientT", RequestorProtocol, AsyncRequestorProtocol)
 
@@ -31,6 +32,12 @@ class BasePaginator(Generic[ClientT]):
         self.size_param = size_param
         self.data_key = data_key
         self.metadata_key = metadata_key
+        self._cursor: Optional[int] = 0
+
+    @property
+    def cursor(self) -> Optional[int]:
+        """The next page cursor (0-based page index), or ``None`` when exhausted."""
+        return self._cursor
 
     def _build_params(self, page: int) -> Dict[str, Any]:
         query = dict(self.params)
@@ -48,7 +55,7 @@ class BasePaginator(Generic[ClientT]):
             )
         return items
 
-    def _next_page(self, payload: Dict[str, Any], page: int) -> Optional[int]:
+    def _next_page(self, payload: Dict[str, Any], page: int, items_count: int) -> Optional[int]:
         pagination = payload.get("pagination")
         if pagination is not None and not isinstance(pagination, dict):
             raise TypeError(
@@ -56,7 +63,29 @@ class BasePaginator(Generic[ClientT]):
             )
         pagination = pagination or {}
         total_pages = pagination.get("totalPages")
-        if total_pages is None or page >= total_pages - 1:
+        if total_pages is None:
+            if items_count >= self.page_size:
+                raise PaginationError(
+                    "Response pagination metadata is missing required 'totalPages' cursor."
+                )
+            return None
+        if not isinstance(total_pages, int) or isinstance(total_pages, bool):
+            raise PaginationError(
+                f"Response pagination cursor 'totalPages' must be an integer, got {type(total_pages).__name__}."
+            )
+        if total_pages < 0:
+            raise PaginationError("Response pagination cursor 'totalPages' cannot be negative.")
+        if total_pages == 0:
+            if items_count > 0:
+                raise PaginationError(
+                    "Response pagination cursor 'totalPages' cannot be 0 when items are present."
+                )
+            return None
+        if page >= total_pages:
+            raise PaginationError(
+                "Response pagination cursor 'totalPages' is inconsistent with the current page."
+            )
+        if page >= total_pages - 1:
             return None
         return page + 1
 
@@ -66,13 +95,16 @@ class Paginator(BasePaginator[RequestorProtocol]):
 
     def __iter__(self) -> Iterator[Any]:
         page = 0
+        self._cursor = page
         while True:
             params = self._build_params(page)
             response: httpx.Response = self.client.get(self.path, params=params)
             payload = response.json()
-            for item in self._extract_items(payload):
+            items = self._extract_items(payload)
+            for item in items:
                 yield item
-            next_page = self._next_page(payload, page)
+            next_page = self._next_page(payload, page, len(items))
+            self._cursor = next_page
             if next_page is None:
                 break
             page = next_page
@@ -83,13 +115,16 @@ class AsyncPaginator(BasePaginator[AsyncRequestorProtocol]):
 
     async def __aiter__(self) -> AsyncIterator[Any]:
         page = 0
+        self._cursor = page
         while True:
             params = self._build_params(page)
             response: httpx.Response = await self.client.get(self.path, params=params)
             payload = response.json()
-            for item in self._extract_items(payload):
+            items = self._extract_items(payload)
+            for item in items:
                 yield item
-            next_page = self._next_page(payload, page)
+            next_page = self._next_page(payload, page, len(items))
+            self._cursor = next_page
             if next_page is None:
                 break
             page = next_page

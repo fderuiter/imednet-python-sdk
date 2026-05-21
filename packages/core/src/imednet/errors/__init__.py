@@ -12,7 +12,7 @@ from .api import (
     UnauthorizedError,
 )
 from .base import ImednetError
-from .client import ClientError
+from .client import ClientError, PaginationError
 from .network import RequestError
 from .plugin import PluginLoadError
 from .registry import get_error_class
@@ -29,6 +29,7 @@ __all__ = [
     "PluginLoadError",
     "RequestError",
     "ClientError",
+    "PaginationError",
     "ApiError",
     "AuthenticationError",
     "AuthorizationError",

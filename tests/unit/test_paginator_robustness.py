@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from imednet.core.paginator import Paginator
+from imednet.errors import PaginationError
 
 
 class MockClient:
@@ -75,7 +76,7 @@ def test_paginator_infinite_loop_protection():
     client = MockClient({"data": [{"id": 1}], "pagination": {"totalPages": "not an integer"}})
     paginator = Paginator(client, "/path")
 
-    with pytest.raises(TypeError):
+    with pytest.raises(PaginationError):
         list(paginator)
 
 
