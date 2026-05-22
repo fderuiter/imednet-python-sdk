@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
 
 from imednet.errors import FilterConflictError
+from imednet.models.studies import Study
 from imednet.orchestration.orchestrator import MultiStudyOrchestrator
 
 
-def _make_study(study_key: str) -> SimpleNamespace:
-    return SimpleNamespace(study_key=study_key)
+def _make_study(study_key: str) -> Study:
+    return Study(study_key=study_key)
 
 
 def test_orchestrator_is_instantiable_with_default_max_workers() -> None:
@@ -66,9 +66,11 @@ def test_resolve_active_studies_raises_on_conflicting_filters_before_network_cal
     sdk = MagicMock()
     orchestrator = MultiStudyOrchestrator(sdk)
 
-    with pytest.raises(FilterConflictError):
+    with pytest.raises(FilterConflictError) as err:
         orchestrator.resolve_active_studies(whitelist={"A"}, blacklist={"B"})
 
+    assert err.value.whitelist == {"A"}
+    assert err.value.blacklist == {"B"}
     sdk.studies.list.assert_not_called()
 
 
