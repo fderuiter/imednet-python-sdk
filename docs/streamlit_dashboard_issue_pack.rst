@@ -78,7 +78,7 @@ Epic placeholder
    - [ ] `poetry run black --check .`
    - [ ] `poetry run isort --check --profile black .`
    - [ ] `poetry run ruff check .`
-   - [ ] `poetry run mypy packages/plugins-streamlit/src/imednet_streamlit`
+   - [ ] `poetry run mypy (affected packages)`
    - [ ] `poetry run pytest -q`
    - [ ] `make docs` (if docs changed)
 
