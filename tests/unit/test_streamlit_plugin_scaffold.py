@@ -14,6 +14,7 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLUGIN_ROOT = REPO_ROOT / "packages" / "plugins-streamlit"
 PACKAGE_ROOT = PLUGIN_ROOT / "src" / "imednet_streamlit"
+COMPONENT_PALETTE = runpy.run_path(str(PACKAGE_ROOT / "components" / "charts.py"))["PALETTE"]
 
 
 class _FakeNavigation:
@@ -157,7 +158,7 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
 def _make_fake_components_module(fake_st: _FakeDashboardStreamlit) -> ModuleType:
     """Build a fake components module so dashboard pages can be tested in isolation."""
     mod = ModuleType("imednet_streamlit.components")
-    mod.PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]  # type: ignore[attr-defined]
+    mod.PALETTE = COMPONENT_PALETTE  # type: ignore[attr-defined]
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
         fake_st.metric_calls.extend(metrics)

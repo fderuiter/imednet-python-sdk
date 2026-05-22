@@ -32,6 +32,9 @@ DISPLAY_COLUMNS = [
 ]
 STATUS_ORDER = ["Complete", "Incomplete", "Pending SDV", "Verified"]
 COMPLETE_RECORD_STATUSES = {"Complete", "Pending SDV", "Verified"}
+MAX_HEATMAP_SUBJECTS = 50
+MAX_HEATMAP_FORMS = 20
+LARGE_DATASET_WARNING_THRESHOLD = 10_000
 
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -152,7 +155,7 @@ def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
         ),
         fill_value=0,
     )
-    df_display = df_pivot.iloc[:50, :20]
+    df_display = df_pivot.iloc[:MAX_HEATMAP_SUBJECTS, :MAX_HEATMAP_FORMS]
     if df_display.empty:
         return pd.DataFrame(columns=columns)
 
@@ -208,7 +211,7 @@ def render_page() -> None:
     forms_df = _fetch_form_metadata(sdk, study_key)
     df = _prepare_records_dataframe(records_df, forms_df)
 
-    if len(df) > 10_000:
+    if len(df) > LARGE_DATASET_WARNING_THRESHOLD:
         st.warning(
             f"⚠️ This study has {len(df):,} records. Charts may be slow. "
             "Consider filtering by form or site before analyzing."
