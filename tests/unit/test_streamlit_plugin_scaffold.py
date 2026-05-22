@@ -14,6 +14,7 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLUGIN_ROOT = REPO_ROOT / "packages" / "plugins-streamlit"
 PACKAGE_ROOT = PLUGIN_ROOT / "src" / "imednet_streamlit"
+_MISSING = object()
 
 
 def _component_palette() -> list[str]:
@@ -229,6 +230,11 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
 
     # Fake components module (avoids needing real altair/streamlit rendering)
     fake_components_module = _make_fake_components_module(fake_st)
+    package_module = sys.modules.get("imednet_streamlit")
+    saved_auth_attr = getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    saved_components_attr = (
+        getattr(package_module, "components", _MISSING) if package_module else _MISSING
+    )
 
     # Fake imednet_workflows.query_management module
     mock_workflow_cls = MagicMock()
@@ -255,6 +261,9 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
+        if package_module is not None:
+            package_module.auth = fake_auth_module
+            package_module.components = fake_components_module
         runpy.run_path(str(page_path), run_name="__main__")
     finally:
         for key, original in saved.items():
@@ -262,6 +271,15 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
                 sys.modules.pop(key, None)
             else:
                 sys.modules[key] = original
+        if package_module is not None:
+            if saved_auth_attr is _MISSING:
+                delattr(package_module, "auth")
+            else:
+                package_module.auth = saved_auth_attr
+            if saved_components_attr is _MISSING:
+                delattr(package_module, "components")
+            else:
+                package_module.components = saved_components_attr
 
     return fake_st
 
@@ -308,6 +326,11 @@ def _run_records_page(
     fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
 
     fake_components_module = _make_fake_components_module(fake_st)
+    package_module = sys.modules.get("imednet_streamlit")
+    saved_auth_attr = getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    saved_components_attr = (
+        getattr(package_module, "components", _MISSING) if package_module else _MISSING
+    )
 
     saved: dict[str, Any] = {
         key: sys.modules.get(key)
@@ -322,6 +345,9 @@ def _run_records_page(
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        if package_module is not None:
+            package_module.auth = fake_auth_module
+            package_module.components = fake_components_module
         module_globals = runpy.run_path(str(page_path), run_name="__main__")
     finally:
         for key, original in saved.items():
@@ -329,6 +355,15 @@ def _run_records_page(
                 sys.modules.pop(key, None)
             else:
                 sys.modules[key] = original
+        if package_module is not None:
+            if saved_auth_attr is _MISSING:
+                delattr(package_module, "auth")
+            else:
+                package_module.auth = saved_auth_attr
+            if saved_components_attr is _MISSING:
+                delattr(package_module, "components")
+            else:
+                package_module.components = saved_components_attr
 
     return fake_st, module_globals
 

@@ -124,8 +124,8 @@ def _build_status_counts(df: pd.DataFrame) -> pd.DataFrame:
 
     status_counts = df.groupby("record_status").size().reset_index(name="count")
     sort_order = {status: index for index, status in enumerate(STATUS_ORDER)}
-    status_counts["sort_order"] = status_counts["record_status"].map(sort_order).fillna(
-        len(sort_order)
+    status_counts["sort_order"] = (
+        status_counts["record_status"].map(sort_order).fillna(len(sort_order))
     )
     status_counts = status_counts.sort_values(["sort_order", "record_status"]).drop(
         columns=["sort_order"]
@@ -225,9 +225,7 @@ def render_page() -> None:
         else []
     )
     site_options = (
-        [str(value) for value in _sorted_unique_values(df["site_id"])]
-        if "site_id" in df
-        else []
+        [str(value) for value in _sorted_unique_values(df["site_id"])] if "site_id" in df else []
     )
     status_options = _status_options(df)
 
@@ -236,9 +234,7 @@ def render_page() -> None:
         st.subheader("Filters")
         form_filter: list[str] = st.multiselect("Form", form_options)
         site_filter = st.multiselect("Site", site_options)
-        status_filter: list[str] = st.multiselect(
-            "Status", status_options, default=status_options
-        )
+        status_filter: list[str] = st.multiselect("Status", status_options, default=status_options)
 
     df_filtered = _apply_filters(
         df,
