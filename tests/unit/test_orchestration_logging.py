@@ -30,6 +30,7 @@ def test_study_context_log_adapter_process_overrides_extra_study_key() -> None:
 
     assert processed["extra"]["study_key"] == "PROT-01"
     assert processed["extra"]["x"] == 1
+    assert kwargs["extra"]["study_key"] == "OTHER"
 
 
 def test_make_study_logger_uses_orchestration_logger() -> None:

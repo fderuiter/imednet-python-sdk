@@ -22,7 +22,8 @@ class StudyContextLogAdapter(logging.LoggerAdapter):
         self, msg: Any, kwargs: MutableMapping[str, Any]
     ) -> tuple[Any, MutableMapping[str, Any]]:
         """Inject ``study_key`` into the log record ``extra`` mapping."""
-        extra = kwargs.get("extra", {})
+        kwargs = dict(kwargs)
+        extra = dict(kwargs.get("extra", {}))
         extra["study_key"] = self._study_key
         kwargs["extra"] = extra
         return msg, kwargs
