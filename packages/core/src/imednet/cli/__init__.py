@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 import sys
 from importlib import import_module
 
@@ -108,6 +109,44 @@ def _register_missing_workflow_commands() -> None:
     app.add_typer(workflows_app)
 
 
+def _register_missing_dashboard_commands() -> None:
+    @app.command("dashboard")
+    def missing_dashboard() -> None:
+        """Launch the iMednet Streamlit reporting dashboard (requires imednet-streamlit plugin)."""
+        typer.secho(
+            "Dashboard plugin not found. Install it with:\n"
+            "  pip install imednet-streamlit",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1)
+
+
+def run_dashboard(
+    port: int = typer.Option(8501, "--port", "-p", help="Port to run the dashboard on."),
+    no_browser: bool = typer.Option(
+        False, "--no-browser", help="Suppress automatic browser launch."
+    ),
+) -> None:
+    """Launch the interactive iMednet Streamlit reporting dashboard."""
+    try:
+        _app_module = import_module("imednet_streamlit.app")
+    except (ImportError, ModuleNotFoundError):
+        _register_missing_dashboard_commands()
+        raise typer.Exit(code=1)
+
+    app_path = _app_module.__file__
+    if app_path is None:
+        typer.secho("Cannot resolve dashboard app path.", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+
+    cmd = [sys.executable, "-m", "streamlit", "run", app_path, "--server.port", str(port)]
+    if no_browser:
+        cmd += ["--server.headless", "true"]
+
+    typer.secho(f"Launching iMednet Dashboard on port {port}...", fg=typer.colors.GREEN)
+    subprocess.run(cmd, check=False)
+
+
 try:  # pragma: no cover - optional workflows plugin
     workflows_cli = import_module("imednet_workflows.cli")
     DataExtractionWorkflow = import_module(  # noqa: F401
@@ -122,6 +161,13 @@ except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover -
     DataExtractionWorkflow = None  # type: ignore[assignment]
     SubjectDataWorkflow = None  # type: ignore[assignment]
     _register_missing_workflow_commands()
+
+
+try:  # pragma: no cover - optional streamlit plugin
+    _dashboard_module = import_module("imednet_streamlit.app")
+    app.command("dashboard")(run_dashboard)
+except (ImportError, ModuleNotFoundError):  # pragma: no cover
+    _register_missing_dashboard_commands()
 
 
 @app.command(hidden=True)
