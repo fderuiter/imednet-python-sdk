@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from unittest.mock import MagicMock
 
 import pytest
@@ -82,3 +83,52 @@ def test_resolve_active_studies_with_empty_filter_sets_returns_all_studies() -> 
     result = orchestrator.resolve_active_studies(whitelist=set(), blacklist=set())
 
     assert result == ["A", "B"]
+
+
+def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments() -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
+    orchestrator = MultiStudyOrchestrator(sdk, max_workers=2)
+
+    def worker(
+        study_key: str, sdk_client: MagicMock, study_logger: object, suffix: str, *, scale: int
+    ) -> str:
+        assert sdk_client is sdk
+        assert getattr(study_logger, "study_key", None) == study_key
+        time.sleep(0.01)
+        return f"{study_key}-{suffix}-{scale}"
+
+    results = orchestrator.execute_pipeline(worker, suffix="done", scale=2)
+
+    assert set(results) == {"A", "B"}
+    for study_key, result in results.items():
+        assert result["status"] == "SUCCESS"
+        assert result["data"] == f"{study_key}-done-2"
+        assert result["error"] is None
+        assert result["duration_seconds"] > 0
+
+
+def test_execute_pipeline_isolates_per_study_failures() -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
+    orchestrator = MultiStudyOrchestrator(sdk, max_workers=3)
+
+    def worker(study_key: str, *_: object) -> str:
+        if study_key == "B":
+            raise RuntimeError("boom")
+        time.sleep(0.01)
+        return f"ok-{study_key}"
+
+    results = orchestrator.execute_pipeline(worker)
+
+    assert set(results) == {"A", "B", "C"}
+    assert results["B"]["status"] == "FAILED"
+    assert results["B"]["data"] is None
+    assert results["B"]["error"] == "RuntimeError('boom')"
+    assert results["B"]["duration_seconds"] >= 0
+
+    for study_key in ("A", "C"):
+        assert results[study_key]["status"] == "SUCCESS"
+        assert results[study_key]["data"] == f"ok-{study_key}"
+        assert results[study_key]["error"] is None
+        assert results[study_key]["duration_seconds"] > 0
