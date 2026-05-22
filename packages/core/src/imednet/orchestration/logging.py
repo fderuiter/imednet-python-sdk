@@ -1,4 +1,32 @@
-"""Per-study logging adapter for the MultiStudyOrchestrator engine."""
+"""Per-study logging adapter for the MultiStudyOrchestrator engine.
+
+This module provides :class:`StudyContextLogAdapter`, which enriches every log
+record emitted by a worker thread with a ``study_key`` field.  When combined
+with a JSON formatter (e.g. :func:`~imednet.utils.json_logging.configure_json_logging`),
+each log line carries structured metadata that can be indexed by log
+aggregation systems such as Splunk, Datadog, or CloudWatch Logs.
+
+Example JSON output
+-------------------
+
+With JSON logging enabled the adapter produces records like::
+
+    {
+        "timestamp": "2024-01-15T10:23:45.123456Z",
+        "level": "INFO",
+        "logger": "imednet.orchestration",
+        "message": "Starting data extraction",
+        "study_key": "PROT-01"
+    }
+
+Usage::
+
+    from imednet.orchestration.logging import make_study_logger
+
+    study_logger = make_study_logger("PROT-01")
+    study_logger.info("Starting data extraction")
+    # → emits a record with extra={"study_key": "PROT-01"}
+"""
 
 from __future__ import annotations
 
