@@ -5,9 +5,11 @@ import re
 import runpy
 import sys
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock
+
+import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLUGIN_ROOT = REPO_ROOT / "packages" / "plugins-streamlit"
@@ -95,29 +97,41 @@ class _FakeCacheDataDecorator:
         pass
 
 
-class _FakeQueriesStreamlit(_FakePageStreamlit):
-    """Extended fake Streamlit for the fully-implemented queries page."""
+class _FakeDashboardStreamlit(_FakePageStreamlit):
+    """Extended fake Streamlit for dashboard pages with charts, filters, and exports."""
 
     def __init__(self, *, connected: bool) -> None:
         super().__init__(connected=connected)
         self.cache_data = _FakeCacheDataDecorator()
         self.sidebar = _FakeContextManager()
+        self.warnings: list[str] = []
+        self.subheaders: list[str] = []
+        self.altair_charts: list[Any] = []
+        self.dataframes: list[Any] = []
+        self.download_calls: list[dict[str, Any]] = []
+        self.metric_calls: list[dict[str, Any]] = []
+        self.multiselect_values: dict[str, list[Any]] = {}
 
     # stubs that return sensible defaults so the page runs end-to-end
     def button(self, label: str, **kwargs: Any) -> bool:
         return False
 
+    def warning(self, value: str, **kwargs: Any) -> None:
+        self.warnings.append(value)
+
     def subheader(self, value: str, **kwargs: Any) -> None:
-        pass
+        self.subheaders.append(value)
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        pass
+        self.altair_charts.append(chart)
 
     def columns(self, spec: Any) -> list[Any]:
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager() for _ in range(count)]
 
     def multiselect(self, label: str, options: Any, **kwargs: Any) -> list[Any]:
+        if label in self.multiselect_values:
+            return self.multiselect_values[label]
         return list(kwargs.get("default", []))
 
     def date_input(self, label: str, **kwargs: Any) -> list[Any]:
@@ -131,38 +145,37 @@ class _FakeQueriesStreamlit(_FakePageStreamlit):
         return ""
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        pass
+        self.dataframes.append(df)
 
     def download_button(self, **kwargs: Any) -> None:
-        pass
+        self.download_calls.append(kwargs)
 
     def metric(self, **kwargs: Any) -> None:
-        pass
+        self.metric_calls.append(kwargs)
 
 
-def _make_fake_components_module() -> ModuleType:
-    """Build a no-op components module so the queries page can be tested in isolation."""
-    import pandas as pd
-
+def _make_fake_components_module(fake_st: _FakeDashboardStreamlit) -> ModuleType:
+    """Build a fake components module so dashboard pages can be tested in isolation."""
     mod = ModuleType("imednet_streamlit.components")
+    mod.PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]  # type: ignore[attr-defined]
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
-        pass
+        fake_st.metric_calls.extend(metrics)
 
-    def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        return MagicMock()
+    def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> SimpleNamespace:
+        return SimpleNamespace(data=df.copy(), kwargs=kwargs)
 
-    def _noop_line_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        return MagicMock()
+    def _noop_line_chart(df: pd.DataFrame, **kwargs: Any) -> SimpleNamespace:
+        return SimpleNamespace(data=df.copy(), kwargs=kwargs)
 
     def _noop_filterable_dataframe(df: pd.DataFrame, **kwargs: Any) -> None:
-        pass
+        fake_st.dataframes.append(df.copy())
 
     def _noop_csv_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        pass
+        fake_st.download_calls.append({"kind": "csv", "df": df.copy(), **kwargs})
 
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        pass
+        fake_st.download_calls.append({"kind": "excel", "df": df.copy(), **kwargs})
 
     mod.kpi_row = _noop_kpi_row  # type: ignore[attr-defined]
     mod.bar_chart = _noop_bar_chart  # type: ignore[attr-defined]
@@ -173,10 +186,10 @@ def _make_fake_components_module() -> ModuleType:
     return mod
 
 
-def _run_queries_page() -> _FakeQueriesStreamlit:
+def _run_queries_page() -> _FakeDashboardStreamlit:
     """Execute queries.py with a comprehensive set of mocked dependencies."""
     page_path = PACKAGE_ROOT / "pages" / "queries.py"
-    fake_st = _FakeQueriesStreamlit(connected=True)
+    fake_st = _FakeDashboardStreamlit(connected=True)
 
     # Fake streamlit module
     fake_streamlit_module = ModuleType("streamlit")
@@ -186,6 +199,7 @@ def _run_queries_page() -> _FakeQueriesStreamlit:
         "info",
         "success",
         "markdown",
+        "warning",
         "button",
         "subheader",
         "altair_chart",
@@ -210,7 +224,7 @@ def _run_queries_page() -> _FakeQueriesStreamlit:
     fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
 
     # Fake components module (avoids needing real altair/streamlit rendering)
-    fake_components_module = _make_fake_components_module()
+    fake_components_module = _make_fake_components_module(fake_st)
 
     # Fake imednet_workflows.query_management module
     mock_workflow_cls = MagicMock()
@@ -246,6 +260,73 @@ def _run_queries_page() -> _FakeQueriesStreamlit:
                 sys.modules[key] = original
 
     return fake_st
+
+
+def _run_records_page(
+    *,
+    records: list[Any] | None = None,
+    forms: list[Any] | None = None,
+    multiselect_values: dict[str, list[Any]] | None = None,
+) -> tuple[_FakeDashboardStreamlit, dict[str, Any]]:
+    """Execute records.py with mocked dependencies and capture the module namespace."""
+    page_path = PACKAGE_ROOT / "pages" / "records.py"
+    fake_st = _FakeDashboardStreamlit(connected=True)
+    fake_st.multiselect_values = multiselect_values or {}
+
+    fake_streamlit_module = ModuleType("streamlit")
+    fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
+    for attr in (
+        "title",
+        "info",
+        "success",
+        "markdown",
+        "warning",
+        "button",
+        "subheader",
+        "altair_chart",
+        "columns",
+        "multiselect",
+        "rerun",
+        "text_input",
+        "dataframe",
+        "download_button",
+        "metric",
+    ):
+        setattr(fake_streamlit_module, attr, getattr(fake_st, attr))
+    fake_streamlit_module.cache_data = fake_st.cache_data  # type: ignore[attr-defined]
+    fake_streamlit_module.sidebar = fake_st.sidebar  # type: ignore[attr-defined]
+
+    mock_sdk = MagicMock()
+    mock_sdk.records.list.return_value = records or []
+    mock_sdk.forms.list.return_value = forms or []
+    fake_auth_module = ModuleType("imednet_streamlit.auth")
+    fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]
+    fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
+
+    fake_components_module = _make_fake_components_module(fake_st)
+
+    saved: dict[str, Any] = {
+        key: sys.modules.get(key)
+        for key in (
+            "streamlit",
+            "imednet_streamlit.auth",
+            "imednet_streamlit.components",
+        )
+    }
+
+    try:
+        sys.modules["streamlit"] = fake_streamlit_module
+        sys.modules["imednet_streamlit.auth"] = fake_auth_module
+        sys.modules["imednet_streamlit.components"] = fake_components_module
+        module_globals = runpy.run_path(str(page_path), run_name="__main__")
+    finally:
+        for key, original in saved.items():
+            if original is None:
+                sys.modules.pop(key, None)
+            else:
+                sys.modules[key] = original
+
+    return fake_st, module_globals
 
 
 def _expected_version() -> str:
@@ -392,7 +473,7 @@ def test_streamlit_pages_execute_without_exceptions() -> None:
     home_connected = _run_page("home.py", connected=True)
     assert home_connected.successes
 
-    for page_name in ("enrollment.py", "sites.py", "records.py"):
+    for page_name in ("enrollment.py", "sites.py"):
         page_streamlit = _run_page(page_name, connected=True)
         assert page_streamlit.titles
         assert page_streamlit.infos == ["This page is under construction."]
@@ -402,6 +483,176 @@ def test_queries_page_renders() -> None:
     """queries.py should render title and not raise, even with an empty dataset."""
     fake_st = _run_queries_page()
     assert "🔍 Query Status Overview" in fake_st.titles
+
+
+def test_records_page_renders_with_filtered_metrics_and_downloads() -> None:
+    records = [
+        SimpleNamespace(
+            record_id=1,
+            form_key="AE",
+            subject_key="SUBJ-001",
+            site_id=1,
+            record_status="Incomplete",
+            record_type="CRF",
+            deleted=False,
+            date_created="2026-01-01",
+            date_modified="2026-01-02",
+        ),
+        SimpleNamespace(
+            record_id=2,
+            form_key="AE",
+            subject_key="SUBJ-002",
+            site_id=1,
+            record_status="Verified",
+            record_type="CRF",
+            deleted=False,
+            date_created="2026-01-03",
+            date_modified="2026-01-04",
+        ),
+        SimpleNamespace(
+            record_id=3,
+            form_key="LAB",
+            subject_key="SUBJ-003",
+            site_id=2,
+            record_status="Complete",
+            record_type="CRF",
+            deleted=False,
+            date_created="2026-01-05",
+            date_modified="2026-01-06",
+        ),
+        SimpleNamespace(
+            record_id=4,
+            form_key="AE",
+            subject_key="SUBJ-004",
+            site_id=1,
+            record_status="Complete",
+            record_type="CRF",
+            deleted=True,
+            date_created="2026-01-07",
+            date_modified="2026-01-08",
+        ),
+    ]
+    forms = [
+        SimpleNamespace(form_key="AE", form_name="Adverse Events"),
+        SimpleNamespace(form_key="LAB", form_name="Laboratory Results"),
+    ]
+
+    fake_st, _ = _run_records_page(
+        records=records,
+        forms=forms,
+        multiselect_values={
+            "Form": ["Adverse Events"],
+            "Site": ["1"],
+            "Status": ["Incomplete", "Verified"],
+        },
+    )
+
+    assert "📋 Data Completeness" in fake_st.titles
+    assert fake_st.metric_calls == [
+        {"label": "Total Records", "value": 2},
+        {"label": "Complete", "value": 0},
+        {"label": "Incomplete", "value": 1},
+        {"label": "Pending SDV", "value": 0},
+        {"label": "Verified", "value": 1},
+    ]
+    assert len(fake_st.altair_charts) == 3
+    assert len(fake_st.dataframes) == 1
+    rendered_df = fake_st.dataframes[0]
+    assert rendered_df["form_name"].tolist() == ["Adverse Events", "Adverse Events"]
+    assert rendered_df["record_status"].tolist() == ["Incomplete", "Verified"]
+    assert len(fake_st.download_calls) == 2
+
+
+def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> None:
+    _, records_globals = _run_records_page()
+    fetch_records = records_globals["_fetch_records"]
+    build_heatmap_source = records_globals["_build_heatmap_source"]
+    apply_filters = records_globals["_apply_filters"]
+    prepare_records_dataframe = records_globals["_prepare_records_dataframe"]
+
+    mock_sdk = MagicMock()
+    mock_sdk.records.list.return_value = [
+        SimpleNamespace(
+            record_id=1,
+            form_key="AE",
+            subject_key="SUBJ-001",
+            site_id=1,
+            record_status="Incomplete",
+            record_type="CRF",
+            deleted=False,
+            date_created="2026-01-01",
+            date_modified="2026-01-02",
+        ),
+        SimpleNamespace(
+            record_id=2,
+            form_key="AE",
+            subject_key="SUBJ-002",
+            site_id=1,
+            record_status="Complete",
+            record_type="CRF",
+            deleted=True,
+            date_created="2026-01-03",
+            date_modified="2026-01-04",
+        ),
+    ]
+
+    records_df = fetch_records(mock_sdk, "STUDY")
+    forms_df = pd.DataFrame(
+        [
+            {"form_key": "AE", "form_name": "Adverse Events"},
+            {"form_key": "LAB", "form_name": "Laboratory Results"},
+        ]
+    )
+    merged_df = prepare_records_dataframe(records_df, forms_df)
+    filtered_df = apply_filters(
+        merged_df,
+        form_filter=["Adverse Events"],
+        site_filter=["1"],
+        status_filter=["Incomplete"],
+    )
+
+    assert records_df["record_id"].tolist() == [1]
+    assert filtered_df["subject_key"].tolist() == ["SUBJ-001"]
+
+    heatmap_input = pd.DataFrame(
+        [
+            {
+                "subject_key": f"SUBJ-{subject_index:03d}",
+                "form_name": f"Form {form_index:02d}",
+                "record_status": "Complete",
+            }
+            for subject_index in range(1, 52)
+            for form_index in range(1, 22)
+        ]
+    )
+    heatmap_df = build_heatmap_source(heatmap_input)
+
+    assert heatmap_df["subject_key"].nunique() == 50
+    assert heatmap_df["form_name"].nunique() == 20
+    assert len(heatmap_df) == 1000
+
+
+def test_records_page_warns_for_large_datasets() -> None:
+    large_records = [
+        SimpleNamespace(
+            record_id=index,
+            form_key="AE",
+            subject_key=f"SUBJ-{index:05d}",
+            site_id=1,
+            record_status="Incomplete",
+            record_type="CRF",
+            deleted=False,
+            date_created="2026-01-01",
+            date_modified="2026-01-02",
+        )
+        for index in range(10_001)
+    ]
+    forms = [SimpleNamespace(form_key="AE", form_name="Adverse Events")]
+
+    fake_st, _ = _run_records_page(records=large_records, forms=forms)
+
+    assert len(fake_st.warnings) == 1
+    assert "10,001 records" in fake_st.warnings[0]
 
 
 def test_streamlit_plugin_has_py_typed_marker() -> None:
