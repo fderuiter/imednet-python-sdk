@@ -37,6 +37,17 @@ Welcome to imednet's documentation!
    issue_management
    project_standards
    triage_playbook
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Integrations:
+
+   duckdb_integration
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference:
+
    api/index
    api/apache_airflow_providers_imednet_api
    api/imednet_workflows_api
