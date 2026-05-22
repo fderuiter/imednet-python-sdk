@@ -14,7 +14,10 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLUGIN_ROOT = REPO_ROOT / "packages" / "plugins-streamlit"
 PACKAGE_ROOT = PLUGIN_ROOT / "src" / "imednet_streamlit"
-COMPONENT_PALETTE = runpy.run_path(str(PACKAGE_ROOT / "components" / "charts.py"))["PALETTE"]
+
+
+def _component_palette() -> list[str]:
+    return runpy.run_path(str(PACKAGE_ROOT / "components" / "charts.py"))["PALETTE"]
 
 
 class _FakeNavigation:
@@ -158,7 +161,7 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
 def _make_fake_components_module(fake_st: _FakeDashboardStreamlit) -> ModuleType:
     """Build a fake components module so dashboard pages can be tested in isolation."""
     mod = ModuleType("imednet_streamlit.components")
-    mod.PALETTE = COMPONENT_PALETTE  # type: ignore[attr-defined]
+    mod.PALETTE = _component_palette()  # type: ignore[attr-defined]
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
         fake_st.metric_calls.extend(metrics)
@@ -634,20 +637,18 @@ def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> 
 
 
 def test_records_page_warns_for_large_datasets() -> None:
-    large_records = [
-        SimpleNamespace(
-            record_id=index,
-            form_key="AE",
-            subject_key=f"SUBJ-{index:05d}",
-            site_id=1,
-            record_status="Incomplete",
-            record_type="CRF",
-            deleted=False,
-            date_created="2026-01-01",
-            date_modified="2026-01-02",
-        )
-        for index in range(10_001)
-    ]
+    large_record = SimpleNamespace(
+        record_id=1,
+        form_key="AE",
+        subject_key="SUBJ-00001",
+        site_id=1,
+        record_status="Incomplete",
+        record_type="CRF",
+        deleted=False,
+        date_created="2026-01-01",
+        date_modified="2026-01-02",
+    )
+    large_records = [large_record] * 10_001
     forms = [SimpleNamespace(form_key="AE", form_name="Adverse Events")]
 
     fake_st, _ = _run_records_page(records=large_records, forms=forms)
