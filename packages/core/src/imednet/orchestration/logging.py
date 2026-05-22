@@ -29,7 +29,14 @@ class StudyContextLogAdapter(logging.LoggerAdapter):
 
 
 def make_study_logger(study_key: str) -> StudyContextLogAdapter:
-    """Create a :class:`StudyContextLogAdapter` for a study key."""
+    """Create a :class:`StudyContextLogAdapter` for a study key.
+
+    Args:
+        study_key: The study identifier to bind to log records.
+
+    Returns:
+        A logger adapter that enriches records with the study key.
+    """
     return StudyContextLogAdapter(logging.getLogger("imednet.orchestration"), study_key)
 
 
