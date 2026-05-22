@@ -4,6 +4,12 @@ from .config import Config, load_config
 from .core.base_client import BaseClient
 from .core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 from .errors import PluginLoadError
+from .errors.orchestration import FilterConflictError, OrchestratorError
+from .orchestration import (
+    MultiStudyOrchestrator,
+    OrchestratorResult,
+    StudyWorkerCallable,
+)
 from .plugins import PluginProtocol, WorkflowsNamespaceProtocol
 from .sdk import AsyncImednetSDK, ImednetSDK
 from .utils.typing import FilterScalar, FilterValue, ItemId, JsonDict
@@ -25,6 +31,11 @@ __all__ = [
     "ItemId",
     "FilterValue",
     "FilterScalar",
+    "MultiStudyOrchestrator",
+    "OrchestratorResult",
+    "StudyWorkerCallable",
+    "OrchestratorError",
+    "FilterConflictError",
     "PluginLoadError",
     "PluginProtocol",
     "WorkflowsNamespaceProtocol",

@@ -18,6 +18,8 @@ from imednet.endpoints.users import UsersEndpoint
 from imednet.endpoints.variables import VariablesEndpoint
 from imednet.endpoints.visits import VisitsEndpoint
 from imednet.errors import PluginLoadError
+from imednet.errors.orchestration import FilterConflictError, OrchestratorError
+from imednet.orchestration import MultiStudyOrchestrator, OrchestratorResult, StudyWorkerCallable
 from imednet_workflows.data_extraction import DataExtractionWorkflow
 from imednet_workflows.query_management import QueryManagementWorkflow
 from imednet_workflows.record_mapper import RecordMapper
@@ -36,6 +38,20 @@ class _FakeEntryPoint:
 
     def load(self):
         return self._loader()
+
+
+def test_top_level_orchestration_exports() -> None:
+    from imednet import FilterConflictError as TopLevelFilterConflictError
+    from imednet import MultiStudyOrchestrator as TopLevelMultiStudyOrchestrator
+    from imednet import OrchestratorError as TopLevelOrchestratorError
+    from imednet import OrchestratorResult as TopLevelOrchestratorResult
+    from imednet import StudyWorkerCallable as TopLevelStudyWorkerCallable
+
+    assert TopLevelMultiStudyOrchestrator is MultiStudyOrchestrator
+    assert TopLevelOrchestratorResult is OrchestratorResult
+    assert TopLevelStudyWorkerCallable is StudyWorkerCallable
+    assert TopLevelOrchestratorError is OrchestratorError
+    assert TopLevelFilterConflictError is FilterConflictError
 
 
 def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:

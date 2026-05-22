@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from imednet.orchestration.logging import StudyContextLogAdapter, make_study_logger
 from imednet.orchestration.orchestrator import MultiStudyOrchestrator
-from imednet.orchestration.types import OrchestratorResult, StudyWorkerCallable
+from imednet.orchestration.types import OrchestratorResult, StudyWorkerCallable, T_Output
 
 __all__ = [
     "MultiStudyOrchestrator",
@@ -17,4 +17,5 @@ __all__ = [
     "StudyWorkerCallable",
     "StudyContextLogAdapter",
     "make_study_logger",
+    "T_Output",
 ]
