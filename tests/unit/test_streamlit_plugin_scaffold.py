@@ -284,7 +284,11 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
     return fake_st
 
 
-def _run_sites_page() -> _FakeDashboardStreamlit:
+def _run_sites_page(
+    *,
+    subjects: list[Any] | None = None,
+    open_queries: list[Any] | None = None,
+) -> tuple[_FakeDashboardStreamlit, dict[str, Any]]:
     """Execute sites.py with mocked dependencies and capture Streamlit output."""
     page_path = PACKAGE_ROOT / "pages" / "sites.py"
     fake_st = _FakeDashboardStreamlit(connected=True)
@@ -314,7 +318,7 @@ def _run_sites_page() -> _FakeDashboardStreamlit:
     fake_streamlit_module.sidebar = fake_st.sidebar  # type: ignore[attr-defined]
 
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = []
+    mock_sdk.subjects.list.return_value = subjects or []
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]
     fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
@@ -327,7 +331,7 @@ def _run_sites_page() -> _FakeDashboardStreamlit:
     )
     mock_workflow_cls = MagicMock()
     mock_workflow_instance = MagicMock()
-    mock_workflow_instance.get_open_queries.return_value = []
+    mock_workflow_instance.get_open_queries.return_value = open_queries or []
     mock_workflow_cls.return_value = mock_workflow_instance
 
     fake_qm_module = ModuleType("imednet_workflows.query_management")
@@ -350,7 +354,7 @@ def _run_sites_page() -> _FakeDashboardStreamlit:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        module_globals = runpy.run_path(str(page_path), run_name="__main__")
     finally:
         for key, original in saved.items():
             if original is None:
@@ -367,7 +371,7 @@ def _run_sites_page() -> _FakeDashboardStreamlit:
             else:
                 package_module.components = saved_components_attr
 
-    return fake_st
+    return fake_st, module_globals
 
 
 def _run_records_page(
@@ -606,9 +610,39 @@ def test_queries_page_renders() -> None:
 
 
 def test_sites_page_renders() -> None:
-    fake_st = _run_sites_page()
+    """sites.py should render metrics, charts, and exports for site data."""
+    subjects = [
+        SimpleNamespace(subject_key="SUBJ-001", site_name="Site A", deleted=False),
+        SimpleNamespace(subject_key="SUBJ-002", site_name="Site A", deleted=False),
+        SimpleNamespace(subject_key="SUBJ-003", site_name="Site B", deleted=False),
+    ]
+    open_queries = [
+        SimpleNamespace(
+            subject_key="SUBJ-001",
+            annotation_id=101,
+            date_created="2026-01-01T00:00:00Z",
+        ),
+        SimpleNamespace(
+            subject_key="SUBJ-003",
+            annotation_id=102,
+            date_created="2026-01-02T00:00:00Z",
+        ),
+    ]
+    fake_st, _ = _run_sites_page(subjects=subjects, open_queries=open_queries)
 
     assert "🏥 Site Performance" in fake_st.titles
+    assert fake_st.metric_calls == [
+        {"label": "Total Sites", "value": 2},
+        {"label": "Total Enrolled", "value": 3},
+        {"label": "Total Open Queries", "value": 2},
+        {"label": "Avg Query Rate %", "value": "66.7%"},
+    ]
+    assert len(fake_st.altair_charts) == 2
+    assert len(fake_st.dataframes) == 1
+    assert len(fake_st.download_calls) == 1
+    assert fake_st.download_calls[0]["filename"] == "site_metrics.csv"
+    assert fake_st.download_calls[0]["df"]["site_name"].tolist() == ["Site A", "Site B"]
+    assert fake_st.download_calls[0]["df"]["query_rate"].tolist() == [50.0, 100.0]
 
 
 def test_records_page_renders_with_filtered_metrics_and_downloads() -> None:
