@@ -1,5 +1,6 @@
 """Workflow helpers built on top of the iMednet SDK."""
 
+from .duckdb_centralizer import DuckDBIngestionWorkflow
 from .job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
@@ -10,6 +11,7 @@ from .subject_data import SubjectDataWorkflow
 
 __all__ = [
     "QueryManagementWorkflow",
+    "DuckDBIngestionWorkflow",
     "RecordMapper",
     "RecordUpdateWorkflow",
     "AsyncJobPoller",
