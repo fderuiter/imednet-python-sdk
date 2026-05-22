@@ -9,6 +9,7 @@ package-mode = false
 python = ">=3.10,<4.0"
 imednet = { path = "packages/core", develop = true }
 imednet-workflows = { path = "packages/plugins-workflows", develop = true }
+imednet-streamlit = { path = "packages/plugins-streamlit", develop = true }
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"
@@ -47,10 +48,10 @@ target-version = ["py310"]
 
 [tool.ruff]
 line-length = 100
-src = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "tests"]
+src = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "packages/plugins-streamlit/src", "tests"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet"]
+known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet", "imednet_streamlit"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N"]
@@ -62,8 +63,8 @@ classmethod-decorators = ["field_validator", "model_validator"]
 [tool.isort]
 profile = "black"
 line_length = 100
-known_first_party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet"]
-src_paths = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "tests"]
+known_first_party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet", "imednet_streamlit"]
+src_paths = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "packages/plugins-streamlit/src", "tests"]
 
 [tool.doc8]
 max_line_length = 400
@@ -104,5 +105,9 @@ module = [
     "openpyxl.*",
     "duckdb",
     "duckdb.*",
+    "streamlit",
+    "streamlit.*",
+    "altair",
+    "altair.*",
 ]
 ignore_missing_imports = true

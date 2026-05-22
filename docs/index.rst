@@ -40,6 +40,7 @@ Welcome to imednet's documentation!
    api/index
    api/apache_airflow_providers_imednet_api
    api/imednet_workflows_api
+   api/imednet_streamlit_api
 
 
 Indices and tables

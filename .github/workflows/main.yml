@@ -75,6 +75,7 @@ jobs:
           poetry run mypy packages/core/src/imednet
           poetry run mypy packages/plugins-workflows/src/imednet_workflows
           poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+          poetry run mypy packages/plugins-streamlit/src/imednet_streamlit
           poetry run mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
 
       - name: Security Audit
@@ -168,6 +169,7 @@ jobs:
             --cov=imednet \
             --cov=imednet_workflows \
             --cov=apache_airflow_providers_imednet \
+            --cov=imednet_streamlit \
             --cov-report=xml \
             --cov-fail-under=90 \
             -m "not live" \
