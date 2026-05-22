@@ -58,7 +58,7 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
 
     monkeypatch.setattr(importlib, "import_module", fake_import_module)
     reloaded_cli = importlib.reload(cli_module)
-    subprocess_run = MagicMock()
+    subprocess_run = MagicMock(return_value=MagicMock(returncode=0))
     monkeypatch.setattr(reloaded_cli.subprocess, "run", subprocess_run)
 
     help_result = runner.invoke(reloaded_cli.app, ["dashboard", "--help"])
@@ -80,6 +80,39 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
             "9999",
             "--server.headless",
             "true",
+        ],
+        check=False,
+    )
+
+
+def test_dashboard_command_uses_default_options(
+    runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    real_import_module = importlib.import_module
+    streamlit_module = ModuleType("imednet_streamlit.app")
+    streamlit_module.__file__ = "/tmp/fake_dashboard.py"
+
+    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+        if name == "imednet_streamlit.app":
+            return streamlit_module
+        return real_import_module(name, package)
+
+    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    reloaded_cli = importlib.reload(cli_module)
+    subprocess_run = MagicMock(return_value=MagicMock(returncode=0))
+    monkeypatch.setattr(reloaded_cli.subprocess, "run", subprocess_run)
+
+    result = runner.invoke(reloaded_cli.app, ["dashboard"])
+    assert result.exit_code == 0
+    subprocess_run.assert_called_once_with(
+        [
+            reloaded_cli.sys.executable,
+            "-m",
+            "streamlit",
+            "run",
+            "/tmp/fake_dashboard.py",
+            "--server.port",
+            "8501",
         ],
         check=False,
     )

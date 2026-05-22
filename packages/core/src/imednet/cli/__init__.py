@@ -144,7 +144,10 @@ def run_dashboard(
         cmd += ["--server.headless", "true"]
 
     typer.secho(f"Launching iMednet Dashboard on port {port}...", fg=typer.colors.GREEN)
-    subprocess.run(cmd, check=False)
+    result = subprocess.run(cmd, check=False)
+    if result.returncode != 0:
+        typer.secho("Dashboard failed to launch.", fg=typer.colors.RED)
+        raise typer.Exit(code=result.returncode)
 
 
 try:  # pragma: no cover - optional workflows plugin
