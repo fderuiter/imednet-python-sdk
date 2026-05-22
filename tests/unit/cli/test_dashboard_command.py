@@ -7,6 +7,8 @@ from unittest.mock import MagicMock
 import pytest
 from typer.testing import CliRunner
 
+FAKE_DASHBOARD_PATH = "/tmp/fake_dashboard.py"
+
 
 @pytest.fixture()
 def runner() -> CliRunner:
@@ -49,7 +51,7 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
 ) -> None:
     real_import_module = importlib.import_module
     streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = "/tmp/fake_dashboard.py"
+    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
 
     def fake_import_module(name: str, package: str | None = None) -> ModuleType:
         if name == "imednet_streamlit.app":
@@ -76,7 +78,7 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
             "-m",
             "streamlit",
             "run",
-            "/tmp/fake_dashboard.py",
+            FAKE_DASHBOARD_PATH,
             "--server.port",
             "9999",
             "--server.headless",
@@ -91,7 +93,7 @@ def test_dashboard_command_uses_default_options(
 ) -> None:
     real_import_module = importlib.import_module
     streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = "/tmp/fake_dashboard.py"
+    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
 
     def fake_import_module(name: str, package: str | None = None) -> ModuleType:
         if name == "imednet_streamlit.app":
@@ -112,7 +114,7 @@ def test_dashboard_command_uses_default_options(
             "-m",
             "streamlit",
             "run",
-            "/tmp/fake_dashboard.py",
+            FAKE_DASHBOARD_PATH,
             "--server.port",
             "8501",
         ],
@@ -145,7 +147,7 @@ def test_dashboard_command_propagates_streamlit_failure(
 ) -> None:
     real_import_module = importlib.import_module
     streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = "/tmp/fake_dashboard.py"
+    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
 
     def fake_import_module(name: str, package: str | None = None) -> ModuleType:
         if name == "imednet_streamlit.app":
@@ -161,3 +163,25 @@ def test_dashboard_command_propagates_streamlit_failure(
     result = runner.invoke(reloaded_cli.app, ["dashboard"])
     assert result.exit_code == 7
     assert "Dashboard failed to launch." in result.stdout
+
+
+def test_dashboard_command_handles_subprocess_oserror(
+    runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    real_import_module = importlib.import_module
+    streamlit_module = ModuleType("imednet_streamlit.app")
+    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
+
+    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+        if name == "imednet_streamlit.app":
+            return streamlit_module
+        return real_import_module(name, package)
+
+    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    reloaded_cli = importlib.reload(cli_module)
+    subprocess_run = MagicMock(side_effect=FileNotFoundError("streamlit not found"))
+    monkeypatch.setattr(reloaded_cli.subprocess, "run", subprocess_run)
+
+    result = runner.invoke(reloaded_cli.app, ["dashboard"])
+    assert result.exit_code == 1
+    assert "Dashboard failed to launch: streamlit not found" in result.stdout

@@ -147,7 +147,12 @@ def run_dashboard(
         cmd += ["--server.headless", "true"]
 
     typer.secho(f"Launching iMednet Dashboard on port {port}...", fg=typer.colors.GREEN)
-    result = subprocess.run(cmd, check=False)
+    try:
+        result = subprocess.run(cmd, check=False)
+    except OSError as exc:
+        typer.secho(f"Dashboard failed to launch: {exc}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+
     if result.returncode != 0:
         typer.secho("Dashboard failed to launch.", fg=typer.colors.RED)
         raise typer.Exit(code=result.returncode)
