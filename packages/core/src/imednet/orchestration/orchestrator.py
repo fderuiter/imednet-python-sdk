@@ -157,7 +157,7 @@ class MultiStudyOrchestrator:
                         study_key,
                         duration,
                     )
-                except Exception as exc:  # noqa: BLE001 - intentional broad catch for per-study failure isolation.
+                except Exception as exc:  # noqa: BLE001 - broad catch for per-study isolation.
                     results[study_key] = OrchestratorResult(
                         status="FAILED",
                         data=None,
