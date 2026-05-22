@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 from typing_extensions import Protocol, TypedDict, runtime_checkable
 
@@ -31,8 +31,8 @@ class OrchestratorResult(TypedDict, total=False):
     """Normalized result entry returned per study by ``execute_pipeline``."""
 
     status: str
-    data: Optional[Any]
-    error: Optional[str]
+    data: Any | None
+    error: str | None
     duration_seconds: float
 
 
