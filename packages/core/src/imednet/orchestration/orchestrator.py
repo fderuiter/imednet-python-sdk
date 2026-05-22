@@ -51,7 +51,7 @@ class MultiStudyOrchestrator:
         whitelist: Optional[set[str]] = None,
         blacklist: Optional[set[str]] = None,
     ) -> list[str]:
-        """Query the iMednet registry and apply filter matrices.
+        """Query the iMednet registry and apply filtering rules.
 
         Calls ``self._sdk.studies.list()`` to fetch the live study inventory,
         then applies the whitelist OR blacklist (mutually exclusive).
