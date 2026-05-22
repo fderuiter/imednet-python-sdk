@@ -1,12 +1,29 @@
 Streamlit Dashboard Builder Issue Pack
 ======================================
 
-This guide provides placeholder GitHub issues for a configurable Streamlit
-Dashboard Builder initiative that targets CDISC/FDA-aligned safety and
-compliance outputs. Copy each issue draft into GitHub and tailor labels,
-assignees, and acceptance criteria as implementation details evolve.
+This guide provides a comprehensive placeholder issue pack for a **standards-guided
+clinical reporting workspace** built on Streamlit. The target product is designed for
+non-technical clinical users and maps study-specific iMednet records into
+CDISC/FDA-aligned reporting objects.
 
 Use this pack with :doc:`issue_management` and :doc:`triage_playbook`.
+
+Product direction (anchor)
+--------------------------
+
+Design around canonical reporting outputs first, then map study-specific forms/fields
+into those objects.
+
+- Canonical reporting objects (AE/PD/DD) with study mapping underneath
+- CDISC-style fields and controlled terminology where applicable
+- Regulatory-ready operational summaries and review queues
+- Guided, audit-friendly, non-technical workflows
+
+Standards references to keep implementation aligned:
+
+- `CDISC SDTMIG <https://www.cdisc.org/standards/foundational/sdtmig>`__
+- `CDISC Controlled Terminology <https://www.cdisc.org/standards/terminology/controlled-terminology>`__
+- `FDA Protocol Deviation draft guidance (Dec 2024) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/protocol-deviations-clinical-investigations-drugs-biological-products-and-devices>`__
 
 How to use this pack
 --------------------
@@ -28,53 +45,57 @@ Recommended native GitHub features
 - **Labels**: Type, area, priority, status, size, risk
 - **Milestones**: Group phased delivery (MVP, Builder v1, Hardening)
 - **Projects**: Use fields for owner, target sprint, and dependency state
-- **Saved replies/checklists**: Standardize triage and review comments
 
-Standards-guided architecture layers
-------------------------------------
+Architecture layers (scope guardrails)
+--------------------------------------
 
-Use these architectural layers in issue scope and acceptance criteria:
-
-- **Layer A — Raw IMedNet records**: top-level metadata plus variable ``recordData``
+- **Layer A — Raw iMednet records**: top-level metadata plus variable ``recordData``
 - **Layer B — Study mapping config**: per-study form/field mapping and value transforms
 - **Layer C — Canonical reporting models**: adverse event (AE), protocol deviation (PD),
   and device deficiency/event (DD) records
-- **Layer D — Outputs**: operational dashboards, review listings, and export-readiness views
-
-MVP scope should be phrased as **CDISC-aligned structured extraction and review support**
-rather than one-click submission-grade compliance generation.
+- **Layer D — Reporting workspace outputs**: dashboards, triage queues, timelines,
+  exports, and audit-ready trace views
 
 Epic placeholder
 ----------------
 
 **Title**
-   ``epic(workflows-plugin): build study-configurable streamlit dashboard builder``
+   ``epic(workflows-plugin): deliver standards-guided streamlit clinical reporting workspace``
 
 **Suggested labels**
-   ``type:epic``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
-   ``size:xl``, ``risk:medium``
+   ``type:epic``, ``area:workflows-plugin``, ``priority:p1``, ``status:triage``,
+   ``size:xl``, ``risk:high``
 
 **Body (copy/paste)**
 
 .. code-block:: markdown
 
    ## Objective
-   Deliver a study-configurable Streamlit Dashboard Builder workbench that maps
-   study-specific records into canonical adverse event (AE), protocol deviation (PD),
-   and device deficiency/event (DD) reporting models aligned to CDISC/FDA concepts.
+   Deliver a study-configurable Streamlit reporting workspace that maps iMednet
+   records into canonical AE/PD/DD models and supports CDISC/FDA-aligned review
+   workflows for non-technical users.
+
+   ## Product qualities
+   - Guided onboarding and setup
+   - Trust and explainability for mapped outputs
+   - Efficient review workflow and triage
+   - Strong usability and accessibility
+   - Reliable performance at study scale
+   - Governance and audit-readiness
+   - Polished user experience (delight)
 
    ## Scope
-   - Study schema profiling for records/forms/keys
-   - Semantic mapping from raw `recordData` to canonical AE/PD/DD fields
-   - Terminology normalization (for yes/no, seriousness, severity, outcome-style values)
-   - Standards-guided builder UX for non-technical users
-   - Runtime output surfaces (operational dashboard, review listings, export-readiness preview)
-   - Reportability/review flags for safety and compliance triage
+   - Study setup wizard + template onboarding
+   - Canonical mapping and terminology normalization
+   - Standards-aware validation and reportability rules
+   - Runtime reporting workspace (dashboards, listings, queues)
+   - Configuration persistence/versioning and audit trails
+   - Collaboration workflows and review handoffs
 
    ## Non-goals
-   - Full blank-canvas drag-and-drop layout engine in MVP
-   - Backend multi-tenant permissions model in MVP
-   - Claiming full submission-ready SDTM package generation in MVP
+   - Fully generic blank-canvas BI builder in MVP
+   - Full SDTM submission package generation in MVP
+   - Replacing sponsor or CRO quality management systems
 
    ## Child issues
    - [ ] #<child_issue_1>
@@ -83,204 +104,226 @@ Epic placeholder
    - [ ] #<child_issue_4>
    - [ ] #<child_issue_5>
    - [ ] #<child_issue_6>
+   - [ ] #<child_issue_7>
+   - [ ] #<child_issue_8>
+   - [ ] #<child_issue_9>
 
    ## Acceptance criteria
-   - [ ] MVP supports canonical AE, PD, and DD model mapping per study
-   - [ ] Dashboard config is saved and reloaded by study key
-   - [ ] Runtime outputs render from saved config without hard-coded form keys
-   - [ ] Validation warns on weak/empty field mappings
-   - [ ] Reportability/review flags are computed for mapped records
-   - [ ] Terminology normalization is visible in export-readiness preview
-
-   ## Dependencies
-   - Blocked by: #<blocking_issue_number>
-   - Coordinates with: #<related_issue_1>, #<related_issue_2>, #<related_issue_3>
-
-   ## Verification
-   - [ ] `poetry run black --check .`
-   - [ ] `poetry run isort --check --profile black .`
-   - [ ] `poetry run ruff check .`
-   - [ ] `poetry run mypy (affected packages)`
-   - [ ] `poetry run pytest -q`
-   - [ ] `make docs` (if docs changed)
+   - [ ] Workspace supports canonical AE/PD/DD mapping per study
+   - [ ] Setup wizard can take a new study from connection to saved profile
+   - [ ] Trust panels explain mapping provenance and terminology transforms
+   - [ ] Triage workflows support important PD and device-escalation-style review
+   - [ ] Configs and review actions are auditable and versioned
+   - [ ] Runtime remains usable at target record volumes
 
 Child issue placeholders
 ------------------------
 
-1) Extraction model and schema profiling
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Title**
-   ``feat(workflows-plugin): add schema profiler for streamlit records builder``
-
-**Suggested labels**
-   ``type:feature``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
-   ``size:m``, ``risk:medium``
-
-.. code-block:: markdown
-
-   ## Problem
-   Dashboard logic currently depends on fixed assumptions about forms/fields.
-
-   ## Desired outcome
-   Add a schema profiling service that summarizes form keys, record counts, observed
-   `recordData` fields, and sample values per study. The profiler suggests candidate
-   mappings for canonical AE/PD/DD reporting models.
-
-   ## Acceptance criteria
-   - [ ] Profiling groups records by `formKey`
-   - [ ] Profile output includes field presence percentage and sample values
-   - [ ] UI can preview profiler output for selected study
-   - [ ] Candidate forms are suggested for AE/PD/DD mapping setup
-
-   ## Test impact
-   Add unit tests for profiler aggregation and edge cases (empty records, sparse fields).
-
-   ## Docs impact
-   Add builder setup and profiler usage notes to plugin docs.
-
-2) Semantic mapping and normalized event model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Title**
-   ``feat(workflows-plugin): add study-level semantic mapping for dashboard domains``
-
-**Suggested labels**
-   ``type:feature``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
-   ``size:l``, ``risk:medium``
-
-.. code-block:: markdown
-
-   ## Problem
-   Raw `recordData` keys vary by study, so AE/PD/DD dashboards cannot rely on static
-   field names.
-
-   ## Desired outcome
-   Introduce canonical AE/PD/DD models and a per-study mapping config that
-   translates raw fields into standards-aligned reporting fields.
-
-   ## Acceptance criteria
-   - [ ] Config supports domain form matching (AE/PD/DD)
-   - [ ] Config maps canonical fields (`term`, `serious`, `severity`, dates, outcome, action)
-   - [ ] Controlled terminology normalization is configurable for key value sets
-   - [ ] Runtime extraction returns normalized records for each configured domain
-   - [ ] Invalid mappings produce user-facing warnings
-
-   ## Dependencies
-   - Parent epic: #<epic_issue_number>
-   - Related: #<related_issue_number>
-
-3) Builder UX (guided mapping)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Title**
-   ``feat(workflows-plugin): add guided streamlit dashboard builder flow``
-
-**Suggested labels**
-   ``type:feature``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
-   ``size:l``, ``risk:medium``
-
-.. code-block:: markdown
-
-   ## Problem
-   Non-technical users need guided configuration rather than manual JSON/path editing.
-
-   ## Desired outcome
-   Implement a standards-guided multi-step flow: study selection, reporting package
-   selection, canonical field mapping, terminology normalization, and preview/publish.
-
-   ## Acceptance criteria
-   - [ ] Users can select source forms per domain
-   - [ ] Users can map canonical fields via plain-language prompts and live previews
-   - [ ] Users can normalize raw values into controlled categories
-   - [ ] Builder validates obvious mapping mistakes before save
-   - [ ] Saved config can be edited later
-
-4) Runtime dashboard rendering
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Title**
-   ``feat(workflows-plugin): render streamlit dashboards from saved study config``
-
-**Suggested labels**
-   ``type:feature``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
-   ``size:m``, ``risk:medium``
-
-.. code-block:: markdown
-
-   ## Problem
-   Current pages are placeholders and do not render config-driven study dashboards.
-
-   ## Desired outcome
-   Use saved mappings/layout config to render runtime outputs with template-first
-   defaults for operational dashboarding and review workflows.
-
-   ## Acceptance criteria
-   - [ ] Runtime reads study config and renders mapped domain metrics and listings
-   - [ ] Starter templates exist for safety summary and deviation/device review
-   - [ ] Empty/missing config states have guided recovery messages
-   - [ ] Export-readiness preview highlights missing required canonical fields
-
-5) Configuration persistence and governance
+1) Study setup wizard and guided onboarding
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Title**
-   ``feat(workflows-plugin): persist streamlit dashboard configs with study defaults and user overrides``
+   ``feat(workflows-plugin): add guided study setup wizard for reporting workspace``
 
 **Suggested labels**
-   ``type:feature``, ``area:workflows-plugin``, ``priority:p3``, ``status:triage``,
-   ``size:m``, ``risk:medium``
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p1``, ``status:triage``,
+   ``size:l``, ``risk:medium``
 
 .. code-block:: markdown
 
-   ## Problem
-   Dashboard mappings and layout choices need stable per-study persistence with optional
-   user-specific overrides.
-
    ## Desired outcome
-   Persist both study mapping config and reporting profile config, with precedence:
-   global template -> study default -> user override.
+   Implement a multi-step setup flow:
+   1) Connect API
+   2) Select study
+   3) Scan forms/records
+   4) Detect candidate AE/PD/DD forms
+   5) Map to canonical fields
+   6) Preview outputs
+   7) Save study profile
 
    ## Acceptance criteria
-   - [ ] Study defaults persist independently of user overrides
-   - [ ] Config versions are tracked for safe updates
-   - [ ] Export/import path exists for config portability
-   - [ ] Reporting profiles (drug/biologic safety, device investigation, general ops) are persisted and selectable per study
+   - [ ] Wizard supports step resume/re-entry
+   - [ ] Candidate form detection suggests AE/PD/DD options
+   - [ ] Setup ends with saved, reusable study profile
 
-6) Reportability and escalation rules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2) Start-from-template onboarding profiles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Title**
-   ``feat(workflows-plugin): add reportability flag rules for mapped safety and compliance records``
+   ``feat(workflows-plugin): add start-from-template reporting profiles``
 
 **Suggested labels**
    ``type:feature``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
+   ``size:m``, ``risk:low``
+
+.. code-block:: markdown
+
+   ## Desired outcome
+   Add profile templates such as:
+   - Drug/Biologic Safety Review
+   - Protocol Deviation Oversight
+   - Device Investigation Review
+
+   ## Acceptance criteria
+   - [ ] Template choice pre-populates canonical field expectations
+   - [ ] Users can customize template defaults before save
+   - [ ] Template metadata is versioned for future updates
+
+3) Canonical mapping + terminology normalization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Title**
+   ``feat(workflows-plugin): implement canonical AE/PD/DD mapping and terminology normalization``
+
+**Suggested labels**
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p1``, ``status:triage``,
+   ``size:l``, ``risk:high``
+
+.. code-block:: markdown
+
+   ## Desired outcome
+   Build mapping from raw study fields to canonical AE/PD/DD objects with configurable
+   controlled-terminology normalization for key value sets.
+
+   ## Acceptance criteria
+   - [ ] Mapping supports per-domain form and field matching
+   - [ ] Normalization dictionaries are configurable per study/profile
+   - [ ] Invalid/weak mappings produce actionable warnings
+
+4) Trust layer: provenance, explainability, and quality checks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Title**
+   ``feat(workflows-plugin): add trust panels for mapping provenance and data quality``
+
+**Suggested labels**
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p1``, ``status:triage``,
    ``size:m``, ``risk:high``
 
 .. code-block:: markdown
 
-   ## Problem
-   Teams need triage flags to quickly identify records that require expedited safety or compliance review.
-
    ## Desired outcome
-   Add configurable rules that compute review/reportability flags from canonical
-   AE/PD/DD records (for example, missing critical fields, important deviation
-   candidates, and FDA IDE UADE-like escalation candidates).
+   Add user-facing trust views that show source field lineage, normalization actions,
+   missing critical inputs, and confidence/coverage summaries.
 
    ## Acceptance criteria
-   - [ ] Rules run on canonical mapped records, not raw source forms
-   - [ ] Rule outputs are visible in review listings and export-readiness preview
-   - [ ] Rule logic is configurable by reporting profile
+   - [ ] Every canonical output field can show source provenance
+   - [ ] Data quality checks flag missing required or high-value fields
+   - [ ] Users can export trust summaries for review documentation
 
-Development workflow checklist
-------------------------------
+5) Review workflow, triage queues, and escalations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use this checklist when moving placeholders into implementation-ready issues:
+**Title**
+   ``feat(workflows-plugin): implement review queues and standards-guided escalation flags``
+
+**Suggested labels**
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p1``, ``status:triage``,
+   ``size:l``, ``risk:high``
+
+.. code-block:: markdown
+
+   ## Desired outcome
+   Add review queues and configurable rule flags for expedited safety/compliance review,
+   including important protocol deviation candidates and device escalation candidates.
+
+   ## Acceptance criteria
+   - [ ] Rules execute on canonical mapped records, not raw fields
+   - [ ] Queue filters support role-specific review workflows
+   - [ ] Escalation rationale is visible and auditable
+
+6) Runtime usability and accessibility polish
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Title**
+   ``feat(workflows-plugin): improve workspace usability and accessibility for clinical users``
+
+**Suggested labels**
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
+   ``size:m``, ``risk:medium``
+
+.. code-block:: markdown
+
+   ## Desired outcome
+   Improve clarity and ease-of-use with plain-language labels, guided empty states,
+   keyboard-first interactions, and accessibility improvements.
+
+   ## Acceptance criteria
+   - [ ] Empty/error states provide clear next actions
+   - [ ] Keyboard navigation works across builder and review tables
+   - [ ] Visual terminology is non-technical and role-appropriate
+
+7) Performance and reliability at study scale
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Title**
+   ``feat(workflows-plugin): optimize runtime performance for large study datasets``
+
+**Suggested labels**
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p2``, ``status:triage``,
+   ``size:m``, ``risk:medium``
+
+.. code-block:: markdown
+
+   ## Desired outcome
+   Add pagination, caching, and incremental query patterns to keep dashboards and
+   review tables responsive at target record volumes.
+
+   ## Acceptance criteria
+   - [ ] Initial load and common filter actions meet agreed response targets
+   - [ ] Large result sets are paginated/virtualized
+   - [ ] Performance guardrails are covered by automated tests
+
+8) Governance, configuration versioning, and audit trail
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Title**
+   ``feat(workflows-plugin): add governed config versioning and audit logging for reporting workspace``
+
+**Suggested labels**
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p1``, ``status:triage``,
+   ``size:l``, ``risk:high``
+
+.. code-block:: markdown
+
+   ## Desired outcome
+   Persist study defaults and optional user overrides with version history, approval
+   metadata, and traceable change logs.
+
+   ## Acceptance criteria
+   - [ ] Config precedence is explicit (template -> study -> user)
+   - [ ] Version rollback is supported with audit metadata
+   - [ ] Export/import supports governed promotion across environments
+
+9) Collaboration and handoff workflow
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Title**
+   ``feat(workflows-plugin): add reviewer collaboration and handoff features``
+
+**Suggested labels**
+   ``type:feature``, ``area:workflows-plugin``, ``priority:p3``, ``status:triage``,
+   ``size:s``, ``risk:low``
+
+.. code-block:: markdown
+
+   ## Desired outcome
+   Support assignment, watchlists, handoff notes, and review-state transitions so
+   coordinators, safety reviewers, and clinical ops can work from a shared workspace.
+
+   ## Acceptance criteria
+   - [ ] Review items can be assigned and transitioned through states
+   - [ ] Handoff notes are retained with timestamp and actor metadata
+   - [ ] Saved filters/views support role-specific daily workflows
+
+Conversion checklist (placeholder -> implementation-ready)
+----------------------------------------------------------
 
 - [ ] Title normalized to ``<type>(<area>): <concise outcome>``
 - [ ] Parent epic linked via sub-issues
 - [ ] Labels set for type, area, priority, status, size, risk
 - [ ] Milestone, assignee, and project fields assigned
-- [ ] Acceptance criteria are testable
+- [ ] Acceptance criteria are concrete and testable
 - [ ] Test impact and docs impact are explicitly stated
+- [ ] Compliance/regulatory statements avoid over-claiming MVP scope
 - [ ] PR template includes ``Closes #<issue_number>`` linkage
