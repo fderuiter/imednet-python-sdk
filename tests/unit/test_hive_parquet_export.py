@@ -73,8 +73,11 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
         ) -> tuple[list[str], dict[str, str]]:
             return (variable_keys, label_map)
 
-        def _fetch_records(self, study_key: str, extra_filters: dict[str, Any]) -> list[str]:
-            _ = extra_filters
+        def _fetch_records(
+            self, study_key: str, extra_filters: dict[str, Any] | None = None
+        ) -> list[str]:
+            assert extra_filters is not None
+            assert "formId" in extra_filters
             return [study_key]
 
         def _parse_records(
