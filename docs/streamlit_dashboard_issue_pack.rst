@@ -267,7 +267,8 @@ Child issue placeholders
    ## Desired outcome
    Add configurable rules that compute review/reportability flags from canonical
    AE/PD/DD records (for example missing critical fields, important deviation
-   candidates, and UADE-like device escalation candidates).
+   candidates, and Unanticipated Adverse Device Effect (UADE)-like escalation
+   candidates).
 
    ## Acceptance criteria
    - [ ] Rules run on canonical mapped records, not raw source forms
