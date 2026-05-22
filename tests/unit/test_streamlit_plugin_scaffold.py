@@ -392,7 +392,7 @@ def test_streamlit_pages_execute_without_exceptions() -> None:
     home_connected = _run_page("home.py", connected=True)
     assert home_connected.successes
 
-    for page_name in ("enrollment.py", "sites.py", "records.py"):
+    for page_name in ("sites.py", "records.py"):
         page_streamlit = _run_page(page_name, connected=True)
         assert page_streamlit.titles
         assert page_streamlit.infos == ["This page is under construction."]
@@ -402,6 +402,108 @@ def test_queries_page_renders() -> None:
     """queries.py should render title and not raise, even with an empty dataset."""
     fake_st = _run_queries_page()
     assert "🔍 Query Status Overview" in fake_st.titles
+
+
+def _run_enrollment_page() -> _FakeQueriesStreamlit:
+    """Execute enrollment.py with a comprehensive set of mocked dependencies."""
+    import datetime
+
+    page_path = PACKAGE_ROOT / "pages" / "enrollment.py"
+    fake_st = _FakeQueriesStreamlit(connected=True)
+
+    # Fake streamlit module
+    fake_streamlit_module = ModuleType("streamlit")
+    fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
+    for attr in (
+        "title",
+        "info",
+        "success",
+        "markdown",
+        "button",
+        "subheader",
+        "altair_chart",
+        "columns",
+        "multiselect",
+        "date_input",
+        "rerun",
+        "text_input",
+        "dataframe",
+        "download_button",
+        "metric",
+    ):
+        setattr(fake_streamlit_module, attr, getattr(fake_st, attr))
+    fake_streamlit_module.cache_data = fake_st.cache_data  # type: ignore[attr-defined]
+    fake_streamlit_module.sidebar = fake_st.sidebar  # type: ignore[attr-defined]
+
+    # Build a minimal subject mock
+    def _make_subject(
+        subject_id: int,
+        subject_status: str,
+        site_name: str,
+        enrollment_start_date: datetime.datetime | None = None,
+    ) -> MagicMock:
+        s = MagicMock()
+        s.subject_id = subject_id
+        s.subject_key = f"S{subject_id:03d}"
+        s.subject_status = subject_status
+        s.site_id = 1
+        s.site_name = site_name
+        s.enrollment_start_date = enrollment_start_date
+        s.deleted = False
+        return s
+
+    mock_subjects = [
+        _make_subject(1, "Enrolled", "Site A", datetime.datetime(2024, 1, 10)),
+        _make_subject(2, "Screened", "Site B"),
+        _make_subject(3, "Withdrawn", "Site A"),
+    ]
+
+    # Build a minimal site mock
+    mock_site = MagicMock()
+    mock_site.model_dump.return_value = {"site_name": "Site A", "site_enrollment_status": "Open"}
+
+    mock_sdk = MagicMock()
+    mock_sdk.subjects.list.return_value = mock_subjects
+    mock_sdk.sites.list.return_value = [mock_site]
+
+    fake_auth_module = ModuleType("imednet_streamlit.auth")
+    fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]
+    fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
+
+    # Fake components module
+    fake_components_module = _make_fake_components_module()
+
+    # Add pie_chart stub (enrollment page uses it)
+    fake_components_module.pie_chart = lambda df, **kw: MagicMock()  # type: ignore[attr-defined]
+
+    saved: dict[str, Any] = {
+        key: sys.modules.get(key)
+        for key in (
+            "streamlit",
+            "imednet_streamlit.auth",
+            "imednet_streamlit.components",
+        )
+    }
+
+    try:
+        sys.modules["streamlit"] = fake_streamlit_module
+        sys.modules["imednet_streamlit.auth"] = fake_auth_module
+        sys.modules["imednet_streamlit.components"] = fake_components_module
+        runpy.run_path(str(page_path), run_name="__main__")
+    finally:
+        for key, original in saved.items():
+            if original is None:
+                sys.modules.pop(key, None)
+            else:
+                sys.modules[key] = original
+
+    return fake_st
+
+
+def test_enrollment_page_renders() -> None:
+    """enrollment.py should render title and not raise, even with a minimal dataset."""
+    fake_st = _run_enrollment_page()
+    assert "👥 Subject Enrollment Overview" in fake_st.titles
 
 
 def test_streamlit_plugin_has_py_typed_marker() -> None:
