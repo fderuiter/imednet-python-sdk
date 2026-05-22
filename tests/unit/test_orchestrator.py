@@ -8,11 +8,20 @@ import pytest
 
 from imednet.errors import FilterConflictError
 from imednet.models.studies import Study
+from imednet.orchestration.logging import StudyContextLogAdapter
 from imednet.orchestration.orchestrator import MultiStudyOrchestrator
 
 
 def _make_study(study_key: str) -> Study:
     return Study(study_key=study_key)
+
+
+def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> None:
+    clock_values = iter(values)
+    monkeypatch.setattr(
+        "imednet.orchestration.orchestrator.time.monotonic",
+        lambda: next(clock_values),
+    )
 
 
 def test_orchestrator_is_instantiable_with_default_max_workers() -> None:
@@ -82,3 +91,63 @@ def test_resolve_active_studies_with_empty_filter_sets_returns_all_studies() -> 
     result = orchestrator.resolve_active_studies(whitelist=set(), blacklist=set())
 
     assert result == ["A", "B"]
+
+
+def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
+    orchestrator = MultiStudyOrchestrator(sdk, max_workers=2)
+    _mock_monotonic(monkeypatch, [0.0, 0.01, 0.02, 0.03])
+
+    def worker(
+        study_key: str,
+        sdk_client: MagicMock,
+        study_logger: StudyContextLogAdapter,
+        suffix: str,
+        *,
+        scale: int,
+    ) -> str:
+        assert sdk_client is sdk
+        assert study_logger.study_key == study_key
+        return f"{study_key}-{suffix}-{scale}"
+
+    results = orchestrator.execute_pipeline(worker, suffix="done", scale=2)
+
+    assert set(results) == {"A", "B"}
+    for study_key, result in results.items():
+        assert result["status"] == "SUCCESS"
+        assert result["data"] == f"{study_key}-done-2"
+        assert result["error"] is None
+        assert result["duration_seconds"] > 0
+
+
+def test_execute_pipeline_isolates_per_study_failures(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
+    orchestrator = MultiStudyOrchestrator(sdk, max_workers=3)
+    _mock_monotonic(monkeypatch, [0.0, 0.01, 0.02, 0.03, 0.04, 0.05])
+
+    def worker(
+        study_key: str, _sdk_client: MagicMock, _study_logger: StudyContextLogAdapter
+    ) -> str:
+        if study_key == "B":
+            raise RuntimeError("boom")
+        return f"ok-{study_key}"
+
+    results = orchestrator.execute_pipeline(worker)
+
+    assert set(results) == {"A", "B", "C"}
+    assert results["B"]["status"] == "FAILED"
+    assert results["B"]["data"] is None
+    assert results["B"]["error"] == "RuntimeError('boom')"
+    assert results["B"]["duration_seconds"] > 0
+
+    for study_key in ("A", "C"):
+        assert results[study_key]["status"] == "SUCCESS"
+        assert results[study_key]["data"] == f"ok-{study_key}"
+        assert results[study_key]["error"] is None
+        assert results[study_key]["duration_seconds"] > 0

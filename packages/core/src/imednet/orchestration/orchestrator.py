@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import logging
+import time
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from typing import Any, Optional
 
 from imednet.errors.orchestration import FilterConflictError
+from imednet.orchestration.logging import make_study_logger
+from imednet.orchestration.types import OrchestratorResult, StudyWorkerCallable
 
 logger = logging.getLogger(__name__)
+_DURATION_PRECISION = 4
 
 
 class MultiStudyOrchestrator:
@@ -94,6 +99,80 @@ class MultiStudyOrchestrator:
             return filtered
 
         return all_studies
+
+    def execute_pipeline(
+        self,
+        pipeline_func: StudyWorkerCallable[Any],
+        whitelist: Optional[set[str]] = None,
+        blacklist: Optional[set[str]] = None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> dict[str, OrchestratorResult]:
+        """Execute a pipeline function concurrently across resolved study contexts."""
+        target_studies = self.resolve_active_studies(
+            whitelist=whitelist,
+            blacklist=blacklist,
+        )
+
+        logger.info(
+            "Initiating parallel pipeline execution across %d clinical studies "
+            "with max_workers=%d.",
+            len(target_studies),
+            self._max_workers,
+        )
+
+        results: dict[str, OrchestratorResult] = {}
+        start_times: dict[Future[Any], float] = {}
+
+        with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
+            future_to_study: dict[Future[Any], str] = {}
+
+            for study_key in target_studies:
+                study_logger = make_study_logger(study_key)
+                future = executor.submit(
+                    pipeline_func,
+                    study_key,
+                    self._sdk,
+                    study_logger,
+                    *args,
+                    **kwargs,
+                )
+                future_to_study[future] = study_key
+                start_times[future] = time.monotonic()
+
+            for future in as_completed(future_to_study):
+                study_key = future_to_study[future]
+                duration = time.monotonic() - start_times[future]
+
+                try:
+                    data = future.result()
+                    results[study_key] = OrchestratorResult(
+                        status="SUCCESS",
+                        data=data,
+                        error=None,
+                        duration_seconds=round(duration, _DURATION_PRECISION),
+                    )
+                    logger.info(
+                        "[%s] Pipeline completed successfully in %.2fs.",
+                        study_key,
+                        duration,
+                    )
+                except Exception as exc:  # noqa: BLE001 - broad catch for per-study isolation.
+                    results[study_key] = OrchestratorResult(
+                        status="FAILED",
+                        data=None,
+                        error=repr(exc),
+                        duration_seconds=round(duration, _DURATION_PRECISION),
+                    )
+                    logger.error(
+                        "[%s] Pipeline execution failed after %.2fs: %s",
+                        study_key,
+                        duration,
+                        repr(exc),
+                        exc_info=True,
+                    )
+
+        return results
 
 
 __all__ = ["MultiStudyOrchestrator"]
