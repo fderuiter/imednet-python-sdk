@@ -38,6 +38,7 @@ Welcome to imednet's documentation!
    issue_management
    project_standards
    triage_playbook
+   streamlit_dashboard_issue_pack
 
 .. toctree::
    :maxdepth: 2

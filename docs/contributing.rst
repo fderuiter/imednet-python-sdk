@@ -12,6 +12,7 @@ see `CONTRIBUTING.md <../CONTRIBUTING.md>`__ for complete details.
    issue_management
    project_standards
    triage_playbook
+   streamlit_dashboard_issue_pack
 
 Setup
 -----
