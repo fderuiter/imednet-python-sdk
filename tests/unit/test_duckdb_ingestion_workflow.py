@@ -129,9 +129,33 @@ def test_ingest_revisions_returns_row_count() -> None:
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
     revisions = [
-        SimpleNamespace(record_id=1, form_id=1, variable_name="A", value="x", revision_number=1),
-        SimpleNamespace(record_id=2, form_id=1, variable_name="B", value="y", revision_number=1),
-        SimpleNamespace(record_id=3, form_id=1, variable_name="C", value="z", revision_number=1),
+        SimpleNamespace(
+            record_id=1,
+            form_id=1,
+            variable_name="A",
+            value="x",
+            revision_number=1,
+            date_modified=datetime(2024, 1, 1, 10, 0, 0),
+            modified_by="alice",
+        ),
+        SimpleNamespace(
+            record_id=2,
+            form_id=1,
+            variable_name="B",
+            value="y",
+            revision_number=1,
+            date_modified=datetime(2024, 1, 1, 11, 0, 0),
+            modified_by="bob",
+        ),
+        SimpleNamespace(
+            record_id=3,
+            form_id=1,
+            variable_name="C",
+            value="z",
+            revision_number=1,
+            date_modified=datetime(2024, 1, 1, 12, 0, 0),
+            modified_by="carol",
+        ),
     ]
 
     with patch.object(DataExtractionWorkflow, "extract_audit_trail", return_value=revisions):

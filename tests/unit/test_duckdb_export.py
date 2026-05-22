@@ -2,7 +2,7 @@ import sys
 from builtins import __import__ as builtin_import
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import pandas as pd
 import pytest
@@ -159,3 +159,4 @@ def test_export_to_duckdb_connection_closed_on_error(
         export_mod.export_to_duckdb(sdk, "STUDY", str(tmp_path / "out.duckdb"), "records")
 
     conn.close.assert_called_once_with()
+    assert conn.mock_calls[-1] == call.close()
