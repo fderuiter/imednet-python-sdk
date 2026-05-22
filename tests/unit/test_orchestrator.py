@@ -70,3 +70,13 @@ def test_resolve_active_studies_raises_on_conflicting_filters_before_network_cal
         orchestrator.resolve_active_studies(whitelist={"A"}, blacklist={"B"})
 
     sdk.studies.list.assert_not_called()
+
+
+def test_resolve_active_studies_with_empty_filter_sets_returns_all_studies() -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
+    orchestrator = MultiStudyOrchestrator(sdk)
+
+    result = orchestrator.resolve_active_studies(whitelist=set(), blacklist=set())
+
+    assert result == ["A", "B"]
