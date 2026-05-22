@@ -16,6 +16,14 @@ def _make_study(study_key: str) -> Study:
     return Study(study_key=study_key)
 
 
+def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> None:
+    clock_values = iter(values)
+    monkeypatch.setattr(
+        "imednet.orchestration.orchestrator.time.monotonic",
+        lambda: next(clock_values),
+    )
+
+
 def test_orchestrator_is_instantiable_with_default_max_workers() -> None:
     sdk = MagicMock()
 
@@ -91,11 +99,7 @@ def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=2)
-    clock_values = iter([0.0, 0.01, 0.02, 0.03])
-    monkeypatch.setattr(
-        "imednet.orchestration.orchestrator.time.monotonic",
-        lambda: next(clock_values),
-    )
+    _mock_monotonic(monkeypatch, [0.0, 0.01, 0.02, 0.03])
 
     def worker(
         study_key: str,
@@ -125,11 +129,7 @@ def test_execute_pipeline_isolates_per_study_failures(
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=3)
-    clock_values = iter([0.0, 0.01, 0.02, 0.03, 0.04, 0.05])
-    monkeypatch.setattr(
-        "imednet.orchestration.orchestrator.time.monotonic",
-        lambda: next(clock_values),
-    )
+    _mock_monotonic(monkeypatch, [0.0, 0.01, 0.02, 0.03, 0.04, 0.05])
 
     def worker(
         study_key: str, _sdk_client: MagicMock, _study_logger: StudyContextLogAdapter
@@ -144,7 +144,7 @@ def test_execute_pipeline_isolates_per_study_failures(
     assert results["B"]["status"] == "FAILED"
     assert results["B"]["data"] is None
     assert results["B"]["error"] == "RuntimeError('boom')"
-    assert results["B"]["duration_seconds"] >= 0
+    assert results["B"]["duration_seconds"] > 0
 
     for study_key in ("A", "C"):
         assert results[study_key]["status"] == "SUCCESS"
