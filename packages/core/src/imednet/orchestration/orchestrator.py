@@ -1,4 +1,38 @@
-"""MultiStudyOrchestrator: concurrent multi-study pipeline engine."""
+"""MultiStudyOrchestrator: concurrent multi-study pipeline engine.
+
+This module provides the :class:`MultiStudyOrchestrator` class, which drives
+parallel execution of a user-supplied pipeline function across all active
+iMednet study boundaries discovered via the SDK's studies endpoint.
+
+Three-step usage
+----------------
+
+1. **Construct** the orchestrator with a live SDK instance::
+
+       orchestrator = MultiStudyOrchestrator(sdk, max_workers=8)
+
+2. **Define** a pipeline callable that conforms to
+   :class:`~imednet.orchestration.StudyWorkerCallable`::
+
+       def my_pipeline(study_key, sdk, study_logger, **kwargs):
+           study_logger.info("Running pipeline for %s", study_key)
+           subjects = sdk.subjects.list(study_key=study_key)
+           return {"count": len(list(subjects))}
+
+3. **Execute** and inspect results::
+
+       results = orchestrator.execute_pipeline(
+           my_pipeline,
+           whitelist={"PROT-01", "PROT-02"},
+       )
+       for study_key, r in results.items():
+           print(study_key, r["status"], r["duration_seconds"])
+
+Each study runs in its own :func:`~imednet.core.context.study_context`,
+so context-sensitive SDK calls resolve the correct study automatically.
+Per-study failures are captured in the result dict (``status="FAILED"``)
+and never propagate as exceptions, ensuring fault isolation.
+"""
 
 from __future__ import annotations
 
