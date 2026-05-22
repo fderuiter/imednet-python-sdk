@@ -440,7 +440,7 @@ def _run_enrollment_page() -> _FakeQueriesStreamlit:
         subject_id: int,
         subject_status: str,
         site_name: str,
-        enrolled_date: datetime.datetime | None = None,
+        enrollment_start_date: datetime.datetime | None = None,
     ) -> MagicMock:
         s = MagicMock()
         s.subject_id = subject_id
@@ -448,7 +448,7 @@ def _run_enrollment_page() -> _FakeQueriesStreamlit:
         s.subject_status = subject_status
         s.site_id = 1
         s.site_name = site_name
-        s.enrollment_start_date = enrolled_date
+        s.enrollment_start_date = enrollment_start_date
         s.deleted = False
         return s
 

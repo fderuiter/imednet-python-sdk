@@ -72,8 +72,13 @@ with st.sidebar:
     status_filter: list[str] = st.multiselect("Subject Status", status_options)
 
     if not df.empty and pd.api.types.is_datetime64_any_dtype(df["enrollment_start_date"]):
-        min_enroll = df["enrollment_start_date"].min().date()
-        max_enroll = df["enrollment_start_date"].max().date()
+        valid_dates = df["enrollment_start_date"].dropna()
+        if not valid_dates.empty:
+            min_enroll = valid_dates.min().date()
+            max_enroll = valid_dates.max().date()
+        else:
+            min_enroll = _date.today()
+            max_enroll = _date.today()
     else:
         min_enroll = _date.today()
         max_enroll = _date.today()
@@ -190,14 +195,14 @@ if not df_filtered.empty:
     )
     site_totals = df_filtered.groupby("site_name").size().reset_index(name="total")
     site_summary = site_summary.merge(site_totals, left_on="Site", right_on="site_name", how="left")
-    site_summary["enrollment_rate%"] = site_summary.apply(
+    site_summary["enrollment_rate_pct"] = site_summary.apply(
         lambda row: f"{row['enrolled_count'] / row['total'] * 100:.1f}%"
         if row["total"] > 0
         else "N/A",
         axis=1,
     )
     display_cols = [
-        "Site", "enrolled_count", "screened_count", "withdrawn_count", "enrollment_rate%"
+        "Site", "enrolled_count", "screened_count", "withdrawn_count", "enrollment_rate_pct"
     ]
     st.dataframe(
         site_summary[[c for c in display_cols if c in site_summary.columns]],
