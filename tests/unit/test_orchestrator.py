@@ -101,7 +101,7 @@ def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
     ) -> str:
         assert sdk_client is sdk
         assert study_logger.study_key == study_key
-        time.sleep(0.01)
+        time.sleep(0.002)
         return f"{study_key}-{suffix}-{scale}"
 
     results = orchestrator.execute_pipeline(worker, suffix="done", scale=2)
@@ -124,7 +124,7 @@ def test_execute_pipeline_isolates_per_study_failures() -> None:
     ) -> str:
         if study_key == "B":
             raise RuntimeError("boom")
-        time.sleep(0.01)
+        time.sleep(0.002)
         return f"ok-{study_key}"
 
     results = orchestrator.execute_pipeline(worker)

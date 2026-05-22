@@ -156,7 +156,7 @@ class MultiStudyOrchestrator:
                         study_key,
                         duration,
                     )
-                except Exception as exc:  # noqa: BLE001 - per-study fault isolation.
+                except Exception as exc:  # noqa: BLE001 - per-study failure isolation.
                     results[study_key] = OrchestratorResult(
                         status="FAILED",
                         data=None,
