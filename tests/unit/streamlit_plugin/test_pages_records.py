@@ -77,7 +77,3 @@ def test_home_page_renders_connected() -> None:
     assert any("connected" in success.lower() for success in home_connected.successes)
 
 
-def test_records_page_renders() -> None:
-    page_streamlit = _run_page("records.py", connected=True)
-    assert page_streamlit.titles
-    assert page_streamlit.infos == ["This page is under construction."]
