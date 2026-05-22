@@ -121,3 +121,22 @@ def test_render_auth_sidebar_build_failure_clears_secret_keys(
     assert auth._KEY_API_KEY not in fake_st.session_state
     assert auth._KEY_SECURITY_KEY not in fake_st.session_state
     assert auth._KEY_SDK not in fake_st.session_state
+
+
+def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secrets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_st = _FakeStreamlit(
+        text_values={"API Key": "api-key", "Security Key": "security-key"},
+        connect_clicked=True,
+    )
+    monkeypatch.setattr(auth, "st", fake_st)
+
+    result = auth.render_auth_sidebar()
+
+    assert result is False
+    assert fake_st.session_state.get(auth._KEY_CONNECTED) is False
+    assert auth._KEY_API_KEY not in fake_st.session_state
+    assert auth._KEY_SECURITY_KEY not in fake_st.session_state
+    assert auth._KEY_SDK not in fake_st.session_state
+    assert fake_st.error_messages == ["All fields are required."]

@@ -3,7 +3,6 @@ from __future__ import annotations
 import streamlit as st
 
 from imednet import ImednetSDK
-from imednet.auth import ApiKeyAuth
 
 _KEY_API_KEY = "_imednet_api_key"
 _KEY_SECURITY_KEY = "_imednet_security_key"
@@ -16,10 +15,9 @@ __all__ = ["render_auth_sidebar", "get_sdk", "get_study_key", "clear_credentials
 
 def _build_sdk(api_key: str, security_key: str) -> None:
     """Construct and cache an authenticated SDK instance."""
-    auth = ApiKeyAuth(api_key=api_key, security_key=security_key)
     st.session_state[_KEY_SDK] = ImednetSDK(
-        api_key=auth.api_key,
-        security_key=auth.security_key,
+        api_key=api_key,
+        security_key=security_key,
     )
 
 
@@ -42,9 +40,9 @@ def render_auth_sidebar() -> bool:
             if api_key and security_key and study_key:
                 try:
                     _build_sdk(api_key=api_key, security_key=security_key)
-                except Exception:
+                except Exception as exc:
                     _mark_disconnected()
-                    st.error("Connection failed.")
+                    st.error(f"Connection failed ({type(exc).__name__}).")
                 else:
                     st.session_state[_KEY_CONNECTED] = True
                     st.success("Connected ✓")
@@ -53,6 +51,8 @@ def render_auth_sidebar() -> bool:
                     st.session_state.pop(_KEY_SECURITY_KEY, None)
             else:
                 _mark_disconnected()
+                st.session_state.pop(_KEY_API_KEY, None)
+                st.session_state.pop(_KEY_SECURITY_KEY, None)
                 st.error("All fields are required.")
 
     return bool(st.session_state.get(_KEY_CONNECTED))
@@ -62,7 +62,9 @@ def get_sdk() -> ImednetSDK:
     """Return the authenticated SDK from session state."""
     sdk = st.session_state.get(_KEY_SDK)
     if not st.session_state.get(_KEY_CONNECTED) or sdk is None:
-        raise RuntimeError("SDK is not connected. Call render_auth_sidebar() first.")
+        raise RuntimeError(
+            "SDK is not connected. Ensure credentials are entered and Connect is clicked."
+        )
     return sdk
 
 
