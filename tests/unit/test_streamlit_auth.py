@@ -61,13 +61,13 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch.setattr(auth, "st", fake_st)
     sentinel_sdk = SimpleNamespace(name="sdk")
 
-    def _fake_build_sdk(**_: object) -> None:
+    def _fake_store_sdk(**_: object) -> None:
         fake_st.session_state[auth._KEY_SDK] = sentinel_sdk
 
     monkeypatch.setattr(
         auth,
         "_build_sdk",
-        _fake_build_sdk,
+        _fake_store_sdk,
     )
 
     assert auth.render_auth_sidebar() is True
