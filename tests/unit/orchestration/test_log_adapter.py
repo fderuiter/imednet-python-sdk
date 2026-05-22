@@ -14,6 +14,7 @@ def test_process_injects_study_key() -> None:
     _, kwargs = adapter.process("msg", {})
 
     assert kwargs["extra"]["study_key"] == "PROT-01"
+    assert kwargs["extra"]["studyKey"] == "PROT-01"
 
 
 def test_process_preserves_caller_extra() -> None:
@@ -24,6 +25,7 @@ def test_process_preserves_caller_extra() -> None:
 
     assert kwargs["extra"]["custom"] == "value"
     assert kwargs["extra"]["study_key"] == "PROT-01"
+    assert kwargs["extra"]["studyKey"] == "PROT-01"
 
 
 def test_study_key_property() -> None:
@@ -43,3 +45,4 @@ def test_log_emission_includes_study_key(caplog: pytest.LogCaptureFixture) -> No
         adapter.info("adapter-log")
 
     assert any(getattr(record, "study_key", None) == "PROT-01" for record in caplog.records)
+    assert any(getattr(record, "studyKey", None) == "PROT-01" for record in caplog.records)

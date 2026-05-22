@@ -62,6 +62,8 @@ def test_logger_study_key_propagated_to_worker(
     for record in worker_logs:
         assert hasattr(record, "study_key")
         assert record.study_key in {"STUDY-A", "STUDY-B", "STUDY-C"}
+        assert hasattr(record, "studyKey")
+        assert record.studyKey in {"STUDY-A", "STUDY-B", "STUDY-C"}
 
 
 def test_result_contains_duration_seconds(orchestrator: MultiStudyOrchestrator) -> None:
