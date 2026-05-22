@@ -41,13 +41,11 @@ class _FakeEntryPoint:
 
 
 def test_top_level_orchestration_exports() -> None:
-    from imednet import (
-        FilterConflictError as TopLevelFilterConflictError,
-        MultiStudyOrchestrator as TopLevelMultiStudyOrchestrator,
-        OrchestratorError as TopLevelOrchestratorError,
-        OrchestratorResult as TopLevelOrchestratorResult,
-        StudyWorkerCallable as TopLevelStudyWorkerCallable,
-    )
+    from imednet import FilterConflictError as TopLevelFilterConflictError
+    from imednet import MultiStudyOrchestrator as TopLevelMultiStudyOrchestrator
+    from imednet import OrchestratorError as TopLevelOrchestratorError
+    from imednet import OrchestratorResult as TopLevelOrchestratorResult
+    from imednet import StudyWorkerCallable as TopLevelStudyWorkerCallable
 
     assert TopLevelMultiStudyOrchestrator is MultiStudyOrchestrator
     assert TopLevelOrchestratorResult is OrchestratorResult
