@@ -111,8 +111,7 @@ def _register_missing_workflow_commands() -> None:
 
 def _exit_missing_dashboard_plugin() -> None:
     typer.secho(
-        "Dashboard plugin not found. Install it with:\n"
-        "  pip install imednet-streamlit",
+        "Dashboard plugin not found. Install it with:\n" "  pip install imednet-streamlit",
         fg=typer.colors.RED,
     )
     raise typer.Exit(code=1)
