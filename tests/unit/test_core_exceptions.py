@@ -18,3 +18,16 @@ def test_exception_hierarchy() -> None:
 
     # New check
     assert issubclass(errors.ClientError, errors.ImednetError)
+    assert issubclass(errors.OrchestratorError, errors.ImednetError)
+    assert issubclass(errors.FilterConflictError, errors.OrchestratorError)
+
+
+def test_filter_conflict_error_keeps_conflicting_filters() -> None:
+    whitelist = {"STUDY-A"}
+    blacklist = {"STUDY-B"}
+
+    err = errors.FilterConflictError(whitelist=whitelist, blacklist=blacklist)
+
+    assert err.whitelist == whitelist
+    assert err.blacklist == blacklist
+    assert "mutually exclusive" in str(err)
