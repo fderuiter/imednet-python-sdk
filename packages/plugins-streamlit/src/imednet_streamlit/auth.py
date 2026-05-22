@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import streamlit as st
 
 from imednet import ImednetSDK
 from imednet.auth import ApiKeyAuth
-
-if TYPE_CHECKING:
-    from imednet import ImednetSDK as _ImednetSDK
 
 _KEY_API_KEY = "_imednet_api_key"
 _KEY_SECURITY_KEY = "_imednet_security_key"
@@ -28,6 +23,11 @@ def _build_sdk(api_key: str, security_key: str) -> None:
     )
 
 
+def _mark_disconnected() -> None:
+    st.session_state[_KEY_CONNECTED] = False
+    st.session_state.pop(_KEY_SDK, None)
+
+
 def render_auth_sidebar() -> bool:
     """
     Render auth controls in the Streamlit sidebar and cache an SDK when connected.
@@ -43,8 +43,7 @@ def render_auth_sidebar() -> bool:
                 try:
                     _build_sdk(api_key=api_key, security_key=security_key)
                 except Exception:
-                    st.session_state[_KEY_CONNECTED] = False
-                    st.session_state.pop(_KEY_SDK, None)
+                    _mark_disconnected()
                     st.error("Connection failed.")
                 else:
                     st.session_state[_KEY_CONNECTED] = True
@@ -53,14 +52,13 @@ def render_auth_sidebar() -> bool:
                     st.session_state.pop(_KEY_API_KEY, None)
                     st.session_state.pop(_KEY_SECURITY_KEY, None)
             else:
-                st.session_state[_KEY_CONNECTED] = False
-                st.session_state.pop(_KEY_SDK, None)
+                _mark_disconnected()
                 st.error("All fields are required.")
 
     return bool(st.session_state.get(_KEY_CONNECTED))
 
 
-def get_sdk() -> "_ImednetSDK":
+def get_sdk() -> ImednetSDK:
     """Return the authenticated SDK from session state."""
     sdk = st.session_state.get(_KEY_SDK)
     if not st.session_state.get(_KEY_CONNECTED) or sdk is None:

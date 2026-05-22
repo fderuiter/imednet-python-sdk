@@ -11,7 +11,7 @@ class _SidebarContext:
     def __enter__(self) -> None:
         return None
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         return None
 
 
@@ -25,7 +25,7 @@ class _FakeStreamlit:
         self.error_messages: list[str] = []
 
     def header(self, _: str) -> None:
-        return None
+        pass
 
     def text_input(self, label: str, **kwargs: object) -> str:
         key = kwargs["key"]
