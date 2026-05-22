@@ -35,7 +35,7 @@ Standards-guided architecture layers
 
 Use these architectural layers in issue scope and acceptance criteria:
 
-- **Layer A — Raw iMednet records**: top-level metadata plus variable ``recordData``
+- **Layer A — Raw IMedNet records**: top-level metadata plus variable ``recordData``
 - **Layer B — Study mapping config**: per-study form/field mapping and value transforms
 - **Layer C — Canonical reporting models**: adverse event (AE), protocol deviation (PD),
   and device deficiency/event (DD) records
@@ -124,8 +124,8 @@ Child issue placeholders
 
    ## Desired outcome
    Add a schema profiling service that summarizes form keys, record counts, observed
-   `recordData` fields, and sample values per study, with candidate mapping hints
-   for canonical AE/PD/DD reporting models.
+   `recordData` fields, and sample values per study. The profiler suggests candidate
+   mappings for canonical AE/PD/DD reporting models.
 
    ## Acceptance criteria
    - [ ] Profiling groups records by `formKey`
@@ -245,8 +245,7 @@ Child issue placeholders
    - [ ] Study defaults persist independently of user overrides
    - [ ] Config versions are tracked for safe updates
    - [ ] Export/import path exists for config portability
-   - [ ] Reporting profiles (drug/biologic safety, device investigation, general ops) are
-         persisted and selectable per study
+   - [ ] Reporting profiles (drug/biologic safety, device investigation, general ops) are persisted and selectable per study
 
 6) Reportability and escalation rules
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -265,7 +264,7 @@ Child issue placeholders
 
    ## Desired outcome
    Add configurable rules that compute review/reportability flags from canonical
-   AE/PD/DD records (for example missing critical fields, important deviation
+   AE/PD/DD records (for example, missing critical fields, important deviation
    candidates, and FDA IDE UADE-like escalation candidates).
 
    ## Acceptance criteria
