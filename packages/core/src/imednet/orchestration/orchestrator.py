@@ -12,6 +12,7 @@ from imednet.orchestration.logging import make_study_logger
 from imednet.orchestration.types import OrchestratorResult, StudyWorkerCallable
 
 logger = logging.getLogger(__name__)
+_DURATION_PRECISION = 4
 
 
 class MultiStudyOrchestrator:
@@ -149,7 +150,7 @@ class MultiStudyOrchestrator:
                         status="SUCCESS",
                         data=data,
                         error=None,
-                        duration_seconds=round(duration, 4),
+                        duration_seconds=round(duration, _DURATION_PRECISION),
                     )
                     logger.info(
                         "[%s] Pipeline completed successfully in %.2fs.",
@@ -161,7 +162,7 @@ class MultiStudyOrchestrator:
                         status="FAILED",
                         data=None,
                         error=repr(exc),
-                        duration_seconds=round(duration, 4),
+                        duration_seconds=round(duration, _DURATION_PRECISION),
                     )
                     logger.error(
                         "[%s] Pipeline execution failed after %.2fs: %s",
