@@ -125,7 +125,7 @@ Child issue placeholders
    ## Desired outcome
    Add a schema profiling service that summarizes form keys, record counts, observed
    `recordData` fields, and sample values per study, with candidate mapping hints
-   for canonical AE/PD/DD packages.
+   for canonical AE/PD/DD reporting models.
 
    ## Acceptance criteria
    - [ ] Profiling groups records by `formKey`
@@ -245,8 +245,8 @@ Child issue placeholders
    - [ ] Study defaults persist independently of user overrides
    - [ ] Config versions are tracked for safe updates
    - [ ] Export/import path exists for config portability
-   - [ ] Reporting profiles (drug/biologic safety, device investigation, general ops)
-         are persisted and selectable per study
+   - [ ] Reporting profiles (drug/biologic safety, device investigation, general ops) are
+         persisted and selectable per study
 
 6) Reportability and escalation rules
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -261,8 +261,7 @@ Child issue placeholders
 .. code-block:: markdown
 
    ## Problem
-   Teams need triage flags to quickly identify records that require expedited safety
-   or compliance review.
+   Teams need triage flags to quickly identify records that require expedited safety or compliance review.
 
    ## Desired outcome
    Add configurable rules that compute review/reportability flags from canonical
