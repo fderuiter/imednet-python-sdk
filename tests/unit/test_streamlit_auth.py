@@ -27,7 +27,9 @@ class _FakeStreamlit:
     def header(self, _: str) -> None:
         return None
 
-    def text_input(self, label: str, *, type: str | None = None, key: str) -> str:  # noqa: A002
+    def text_input(self, label: str, **kwargs: object) -> str:
+        key = kwargs["key"]
+        assert isinstance(key, str)
         value = self._text_values.get(label, "")
         self.session_state[key] = value
         return value
@@ -59,8 +61,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch.setattr(auth, "st", fake_st)
     sentinel_sdk = SimpleNamespace(name="sdk")
 
-    def _fake_build_sdk(api_key: str, security_key: str) -> None:
-        _ = (api_key, security_key)
+    def _fake_build_sdk(**_: str) -> None:
         fake_st.session_state[auth._KEY_SDK] = sentinel_sdk
 
     monkeypatch.setattr(
@@ -100,3 +101,23 @@ def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPa
     auth.clear_credentials()
 
     assert fake_st.session_state == {}
+
+
+def test_render_auth_sidebar_build_failure_clears_secret_keys(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_st = _FakeStreamlit(
+        text_values={"API Key": "api-key", "Security Key": "security-key", "Study Key": "STUDY"},
+        connect_clicked=True,
+    )
+    monkeypatch.setattr(auth, "st", fake_st)
+
+    def _raise_build_error(**_: str) -> None:
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(auth, "_build_sdk", _raise_build_error)
+
+    assert auth.render_auth_sidebar() is False
+    assert auth._KEY_API_KEY not in fake_st.session_state
+    assert auth._KEY_SECURITY_KEY not in fake_st.session_state
+    assert auth._KEY_SDK not in fake_st.session_state

@@ -40,11 +40,18 @@ def render_auth_sidebar() -> bool:
 
         if st.button("Connect"):
             if api_key and security_key and study_key:
-                _build_sdk(api_key=api_key, security_key=security_key)
-                st.session_state[_KEY_CONNECTED] = True
-                st.session_state.pop(_KEY_API_KEY, None)
-                st.session_state.pop(_KEY_SECURITY_KEY, None)
-                st.success("Connected ✓")
+                try:
+                    _build_sdk(api_key=api_key, security_key=security_key)
+                except Exception:
+                    st.session_state[_KEY_CONNECTED] = False
+                    st.session_state.pop(_KEY_SDK, None)
+                    st.error("Connection failed.")
+                else:
+                    st.session_state[_KEY_CONNECTED] = True
+                    st.success("Connected ✓")
+                finally:
+                    st.session_state.pop(_KEY_API_KEY, None)
+                    st.session_state.pop(_KEY_SECURITY_KEY, None)
             else:
                 st.session_state[_KEY_CONNECTED] = False
                 st.session_state.pop(_KEY_SDK, None)
