@@ -284,6 +284,92 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
     return fake_st
 
 
+def _run_sites_page() -> _FakeDashboardStreamlit:
+    """Execute sites.py with mocked dependencies and capture Streamlit output."""
+    page_path = PACKAGE_ROOT / "pages" / "sites.py"
+    fake_st = _FakeDashboardStreamlit(connected=True)
+
+    fake_streamlit_module = ModuleType("streamlit")
+    fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
+    for attr in (
+        "title",
+        "info",
+        "success",
+        "markdown",
+        "warning",
+        "button",
+        "subheader",
+        "altair_chart",
+        "columns",
+        "multiselect",
+        "date_input",
+        "rerun",
+        "text_input",
+        "dataframe",
+        "download_button",
+        "metric",
+    ):
+        setattr(fake_streamlit_module, attr, getattr(fake_st, attr))
+    fake_streamlit_module.cache_data = fake_st.cache_data  # type: ignore[attr-defined]
+    fake_streamlit_module.sidebar = fake_st.sidebar  # type: ignore[attr-defined]
+
+    mock_sdk = MagicMock()
+    mock_sdk.subjects.list.return_value = []
+    fake_auth_module = ModuleType("imednet_streamlit.auth")
+    fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]
+    fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
+
+    fake_components_module = _make_fake_components_module(fake_st)
+    package_module = sys.modules.get("imednet_streamlit")
+    saved_auth_attr = getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    saved_components_attr = (
+        getattr(package_module, "components", _MISSING) if package_module else _MISSING
+    )
+    mock_workflow_cls = MagicMock()
+    mock_workflow_instance = MagicMock()
+    mock_workflow_instance.get_open_queries.return_value = []
+    mock_workflow_cls.return_value = mock_workflow_instance
+
+    fake_qm_module = ModuleType("imednet_workflows.query_management")
+    fake_qm_module.QueryManagementWorkflow = mock_workflow_cls  # type: ignore[attr-defined]
+    saved: dict[str, Any] = {
+        key: sys.modules.get(key)
+        for key in (
+            "streamlit",
+            "imednet_streamlit.auth",
+            "imednet_streamlit.components",
+            "imednet_workflows.query_management",
+        )
+    }
+
+    try:
+        sys.modules["streamlit"] = fake_streamlit_module
+        sys.modules["imednet_streamlit.auth"] = fake_auth_module
+        sys.modules["imednet_streamlit.components"] = fake_components_module
+        if package_module is not None:
+            package_module.auth = fake_auth_module
+            package_module.components = fake_components_module
+        sys.modules["imednet_workflows.query_management"] = fake_qm_module
+        runpy.run_path(str(page_path), run_name="__main__")
+    finally:
+        for key, original in saved.items():
+            if original is None:
+                sys.modules.pop(key, None)
+            else:
+                sys.modules[key] = original
+        if package_module is not None:
+            if saved_auth_attr is _MISSING:
+                delattr(package_module, "auth")
+            else:
+                package_module.auth = saved_auth_attr
+            if saved_components_attr is _MISSING:
+                delattr(package_module, "components")
+            else:
+                package_module.components = saved_components_attr
+
+    return fake_st
+
+
 def _run_records_page(
     *,
     records: list[Any] | None = None,
@@ -512,16 +598,17 @@ def test_streamlit_pages_execute_without_exceptions() -> None:
     home_connected = _run_page("home.py", connected=True)
     assert home_connected.successes
 
-    for page_name in ("sites.py",):
-        page_streamlit = _run_page(page_name, connected=True)
-        assert page_streamlit.titles
-        assert page_streamlit.infos == ["This page is under construction."]
-
 
 def test_queries_page_renders() -> None:
     """queries.py should render title and not raise, even with an empty dataset."""
     fake_st = _run_queries_page()
     assert "🔍 Query Status Overview" in fake_st.titles
+
+
+def test_sites_page_renders() -> None:
+    fake_st = _run_sites_page()
+
+    assert "🏥 Site Performance" in fake_st.titles
 
 
 def test_records_page_renders_with_filtered_metrics_and_downloads() -> None:
