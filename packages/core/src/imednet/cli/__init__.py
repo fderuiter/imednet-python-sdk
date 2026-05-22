@@ -109,16 +109,20 @@ def _register_missing_workflow_commands() -> None:
     app.add_typer(workflows_app)
 
 
+def _exit_missing_dashboard_plugin() -> None:
+    typer.secho(
+        "Dashboard plugin not found. Install it with:\n"
+        "  pip install imednet-streamlit",
+        fg=typer.colors.RED,
+    )
+    raise typer.Exit(code=1)
+
+
 def _register_missing_dashboard_commands() -> None:
     @app.command("dashboard")
     def missing_dashboard() -> None:
         """Launch the iMednet Streamlit reporting dashboard (requires imednet-streamlit plugin)."""
-        typer.secho(
-            "Dashboard plugin not found. Install it with:\n"
-            "  pip install imednet-streamlit",
-            fg=typer.colors.RED,
-        )
-        raise typer.Exit(code=1)
+        _exit_missing_dashboard_plugin()
 
 
 def run_dashboard(
@@ -131,12 +135,7 @@ def run_dashboard(
     try:
         _app_module = import_module("imednet_streamlit.app")
     except (ImportError, ModuleNotFoundError):
-        typer.secho(
-            "Dashboard plugin not found. Install it with:\n"
-            "  pip install imednet-streamlit",
-            fg=typer.colors.RED,
-        )
-        raise typer.Exit(code=1)
+        _exit_missing_dashboard_plugin()
 
     app_path = _app_module.__file__
     if app_path is None:
