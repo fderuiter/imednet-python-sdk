@@ -83,9 +83,7 @@ if type_filter:
     df_filtered = df_filtered[df_filtered["annotation_type"].isin(type_filter)]
 if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
     start_date, end_date = date_range[0], date_range[1]
-    if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(
-        df_filtered["date_created"]
-    ):
+    if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(df_filtered["date_created"]):
         df_filtered = df_filtered[
             (df_filtered["date_created"].dt.date >= start_date)
             & (df_filtered["date_created"].dt.date <= end_date)
