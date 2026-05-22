@@ -26,6 +26,7 @@ PUBLIC_MODULES_WITH_ALL = [
     "imednet.form_designer",
     "imednet.integrations",
     "imednet.models",
+    "imednet.orchestration",
     "imednet.pagination",
     "imednet.utils",
     "imednet.validation",
