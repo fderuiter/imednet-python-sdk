@@ -1,22 +1,30 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pandas as pd
 import streamlit as st
 
 from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
 
+if TYPE_CHECKING:
+    from imednet import ImednetSDK
+
 _HIGH_QUERY_RATE_THRESHOLD = 20.0
 _HIGH_RATE_COLOR = "#ffe0e0"
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def _fetch_site_metrics(_sdk: object, study_key: str) -> pd.DataFrame:
-    """Joins subjects + queries to produce a per-site metrics DataFrame."""
+def _fetch_site_metrics(
+    _sdk: ImednetSDK, study_key: str, *, now_utc: pd.Timestamp | None = None
+) -> pd.DataFrame:
+    """Build site metrics with site/query counts, rates, and average days open."""
     from imednet_workflows.query_management import QueryManagementWorkflow
 
     # --- Subjects ---
-    subjects = _sdk.subjects.list(study_key=study_key)  # type: ignore[attr-defined]
+    subject_cols = ["subject_key", "site_name", "deleted"]
+    subjects = _sdk.subjects.list(study_key=study_key)
     df_subjects = pd.DataFrame(
         [
             {
@@ -25,19 +33,20 @@ def _fetch_site_metrics(_sdk: object, study_key: str) -> pd.DataFrame:
                 "deleted": s.deleted,
             }
             for s in subjects
-        ]
+        ],
+        columns=subject_cols,
     )
-    _subject_cols = ["subject_key", "site_name", "deleted"]
     if df_subjects.empty:
-        df_subjects = pd.DataFrame(columns=_subject_cols)
+        df_subjects = pd.DataFrame(columns=subject_cols)
     else:
         df_subjects = df_subjects[~df_subjects["deleted"]]
 
     site_enrollment = df_subjects.groupby("site_name").size().reset_index(name="enrolled_count")
 
     # --- Open Queries ---
-    workflow = QueryManagementWorkflow(sdk=_sdk)  # type: ignore[arg-type]
+    workflow = QueryManagementWorkflow(sdk=_sdk)
     open_queries = workflow.get_open_queries(study_key=study_key)
+    query_cols = ["subject_key", "annotation_id", "date_created"]
     df_queries = pd.DataFrame(
         [
             {
@@ -46,11 +55,11 @@ def _fetch_site_metrics(_sdk: object, study_key: str) -> pd.DataFrame:
                 "date_created": q.date_created,
             }
             for q in open_queries
-        ]
+        ],
+        columns=query_cols,
     )
-    _query_cols = ["subject_key", "annotation_id", "date_created"]
     if df_queries.empty:
-        df_queries = pd.DataFrame(columns=_query_cols)
+        df_queries = pd.DataFrame(columns=query_cols)
 
     # Join queries → subjects → site_name
     df_q_with_site = df_queries.merge(
@@ -60,15 +69,14 @@ def _fetch_site_metrics(_sdk: object, study_key: str) -> pd.DataFrame:
     if df_q_with_site.empty:
         site_queries = pd.DataFrame(columns=["site_name", "open_queries", "avg_days_open"])
     else:
+        timestamp_now = now_utc or pd.Timestamp.now(tz="UTC")
         site_queries = (
             df_q_with_site.groupby("site_name")
             .agg(
                 open_queries=("annotation_id", "count"),
                 avg_days_open=(
                     "date_created",
-                    lambda x: (
-                        pd.Timestamp.now(tz="UTC") - pd.to_datetime(x, utc=True)
-                    ).dt.days.mean(),
+                    lambda x: (timestamp_now - pd.to_datetime(x, utc=True)).dt.days.mean(),
                 ),
             )
             .reset_index()
@@ -102,7 +110,9 @@ df_metrics = _fetch_site_metrics(sdk, study_key)
 total_sites = int(df_metrics["site_name"].nunique()) if not df_metrics.empty else 0
 total_enrolled = int(df_metrics["enrolled_count"].sum()) if not df_metrics.empty else 0
 total_open_queries = int(df_metrics["open_queries"].sum()) if not df_metrics.empty else 0
-avg_query_rate = round(float(df_metrics["query_rate"].mean()), 1) if not df_metrics.empty else 0.0
+avg_query_rate = (
+    round(float(total_open_queries / total_enrolled * 100), 1) if total_enrolled else 0.0
+)
 
 components.kpi_row(
     [
