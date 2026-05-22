@@ -135,3 +135,9 @@ Error codes
 
 ``9001``
   Unauthorized error. Insufficient permission to retrieve data.
+
+Integrations and analytical exports
+-----------------------------------
+
+For DuckDB table exports, Hive-partitioned Parquet layouts, and incremental
+bronze/silver ingestion workflows, see :doc:`duckdb_integration`.
