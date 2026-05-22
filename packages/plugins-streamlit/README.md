@@ -13,3 +13,5 @@ pip install ./packages/plugins-streamlit
 ```bash
 streamlit run "$(python -c 'import imednet_streamlit.app as app; print(app.__file__)')"
 ```
+
+> This currently launches a placeholder stub. The full Streamlit app scaffold is implemented in a follow-up task.
