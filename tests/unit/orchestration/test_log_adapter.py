@@ -16,7 +16,6 @@ def test_process_injects_study_key() -> None:
     assert kwargs["extra"]["study_key"] == "PROT-01"
 
 
-
 def test_process_preserves_caller_extra() -> None:
     adapter = StudyContextLogAdapter(logging.getLogger("tests.orchestration"), "PROT-01")
     input_kwargs: dict[str, Any] = {"extra": {"custom": "value"}}
@@ -27,17 +26,14 @@ def test_process_preserves_caller_extra() -> None:
     assert kwargs["extra"]["study_key"] == "PROT-01"
 
 
-
 def test_study_key_property() -> None:
     adapter = StudyContextLogAdapter(logging.getLogger("tests.orchestration"), "PROT-01")
 
     assert adapter.study_key == "PROT-01"
 
 
-
 def test_make_study_logger_returns_adapter() -> None:
     assert isinstance(make_study_logger("X"), StudyContextLogAdapter)
-
 
 
 def test_log_emission_includes_study_key(caplog: pytest.LogCaptureFixture) -> None:

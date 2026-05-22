@@ -16,9 +16,7 @@ def test_isolation_study_a_failure_does_not_affect_b_and_c(
 ) -> None:
     """STUDY-A raises RuntimeError; STUDY-B and STUDY-C must succeed."""
 
-    def pipeline(
-        study_key: str, sdk: object, logger: logging.LoggerAdapter, **kwargs: Any
-    ) -> str:
+    def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter, **kwargs: Any) -> str:
         if study_key == "STUDY-A":
             raise RuntimeError("Simulated failure")
         return f"processed:{study_key}"
@@ -30,7 +28,6 @@ def test_isolation_study_a_failure_does_not_affect_b_and_c(
     assert results["STUDY-B"]["status"] == "SUCCESS"
     assert results["STUDY-B"]["data"] == "processed:STUDY-B"
     assert results["STUDY-C"]["status"] == "SUCCESS"
-
 
 
 def test_sdk_immutability_across_threads(mock_sdk: MagicMock) -> None:
@@ -46,7 +43,6 @@ def test_sdk_immutability_across_threads(mock_sdk: MagicMock) -> None:
 
     assert all(r["status"] == "SUCCESS" for r in results.values())
     assert id(orch.sdk) == original_id
-
 
 
 def test_logger_study_key_propagated_to_worker(
@@ -68,7 +64,6 @@ def test_logger_study_key_propagated_to_worker(
         assert record.study_key in {"STUDY-A", "STUDY-B", "STUDY-C"}
 
 
-
 def test_result_contains_duration_seconds(orchestrator: MultiStudyOrchestrator) -> None:
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         sleep(0.02)
@@ -79,7 +74,6 @@ def test_result_contains_duration_seconds(orchestrator: MultiStudyOrchestrator) 
     assert all(result["duration_seconds"] > 0 for result in results.values())
 
 
-
 def test_successful_result_error_is_none(orchestrator: MultiStudyOrchestrator) -> None:
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         return study_key
@@ -88,7 +82,6 @@ def test_successful_result_error_is_none(orchestrator: MultiStudyOrchestrator) -
 
     assert all(result["data"] is not None for result in results.values())
     assert all(result["error"] is None for result in results.values())
-
 
 
 def test_failed_result_data_is_none(orchestrator: MultiStudyOrchestrator) -> None:
@@ -102,7 +95,6 @@ def test_failed_result_data_is_none(orchestrator: MultiStudyOrchestrator) -> Non
     assert all(isinstance(result["error"], str) for result in results.values())
 
 
-
 def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrator) -> None:
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         return study_key
@@ -110,7 +102,6 @@ def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrato
     results = orchestrator.execute_pipeline(pipeline, whitelist={"STUDY-A"})
 
     assert set(results) == {"STUDY-A"}
-
 
 
 def test_execute_pipeline_context_propagation(orchestrator: MultiStudyOrchestrator) -> None:
