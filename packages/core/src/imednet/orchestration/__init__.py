@@ -7,6 +7,12 @@ telemetry context propagation, and normalized result reporting.
 
 from __future__ import annotations
 
+from imednet.orchestration.logging import StudyContextLogAdapter, make_study_logger
 from imednet.orchestration.types import OrchestratorResult, StudyWorkerCallable
 
-__all__ = ["OrchestratorResult", "StudyWorkerCallable"]
+__all__ = [
+    "OrchestratorResult",
+    "StudyWorkerCallable",
+    "StudyContextLogAdapter",
+    "make_study_logger",
+]
