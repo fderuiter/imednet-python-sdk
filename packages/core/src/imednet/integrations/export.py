@@ -16,6 +16,14 @@ from .. import ImednetClient
 from ..sdk import ImednetSDK
 
 
+def _quote_duckdb_identifier(name: str) -> str:
+    escaped_name = name.replace('"', '""')
+    return f'"{escaped_name}"'
+
+
+_DUCKDB_DF_ALIAS = "df"
+
+
 def _record_mapper() -> Any:
     try:
         return import_module("imednet_workflows.record_mapper").RecordMapper
@@ -256,6 +264,133 @@ def export_to_sql(
         if_exists=if_exists,
         **kwargs,
     )  # type: ignore[arg-type]
+
+
+def export_to_duckdb(
+    sdk: ImednetSDK,
+    study_key: str,
+    db_path: str,
+    table_name: str,
+    *,
+    use_labels_as_columns: bool = False,
+    variable_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
+) -> None:
+    """Export study records to a DuckDB table using native DataFrame registration.
+
+    Parameters
+    ----------
+    sdk:
+        Authenticated SDK instance used to fetch study records.
+    study_key:
+        Study identifier to export.
+    db_path:
+        Path to the target ``.duckdb`` database file.
+    table_name:
+        Name of the destination DuckDB table.
+    use_labels_as_columns:
+        When ``True``, variable labels are used for DataFrame column names.
+    variable_whitelist:
+        Optional list of variable names to include.
+    form_whitelist:
+        Optional list of form IDs to include.
+
+    Raises
+    ------
+    ImportError
+        If the optional ``duckdb`` dependency is not installed.
+    """
+    try:
+        import duckdb
+    except ImportError as error:
+        raise ImportError(
+            "DuckDB export requires the optional 'duckdb' dependency. "
+            "Install with `pip install 'imednet[duckdb]'`."
+        ) from error
+
+    df = _prepare_export_df(
+        sdk,
+        study_key,
+        use_labels_as_columns=use_labels_as_columns,
+        variable_whitelist=variable_whitelist,
+        form_whitelist=form_whitelist,
+    )
+
+    conn: Any = duckdb.connect(db_path)
+    try:
+        conn.register(_DUCKDB_DF_ALIAS, df)
+        conn.execute(
+            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "
+            f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
+        )
+        conn.unregister(_DUCKDB_DF_ALIAS)
+    finally:
+        conn.close()
+
+
+def export_to_duckdb_by_form(
+    sdk: ImednetSDK,
+    study_key: str,
+    db_path: str,
+    *,
+    use_labels_as_columns: bool = False,
+    variable_whitelist: Optional[List[str]] = None,
+    form_whitelist: Optional[List[int]] = None,
+) -> None:
+    """Export records to separate DuckDB tables for each form.
+
+    Each form is exported to a table named after ``form.form_key``.
+
+    Parameters
+    ----------
+    sdk:
+        Authenticated SDK instance used to fetch study records.
+    study_key:
+        Study identifier to export.
+    db_path:
+        Path to the target ``.duckdb`` database file.
+    use_labels_as_columns:
+        When ``True``, variable labels are used for DataFrame column names.
+    variable_whitelist:
+        Optional list of variable names to include.
+    form_whitelist:
+        Optional list of form IDs to include.
+
+    Raises
+    ------
+    ImportError
+        If the optional ``duckdb`` dependency is not installed.
+    """
+    try:
+        import duckdb
+    except ImportError as error:
+        raise ImportError(
+            "DuckDB export requires the optional 'duckdb' dependency. "
+            "Install with `pip install 'imednet[duckdb]'`."
+        ) from error
+
+    conn: Any = duckdb.connect(db_path)
+    try:
+        for form in sdk.forms.list(study_key=study_key):
+            if form_whitelist is not None and form.form_id not in form_whitelist:
+                continue
+
+            df = _records_df(
+                sdk,
+                study_key,
+                use_labels_as_columns=use_labels_as_columns,
+                variable_whitelist=variable_whitelist,
+                form_whitelist=[form.form_id],
+            )
+
+            conn.register(_DUCKDB_DF_ALIAS, df)
+            conn.execute(
+                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "
+                f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
+            )
+            conn.unregister(_DUCKDB_DF_ALIAS)
+    finally:
+        conn.close()
 
 
 def export_to_sql_by_form(

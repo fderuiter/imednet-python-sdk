@@ -1,7 +1,8 @@
 import sys
+from builtins import __import__ as builtin_import
 from datetime import datetime
 from types import ModuleType
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import pandas as pd
 import pytest
@@ -115,6 +116,62 @@ def test_export_to_sql(monkeypatch):
     df.to_sql.assert_called_once_with("table", engine, if_exists="append", index=False)
 
 
+def test_export_to_duckdb(monkeypatch):
+    sdk = MagicMock()
+    df = pd.DataFrame({"A": [1]})
+    monkeypatch.setattr(export_mod, "_prepare_export_df", MagicMock(return_value=df))
+
+    conn = MagicMock()
+    duckdb_module = ModuleType("duckdb")
+    duckdb_module.connect = MagicMock(return_value=conn)
+    monkeypatch.setitem(sys.modules, "duckdb", duckdb_module)
+
+    export_mod.export_to_duckdb(sdk, "STUDY", "out.duckdb", "my table")
+
+    duckdb_module.connect.assert_called_once_with("out.duckdb")
+    conn.register.assert_called_once_with("df", df)
+    conn.execute.assert_called_once_with('CREATE OR REPLACE TABLE "my table" AS SELECT * FROM "df"')
+    conn.unregister.assert_called_once_with("df")
+    conn.close.assert_called_once_with()
+
+
+def test_export_to_duckdb_handles_wide_dataframe(monkeypatch):
+    sdk = MagicMock()
+    wide_df = pd.DataFrame([range(export_mod.MAX_SQLITE_COLUMNS + 50)])
+    monkeypatch.setattr(export_mod, "_prepare_export_df", MagicMock(return_value=wide_df))
+
+    conn = MagicMock()
+    duckdb_module = ModuleType("duckdb")
+    duckdb_module.connect = MagicMock(return_value=conn)
+    monkeypatch.setitem(sys.modules, "duckdb", duckdb_module)
+
+    export_mod.export_to_duckdb(sdk, "STUDY", "wide.duckdb", "wide_table")
+
+    conn.register.assert_called_once_with("df", wide_df)
+    conn.execute.assert_called_once_with(
+        'CREATE OR REPLACE TABLE "wide_table" AS SELECT * FROM "df"'
+    )
+
+
+def test_export_to_duckdb_import_error(monkeypatch):
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == "duckdb":
+            raise ImportError("No module named duckdb")
+        return builtin_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.delitem(sys.modules, "duckdb", raising=False)
+    monkeypatch.setattr("builtins.__import__", fake_import)
+
+    with pytest.raises(
+        ImportError,
+        match=(
+            r"DuckDB export requires the optional 'duckdb' dependency\. "
+            r"Install with `pip install 'imednet\[duckdb\]'`\."
+        ),
+    ):
+        export_mod.export_to_duckdb(MagicMock(), "STUDY", "out.duckdb", "records")
+
+
 def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
     df = pd.DataFrame([[1, 2]], columns=["A", "A"])
     monkeypatch.setattr(
@@ -220,6 +277,74 @@ def test_export_to_sql_by_form(monkeypatch):
     assert sdk.variables.list.call_count == 1
     df1.to_sql.assert_called_once_with("F1", engine, if_exists="replace", index=False)
     df2.to_sql.assert_called_once_with("F2", engine, if_exists="replace", index=False)
+
+
+def test_export_to_duckdb_by_form(monkeypatch):
+    sdk = MagicMock()
+    form1 = MagicMock(form_id=1, form_key="F1")
+    form2 = MagicMock(form_id=2, form_key="F2")
+    sdk.forms.list.return_value = [form1, form2]
+    df1 = pd.DataFrame({"A": [1]})
+    df2 = pd.DataFrame({"B": [2]})
+    records_df_mock = MagicMock(side_effect=[df1, df2])
+    monkeypatch.setattr(export_mod, "_records_df", records_df_mock)
+
+    conn = MagicMock()
+    duckdb_module = ModuleType("duckdb")
+    duckdb_module.connect = MagicMock(return_value=conn)
+    monkeypatch.setitem(sys.modules, "duckdb", duckdb_module)
+
+    export_mod.export_to_duckdb_by_form(
+        sdk,
+        "STUDY",
+        "forms.duckdb",
+        use_labels_as_columns=True,
+        variable_whitelist=["A", "B"],
+        form_whitelist=[1, 2],
+    )
+
+    assert records_df_mock.call_args_list == [
+        call(
+            sdk,
+            "STUDY",
+            use_labels_as_columns=True,
+            variable_whitelist=["A", "B"],
+            form_whitelist=[1],
+        ),
+        call(
+            sdk,
+            "STUDY",
+            use_labels_as_columns=True,
+            variable_whitelist=["A", "B"],
+            form_whitelist=[2],
+        ),
+    ]
+    assert conn.register.call_args_list == [call("df", df1), call("df", df2)]
+    assert conn.execute.call_args_list == [
+        call('CREATE OR REPLACE TABLE "F1" AS SELECT * FROM "df"'),
+        call('CREATE OR REPLACE TABLE "F2" AS SELECT * FROM "df"'),
+    ]
+    assert conn.unregister.call_args_list == [call("df"), call("df")]
+    conn.close.assert_called_once_with()
+
+
+def test_export_to_duckdb_by_form_import_error(monkeypatch):
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == "duckdb":
+            raise ImportError("No module named duckdb")
+        return builtin_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.delitem(sys.modules, "duckdb", raising=False)
+    monkeypatch.setattr("builtins.__import__", fake_import)
+
+    with pytest.raises(
+        ImportError,
+        match=(
+            r"DuckDB export requires the optional 'duckdb' dependency\. "
+            r"Install with `pip install 'imednet\[duckdb\]'`\."
+        ),
+    ):
+        export_mod.export_to_duckdb_by_form(MagicMock(), "STUDY", "out.duckdb")
 
 
 def test_export_to_long_sql(monkeypatch):
