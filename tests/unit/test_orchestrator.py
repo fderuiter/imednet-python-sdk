@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import time
 from unittest.mock import MagicMock
 
 import pytest
@@ -86,10 +85,17 @@ def test_resolve_active_studies_with_empty_filter_sets_returns_all_studies() -> 
     assert result == ["A", "B"]
 
 
-def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments() -> None:
+def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=2)
+    clock_values = iter([0.0, 0.01, 0.02, 0.03])
+    monkeypatch.setattr(
+        "imednet.orchestration.orchestrator.time.monotonic",
+        lambda: next(clock_values),
+    )
 
     def worker(
         study_key: str,
@@ -101,7 +107,6 @@ def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
     ) -> str:
         assert sdk_client is sdk
         assert study_logger.study_key == study_key
-        time.sleep(0.002)
         return f"{study_key}-{suffix}-{scale}"
 
     results = orchestrator.execute_pipeline(worker, suffix="done", scale=2)
@@ -114,17 +119,23 @@ def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
         assert result["duration_seconds"] > 0
 
 
-def test_execute_pipeline_isolates_per_study_failures() -> None:
+def test_execute_pipeline_isolates_per_study_failures(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=3)
+    clock_values = iter([0.0, 0.01, 0.02, 0.03, 0.04, 0.05])
+    monkeypatch.setattr(
+        "imednet.orchestration.orchestrator.time.monotonic",
+        lambda: next(clock_values),
+    )
 
     def worker(
         study_key: str, _sdk_client: MagicMock, _study_logger: StudyContextLogAdapter
     ) -> str:
         if study_key == "B":
             raise RuntimeError("boom")
-        time.sleep(0.002)
         return f"ok-{study_key}"
 
     results = orchestrator.execute_pipeline(worker)
