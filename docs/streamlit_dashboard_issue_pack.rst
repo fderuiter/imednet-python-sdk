@@ -30,8 +30,8 @@ Recommended native GitHub features
 - **Projects**: Use fields for owner, target sprint, and dependency state
 - **Saved replies/checklists**: Standardize triage and review comments
 
-Standards-guided design contract
---------------------------------
+Standards-guided architecture layers
+------------------------------------
 
 Use these architectural layers in issue scope and acceptance criteria:
 
@@ -267,8 +267,7 @@ Child issue placeholders
    ## Desired outcome
    Add configurable rules that compute review/reportability flags from canonical
    AE/PD/DD records (for example missing critical fields, important deviation
-   candidates, and Unanticipated Adverse Device Effect (UADE)-like escalation
-   candidates).
+   candidates, and FDA IDE UADE-like escalation candidates).
 
    ## Acceptance criteria
    - [ ] Rules run on canonical mapped records, not raw source forms
