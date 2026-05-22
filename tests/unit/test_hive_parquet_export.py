@@ -73,7 +73,8 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
         ) -> tuple[list[str], dict[str, str]]:
             return (variable_keys, label_map)
 
-        def _fetch_records(self, study_key: str, _extra_filters: dict[str, Any]) -> list[str]:
+        def _fetch_records(self, study_key: str, extra_filters: dict[str, Any]) -> list[str]:
+            assert extra_filters is not None
             return [study_key]
 
         def _parse_records(
