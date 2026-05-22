@@ -45,7 +45,8 @@ Epic placeholder
 
    ## Objective
    Deliver a study-configurable Streamlit Dashboard Builder that maps study-specific
-   record data into normalized dashboard domains (AE/PD/DD + custom domains).
+   record data into normalized dashboard domains (adverse events (AE), protocol
+   deviations (PD), and device deficiencies (DD), plus custom domains).
 
    ## Scope
    - Study schema profiling for records/forms/keys
@@ -71,8 +72,8 @@ Epic placeholder
    - [ ] Validation warns on weak/empty field mappings
 
    ## Dependencies
-   - Blocked by: #915
-   - Coordinates with: #1005, #1006, #1007
+   - Blocked by: #<blocking_issue_number>
+   - Coordinates with: #<related_issue_1>, #<related_issue_2>, #<related_issue_3>
 
    ## Verification
    - [ ] `poetry run black --check .`
@@ -143,7 +144,7 @@ Child issue placeholders
 
    ## Dependencies
    - Parent epic: #<epic_issue_number>
-   - Related: #1007
+   - Related: #<related_issue_number>
 
 3) Builder UX (guided mapping)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
