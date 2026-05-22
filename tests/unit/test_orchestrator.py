@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from imednet.core.context import get_current_study
 from imednet.errors import FilterConflictError
 from imednet.models.studies import Study
 from imednet.orchestration.logging import StudyContextLogAdapter
@@ -151,3 +152,28 @@ def test_execute_pipeline_isolates_per_study_failures(
         assert results[study_key]["data"] == f"ok-{study_key}"
         assert results[study_key]["error"] is None
         assert results[study_key]["duration_seconds"] > 0
+
+
+def test_execute_pipeline_propagates_study_context_to_worker_thread(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Pipeline functions can call get_current_study() without an explicit study_key."""
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("ALPHA"), _make_study("BETA")]
+    orchestrator = MultiStudyOrchestrator(sdk, max_workers=2)
+    _mock_monotonic(monkeypatch, [0.0, 0.01, 0.02, 0.03])
+
+    def worker(
+        study_key: str,
+        sdk_client: MagicMock,
+        study_logger: StudyContextLogAdapter,
+    ) -> str:
+        # get_current_study() must resolve to the same key passed explicitly.
+        return get_current_study()
+
+    results = orchestrator.execute_pipeline(worker)
+
+    assert set(results) == {"ALPHA", "BETA"}
+    for study_key, result in results.items():
+        assert result["status"] == "SUCCESS"
+        assert result["data"] == study_key
