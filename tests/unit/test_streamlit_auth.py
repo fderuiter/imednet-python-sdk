@@ -61,7 +61,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch.setattr(auth, "st", fake_st)
     sentinel_sdk = SimpleNamespace(name="sdk")
 
-    def _fake_build_sdk(**_: str) -> None:
+    def _fake_build_sdk(**_: object) -> None:
         fake_st.session_state[auth._KEY_SDK] = sentinel_sdk
 
     monkeypatch.setattr(
@@ -112,7 +112,7 @@ def test_render_auth_sidebar_build_failure_clears_secret_keys(
     )
     monkeypatch.setattr(auth, "st", fake_st)
 
-    def _raise_build_error(**_: str) -> None:
+    def _raise_build_error(**_: object) -> None:
         raise RuntimeError("boom")
 
     monkeypatch.setattr(auth, "_build_sdk", _raise_build_error)
