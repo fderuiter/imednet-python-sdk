@@ -19,8 +19,8 @@ def test_export_to_hive_parquet_directory_structure(
     sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
 
     class FakeMapper:
-        def __init__(self, _sdk) -> None:
-            self._sdk = _sdk
+        def __init__(self, sdk: MagicMock) -> None:
+            self._sdk = sdk
 
         def _build_record_model(
             self, variable_keys: list[str], label_map: dict[str, str]
@@ -65,8 +65,8 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
     ]
 
     class FakeMapper:
-        def __init__(self, _sdk) -> None:
-            self._sdk = _sdk
+        def __init__(self, sdk: MagicMock) -> None:
+            self._sdk = sdk
 
         def _build_record_model(
             self, variable_keys: list[str], label_map: dict[str, str]

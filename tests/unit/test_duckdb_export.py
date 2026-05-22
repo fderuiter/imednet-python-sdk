@@ -93,14 +93,14 @@ def test_export_to_duckdb_by_form_creates_per_form_tables(
 def test_export_to_duckdb_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_import(
         name: str,
-        globals: Any = None,
-        locals: Any = None,
+        globals_dict: Any = None,
+        locals_dict: Any = None,
         fromlist: tuple[str, ...] = (),
         level: int = 0,
     ) -> Any:
         if name == "duckdb":
             raise ImportError("No module named duckdb")
-        return builtin_import(name, globals, locals, fromlist, level)
+        return builtin_import(name, globals_dict, locals_dict, fromlist, level)
 
     monkeypatch.delitem(sys.modules, "duckdb", raising=False)
     monkeypatch.setattr("builtins.__import__", fake_import)

@@ -166,14 +166,14 @@ def test_ingest_revisions_returns_row_count() -> None:
 def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_import(
         name: str,
-        globals: Any = None,
-        locals: Any = None,
+        globals_dict: Any = None,
+        locals_dict: Any = None,
         fromlist: tuple[str, ...] = (),
         level: int = 0,
     ) -> Any:
         if name == "duckdb":
             raise ImportError("No module named duckdb")
-        return builtin_import(name, globals, locals, fromlist, level)
+        return builtin_import(name, globals_dict, locals_dict, fromlist, level)
 
     monkeypatch.delitem(sys.modules, "duckdb", raising=False)
     monkeypatch.setattr("builtins.__import__", fake_import)
