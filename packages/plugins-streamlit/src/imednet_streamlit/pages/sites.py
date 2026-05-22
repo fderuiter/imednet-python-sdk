@@ -58,9 +58,7 @@ def _fetch_site_metrics(_sdk: object, study_key: str) -> pd.DataFrame:
     )
 
     if df_q_with_site.empty:
-        site_queries = pd.DataFrame(
-            columns=["site_name", "open_queries", "avg_days_open"]
-        )
+        site_queries = pd.DataFrame(columns=["site_name", "open_queries", "avg_days_open"])
     else:
         site_queries = (
             df_q_with_site.groupby("site_name")
@@ -70,8 +68,7 @@ def _fetch_site_metrics(_sdk: object, study_key: str) -> pd.DataFrame:
                     "date_created",
                     lambda x: (
                         pd.Timestamp.now(tz="UTC") - pd.to_datetime(x, utc=True)
-                    )
-                    .dt.days.mean(),
+                    ).dt.days.mean(),
                 ),
             )
             .reset_index()
@@ -105,9 +102,7 @@ df_metrics = _fetch_site_metrics(sdk, study_key)
 total_sites = int(df_metrics["site_name"].nunique()) if not df_metrics.empty else 0
 total_enrolled = int(df_metrics["enrolled_count"].sum()) if not df_metrics.empty else 0
 total_open_queries = int(df_metrics["open_queries"].sum()) if not df_metrics.empty else 0
-avg_query_rate = (
-    round(float(df_metrics["query_rate"].mean()), 1) if not df_metrics.empty else 0.0
-)
+avg_query_rate = round(float(df_metrics["query_rate"].mean()), 1) if not df_metrics.empty else 0.0
 
 components.kpi_row(
     [
