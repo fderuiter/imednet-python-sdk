@@ -34,6 +34,7 @@ sys.path[:0] = [
     os.path.abspath("../packages/core/src"),
     os.path.abspath("../packages/providers-airflow/src"),
     os.path.abspath("../packages/plugins-workflows/src"),
+    os.path.abspath("../packages/plugins-streamlit/src"),
 ]
 warnings.filterwarnings("ignore", message="duplicate object description*")
 warnings.filterwarnings("ignore", message="Failed guarded type import*")
@@ -88,6 +89,8 @@ autodoc_mock_imports = [
     "pydantic",
     "airflow",
     "opentelemetry",
+    "streamlit",
+    "altair",
 ]
 
 suppress_warnings = [
