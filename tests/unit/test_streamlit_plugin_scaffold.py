@@ -637,18 +637,20 @@ def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> 
 
 
 def test_records_page_warns_for_large_datasets() -> None:
-    large_record = SimpleNamespace(
-        record_id=1,
-        form_key="AE",
-        subject_key="SUBJ-00001",
-        site_id=1,
-        record_status="Incomplete",
-        record_type="CRF",
-        deleted=False,
-        date_created="2026-01-01",
-        date_modified="2026-01-02",
-    )
-    large_records = [large_record] * 10_001
+    large_records = [
+        SimpleNamespace(
+            record_id=index,
+            form_key="AE",
+            subject_key=f"SUBJ-{index:05d}",
+            site_id=1,
+            record_status="Incomplete",
+            record_type="CRF",
+            deleted=False,
+            date_created="2026-01-01",
+            date_modified="2026-01-02",
+        )
+        for index in range(1, 10_002)
+    ]
     forms = [SimpleNamespace(form_key="AE", form_name="Adverse Events")]
 
     fake_st, _ = _run_records_page(records=large_records, forms=forms)

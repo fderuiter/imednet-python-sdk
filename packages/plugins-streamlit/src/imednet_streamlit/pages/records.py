@@ -37,6 +37,11 @@ MAX_HEATMAP_FORMS = 20
 LARGE_DATASET_WARNING_THRESHOLD = 10_000
 
 
+def _resolve_form_name(form: object) -> str:
+    form_name = getattr(form, "form_name", "")
+    return str(form_name or form.form_key)  # type: ignore[attr-defined]
+
+
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
     records = _sdk.records.list(study_key=study_key)  # type: ignore[attr-defined]
@@ -65,9 +70,7 @@ def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_form_metadata(_sdk: object, study_key: str) -> pd.DataFrame:
     forms = _sdk.forms.list(study_key=study_key)  # type: ignore[attr-defined]
-    rows = [
-        {"form_key": f.form_key, "form_name": getattr(f, "form_name", f.form_key)} for f in forms
-    ]
+    rows = [{"form_key": f.form_key, "form_name": _resolve_form_name(f)} for f in forms]
     return pd.DataFrame(rows, columns=FORM_COLUMNS)
 
 
@@ -150,11 +153,10 @@ def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
         index="subject_key",
         columns="form_name",
         values="record_status",
-        aggfunc=lambda values: int(
-            any(str(value) in COMPLETE_RECORD_STATUSES for value in values.tolist())
-        ),
+        aggfunc=lambda values: int(values.isin(COMPLETE_RECORD_STATUSES).any()),
         fill_value=0,
     )
+    df_pivot = df_pivot.sort_index().sort_index(axis=1)
     df_display = df_pivot.iloc[:MAX_HEATMAP_SUBJECTS, :MAX_HEATMAP_FORMS]
     if df_display.empty:
         return pd.DataFrame(columns=columns)
