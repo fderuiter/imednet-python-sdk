@@ -7,12 +7,32 @@ import time
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from typing import Any, Optional
 
+from imednet.core.context import study_context as _study_context
 from imednet.errors.orchestration import FilterConflictError
-from imednet.orchestration.logging import make_study_logger
+from imednet.orchestration.logging import StudyContextLogAdapter, make_study_logger
 from imednet.orchestration.types import OrchestratorResult, StudyWorkerCallable
 
 logger = logging.getLogger(__name__)
 _DURATION_PRECISION = 4
+
+
+def _run_with_context(
+    study_key: str,
+    sdk: Any,
+    study_logger: StudyContextLogAdapter,
+    func: StudyWorkerCallable[Any],
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
+) -> Any:
+    """Execute *func* inside the ``study_context()`` context manager.
+
+    This ensures that any code inside *func* that calls
+    :func:`~imednet.core.context.get_current_study` (or uses SDK endpoints
+    without an explicit ``study_key`` argument) will correctly resolve to this
+    thread's ``study_key``.
+    """
+    with _study_context(study_key):
+        return func(study_key, sdk, study_logger, *args, **kwargs)
 
 
 class MultiStudyOrchestrator:
@@ -130,12 +150,13 @@ class MultiStudyOrchestrator:
             for study_key in target_studies:
                 study_logger = make_study_logger(study_key)
                 future = executor.submit(
-                    pipeline_func,
+                    _run_with_context,
                     study_key,
                     self._sdk,
                     study_logger,
-                    *args,
-                    **kwargs,
+                    pipeline_func,
+                    args,
+                    kwargs,
                 )
                 future_to_study[future] = study_key
                 start_times[future] = time.monotonic()
