@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 
 # Re-export for tests
 from ..integrations.export import export_to_csv  # noqa: F401
+from ..integrations.export import export_to_duckdb  # noqa: F401
 from ..integrations.export import export_to_excel  # noqa: F401
 from ..integrations.export import export_to_json  # noqa: F401
 from ..integrations.export import export_to_long_sql  # noqa: F401
@@ -37,6 +38,7 @@ __all__ = [
     "get_sdk",
     "parse_filter_args",
     "export_to_csv",
+    "export_to_duckdb",
     "export_to_excel",
     "export_to_json",
     "export_to_long_sql",

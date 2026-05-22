@@ -5,6 +5,7 @@ from pathlib import Path
 
 import typer
 from rich import print
+from rich.markup import escape
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
@@ -90,6 +91,57 @@ def export_json_cmd(
 
     with fetching_status("records for JSON export", study_key):
         export_to_json(sdk, study_key, str(path))
+
+
+@app.command("duckdb")
+@with_sdk
+def export_duckdb(
+    sdk: ImednetSDK,
+    study_key: str = STUDY_KEY_ARG,
+    table_name: str = typer.Argument(..., help="Destination DuckDB table name."),
+    db_path: Path = typer.Argument(..., help="Path to DuckDB database file."),
+    vars_: str = typer.Option(
+        None,
+        "--vars",
+        help="Comma-separated list of variable names to include.",
+    ),
+    forms: str = typer.Option(
+        None,
+        "--forms",
+        help="Comma-separated list of form IDs to include.",
+    ),
+    use_labels: bool = typer.Option(
+        False,
+        "--use-labels",
+        help="Use variable labels instead of names as column headers.",
+    ),
+) -> None:
+    """Export study records to a DuckDB table."""
+    if importlib.util.find_spec("duckdb") is None:
+        print(
+            "[bold red]Error:[/bold red] "
+            + escape(
+                "duckdb is required for DuckDB export. "
+                "Install with \"pip install 'imednet[duckdb]'\"."
+            )
+        )
+        raise typer.Exit(code=1)
+
+    from .. import export_to_duckdb
+
+    var_list = [v.strip() for v in vars_.split(",")] if vars_ else None
+    form_list = [int(f.strip()) for f in forms.split(",")] if forms else None
+
+    with fetching_status("records for DuckDB export", study_key):
+        export_to_duckdb(
+            sdk,
+            study_key,
+            str(db_path),
+            table_name,
+            use_labels_as_columns=use_labels,
+            variable_whitelist=var_list,
+            form_whitelist=form_list,
+        )
 
 
 @app.command("sql")

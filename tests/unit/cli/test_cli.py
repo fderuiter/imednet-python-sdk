@@ -272,6 +272,51 @@ def test_export_json_calls_helper(
     func.assert_called_once_with(sdk, "STUDY", "out.json")
 
 
+def test_export_duckdb_calls_helper(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    func = MagicMock()
+    monkeypatch.setattr(export_mod, "export_to_duckdb", func)
+    monkeypatch.setattr(cli, "export_to_duckdb", export_mod.export_to_duckdb)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+    result = runner.invoke(
+        cli.app,
+        [
+            "export",
+            "duckdb",
+            "STUDY",
+            "study_records",
+            "out.duckdb",
+            "--vars",
+            "A,B",
+            "--forms",
+            "1,2",
+            "--use-labels",
+        ],
+    )
+    assert result.exit_code == 0
+    func.assert_called_once_with(
+        sdk,
+        "STUDY",
+        "out.duckdb",
+        "study_records",
+        use_labels_as_columns=True,
+        variable_whitelist=["A", "B"],
+        form_whitelist=[1, 2],
+    )
+
+
+def test_export_duckdb_help(runner: CliRunner) -> None:
+    result = runner.invoke(cli.app, ["export", "duckdb", "--help"])
+    assert result.exit_code == 0
+    assert "STUDY_KEY" in result.stdout
+    assert "TABLE_NAME" in result.stdout
+    assert "DB_PATH" in result.stdout
+    assert "vars" in result.stdout
+    assert "forms" in result.stdout
+    assert "labels" in result.stdout
+
+
 def test_export_sql_calls_helper_non_sqlite(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -487,6 +532,25 @@ def test_export_sql_missing_sqlalchemy(runner: CliRunner, monkeypatch: pytest.Mo
     )
     assert result.exit_code == 1
     assert "SQLAlchemy is required" in result.stdout
+
+
+def test_export_duckdb_missing_dependency(
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original_find_spec = importlib.util.find_spec
+
+    def fake_find_spec(name: str) -> object | None:
+        if name == "duckdb":
+            return None
+        return original_find_spec(name)
+
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
+    result = runner.invoke(
+        cli.app,
+        ["export", "duckdb", "STUDY", "table", "out.duckdb"],
+    )
+    assert result.exit_code == 1
+    assert "imednet[duckdb]" in result.stdout
 
 
 def test_subject_data_calls_workflow(
