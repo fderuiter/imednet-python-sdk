@@ -92,9 +92,8 @@ if status_filter:
     df_filtered = df_filtered[df_filtered["subject_status"].isin(status_filter)]
 if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
     start_date, end_date = date_range[0], date_range[1]
-    if (
-        not df_filtered.empty
-        and pd.api.types.is_datetime64_any_dtype(df_filtered["enrollment_start_date"])
+    if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(
+        df_filtered["enrollment_start_date"]
     ):
         df_filtered = df_filtered[
             (df_filtered["enrollment_start_date"].dt.date >= start_date)
@@ -152,14 +151,11 @@ with col_right:
 # ── Cumulative enrollment trend ────────────────────────────────────────────────
 st.subheader("Cumulative Enrollment Over Time")
 df_enrolled = df_filtered[df_filtered["subject_status"] == "Enrolled"].copy()
-if (
-    not df_enrolled.empty
-    and pd.api.types.is_datetime64_any_dtype(df_enrolled["enrollment_start_date"])
+if not df_enrolled.empty and pd.api.types.is_datetime64_any_dtype(
+    df_enrolled["enrollment_start_date"]
 ):
     df_enrolled["enrollment_date"] = df_enrolled["enrollment_start_date"].dt.date
-    df_trend = (
-        df_enrolled.groupby("enrollment_date").size().reset_index(name="count")
-    )
+    df_trend = df_enrolled.groupby("enrollment_date").size().reset_index(name="count")
     df_trend = df_trend.sort_values("enrollment_date")
     df_trend["cumulative"] = df_trend["count"].cumsum()
     df_trend["enrollment_date"] = pd.to_datetime(df_trend["enrollment_date"])
@@ -196,13 +192,17 @@ if not df_filtered.empty:
     site_totals = df_filtered.groupby("site_name").size().reset_index(name="total")
     site_summary = site_summary.merge(site_totals, left_on="Site", right_on="site_name", how="left")
     site_summary["enrollment_rate_pct"] = site_summary.apply(
-        lambda row: f"{row['enrolled_count'] / row['total'] * 100:.1f}%"
-        if row["total"] > 0
-        else "N/A",
+        lambda row: (
+            f"{row['enrolled_count'] / row['total'] * 100:.1f}%" if row["total"] > 0 else "N/A"
+        ),
         axis=1,
     )
     display_cols = [
-        "Site", "enrolled_count", "screened_count", "withdrawn_count", "enrollment_rate_pct"
+        "Site",
+        "enrolled_count",
+        "screened_count",
+        "withdrawn_count",
+        "enrollment_rate_pct",
     ]
     st.dataframe(
         site_summary[[c for c in display_cols if c in site_summary.columns]],
