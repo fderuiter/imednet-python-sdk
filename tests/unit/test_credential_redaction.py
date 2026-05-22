@@ -5,10 +5,9 @@ import pytest
 import respx
 from typer.testing import CliRunner
 
-import imednet.cli as cli
 from imednet.auth.api_key import ApiKeyAuth
 from imednet.core.client import Client
-from imednet.errors import AuthenticationError, RateLimitError
+from imednet.errors import ApiError, AuthenticationError, RateLimitError
 
 
 def test_api_key_auth_repr_and_str_mask_secrets() -> None:
@@ -22,7 +21,7 @@ def test_api_key_auth_repr_and_str_mask_secrets() -> None:
 
 
 @pytest.mark.parametrize("error_cls", [AuthenticationError, RateLimitError])
-def test_api_errors_mask_sensitive_values(error_cls: type[Exception]) -> None:
+def test_api_errors_mask_sensitive_values(error_cls: type[ApiError]) -> None:
     secret_api_key = "very-secret-api-key"
     secret_token = "very-secret-token"
     secret_auth = "Bearer very-secret-authorization"
@@ -71,6 +70,8 @@ def test_http_client_never_logs_authorization_header(
 
 
 def test_cli_surfaces_redacted_authentication_errors(monkeypatch: pytest.MonkeyPatch) -> None:
+    from importlib import import_module
+
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "api")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "security")
@@ -83,9 +84,13 @@ def test_cli_surfaces_redacted_authentication_errors(monkeypatch: pytest.MonkeyP
         },
         status_code=401,
     )
-    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
 
-    result = runner.invoke(cli.app, ["studies", "list"])
+    # Use the active modules registered in sys.modules
+    context_module = import_module("imednet.cli.utils.context")
+    monkeypatch.setattr(context_module, "get_sdk", MagicMock(return_value=sdk))
+
+    cli_module = import_module("imednet.cli")
+    result = runner.invoke(cli_module.app, ["studies", "list"])
 
     assert result.exit_code == 1
     assert "API Error" in result.stdout
