@@ -14,6 +14,7 @@ from .api import (
 from .base import ImednetError
 from .client import ClientError, PaginationError
 from .network import RequestError
+from .orchestration import FilterConflictError, OrchestratorError
 from .plugin import PluginLoadError
 from .registry import get_error_class
 from .validation import (
@@ -43,4 +44,6 @@ __all__ = [
     "ForbiddenError",
     "ConflictError",
     "UnknownVariableTypeError",
+    "OrchestratorError",
+    "FilterConflictError",
 ]
