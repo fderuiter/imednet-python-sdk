@@ -7,6 +7,7 @@ telemetry context propagation, and normalized result reporting.
 
 from __future__ import annotations
 
+from imednet.orchestration.orchestrator import MultiStudyOrchestrator
 from imednet.orchestration.types import OrchestratorResult, StudyWorkerCallable
 
-__all__ = ["OrchestratorResult", "StudyWorkerCallable"]
+__all__ = ["MultiStudyOrchestrator", "OrchestratorResult", "StudyWorkerCallable"]
