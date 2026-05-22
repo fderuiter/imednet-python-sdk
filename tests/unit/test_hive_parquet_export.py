@@ -1,5 +1,6 @@
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock
 
 import pandas as pd
@@ -21,16 +22,28 @@ def test_export_to_hive_parquet_directory_structure(
         def __init__(self, _sdk) -> None:
             self._sdk = _sdk
 
-        def _build_record_model(self, variable_keys, label_map):  # type: ignore[no-untyped-def]
+        def _build_record_model(
+            self, variable_keys: list[str], label_map: dict[str, str]
+        ) -> tuple[list[str], dict[str, str]]:
             return (variable_keys, label_map)
 
-        def _fetch_records(self, _study_key, extra_filters):  # type: ignore[no-untyped-def]
+        def _fetch_records(self, _study_key: str, extra_filters: dict[str, Any]) -> list[int]:
             return [extra_filters["formId"]]
 
-        def _parse_records(self, records, _record_model):  # type: ignore[no-untyped-def]
+        def _parse_records(
+            self,
+            records: list[int],
+            _record_model: tuple[list[str], dict[str, str]],
+        ) -> tuple[list[int], int]:
             return records, len(records)
 
-        def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):  # type: ignore[no-untyped-def]
+        def _build_dataframe(
+            self,
+            rows: list[int],
+            _variable_keys: list[str],
+            _label_map: dict[str, str],
+            _use_labels_as_columns: bool,
+        ) -> pd.DataFrame:
             return pd.DataFrame([{"age": rows[0]}])
 
     monkeypatch.setattr(parquet_mod, "_record_mapper", lambda: FakeMapper)
@@ -55,16 +68,28 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
         def __init__(self, _sdk) -> None:
             self._sdk = _sdk
 
-        def _build_record_model(self, variable_keys, label_map):  # type: ignore[no-untyped-def]
+        def _build_record_model(
+            self, variable_keys: list[str], label_map: dict[str, str]
+        ) -> tuple[list[str], dict[str, str]]:
             return (variable_keys, label_map)
 
-        def _fetch_records(self, study_key, _extra_filters):  # type: ignore[no-untyped-def]
+        def _fetch_records(self, study_key: str, _extra_filters: dict[str, Any]) -> list[str]:
             return [study_key]
 
-        def _parse_records(self, records, _record_model):  # type: ignore[no-untyped-def]
+        def _parse_records(
+            self,
+            records: list[str],
+            _record_model: tuple[list[str], dict[str, str]],
+        ) -> tuple[list[str], int]:
             return records, len(records)
 
-        def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):  # type: ignore[no-untyped-def]
+        def _build_dataframe(
+            self,
+            rows: list[str],
+            _variable_keys: list[str],
+            _label_map: dict[str, str],
+            _use_labels_as_columns: bool,
+        ) -> pd.DataFrame:
             return pd.DataFrame([{"study": rows[0]}])
 
     monkeypatch.setattr(parquet_mod, "_record_mapper", lambda: FakeMapper)

@@ -2,6 +2,7 @@ import sys
 from builtins import __import__ as builtin_import
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock, call
 
 import pandas as pd
@@ -90,7 +91,13 @@ def test_export_to_duckdb_by_form_creates_per_form_tables(
 
 
 def test_export_to_duckdb_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):  # type: ignore[no-untyped-def]
+    def fake_import(
+        name: str,
+        globals: Any = None,
+        locals: Any = None,
+        fromlist: tuple[str, ...] = (),
+        level: int = 0,
+    ) -> Any:
         if name == "duckdb":
             raise ImportError("No module named duckdb")
         return builtin_import(name, globals, locals, fromlist, level)

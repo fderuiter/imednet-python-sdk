@@ -4,6 +4,7 @@ import sys
 from builtins import __import__ as builtin_import
 from datetime import datetime
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -163,7 +164,13 @@ def test_ingest_revisions_returns_row_count() -> None:
 
 
 def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):  # type: ignore[no-untyped-def]
+    def fake_import(
+        name: str,
+        globals: Any = None,
+        locals: Any = None,
+        fromlist: tuple[str, ...] = (),
+        level: int = 0,
+    ) -> Any:
         if name == "duckdb":
             raise ImportError("No module named duckdb")
         return builtin_import(name, globals, locals, fromlist, level)
