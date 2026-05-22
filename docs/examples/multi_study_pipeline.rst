@@ -28,7 +28,7 @@ with per-study fault isolation and structured telemetry context.
 
 Each study runs in its own :func:`~imednet.core.context.study_context` thread
 so failures in one study do not affect others. The orchestrator collects
-results in a normalised :data:`~imednet.orchestration.OrchestratorResult`
+results in a normalized :data:`~imednet.orchestration.OrchestratorResult`
 dict keyed by study key.
 
 .. literalinclude:: ../../examples/workflows/multi_study_pipeline.py
