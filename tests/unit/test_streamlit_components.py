@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import io
+
 import altair as alt
 import pandas as pd
 import pytest
@@ -8,9 +10,13 @@ import imednet_streamlit.components.export as export_components
 from imednet_streamlit.components import (
     bar_chart,
     csv_download_button,
+    excel_download_button,
     filterable_dataframe,
+    kpi_card,
     kpi_row,
+    line_chart,
     metrics,
+    pie_chart,
     tables,
 )
 
@@ -101,6 +107,22 @@ def test_kpi_row_uses_column_count_and_renders_metrics(monkeypatch: pytest.Monke
     ]
 
 
+def test_kpi_card_calls_streamlit_metric(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_st = _FakeMetricStreamlit()
+    monkeypatch.setattr(metrics, "st", fake_st)
+
+    kpi_card(label="Subjects", value=120, delta="+5", help="Weekly enrollment")
+
+    assert fake_st.metrics == [
+        {
+            "label": "Subjects",
+            "value": 120,
+            "delta": "+5",
+            "help": "Weekly enrollment",
+        }
+    ]
+
+
 def test_filterable_dataframe_applies_case_insensitive_row_filter(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -137,8 +159,42 @@ def test_csv_download_button_exports_utf8_csv(monkeypatch: pytest.MonkeyPatch) -
     assert data.decode("utf-8").startswith("name,count\nJosé,1\n")
 
 
+def test_excel_download_button_exports_valid_xlsx(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_st = _FakeExportStreamlit()
+    monkeypatch.setattr(export_components, "st", fake_st)
+    df = pd.DataFrame({"name": ["Site A"], "count": [3]})
+
+    excel_download_button(df, filename="report.xlsx")
+
+    assert len(fake_st.download_calls) == 1
+    call = fake_st.download_calls[0]
+    assert call["file_name"] == "report.xlsx"
+    assert call["mime"] == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    exported = pd.read_excel(io.BytesIO(call["data"]))
+    assert exported.to_dict(orient="list") == {"name": ["Site A"], "count": [3]}
+
+
 def test_bar_chart_returns_altair_chart() -> None:
     df = pd.DataFrame({"category": ["A", "B"], "value": [1, 2]})
     chart = bar_chart(df, x="value", y="category", title="Example")
+
+    assert isinstance(chart, alt.Chart)
+
+
+def test_line_chart_returns_altair_chart() -> None:
+    df = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2026-01-01", "2026-01-02"]),
+            "count": [1, 2],
+        }
+    )
+    chart = line_chart(df, x="date", y="count")
+
+    assert isinstance(chart, alt.Chart)
+
+
+def test_pie_chart_returns_altair_chart() -> None:
+    df = pd.DataFrame({"status": ["Open", "Closed"], "count": [4, 6]})
+    chart = pie_chart(df, theta="count", color="status")
 
     assert isinstance(chart, alt.Chart)
