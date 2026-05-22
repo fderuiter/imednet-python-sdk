@@ -9,6 +9,7 @@ import pytest
 
 from imednet.errors import FilterConflictError
 from imednet.models.studies import Study
+from imednet.orchestration.logging import StudyContextLogAdapter
 from imednet.orchestration.orchestrator import MultiStudyOrchestrator
 
 
@@ -91,10 +92,15 @@ def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=2)
 
     def worker(
-        study_key: str, sdk_client: MagicMock, study_logger: object, suffix: str, *, scale: int
+        study_key: str,
+        sdk_client: MagicMock,
+        study_logger: StudyContextLogAdapter,
+        suffix: str,
+        *,
+        scale: int,
     ) -> str:
         assert sdk_client is sdk
-        assert getattr(study_logger, "study_key", None) == study_key
+        assert study_logger.study_key == study_key
         time.sleep(0.01)
         return f"{study_key}-{suffix}-{scale}"
 
@@ -113,7 +119,9 @@ def test_execute_pipeline_isolates_per_study_failures() -> None:
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=3)
 
-    def worker(study_key: str, *_: object) -> str:
+    def worker(
+        study_key: str, _sdk_client: MagicMock, _study_logger: StudyContextLogAdapter
+    ) -> str:
         if study_key == "B":
             raise RuntimeError("boom")
         time.sleep(0.01)
