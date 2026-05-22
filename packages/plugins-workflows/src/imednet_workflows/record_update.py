@@ -11,9 +11,7 @@ from .job_poller import AsyncJobPoller, JobPoller
 if TYPE_CHECKING:
     from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
-    SDKLike = ImednetSDK | AsyncImednetSDK
-else:
-    SDKLike = Any
+SDKLike = Union["ImednetSDK", "AsyncImednetSDK"]
 
 
 class RecordUpdateWorkflow:
