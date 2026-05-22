@@ -58,7 +58,8 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
 
     monkeypatch.setattr(importlib, "import_module", fake_import_module)
     reloaded_cli = importlib.reload(cli_module)
-    subprocess_run = MagicMock(return_value=MagicMock(returncode=0))
+    mock_result = MagicMock(returncode=0)
+    subprocess_run = MagicMock(return_value=mock_result)
     monkeypatch.setattr(reloaded_cli.subprocess, "run", subprocess_run)
 
     help_result = runner.invoke(reloaded_cli.app, ["dashboard", "--help"])
@@ -99,7 +100,8 @@ def test_dashboard_command_uses_default_options(
 
     monkeypatch.setattr(importlib, "import_module", fake_import_module)
     reloaded_cli = importlib.reload(cli_module)
-    subprocess_run = MagicMock(return_value=MagicMock(returncode=0))
+    mock_result = MagicMock(returncode=0)
+    subprocess_run = MagicMock(return_value=mock_result)
     monkeypatch.setattr(reloaded_cli.subprocess, "run", subprocess_run)
 
     result = runner.invoke(reloaded_cli.app, ["dashboard"])

@@ -131,7 +131,11 @@ def run_dashboard(
     try:
         _app_module = import_module("imednet_streamlit.app")
     except (ImportError, ModuleNotFoundError):
-        _register_missing_dashboard_commands()
+        typer.secho(
+            "Dashboard plugin not found. Install it with:\n"
+            "  pip install imednet-streamlit",
+            fg=typer.colors.RED,
+        )
         raise typer.Exit(code=1)
 
     app_path = _app_module.__file__
@@ -167,7 +171,7 @@ except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover -
 
 
 try:  # pragma: no cover - optional streamlit plugin
-    _dashboard_module = import_module("imednet_streamlit.app")
+    import_module("imednet_streamlit.app")
     app.command("dashboard")(run_dashboard)
 except (ImportError, ModuleNotFoundError):  # pragma: no cover
     _register_missing_dashboard_commands()
