@@ -1,7 +1,8 @@
 """Per-study logging adapter for the MultiStudyOrchestrator engine.
 
 This module provides :class:`StudyContextLogAdapter`, which enriches every log
-record emitted by a worker thread with a ``study_key`` field.  When combined
+record emitted by a worker thread with ``study_key`` and ``studyKey`` fields.
+When combined
 with a JSON formatter (e.g. :func:`~imednet.utils.json_logging.configure_json_logging`),
 each log line carries structured metadata that can be indexed by log
 aggregation systems such as Splunk, Datadog, or CloudWatch Logs.
@@ -16,7 +17,8 @@ With JSON logging enabled the adapter produces records like::
         "level": "INFO",
         "logger": "imednet.orchestration",
         "message": "Starting data extraction",
-        "study_key": "PROT-01"
+        "study_key": "PROT-01",
+        "studyKey": "PROT-01"
     }
 
 Usage::
@@ -25,7 +27,7 @@ Usage::
 
     study_logger = make_study_logger("PROT-01")
     study_logger.info("Starting data extraction")
-    # → emits a record with extra={"study_key": "PROT-01"}
+    # → emits a record with extra={"study_key": "PROT-01", "studyKey": "PROT-01"}
 """
 
 from __future__ import annotations
@@ -49,10 +51,11 @@ class StudyContextLogAdapter(logging.LoggerAdapter):
     def process(
         self, msg: Any, kwargs: MutableMapping[str, Any]
     ) -> tuple[Any, MutableMapping[str, Any]]:
-        """Inject ``study_key`` into the log record ``extra`` mapping."""
+        """Inject ``study_key`` and ``studyKey`` into the log record ``extra`` mapping."""
         kwargs = dict(kwargs)
         extra = dict(kwargs.get("extra", {}))
         extra["study_key"] = self._study_key
+        extra["studyKey"] = self._study_key
         kwargs["extra"] = extra
         return msg, kwargs
 
