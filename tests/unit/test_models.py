@@ -13,7 +13,8 @@ def _build_value(annotation: Any) -> Any:
         sub = get_args(annotation)[0]
         return [_build_value(sub)]
     if origin is dict:
-        return {"k": "v"}
+        _, value_type = get_args(annotation) or (Any, Any)
+        return {"k": _build_value(value_type)}
     if origin is Union:
         args = [a for a in get_args(annotation) if a is not type(None)]
         if not args:
