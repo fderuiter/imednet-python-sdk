@@ -4,9 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-
-def _is_missing_value(value: Any) -> bool:
-    return value is None or (isinstance(value, str) and value.strip() == "")
+from imednet.utils.validators import is_missing_value
 
 
 class ValidationViolation(BaseModel):
@@ -43,7 +41,7 @@ class StandardsProfile:
         violations: list[ValidationViolation] = []
 
         for field_name in self.required_fields.get(domain_key, []):
-            if _is_missing_value(data.get(field_name)):
+            if is_missing_value(data.get(field_name)):
                 violations.append(
                     ValidationViolation(
                         field=field_name,
@@ -55,7 +53,7 @@ class StandardsProfile:
                 )
 
         for field_name in self.recommended_fields.get(domain_key, []):
-            if _is_missing_value(data.get(field_name)):
+            if is_missing_value(data.get(field_name)):
                 violations.append(
                     ValidationViolation(
                         field=field_name,
@@ -75,7 +73,7 @@ class StandardsProfile:
                 field_name = constraint_key
 
             value = data.get(field_name)
-            if _is_missing_value(value):
+            if is_missing_value(value):
                 continue
             if value not in allowed_values:
                 violations.append(
@@ -143,7 +141,7 @@ class DeviceSafetyProfile(StandardsProfile):
 
         deficiency_occurred = data.get("ddOccurred")
         if deficiency_occurred is True and all(
-            _is_missing_value(data.get(field_name))
+            is_missing_value(data.get(field_name))
             for field_name in ("ddTerm", "ddCategory", "ddDate")
         ):
             violations.append(
@@ -155,7 +153,7 @@ class DeviceSafetyProfile(StandardsProfile):
             )
 
         dd_serious = data.get("ddSerious")
-        if not _is_missing_value(dd_serious) and not isinstance(dd_serious, bool):
+        if not is_missing_value(dd_serious) and not isinstance(dd_serious, bool):
             violations.append(
                 ValidationViolation(
                     field="ddSerious",

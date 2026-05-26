@@ -19,6 +19,15 @@ _FALSE_VARIANTS = _FALSE_LOWER | {"False", "FALSE"}
 _SENTINEL_DATETIME = datetime(1969, 4, 20, 16, 20)
 
 
+def is_missing_value(value: Any) -> bool:
+    return value is None or (isinstance(value, str) and value.strip() == "")
+
+
+def is_boolean_token(value: str) -> bool:
+    normalized = value.strip().lower()
+    return normalized in _TRUE_LOWER or normalized in _FALSE_LOWER
+
+
 def parse_datetime(v: str | int | float | datetime) -> datetime:
     """Parse an ISO datetime string, numeric timestamp, or return a sentinel value.
 

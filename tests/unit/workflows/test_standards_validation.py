@@ -23,7 +23,7 @@ def test_categorical_normalizer_translates_lookup_values_and_yes_no_booleans() -
     assert result.warnings == []
 
 
-def test_standards_readiness_score_uses_expected_fields_and_reports_unmapped_values() -> None:
+def test_standards_readiness_validator_scores_records() -> None:
     validator = StandardsReadinessValidator(profile=DrugSafetyProfile())
     report = validator.score_records(
         records_by_domain={
