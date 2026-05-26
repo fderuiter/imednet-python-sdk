@@ -1,3 +1,4 @@
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -8,7 +9,7 @@ import imednet.integrations.parquet as parquet_mod
 from imednet.errors import PathTraversalValidationError
 
 
-def _read_partition_dataframe(path) -> pd.DataFrame:
+def _read_partition_dataframe(path: Path) -> pd.DataFrame:
     parquet_files = sorted(path.glob("*.parquet"))
     assert parquet_files
     return pd.read_parquet(parquet_files[0], engine="pyarrow")
