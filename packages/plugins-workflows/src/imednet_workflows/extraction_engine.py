@@ -36,7 +36,9 @@ def _get_from_path(value: Any, path: str) -> Any:
     return current
 
 
-def _extract_rule_value(record: Record, rule: MappingRule) -> Any:
+def _extract_rule_value_from_payload(
+    record: Record, rule: MappingRule, top_level_payload: dict[str, Any]
+) -> Any:
     source_path = rule.source_variable_name
 
     if source_path.startswith("recordData."):
@@ -45,8 +47,6 @@ def _extract_rule_value(record: Record, rule: MappingRule) -> Any:
     if source_path.startswith("record_data."):
         return _get_from_path(record.record_data, source_path[len("record_data.") :])
 
-    top_level_payload = record.model_dump(by_alias=True)
-    top_level_payload.update(record.model_dump(by_alias=False))
     value = _get_from_path(top_level_payload, source_path)
     if value is not None:
         return value
@@ -55,6 +55,10 @@ def _extract_rule_value(record: Record, rule: MappingRule) -> Any:
         return record.record_data.get(source_path)
 
     return None
+
+
+def _is_missing_value(value: Any) -> bool:
+    return value is None or (isinstance(value, str) and value == "")
 
 
 def _group_mappings_by_domain_and_form(
@@ -77,6 +81,10 @@ def extract_canonical_records(
     grouped_mappings = _group_mappings_by_domain_and_form(study_configuration)
 
     for record in records:
+        top_level_payload = {
+            **record.model_dump(by_alias=False),
+            **record.model_dump(by_alias=True),
+        }
         for domain, by_form in grouped_mappings.items():
             rules = by_form.get(record.form_key)
             if not rules:
@@ -84,8 +92,8 @@ def extract_canonical_records(
 
             payload: dict[str, Any] = {}
             for rule in rules:
-                value = _extract_rule_value(record, rule)
-                if value in (None, "") and rule.fallback_value is not None:
+                value = _extract_rule_value_from_payload(record, rule, top_level_payload)
+                if _is_missing_value(value) and rule.fallback_value is not None:
                     value = rule.fallback_value
                 payload[rule.target_field] = value
 
