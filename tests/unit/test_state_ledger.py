@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from imednet_workflows.state_ledger import ExtractionStateLedger, LedgerState
 import imednet_workflows.state_ledger as _state_ledger_module
+from imednet_workflows.state_ledger import ExtractionStateLedger, LedgerState
 
 
 def test_state_ledger_read_write(tmp_path) -> None:

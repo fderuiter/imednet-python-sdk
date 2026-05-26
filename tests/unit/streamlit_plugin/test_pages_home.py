@@ -75,5 +75,3 @@ def test_home_page_renders_disconnected() -> None:
 def test_home_page_renders_connected() -> None:
     home_connected = _run_page("home.py", connected=True)
     assert any("connected" in success.lower() for success in home_connected.successes)
-
-
