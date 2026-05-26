@@ -13,6 +13,7 @@ from .api import (
 )
 from .base import ImednetError
 from .client import ClientError, PaginationError
+from .export import ExportBatchError, ExportConfigurationError, ExportError
 from .network import RequestError
 from .orchestration import FilterConflictError, OrchestratorError
 from .plugin import PluginLoadError
@@ -48,4 +49,7 @@ __all__ = [
     "UnknownVariableTypeError",
     "OrchestratorError",
     "FilterConflictError",
+    "ExportError",
+    "ExportConfigurationError",
+    "ExportBatchError",
 ]
