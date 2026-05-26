@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 def _is_missing_value(value: Any) -> bool:
@@ -15,12 +15,21 @@ class ValidationViolation(BaseModel):
     severity: str  # ERROR, WARNING
 
 
-class StandardsProfile(BaseModel):
-    profile_name: str
-    required_fields: dict[str, list[str]] = Field(default_factory=dict)
-    recommended_fields: dict[str, list[str]] = Field(default_factory=dict)
-    optional_fields: dict[str, list[str]] = Field(default_factory=dict)
-    value_constraints: dict[str, list[Any]] = Field(default_factory=dict)
+class StandardsProfile:
+    def __init__(
+        self,
+        *,
+        profile_name: str,
+        required_fields: dict[str, list[str]] | None = None,
+        recommended_fields: dict[str, list[str]] | None = None,
+        optional_fields: dict[str, list[str]] | None = None,
+        value_constraints: dict[str, list[Any]] | None = None,
+    ) -> None:
+        self.profile_name = profile_name
+        self.required_fields = required_fields or {}
+        self.recommended_fields = recommended_fields or {}
+        self.optional_fields = optional_fields or {}
+        self.value_constraints = value_constraints or {}
 
     def expected_fields(self, domain: str) -> list[str]:
         domain_key = domain.upper()
@@ -38,7 +47,9 @@ class StandardsProfile(BaseModel):
                 violations.append(
                     ValidationViolation(
                         field=field_name,
-                        message=f"{field_name} is required for {domain_key} in {self.profile_name}.",
+                        message=(
+                            f"{field_name} is required for {domain_key} in {self.profile_name}."
+                        ),
                         severity="ERROR",
                     )
                 )
@@ -79,7 +90,7 @@ class StandardsProfile(BaseModel):
 
 
 class GeneralClinicalProfile(StandardsProfile):
-    def __init__(self, **data: Any) -> None:
+    def __init__(self) -> None:
         super().__init__(
             profile_name="general",
             required_fields={
@@ -93,12 +104,11 @@ class GeneralClinicalProfile(StandardsProfile):
             optional_fields={
                 "DD": ["subjectKey", "ddTerm", "ddCategory", "ddDate", "ddSerious"],
             },
-            **data,
         )
 
 
 class DrugSafetyProfile(StandardsProfile):
-    def __init__(self, **data: Any) -> None:
+    def __init__(self) -> None:
         super().__init__(
             profile_name="drug",
             required_fields={
@@ -108,12 +118,11 @@ class DrugSafetyProfile(StandardsProfile):
             recommended_fields={"AE": ["aeActionTaken", "aeOutcome"]},
             optional_fields={"DD": ["subjectKey", "ddTerm", "ddCategory", "ddDate", "ddSerious"]},
             value_constraints={"AE.aeSeverity": [1, 2, 3, 4, 5, "1", "2", "3", "4", "5"]},
-            **data,
         )
 
 
 class DeviceSafetyProfile(StandardsProfile):
-    def __init__(self, **data: Any) -> None:
+    def __init__(self) -> None:
         super().__init__(
             profile_name="device",
             required_fields={
@@ -123,7 +132,6 @@ class DeviceSafetyProfile(StandardsProfile):
             },
             recommended_fields={"DD": ["ddRelationship", "ddActionTaken"]},
             optional_fields={},
-            **data,
         )
 
     def validate(self, domain: str, data: dict[str, Any]) -> list[ValidationViolation]:
@@ -135,7 +143,8 @@ class DeviceSafetyProfile(StandardsProfile):
 
         deficiency_occurred = data.get("ddOccurred")
         if deficiency_occurred is True and all(
-            _is_missing_value(data.get(field_name)) for field_name in ("ddTerm", "ddCategory", "ddDate")
+            _is_missing_value(data.get(field_name))
+            for field_name in ("ddTerm", "ddCategory", "ddDate")
         ):
             violations.append(
                 ValidationViolation(
