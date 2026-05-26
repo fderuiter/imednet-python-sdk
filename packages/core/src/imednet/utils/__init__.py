@@ -10,6 +10,7 @@ from .json_logging import configure_json_logging
 from .typing import DataFrame, FilterValue, ItemId, JsonDict
 
 _LAZY_ATTRS: dict[str, tuple[str, str]] = {
+    "to_arrow_table": ("imednet.utils.arrow", "to_arrow_table"),
     "records_to_dataframe": ("imednet.utils.pandas", "records_to_dataframe"),
     "export_records_csv": ("imednet.utils.pandas", "export_records_csv"),
     "parse_bool": ("imednet.utils.validators", "parse_bool"),
@@ -40,6 +41,7 @@ __all__ = [
     "format_iso_datetime",
     "build_filter_string",
     "configure_json_logging",
+    "to_arrow_table",
     "records_to_dataframe",
     "export_records_csv",
     "JsonDict",
