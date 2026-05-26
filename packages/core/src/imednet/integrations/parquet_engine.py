@@ -134,8 +134,8 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
                 )
 
             final_partition_dir.mkdir(parents=True, exist_ok=True)
-            # os.replace is atomic on local POSIX filesystems, so readers only
-            # observe a fully committed batch directory and never partial files.
+            # Where the filesystem supports atomic rename (e.g., local POSIX),
+            # os.replace ensures readers observe a fully committed batch dir.
             os.replace(staged_partition_dir, committed_batch_dir)
         finally:
             shutil.rmtree(staging_base_dir, ignore_errors=True)
