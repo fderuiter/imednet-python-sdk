@@ -19,4 +19,7 @@ except (ImportError, ModuleNotFoundError):
     class AirflowBaseHook:  # type: ignore[no-redef]
         @staticmethod
         def get_connection(conn_id: str) -> Any:
-            raise NotImplementedError
+            raise NotImplementedError(
+                "Apache Airflow is not installed. "
+                "Install apache-airflow-providers-imednet[airflow] to use this feature."
+            )
