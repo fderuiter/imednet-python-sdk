@@ -129,11 +129,13 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
             if not staged_partition_dir.exists():
                 raise RuntimeError(
                     "Partition write did not produce staged output for "
-                    f"study_key={study_key!r}, form_key={form_key!r}."
+                    f"study_key={study_key!r}, form_key={form_key!r}, "
+                    f"commit_id={commit_id!r}, staged_partition_dir={staged_partition_dir!s}."
                 )
 
             final_partition_dir.mkdir(parents=True, exist_ok=True)
-            # Atomic rename ensures readers only observe fully committed batches.
+            # os.replace is atomic on local POSIX filesystems, so readers only
+            # observe a fully committed batch directory and never partial files.
             os.replace(staged_partition_dir, committed_batch_dir)
         finally:
             shutil.rmtree(staging_base_dir, ignore_errors=True)

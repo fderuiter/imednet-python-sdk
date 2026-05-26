@@ -15,6 +15,12 @@ class _FakeTable:
         self.columns.append((name, values))
         return self
 
+    def value_for_column(self, name: str) -> str:
+        for column_name, values in self.columns:
+            if column_name == name:
+                return values[0]
+        raise AssertionError(f"Missing expected column {name!r}")
+
 
 class _FakeParquetFormat:
     def __init__(self) -> None:
@@ -43,8 +49,8 @@ class _FakeDatasetModule:
         if self.should_fail:
             raise RuntimeError("boom")
         base_dir = Path(kwargs["base_dir"])
-        study_key = table.columns[0][1][0]
-        form_key = table.columns[1][1][0]
+        study_key = table.value_for_column("study_key")
+        form_key = table.value_for_column("form_key")
         partition_dir = base_dir / f"study_key={study_key}" / f"form_key={form_key}"
         partition_dir.mkdir(parents=True, exist_ok=True)
         (partition_dir / "part-0.parquet").write_bytes(b"parquet")
