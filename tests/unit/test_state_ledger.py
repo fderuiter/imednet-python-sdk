@@ -173,6 +173,59 @@ def test_state_ledger_flock_concurrency(tmp_path) -> None:
     t2.join()
 
 
+def test_delete_entry_removes_whole_study(tmp_path) -> None:
+    ledger_file = tmp_path / "ledger.json"
+    ledger = ExtractionStateLedger(str(ledger_file))
+    ts = datetime(2026, 5, 22, 12, 0, 0, tzinfo=timezone.utc)
+    ledger.set_last_timestamp("STUDY-01", "records", ts)
+    ledger.set_last_timestamp("STUDY-02", "records", ts)
+
+    removed = ledger.delete_entry("STUDY-01")
+
+    assert removed is True
+    state = ledger.read_state()
+    assert "STUDY-01" not in state.studies
+    assert "STUDY-02" in state.studies
+
+
+def test_delete_entry_removes_specific_stream(tmp_path) -> None:
+    ledger_file = tmp_path / "ledger.json"
+    ledger = ExtractionStateLedger(str(ledger_file))
+    ts = datetime(2026, 5, 22, 12, 0, 0, tzinfo=timezone.utc)
+    ledger.set_last_timestamp("STUDY-01", "records", ts)
+    ledger.set_last_timestamp("STUDY-01", "queries", ts)
+
+    removed = ledger.delete_entry("STUDY-01", stream_name="records")
+
+    assert removed is True
+    state = ledger.read_state()
+    assert "STUDY-01" in state.studies
+    assert "records" not in state.studies["STUDY-01"].streams
+    assert "queries" in state.studies["STUDY-01"].streams
+
+
+def test_delete_entry_returns_false_when_study_not_found(tmp_path) -> None:
+    ledger_file = tmp_path / "ledger.json"
+    ledger = ExtractionStateLedger(str(ledger_file))
+
+    removed = ledger.delete_entry("NONEXISTENT-STUDY")
+
+    assert removed is False
+
+
+def test_delete_entry_returns_false_when_stream_not_found(tmp_path) -> None:
+    ledger_file = tmp_path / "ledger.json"
+    ledger = ExtractionStateLedger(str(ledger_file))
+    ts = datetime(2026, 5, 22, 12, 0, 0, tzinfo=timezone.utc)
+    ledger.set_last_timestamp("STUDY-01", "records", ts)
+
+    removed = ledger.delete_entry("STUDY-01", stream_name="nonexistent-stream")
+
+    assert removed is False
+    state = ledger.read_state()
+    assert "records" in state.studies["STUDY-01"].streams
+
+
 def test_corrupted_ledger_recovery(tmp_path) -> None:
     ledger_file = tmp_path / "ledger.json"
     # Write garbage content to file

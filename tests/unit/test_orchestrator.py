@@ -177,3 +177,57 @@ def test_execute_pipeline_propagates_study_context_to_worker_thread(
     for study_key, result in results.items():
         assert result["status"] == "SUCCESS"
         assert result["data"] == study_key
+
+
+def test_sdk_property_returns_original_sdk() -> None:
+    sdk = MagicMock()
+    orchestrator = MultiStudyOrchestrator(sdk)
+    assert orchestrator.sdk is sdk
+
+
+def test_max_workers_property_returns_configured_value() -> None:
+    sdk = MagicMock()
+    orchestrator = MultiStudyOrchestrator(sdk, max_workers=7)
+    assert orchestrator.max_workers == 7
+
+
+def test_resolve_active_studies_logs_and_returns_all_when_no_filters(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
+    orchestrator = MultiStudyOrchestrator(sdk)
+
+    with caplog.at_level("DEBUG", logger="imednet.orchestration.orchestrator"):
+        result = orchestrator.resolve_active_studies()
+
+    assert result == ["A", "B"]
+    assert "Resolved 2 studies from registry." in caplog.text
+
+
+def test_resolve_active_studies_logs_whitelist_selection(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
+    orchestrator = MultiStudyOrchestrator(sdk)
+
+    with caplog.at_level("INFO", logger="imednet.orchestration.orchestrator"):
+        result = orchestrator.resolve_active_studies(whitelist={"A", "C"})
+
+    assert result == ["A", "C"]
+    assert "Whitelist filter applied: 2/3 studies selected." in caplog.text
+
+
+def test_resolve_active_studies_logs_blacklist_selection(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
+    orchestrator = MultiStudyOrchestrator(sdk)
+
+    with caplog.at_level("INFO", logger="imednet.orchestration.orchestrator"):
+        result = orchestrator.resolve_active_studies(blacklist={"B"})
+
+    assert result == ["A", "C"]
+    assert "Blacklist filter applied: 2/3 studies selected." in caplog.text
