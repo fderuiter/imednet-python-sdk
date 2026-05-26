@@ -15,6 +15,7 @@ from imednet_streamlit.auth import get_sdk, get_study_key
 
 _HIGH_QUERY_RATE_THRESHOLD = 20.0
 _HIGH_RATE_COLOR = "#ffe0e0"
+_PERCENT_SCALE = 100.0
 _MAX_HEATMAP_SUBJECTS = 50
 _MAX_HEATMAP_FORMS = 20
 _VIEW_STORE_KEY = "_reporting_saved_views"
@@ -255,7 +256,7 @@ def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame)
     for col in ("enrolled_count", "open_queries", "avg_days_open"):
         merged[col] = pd.to_numeric(merged[col], errors="coerce").fillna(0)
     merged["query_rate"] = (
-        merged["open_queries"] / merged["enrolled_count"].replace(0, 1) * 100
+        merged["open_queries"] / merged["enrolled_count"].replace(0, 1) * _PERCENT_SCALE
     ).round(1)
     return merged
 
