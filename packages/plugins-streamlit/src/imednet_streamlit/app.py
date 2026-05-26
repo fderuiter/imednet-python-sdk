@@ -21,6 +21,7 @@ reporting_dashboard_page = st.Page(
 )
 sites_page = st.Page("pages/sites.py", title="Site Performance", icon="🏥")
 records_page = st.Page("pages/records.py", title="Data Completeness", icon="📋")
+setup_wizard_page = st.Page("pages/setup_wizard.py", title="Setup Wizard", icon="🧭")
 
 if is_connected:
     nav = st.navigation(
@@ -31,6 +32,7 @@ if is_connected:
             reporting_dashboard_page,
             sites_page,
             records_page,
+            setup_wizard_page,
         ]
     )
 else:
