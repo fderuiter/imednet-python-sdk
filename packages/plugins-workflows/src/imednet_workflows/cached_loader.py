@@ -100,8 +100,7 @@ class CachedRecordsLoader:
     def _initialise_cache(self) -> None:
         conn = get_cache_connection(self.db_path)
         try:
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS record_cache (
                     study_key TEXT NOT NULL,
                     record_id INTEGER NOT NULL,
@@ -110,14 +109,11 @@ class CachedRecordsLoader:
                     payload TEXT NOT NULL,
                     PRIMARY KEY (study_key, record_id)
                 )
-                """
-            )
-            conn.execute(
-                """
+                """)
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
                 ON record_cache (study_key, date_modified)
-                """
-            )
+                """)
             conn.commit()
         finally:
             conn.close()

@@ -3,8 +3,6 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
-import pytest
-
 from imednet.models.forms import Form
 from imednet.models.records import Record
 from imednet.models.variables import Variable
