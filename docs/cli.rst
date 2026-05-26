@@ -135,8 +135,14 @@ destinations:
 .. code-block:: console
 
    imednet export mongodb MY_STUDY mongodb://localhost:27017 imednet records --batch-size 500
+   imednet export mongodb MY_STUDY mongodb://localhost:27017 imednet records --insert-only
    imednet export neo4j MY_STUDY bolt://localhost:7687 neo4j "$NEO4J_PASSWORD" --database neo4j
    imednet export snowflake MY_STUDY acct user "$SNOWFLAKE_PASSWORD" DB PUBLIC WH STAGE TABLE
+
+MongoDB exports write schema-preserving record envelopes (metadata + raw
+``record_data``) in batches controlled by ``--batch-size``. The default mode is
+idempotent ``--upsert`` keyed by ``<study_key>/<record_id>``, and ``--insert-only``
+can be used when strict insert semantics are desired.
 
 Optional dependency guidance:
 

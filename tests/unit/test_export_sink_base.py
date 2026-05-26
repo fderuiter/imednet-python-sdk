@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import sys
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
@@ -310,6 +311,22 @@ class TestMongoDbExportSink:
         with pytest.raises(ExportConfigurationError, match="Cannot connect to MongoDB"):
             MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1")
 
+    def test_connect_error_message_redacts_credentials(self, monkeypatch):
+        import imednet.integrations.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet.integrations.document import MongoDbExportSink
+
+        uri = "******localhost:27017"
+        with pytest.raises(ExportConfigurationError) as exc_info:
+            MongoDbExportSink(uri, "db", "col", "STUDY1")
+
+        message = str(exc_info.value)
+        assert "secret" not in message
+        assert "localhost:27017" in message
+
     def test_write_batch_upsert_returns_count(self, monkeypatch):
         import imednet.integrations.document as doc_mod
 
@@ -324,8 +341,53 @@ class TestMongoDbExportSink:
         ]
         with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
             count = sink.write_batch(records, batch_id="STUDY1/F1/0")
-        # upserted_count=2 + modified_count=1 = 3
+        # return value reflects number of exported records in the batch
         assert count == 3
+
+    def test_write_batch_upsert_document_envelope_shape(self, monkeypatch):
+        import imednet.integrations.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module()
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet.integrations.document import MongoDbExportSink
+
+        record = SimpleNamespace(
+            record_id=1234,
+            subject_id=100,
+            subject_key="SUBJ-001",
+            visit_id=42,
+            form_id=7,
+            form_key="BASELINE",
+            record_status="Complete",
+            deleted=False,
+            date_created=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            date_modified=datetime(2024, 1, 15, tzinfo=timezone.utc),
+            record_data={"labs": {"hemoglobin": 13.2}, "symptoms": ["fatigue"]},
+        )
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
+            count = sink.write_batch([record], batch_id="STUDY1/F1/0")
+
+        assert count == 1
+        assert pymongo.UpdateOne.call_count == 1
+        filter_doc, update_doc = pymongo.UpdateOne.call_args.args[:2]
+        assert filter_doc == {"_id": "STUDY1/1234"}
+        assert update_doc["$set"]["study_key"] == "STUDY1"
+        assert update_doc["$set"]["record_id"] == 1234
+        assert update_doc["$set"]["subject_id"] == 100
+        assert update_doc["$set"]["subject_key"] == "SUBJ-001"
+        assert update_doc["$set"]["visit_id"] == 42
+        assert update_doc["$set"]["form_id"] == 7
+        assert update_doc["$set"]["form_key"] == "BASELINE"
+        assert update_doc["$set"]["record_status"] == "Complete"
+        assert update_doc["$set"]["deleted"] is False
+        assert update_doc["$set"]["date_created"] == datetime(2024, 1, 1, tzinfo=timezone.utc)
+        assert update_doc["$set"]["date_modified"] == datetime(2024, 1, 15, tzinfo=timezone.utc)
+        assert update_doc["$set"]["record_data"] == {
+            "labs": {"hemoglobin": 13.2},
+            "symptoms": ["fatigue"],
+        }
+        assert "exported_at" in update_doc["$set"]
 
     def test_write_batch_empty_returns_zero(self, monkeypatch):
         import imednet.integrations.document as doc_mod
