@@ -24,6 +24,16 @@ body:
         - release
         - workflows-plugin
         - airflow-provider
+        - streamlit
+        - records
+        - mapping
+        - standards
+        - terminology
+        - dashboard
+        - review-workbench
+        - governance
+        - performance
+        - testing
     validations:
       required: true
   - type: dropdown

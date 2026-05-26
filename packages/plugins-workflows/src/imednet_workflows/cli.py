@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import List, Optional
 
 import typer
@@ -10,6 +11,7 @@ from imednet.cli.utils import STUDY_KEY_ARG, parse_filter_args
 from imednet.sdk import ImednetSDK
 
 from .data_extraction import DataExtractionWorkflow
+from .state_ledger import ExtractionStateLedger
 from .subject_data import SubjectDataWorkflow
 
 app = typer.Typer(name="workflows", help="Execute common data workflows.")
@@ -73,3 +75,151 @@ def subject_data(
     workflow = SubjectDataWorkflow(sdk)
     data = workflow.get_all_subject_data(study_key, subject_key)
     print(data.model_dump())
+
+
+state_app = typer.Typer(name="state", help="Manage high-water mark execution ledger state.")
+
+
+@state_app.command("show")
+def show_state(
+    ledger_path: str = typer.Option(
+        "/var/lib/imednet/pipeline_ledger.json",
+        "--ledger-path",
+        "-l",
+        help="Path to the pipeline ledger JSON file.",
+    ),
+    study_key: Optional[str] = typer.Option(
+        None,
+        "--study-key",
+        "-s",
+        help="Filter the ledger by a specific study key.",
+    ),
+) -> None:
+    """Show the current high-water mark records and stream metadata."""
+    ledger = ExtractionStateLedger(ledger_path)
+    try:
+        state = ledger.read_state()
+    except Exception as err:
+        print(f"[red]Failed to read ledger from {ledger_path}: {err}[/red]")
+        raise typer.Exit(code=1)
+
+    from rich.console import Console
+    from rich.table import Table
+
+    console = Console()
+    table = Table(title=f"iMednet Extraction Ledger ({ledger_path})")
+    table.add_column("Study Key", style="cyan")
+    table.add_column("Stream Name", style="magenta")
+    table.add_column("Last Timestamp (UTC)", style="green")
+    table.add_column("Records Processed", style="blue")
+    table.add_column("Status", style="yellow")
+    table.add_column("Error Message", style="red")
+
+    has_data = False
+    for s_key, study_state in state.studies.items():
+        if study_key and s_key != study_key:
+            continue
+        for stream_name, stream_state in study_state.streams.items():
+            has_data = True
+            table.add_row(
+                s_key,
+                stream_name,
+                stream_state.last_timestamp.isoformat(),
+                str(stream_state.records_processed),
+                stream_state.last_run_status,
+                stream_state.error_message or "",
+            )
+
+    if has_data:
+        console.print(table)
+    else:
+        print("[yellow]No ledger entries found matching filters.[/yellow]")
+
+
+@state_app.command("set")
+def set_state(
+    study_key: str = typer.Option(..., "--study-key", "-s", help="The study key."),
+    stream: str = typer.Option(..., "--stream", "-m", help="The stream name."),
+    timestamp: str = typer.Option(..., "--timestamp", "-t", help="The ISO-8601 timestamp (UTC)."),
+    records_processed: int = typer.Option(
+        0, "--records-processed", "-r", help="Number of records processed."
+    ),
+    ledger_path: str = typer.Option(
+        "/var/lib/imednet/pipeline_ledger.json",
+        "--ledger-path",
+        "-l",
+        help="Path to the pipeline ledger JSON file.",
+    ),
+) -> None:
+    """Manually set a high-water mark timestamp for a study and stream."""
+    try:
+        normalized = timestamp.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(normalized)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+    except ValueError as err:
+        print(f"[red]Invalid ISO timestamp format: {err}[/red]")
+        raise typer.Exit(code=1)
+
+    ledger = ExtractionStateLedger(ledger_path)
+    try:
+        ledger.set_last_timestamp(
+            study_key=study_key,
+            stream_name=stream,
+            timestamp=dt,
+            records_processed=records_processed,
+            status="success",
+        )
+        print(
+            f"[green]Successfully set high-water mark for '{study_key}' -> '{stream}' "
+            f"to {dt.isoformat()}[/green]"
+        )
+    except Exception as err:
+        print(f"[red]Failed to write ledger: {err}[/red]")
+        raise typer.Exit(code=1)
+
+
+@state_app.command("reset")
+def reset_state(
+    study_key: str = typer.Option(..., "--study-key", "-s", help="The study key."),
+    stream: Optional[str] = typer.Option(
+        None,
+        "--stream",
+        "-m",
+        help="The stream name. If omitted, all streams for the study will be reset.",
+    ),
+    ledger_path: str = typer.Option(
+        "/var/lib/imednet/pipeline_ledger.json",
+        "--ledger-path",
+        "-l",
+        help="Path to the pipeline ledger JSON file.",
+    ),
+) -> None:
+    """Reset (clear) high-water mark state for a study/stream."""
+    ledger = ExtractionStateLedger(ledger_path)
+    try:
+        if stream:
+            removed = ledger.delete_entry(study_key, stream)
+            if removed:
+                print(
+                    f"[green]Successfully reset stream '{stream}' for study "
+                    f"'{study_key}'.[/green]"
+                )
+            else:
+                print(f"[yellow]No stream '{stream}' found for study '{study_key}'.[/yellow]")
+                return
+        else:
+            removed = ledger.delete_entry(study_key)
+            if removed:
+                print(f"[green]Successfully reset all streams for study '{study_key}'.[/green]")
+            else:
+                print(f"[yellow]No state found for study '{study_key}'.[/yellow]")
+                return
+    except Exception as err:
+        print(f"[red]Failed to reset ledger state: {err}[/red]")
+        raise typer.Exit(code=1)
+
+
+app.add_typer(state_app)

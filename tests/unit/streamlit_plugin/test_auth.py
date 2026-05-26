@@ -140,3 +140,29 @@ def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secret
     assert auth._KEY_SECURITY_KEY not in fake_st.session_state
     assert auth._KEY_SDK not in fake_st.session_state
     assert fake_st.error_messages == ["All fields are required."]
+
+
+def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_st = _FakeStreamlit(text_values={}, connect_clicked=False)
+    monkeypatch.setattr(auth, "st", fake_st)
+
+    sdk_args = {}
+
+    class FakeSDK:
+        def __init__(self, api_key: str, security_key: str) -> None:
+            sdk_args["api_key"] = api_key
+            sdk_args["security_key"] = security_key
+
+    monkeypatch.setattr(auth, "ImednetSDK", FakeSDK)
+
+    auth._build_sdk("key1", "key2")
+    assert sdk_args == {"api_key": "key1", "security_key": "key2"}
+    assert isinstance(fake_st.session_state[auth._KEY_SDK], FakeSDK)
+
+
+def test_get_study_key_raises_when_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_st = _FakeStreamlit(text_values={}, connect_clicked=False)
+    monkeypatch.setattr(auth, "st", fake_st)
+
+    with pytest.raises(RuntimeError, match="Study key is not set"):
+        auth.get_study_key()
