@@ -5,6 +5,7 @@ import pytest
 from typer.testing import CliRunner
 
 import imednet.cli as cli
+import imednet.integrations as integrations_mod
 from imednet.integrations import Neo4jSinkConfig, SinkConfig, SnowflakeSinkConfig
 from imednet.integrations import export as export_mod
 
@@ -112,7 +113,7 @@ def test_cli_export_mongodb_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_mongodb", func)
+    monkeypatch.setattr(integrations_mod, "export_to_mongodb", func)
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(
@@ -165,7 +166,7 @@ def test_cli_export_neo4j_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_neo4j", func)
+    monkeypatch.setattr(integrations_mod, "export_to_neo4j", func)
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(
@@ -219,7 +220,7 @@ def test_cli_export_snowflake_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     func = MagicMock()
-    monkeypatch.setattr(cli, "export_to_snowflake", func)
+    monkeypatch.setattr(integrations_mod, "export_to_snowflake", func)
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(

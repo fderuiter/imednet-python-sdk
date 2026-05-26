@@ -123,8 +123,8 @@ class SnowflakeSinkConfig(SinkConfig):
     stage: str = ""
     table: str = ""
     stage_prefix: str = "imednet"
-    local_staging_dir: Optional[str] = None
-    manifest_path: Optional[str] = None
+    local_staging_dir: Optional[str | os.PathLike[str]] = None
+    manifest_path: Optional[str | os.PathLike[str]] = None
 
 
 def _records_to_arrow_table(records: Sequence[Any]) -> Any:
@@ -211,8 +211,9 @@ class SnowflakeExportSink(ExportSink):
 
         # Set up local staging directory
         if cfg.local_staging_dir:
-            Path(cfg.local_staging_dir).mkdir(parents=True, exist_ok=True)
-            self._staging_dir: str = cfg.local_staging_dir
+            resolved_staging_dir = os.fspath(cfg.local_staging_dir)
+            Path(resolved_staging_dir).mkdir(parents=True, exist_ok=True)
+            self._staging_dir: str = resolved_staging_dir
         else:
             self._tmp_dir = tempfile.TemporaryDirectory()
             self._staging_dir = self._tmp_dir.name

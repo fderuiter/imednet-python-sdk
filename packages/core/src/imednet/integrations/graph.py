@@ -248,7 +248,7 @@ def export_to_neo4j(
     uri: str,
     auth: Tuple[str, str],
     *,
-    config: Optional[SinkConfig] = None,
+    config: Optional[Neo4jSinkConfig] = None,
 ) -> int:
     """Export study records to Neo4j using :class:`Neo4jExportSink`."""
     cfg = config if config is not None else Neo4jSinkConfig()
