@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import sys
+from datetime import datetime, timezone
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
 
