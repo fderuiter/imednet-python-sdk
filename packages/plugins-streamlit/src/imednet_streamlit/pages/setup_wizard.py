@@ -7,6 +7,7 @@ from typing import Any, cast
 import pandas as pd
 import streamlit as st
 
+from imednet import ImednetSDK
 from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_workflows import CachedRecordsLoader, SchemaProfiler
@@ -44,7 +45,11 @@ def _initialise_state(study_key: str) -> None:
 
     config = st.session_state.get(_KEY_MAPPING_CONFIG)
     if not isinstance(config, StudyConfiguration):
-        st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration(study_key=study_key)
+        st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration(
+            version="1.0.0",
+            studyKey=study_key,
+            reportingProfile="general",
+        )
     else:
         config.study_key = study_key
 
@@ -57,7 +62,7 @@ def _get_mapping_config() -> StudyConfiguration:
     return cast(StudyConfiguration, st.session_state[_KEY_MAPPING_CONFIG])
 
 
-def _scan_schema(sdk: object, study_key: str) -> dict[str, Any]:
+def _scan_schema(sdk: ImednetSDK, study_key: str) -> dict[str, Any]:
     loader = CachedRecordsLoader(sdk=sdk)
     records = loader.load_records(study_key)
     profiler = SchemaProfiler(sdk=sdk, loader=loader)
@@ -145,7 +150,7 @@ def _existing_mapping_index(
     return None
 
 
-def _step_scan_and_profile(sdk: object, study_key: str) -> None:
+def _step_scan_and_profile(sdk: ImednetSDK, study_key: str) -> None:
     st.subheader("1. Scan & Profile Study Structure")
     st.markdown(
         "Discover forms, profile field populations, and choose source forms "
@@ -241,10 +246,10 @@ def _step_field_mapping() -> None:
             new_mappings.append(
                 MappingRule(
                     domain=domain,
-                    target_field=target_field,
-                    source_form_key=selected_form,
-                    source_variable_name=selected_field,
-                    fallback_value=fallback_value or None,
+                    targetField=target_field,
+                    sourceFormKey=selected_form,
+                    sourceVariableName=selected_field,
+                    fallbackValue=fallback_value or None,
                 )
             )
 
@@ -357,7 +362,9 @@ def _build_preview_rows(
         for mapping in config.mappings:
             if mapping.source_form_key != record.get("form_key"):
                 continue
-            source_value = record_data.get(mapping.source_variable_name, mapping.fallback_value)
+            source_value = mapping.fallback_value
+            if isinstance(record_data, dict):
+                source_value = record_data.get(mapping.source_variable_name, mapping.fallback_value)
             lookup_key = f"{mapping.domain}.{mapping.target_field}"
             row[lookup_key] = _apply_lookup(config, lookup_key, source_value)
         rows.append(row)
@@ -383,11 +390,13 @@ def _step_preview_and_layout() -> None:
     layout_cols = st.slider("Widget column width", min_value=3, max_value=12, value=6, step=1)
     config.widgets = [
         WidgetConfig(
-            widget_id=f"widget-{index + 1}",
+            widgetId=f"widget-{index + 1}",
             type=widget_type,
             title=f"{widget_type.replace('_', ' ').title()}",
             domain=config.mappings[0].domain,
-            layout_cols=layout_cols,
+            xAxis=None,
+            yAxis=None,
+            layoutCols=layout_cols,
         )
         for index, widget_type in enumerate(selected_widgets)
     ]
