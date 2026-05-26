@@ -82,7 +82,9 @@ pip install "imednet[snowflake]"
 pip install imednet-workflows
 
 # Airflow provider package
-pip install "apache-airflow>=3.2.0" apache-airflow-providers-imednet apache-airflow-providers-amazon
+pip install "apache-airflow>=2.3.0,<4.0.0" apache-airflow-providers-imednet
+# Optional: install Amazon provider only when using ImednetToS3Operator
+pip install "apache-airflow-providers-imednet[amazon]"
 ```
 
 ### Version Pinning

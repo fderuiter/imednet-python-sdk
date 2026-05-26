@@ -10,40 +10,45 @@ Install the provider package:
 
 .. code-block:: bash
 
-   pip install "apache-airflow>=3.2.0" apache-airflow-providers-imednet
+   pip install "apache-airflow>=2.3.0,<4.0.0" apache-airflow-providers-imednet
+   # Optional only for ImednetToS3Operator
+   pip install "apache-airflow-providers-imednet[amazon]"
 
-Example DAG
------------
+Dynamic task mapping pattern
+----------------------------
 
 .. code-block:: python
 
-   from datetime import datetime
-   from airflow import DAG
-   from apache_airflow_providers_imednet import ImednetToS3Operator, ImednetJobSensor
+   from datetime import datetime, timedelta
+   from airflow.decorators import dag, task
+   from apache_airflow_providers_imednet import ImednetExportOperator, ImednetHook
 
-   default_args = {"start_date": datetime(2024, 1, 1)}
-
-   with DAG(
-       dag_id="imednet_example",
-       schedule_interval=None,
-       default_args=default_args,
+   @dag(
+       dag_id="imednet_multi_study_pipeline",
+       start_date=datetime(2024, 1, 1),
+       schedule=None,
        catchup=False,
-   ) as dag:
-       export_records = ImednetToS3Operator(
-           task_id="export_records",
-           study_key="STUDY_KEY",
-           s3_bucket="your-bucket",
-           s3_key="imednet/records.json",
-       )
+       max_active_runs=1,
+       default_args={"retries": 2, "retry_delay": timedelta(minutes=5)},
+   )
+   def multi_study_pipeline():
+       @task(task_id="discover_studies")
+       def discover_studies() -> list[dict[str, str]]:
+           hook = ImednetHook()
+           return hook.build_export_requests(output_root="/tmp/imednet/exports")
 
-       wait_for_job = ImednetJobSensor(
-           task_id="wait_for_job",
-           study_key="STUDY_KEY",
-           batch_id="BATCH_ID",
-           poke_interval=60,
-       )
+       ImednetExportOperator.partial(
+           task_id="export_study_records",
+           export_func="export_to_csv",
+           isolate_output_path=True,
+           pool="imednet_exports",
+           execution_timeout=timedelta(minutes=30),
+       ).expand_kwargs(discover_studies())
 
-       export_records >> wait_for_job
+   multi_study_pipeline()
+
+See ``examples/airflow/multi_study_pipeline.py`` for a full production-ready
+reference DAG.
 
 Connections
 -----------
@@ -53,8 +58,16 @@ Provide ``api_key`` and ``security_key`` via the login/password fields or in the
 ``extra`` JSON. ``base_url`` may be added in ``extra`` for a non-standard
 environment. The hook merges these settings with values from
 ``imednet.config.load_config`` so environment variables still apply. The
-``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default)
-when writing to S3.
+``ImednetHook`` also exposes discovery helpers that return only primitive,
+serialization-safe values for mapped task expansion:
+
+* ``discover_studies()`` for lightweight study discovery payloads.
+* ``build_export_requests()`` for ``.expand_kwargs(...)`` payloads.
+* ``resolved_connection_config(redact_credentials=True)`` to inspect effective
+  settings with credentials masked.
+
+``ImednetToS3Operator`` uses an AWS connection (``aws_default`` by default) and
+requires the optional ``amazon`` extra.
 
 Operators and Sensors
 ---------------------
@@ -64,7 +77,8 @@ The Airflow integration organizes hooks, operators, and sensors in dedicated sub
 ``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3
 and ``ImednetJobSensor`` waits for an export job to complete. All operators use
 ``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance from an
-Airflow connection.
+Airflow connection at execution time. ``ImednetExportOperator`` can isolate
+output paths per mapped task instance by setting ``isolate_output_path=True``.
 
 Testing with Airflow
 --------------------
