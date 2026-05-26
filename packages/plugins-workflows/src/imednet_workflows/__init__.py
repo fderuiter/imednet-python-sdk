@@ -2,6 +2,7 @@
 
 from .cached_loader import CachedRecordsLoader, get_cache_connection
 from .duckdb_centralizer import DuckDBIngestionWorkflow
+from .extraction_engine import ExtractionResult, extract_canonical_records
 from .job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
@@ -13,23 +14,25 @@ from .study_structure import async_get_study_structure, get_study_structure
 from .subject_data import SubjectDataWorkflow
 
 __all__ = [
+    "AsyncJobPoller",
     "CachedRecordsLoader",
-    "QueryManagementWorkflow",
     "DuckDBIngestionWorkflow",
+    "ExtractionResult",
+    "ExtractionStateLedger",
     "FieldProfile",
     "FormProfile",
-    "RecordMapper",
-    "RecordUpdateWorkflow",
-    "AsyncJobPoller",
     "JobPoller",
     "JobTimeoutError",
-    "RegisterSubjectsWorkflow",
-    "SubjectDataWorkflow",
-    "get_study_structure",
-    "async_get_study_structure",
-    "ExtractionStateLedger",
-    "get_cache_connection",
-    "StreamState",
     "LedgerState",
+    "QueryManagementWorkflow",
+    "RecordMapper",
+    "RecordUpdateWorkflow",
+    "RegisterSubjectsWorkflow",
     "SchemaProfiler",
+    "StreamState",
+    "SubjectDataWorkflow",
+    "async_get_study_structure",
+    "extract_canonical_records",
+    "get_cache_connection",
+    "get_study_structure",
 ]

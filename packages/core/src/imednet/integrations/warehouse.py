@@ -75,8 +75,9 @@ from pathlib import Path
 from typing import Any, Optional, Sequence
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.sdk import ImednetSDK
 
-from .sink_base import ExportSink, SinkConfig, _require_optional_dep
+from .sink_base import ExportSink, SinkConfig, _require_optional_dep, iter_batches
 
 logger = logging.getLogger(__name__)
 
@@ -122,8 +123,8 @@ class SnowflakeSinkConfig(SinkConfig):
     stage: str = ""
     table: str = ""
     stage_prefix: str = "imednet"
-    local_staging_dir: Optional[str] = None
-    manifest_path: Optional[str] = None
+    local_staging_dir: Optional[str | os.PathLike[str]] = None
+    manifest_path: Optional[str | os.PathLike[str]] = None
 
 
 def _records_to_arrow_table(records: Sequence[Any]) -> Any:
@@ -210,8 +211,9 @@ class SnowflakeExportSink(ExportSink):
 
         # Set up local staging directory
         if cfg.local_staging_dir:
-            Path(cfg.local_staging_dir).mkdir(parents=True, exist_ok=True)
-            self._staging_dir: str = cfg.local_staging_dir
+            resolved_staging_dir = os.fspath(cfg.local_staging_dir)
+            Path(resolved_staging_dir).mkdir(parents=True, exist_ok=True)
+            self._staging_dir: str = resolved_staging_dir
         else:
             self._tmp_dir = tempfile.TemporaryDirectory()
             self._staging_dir = self._tmp_dir.name
@@ -327,4 +329,19 @@ class SnowflakeExportSink(ExportSink):
             f.write(json.dumps(entry) + os.linesep)
 
 
-__all__ = ["SnowflakeExportSink", "SnowflakeSinkConfig"]
+def export_to_snowflake(
+    sdk: ImednetSDK,
+    study_key: str,
+    *,
+    config: SnowflakeSinkConfig,
+) -> int:
+    """Export study records to Snowflake using :class:`SnowflakeExportSink`."""
+    records = sdk.records.list(study_key=study_key, record_data_filter=None)
+    total_written = 0
+    with SnowflakeExportSink(config=config) as sink:
+        for index, batch in enumerate(iter_batches(records, config.batch_size)):
+            total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
+    return total_written
+
+
+__all__ = ["SnowflakeExportSink", "SnowflakeSinkConfig", "export_to_snowflake"]

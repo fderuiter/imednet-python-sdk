@@ -15,6 +15,7 @@ from imednet.integrations.sink_base import (
     SinkConfig,
     _redact_uri,
     _require_optional_dep,
+    iter_batches,
 )
 
 # ---------------------------------------------------------------------------
@@ -84,6 +85,16 @@ class TestSinkConfig:
         assert cfg.batch_size == 100
         assert cfg.max_retries == 0
         assert cfg.idempotent is False
+
+
+class TestIterBatches:
+    def test_splits_sequence_by_batch_size(self):
+        batches = list(iter_batches([1, 2, 3, 4, 5], 2))
+        assert batches == [[1, 2], [3, 4], [5]]
+
+    def test_rejects_non_positive_batch_size(self):
+        with pytest.raises(ValueError, match="batch_size"):
+            list(iter_batches([1, 2], 0))
 
 
 # ---------------------------------------------------------------------------
@@ -609,3 +620,146 @@ class TestIntegrationsReExports:
         from imednet.integrations import SnowflakeExportSink
 
         assert SnowflakeExportSink.__module__ == "imednet.integrations.warehouse"
+
+
+class TestExportConvenienceFunctions:
+    def test_export_to_mongodb_batches_records(self, monkeypatch):
+        import imednet.integrations.document as doc_mod
+
+        created = []
+
+        class FakeSink:
+            def __init__(self, *args, config=None, **kwargs):
+                self.config = config if config is not None else SinkConfig()
+                self.calls = []
+                created.append(self)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def write_batch(self, records, *, batch_id: str) -> int:
+                self.calls.append((list(records), batch_id))
+                return len(records)
+
+        monkeypatch.setattr(doc_mod, "MongoDbExportSink", FakeSink)
+        sdk = MagicMock()
+        sdk.records.list.return_value = [MagicMock(record_id=i) for i in range(3)]
+
+        written = doc_mod.export_to_mongodb(
+            sdk,
+            "STUDY1",
+            "mongodb://localhost:27017",
+            "db",
+            "records",
+            config=SinkConfig(batch_size=2),
+        )
+
+        assert written == 3
+        assert [c[1] for c in created[0].calls] == ["STUDY1/records/0", "STUDY1/records/1"]
+
+    def test_export_to_mongodb_propagates_batch_error(self, monkeypatch):
+        import imednet.integrations.document as doc_mod
+
+        class FakeSink:
+            def __init__(self, *args, config=None, **kwargs):
+                self.config = config if config is not None else SinkConfig()
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def write_batch(self, records, *, batch_id: str) -> int:
+                raise ExportBatchError("failed", batch_id=batch_id)
+
+        monkeypatch.setattr(doc_mod, "MongoDbExportSink", FakeSink)
+        sdk = MagicMock()
+        sdk.records.list.return_value = [MagicMock(record_id=1)]
+
+        with pytest.raises(ExportBatchError, match="failed"):
+            doc_mod.export_to_mongodb(
+                sdk,
+                "STUDY1",
+                "mongodb://localhost:27017",
+                "db",
+                "records",
+                config=SinkConfig(batch_size=1),
+            )
+
+    def test_export_to_neo4j_batches_records(self, monkeypatch):
+        import imednet.integrations.graph as graph_mod
+        from imednet.integrations.graph import Neo4jSinkConfig
+
+        created = []
+        init_args = {}
+
+        class FakeSink:
+            def __init__(self, uri, auth, study_key, *, config=None):
+                self.config = config if config is not None else SinkConfig()
+                self.calls = []
+                created.append(self)
+                init_args["uri"] = uri
+                init_args["auth"] = auth
+                init_args["study_key"] = study_key
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def write_batch(self, records, *, batch_id: str) -> int:
+                self.calls.append((list(records), batch_id))
+                return len(records)
+
+        monkeypatch.setattr(graph_mod, "Neo4jExportSink", FakeSink)
+        sdk = MagicMock()
+        sdk.records.list.return_value = [MagicMock(record_id=i) for i in range(4)]
+
+        written = graph_mod.export_to_neo4j(
+            sdk,
+            "STUDY2",
+            "bolt://localhost:7687",
+            ("neo4j", "pass"),
+            config=Neo4jSinkConfig(batch_size=3),
+        )
+
+        assert written == 4
+        assert init_args["auth"] == ("neo4j", "pass")
+        assert [c[1] for c in created[0].calls] == ["STUDY2/records/0", "STUDY2/records/1"]
+
+    def test_export_to_snowflake_batches_records(self, monkeypatch):
+        import imednet.integrations.warehouse as wh_mod
+        from imednet.integrations.warehouse import SnowflakeSinkConfig
+
+        created = []
+
+        class FakeSink:
+            def __init__(self, *args, config=None, **kwargs):
+                self.config = config if config is not None else SinkConfig()
+                self.calls = []
+                created.append(self)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def write_batch(self, records, *, batch_id: str) -> int:
+                self.calls.append((list(records), batch_id))
+                return len(records)
+
+        monkeypatch.setattr(wh_mod, "SnowflakeExportSink", FakeSink)
+        sdk = MagicMock()
+        sdk.records.list.return_value = [MagicMock(record_id=i) for i in range(3)]
+
+        cfg = SnowflakeSinkConfig(batch_size=2)
+        written = wh_mod.export_to_snowflake(sdk, "STUDY3", config=cfg)
+
+        assert written == 3
+        assert [c[1] for c in created[0].calls] == ["STUDY3/records/0", "STUDY3/records/1"]
