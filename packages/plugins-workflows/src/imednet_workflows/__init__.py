@@ -10,6 +10,12 @@ from .record_update import RecordUpdateWorkflow
 from .register_subjects import RegisterSubjectsWorkflow
 from .schema_profiler import FieldProfile, FormProfile, SchemaProfiler
 from .state_ledger import ExtractionStateLedger, LedgerState, StreamState
+from .standards_validation import (
+    CategoricalNormalizer,
+    NormalizationResult,
+    StandardsReadinessReport,
+    StandardsReadinessValidator,
+)
 from .study_structure import async_get_study_structure, get_study_structure
 from .subject_data import SubjectDataWorkflow
 
@@ -24,13 +30,17 @@ __all__ = [
     "JobPoller",
     "JobTimeoutError",
     "LedgerState",
+    "NormalizationResult",
     "QueryManagementWorkflow",
     "RecordMapper",
     "RecordUpdateWorkflow",
     "RegisterSubjectsWorkflow",
     "SchemaProfiler",
+    "StandardsReadinessReport",
+    "StandardsReadinessValidator",
     "StreamState",
     "SubjectDataWorkflow",
+    "CategoricalNormalizer",
     "async_get_study_structure",
     "extract_canonical_records",
     "get_cache_connection",
