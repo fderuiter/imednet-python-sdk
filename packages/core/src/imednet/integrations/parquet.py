@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 from importlib import import_module
-from pathlib import Path
+from types import ModuleType
 from typing import Any, List, Optional
 
 from ..sdk import ImednetSDK
 from ..utils import validate_partition_key
 from .export import _record_mapper
+from .parquet_engine import PyArrowDatasetPartitionedStorageEngine
 
 
-def _ensure_pyarrow() -> None:
+def _ensure_pyarrow() -> ModuleType:
     try:
-        import_module("pyarrow")
+        return import_module("pyarrow")
     except ImportError as error:
         raise ImportError(
             "PyArrow is required for Hive Parquet export. Install with "
@@ -31,10 +32,11 @@ def export_to_hive_parquet(
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
     """Export study records to a Hive-partitioned Parquet directory layout."""
-    _ensure_pyarrow()
+    pyarrow_module = _ensure_pyarrow()
     validate_partition_key(study_key)
 
     mapper = _record_mapper()(sdk)
+    storage_engine = PyArrowDatasetPartitionedStorageEngine()
     forms = sdk.forms.list(study_key=study_key)
 
     form_filter: dict[str, Any] = {"formIds": form_whitelist} if form_whitelist else {}
@@ -43,7 +45,6 @@ def export_to_hive_parquet(
     for variable in all_variables:
         variables_by_form.setdefault(variable.form_id, []).append(variable)
 
-    study_dir = Path(base_dir) / f"study_key={study_key}"
     for form in forms:
         if form_whitelist is not None and form.form_id not in form_whitelist:
             continue
@@ -76,10 +77,13 @@ def export_to_hive_parquet(
             label_map,
             use_labels_as_columns,
         )
-
-        output_dir = study_dir / f"form_key={form.form_key}"
-        output_dir.mkdir(parents=True, exist_ok=True)
-        df.to_parquet(output_dir / "records.parquet", index=False, engine="pyarrow")
+        table = pyarrow_module.Table.from_pandas(df)
+        storage_engine.write_form_table(
+            table,
+            base_dir=base_dir,
+            study_key=study_key,
+            form_key=form.form_key,
+        )
 
 
 def hive_parquet_query(base_dir: str) -> str:
