@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from importlib import import_module
+from types import ModuleType
 from typing import Any, List, Optional
 
 from ..sdk import ImednetSDK
@@ -11,9 +12,9 @@ from .export import _record_mapper
 from .parquet_engine import PyArrowDatasetPartitionedStorageEngine
 
 
-def _ensure_pyarrow() -> None:
+def _ensure_pyarrow() -> ModuleType:
     try:
-        import_module("pyarrow")
+        return import_module("pyarrow")
     except ImportError as error:
         raise ImportError(
             "PyArrow is required for Hive Parquet export. Install with "
@@ -31,9 +32,8 @@ def export_to_hive_parquet(
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
     """Export study records to a Hive-partitioned Parquet directory layout."""
-    _ensure_pyarrow()
+    pyarrow_module = _ensure_pyarrow()
     validate_partition_key(study_key)
-    pyarrow_module = import_module("pyarrow")
 
     mapper = _record_mapper()(sdk)
     storage_engine = PyArrowDatasetPartitionedStorageEngine()
@@ -77,7 +77,7 @@ def export_to_hive_parquet(
             label_map,
             use_labels_as_columns,
         )
-        table = pyarrow_module.Table.from_pandas(df, preserve_index=False)
+        table = pyarrow_module.Table.from_pandas(df)
         storage_engine.write_form_table(
             table,
             base_dir=base_dir,

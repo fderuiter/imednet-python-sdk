@@ -1,5 +1,7 @@
 from typing import Any
 
+import pytest
+
 from imednet.integrations.parquet_engine import PyArrowDatasetPartitionedStorageEngine
 
 
@@ -46,12 +48,14 @@ class _FakePyArrowModule:
     def schema(self, fields: list[tuple[str, str]]) -> list[tuple[str, str]]:
         return fields
 
-    def array(self, values: list[str], *, type: str) -> list[str]:
-        assert type == "string"
+    def array(self, values: list[str], **kwargs: Any) -> list[str]:
+        assert kwargs["type"] == "string"
         return values
 
 
-def test_pyarrow_dataset_partitioned_storage_engine_defaults(monkeypatch) -> None:
+def test_pyarrow_dataset_partitioned_storage_engine_defaults(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     fake_pa = _FakePyArrowModule()
     fake_ds = _FakeDatasetModule()
     monkeypatch.setattr(

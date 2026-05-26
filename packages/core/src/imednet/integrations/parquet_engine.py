@@ -36,7 +36,7 @@ class PartitionedStorageEngine(Protocol):
 
 
 @dataclass(frozen=True)
-class PyArrowDatasetPartitionedStorageEngine:
+class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
     """Partitioned storage engine powered by ``pyarrow.dataset.write_dataset``."""
 
     compression: str = "snappy"
