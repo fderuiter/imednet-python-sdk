@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from imednet.models.forms import Form
 from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache
@@ -74,7 +73,9 @@ class SchemaProfiler:
 
         grouped_records: dict[str, list[Record]] = defaultdict(list)
         for record in records:
-            form_key = record.form_key or schema.form_key_from_id(record.form_id) or str(record.form_id)
+            form_key = (
+                record.form_key or schema.form_key_from_id(record.form_id) or str(record.form_id)
+            )
             grouped_records[form_key].append(record)
 
         profiles: dict[str, FormProfile] = {}
@@ -118,7 +119,9 @@ class SchemaProfiler:
         distinct_values: set[str] = set()
 
         for record in records:
-            value = record.record_data.get(field_name) if isinstance(record.record_data, dict) else None
+            value = (
+                record.record_data.get(field_name) if isinstance(record.record_data, dict) else None
+            )
             if not _is_populated(value):
                 continue
             populated_values.append(value)
