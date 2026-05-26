@@ -29,6 +29,15 @@ from imednet.models.records import (
 )
 from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDeviation
 from imednet.models.sites import Site
+from imednet.models.standards import (
+    PROFILE_REGISTRY,
+    DeviceSafetyProfile,
+    DrugSafetyProfile,
+    GeneralClinicalProfile,
+    StandardsProfile,
+    StandardsProfileRegistry,
+    ValidationViolation,
+)
 from imednet.models.studies import Study
 from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
 from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
@@ -76,6 +85,13 @@ __all__: list[str] = [
     "SortField",
     "Study",
     "StudyConfiguration",
+    "StandardsProfile",
+    "StandardsProfileRegistry",
+    "GeneralClinicalProfile",
+    "DrugSafetyProfile",
+    "DeviceSafetyProfile",
+    "ValidationViolation",
+    "PROFILE_REGISTRY",
     "Subject",
     "SubjectKeyword",
     "StudyStructure",
