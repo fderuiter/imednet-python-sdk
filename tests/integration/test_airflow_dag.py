@@ -10,6 +10,7 @@ from moto import mock_aws
 @mock_aws
 def test_dag_runs(monkeypatch):
     pytest.importorskip("airflow")
+    pytest.importorskip("airflow.providers.amazon.aws.hooks.s3")
     # isort: off
     from airflow.models import DAG, TaskInstance
     from airflow.utils.state import State

@@ -1,6 +1,8 @@
 """Airflow hook for retrieving an :class:`ImednetSDK` instance."""
 
-from airflow.hooks.base import BaseHook
+import sys
+
+from airflow.hooks.base import BaseHook  # type: ignore[attr-defined]
 
 from imednet.config import load_config
 from imednet.sdk import ImednetSDK
@@ -14,9 +16,9 @@ class ImednetHook(BaseHook):
         self.imednet_conn_id = imednet_conn_id
 
     def get_conn(self) -> ImednetSDK:  # type: ignore[override]
-        from airflow.hooks.base import BaseHook
-
-        conn = BaseHook.get_connection(self.imednet_conn_id)
+        hooks_base = sys.modules.get("airflow.hooks.base")
+        hook_cls = getattr(hooks_base, "BaseHook", BaseHook)
+        conn = hook_cls.get_connection(self.imednet_conn_id)
         extras = getattr(conn, "extra_dejson", {}) or {}
         if not isinstance(extras, dict):
             extras = {}

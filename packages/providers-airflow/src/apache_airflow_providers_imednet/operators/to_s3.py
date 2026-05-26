@@ -15,7 +15,6 @@ _MISSING_AMAZON_PROVIDER_MESSAGE = (
 
 try:  # pragma: no cover - optional Airflow dependency
     from airflow.models import BaseOperator  # type: ignore
-    from airflow.providers.amazon.aws.hooks.s3 import S3Hook  # type: ignore
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
 
     class BaseOperator:  # type: ignore
@@ -23,6 +22,15 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
             pass
+
+
+try:  # pragma: no cover - optional Amazon provider dependency
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook  # type: ignore
+except (
+    ImportError,
+    ModuleNotFoundError,
+    AttributeError,
+):  # pragma: no cover - placeholder fallback
 
     class S3Hook:  # type: ignore
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover

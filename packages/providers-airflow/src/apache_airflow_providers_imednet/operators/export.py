@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
-
-if TYPE_CHECKING:
-    from airflow.utils.context import Context
-else:  # pragma: no cover - typing fallback for optional Airflow dependency
-    Context = Dict[str, Any]
+from typing import Any, Dict, Optional, Sequence
 
 from airflow.models import BaseOperator
 
 from .. import export
+from .._airflow_compat import Context
 from ..hooks import ImednetHook
 
 

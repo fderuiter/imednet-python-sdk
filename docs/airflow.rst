@@ -10,7 +10,13 @@ Install the provider package:
 
 .. code-block:: bash
 
-   pip install "apache-airflow>=3.2.0" apache-airflow-providers-imednet
+   pip install "apache-airflow>=2.3.0,<4.0.0" apache-airflow-providers-imednet
+
+Install Amazon provider extras only when using S3 operators:
+
+.. code-block:: bash
+
+   pip install apache-airflow-providers-amazon
 
 Example DAG
 -----------

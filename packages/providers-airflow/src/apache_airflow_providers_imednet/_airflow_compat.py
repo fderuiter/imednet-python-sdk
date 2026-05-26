@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict
 
 if TYPE_CHECKING:
     from airflow.exceptions import AirflowException
-    from airflow.utils.context import Context
+    from airflow.sdk.definitions.context import Context
 else:  # pragma: no cover - typing fallback for optional Airflow dependency
     Context = Dict[str, Any]
     try:

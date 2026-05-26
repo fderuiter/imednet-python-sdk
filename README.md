@@ -81,7 +81,10 @@ pip install pandas openpyxl  # For Excel export
 pip install imednet-workflows
 
 # Airflow provider package
-pip install "apache-airflow>=3.2.0" apache-airflow-providers-imednet apache-airflow-providers-amazon
+pip install "apache-airflow>=2.3.0,<4.0.0" apache-airflow-providers-imednet
+
+# Optional S3 operator dependency
+pip install apache-airflow-providers-amazon
 ```
 
 ### Version Pinning
