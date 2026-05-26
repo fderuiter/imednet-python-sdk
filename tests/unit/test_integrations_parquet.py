@@ -125,3 +125,19 @@ def test_export_to_hive_parquet_rejects_malicious_study_key(monkeypatch) -> None
         parquet_mod.export_to_hive_parquet(sdk, "../STUDY_A", "/tmp/lake")
 
     sdk.forms.list.assert_not_called()
+
+
+def test_export_to_hive_parquet_rejects_malicious_form_key(monkeypatch) -> None:
+    monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: None)
+
+    sdk = MagicMock()
+    sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="../DEMOGRAPHICS")]
+    sdk.variables.list.return_value = []
+    mapper_factory = MagicMock()
+    mapper = mapper_factory.return_value
+    monkeypatch.setattr(parquet_mod, "_record_mapper", lambda: mapper_factory)
+
+    with pytest.raises(PathTraversalValidationError):
+        parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", "/tmp/lake")
+
+    mapper._fetch_records.assert_not_called()
