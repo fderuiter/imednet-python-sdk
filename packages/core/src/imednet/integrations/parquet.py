@@ -47,6 +47,7 @@ def export_to_hive_parquet(
     for form in forms:
         if form_whitelist is not None and form.form_id not in form_whitelist:
             continue
+        validate_partition_key(form.form_key)
 
         variables = variables_by_form.get(form.form_id, [])
         variable_keys = [
@@ -76,7 +77,6 @@ def export_to_hive_parquet(
             use_labels_as_columns,
         )
 
-        validate_partition_key(form.form_key)
         output_dir = study_dir / f"form_key={form.form_key}"
         output_dir.mkdir(parents=True, exist_ok=True)
         df.to_parquet(output_dir / "records.parquet", index=False, engine="pyarrow")

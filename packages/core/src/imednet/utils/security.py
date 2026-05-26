@@ -7,7 +7,7 @@ from typing import Any
 
 from imednet.errors import ClientError, PathTraversalValidationError
 
-_WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[/\\\\]")
+_WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[/\\]")
 
 
 def sanitize_csv_formula(value: Any) -> Any:
