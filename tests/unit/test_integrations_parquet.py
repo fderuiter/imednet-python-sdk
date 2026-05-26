@@ -8,6 +8,12 @@ import imednet.integrations.parquet as parquet_mod
 from imednet.errors import PathTraversalValidationError
 
 
+def _read_partition_dataframe(path) -> pd.DataFrame:
+    parquet_files = sorted(path.glob("*.parquet"))
+    assert parquet_files
+    return pd.read_parquet(parquet_files[0], engine="pyarrow")
+
+
 def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
     pytest.importorskip("pyarrow")
 
@@ -44,13 +50,13 @@ def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
 
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", str(tmp_path))
 
-    demographics_path = tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS" / "records.parquet"
-    vitals_path = tmp_path / "study_key=STUDY_A" / "form_key=VITALS" / "records.parquet"
+    demographics_path = tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS"
+    vitals_path = tmp_path / "study_key=STUDY_A" / "form_key=VITALS"
     assert demographics_path.exists()
     assert vitals_path.exists()
 
-    demographics_df = pd.read_parquet(demographics_path, engine="pyarrow")
-    vitals_df = pd.read_parquet(vitals_path, engine="pyarrow")
+    demographics_df = _read_partition_dataframe(demographics_path)
+    vitals_df = _read_partition_dataframe(vitals_path)
     assert demographics_df.to_dict("records") == [{"age": 42}]
     assert vitals_df.to_dict("records") == [{"weight": 73.5}]
 
@@ -84,17 +90,13 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", str(tmp_path))
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_B", str(tmp_path))
 
-    study_a_path = tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS" / "records.parquet"
-    study_b_path = tmp_path / "study_key=STUDY_B" / "form_key=DEMOGRAPHICS" / "records.parquet"
+    study_a_path = tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS"
+    study_b_path = tmp_path / "study_key=STUDY_B" / "form_key=DEMOGRAPHICS"
     assert study_a_path.exists()
     assert study_b_path.exists()
 
-    assert pd.read_parquet(study_a_path, engine="pyarrow").to_dict("records") == [
-        {"study": "STUDY_A"}
-    ]
-    assert pd.read_parquet(study_b_path, engine="pyarrow").to_dict("records") == [
-        {"study": "STUDY_B"}
-    ]
+    assert _read_partition_dataframe(study_a_path).to_dict("records") == [{"study": "STUDY_A"}]
+    assert _read_partition_dataframe(study_b_path).to_dict("records") == [{"study": "STUDY_B"}]
 
 
 def test_hive_parquet_query() -> None:

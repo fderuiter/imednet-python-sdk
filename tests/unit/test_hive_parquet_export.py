@@ -9,6 +9,12 @@ import pytest
 import imednet.integrations.parquet as parquet_mod
 
 
+def _read_partition_dataframe(path: Path) -> pd.DataFrame:
+    parquet_files = sorted(path.glob("*.parquet"))
+    assert parquet_files
+    return pd.read_parquet(parquet_files[0], engine="pyarrow")
+
+
 def test_export_to_hive_parquet_directory_structure(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -50,7 +56,7 @@ def test_export_to_hive_parquet_directory_structure(
 
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", str(tmp_path))
 
-    assert (tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS" / "records.parquet").exists()
+    assert (tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS").exists()
 
 
 def test_export_to_hive_parquet_concurrent_studies_no_conflict(
@@ -101,14 +107,8 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", str(tmp_path))
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_B", str(tmp_path))
 
-    study_a = pd.read_parquet(
-        tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS" / "records.parquet",
-        engine="pyarrow",
-    )
-    study_b = pd.read_parquet(
-        tmp_path / "study_key=STUDY_B" / "form_key=DEMOGRAPHICS" / "records.parquet",
-        engine="pyarrow",
-    )
+    study_a = _read_partition_dataframe(tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS")
+    study_b = _read_partition_dataframe(tmp_path / "study_key=STUDY_B" / "form_key=DEMOGRAPHICS")
 
     assert study_a.to_dict("records") == [{"study": "STUDY_A"}]
     assert study_b.to_dict("records") == [{"study": "STUDY_B"}]
