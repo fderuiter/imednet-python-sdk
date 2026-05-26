@@ -307,7 +307,11 @@ def test_reporting_dashboard_renders_expected_kpis_and_site_aggregation() -> Non
     assert pd_kpis["Total Deviations"] == 1
     assert pd_kpis["Major Deviations"] == 1
 
-    site_styler = next(df for df in fake_st.dataframes if hasattr(df, "data"))
+    site_styler = next(
+        df
+        for df in fake_st.dataframes
+        if hasattr(df, "data") and "query_rate" in getattr(df, "data").columns
+    )
     site_df = site_styler.data  # type: ignore[assignment]
     assert int(site_df.loc[site_df["site_name"] == "Site A", "open_queries"].iloc[0]) == 1
 
