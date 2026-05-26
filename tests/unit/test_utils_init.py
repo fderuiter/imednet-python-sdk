@@ -14,6 +14,13 @@ def test_lazy_load_pandas_functions() -> None:
     assert func2 is expected_export
 
 
+def test_lazy_load_arrow_function() -> None:
+    func = utils.to_arrow_table
+    from imednet.utils.arrow import to_arrow_table as expected_to_arrow_table
+
+    assert func is expected_to_arrow_table
+
+
 def test_schema_objects_not_in_utils() -> None:
     with pytest.raises(AttributeError):
         getattr(utils, "SchemaCache")

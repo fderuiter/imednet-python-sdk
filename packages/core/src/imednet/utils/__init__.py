@@ -10,6 +10,7 @@ from .json_logging import configure_json_logging
 from .typing import DataFrame, FilterValue, ItemId, JsonDict
 
 _LAZY_ATTRS: dict[str, tuple[str, str]] = {
+    "to_arrow_table": ("imednet.utils.arrow", "to_arrow_table"),
     "records_to_dataframe": ("imednet.utils.pandas", "records_to_dataframe"),
     "export_records_csv": ("imednet.utils.pandas", "export_records_csv"),
     "parse_bool": ("imednet.utils.validators", "parse_bool"),
@@ -21,6 +22,7 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
     "sanitize_base_url": ("imednet.utils.url", "sanitize_base_url"),
     "build_safe_path": ("imednet.utils.url", "build_safe_path"),
     "sanitize_csv_formula": ("imednet.utils.security", "sanitize_csv_formula"),
+    "validate_partition_key": ("imednet.utils.security", "validate_partition_key"),
 }
 
 
@@ -40,6 +42,7 @@ __all__ = [
     "format_iso_datetime",
     "build_filter_string",
     "configure_json_logging",
+    "to_arrow_table",
     "records_to_dataframe",
     "export_records_csv",
     "JsonDict",
@@ -55,4 +58,5 @@ __all__ = [
     "sanitize_base_url",
     "build_safe_path",
     "sanitize_csv_formula",
+    "validate_partition_key",
 ]

@@ -20,6 +20,7 @@ from .registry import get_error_class
 from .validation import (
     BadRequestError,
     ConfigurationError,
+    PathTraversalValidationError,
     UnknownVariableTypeError,
     ValidationError,
 )
@@ -40,6 +41,7 @@ __all__ = [
     "ValidationError",
     "ConfigurationError",
     "BadRequestError",
+    "PathTraversalValidationError",
     "UnauthorizedError",
     "ForbiddenError",
     "ConflictError",

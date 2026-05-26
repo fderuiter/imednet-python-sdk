@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 from ..sdk import ImednetSDK
+from ..utils import validate_partition_key
 from .export import _record_mapper
 
 
@@ -31,6 +32,7 @@ def export_to_hive_parquet(
 ) -> None:
     """Export study records to a Hive-partitioned Parquet directory layout."""
     _ensure_pyarrow()
+    validate_partition_key(study_key)
 
     mapper = _record_mapper()(sdk)
     forms = sdk.forms.list(study_key=study_key)
@@ -45,6 +47,7 @@ def export_to_hive_parquet(
     for form in forms:
         if form_whitelist is not None and form.form_id not in form_whitelist:
             continue
+        validate_partition_key(form.form_key)
 
         variables = variables_by_form.get(form.form_id, [])
         variable_keys = [

@@ -27,8 +27,10 @@ from imednet.models.records import (
     RegisterSubjectRequest,
     UpdateScheduledRecordRequest,
 )
+from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDeviation
 from imednet.models.sites import Site
 from imednet.models.studies import Study
+from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
 from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
 from imednet.models.subjects import Subject, SubjectKeyword
 from imednet.models.users import Role, User
@@ -55,6 +57,9 @@ __all__: list[str] = [
     "JobStatus",
     "Keyword",
     "Metadata",
+    "AdverseEvent",
+    "ProtocolDeviation",
+    "DeviceDeficiency",
     "Pagination",
     "Query",
     "QueryComment",
@@ -70,14 +75,17 @@ __all__: list[str] = [
     "Site",
     "SortField",
     "Study",
+    "StudyConfiguration",
     "Subject",
     "SubjectKeyword",
     "StudyStructure",
     "IntervalStructure",
     "FormStructure",
+    "MappingRule",
     "User",
     "Variable",
     "Visit",
+    "WidgetConfig",
     "parse_bool",
     "parse_datetime",
     "parse_int_or_default",

@@ -1,7 +1,11 @@
 import pytest
 
-from imednet.errors import ClientError
-from imednet.utils.security import sanitize_csv_formula, validate_header_value
+from imednet.errors import ClientError, PathTraversalValidationError
+from imednet.utils.security import (
+    sanitize_csv_formula,
+    validate_header_value,
+    validate_partition_key,
+)
 
 
 @pytest.mark.parametrize(
@@ -75,3 +79,28 @@ def test_validate_header_value_invalid(input_val):
 )
 def test_sanitize_csv_formula_collections(input_val, expected):
     assert sanitize_csv_formula(input_val) == expected
+
+
+@pytest.mark.parametrize("key", ["STUDY_A", "study-001", "visit 1"])
+def test_validate_partition_key_valid(key: str) -> None:
+    validate_partition_key(key)
+
+
+@pytest.mark.parametrize(
+    "key",
+    [
+        "../study",
+        "..\\study",
+        "/rooted",
+        "\\rooted",
+        "C:\\Windows",
+        "C:/Windows",
+        "study/form",
+        "study\\form",
+        "study\x00key",
+        "..",
+    ],
+)
+def test_validate_partition_key_invalid(key: str) -> None:
+    with pytest.raises(PathTraversalValidationError):
+        validate_partition_key(key)

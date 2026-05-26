@@ -26,3 +26,9 @@ class ConfigurationError(ClientError):
     """Raised when required SDK/client configuration is missing."""
 
     pass
+
+
+class PathTraversalValidationError(ClientError):
+    """Raised when a partition key contains unsafe path content."""
+
+    pass

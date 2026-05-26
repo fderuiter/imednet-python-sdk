@@ -2,9 +2,12 @@
 Security utilities.
 """
 
+import re
 from typing import Any
 
-from imednet.errors import ClientError
+from imednet.errors import ClientError, PathTraversalValidationError
+
+_WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[/\\]")
 
 
 def sanitize_csv_formula(value: Any) -> Any:
@@ -35,3 +38,21 @@ def validate_header_value(value: str) -> None:
     """
     if "\n" in value or "\r" in value:
         raise ClientError(f"Header value must not contain newlines: {value!r}")
+
+
+def validate_partition_key(key: str) -> None:
+    """Reject partition keys that could escape or reshape the target directory."""
+    if "\x00" in key:
+        raise PathTraversalValidationError(f"Partition key must not contain null bytes: {key!r}")
+    if key.startswith(("/", "\\")) or _WINDOWS_ABSOLUTE_PATH_RE.match(key):
+        raise PathTraversalValidationError(
+            f"Partition key must not use absolute path modifiers: {key!r}"
+        )
+    if "../" in key or "..\\" in key or key == "..":
+        raise PathTraversalValidationError(
+            f"Partition key must not contain parent-directory traversal: {key!r}"
+        )
+    if "/" in key or "\\" in key:
+        raise PathTraversalValidationError(
+            f"Partition key must not contain path separators: {key!r}"
+        )
