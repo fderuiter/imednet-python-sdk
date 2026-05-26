@@ -12,6 +12,7 @@ from .export import (
     export_to_sql_by_form,
 )
 from .parquet import export_to_hive_parquet, hive_parquet_query
+from .parquet_engine import PartitionedStorageEngine, PyArrowDatasetPartitionedStorageEngine
 
 __all__ = [
     "export_to_csv",
@@ -25,4 +26,6 @@ __all__ = [
     "export_to_sql_by_form",
     "export_to_sql",
     "hive_parquet_query",
+    "PartitionedStorageEngine",
+    "PyArrowDatasetPartitionedStorageEngine",
 ]
