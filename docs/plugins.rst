@@ -113,11 +113,6 @@ Architecture rules
 Plugin authoring reference
 --------------------------
 
-The iMednet SDK supports optional plugins that extend the SDK with additional
-workflow functionality.  The built-in ``imednet-workflows`` package is the
-reference implementation, but any third-party package can register its own
-plugin using the standard `Python entry-point`_ mechanism.
-
 How it works
 ------------
 
