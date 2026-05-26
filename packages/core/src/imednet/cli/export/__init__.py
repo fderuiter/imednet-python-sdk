@@ -244,7 +244,7 @@ def export_mongodb(
         )
         raise typer.Exit(code=1)
 
-    from .. import SinkConfig, export_to_mongodb
+    from imednet.integrations import SinkConfig, export_to_mongodb
 
     cfg = SinkConfig(batch_size=batch_size, idempotent=upsert)
     with fetching_status("records for MongoDB export", study_key):
@@ -285,7 +285,7 @@ def export_neo4j(
         )
         raise typer.Exit(code=1)
 
-    from .. import Neo4jSinkConfig, export_to_neo4j
+    from imednet.integrations import Neo4jSinkConfig, export_to_neo4j
 
     cfg = Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
     with fetching_status("records for Neo4j export", study_key):
@@ -345,7 +345,7 @@ def export_snowflake(
         )
         raise typer.Exit(code=1)
 
-    from .. import SnowflakeSinkConfig, export_to_snowflake
+    from imednet.integrations import SnowflakeSinkConfig, export_to_snowflake
 
     cfg = SnowflakeSinkConfig(
         account=account,
@@ -357,8 +357,8 @@ def export_snowflake(
         stage=stage,
         table=table,
         stage_prefix=stage_prefix,
-        local_staging_dir=str(local_staging_dir) if local_staging_dir else None,
-        manifest_path=str(manifest_path) if manifest_path else None,
+        local_staging_dir=local_staging_dir,
+        manifest_path=manifest_path,
         batch_size=batch_size,
         idempotent=idempotent,
     )

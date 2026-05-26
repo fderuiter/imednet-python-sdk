@@ -660,17 +660,51 @@ class TestExportConvenienceFunctions:
         assert written == 3
         assert [c[1] for c in created[0].calls] == ["STUDY1/records/0", "STUDY1/records/1"]
 
+    def test_export_to_mongodb_propagates_batch_error(self, monkeypatch):
+        import imednet.integrations.document as doc_mod
+
+        class FakeSink:
+            def __init__(self, *args, config=None, **kwargs):
+                self.config = config if config is not None else SinkConfig()
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def write_batch(self, records, *, batch_id: str) -> int:
+                raise ExportBatchError("failed", batch_id=batch_id)
+
+        monkeypatch.setattr(doc_mod, "MongoDbExportSink", FakeSink)
+        sdk = MagicMock()
+        sdk.records.list.return_value = [MagicMock(record_id=1)]
+
+        with pytest.raises(ExportBatchError, match="failed"):
+            doc_mod.export_to_mongodb(
+                sdk,
+                "STUDY1",
+                "mongodb://localhost:27017",
+                "db",
+                "records",
+                config=SinkConfig(batch_size=1),
+            )
+
     def test_export_to_neo4j_batches_records(self, monkeypatch):
         import imednet.integrations.graph as graph_mod
         from imednet.integrations.graph import Neo4jSinkConfig
 
         created = []
+        init_args = {}
 
         class FakeSink:
-            def __init__(self, *args, config=None, **kwargs):
+            def __init__(self, uri, auth, study_key, *, config=None):
                 self.config = config if config is not None else SinkConfig()
                 self.calls = []
                 created.append(self)
+                init_args["uri"] = uri
+                init_args["auth"] = auth
+                init_args["study_key"] = study_key
 
             def __enter__(self):
                 return self
@@ -695,6 +729,7 @@ class TestExportConvenienceFunctions:
         )
 
         assert written == 4
+        assert init_args["auth"] == ("neo4j", "pass")
         assert [c[1] for c in created[0].calls] == ["STUDY2/records/0", "STUDY2/records/1"]
 
     def test_export_to_snowflake_batches_records(self, monkeypatch):
