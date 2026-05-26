@@ -15,7 +15,7 @@ class _FakeTable:
         self.columns.append((name, values))
         return self
 
-    def value_for_column(self, name: str) -> str:
+    def value_for_column(self, name: str) -> Any:
         for column_name, values in self.columns:
             if column_name == name:
                 return values[0]
