@@ -1,5 +1,6 @@
 """Integration helpers for exporting study data."""
 
+from .document import MongoDbExportSink
 from .export import (
     export_to_csv,
     export_to_duckdb,
@@ -11,10 +12,14 @@ from .export import (
     export_to_sql,
     export_to_sql_by_form,
 )
+from .graph import Neo4jExportSink, Neo4jSinkConfig
 from .parquet import export_to_hive_parquet, hive_parquet_query
 from .parquet_engine import PartitionedStorageEngine, PyArrowDatasetPartitionedStorageEngine
+from .sink_base import ExportSink, SinkConfig
+from .warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
 __all__ = [
+    # Tabular path
     "export_to_csv",
     "export_to_duckdb",
     "export_to_duckdb_by_form",
@@ -28,4 +33,14 @@ __all__ = [
     "hive_parquet_query",
     "PartitionedStorageEngine",
     "PyArrowDatasetPartitionedStorageEngine",
+    # Shared sink base
+    "SinkConfig",
+    "ExportSink",
+    # Structure-preserving sinks
+    "Neo4jExportSink",
+    "Neo4jSinkConfig",
+    "MongoDbExportSink",
+    # Warehouse sinks
+    "SnowflakeExportSink",
+    "SnowflakeSinkConfig",
 ]

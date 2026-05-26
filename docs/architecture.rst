@@ -183,3 +183,171 @@ Adding New Workflows
 * Instantiate the workflow in ``Workflows`` inside :mod:`imednet.sdk`.
 * Add CLI commands or examples that demonstrate the workflow.
 * Update documentation and tests.
+
+Export Sink Architecture
+------------------------
+
+The SDK supports three distinct export paths.  Choose the right path based
+on the shape of data you want to land at the destination.
+
+Export Path Decision Matrix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 35 45
+
+   * - Path
+     - When to use
+     - Key components
+   * - **Tabular**
+     - Destination is a flat/columnar store (CSV, Excel, SQL, DuckDB,
+       Parquet).  All variables for a form can be represented as columns.
+     - :class:`~imednet_workflows.record_mapper.RecordMapper` →
+       ``pandas.DataFrame`` → sink function in
+       :mod:`imednet.integrations.export`
+   * - **Structure-preserving**
+     - Destination models relationships natively (property graph,
+       document store).  The clinical hierarchy *Study → Subject → Visit
+       → Record* should be preserved.
+     - :class:`~imednet_workflows.data_extraction.DataExtractionWorkflow`
+       → typed :class:`~imednet.models.Record` list →
+       :class:`~imednet.integrations.graph.Neo4jExportSink` or
+       :class:`~imednet.integrations.document.MongoDbExportSink`
+   * - **Warehouse**
+     - Destination is a cloud data warehouse with a native bulk loader.
+       Records are staged as Parquet files and then COPY'd in a single
+       command for best throughput.
+     - :class:`~imednet_workflows.record_mapper.RecordMapper` →
+       Parquet staging →
+       :class:`~imednet.integrations.warehouse.SnowflakeExportSink`
+
+Data flow diagram
+~~~~~~~~~~~~~~~~~
+
+.. mermaid::
+
+   graph TD
+       SDK["ImednetSDK"] --> RM["RecordMapper (tabular)"]
+       SDK --> DEW["DataExtractionWorkflow (structured)"]
+
+       RM --> DF["pandas.DataFrame"]
+       DF --> T1["CSV / Excel / JSON"]
+       DF --> T2["SQL / DuckDB"]
+       DF --> T3["Parquet (local)"]
+
+       DEW --> REC["Typed Record list"]
+       REC --> G["Neo4jExportSink"]
+       REC --> D["MongoDbExportSink"]
+
+       T3 --> W["SnowflakeExportSink (COPY INTO)"]
+
+Shared ``ExportSink`` contract
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All non-tabular sinks subclass
+:class:`~imednet.integrations.sink_base.ExportSink` and must implement
+three methods:
+
+``write_batch(records, *, batch_id) -> int``
+    Write one batch to the destination.  The ``batch_id`` is a
+    caller-supplied idempotency key in the format
+    ``"<study_key>/<form_key>/<batch_n>"``.  Returns the number of
+    records written.
+
+``flush() -> None``
+    Flush any internal buffers.
+
+``close() -> None``
+    Release all held resources.  Must be idempotent.
+
+Sinks are used as context managers; ``flush`` is called automatically on
+clean exit and ``close`` is always called via ``__exit__``.
+
+Shared :class:`~imednet.integrations.sink_base.SinkConfig` fields:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 15 55
+
+   * - Field
+     - Default
+     - Description
+   * - ``batch_size``
+     - 500
+     - Records per :meth:`write_batch` call.
+   * - ``max_retries``
+     - 3
+     - Retry attempts on transient errors.
+   * - ``retry_backoff``
+     - 1.0
+     - Base delay (seconds); grows as ``backoff * 2^attempt``.
+   * - ``idempotent``
+     - ``True``
+     - Use upsert / MERGE / FORCE=FALSE semantics.
+
+Error propagation
+~~~~~~~~~~~~~~~~~
+
+* Transient errors are retried up to ``max_retries`` times with
+  exponential back-off.
+* After all retries are exhausted, sinks raise
+  :class:`~imednet.errors.ExportBatchError` (carries ``batch_id``) so
+  that callers can log and resume partial exports.
+* Misconfiguration (missing credentials, invalid URIs) raises
+  :class:`~imednet.errors.ExportConfigurationError` immediately before
+  any data is written.
+* Credentials and connection URIs are never written to logs.  Pass URIs
+  through :func:`~imednet.integrations.sink_base._redact_uri` before
+  logging them.
+
+Optional dependency conventions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each sink module calls
+:func:`~imednet.integrations.sink_base._require_optional_dep` at
+*connection time* (not at import time).  This means:
+
+* ``import imednet.integrations.graph`` never raises even when
+  ``neo4j`` is not installed.
+* The error is raised when the first sink instance is created.
+* The error message tells the user which ``imednet[<extra>]`` to install.
+
+Extras naming:
+
+.. code-block:: console
+
+   pip install 'imednet[neo4j]'       # Neo4j driver
+   pip install 'imednet[mongodb]'     # PyMongo client
+   pip install 'imednet[snowflake]'   # Snowflake connector + pyarrow
+   pip install 'imednet[export]'      # Tabular path (pandas, SQL, Parquet, DuckDB)
+
+Public API exposure
+~~~~~~~~~~~~~~~~~~~
+
+* :mod:`imednet.integrations` re-exports all tabular helpers and all three
+  new sink classes (backward-compatible).
+* Graph/document/warehouse sinks can also be imported directly from their
+  submodules:
+
+  * :mod:`imednet.integrations.graph`
+  * :mod:`imednet.integrations.document`
+  * :mod:`imednet.integrations.warehouse`
+
+* :mod:`apache_airflow_providers_imednet.export` wraps **only** the
+  tabular helpers.  Airflow DAGs that need graph or warehouse sinks should
+  import them directly from ``imednet.integrations``.
+
+Adding New Export Sinks
+~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Create a module under ``packages/core/src/imednet/integrations/``.
+2. Subclass :class:`~imednet.integrations.sink_base.ExportSink` and
+   implement ``write_batch``, ``flush``, and ``close``.
+3. Call :func:`~imednet.integrations.sink_base._require_optional_dep`
+   inside the constructor (not at module level).
+4. Add the optional dependency to ``packages/core/pyproject.toml`` and
+   define a new ``[tool.poetry.extras]`` key.
+5. Re-export the new class from :mod:`imednet.integrations`.
+6. Add unit tests; run ``pytest --cov=imednet.integrations``.
+
