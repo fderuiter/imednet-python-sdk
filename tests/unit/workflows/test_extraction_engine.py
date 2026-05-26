@@ -104,7 +104,7 @@ def test_extract_canonical_records_maps_ae_pd_dd_and_collects_row_errors() -> No
                     "term": "Missed visit",
                     "category": "PROCEDURE",
                     "severity": "MAJOR",
-                    "date": "not-a-date",
+                    "date": "invalid-date-format",
                 }
             },
         ),
@@ -147,7 +147,7 @@ def test_extract_canonical_records_maps_ae_pd_dd_and_collects_row_errors() -> No
     assert error["recordId"] == 2
     assert error["formKey"] == "PD_FORM"
     assert error["domain"] == "PD"
-    assert error["payload"]["dvDate"] == "not-a-date"
+    assert error["payload"]["dvDate"] == "invalid-date-format"
 
 
 def test_extract_canonical_records_uses_fallback_values() -> None:
