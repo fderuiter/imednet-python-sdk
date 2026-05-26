@@ -342,8 +342,8 @@ class TestMongoDbExportSink:
         with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "S1", config=cfg) as sink:
             with pytest.raises(ExportBatchError, match="S1/F1/0"):
                 records = [
-                MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
-            ]
+                    MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
+                ]
                 sink.write_batch(records, batch_id="S1/F1/0")
 
     def test_document_id_format(self):

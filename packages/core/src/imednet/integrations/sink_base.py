@@ -217,7 +217,7 @@ class ExportSink(ABC):
 # ---------------------------------------------------------------------------
 
 # Regex that matches the user-info component of a URI
-# e.g.  ******host  ->  mongodb://***@host
+# e.g.  mongodb://user:pass@host  ->  mongodb://***@host
 _URI_USERINFO_RE = re.compile(r"(://)[^@/]+@")
 
 
@@ -226,7 +226,7 @@ def _redact_uri(uri: str) -> str:
 
     Examples
     --------
-    >>> _redact_uri("******localhost:27017/db")
+    >>> _redact_uri("mongodb://user:pass@localhost:27017/db")
     'mongodb://***@localhost:27017/db'
     >>> _redact_uri("neo4j+s://bolt.example.com")
     'neo4j+s://bolt.example.com'

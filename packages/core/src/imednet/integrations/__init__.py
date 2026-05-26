@@ -14,7 +14,7 @@ from .export import (
 )
 from .graph import Neo4jExportSink, Neo4jSinkConfig
 from .parquet import export_to_hive_parquet, hive_parquet_query
-from .sink_base import ExportSink, SinkConfig, _redact_uri, _require_optional_dep
+from .sink_base import ExportSink, SinkConfig
 from .warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
 __all__ = [
@@ -33,8 +33,6 @@ __all__ = [
     # Shared sink base
     "SinkConfig",
     "ExportSink",
-    "_redact_uri",
-    "_require_optional_dep",
     # Structure-preserving sinks
     "Neo4jExportSink",
     "Neo4jSinkConfig",
