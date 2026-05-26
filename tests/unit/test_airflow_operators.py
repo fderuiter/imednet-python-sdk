@@ -148,6 +148,22 @@ def test_to_s3_operator_missing_list(monkeypatch):
     hook_inst.get_conn.assert_called_once_with()
 
 
+def test_to_s3_operator_requires_amazon_extra(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    hooks_mod = sys.modules["airflow.providers.amazon.aws.hooks"]
+    monkeypatch.delitem(sys.modules, "airflow.providers.amazon.aws.hooks.s3", raising=False)
+    if hasattr(hooks_mod, "s3"):
+        monkeypatch.delattr(hooks_mod, "s3", raising=False)
+
+    import apache_airflow_providers_imednet.operators.to_s3 as to_s3_ops
+
+    importlib.reload(to_s3_ops)
+
+    with pytest.raises(ImportError, match=r"apache-airflow-providers-imednet\[amazon\]"):
+        to_s3_ops.S3Hook()
+
+
 def test_job_sensor(monkeypatch):
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.operators as ops
