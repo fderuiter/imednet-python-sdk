@@ -14,13 +14,19 @@ carries the metadata needed to locate and de-duplicate it:
 
     {
         "_id": "<study_key>/<record_id>",
-        "study_key":   "MYSTUDY",
-        "subject_key": "SUBJ-001",
-        "visit_id":    42,
-        "form_id":     7,
-        "record_id":   1234,
-        "record_data": { "var1": "value1", "var2": 99 },
-        "exported_at": "2024-01-15T12:00:00Z"
+        "study_key":     "MYSTUDY",
+        "record_id":     1234,
+        "subject_id":    99,
+        "subject_key":   "SUBJ-001",
+        "visit_id":      42,
+        "form_id":       7,
+        "form_key":      "BASELINE",
+        "record_status": "Complete",
+        "deleted":       false,
+        "date_created":  "2024-01-01T08:00:00Z",
+        "date_modified": "2024-01-15T12:00:00Z",
+        "record_data":   { "var1": "value1", "var2": 99 },
+        "exported_at":   "2024-01-15T12:00:00Z"
     }
 
 The ``_id`` field is a composite key ``<study_key>/<record_id>`` which
@@ -84,10 +90,16 @@ def _record_to_document(record: Any, study_key: str) -> dict[str, Any]:
     return {
         "_id": _make_document_id(study_key, record_id),
         "study_key": study_key,
+        "record_id": record_id,
+        "subject_id": getattr(record, "subject_id", None),
         "subject_key": getattr(record, "subject_key", None),
         "visit_id": getattr(record, "visit_id", None),
         "form_id": getattr(record, "form_id", None),
-        "record_id": record_id,
+        "form_key": getattr(record, "form_key", None),
+        "record_status": getattr(record, "record_status", None),
+        "deleted": getattr(record, "deleted", None),
+        "date_created": getattr(record, "date_created", None),
+        "date_modified": getattr(record, "date_modified", None),
         "record_data": dict(getattr(record, "record_data", {}) or {}),
         "exported_at": datetime.now(tz=timezone.utc).isoformat(),
     }
@@ -154,7 +166,8 @@ class MongoDbExportSink(ExportSink):
             self._collection = db[self._collection_name]
         except Exception as exc:
             raise ExportConfigurationError(
-                f"Cannot connect to MongoDB at {redacted}: {exc}"
+                f"Cannot connect to MongoDB at {redacted}. "
+                f"Driver error type: {type(exc).__name__}"
             ) from exc
 
     # ------------------------------------------------------------------
@@ -194,7 +207,7 @@ class MongoDbExportSink(ExportSink):
                         for doc in docs
                     ]
                     result = self._collection.bulk_write(ops, ordered=False)
-                    written = result.upserted_count + result.modified_count
+                    written = len(docs)
                 else:
                     result = self._collection.insert_many(docs, ordered=False)
                     written = len(result.inserted_ids)
