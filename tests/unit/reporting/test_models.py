@@ -32,13 +32,13 @@ def test_protocol_deviation_applies_defaults_and_parses_datetime_timestamp() -> 
             "dvTerm": "Missed visit",
             "dvCategory": "PROCEDURE",
             "dvSeverity": "MAJOR",
-            "dvDate": 0,
+            "dvDate": 1705309200,
         }
     )
 
     assert model.subject_key == "77"
     assert model.dv_status == "Unreviewed"
-    assert model.dv_date == datetime(1970, 1, 1, 0, 0, tzinfo=timezone.utc)
+    assert model.dv_date == datetime(2024, 1, 15, 9, 0, tzinfo=timezone.utc)
 
 
 def test_device_deficiency_parses_valid_input() -> None:
@@ -62,9 +62,21 @@ def test_device_deficiency_parses_valid_input() -> None:
         (AdverseEvent, {"aeTerm": "Headache", "aeSeverity": "MILD"}),
         (
             ProtocolDeviation,
-            {"subjectKey": "SUBJ-1", "dvCategory": "PROCEDURE", "dvSeverity": "MAJOR", "dvDate": 0},
+            {
+                "subjectKey": "SUBJ-1",
+                "dvCategory": "PROCEDURE",
+                "dvSeverity": "MAJOR",
+                "dvDate": "2024-01-15T09:00:00+00:00",
+            },
         ),
-        (DeviceDeficiency, {"subjectKey": "SUBJ-1", "ddTerm": "Battery failed", "ddDate": 0}),
+        (
+            DeviceDeficiency,
+            {
+                "subjectKey": "SUBJ-1",
+                "ddTerm": "Battery failed",
+                "ddDate": "2024-01-15T09:00:00+00:00",
+            },
+        ),
     ],
 )
 def test_reporting_models_reject_missing_required_fields(model_cls: type, payload: dict) -> None:
