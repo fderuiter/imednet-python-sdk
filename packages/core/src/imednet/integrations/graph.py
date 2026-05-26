@@ -175,9 +175,7 @@ class Neo4jExportSink(ExportSink):
             self._driver = neo4j_mod.GraphDatabase.driver(self._uri, auth=self._auth)
             self._driver.verify_connectivity()
         except Exception as exc:
-            raise ExportConfigurationError(
-                f"Cannot connect to Neo4j at {redacted}: {exc}"
-            ) from exc
+            raise ExportConfigurationError(f"Cannot connect to Neo4j at {redacted}: {exc}") from exc
 
     # ------------------------------------------------------------------
     # ExportSink interface

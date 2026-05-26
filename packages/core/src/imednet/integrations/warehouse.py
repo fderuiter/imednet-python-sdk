@@ -193,9 +193,7 @@ class SnowflakeExportSink(ExportSink):
             )
 
         snowflake = _require_optional_dep("snowflake.connector", "snowflake")
-        logger.debug(
-            "Connecting to Snowflake account=%s database=%s", cfg.account, cfg.database
-        )
+        logger.debug("Connecting to Snowflake account=%s database=%s", cfg.account, cfg.database)
         try:
             self._conn = snowflake.connect(
                 account=cfg.account,
