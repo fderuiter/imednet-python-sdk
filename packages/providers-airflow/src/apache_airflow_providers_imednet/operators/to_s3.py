@@ -10,7 +10,7 @@ from .._airflow_compat import AirflowException, Context
 _MISSING_AMAZON_PROVIDER_MESSAGE = (
     "apache-airflow-providers-amazon package is required for "
     "ImednetToS3Operator. Install with: "
-    "pip install apache-airflow-providers-amazon"
+    'pip install "apache-airflow-providers-imednet[amazon]"'
 )
 
 try:  # pragma: no cover - optional Airflow dependency
