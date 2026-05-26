@@ -14,6 +14,7 @@ from .export import (
 )
 from .graph import Neo4jExportSink, Neo4jSinkConfig
 from .parquet import export_to_hive_parquet, hive_parquet_query
+from .parquet_engine import PartitionedStorageEngine, PyArrowDatasetPartitionedStorageEngine
 from .sink_base import ExportSink, SinkConfig
 from .warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
@@ -30,6 +31,8 @@ __all__ = [
     "export_to_sql_by_form",
     "export_to_sql",
     "hive_parquet_query",
+    "PartitionedStorageEngine",
+    "PyArrowDatasetPartitionedStorageEngine",
     # Shared sink base
     "SinkConfig",
     "ExportSink",
