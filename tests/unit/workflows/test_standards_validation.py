@@ -1,7 +1,10 @@
 import pytest
 
 from imednet.models.standards import DrugSafetyProfile
-from imednet_workflows.standards_validation import CategoricalNormalizer, StandardsReadinessValidator
+from imednet_workflows.standards_validation import (
+    CategoricalNormalizer,
+    StandardsReadinessValidator,
+)
 
 
 def test_categorical_normalizer_translates_lookup_values_and_yes_no_booleans() -> None:

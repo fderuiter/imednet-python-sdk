@@ -64,7 +64,18 @@ class CategoricalNormalizer:
             stripped_value = raw_value.strip()
             if stripped_value:
                 parsed_bool = parse_bool(stripped_value)
-                if stripped_value.lower() in {"true", "false", "1", "0", "yes", "no", "y", "n", "t", "f"}:
+                if stripped_value.lower() in {
+                    "true",
+                    "false",
+                    "1",
+                    "0",
+                    "yes",
+                    "no",
+                    "y",
+                    "n",
+                    "t",
+                    "f",
+                }:
                     return parsed_bool, None
 
         return raw_value, None
