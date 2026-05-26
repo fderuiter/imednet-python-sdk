@@ -418,4 +418,4 @@ def test_setup_wizard_save_local_reports_oserror(monkeypatch: Any, tmp_path: Pat
 
     _run_setup_wizard(fake_st)
 
-    assert fake_st.error_calls[-1] == "Unable to save configuration locally (OSError)."
+    assert fake_st.error_calls[-1] == "Unable to save configuration locally."

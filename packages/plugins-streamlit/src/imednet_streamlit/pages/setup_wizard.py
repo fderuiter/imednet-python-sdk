@@ -459,8 +459,8 @@ def _step_export(study_key: str) -> None:
             safe_study_key = _sanitise_study_key(study_key)
             output_file = output_dir / f"{safe_study_key}_study_configuration.json"
             output_file.write_text(payload, encoding="utf-8")
-        except OSError as exc:  # pragma: no cover - defensive runtime UI handling
-            st.error(f"Unable to save configuration locally ({type(exc).__name__}).")
+        except OSError:  # pragma: no cover - defensive runtime UI handling
+            st.error("Unable to save configuration locally.")
             return
         st.success(f"Saved to {output_file}")
 
