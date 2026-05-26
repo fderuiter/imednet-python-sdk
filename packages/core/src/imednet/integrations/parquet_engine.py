@@ -6,6 +6,7 @@ import os
 import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from errno import ENOENT, ENOTEMPTY
 from importlib import import_module
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
@@ -132,14 +133,16 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
                 )
 
             final_partition_dir.mkdir(parents=True, exist_ok=True)
+            # Atomic rename ensures readers only observe fully committed batches.
             os.replace(staged_partition_dir, committed_batch_dir)
         finally:
             shutil.rmtree(staging_base_dir, ignore_errors=True)
             if staging_root.exists():
                 try:
                     staging_root.rmdir()
-                except OSError:
-                    pass
+                except OSError as error:
+                    if error.errno not in (ENOENT, ENOTEMPTY):
+                        raise
 
 
 __all__ = ["PartitionedStorageEngine", "PyArrowDatasetPartitionedStorageEngine"]

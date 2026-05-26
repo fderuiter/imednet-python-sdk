@@ -95,7 +95,8 @@ def test_pyarrow_dataset_partitioned_storage_engine_defaults(
         ("study_key", ["STUDY_A", "STUDY_A"]),
         ("form_key", ["DEMOGRAPHICS", "DEMOGRAPHICS"]),
     ]
-    assert list((tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS").glob("**/*.parquet"))
+    files = list((tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS").glob("**/*.parquet"))
+    assert len(files) >= 1
 
 
 def test_pyarrow_dataset_partitioned_storage_engine_cleans_staging_on_failure(

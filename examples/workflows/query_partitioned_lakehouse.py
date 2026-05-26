@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import os
+
 import duckdb
 
 from imednet.integrations.parquet import hive_parquet_query
 
-base_dir = "/path/to/lakehouse"
+base_dir = os.getenv("IMEDNET_LAKEHOUSE_DIR", "/tmp/lakehouse")
 
 query = (
     "SELECT study_key, form_key, COUNT(*) AS row_count "
