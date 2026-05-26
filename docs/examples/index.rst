@@ -39,3 +39,4 @@ Advanced
    custom_retry
    export_long_sql
    multi_study_pipeline
+   query_partitioned_lakehouse

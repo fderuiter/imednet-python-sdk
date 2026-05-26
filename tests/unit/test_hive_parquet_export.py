@@ -10,7 +10,7 @@ import imednet.integrations.parquet as parquet_mod
 
 
 def _read_partition_dataframe(path: Path) -> pd.DataFrame:
-    parquet_files = sorted(path.glob("*.parquet"))
+    parquet_files = sorted(path.glob("**/*.parquet"))
     assert parquet_files
     return pd.read_parquet(parquet_files[0], engine="pyarrow")
 
