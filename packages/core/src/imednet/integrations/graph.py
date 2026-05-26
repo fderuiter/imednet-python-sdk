@@ -61,8 +61,9 @@ from dataclasses import dataclass
 from typing import Any, Optional, Sequence, Tuple
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.sdk import ImednetSDK
 
-from .sink_base import ExportSink, SinkConfig, _redact_uri, _require_optional_dep
+from .sink_base import ExportSink, SinkConfig, _redact_uri, _require_optional_dep, iter_batches
 
 logger = logging.getLogger(__name__)
 
@@ -241,4 +242,22 @@ class Neo4jExportSink(ExportSink):
                 self._driver = None
 
 
-__all__ = ["Neo4jExportSink", "Neo4jSinkConfig"]
+def export_to_neo4j(
+    sdk: ImednetSDK,
+    study_key: str,
+    uri: str,
+    auth: Tuple[str, str],
+    *,
+    config: Optional[SinkConfig] = None,
+) -> int:
+    """Export study records to Neo4j using :class:`Neo4jExportSink`."""
+    cfg = config if config is not None else Neo4jSinkConfig()
+    records = sdk.records.list(study_key=study_key, record_data_filter=None)
+    total_written = 0
+    with Neo4jExportSink(uri, auth, study_key, config=cfg) as sink:
+        for index, batch in enumerate(iter_batches(records, cfg.batch_size)):
+            total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
+    return total_written
+
+
+__all__ = ["Neo4jExportSink", "Neo4jSinkConfig", "export_to_neo4j"]

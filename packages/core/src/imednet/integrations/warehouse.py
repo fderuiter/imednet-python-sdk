@@ -75,8 +75,9 @@ from pathlib import Path
 from typing import Any, Optional, Sequence
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.sdk import ImednetSDK
 
-from .sink_base import ExportSink, SinkConfig, _require_optional_dep
+from .sink_base import ExportSink, SinkConfig, _require_optional_dep, iter_batches
 
 logger = logging.getLogger(__name__)
 
@@ -327,4 +328,19 @@ class SnowflakeExportSink(ExportSink):
             f.write(json.dumps(entry) + os.linesep)
 
 
-__all__ = ["SnowflakeExportSink", "SnowflakeSinkConfig"]
+def export_to_snowflake(
+    sdk: ImednetSDK,
+    study_key: str,
+    *,
+    config: SnowflakeSinkConfig,
+) -> int:
+    """Export study records to Snowflake using :class:`SnowflakeExportSink`."""
+    records = sdk.records.list(study_key=study_key, record_data_filter=None)
+    total_written = 0
+    with SnowflakeExportSink(config=config) as sink:
+        for index, batch in enumerate(iter_batches(records, config.batch_size)):
+            total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
+    return total_written
+
+
+__all__ = ["SnowflakeExportSink", "SnowflakeSinkConfig", "export_to_snowflake"]

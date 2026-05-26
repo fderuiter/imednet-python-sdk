@@ -66,8 +66,9 @@ from datetime import datetime, timezone
 from typing import Any, Optional, Sequence
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.sdk import ImednetSDK
 
-from .sink_base import ExportSink, SinkConfig, _redact_uri, _require_optional_dep
+from .sink_base import ExportSink, SinkConfig, _redact_uri, _require_optional_dep, iter_batches
 
 logger = logging.getLogger(__name__)
 
@@ -232,4 +233,23 @@ class MongoDbExportSink(ExportSink):
                 self._collection = None
 
 
-__all__ = ["MongoDbExportSink"]
+def export_to_mongodb(
+    sdk: ImednetSDK,
+    study_key: str,
+    uri: str,
+    database: str,
+    collection: str,
+    *,
+    config: Optional[SinkConfig] = None,
+) -> int:
+    """Export study records to MongoDB using :class:`MongoDbExportSink`."""
+    cfg = config if config is not None else SinkConfig()
+    records = sdk.records.list(study_key=study_key, record_data_filter=None)
+    total_written = 0
+    with MongoDbExportSink(uri, database, collection, study_key, config=cfg) as sink:
+        for index, batch in enumerate(iter_batches(records, cfg.batch_size)):
+            total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
+    return total_written
+
+
+__all__ = ["MongoDbExportSink", "export_to_mongodb"]

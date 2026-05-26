@@ -76,7 +76,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import TracebackType
-from typing import Any, Optional, Sequence, Type
+from typing import Any, Iterator, Optional, Sequence, Type
 
 logger = logging.getLogger(__name__)
 
@@ -266,9 +266,18 @@ def _require_optional_dep(package: str, extras_key: str) -> Any:
         raise
 
 
+def iter_batches(records: Sequence[Any], batch_size: int) -> Iterator[Sequence[Any]]:
+    """Yield ``records`` in chunks of ``batch_size``."""
+    if batch_size <= 0:
+        raise ValueError("batch_size must be greater than 0")
+    for start in range(0, len(records), batch_size):
+        yield records[start : start + batch_size]
+
+
 __all__ = [
     "SinkConfig",
     "ExportSink",
+    "iter_batches",
     "_redact_uri",
     "_require_optional_dep",
 ]

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+from typing import Optional
 
 import typer
 from rich import print
@@ -215,3 +216,155 @@ def export_sql(
                 variable_whitelist=var_list,
                 form_whitelist=form_list,
             )
+
+
+@app.command("mongodb")
+@with_sdk
+def export_mongodb(
+    sdk: ImednetSDK,
+    study_key: str = STUDY_KEY_ARG,
+    uri: str = typer.Argument(..., help="MongoDB connection URI."),
+    database: str = typer.Argument(..., help="MongoDB database name."),
+    collection: str = typer.Argument(..., help="MongoDB collection name."),
+    batch_size: int = typer.Option(500, "--batch-size", min=1, help="Records per batch."),
+    upsert: bool = typer.Option(
+        True,
+        "--upsert/--insert-only",
+        help="Use idempotent upserts (default) or insert-only mode.",
+    ),
+) -> None:
+    """Export study records to MongoDB document envelopes."""
+    if importlib.util.find_spec("pymongo") is None:
+        print(
+            "[bold red]Error:[/bold red] "
+            + escape(
+                "pymongo is required for MongoDB export. "
+                "Install with \"pip install 'imednet[mongodb]'\"."
+            )
+        )
+        raise typer.Exit(code=1)
+
+    from .. import SinkConfig, export_to_mongodb
+
+    cfg = SinkConfig(batch_size=batch_size, idempotent=upsert)
+    with fetching_status("records for MongoDB export", study_key):
+        export_to_mongodb(
+            sdk,
+            study_key,
+            uri,
+            database,
+            collection,
+            config=cfg,
+        )
+
+
+@app.command("neo4j")
+@with_sdk
+def export_neo4j(
+    sdk: ImednetSDK,
+    study_key: str = STUDY_KEY_ARG,
+    uri: str = typer.Argument(..., help="Neo4j URI (bolt:// or neo4j+s://)."),
+    username: str = typer.Argument(..., help="Neo4j username."),
+    password: str = typer.Argument(..., help="Neo4j password."),
+    database: str = typer.Option("neo4j", "--database", help="Neo4j database name."),
+    batch_size: int = typer.Option(500, "--batch-size", min=1, help="Records per batch."),
+    merge: bool = typer.Option(
+        True,
+        "--merge/--create-only",
+        help="Use idempotent MERGE semantics (default) or CREATE-only writes.",
+    ),
+) -> None:
+    """Export study records to Neo4j nodes and relationships."""
+    if importlib.util.find_spec("neo4j") is None:
+        print(
+            "[bold red]Error:[/bold red] "
+            + escape(
+                "neo4j is required for Neo4j export. "
+                "Install with \"pip install 'imednet[neo4j]'\"."
+            )
+        )
+        raise typer.Exit(code=1)
+
+    from .. import Neo4jSinkConfig, export_to_neo4j
+
+    cfg = Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
+    with fetching_status("records for Neo4j export", study_key):
+        export_to_neo4j(
+            sdk,
+            study_key,
+            uri,
+            (username, password),
+            config=cfg,
+        )
+
+
+@app.command("snowflake")
+@with_sdk
+def export_snowflake(
+    sdk: ImednetSDK,
+    study_key: str = STUDY_KEY_ARG,
+    account: str = typer.Argument(..., help="Snowflake account identifier."),
+    user: str = typer.Argument(..., help="Snowflake username."),
+    password: str = typer.Argument(..., help="Snowflake password."),
+    database: str = typer.Argument(..., help="Target Snowflake database."),
+    schema: str = typer.Argument(..., help="Target Snowflake schema."),
+    warehouse: str = typer.Argument(..., help="Snowflake warehouse."),
+    stage: str = typer.Argument(..., help="Internal stage name."),
+    table: str = typer.Argument(..., help="Target table name."),
+    stage_prefix: str = typer.Option("imednet", "--stage-prefix", help="Path prefix in stage."),
+    local_staging_dir: Optional[Path] = typer.Option(
+        None, "--local-staging-dir", help="Local directory for staged Parquet files."
+    ),
+    manifest_path: Optional[Path] = typer.Option(
+        None, "--manifest-path", help="Optional JSONL manifest output path."
+    ),
+    batch_size: int = typer.Option(500, "--batch-size", min=1, help="Records per batch."),
+    idempotent: bool = typer.Option(
+        True,
+        "--idempotent/--force-reload",
+        help="Skip already-loaded files (default) or force reloading.",
+    ),
+) -> None:
+    """Export study records to Snowflake using staged Parquet + COPY INTO."""
+    if importlib.util.find_spec("snowflake.connector") is None:
+        print(
+            "[bold red]Error:[/bold red] "
+            + escape(
+                "snowflake-connector-python is required for Snowflake export. "
+                "Install with \"pip install 'imednet[snowflake]'\"."
+            )
+        )
+        raise typer.Exit(code=1)
+    if importlib.util.find_spec("pyarrow") is None:
+        print(
+            "[bold red]Error:[/bold red] "
+            + escape(
+                "pyarrow is required for Snowflake export. "
+                "Install with \"pip install 'imednet[snowflake]'\"."
+            )
+        )
+        raise typer.Exit(code=1)
+
+    from .. import SnowflakeSinkConfig, export_to_snowflake
+
+    cfg = SnowflakeSinkConfig(
+        account=account,
+        user=user,
+        password=password,
+        database=database,
+        schema=schema,
+        warehouse=warehouse,
+        stage=stage,
+        table=table,
+        stage_prefix=stage_prefix,
+        local_staging_dir=str(local_staging_dir) if local_staging_dir else None,
+        manifest_path=str(manifest_path) if manifest_path else None,
+        batch_size=batch_size,
+        idempotent=idempotent,
+    )
+    with fetching_status("records for Snowflake export", study_key):
+        export_to_snowflake(
+            sdk,
+            study_key,
+            config=cfg,
+        )

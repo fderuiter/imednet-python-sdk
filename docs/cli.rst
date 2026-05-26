@@ -37,6 +37,9 @@ Command Hierarchy
        F --> F2(csv)
        F --> F3(excel)
        F --> F4(json)
+       F --> F5(mongodb)
+       F --> F6(neo4j)
+       F --> F7(snowflake)
        A --> G(jobs)
        A --> H(queries)
        A --> I(variables)
@@ -61,6 +64,9 @@ Available Commands
    imednet jobs wait <STUDY_KEY> <BATCH_ID> [--interval N] [--timeout N]
    imednet subject-data <STUDY_KEY> <SUBJECT_KEY>
    imednet export sql <STUDY_KEY> table sqlite:///data.db [options]
+   imednet export mongodb <STUDY_KEY> mongodb://localhost:27017 db collection [options]
+   imednet export neo4j <STUDY_KEY> bolt://localhost:7687 neo4j password [options]
+   imednet export snowflake <STUDY_KEY> account user password DB PUBLIC WH STAGE TABLE [options]
    imednet workflows extract-records <STUDY_KEY> [options]
 
 Examples
@@ -119,6 +125,26 @@ from iMednet. Both options accept comma-separated values.
 .. code-block:: console
 
    imednet export sql MY_STUDY table sqlite:///test.db --vars AGE,SEX --forms 10,20
+
+Document / Graph / Warehouse Exports
+------------------------------------
+
+The ``export`` command group also includes structure-preserving and warehouse-native
+destinations:
+
+.. code-block:: console
+
+   imednet export mongodb MY_STUDY mongodb://localhost:27017 imednet records --batch-size 500
+   imednet export neo4j MY_STUDY bolt://localhost:7687 neo4j "$NEO4J_PASSWORD" --database neo4j
+   imednet export snowflake MY_STUDY acct user "$SNOWFLAKE_PASSWORD" DB PUBLIC WH STAGE TABLE
+
+Optional dependency guidance:
+
+.. code-block:: console
+
+   pip install "imednet[mongodb]"
+   pip install "imednet[neo4j]"
+   pip install "imednet[snowflake]"
 
 Jobs
 ----
