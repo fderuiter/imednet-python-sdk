@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import runpy
+import importlib.util
 import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -281,7 +281,12 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
         sys.modules["imednet_streamlit.components"] = fake_components_module
         sys.modules["imednet_workflows.extraction_engine"] = fake_extraction_module
         sys.modules["imednet_workflows.query_management"] = fake_query_workflow_module
-        runpy.run_path(str(PAGE_PATH), run_name="__main__")
+        module_name = "imednet_streamlit.pages.reporting_dashboard"
+        module_spec = importlib.util.spec_from_file_location(module_name, PAGE_PATH)
+        assert module_spec is not None and module_spec.loader is not None
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
     finally:
         for key, value in saved.items():
             if value is None:
