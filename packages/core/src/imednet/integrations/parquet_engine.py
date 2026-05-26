@@ -66,9 +66,7 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
                 b"imednet.commit_id": commit_id.encode("utf-8"),
                 b"imednet.study_key": study_key.encode("utf-8"),
                 b"imednet.form_key": form_key.encode("utf-8"),
-                b"imednet.written_at_utc": datetime.now(timezone.utc)
-                .isoformat()
-                .encode("utf-8"),
+                b"imednet.written_at_utc": datetime.now(timezone.utc).isoformat().encode("utf-8"),
             }
         )
         return table.replace_schema_metadata(existing_metadata)

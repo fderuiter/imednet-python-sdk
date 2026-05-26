@@ -154,12 +154,16 @@ def test_pyarrow_dataset_partitioned_storage_engine_schema_drift_duckdb(
     assert metadata[b"imednet.writer"] == b"pyarrow.dataset"
     assert b"imednet.commit_id" in metadata
 
-    rows = duckdb.connect(":memory:").execute(
-        "SELECT id, age, weight, study_key, form_key "
-        "FROM read_parquet(?, hive_partitioning=true, union_by_name=true) "
-        "ORDER BY id",
-        [str(tmp_path / "**/*.parquet")],
-    ).fetchall()
+    rows = (
+        duckdb.connect(":memory:")
+        .execute(
+            "SELECT id, age, weight, study_key, form_key "
+            "FROM read_parquet(?, hive_partitioning=true, union_by_name=true) "
+            "ORDER BY id",
+            [str(tmp_path / "**/*.parquet")],
+        )
+        .fetchall()
+    )
     assert rows == [
         (1, 42, None, "STUDY_A", "DEMOGRAPHICS"),
         (2, None, 73.5, "STUDY_A", "DEMOGRAPHICS"),
