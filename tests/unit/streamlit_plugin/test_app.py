@@ -116,4 +116,5 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
         "pages/enrollment.py",
         "pages/sites.py",
         "pages/records.py",
+        "pages/setup_wizard.py",
     ]

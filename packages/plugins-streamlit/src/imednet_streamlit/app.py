@@ -18,9 +18,12 @@ queries_page = st.Page("pages/queries.py", title="Query Status", icon="🔍")
 enrollment_page = st.Page("pages/enrollment.py", title="Subject Enrollment", icon="👥")
 sites_page = st.Page("pages/sites.py", title="Site Performance", icon="🏥")
 records_page = st.Page("pages/records.py", title="Data Completeness", icon="📋")
+setup_wizard_page = st.Page("pages/setup_wizard.py", title="Setup Wizard", icon="🧭")
 
 if is_connected:
-    nav = st.navigation([home_page, queries_page, enrollment_page, sites_page, records_page])
+    nav = st.navigation(
+        [home_page, queries_page, enrollment_page, sites_page, records_page, setup_wizard_page]
+    )
 else:
     nav = st.navigation([home_page])
 
