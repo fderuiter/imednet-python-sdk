@@ -42,6 +42,7 @@ from imednet.models.studies import Study
 from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
 from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
 from imednet.models.subjects import Subject, SubjectKeyword
+from imednet.models.triage import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
 from imednet.models.users import Role, User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
@@ -102,6 +103,10 @@ __all__: list[str] = [
     "Variable",
     "Visit",
     "WidgetConfig",
+    "TriageStatus",
+    "TriageAnnotation",
+    "TriageHistoryEntry",
+    "TriageItem",
     "parse_bool",
     "parse_datetime",
     "parse_int_or_default",

@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Any, Union, get_args, get_origin
 
 import pytest
@@ -31,6 +32,8 @@ def _build_value(annotation: Any) -> Any:
         return "true"
     if annotation is datetime:
         return "2024-01-01T00:00:00Z"
+    if isinstance(annotation, type) and issubclass(annotation, Enum):
+        return next(iter(annotation)).value
     return "value"
 
 
