@@ -6,7 +6,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import PurePosixPath
 from typing import Any
 
-from airflow.hooks.base import BaseHook
+from .._airflow_compat import AirflowBaseHook
 
 from imednet.config import load_config
 from imednet.sdk import ImednetSDK
@@ -17,7 +17,7 @@ Primitive = str | int | float | bool | None
 PrimitiveValue = Primitive | list["PrimitiveValue"] | dict[str, "PrimitiveValue"]
 
 
-class ImednetHook(BaseHook):
+class ImednetHook(AirflowBaseHook):
     """Retrieve an :class:`ImednetSDK` instance from an Airflow connection."""
 
     def __init__(self, imednet_conn_id: str = "imednet_default") -> None:
@@ -25,8 +25,6 @@ class ImednetHook(BaseHook):
         self.imednet_conn_id = imednet_conn_id
 
     def get_conn(self) -> ImednetSDK:  # type: ignore[override]
-        from airflow.hooks.base import BaseHook as AirflowBaseHook
-
         conn = AirflowBaseHook.get_connection(self.imednet_conn_id)
         extras = self._connection_extras(conn)
         login = self._string_or_none(getattr(conn, "login", None))

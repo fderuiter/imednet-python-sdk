@@ -66,7 +66,7 @@ class ImednetToS3Operator(BaseOperator):
     def _get_sdk(self) -> ImednetSDK:
         return ImednetHook(self.imednet_conn_id).get_conn()
 
-    def execute(self, context: Context) -> str:
+    def execute(self, context: Context) -> str:  # type: ignore[override]
         sdk = self._get_sdk()
         endpoint_obj = getattr(sdk, self.endpoint)
         if hasattr(endpoint_obj, "list"):

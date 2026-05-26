@@ -4,16 +4,12 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
-
-if TYPE_CHECKING:
-    from airflow.utils.context import Context
-else:  # pragma: no cover - typing fallback for optional Airflow dependency
-    Context = Dict[str, Any]
+from typing import Any, Dict, Optional, Sequence
 
 from airflow.models import BaseOperator
 
 from .. import export
+from .._airflow_compat import Context
 from ..hooks import ImednetHook
 
 
@@ -41,7 +37,7 @@ class ImednetExportOperator(BaseOperator):
         self.imednet_conn_id = imednet_conn_id
         self.isolate_output_path = isolate_output_path
 
-    def execute(self, context: Context) -> str:
+    def execute(self, context: Context) -> str:  # type: ignore[override]
         hook = ImednetHook(self.imednet_conn_id)
         sdk = hook.get_sdk_client()
         export_callable = getattr(export, self.export_func)

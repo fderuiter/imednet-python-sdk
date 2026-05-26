@@ -1,17 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict
 
-if TYPE_CHECKING:
+Context = Dict[str, Any]
+
+try:
     from airflow.exceptions import AirflowException
-    from airflow.utils.context import Context
-else:  # pragma: no cover - typing fallback for optional Airflow dependency
-    Context = Dict[str, Any]
-    try:
-        from airflow.exceptions import AirflowException
-    except (ImportError, ModuleNotFoundError):
+except (ImportError, ModuleNotFoundError):
 
-        class _FallbackAirflowError(Exception):
-            pass
+    class AirflowException(Exception):  # type: ignore[no-redef]
+        pass
 
-        AirflowException = _FallbackAirflowError
+
+try:
+    from airflow.hooks.base import BaseHook as AirflowBaseHook  # type: ignore[attr-defined]
+except (ImportError, ModuleNotFoundError):
+
+    class AirflowBaseHook:  # type: ignore[no-redef]
+        @staticmethod
+        def get_connection(conn_id: str) -> Any:
+            raise NotImplementedError
