@@ -158,6 +158,16 @@ def test_export_operator_isolates_output_path(monkeypatch):
     result_multi_extension = op_multi_extension.execute({"map_index": 3})
     assert result_multi_extension == "/tmp/out__3.tar.gz"
 
+    op_non_mapped_sentinel = airflow_mod.ImednetExportOperator(
+        task_id="t4",
+        study_key="S",
+        output_path="/tmp/out.csv",
+        export_func="export_to_csv",
+        isolate_output_path=True,
+    )
+    result_sentinel = op_non_mapped_sentinel.execute({"map_index": -1})
+    assert result_sentinel == "/tmp/out__single.csv"
+
 
 def test_imednet_hook_non_dict_extras(monkeypatch):
     _setup_airflow(monkeypatch)

@@ -50,14 +50,15 @@ class ImednetHook(AirflowBaseHook):
     def resolved_connection_config(self, *, redact_credentials: bool = True) -> dict[str, str]:
         """Return resolved connection settings as serialization-safe primitives."""
         sdk = self.get_sdk_client()
-        api_key = sdk._client._client.headers.get("x-api-key")
-        security_key = sdk._client._client.headers.get("x-imn-security-key")
+        config = sdk.config
+        api_key = config.api_key
+        security_key = config.security_key
         settings = {
             "api_key": self._redact_secret(api_key) if redact_credentials else api_key,
             "security_key": (
                 self._redact_secret(security_key) if redact_credentials else security_key
             ),
-            "base_url": str(sdk._client.base_url),
+            "base_url": config.base_url,
         }
         return {k: str(v) for k, v in settings.items() if v is not None}
 

@@ -6,9 +6,9 @@ authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
 packages = [{ include = "apache_airflow_providers_imednet", from = "src" }]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,!=3.15,<4.0"
 imednet = { path = "../core", develop = true }
-apache-airflow = {version = ">=2.3.0,<4.0.0", python = "!=3.15"}
+apache-airflow = ">=2.3.0,<4.0.0"
 apache-airflow-providers-amazon = { version = ">=8.0.0", optional = true }
 
 [tool.poetry.extras]

@@ -52,7 +52,7 @@ class ImednetExportOperator(BaseOperator):
         if map_index is None:
             task_instance = context.get("ti") or context.get("task_instance")
             map_index = getattr(task_instance, "map_index", None)
-        suffix = "single" if map_index is None else str(map_index)
+        suffix = "single" if map_index is None or map_index == -1 else str(map_index)
         path = Path(self.output_path)
         joined_suffix = "".join(path.suffixes)
         base_name = path.name[: -len(joined_suffix)] if joined_suffix else path.name
