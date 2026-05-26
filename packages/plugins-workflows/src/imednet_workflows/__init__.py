@@ -2,6 +2,7 @@
 
 from .duckdb_centralizer import DuckDBIngestionWorkflow
 from .job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
+from .cached_loader import CachedRecordsLoader
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
 from .record_update import RecordUpdateWorkflow
@@ -13,6 +14,7 @@ from .subject_data import SubjectDataWorkflow
 __all__ = [
     "QueryManagementWorkflow",
     "DuckDBIngestionWorkflow",
+    "CachedRecordsLoader",
     "RecordMapper",
     "RecordUpdateWorkflow",
     "AsyncJobPoller",
