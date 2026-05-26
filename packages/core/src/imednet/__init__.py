@@ -5,11 +5,7 @@ from .core.base_client import BaseClient
 from .core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 from .errors import PluginLoadError
 from .errors.orchestration import FilterConflictError, OrchestratorError
-from .orchestration import (
-    MultiStudyOrchestrator,
-    OrchestratorResult,
-    StudyWorkerCallable,
-)
+from .orchestration import MultiStudyOrchestrator, OrchestratorResult, StudyWorkerCallable
 from .plugins import PluginProtocol, WorkflowsNamespaceProtocol
 from .sdk import AsyncImednetSDK, ImednetSDK
 from .utils.typing import FilterScalar, FilterValue, ItemId, JsonDict

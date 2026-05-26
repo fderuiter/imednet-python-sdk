@@ -24,18 +24,25 @@ def test_load_config_overrides_env(monkeypatch):
 def test_load_config_missing(monkeypatch):
     monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
     monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
-    with pytest.raises(ValueError, match="API key and security key are required"):
+    with pytest.raises(
+        ValueError,
+        match="IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.",
+    ):
         load_config()
 
 
 @pytest.mark.parametrize(
     "api_key,security_key,expected_error",
     [
-        ("   ", "valid", "API key is required"),
-        ("valid", "   ", "Security key is required"),
-        ("   ", "   ", "API key and security key are required"),
-        ("", "valid", "API key is required"),
-        ("valid", "", "Security key is required"),
+        ("   ", "valid", "IMEDNET_API_KEY is required"),
+        ("valid", "   ", "IMEDNET_SECURITY_KEY is required"),
+        (
+            "   ",
+            "   ",
+            "IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.",
+        ),
+        ("", "valid", "IMEDNET_API_KEY is required"),
+        ("valid", "", "IMEDNET_SECURITY_KEY is required"),
     ],
 )
 def test_load_config_whitespace_args(monkeypatch, api_key, security_key, expected_error):
@@ -51,8 +58,8 @@ def test_load_config_whitespace_args(monkeypatch, api_key, security_key, expecte
 @pytest.mark.parametrize(
     "env_api_key,env_security_key,expected_error",
     [
-        ("   ", "valid", "API key is required"),
-        ("valid", "   ", "Security key is required"),
+        ("   ", "valid", "IMEDNET_API_KEY is required"),
+        ("valid", "   ", "IMEDNET_SECURITY_KEY is required"),
     ],
 )
 def test_load_config_whitespace_env(monkeypatch, env_api_key, env_security_key, expected_error):

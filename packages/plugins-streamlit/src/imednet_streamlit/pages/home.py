@@ -8,12 +8,14 @@ st.title("🏥 iMednet EDC Dashboard")
 
 if not st.session_state.get("_imednet_connected"):
     st.info("Please authenticate using the sidebar to access the dashboard.")
-    st.markdown("""
+    st.markdown(
+        """
     **Getting Started:**
     1. Enter your **API Key** and **Security Key** in the sidebar
     2. Enter the **Study Key** for the study you want to report on
     3. Click **Connect**
-    """)
+    """
+    )
 else:
     study_key = get_study_key()
     get_sdk()

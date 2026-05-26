@@ -103,19 +103,23 @@ def test_ingest_revisions_and_build_silver_view() -> None:
         0
     ]
     assert bronze_count == 4
-    age_value = workflow._connection.execute("""
+    age_value = workflow._connection.execute(
+        """
         SELECT value
         FROM bronze_revisions
         WHERE record_id = 1 AND variable_name = 'AGE' AND revision_number = 2
-        """).fetchone()[0]
+        """
+    ).fetchone()[0]
     assert age_value == "31"
 
     workflow.build_silver_view("STUDY")
-    silver_rows = workflow._connection.execute("""
+    silver_rows = workflow._connection.execute(
+        """
         SELECT record_id, variable_name, value, revision_number
         FROM silver_current_state
         ORDER BY record_id, variable_name
-        """).fetchall()
+        """
+    ).fetchall()
     assert silver_rows == [
         (1, "AGE", "31", 2),
         (1, "WEIGHT", "70", 1),

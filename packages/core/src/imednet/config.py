@@ -32,10 +32,12 @@ def load_config(
     base_url = base_url.strip() if base_url else None
 
     if not api_key and not security_key:
-        raise ValueError("API key and security key are required")
+        raise ValueError(
+            "IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set."
+        )
     if not api_key:
-        raise ValueError("API key is required")
+        raise ValueError("IMEDNET_API_KEY is required")
     if not security_key:
-        raise ValueError("Security key is required")
+        raise ValueError("IMEDNET_SECURITY_KEY is required")
 
     return Config(api_key=api_key, security_key=security_key, base_url=base_url)

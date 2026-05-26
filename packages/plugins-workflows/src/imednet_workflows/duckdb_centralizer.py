@@ -72,7 +72,8 @@ class DuckDBIngestionWorkflow:
         """Create or replace the silver_current_state view."""
         self._ensure_bronze_table()
         escaped_study_key = study_key.replace("'", "''")
-        self._connection.execute(f"""
+        self._connection.execute(
+            f"""
             CREATE OR REPLACE VIEW silver_current_state AS
             SELECT
                 study_key,
@@ -89,10 +90,12 @@ class DuckDBIngestionWorkflow:
                 PARTITION BY record_id, variable_name
                 ORDER BY revision_number DESC
             ) = 1
-            """)
+            """
+        )
 
     def _ensure_bronze_table(self) -> None:
-        self._connection.execute("""
+        self._connection.execute(
+            """
             CREATE TABLE IF NOT EXISTS bronze_revisions (
                 study_key VARCHAR,
                 record_id INTEGER,
@@ -103,7 +106,8 @@ class DuckDBIngestionWorkflow:
                 date_modified TIMESTAMP,
                 modified_by VARCHAR
             )
-            """)
+            """
+        )
 
     def _to_rows(
         self, study_key: str, revisions: Iterable["RecordRevision"]
