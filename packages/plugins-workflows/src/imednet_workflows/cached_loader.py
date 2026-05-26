@@ -16,6 +16,9 @@ from imednet.models.records import Record
 if TYPE_CHECKING:
     from imednet.sdk import ImednetSDK
 
+ALWAYS_RECONCILE_INTERVAL_SECONDS = 0
+DEFAULT_RECONCILE_INTERVAL_SECONDS = 900
+
 
 def get_cache_connection(db_path: str) -> sqlite3.Connection:
     """Create a SQLite cache connection configured for concurrent access."""
@@ -36,7 +39,7 @@ class CachedRecordsLoader:
         db_name: str = "records_cache.sqlite3",
         retry_attempts: int = 3,
         retry_wait_seconds: float = 1.0,
-        reconcile_interval_seconds: int = 900,
+        reconcile_interval_seconds: int = DEFAULT_RECONCILE_INTERVAL_SECONDS,
     ) -> None:
         self._sdk = sdk
         base_dir = Path(cache_dir).expanduser() if cache_dir else Path.home() / ".imednet" / "cache"
@@ -164,7 +167,7 @@ class CachedRecordsLoader:
                 **filters,
             )
 
-        return list(self._retryer(_request))
+        return self._retryer(_request)
 
     def _fetch_active_record_ids(self, study_key: str) -> Set[int]:
         def _request() -> Set[int]:
@@ -208,7 +211,7 @@ class CachedRecordsLoader:
                 )
 
     def _reconciliation_due(self, study_key: str) -> bool:
-        if self._reconcile_interval_seconds == 0:
+        if self._reconcile_interval_seconds == ALWAYS_RECONCILE_INTERVAL_SECONDS:
             return True
         with contextlib.closing(get_cache_connection(self.db_path)) as conn:
             row = conn.execute(

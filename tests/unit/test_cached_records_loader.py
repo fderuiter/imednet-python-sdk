@@ -29,10 +29,10 @@ def test_get_cache_connection_enables_wal(tmp_path) -> None:
 
 def test_loader_initializes_database_in_configurable_directory(tmp_path) -> None:
     sdk = MagicMock()
-    loader = CachedRecordsLoader(sdk, cache_dir=str(tmp_path), db_name="records-test.db")
+    loader = CachedRecordsLoader(sdk, cache_dir=str(tmp_path), db_name="records_cache_test.db")
 
-    assert loader.db_path == str(tmp_path / "records-test.db")
-    assert (tmp_path / "records-test.db").exists()
+    assert loader.db_path == str(tmp_path / "records_cache_test.db")
+    assert (tmp_path / "records_cache_test.db").exists()
 
     with sqlite3.connect(loader.db_path) as conn:
         tables = {
