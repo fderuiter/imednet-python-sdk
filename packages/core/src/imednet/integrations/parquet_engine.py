@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import os
+import shutil
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from importlib import import_module
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
+from uuid import uuid4
 
 
 def _import_pyarrow() -> tuple[Any, Any]:
@@ -42,6 +46,32 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
     compression: str = "snappy"
     use_dictionary: bool = True
     existing_data_behavior: str = "overwrite_or_ignore"
+    staging_dir_name: str = ".imednet_staging"
+
+    def _table_with_metadata(
+        self,
+        table: Any,
+        *,
+        study_key: str,
+        form_key: str,
+        commit_id: str,
+    ) -> Any:
+        if not hasattr(table, "replace_schema_metadata"):
+            return table
+        schema = getattr(table, "schema", None)
+        existing_metadata = dict(getattr(schema, "metadata", {}) or {})
+        existing_metadata.update(
+            {
+                b"imednet.writer": b"pyarrow.dataset",
+                b"imednet.commit_id": commit_id.encode("utf-8"),
+                b"imednet.study_key": study_key.encode("utf-8"),
+                b"imednet.form_key": form_key.encode("utf-8"),
+                b"imednet.written_at_utc": datetime.now(timezone.utc)
+                .isoformat()
+                .encode("utf-8"),
+            }
+        )
+        return table.replace_schema_metadata(existing_metadata)
 
     def write_form_table(
         self,
@@ -52,6 +82,16 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         form_key: str,
     ) -> None:
         pyarrow_module, dataset_module = _import_pyarrow()
+        commit_id = uuid4().hex
+        base_path = Path(base_dir)
+        staging_root = base_path / self.staging_dir_name
+        staging_base_dir = staging_root / commit_id
+        staged_partition_dir = staging_base_dir / f"study_key={study_key}" / f"form_key={form_key}"
+        final_partition_dir = base_path / f"study_key={study_key}" / f"form_key={form_key}"
+        committed_batch_dir = final_partition_dir / f"_batch_{commit_id}"
+
+        staging_base_dir.mkdir(parents=True, exist_ok=False)
+
         partition_schema = pyarrow_module.schema(
             [
                 ("study_key", pyarrow_module.string()),
@@ -65,19 +105,43 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
             "form_key",
             pyarrow_module.array([form_key] * table.num_rows, type=pyarrow_module.string()),
         )
+        partitioned_table = self._table_with_metadata(
+            partitioned_table,
+            study_key=study_key,
+            form_key=form_key,
+            commit_id=commit_id,
+        )
         parquet_format = dataset_module.ParquetFileFormat()
         parquet_options = parquet_format.make_write_options(
             compression=self.compression,
             use_dictionary=self.use_dictionary,
         )
-        dataset_module.write_dataset(
-            partitioned_table,
-            base_dir=str(Path(base_dir)),
-            partitioning=dataset_module.partitioning(flavor="hive", schema=partition_schema),
-            format=parquet_format,
-            file_options=parquet_options,
-            existing_data_behavior=self.existing_data_behavior,
-        )
+        try:
+            dataset_module.write_dataset(
+                partitioned_table,
+                base_dir=str(staging_base_dir),
+                basename_template=f"{commit_id}-{{i}}.parquet",
+                partitioning=dataset_module.partitioning(flavor="hive", schema=partition_schema),
+                format=parquet_format,
+                file_options=parquet_options,
+                existing_data_behavior=self.existing_data_behavior,
+            )
+
+            if not staged_partition_dir.exists():
+                raise RuntimeError(
+                    "Partition write did not produce staged output for "
+                    f"study_key={study_key!r}, form_key={form_key!r}."
+                )
+
+            final_partition_dir.mkdir(parents=True, exist_ok=True)
+            os.replace(staged_partition_dir, committed_batch_dir)
+        finally:
+            shutil.rmtree(staging_base_dir, ignore_errors=True)
+            if staging_root.exists():
+                try:
+                    staging_root.rmdir()
+                except OSError:
+                    pass
 
 
 __all__ = ["PartitionedStorageEngine", "PyArrowDatasetPartitionedStorageEngine"]
