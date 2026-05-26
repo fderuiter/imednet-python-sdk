@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any, cast
 
@@ -60,6 +61,11 @@ def _go_to_step(step: int) -> None:
 
 def _get_mapping_config() -> StudyConfiguration:
     return cast(StudyConfiguration, st.session_state[_KEY_MAPPING_CONFIG])
+
+
+def _sanitise_study_key(study_key: str) -> str:
+    safe_study_key = re.sub(r"[^a-z0-9_-]+", "_", study_key.lower()).strip("_")
+    return safe_study_key or "study"
 
 
 def _scan_schema(sdk: ImednetSDK, study_key: str) -> dict[str, Any]:
@@ -220,7 +226,11 @@ def _step_field_mapping() -> None:
         selected_form = col_form.selectbox(
             "Source form",
             options=form_options,
-            index=form_options.index(existing.source_form_key) if existing else 0,
+            index=(
+                form_options.index(existing.source_form_key)
+                if existing and existing.source_form_key in form_options
+                else 0
+            ),
             key=f"wizard_map_form_{mapping_key}",
         )
 
@@ -380,7 +390,10 @@ def _step_preview_and_layout() -> None:
         st.info("Create mappings in Step 2 before previewing.")
         return
 
-    default_types = [widget.type for widget in config.widgets] or ["kpi_card", "bar_chart"]
+    default_types = [widget.type for widget in config.widgets if widget.type in _WIDGET_TYPES] or [
+        "kpi_card",
+        "bar_chart",
+    ]
     selected_widgets = st.multiselect(
         "Widget types",
         options=list(_WIDGET_TYPES),
@@ -440,10 +453,15 @@ def _step_export(study_key: str) -> None:
     )
 
     if st.button("Save configuration locally", key="wizard_save_local"):
-        output_dir = Path.cwd() / ".imednet" / "configs"
-        output_dir.mkdir(parents=True, exist_ok=True)
-        output_file = output_dir / f"{study_key.lower()}_study_configuration.json"
-        output_file.write_text(payload, encoding="utf-8")
+        try:
+            output_dir = Path.cwd() / ".imednet" / "configs"
+            output_dir.mkdir(parents=True, exist_ok=True)
+            safe_study_key = _sanitise_study_key(study_key)
+            output_file = output_dir / f"{safe_study_key}_study_configuration.json"
+            output_file.write_text(payload, encoding="utf-8")
+        except OSError as exc:  # pragma: no cover - defensive runtime UI handling
+            st.error(f"Unable to save configuration locally ({type(exc).__name__}).")
+            return
         st.success(f"Saved to {output_file}")
 
 

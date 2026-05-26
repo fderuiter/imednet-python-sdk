@@ -42,6 +42,8 @@ class _FakeStreamlit:
         self.slider_value: int | None = None
         self.download_calls: list[dict[str, Any]] = []
         self.metric_calls: list[dict[str, Any]] = []
+        self.success_calls: list[str] = []
+        self.error_calls: list[str] = []
         self.titles: list[str] = []
 
     def title(self, value: str) -> None:
@@ -60,7 +62,7 @@ class _FakeStreamlit:
         return None
 
     def success(self, value: str) -> None:
-        return None
+        self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
         return None
@@ -69,7 +71,7 @@ class _FakeStreamlit:
         return None
 
     def error(self, value: str) -> None:
-        return None
+        self.error_calls.append(value)
 
     def button(self, label: str, **kwargs: Any) -> bool:
         key = str(kwargs.get("key") or label)
@@ -99,6 +101,9 @@ class _FakeStreamlit:
         if key in self.multiselect_values:
             return self.multiselect_values[key]
         default = kwargs.get("default", [])
+        invalid_defaults = [str(value) for value in default if str(value) not in options]
+        if invalid_defaults:
+            raise ValueError(f"Invalid default values: {invalid_defaults}")
         return [str(value) for value in default]
 
     def slider(self, label: str, **kwargs: Any) -> int:
@@ -200,7 +205,9 @@ def _run_setup_wizard(fake_st: _FakeStreamlit) -> None:
 
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_sdk = lambda: object()  # type: ignore[attr-defined]
-    fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
+    fake_auth_module.get_study_key = lambda: str(  # type: ignore[attr-defined]
+        fake_st.session_state.get("_imednet_study_key", "STUDY")
+    )
 
     fake_workflows_module = ModuleType("imednet_workflows")
     fake_workflows_module.CachedRecordsLoader = _FakeLoader  # type: ignore[attr-defined]
@@ -302,3 +309,113 @@ def test_setup_wizard_mapping_normalization_preview_and_export() -> None:
     _run_setup_wizard(fake_st)
     assert fake_st.download_calls
     assert fake_st.download_calls[-1]["file_name"] == "study_study_configuration.json"
+
+
+def test_setup_wizard_mapping_falls_back_when_saved_form_is_missing() -> None:
+    fake_st = _FakeStreamlit()
+    fake_st.session_state["wizard_step"] = 2
+    fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
+        {
+            "studyKey": "STUDY",
+            "mappings": [
+                {
+                    "domain": "AE",
+                    "targetField": "event_term",
+                    "sourceFormKey": "MISSING_FORM",
+                    "sourceVariableName": "AE_TERM",
+                }
+            ],
+        }
+    )
+    fake_st.session_state["discovered_schema"] = {
+        "forms": [
+            {
+                "form_key": "AE_FORM",
+                "form_name": "Adverse Events",
+                "record_count": 1,
+                "fields": [{"variable_name": "AE_TERM"}],
+            }
+        ],
+        "sample_records": [],
+    }
+    fake_st.session_state["wizard_target_form_ae"] = "AE_FORM"
+    fake_st.session_state["wizard_target_form_pd"] = "AE_FORM"
+    fake_st.session_state["wizard_target_form_dd"] = "AE_FORM"
+
+    _run_setup_wizard(fake_st)
+
+    assert fake_st.session_state["mapping_config"].mappings == []
+
+
+def test_setup_wizard_preview_filters_invalid_saved_widget_types() -> None:
+    fake_st = _FakeStreamlit()
+    fake_st.session_state["wizard_step"] = 4
+    fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
+        {
+            "studyKey": "STUDY",
+            "mappings": [
+                {
+                    "domain": "AE",
+                    "targetField": "event_term",
+                    "sourceFormKey": "AE_FORM",
+                    "sourceVariableName": "AE_TERM",
+                }
+            ],
+            "widgets": [
+                {"widgetId": "widget-1", "type": "pie_chart", "title": "Pie", "domain": "AE"}
+            ],
+        }
+    )
+    fake_st.session_state["discovered_schema"] = {
+        "forms": [],
+        "sample_records": [
+            {
+                "record_id": 1,
+                "form_key": "AE_FORM",
+                "subject_key": "SUBJ-001",
+                "record_data": {"AE_TERM": "y"},
+            }
+        ],
+    }
+
+    _run_setup_wizard(fake_st)
+
+    assert fake_st.session_state["validation_report"]["preview_rows"] == 1
+    assert [widget.type for widget in fake_st.session_state["mapping_config"].widgets] == [
+        "kpi_card",
+        "bar_chart",
+    ]
+
+
+def test_setup_wizard_save_local_sanitises_filename(tmp_path: Path, monkeypatch: Any) -> None:
+    fake_st = _FakeStreamlit()
+    fake_st.session_state["wizard_step"] = 5
+    fake_st.session_state["_imednet_study_key"] = "../Bad/Name"
+    fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
+    fake_st.button_presses = {"wizard_save_local"}
+
+    monkeypatch.setattr(Path, "cwd", classmethod(lambda cls: tmp_path))
+
+    _run_setup_wizard(fake_st)
+
+    output_file = tmp_path / ".imednet" / "configs" / "bad_name_study_configuration.json"
+    assert output_file.is_file()
+    assert fake_st.success_calls[-1] == f"Saved to {output_file}"
+
+
+def test_setup_wizard_save_local_reports_oserror(monkeypatch: Any, tmp_path: Path) -> None:
+    fake_st = _FakeStreamlit()
+    fake_st.session_state["wizard_step"] = 5
+    fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
+    fake_st.button_presses = {"wizard_save_local"}
+
+    monkeypatch.setattr(Path, "cwd", classmethod(lambda cls: tmp_path))
+    monkeypatch.setattr(
+        Path,
+        "write_text",
+        lambda self, data, encoding=None: (_ for _ in ()).throw(OSError("boom")),
+    )
+
+    _run_setup_wizard(fake_st)
+
+    assert fake_st.error_calls[-1] == "Unable to save configuration locally (OSError)."
