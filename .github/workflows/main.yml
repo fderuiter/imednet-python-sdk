@@ -80,9 +80,16 @@ jobs:
 
       - name: Security Audit
         run: |
+          poetry self add "poetry-plugin-export<1.9"
           poetry run pip install pip-audit
+          poetry export \
+            --format=requirements.txt \
+            --with dev \
+            --without-hashes \
+            -o requirements-audit.txt
+          grep -vE '^(imednet|imednet-workflows|imednet-streamlit)([[:space:]]*@|[=<>!~].*)?$|^-e file:.*/packages/(core|plugins-workflows|plugins-streamlit)([[:space:];].*)?$' requirements-audit.txt > requirements-audit-filtered.txt
           set +e
-          audit_output=$(poetry run pip-audit -s pypi --timeout 60 2>&1)
+          audit_output=$(poetry run pip-audit -r requirements-audit-filtered.txt -s pypi --timeout 60 2>&1)
           audit_exit_code=$?
           set -e
 
