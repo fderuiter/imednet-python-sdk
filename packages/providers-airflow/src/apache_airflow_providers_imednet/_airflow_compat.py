@@ -8,8 +8,10 @@ try:
     from airflow.exceptions import AirflowException
 except (ImportError, ModuleNotFoundError):
 
-    class AirflowException(Exception):  # type: ignore[no-redef]
+    class _FallbackAirflowError(Exception):
         pass
+
+    AirflowException = _FallbackAirflowError  # type: ignore[assignment,misc]
 
 
 try:

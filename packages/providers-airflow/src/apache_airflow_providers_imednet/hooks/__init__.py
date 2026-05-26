@@ -6,10 +6,10 @@ from collections.abc import Mapping, Sequence
 from pathlib import PurePosixPath
 from typing import Any
 
-from .._airflow_compat import AirflowBaseHook
-
 from imednet.config import load_config
 from imednet.sdk import ImednetSDK
+
+from .._airflow_compat import AirflowBaseHook
 
 # JSON/XCom-safe scalar types.
 Primitive = str | int | float | bool | None
