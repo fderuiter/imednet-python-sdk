@@ -51,7 +51,7 @@ class ExtractionStateLedger:
     def _ensure_ledger_exists(self) -> None:
         if not self.ledger_path.exists():
             self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.ledger_path, "w") as f:
+            with open(self.ledger_path, "w", encoding="utf-8") as f:
                 json.dump({"studies": {}}, f, indent=2)
 
     @contextlib.contextmanager
@@ -73,7 +73,7 @@ class ExtractionStateLedger:
     def read_state(self) -> LedgerState:
         """Reads and validates the current ledger state."""
         self._ensure_ledger_exists()
-        with open(self.ledger_path, "r") as f:
+        with open(self.ledger_path, "r", encoding="utf-8") as f:
             try:
                 data = json.load(f)
             except json.JSONDecodeError:
@@ -89,7 +89,7 @@ class ExtractionStateLedger:
 
         dir_name = self.ledger_path.parent
         # Write to temp file in the same directory, then rename atomically
-        with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False) as tf:
+        with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False, encoding="utf-8") as tf:
             tf.write(serialized)
             temp_name = tf.name
 
@@ -156,44 +156,74 @@ class ExtractionStateLedger:
         Context manager for transactional state tracking.
         Yields a dict where user can record 'records_processed', 'new_timestamp', and 'metadata'.
         Saves automatically upon exiting the context with no exceptions.
+        The ledger file lock is held for the entire duration of the context.
         """
-        last_ts = self.get_last_timestamp(study_key, stream_name) or fallback_timestamp
-        if last_ts and last_ts.tzinfo is None:
-            last_ts = last_ts.replace(tzinfo=timezone.utc)
+        with self._lock():
+            state = self.read_state()
+            study = state.studies.get(study_key)
+            last_ts: Optional[datetime] = None
+            if study:
+                stream_state = study.streams.get(stream_name)
+                if stream_state:
+                    last_ts = stream_state.last_timestamp
+                    if last_ts.tzinfo is None:
+                        last_ts = last_ts.replace(tzinfo=timezone.utc)
+            if last_ts is None:
+                last_ts = fallback_timestamp
+            if last_ts is not None and last_ts.tzinfo is None:
+                last_ts = last_ts.replace(tzinfo=timezone.utc)
 
-        tx_data: Dict[str, Any] = {
-            "last_timestamp": last_ts,
-            "new_timestamp": None,
-            "records_processed": 0,
-            "metadata": {},
-        }
-        try:
-            yield tx_data
-            # Commit changes only if successful and new_timestamp is set
-            new_ts = tx_data.get("new_timestamp")
-            if new_ts:
-                if new_ts.tzinfo is None:
-                    new_ts = new_ts.replace(tzinfo=timezone.utc)
-                self.set_last_timestamp(
-                    study_key=study_key,
-                    stream_name=stream_name,
-                    timestamp=new_ts,
+            tx_data: Dict[str, Any] = {
+                "last_timestamp": last_ts,
+                "new_timestamp": None,
+                "records_processed": 0,
+                "metadata": {},
+            }
+            try:
+                yield tx_data
+                # Commit changes only if successful and new_timestamp is set
+                new_ts = tx_data.get("new_timestamp")
+                if new_ts:
+                    if new_ts.tzinfo is None:
+                        new_ts = new_ts.replace(tzinfo=timezone.utc)
+                    study_entry = state.studies.setdefault(study_key, StudyState())
+                    study_entry.streams[stream_name] = StreamState(
+                        last_timestamp=new_ts,
+                        records_processed=tx_data.get("records_processed", 0),
+                        last_run_status="success",
+                        metadata=tx_data.get("metadata") or {},
+                    )
+                    self.write_state(state)
+            except Exception as err:
+                # Mark stream as failed
+                err_ts = tx_data.get("new_timestamp") or last_ts or datetime.now(timezone.utc)
+                if err_ts.tzinfo is None:
+                    err_ts = err_ts.replace(tzinfo=timezone.utc)
+                study_entry = state.studies.setdefault(study_key, StudyState())
+                study_entry.streams[stream_name] = StreamState(
+                    last_timestamp=err_ts,
                     records_processed=tx_data.get("records_processed", 0),
-                    status="success",
-                    metadata=tx_data.get("metadata"),
+                    last_run_status="failed",
+                    error_message=str(err),
+                    metadata=tx_data.get("metadata") or {},
                 )
-        except Exception as err:
-            # Mark stream as failed
-            new_ts = tx_data.get("new_timestamp") or last_ts or datetime.now(timezone.utc)
-            if new_ts.tzinfo is None:
-                new_ts = new_ts.replace(tzinfo=timezone.utc)
-            self.set_last_timestamp(
-                study_key=study_key,
-                stream_name=stream_name,
-                timestamp=new_ts,
-                records_processed=tx_data.get("records_processed", 0),
-                status="failed",
-                error_message=str(err),
-                metadata=tx_data.get("metadata"),
-            )
-            raise
+                self.write_state(state)
+                raise
+
+    def delete_entry(self, study_key: str, stream_name: Optional[str] = None) -> bool:
+        """Deletes a study or specific stream entry from the ledger under the file lock.
+
+        Returns ``True`` if the entry existed and was removed, ``False`` otherwise.
+        """
+        with self._lock():
+            state = self.read_state()
+            if study_key not in state.studies:
+                return False
+            if stream_name is None:
+                del state.studies[study_key]
+            else:
+                if stream_name not in state.studies[study_key].streams:
+                    return False
+                del state.studies[study_key].streams[stream_name]
+            self.write_state(state)
+        return True

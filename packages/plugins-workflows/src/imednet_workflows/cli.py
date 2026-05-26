@@ -153,9 +153,12 @@ def set_state(
 ) -> None:
     """Manually set a high-water mark timestamp for a study and stream."""
     try:
-        dt = datetime.fromisoformat(timestamp)
+        normalized = timestamp.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(normalized)
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
     except ValueError as err:
         print(f"[red]Invalid ISO timestamp format: {err}[/red]")
         raise typer.Exit(code=1)
@@ -197,14 +200,9 @@ def reset_state(
     """Reset (clear) high-water mark state for a study/stream."""
     ledger = ExtractionStateLedger(ledger_path)
     try:
-        state = ledger.read_state()
-        if study_key not in state.studies:
-            print(f"[yellow]No state found for study '{study_key}'.[/yellow]")
-            return
-
         if stream:
-            if stream in state.studies[study_key].streams:
-                del state.studies[study_key].streams[stream]
+            removed = ledger.delete_entry(study_key, stream)
+            if removed:
                 print(
                     f"[green]Successfully reset stream '{stream}' for study "
                     f"'{study_key}'.[/green]"
@@ -213,10 +211,12 @@ def reset_state(
                 print(f"[yellow]No stream '{stream}' found for study '{study_key}'.[/yellow]")
                 return
         else:
-            del state.studies[study_key]
-            print(f"[green]Successfully reset all streams for study '{study_key}'.[/green]")
-
-        ledger.write_state(state)
+            removed = ledger.delete_entry(study_key)
+            if removed:
+                print(f"[green]Successfully reset all streams for study '{study_key}'.[/green]")
+            else:
+                print(f"[yellow]No state found for study '{study_key}'.[/yellow]")
+                return
     except Exception as err:
         print(f"[red]Failed to reset ledger state: {err}[/red]")
         raise typer.Exit(code=1)

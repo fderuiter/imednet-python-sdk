@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import pytest
 
 from imednet_workflows.state_ledger import ExtractionStateLedger, LedgerState
+import imednet_workflows.state_ledger as _state_ledger_module
 
 
 def test_state_ledger_read_write(tmp_path) -> None:
@@ -116,6 +117,10 @@ def test_state_ledger_atomic_write_failure(tmp_path, monkeypatch) -> None:
     assert ledger.get_last_timestamp("STUDY-01", "records") == ts
 
 
+@pytest.mark.skipif(
+    _state_ledger_module.fcntl is None,
+    reason="flock not available on this platform (no fcntl)",
+)
 def test_state_ledger_flock_concurrency(tmp_path) -> None:
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
