@@ -80,11 +80,11 @@ Dashboard pages
 +----------------------+------------------------------------------------------+
 | Query Status         | Open/closed query breakdown with trend charts        |
 +----------------------+------------------------------------------------------+
-| Subject Enrollment   | Enrollment funnel and per-site summaries             |
+| Subject Enrollment   | Enrollment funnel and site-level summaries           |
 +----------------------+------------------------------------------------------+
-| Site Performance     | Per-site query rate metrics and rankings             |
+| Site Performance     | Site-level query rate metrics and rankings           |
 +----------------------+------------------------------------------------------+
-| Data Completeness    | Record-status heatmap and form-level summaries       |
+| Data Completeness    | Record status heatmap and form-level summaries       |
 +----------------------+------------------------------------------------------+
 
 Credential management
