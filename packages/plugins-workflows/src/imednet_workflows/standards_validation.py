@@ -5,11 +5,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from imednet.models.standards import StandardsProfile, ValidationViolation
-from imednet.utils.validators import parse_bool
-
-
-def _is_missing_value(value: Any) -> bool:
-    return value is None or (isinstance(value, str) and value.strip() == "")
+from imednet.utils.validators import is_boolean_token, is_missing_value, parse_bool
 
 
 class NormalizationResult(BaseModel):
@@ -26,13 +22,14 @@ class CategoricalNormalizer:
     ) -> NormalizationResult:
         normalized_record: dict[str, Any] = {}
         warnings: list[str] = []
+        normalized_lookups = self._normalize_lookups(terminology_lookups)
 
         subject_key = record.get("subjectKey") or record.get("subject_key")
         for field_name, raw_value in record.items():
             normalized_value, warning_message = self._normalize_value(
                 field_name=field_name,
                 raw_value=raw_value,
-                terminology_lookups=terminology_lookups,
+                normalized_lookups=normalized_lookups,
                 subject_key=subject_key,
             )
             normalized_record[field_name] = normalized_value
@@ -41,20 +38,27 @@ class CategoricalNormalizer:
 
         return NormalizationResult(normalized_record=normalized_record, warnings=warnings)
 
+    def _normalize_lookups(
+        self, terminology_lookups: dict[str, dict[str, str]]
+    ) -> dict[str, dict[str, str]]:
+        return {
+            field_name: {str(key).strip().upper(): value for key, value in lookup.items()}
+            for field_name, lookup in terminology_lookups.items()
+        }
+
     def _normalize_value(
         self,
         *,
         field_name: str,
         raw_value: Any,
-        terminology_lookups: dict[str, dict[str, str]],
+        normalized_lookups: dict[str, dict[str, str]],
         subject_key: Any,
     ) -> tuple[Any, str | None]:
-        lookup = terminology_lookups.get(field_name)
+        lookup = normalized_lookups.get(field_name)
         if lookup and isinstance(raw_value, str):
-            normalized_lookup = {str(key).strip().upper(): value for key, value in lookup.items()}
             lookup_key = raw_value.strip().upper()
-            if lookup_key in normalized_lookup:
-                return normalized_lookup[lookup_key], None
+            if lookup_key in lookup:
+                return lookup[lookup_key], None
             subject_prefix = (
                 f"Subject {subject_key} " if isinstance(subject_key, str) and subject_key else ""
             )
@@ -62,21 +66,8 @@ class CategoricalNormalizer:
 
         if isinstance(raw_value, str):
             stripped_value = raw_value.strip()
-            if stripped_value:
-                parsed_bool = parse_bool(stripped_value)
-                if stripped_value.lower() in {
-                    "true",
-                    "false",
-                    "1",
-                    "0",
-                    "yes",
-                    "no",
-                    "y",
-                    "n",
-                    "t",
-                    "f",
-                }:
-                    return parsed_bool, None
+            if stripped_value and is_boolean_token(stripped_value):
+                return parse_bool(stripped_value), None
 
         return raw_value, None
 
@@ -129,7 +120,7 @@ class StandardsReadinessValidator:
                 }
                 for field_name in expected_fields:
                     value = normalization_result.normalized_record.get(field_name)
-                    if field_name in error_fields or _is_missing_value(value):
+                    if field_name in error_fields or is_missing_value(value):
                         continue
                     successfully_validated_fields += 1
 
