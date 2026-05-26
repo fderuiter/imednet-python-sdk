@@ -50,6 +50,7 @@ class _FakeStreamlit:
 
 def _run_app(is_connected: bool) -> _FakeStreamlit:
     app_path = PACKAGE_ROOT / "app.py"
+    module_name = "imednet_streamlit.app"
     fake_st = _FakeStreamlit()
     fake_streamlit_module: Any = ModuleType("streamlit")
     fake_streamlit_module.set_page_config = fake_st.set_page_config
@@ -65,16 +66,16 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 
     previous_streamlit = sys.modules.get("streamlit")
     previous_auth = sys.modules.get("imednet_streamlit.auth")
+    previous_app = sys.modules.get(module_name)
 
     try:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
 
-        app_spec = importlib.util.spec_from_file_location(
-            f"imednet_streamlit.app_test_{int(is_connected)}", app_path
-        )
+        app_spec = importlib.util.spec_from_file_location(module_name, app_path)
         assert app_spec is not None and app_spec.loader is not None
         app_module = importlib.util.module_from_spec(app_spec)
+        sys.modules[module_name] = app_module
         app_spec.loader.exec_module(app_module)
     finally:
         if previous_streamlit is None:
@@ -85,6 +86,10 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
             sys.modules.pop("imednet_streamlit.auth", None)
         else:
             sys.modules["imednet_streamlit.auth"] = previous_auth
+        if previous_app is None:
+            sys.modules.pop(module_name, None)
+        else:
+            sys.modules[module_name] = previous_app
 
     return fake_st
 

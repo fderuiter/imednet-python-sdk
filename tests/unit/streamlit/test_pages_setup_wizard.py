@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import runpy
+import importlib.util
 import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -43,6 +43,8 @@ class _FakeStreamlit:
         self.download_calls: list[dict[str, Any]] = []
         self.metric_calls: list[dict[str, Any]] = []
         self.success_calls: list[str] = []
+        self.warning_calls: list[str] = []
+        self.info_calls: list[str] = []
         self.error_calls: list[str] = []
         self.titles: list[str] = []
 
@@ -65,10 +67,10 @@ class _FakeStreamlit:
         self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
-        return None
+        self.warning_calls.append(value)
 
     def info(self, value: str) -> None:
-        return None
+        self.info_calls.append(value)
 
     def error(self, value: str) -> None:
         self.error_calls.append(value)
@@ -124,8 +126,14 @@ class _FakeStreamlit:
         self.download_calls.append(kwargs)
 
 
-def _run_setup_wizard(fake_st: _FakeStreamlit) -> None:
+def _run_setup_wizard(
+    fake_st: _FakeStreamlit,
+    *,
+    get_sdk: Any | None = None,
+    get_study_key: Any | None = None,
+) -> None:
     page_path = PACKAGE_ROOT / "pages" / "setup_wizard.py"
+    module_name = "imednet_streamlit.pages.setup_wizard"
 
     fake_streamlit_module = ModuleType("streamlit")
     fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
@@ -204,9 +212,9 @@ def _run_setup_wizard(fake_st: _FakeStreamlit) -> None:
             return profiles
 
     fake_auth_module = ModuleType("imednet_streamlit.auth")
-    fake_auth_module.get_sdk = lambda: object()  # type: ignore[attr-defined]
-    fake_auth_module.get_study_key = lambda: str(  # type: ignore[attr-defined]
-        fake_st.session_state.get("_imednet_study_key", "STUDY")
+    fake_auth_module.get_sdk = get_sdk or (lambda: object())  # type: ignore[attr-defined]
+    fake_auth_module.get_study_key = get_study_key or (  # type: ignore[attr-defined]
+        lambda: str(fake_st.session_state.get("_imednet_study_key", "STUDY"))
     )
 
     fake_workflows_module = ModuleType("imednet_workflows")
@@ -219,13 +227,18 @@ def _run_setup_wizard(fake_st: _FakeStreamlit) -> None:
             "streamlit",
             "imednet_streamlit.auth",
             "imednet_workflows",
+            module_name,
         )
     }
     try:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_workflows"] = fake_workflows_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        module_spec = importlib.util.spec_from_file_location(module_name, page_path)
+        assert module_spec is not None and module_spec.loader is not None
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
     finally:
         for key, original in saved.items():
             if original is None:
@@ -419,3 +432,181 @@ def test_setup_wizard_save_local_reports_oserror(monkeypatch: Any, tmp_path: Pat
     _run_setup_wizard(fake_st)
 
     assert fake_st.error_calls[-1] == "Unable to save configuration locally."
+
+
+def test_setup_wizard_shows_prerequisite_info_messages() -> None:
+    step_one = _FakeStreamlit()
+    _run_setup_wizard(step_one)
+    assert step_one.info_calls[-1] == "Run scan to discover forms and field candidates."
+
+    step_two = _FakeStreamlit()
+    step_two.session_state["wizard_step"] = 2
+    step_two.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
+    _run_setup_wizard(step_two)
+    assert step_two.info_calls[-1] == "No profiled forms available yet. Complete Step 1 first."
+
+    step_three = _FakeStreamlit()
+    step_three.session_state["wizard_step"] = 3
+    step_three.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
+    _run_setup_wizard(step_three)
+    assert step_three.info_calls[-1] == "Add field mappings first in Step 2."
+
+    step_four = _FakeStreamlit()
+    step_four.session_state["wizard_step"] = 4
+    step_four.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
+    _run_setup_wizard(step_four)
+    assert step_four.info_calls[-1] == "Create mappings in Step 2 before previewing."
+
+
+def test_setup_wizard_handles_connection_and_auth_failures() -> None:
+    disconnected = _FakeStreamlit()
+    disconnected.session_state["_imednet_connected"] = False
+    _run_setup_wizard(disconnected)
+    assert disconnected.info_calls[-1] == (
+        "Please connect from the sidebar to configure and publish a study mapping."
+    )
+
+    auth_failure = _FakeStreamlit()
+
+    def _raise_runtime_error() -> object:
+        raise RuntimeError("missing credentials")
+
+    _run_setup_wizard(auth_failure, get_sdk=_raise_runtime_error)
+    assert auth_failure.error_calls[-1] == "missing credentials"
+
+
+def test_setup_wizard_snapshot_controls_and_navigation_work() -> None:
+    fake_st = _FakeStreamlit()
+    fake_st.session_state["wizard_step"] = 3
+    fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
+        {
+            "studyKey": "STUDY",
+            "mappings": [
+                {
+                    "domain": "AE",
+                    "targetField": "event_term",
+                    "sourceFormKey": "AE_FORM",
+                    "sourceVariableName": "AE_TERM",
+                }
+            ],
+            "terminologyLookups": {"AE.event_term": {"y": "yes"}},
+        }
+    )
+    fake_st.session_state["discovered_schema"] = {
+        "forms": [
+            {
+                "form_key": "AE_FORM",
+                "form_name": "Adverse Events",
+                "record_count": 1,
+                "fields": [
+                    {
+                        "variable_name": "AE_TERM",
+                        "label": "Adverse Event",
+                        "population_rate": 100.0,
+                        "inferred_type": "string",
+                        "unique_count": 1,
+                        "unique_values": ["y"],
+                    }
+                ],
+            }
+        ],
+        "sample_records": [],
+    }
+    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.event_term"
+
+    fake_st.button_presses = {"wizard_clone_snapshot"}
+    _run_setup_wizard(fake_st)
+    assert fake_st.success_calls[-1] == "Configuration snapshot saved."
+
+    fake_st.button_presses = {"wizard_undo_snapshot"}
+    _run_setup_wizard(fake_st)
+    assert fake_st.success_calls[-1] == "Reverted to previous configuration snapshot."
+
+    fake_st.button_presses = {"wizard_reset_normalizations"}
+    _run_setup_wizard(fake_st)
+    assert fake_st.success_calls[-1] == "Terminology normalizations reset."
+    assert fake_st.session_state["mapping_config"].terminology_lookups == {}
+
+    fake_st.button_presses = {"wizard_prev"}
+    _run_setup_wizard(fake_st)
+    assert fake_st.session_state["wizard_step"] == 2
+
+
+def test_setup_wizard_undo_without_snapshot_and_nav_button_paths() -> None:
+    fake_st = _FakeStreamlit()
+    fake_st.session_state["wizard_step"] = 3
+    fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
+        {
+            "studyKey": "STUDY",
+            "mappings": [
+                {
+                    "domain": "AE",
+                    "targetField": "event_term",
+                    "sourceFormKey": "AE_FORM",
+                    "sourceVariableName": "AE_TERM",
+                }
+            ],
+        }
+    )
+    fake_st.session_state["discovered_schema"] = {
+        "forms": [
+            {
+                "form_key": "AE_FORM",
+                "form_name": "Adverse Events",
+                "record_count": 1,
+                "fields": [
+                    {
+                        "variable_name": "AE_TERM",
+                        "label": "Adverse Event",
+                        "population_rate": 100.0,
+                        "inferred_type": "string",
+                        "unique_count": 1,
+                        "unique_values": ["y"],
+                    }
+                ],
+            }
+        ],
+        "sample_records": [],
+    }
+    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.event_term"
+
+    fake_st.button_presses = {"wizard_undo_snapshot"}
+    _run_setup_wizard(fake_st)
+    assert fake_st.warning_calls[-1] == "No snapshots available to undo."
+
+    fake_st.button_presses = {"wizard_nav_2"}
+    _run_setup_wizard(fake_st)
+    assert fake_st.session_state["wizard_step"] == 2
+
+
+def test_setup_wizard_preview_handles_empty_records() -> None:
+    fake_st = _FakeStreamlit()
+    fake_st.session_state["wizard_step"] = 4
+    fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
+        {
+            "studyKey": "STUDY",
+            "mappings": [
+                {
+                    "domain": "AE",
+                    "targetField": "event_term",
+                    "sourceFormKey": "AE_FORM",
+                    "sourceVariableName": "AE_TERM",
+                }
+            ],
+        }
+    )
+    fake_st.session_state["discovered_schema"] = {
+        "forms": [
+            {
+                "form_key": "AE_FORM",
+                "form_name": "Adverse Events",
+                "record_count": 0,
+                "fields": [],
+            }
+        ],
+        "sample_records": [],
+    }
+
+    _run_setup_wizard(fake_st)
+
+    assert fake_st.info_calls[-1] == "No sample records available to preview."
