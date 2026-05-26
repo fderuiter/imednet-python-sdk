@@ -69,13 +69,14 @@ pip install imednet
 To use export features, workflow plugins, or Airflow provider integrations, install the relevant extras/packages:
 
 ```bash
-# Install all export dependencies
-pip install pandas sqlalchemy pyarrow openpyxl
+# Install all tabular export dependencies
+pip install "imednet[export]"
 
-# Or pick specific ones
-pip install sqlalchemy  # For SQL export
-pip install pyarrow     # For Parquet export
-pip install pandas openpyxl  # For Excel export
+# Or install destination-specific extras
+pip install "imednet[duckdb]"
+pip install "imednet[mongodb]"
+pip install "imednet[neo4j]"
+pip install "imednet[snowflake]"
 
 # Workflow plugin package
 pip install imednet-workflows
@@ -207,6 +208,14 @@ Example of exporting a subset of variables:
 
 ```bash
 imednet export sql MY_STUDY table sqlite:///data.db --vars AGE,SEX --forms 10,20
+```
+
+Examples for new destination families:
+
+```bash
+imednet export mongodb MY_STUDY mongodb://localhost:27017 imednet records
+imednet export neo4j MY_STUDY bolt://localhost:7687 neo4j "$NEO4J_PASSWORD"
+imednet export snowflake MY_STUDY acct user "$SNOWFLAKE_PASSWORD" DB PUBLIC WH STAGE TABLE
 ```
 
 When the connection string uses SQLite, the command splits the output into one
