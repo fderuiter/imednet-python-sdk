@@ -2,6 +2,7 @@
 
 from .cached_loader import CachedRecordsLoader, get_cache_connection
 from .duckdb_centralizer import DuckDBIngestionWorkflow
+from .extraction_engine import ExtractionResult, extract_canonical_records
 from .job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
@@ -16,6 +17,7 @@ __all__ = [
     "CachedRecordsLoader",
     "QueryManagementWorkflow",
     "DuckDBIngestionWorkflow",
+    "ExtractionResult",
     "FieldProfile",
     "FormProfile",
     "RecordMapper",
@@ -32,4 +34,5 @@ __all__ = [
     "StreamState",
     "LedgerState",
     "SchemaProfiler",
+    "extract_canonical_records",
 ]
