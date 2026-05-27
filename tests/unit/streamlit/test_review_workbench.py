@@ -96,7 +96,7 @@ class _FakeStreamlit:
 
     def button(self, label: str, **kwargs: Any) -> bool:
         key = kwargs.get("key")
-        return label in self.button_presses or key in self.button_presses
+        return label in self.button_presses or (isinstance(key, str) and key in self.button_presses)
 
     def text_area(self, label: str, **kwargs: Any) -> str:
         return ""
@@ -237,11 +237,6 @@ def test_review_workbench_renders_kpis_and_filters_queue() -> None:
 
 def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
     fake_st = _FakeStreamlit()
-    fake_st.button_presses = {
-        "assign_btn_AE-1",
-        "annotation_btn_AE-1",
-        "triage_btn_AE-1",
-    }
     fake_st.text_area = lambda label, **kwargs: "follow-up"  # type: ignore[assignment]
     fake_st.selectbox_values = {
         "Change Assignee": "alice",
@@ -288,6 +283,24 @@ def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
 
         item = _sample_items()[0]
         store = MagicMock()
+
+        fake_st.button_presses = {"assign_btn_AE-1"}
+        module.render_triage_drawer(
+            store=store,
+            item=item,
+            assignee_options=["alice", "bob"],
+            current_user="reviewer",
+        )
+
+        fake_st.button_presses = {"annotation_btn_AE-1"}
+        module.render_triage_drawer(
+            store=store,
+            item=item,
+            assignee_options=["alice", "bob"],
+            current_user="reviewer",
+        )
+
+        fake_st.button_presses = {"triage_btn_AE-1"}
         module.render_triage_drawer(
             store=store,
             item=item,
