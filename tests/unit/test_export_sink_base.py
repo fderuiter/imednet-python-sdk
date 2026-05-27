@@ -536,6 +536,25 @@ class TestSnowflakeExportSink:
         with pytest.raises(ExportConfigurationError, match="missing required fields"):
             SnowflakeExportSink(config=cfg)
 
+    def test_records_to_arrow_table_uses_snowflake_extra(self, monkeypatch):
+        import imednet.integrations.warehouse as wh_mod
+
+        pa, _, table = _fake_pyarrow_modules()
+        seen: list[tuple[str, str]] = []
+
+        def fake_require(pkg, extras):
+            seen.append((pkg, extras))
+            return pa
+
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+
+        result = wh_mod._records_to_arrow_table(
+            [MagicMock(record_id=1, form_id=2, visit_id=3, subject_key="S", record_data={})]
+        )
+
+        assert result is table
+        assert seen == [("pyarrow", "snowflake")]
+
     def test_write_batch_calls_put_and_copy(self, monkeypatch, tmp_path):
         from imednet.integrations.warehouse import SnowflakeExportSink
 
@@ -552,6 +571,35 @@ class TestSnowflakeExportSink:
         assert any("PUT" in c for c in calls)
         assert any("COPY INTO" in c for c in calls)
         sink.close()
+
+    def test_write_batch_uses_snowflake_extra_for_parquet(self, monkeypatch, tmp_path):
+        import imednet.integrations.warehouse as wh_mod
+        from imednet.integrations.warehouse import SnowflakeExportSink
+
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
+        seen: list[tuple[str, str]] = []
+
+        def fake_require(pkg, extras):
+            seen.append((pkg, extras))
+            if pkg == "snowflake.connector":
+                return sf
+            if pkg == "pyarrow":
+                return MagicMock(Table=MagicMock(from_pylist=MagicMock(return_value=MagicMock())))
+            if pkg == "pyarrow.parquet":
+                return pq
+            return MagicMock()
+
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+
+        sink = SnowflakeExportSink(config=cfg)
+        sink.write_batch(
+            [MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})],
+            batch_id="S1/F1/0",
+        )
+        sink.close()
+
+        assert ("pyarrow", "snowflake") in seen
+        assert ("pyarrow.parquet", "snowflake") in seen
 
     def test_write_batch_empty_returns_zero(self, monkeypatch, tmp_path):
         from imednet.integrations.warehouse import SnowflakeExportSink
