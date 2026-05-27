@@ -4,8 +4,9 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-from imednet.models.triage import TriageStatus
-from imednet_workflows.triage_store import TriageStore
+_DRAWER_BUTTON_COUNT = 5
+_SAVE_ANNOTATION_BUTTON_INDEX = 1
+_APPROVE_BUTTON_INDEX = 4
 
 
 def _triage_drawer_app() -> None:
@@ -59,32 +60,41 @@ def _triage_drawer_app() -> None:
 
 
 def test_triage_drawer_submission_updates_session_state_and_persistence() -> None:
+    from imednet.models.triage import TriageStatus
+    from imednet_workflows.triage_store import TriageStore
+
     at = AppTest.from_function(_triage_drawer_app)
-    at.run()
-    assert len(at.exception) == 0
-    assert len(at.text_area) == 1
-    assert len(at.button) == 5
+    try:
+        at.run()
+        assert len(at.exception) == 0
+        assert len(at.text_area) == 1
+        assert len(at.button) == _DRAWER_BUTTON_COUNT
 
-    at.text_area[0].input("looks good")
-    at.button[1].click()
-    at.run()
+        at.text_area[0].input("needs follow-up")
+        at.button[_SAVE_ANNOTATION_BUTTON_INDEX].click()
+        at.run()
 
-    assert at.session_state["_triage_drawer_last_action"]["action"] == "annotate"
-    assert at.session_state["_triage_drawer_last_action"]["comment"] == "looks good"
+        assert at.session_state["_triage_drawer_last_action"]["action"] == "annotate"
+        assert at.session_state["_triage_drawer_last_action"]["comment"] == "needs follow-up"
 
-    at.text_area[0].input("looks good")
-    at.button[4].click()
-    at.run()
+        at.text_area[0].input("ready for approval")
+        at.button[_APPROVE_BUTTON_INDEX].click()
+        at.run()
 
-    assert at.session_state["_triage_drawer_last_action"]["action"] == "approve"
-    assert at.session_state["_triage_drawer_last_action"]["status"] == TriageStatus.RESOLVED.value
+        assert at.session_state["_triage_drawer_last_action"]["action"] == "approve"
+        assert (
+            at.session_state["_triage_drawer_last_action"]["status"] == TriageStatus.RESOLVED.value
+        )
 
-    db_path = str(at.session_state["_triage_drawer_test_db_path"])
-    store = TriageStore(db_path)
-    item = store.get_queue("STUDY-X")[0]
-    assert item.status == TriageStatus.RESOLVED
-    assert [annotation.comment for annotation in item.annotations] == ["looks good"]
-    assert item.history[-1].to_status == TriageStatus.RESOLVED
-    assert item.history[-1].comment == "Approved: looks good"
-
-    Path(db_path).unlink(missing_ok=True)
+        db_path = str(at.session_state["_triage_drawer_test_db_path"])
+        store = TriageStore(db_path)
+        item = store.get_queue("STUDY-X")[0]
+        assert item.status == TriageStatus.RESOLVED
+        assert [annotation.comment for annotation in item.annotations] == ["needs follow-up"]
+        assert item.history[-1].to_status == TriageStatus.RESOLVED
+        assert item.history[-1].comment == "Approved: ready for approval"
+    finally:
+        if "_triage_drawer_test_db_path" in at.session_state:
+            db_path = at.session_state["_triage_drawer_test_db_path"]
+            if isinstance(db_path, str):
+                Path(db_path).unlink(missing_ok=True)
