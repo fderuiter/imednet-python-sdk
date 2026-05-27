@@ -1,132 +1,68 @@
-"""Regression tests: block_external_requests must not activate respx for live tests.
-
-These tests use pytest's ``pytester`` fixture to run a tiny in-process pytest
-session and assert that the fixture override in ``tests/live/conftest.py``
-actually prevents ``respx_mock`` from intercepting real HTTP traffic during
-live-suite runs.
-"""
-from __future__ import annotations
+import importlib
+from pathlib import Path
 
 import pytest
 
-pytest_plugins = ["pytester"]
+test_conftest = importlib.import_module("tests.conftest")
 
 
-def test_block_external_requests_bypassed_in_live_suite(pytester: pytest.Pytester) -> None:
-    """Overriding block_external_requests in live/conftest.py must suppress respx_mock.
+class _DummyNode:
+    def __init__(self, *, path: Path, has_live_marker: bool = False):
+        self.path = path
+        self._has_live_marker = has_live_marker
 
-    Simulates the exact structure of ``tests/`` + ``tests/live/`` and verifies
-    that a live test can reach the network (or at least fail with a real
-    connection error) instead of an ``AllMockedAssertionError``.
-    """
-    pytester.makeini(
-        """
-[pytest]
-asyncio_mode = auto
-markers =
-    live: marks tests that require a live external connection
-"""
+    def get_closest_marker(self, name: str) -> object | None:
+        if name == "live" and self._has_live_marker:
+            return object()
+        return None
+
+
+class _DummyRequest:
+    def __init__(self, node: _DummyNode):
+        self.node = node
+        self.fixture_calls: list[str] = []
+
+    def getfixturevalue(self, fixture_name: str) -> None:
+        self.fixture_calls.append(fixture_name)
+
+
+def _run_guard(request: _DummyRequest) -> None:
+    """Execute the autouse fixture function directly for deterministic unit assertions."""
+    fixture = test_conftest.block_external_requests.__wrapped__
+    guard = fixture(request=request)
+    next(guard)
+    with pytest.raises(StopIteration):
+        next(guard)
+
+
+def test_live_path_bypasses_respx_guard() -> None:
+    request = _DummyRequest(
+        node=_DummyNode(path=test_conftest.ROOT / "tests" / "live" / "test_a.py")
     )
 
-    # Root conftest mirrors the real tests/conftest.py guard.
-    pytester.makeconftest(
-        """
-import pytest
+    _run_guard(request)
 
-@pytest.fixture(autouse=True)
-def block_external_requests(request):
-    if request.node.get_closest_marker("live"):
-        yield
-        return
-    request.getfixturevalue("respx_mock")
-    yield
-"""
+    assert request.fixture_calls == []
+
+
+def test_non_live_path_activates_respx_guard() -> None:
+    request = _DummyRequest(
+        node=_DummyNode(path=test_conftest.ROOT / "tests" / "unit" / "test_a.py")
     )
 
-    # Nested live/ package with the override fixture.
-    live_dir = pytester.mkpydir("live")
-    (live_dir / "conftest.py").write_text(
-        """
-import pytest
-from typing import Generator
+    _run_guard(request)
 
-pytestmark = pytest.mark.live
+    assert request.fixture_calls == ["respx_mock"]
 
-@pytest.fixture(autouse=True)
-def block_external_requests() -> Generator[None, None, None]:
-    # Override: live tests are allowed to make real HTTP calls.
-    yield
-""",
-        encoding="utf-8",
-    )
 
-    # A live test that would raise AllMockedAssertionError if respx were active.
-    (live_dir / "test_guard.py").write_text(
-        """
-import httpx
-import pytest
-from respx.models import AllMockedAssertionError
-
-@pytest.mark.live
-def test_no_respx_blocking_in_live_suite():
-    \"\"\"Real (or refused) connections must not be intercepted by respx.\"\"\"
-    try:
-        # Port 1 is almost universally refused; this just needs to NOT raise
-        # AllMockedAssertionError – a refused connection proves respx is inactive.
-        httpx.get("http://127.0.0.1:1", timeout=1.0)
-    except AllMockedAssertionError as exc:
-        pytest.fail(
-            f"respx is still intercepting live requests; "
-            f"the network guard was not bypassed: {exc}"
+def test_live_marker_bypasses_guard_outside_live_directory() -> None:
+    request = _DummyRequest(
+        node=_DummyNode(
+            path=test_conftest.ROOT / "tests" / "unit" / "test_a.py",
+            has_live_marker=True,
         )
-    except Exception:
-        # Any real network error (ConnectError, TimeoutException, …) is fine.
-        pass
-""",
-        encoding="utf-8",
     )
 
-    result = pytester.runpytest_subprocess("live/", "-v")
-    result.assert_outcomes(passed=1)
+    _run_guard(request)
 
-
-def test_block_external_requests_active_outside_live_suite(pytester: pytest.Pytester) -> None:
-    """Sanity-check: respx_mock must still block requests in non-live tests."""
-    pytester.makeini(
-        """
-[pytest]
-asyncio_mode = auto
-markers =
-    live: marks tests that require a live external connection
-"""
-    )
-
-    pytester.makeconftest(
-        """
-import pytest
-
-@pytest.fixture(autouse=True)
-def block_external_requests(request):
-    if request.node.get_closest_marker("live"):
-        yield
-        return
-    request.getfixturevalue("respx_mock")
-    yield
-"""
-    )
-
-    # A plain (non-live) test that should be blocked by respx_mock.
-    pytester.makepyfile(
-        test_unit_guard="""
-import httpx
-import pytest
-from respx.models import AllMockedAssertionError
-
-def test_respx_blocks_non_live_requests():
-    with pytest.raises(AllMockedAssertionError):
-        httpx.get("http://127.0.0.1:1", timeout=1.0)
-"""
-    )
-
-    result = pytester.runpytest_subprocess("-v")
-    result.assert_outcomes(passed=1)
+    assert request.fixture_calls == []
