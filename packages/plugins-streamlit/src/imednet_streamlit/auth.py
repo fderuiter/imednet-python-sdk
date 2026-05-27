@@ -94,6 +94,10 @@ def get_study_key() -> str:
 
 
 def clear_credentials() -> None:
-    """Remove all authentication-related state from the Streamlit session."""
+    """Remove all authentication state from Streamlit session storage.
+
+    This removes the cached SDK instance, connection flag, and any credential
+    input values currently held in ``st.session_state``.
+    """
     for key in (_KEY_API_KEY, _KEY_SECURITY_KEY, _KEY_STUDY_KEY, _KEY_SDK, _KEY_CONNECTED):
         st.session_state.pop(key, None)
