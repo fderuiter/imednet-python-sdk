@@ -4,6 +4,7 @@ import subprocess
 import sys
 from importlib import import_module
 from importlib.util import find_spec
+from typing import NoReturn
 
 try:
     # typer[all] also pulls in rich; checking both ensures a clear error
@@ -128,7 +129,7 @@ def _register_missing_workflow_commands() -> None:
     app.add_typer(workflows_app)
 
 
-def _exit_missing_dashboard_plugin() -> None:
+def _exit_missing_dashboard_plugin() -> NoReturn:
     typer.secho(
         "Dashboard plugin not found. Install it with:\n" "  pip install imednet-streamlit",
         fg=typer.colors.RED,
