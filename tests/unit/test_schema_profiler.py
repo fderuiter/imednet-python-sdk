@@ -131,6 +131,7 @@ def test_schema_profiler_streams_chunked_loader_records() -> None:
     class _ChunkedLoader:
         def __init__(self) -> None:
             self.load_records = MagicMock()
+            self.sync_records = MagicMock()
             self._iter_mock = MagicMock()
 
         def iter_cached_records(self, study_key: str):
@@ -173,7 +174,8 @@ def test_schema_profiler_streams_chunked_loader_records() -> None:
     profiler = SchemaProfiler(sdk, loader=loader)
     profile = profiler.profile_records("STUDY")["LAB"]
 
-    loader.load_records.assert_called_once_with("STUDY")
+    loader.sync_records.assert_called_once_with("STUDY")
+    loader.load_records.assert_not_called()
     loader._iter_mock.assert_called_once_with("STUDY")
     assert profile.record_count == 2
     assert profile.fields["RESULT"].population_rate == 100.0

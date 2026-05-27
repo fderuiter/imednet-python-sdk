@@ -111,11 +111,15 @@ class SchemaProfiler:
     def _iter_records(self, study_key: str) -> Iterable[Record]:
         if self._loader is None:
             self._loader = CachedRecordsLoader(self._sdk)
-        # Check class-level method presence to avoid dynamic mock attributes
+        sync_method = getattr(self._loader, "sync_records", None)
+        # Check class-level iterator presence to avoid dynamic mock attributes
         # being treated as real chunked iterators.
         iter_method = getattr(type(self._loader), "iter_cached_records", None)
         if callable(iter_method):
-            self._loader.load_records(study_key)
+            if callable(sync_method):
+                sync_method(study_key)
+            else:
+                self._loader.load_records(study_key)
             return self._loader.iter_cached_records(study_key)
         return self._loader.load_records(study_key)
 

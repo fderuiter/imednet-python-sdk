@@ -1,8 +1,10 @@
+import tracemalloc
 from datetime import datetime
 from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
+from faker import Faker
 from pydantic import BaseModel, ValidationError
 
 from imednet.models.records import Record
@@ -237,3 +239,51 @@ def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
     mapper = RecordMapper(MagicMock())
     with pytest.raises(ImportError, match="pandas is required for RecordMapper.dataframe"):
         mapper.dataframe("STUDY")
+
+
+def test_iter_dataframes_streams_large_study_with_bounded_memory() -> None:
+    fake = Faker()
+
+    class _StreamingLoader:
+        def __init__(self) -> None:
+            self.sync_records = MagicMock()
+
+        def iter_cached_records(self, study_key: str, *, chunk_size: int = 5_000):
+            assert study_key == "STUDY"
+            assert chunk_size == 5_000
+            for record_id in range(50_000):
+                yield Record(
+                    study_key="STUDY",
+                    record_id=record_id,
+                    subject_key=f"S{record_id}",
+                    visit_id=record_id % 5,
+                    form_id=10,
+                    form_key="LAB",
+                    record_status="Complete",
+                    date_created=datetime(2024, 1, 1),
+                    record_data={
+                        "AGE": fake.pyint(min_value=18, max_value=90),
+                        "COMMENT": fake.lexify(text="????????"),
+                    },
+                )
+
+    sdk = MagicMock()
+    sdk.variables.list.return_value = [
+        Variable(variable_name="AGE", label="Age", form_id=10),
+        Variable(variable_name="COMMENT", label="Comment", form_id=10),
+    ]
+    loader = _StreamingLoader()
+    mapper = RecordMapper(sdk, loader=loader, chunk_size=5_000)
+
+    tracemalloc.start()
+    chunk_sizes: list[int] = []
+    peak_bytes = 0
+    for frame in mapper.iter_dataframes("STUDY", use_labels_as_columns=False):
+        chunk_sizes.append(len(frame))
+        _, current_peak = tracemalloc.get_traced_memory()
+        peak_bytes = max(peak_bytes, current_peak)
+    tracemalloc.stop()
+
+    loader.sync_records.assert_called_once_with("STUDY")
+    assert chunk_sizes == [5_000] * 10
+    assert peak_bytes < 35_000_000

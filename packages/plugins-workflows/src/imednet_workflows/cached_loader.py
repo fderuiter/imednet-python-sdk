@@ -48,6 +48,11 @@ class CachedRecordsLoader:
 
     def load_records(self, study_key: str, *, reconcile: bool = True) -> list[Record]:
         """Synchronise the cache for ``study_key`` and return cached records."""
+        self.sync_records(study_key, reconcile=reconcile)
+        return self.get_cached_records(study_key)
+
+    def sync_records(self, study_key: str, *, reconcile: bool = True) -> None:
+        """Synchronise the cache for ``study_key`` without materialising cached rows."""
         conn = get_cache_connection(self.db_path)
         try:
             high_water_mark = self._get_high_water_mark(conn, study_key)
@@ -56,7 +61,6 @@ class CachedRecordsLoader:
             if reconcile:
                 active_record_ids = self._fetch_active_record_ids(study_key)
                 self.reconcile_cache(conn, study_key, active_record_ids)
-            return self.get_cached_records(study_key, conn=conn)
         finally:
             conn.close()
 

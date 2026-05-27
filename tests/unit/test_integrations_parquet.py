@@ -144,3 +144,53 @@ def test_export_to_hive_parquet_rejects_malicious_form_key(monkeypatch) -> None:
         parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", "/tmp/lake")
 
     mapper._fetch_records.assert_not_called()
+
+
+def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> None:
+    sdk = MagicMock()
+    sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="DEMOGRAPHICS")]
+    sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
+
+    class FakeMapper:
+        def __init__(self, _sdk) -> None:
+            self._sdk = _sdk
+
+        def _build_record_model(self, variable_keys, label_map):
+            return (variable_keys, label_map)
+
+        def _iter_records(self, _study_key, extra_filters):
+            assert extra_filters == {"formIds": [1]}
+            return iter([1, 2, 3])
+
+        def _iter_parsed_rows(self, records, _record_model):
+            values = list(records)
+            yield values[:2], 0
+            yield values[2:], 0
+
+        def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
+            return pd.DataFrame([{"age": value} for value in rows])
+
+    writes: list[list[dict[str, int]]] = []
+
+    class FakeEngine:
+        def write_form_table(self, table, **kwargs) -> None:
+            assert kwargs == {
+                "base_dir": str(tmp_path),
+                "study_key": "STUDY_A",
+                "form_key": "DEMOGRAPHICS",
+            }
+            writes.append(table.to_dict("records"))
+
+    class _FakeTable:
+        @staticmethod
+        def from_pandas(df: pd.DataFrame, preserve_index: bool = False) -> pd.DataFrame:
+            assert preserve_index is False
+            return df
+
+    monkeypatch.setattr(parquet_mod, "_record_mapper", lambda: FakeMapper)
+    monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: SimpleNamespace(Table=_FakeTable))
+    monkeypatch.setattr(parquet_mod, "PyArrowDatasetPartitionedStorageEngine", lambda: FakeEngine())
+
+    parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", str(tmp_path), chunk_size=2)
+
+    assert writes == [[{"age": 1}, {"age": 2}], [{"age": 3}]]

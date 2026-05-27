@@ -93,3 +93,23 @@ def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
     records = list(loader.iter_cached_records("STUDY", chunk_size=1))
 
     assert [record.record_id for record in records] == [1, 2]
+
+
+def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None:
+    sdk = MagicMock()
+    sdk.records.list.side_effect = [
+        [_record(1, "2024-01-01T00:00:00+00:00")],
+        [_record(1, "2024-01-01T00:00:00+00:00")],
+    ]
+    loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
+
+    loader.sync_records("STUDY")
+
+    with get_cache_connection(loader.db_path) as conn:
+        row = conn.execute(
+            "SELECT COUNT(*) FROM record_cache WHERE study_key = ?",
+            ("STUDY",),
+        ).fetchone()
+
+    assert row is not None
+    assert row[0] == 1
