@@ -7,6 +7,7 @@ on:
       - "imednet-v*.*.*"
       - "imednet-workflows-v*.*.*"
       - "apache-airflow-providers-imednet-v*.*.*"
+      - "imednet-streamlit-v*.*.*"
   pull_request:
     branches: [main]
 
@@ -138,6 +139,13 @@ jobs:
           path: packages/providers-airflow/dist/
           retention-days: 1
 
+      - name: Upload Streamlit Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-streamlit
+          path: packages/plugins-streamlit/dist/
+          retention-days: 1
+
   # ------------------------------------------------------------------
   # JOB 3: TEST MATRIX (Tests the BUILT library)
   # ------------------------------------------------------------------
@@ -229,6 +237,7 @@ jobs:
     needs: test
     if: startsWith(github.ref, 'refs/tags/imednet-v')
     runs-on: ubuntu-latest
+    environment: pypi
     permissions:
       id-token: write # Mandatory for trusted publishing
     steps:
@@ -246,6 +255,7 @@ jobs:
     needs: test
     if: startsWith(github.ref, 'refs/tags/imednet-workflows-v')
     runs-on: ubuntu-latest
+    environment: pypi
     permissions:
       id-token: write # Mandatory for trusted publishing
     steps:
@@ -263,6 +273,7 @@ jobs:
     needs: test
     if: startsWith(github.ref, 'refs/tags/apache-airflow-providers-imednet-v')
     runs-on: ubuntu-latest
+    environment: pypi
     permissions:
       id-token: write # Mandatory for trusted publishing
     steps:
@@ -270,6 +281,24 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-providers
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-streamlit:
+    name: Publish imednet-streamlit to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/imednet-streamlit-v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Streamlit Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-streamlit
           path: dist
 
       - name: Publish to PyPI
