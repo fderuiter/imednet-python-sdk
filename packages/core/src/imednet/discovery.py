@@ -25,21 +25,33 @@ def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
 
 
 def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
-    """Return the first active site name for ``study_key``."""
+    """Return the first active site name for ``study_key``.
+
+    Status matching is case-insensitive and uses substring containment so
+    that values such as ``"Active"``, ``"active"``, or ``"ACTIVE"`` are all
+    treated as eligible.
+    """
     sites = sdk.sites.list(study_key=study_key)
     for site in sites:
-        if getattr(site, "site_enrollment_status", "").lower() == "active":
+        status = getattr(site, "site_enrollment_status", "") or ""
+        if "active" in status.lower():
             return site.site_name
-    raise NoLiveDataError("No active sites available for live tests")
+    raise NoLiveDataError(f"No active sites available for study {study_key}")
 
 
 def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
-    """Return the first active subject key for ``study_key``."""
+    """Return the first active subject key for ``study_key``.
+
+    Status matching is case-insensitive and uses substring containment so
+    that values such as ``"Active"``, ``"active"``, or ``"ACTIVE"`` are all
+    treated as eligible.
+    """
     subjects = sdk.subjects.list(study_key=study_key)
     for subject in subjects:
-        if getattr(subject, "subject_status", "").lower() == "active":
+        status = getattr(subject, "subject_status", "") or ""
+        if "active" in status.lower():
             return subject.subject_key
-    raise NoLiveDataError("No active subjects available for live tests")
+    raise NoLiveDataError(f"No active subjects available for study {study_key}")
 
 
 def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
@@ -48,4 +60,4 @@ def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
     for interval in intervals:
         if not getattr(interval, "disabled", False):
             return interval.interval_name
-    raise NoLiveDataError("No active intervals available for live tests")
+    raise NoLiveDataError(f"No active intervals available for study {study_key}")
