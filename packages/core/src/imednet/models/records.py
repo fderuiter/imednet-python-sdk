@@ -71,13 +71,16 @@ class BaseRecordRequest(JsonModel):
 
 
 class RegisterSubjectRequest(BaseRecordRequest):
-    """Payload for registering (enrolling) a new subject."""
+    """Payload for registering (enrolling) a new subject.
+
+    Per the API documentation, registering a subject only requires ``formKey``
+    and ``siteName``.  The system assigns the subject identifier upon creation.
+    Do **not** include a ``subjectKey`` here — doing so causes the server to
+    treat the request as an update and reject it when the key is unknown.
+    """
 
     site_name: str = Field(
         "", alias="siteName", description="Name of the site where the subject is enrolled"
-    )
-    subject_key: str = Field(
-        "", alias="subjectKey", description="Unique identifier for the subject"
     )
 
     pass

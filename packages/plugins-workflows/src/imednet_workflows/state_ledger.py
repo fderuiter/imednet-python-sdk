@@ -65,10 +65,10 @@ class ExtractionStateLedger:
 
         with open(self._lock_path, "w") as lock_file:
             try:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)  # type: ignore[attr-defined]
                 yield
             finally:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)  # type: ignore[attr-defined]
 
     def read_state(self) -> LedgerState:
         """Reads and validates the current ledger state."""
