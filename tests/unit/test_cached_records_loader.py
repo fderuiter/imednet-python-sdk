@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock
 
+import pytest
+
 from imednet.models.records import Record
 from imednet_workflows.cached_loader import CachedRecordsLoader, get_cache_connection
 
@@ -95,6 +97,13 @@ def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
     assert [record.record_id for record in records] == [1, 2]
 
 
+def test_iter_cached_records_rejects_non_positive_chunk_size(tmp_path: Path) -> None:
+    loader = CachedRecordsLoader(MagicMock(), cache_dir=tmp_path)
+
+    with pytest.raises(ValueError, match="chunk_size must be greater than zero"):
+        next(loader.iter_cached_records("STUDY", chunk_size=0))
+
+
 def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None:
     sdk = MagicMock()
     sdk.records.list.side_effect = [
@@ -113,3 +122,22 @@ def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None
 
     assert row is not None
     assert row[0] == 1
+
+
+def test_sync_records_handles_empty_delta_without_reconciliation(tmp_path: Path) -> None:
+    sdk = MagicMock()
+    sdk.records.list.side_effect = [
+        [_record(1, "2024-01-01T00:00:00+00:00")],
+        [],
+    ]
+    loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
+
+    loader.sync_records("STUDY", reconcile=False)
+    loader.sync_records("STUDY", reconcile=False)
+
+    assert sdk.records.list.call_count == 2
+    assert sdk.records.list.call_args_list[1].kwargs == {
+        "study_key": "STUDY",
+        "record_data_filter": None,
+        "date_modified": (">", "2024-01-01T00:00:00+00:00"),
+    }
