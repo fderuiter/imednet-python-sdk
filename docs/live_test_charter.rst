@@ -224,10 +224,12 @@ The following table documents which statuses are treated as eligible.
      - same
    * - Site
      - any (first returned)
-     - ``site_enrollment_status`` equals ``active`` (case-insensitive)
+     - ``site_enrollment_status`` equals ``active`` or ``enrollment_open``
+       (case-insensitive)
    * - Subject
      - any (first returned)
-     - ``subject_status`` equals ``active`` (case-insensitive)
+     - ``subject_status`` equals ``active``, ``registered``, ``baseline``, or
+       ``enrolled`` (case-insensitive)
    * - Interval
      - ``disabled=false``
      - same
@@ -285,7 +287,7 @@ Smoke (``scripts/post_smoke_record.py``)
      - **Skip** (exit 0 + ``::notice::`` annotation)
      - The environment exists but is not configured for writes.  This is a
        warning, not a failure.
-   * - Credentials valid, no studies found
+   * - Credentials valid, no studies or no eligible form found
      - **Red** (exit 1)
      - The environment has no accessible data; the smoke run cannot prove
        anything.
@@ -354,9 +356,8 @@ At startup, ``tests/live/conftest.py`` prints the following context:
 
 * whether ``IMEDNET_RUN_E2E`` is set,
 * whether ``IMEDNET_ALLOW_MUTATION`` is set,
-* the value of ``IMEDNET_STUDY_KEY`` (if set),
-* the resolved base URL,
-* a count of studies accessible with the provided credentials.
+* the value of ``IMEDNET_STUDY_KEY`` (if set, or ``auto-discover`` otherwise),
+* the resolved base URL.
 
 This output is always visible, even when tests are subsequently skipped.  It
 lets operators verify that the right environment was targeted before reading

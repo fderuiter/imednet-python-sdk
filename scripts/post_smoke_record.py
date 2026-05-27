@@ -191,14 +191,11 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         with authenticate() as sdk:
-            # discover_keys raises NoLiveDataError when no study or form exists.
-            # Per the live-test charter that is a hard failure (exit 1) because
-            # the environment cannot prove anything useful without basic data.
             try:
                 study_key, form_key = discover_keys(sdk)
             except NoLiveDataError as exc:
-                print(f"::notice:: Smoke record skipped – {exc}")
-                return SKIP_EXIT_CODE
+                print(f"::error:: Smoke record failed – {exc}", file=sys.stderr)
+                return 1
 
             logger.info("Discovered study_key=%s form_key=%s", study_key, form_key)
             site_name, subject_key, interval_name = discover_identifiers(sdk, study_key)

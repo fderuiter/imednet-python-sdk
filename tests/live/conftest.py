@@ -5,9 +5,15 @@ from typing import Any, AsyncIterator, Callable, Generator, Iterator
 
 import pytest
 
+from imednet.discovery import (
+    NoLiveDataError,
+    discover_interval_name,
+    discover_site_name,
+    discover_subject_key,
+)
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 from imednet.testing import typed_values
-from tests.live.helpers import get_form_key, get_study_key
+from tests.live.helpers import get_form_key, get_study_key, require_mutation
 
 pytestmark = pytest.mark.live
 
@@ -17,6 +23,7 @@ BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
 ALLOW_MUTATION = os.getenv("IMEDNET_ALLOW_MUTATION") == "1"
 STUDY_KEY_OVERRIDE = os.getenv("IMEDNET_STUDY_KEY")
+BATCH_ID_OVERRIDE = os.getenv("IMEDNET_BATCH_ID")
 
 logger = logging.getLogger(__name__)
 
@@ -91,30 +98,40 @@ def first_form_key(sdk: ImednetSDK, study_key: str) -> str:
 
 @pytest.fixture(scope="session")
 def first_site_name(sdk: ImednetSDK, study_key: str) -> str:
-    sites = sdk.sites.list(study_key=study_key)
-    if not sites:
-        pytest.skip(f"No sites available for study {study_key}")
-    return sites[0].site_name
+    try:
+        return discover_site_name(sdk, study_key)
+    except NoLiveDataError as exc:
+        pytest.skip(str(exc))
 
 
 @pytest.fixture(scope="session")
 def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
-    subjects = sdk.subjects.list(study_key=study_key)
-    if not subjects:
-        pytest.skip(f"No subjects available for study {study_key}")
-    return subjects[0].subject_key
+    try:
+        return discover_subject_key(sdk, study_key)
+    except NoLiveDataError as exc:
+        pytest.skip(str(exc))
 
 
 @pytest.fixture(scope="session")
 def first_interval_name(sdk: ImednetSDK, study_key: str) -> str:
-    intervals = sdk.intervals.list(study_key=study_key)
-    if not intervals:
-        pytest.skip(f"No intervals available for study {study_key}")
-    return intervals[0].interval_name
+    try:
+        return discover_interval_name(sdk, study_key)
+    except NoLiveDataError as exc:
+        pytest.skip(str(exc))
 
 
 @pytest.fixture(scope="session")
 def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> str:
+    """Return a batch ID for job-polling tests.
+
+    Uses ``IMEDNET_BATCH_ID`` when set (read-only path).  Otherwise requires
+    ``IMEDNET_ALLOW_MUTATION=1`` and creates a record to obtain a fresh batch ID.
+    """
+    if BATCH_ID_OVERRIDE:
+        return BATCH_ID_OVERRIDE
+
+    require_mutation()
+
     variables = sdk.variables.list(study_key=study_key, formKey=first_form_key)
     if not variables:
         pytest.skip(f"No variables available for form {first_form_key}")
