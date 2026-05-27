@@ -19,6 +19,14 @@ def test_dashboard_login_requires_all_fields() -> None:
     assert at.sidebar.error[0].value == "All fields are required."
 
 
+def test_dashboard_home_page_prompts_for_credentials_before_auth() -> None:
+    at = AppTest.from_file(str(APP_PATH))
+    at.run()
+
+    assert at.title[0].value == "🏥 iMednet EDC Dashboard"
+    assert at.info[0].value == "Please authenticate using the sidebar to access the dashboard."
+
+
 def test_dashboard_login_uses_sdk_after_credentials_entered() -> None:
     with patch("imednet_streamlit.auth.ImednetSDK") as mock_sdk:
         at = AppTest.from_file(str(APP_PATH))
@@ -32,3 +40,7 @@ def test_dashboard_login_uses_sdk_after_credentials_entered() -> None:
 
     assert mock_sdk.called
     assert at.sidebar.success[0].value == "Connected ✓"
+    assert at.success[0].value == "Connected to study: `PROT-100`"
+    assert at.session_state["_imednet_connected"] is True
+    assert "_imednet_api_key" not in at.session_state
+    assert "_imednet_security_key" not in at.session_state
