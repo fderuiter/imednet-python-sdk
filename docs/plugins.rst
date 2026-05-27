@@ -143,12 +143,23 @@ manual ``sys.modules`` monkeypatching:
 
 .. code-block:: python
 
+   from pathlib import Path
    from streamlit.testing.v1 import AppTest
    from unittest.mock import patch
 
+   APP_PATH = (
+       Path(__file__).resolve().parents[3]
+       / "packages"
+       / "plugins-streamlit"
+       / "src"
+       / "imednet_streamlit"
+       / "app.py"
+   )
+
    def test_dashboard_login_flow() -> None:
-       with patch("imednet_streamlit.auth.ImednetSDK"):
-           at = AppTest.from_file("packages/plugins-streamlit/src/imednet_streamlit/app.py")
+       with patch("imednet_streamlit.auth.ImednetSDK") as mock_sdk:
+           mock_sdk.return_value = object()
+           at = AppTest.from_file(str(APP_PATH))
            at.run()
            at.sidebar.text_input(key="_imednet_api_key").input("test-api-key")
            at.sidebar.text_input(key="_imednet_security_key").input("test-security-key")
@@ -165,7 +176,8 @@ CLI commands that depend on optional plugins should be tested in two modes:
 * **Plugin present**: patch ``importlib.util.find_spec`` (or module import) to
   return a module and assert the command runs.
 * **Plugin absent**: patch discovery to return ``None`` (or raise
-  ``ImportError``) and assert the command exits non-zero with install guidance.
+  ``ImportError``) and assert the command exits with code ``1`` and prints
+  install guidance.
 
 See ``tests/unit/cli/test_cli.py`` and ``tests/unit/cli/test_cli_export.py``
 for repository examples of this pattern.
