@@ -227,8 +227,10 @@ def test_imednet_hook_get_extra_json_fallback(monkeypatch):
     conn.login = None
     conn.password = None
     conn.extra_dejson = None
-    conn.get_extra.return_value = (
+    conn.get_extra = MagicMock(
+        return_value=(
         '{"api_key":"GET_EXTRA_KEY","security_key":"GET_EXTRA_SEC","base_url":"https://get-extra"}'
+    )
     )
 
     import airflow.hooks.base as hooks_base
@@ -247,6 +249,7 @@ def test_imednet_hook_get_extra_json_fallback(monkeypatch):
     assert sdk._client._client.headers["x-api-key"] == "GET_EXTRA_KEY"
     assert sdk._client._client.headers["x-imn-security-key"] == "GET_EXTRA_SEC"
     assert sdk._client.base_url == "https://get-extra"
+    conn.get_extra.assert_called_once_with()
 
 
 def test_imednet_hook_extra_json_string_fallback(monkeypatch):
@@ -256,7 +259,7 @@ def test_imednet_hook_extra_json_string_fallback(monkeypatch):
     conn.login = None
     conn.password = None
     conn.extra_dejson = None
-    conn.get_extra = None
+    conn.get_extra = MagicMock(return_value="not-json")
     conn.extra = (
         '{"api_key":"EXTRA_FIELD_KEY","security_key":"EXTRA_FIELD_SEC","base_url":"https://extra"}'
     )
@@ -277,6 +280,7 @@ def test_imednet_hook_extra_json_string_fallback(monkeypatch):
     assert sdk._client._client.headers["x-api-key"] == "EXTRA_FIELD_KEY"
     assert sdk._client._client.headers["x-imn-security-key"] == "EXTRA_FIELD_SEC"
     assert sdk._client.base_url == "https://extra"
+    conn.get_extra.assert_called_once_with()
 
 
 def test_imednet_hook_non_string_login(monkeypatch):

@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING, Any, Dict
 if TYPE_CHECKING:
     from airflow.exceptions import AirflowException
     try:
+        # Airflow 3.x canonical Context import path.
         from airflow.sdk import Context
     except (ImportError, ModuleNotFoundError):
+        # Airflow 2.x and compatibility fallback path.
         from airflow.utils.context import Context
 else:  # pragma: no cover - typing fallback for optional Airflow dependency
     try:
