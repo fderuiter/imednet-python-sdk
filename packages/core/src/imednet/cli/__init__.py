@@ -192,11 +192,9 @@ except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover -
     _register_missing_workflow_commands()
 
 
-try:  # pragma: no cover - optional streamlit plugin
-    if find_spec("imednet_streamlit.app") is None:
-        raise ModuleNotFoundError("No module named 'imednet_streamlit.app'")
+if find_spec("imednet_streamlit.app") is not None:  # pragma: no cover - optional streamlit plugin
     app.command("dashboard")(run_dashboard)
-except (ImportError, ModuleNotFoundError):  # pragma: no cover
+else:  # pragma: no cover
     _register_missing_dashboard_commands()
 
 
