@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
+import pytest
 
 import imednet_streamlit.components.paginated_grid as paginated_grid
 
@@ -24,7 +25,7 @@ class _FakeColumn:
         self.captions.append(value)
 
 
-def test_paginated_slice_limits_rows_to_active_page(monkeypatch) -> None:
+def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPatch) -> None:
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
@@ -47,7 +48,7 @@ def test_paginated_slice_limits_rows_to_active_page(monkeypatch) -> None:
     assert "Showing 1-100 of 20000" in info_col.captions[0]
 
 
-def test_paginated_slice_moves_to_next_page(monkeypatch) -> None:
+def test_paginated_slice_moves_to_next_page(monkeypatch: pytest.MonkeyPatch) -> None:
     session_state: dict[str, Any] = {"records_page": 1}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
