@@ -88,6 +88,7 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         staged_partition_dir = staging_base_dir / f"study_key={study_key}" / f"form_key={form_key}"
         final_partition_dir = base_path / f"study_key={study_key}" / f"form_key={form_key}"
         committed_batch_dir = final_partition_dir / f"_batch_{commit_id}"
+        commit_succeeded = False
 
         staging_base_dir.mkdir(parents=True, exist_ok=False)
 
@@ -137,8 +138,19 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
             # Where the filesystem supports atomic rename (e.g., local POSIX),
             # os.replace ensures readers observe a fully committed batch dir.
             os.replace(staged_partition_dir, committed_batch_dir)
+            commit_succeeded = True
         finally:
             shutil.rmtree(staging_base_dir, ignore_errors=True)
+            if not commit_succeeded:
+                current_path = final_partition_dir
+                while current_path != base_path:
+                    try:
+                        current_path.rmdir()
+                    except OSError as error:
+                        if error.errno in (ENOENT, ENOTEMPTY):
+                            break
+                        raise
+                    current_path = current_path.parent
             if staging_root.exists():
                 try:
                     staging_root.rmdir()
