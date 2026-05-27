@@ -75,14 +75,20 @@ class ConfigVersionStore:
                 CREATE TRIGGER IF NOT EXISTS trg_config_commits_no_update
                 BEFORE UPDATE ON config_commits
                 BEGIN
-                    SELECT RAISE(ABORT, 'config_commits is immutable');
+                    SELECT RAISE(
+                        ABORT,
+                        'Configuration history is immutable and cannot be modified'
+                    );
                 END;
             """)
             conn.execute("""
                 CREATE TRIGGER IF NOT EXISTS trg_config_commits_no_delete
                 BEFORE DELETE ON config_commits
                 BEGIN
-                    SELECT RAISE(ABORT, 'config_commits is immutable');
+                    SELECT RAISE(
+                        ABORT,
+                        'Configuration history is immutable and cannot be deleted'
+                    );
                 END;
             """)
             conn.commit()
@@ -266,7 +272,10 @@ class ConfigVersionStore:
 
     def _verify_commit_signature(self, commit_id: str, config_data: str) -> None:
         if _sha256_of(config_data) != commit_id:
-            raise ValueError(f"Commit {commit_id!r} failed hash signature verification.")
+            raise ValueError(
+                "Configuration data integrity check failed: "
+                f"SHA-256 hash mismatch for commit {commit_id!r}"
+            )
 
 
 def _flatten(data: Any, prefix: str = "") -> dict[str, Any]:
