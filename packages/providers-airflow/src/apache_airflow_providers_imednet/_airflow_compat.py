@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict
 
 if TYPE_CHECKING:
     from airflow.exceptions import AirflowException
+
     try:
         # Airflow 3.x canonical Context import path.
         from airflow.sdk import Context
