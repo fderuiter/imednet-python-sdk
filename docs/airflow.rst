@@ -91,12 +91,13 @@ by expanding a list of per-study destinations or by templating with
 
 .. code-block:: python
 
+   from typing import Any
    from airflow.decorators import task
    from apache_airflow_providers_imednet import ImednetExportOperator, ImednetHook
 
    @task
-   def export_targets() -> list[dict[str, object]]:
-       hook = ImednetHook()
+   def export_targets() -> list[dict[str, Any]]:
+       hook = ImednetHook("imednet_default")
        return [
            {
                "study_key": study_key,
