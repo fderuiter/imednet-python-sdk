@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 from types import ModuleType
 from unittest.mock import MagicMock
 
+import pytest
+
 import imednet.sdk as sdk_mod
 
 
@@ -79,7 +81,7 @@ def test_export_operator_calls_helper(monkeypatch):
     )
 
     sdk = MagicMock()
-    hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
+    hook_inst = MagicMock(get_sdk_client=MagicMock(return_value=sdk))
 
     import apache_airflow_providers_imednet as airflow_mod
     import apache_airflow_providers_imednet.operators.export as export_ops
@@ -99,6 +101,96 @@ def test_export_operator_calls_helper(monkeypatch):
 
     export_mock.assert_called_once_with(sdk, "S", "/tmp/out.csv")
     assert result == "/tmp/out.csv"
+
+
+def test_export_operator_exposes_mapped_runtime_fields(monkeypatch):
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
+
+    _setup_airflow(monkeypatch)
+
+    from apache_airflow_providers_imednet import ImednetExportOperator
+
+    assert ImednetExportOperator.mapped_runtime_fields == (
+        "study_key",
+        "output_path",
+        "export_kwargs",
+    )
+    assert ImednetExportOperator.template_fields == ImednetExportOperator.mapped_runtime_fields
+    assert ImednetExportOperator.template_fields_renderers == {"export_kwargs": "json"}
+
+
+def test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute(monkeypatch):
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
+
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    sdk = MagicMock()
+    hook_inst = MagicMock(get_sdk_client=MagicMock(return_value=sdk))
+
+    import apache_airflow_providers_imednet as airflow_mod
+    import apache_airflow_providers_imednet.operators.export as export_ops
+
+    hook_cls = MagicMock(return_value=hook_inst)
+    monkeypatch.setattr(export_ops, "ImednetHook", hook_cls)
+    export_mock = MagicMock()
+    monkeypatch.setattr(airflow_mod.export, "export_to_json", export_mock)
+
+    export_kwargs = {"orient": "records"}
+    op = airflow_mod.ImednetExportOperator(
+        task_id="t",
+        study_key="S",
+        output_path="/tmp/out.json",
+        export_func="export_to_json",
+        export_kwargs=export_kwargs,
+    )
+
+    export_kwargs["orient"] = "split"
+    result = op.execute({})
+
+    hook_cls.assert_called_once_with("imednet_default")
+    hook_inst.get_sdk_client.assert_called_once_with()
+    export_mock.assert_called_once_with(sdk, "S", "/tmp/out.json", orient="records")
+    assert result == "/tmp/out.json"
+
+
+def test_export_operator_rejects_unknown_export_callable(monkeypatch):
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
+
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from apache_airflow_providers_imednet import ImednetExportOperator
+    from apache_airflow_providers_imednet._airflow_compat import AirflowException
+
+    op = ImednetExportOperator(
+        task_id="t",
+        study_key="S",
+        output_path="/tmp/out.csv",
+        export_func="does_not_exist",
+    )
+
+    with pytest.raises(AirflowException, match="Unsupported export_func"):
+        op.execute({})
 
 
 def test_imednet_hook_non_dict_extras(monkeypatch):

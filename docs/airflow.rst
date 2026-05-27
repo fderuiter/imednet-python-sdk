@@ -82,7 +82,35 @@ The Airflow integration organizes hooks, operators, and sensors in dedicated sub
 ``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3
 and ``ImednetJobSensor`` waits for an export job to complete. All operators use
 ``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance from an
-Airflow connection.
+Airflow connection. For dynamic task mapping, keep static settings such as
+``export_func`` and ``imednet_conn_id`` in ``.partial(...)`` and map only the
+runtime fields ``study_key``, ``output_path``, and ``export_kwargs``. Ensure
+``output_path`` resolves to a unique value per mapped task instance, for example
+by expanding a list of per-study destinations or by templating with
+``{{ ti.map_index }}``.
+
+.. code-block:: python
+
+   from airflow.decorators import task
+   from apache_airflow_providers_imednet import ImednetExportOperator, ImednetHook
+
+   @task
+   def export_targets() -> list[dict[str, object]]:
+       hook = ImednetHook()
+       return [
+           {
+               "study_key": study_key,
+               "output_path": f"/tmp/{study_key}.csv",
+               "export_kwargs": {"index": False},
+           }
+           for study_key in hook.list_study_keys()
+       ]
+
+   ImednetExportOperator.partial(
+       task_id="export_records",
+       export_func="export_to_csv",
+       imednet_conn_id="imednet_default",
+   ).expand_kwargs(export_targets())
 
 Testing with Airflow
 --------------------
