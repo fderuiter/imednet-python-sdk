@@ -113,6 +113,75 @@ Architecture rules
 * **Zero core bloat** — ``streamlit``, ``altair``, and ``pandas`` do **not**
   appear in the ``packages/core`` dependency list.
 
+Workbench MVP developer guide
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Reporting Foundation MVP pages (Setup Wizard, Review Workbench, Publisher
+Wizard, Data Lineage) are designed so teams can extend templates and schema
+mapping safely without changing the core SDK package.
+
+Extending templates and schema mappings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use :class:`imednet.models.study_config.StudyConfiguration` as the single
+source of truth for extension points:
+
+* ``mappings`` defines canonical-field to raw-form mappings.
+* ``terminology_lookups`` defines normalization tables used before validation.
+* ``widgets`` defines dashboard template blocks rendered by the MVP pages.
+
+When introducing new mappings or widgets, validate behavior in both:
+
+* ``tests/unit/streamlit/`` for UI interaction and page-state checks.
+* ``tests/unit/workflows/`` for schema profiling/extraction behavior.
+
+Headless Streamlit testing pattern (AppTest)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use Streamlit's official ``AppTest`` runner to test full-page flows without
+manual ``sys.modules`` monkeypatching:
+
+.. code-block:: python
+
+   from pathlib import Path
+   from streamlit.testing.v1 import AppTest
+   from unittest.mock import patch
+
+   APP_PATH = (
+       Path(__file__).resolve().parents[3]
+       / "packages"
+       / "plugins-streamlit"
+       / "src"
+       / "imednet_streamlit"
+       / "app.py"
+   )
+
+   def test_dashboard_login_flow() -> None:
+       with patch("imednet_streamlit.auth.ImednetSDK") as mock_sdk:
+           mock_sdk.return_value = object()
+           at = AppTest.from_file(str(APP_PATH))
+           at.run()
+           at.sidebar.text_input(key="_imednet_api_key").input("test-api-key")
+           at.sidebar.text_input(key="_imednet_security_key").input("test-security-key")
+           at.sidebar.text_input(key="_imednet_study_key").input("PROT-100")
+           at.sidebar.button[0].click()
+           at.run()
+           assert at.sidebar.success[0].value == "Connected ✓"
+
+Optional-plugin CLI graceful-degradation verification
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+CLI commands that depend on optional plugins should be tested in two modes:
+
+* **Plugin present**: patch ``importlib.util.find_spec`` (or module import) to
+  return a module and assert the command runs.
+* **Plugin absent**: patch discovery to return ``None`` (or raise
+  ``ImportError``) and assert the command exits with code ``1`` and prints
+  install guidance.
+
+See ``tests/unit/cli/test_cli.py`` and ``tests/unit/cli/test_cli_export.py``
+for repository examples of this pattern.
+
 Plugin authoring reference
 --------------------------
 
