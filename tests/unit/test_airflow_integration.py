@@ -392,9 +392,8 @@ def test_imednet_hook_study_discovery_serialization_safe(monkeypatch):
     assert keys == ["S-001"]
 
 
-# ---------------------------------------------------------------------------
-# Regression: mapped parameter rendering and serialization-safe discovery
-# ---------------------------------------------------------------------------
+# Anchored at repo root so the path stays valid regardless of test-runner CWD.
+_EXAMPLES_AIRFLOW_DIR = Path(__file__).parent.parent.parent / "examples" / "airflow"
 
 
 def _setup_airflow_for_dag(monkeypatch):
@@ -439,6 +438,9 @@ def _setup_airflow_for_dag(monkeypatch):
 
     class _DummyOperator:
         template_fields = ()
+        # Mirrors ImednetExportOperator.mapped_runtime_fields: these are the fields
+        # that Airflow sets at runtime (via template rendering / expand_kwargs) and
+        # that the operator must read from self at execute time, not from __init__.
         mapped_runtime_fields = ("study_key", "output_path", "export_kwargs")
 
         def __init__(self, **kwargs):
@@ -604,9 +606,7 @@ def test_reference_dag_safe_study_path_fragment(monkeypatch):
     """
     _setup_airflow_for_dag(monkeypatch)
 
-    dag_path = (
-        Path(__file__).parent.parent.parent / "examples" / "airflow" / "multi_study_pipeline.py"
-    )
+    dag_path = _EXAMPLES_AIRFLOW_DIR / "multi_study_pipeline.py"
     spec = importlib.util.spec_from_file_location("_test_multi_study_pipeline", dag_path)
     assert spec is not None and spec.loader is not None, "Could not locate multi_study_pipeline.py"
     module = importlib.util.module_from_spec(spec)
