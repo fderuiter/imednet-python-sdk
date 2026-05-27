@@ -90,7 +90,7 @@ def test_triage_json_roundtrip_keeps_enum_values() -> None:
 
 
 def test_triage_models_enforce_schema_constraints() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as blank_id_error:
         TriageAnnotation.model_validate(
             {
                 "annotation_id": "   ",
@@ -99,8 +99,9 @@ def test_triage_models_enforce_schema_constraints() -> None:
                 "timestamp": "2024-01-01T00:00:00Z",
             }
         )
+    assert blank_id_error.value.errors()[0]["loc"] == ("annotation_id",)
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as status_error:
         TriageItem.model_validate(
             {
                 "item_id": "AE-1002",
@@ -112,3 +113,4 @@ def test_triage_models_enforce_schema_constraints() -> None:
                 "history": [],
             }
         )
+    assert status_error.value.errors()[0]["loc"] == ("status",)
