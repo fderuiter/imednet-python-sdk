@@ -356,6 +356,10 @@ def test_data_lineage_redact_sensitive_keys() -> None:
         "ae_term": "headache",
         "api_key": "supersecret",
         "token": "mytoken",
+        "nested": {
+            "password": "abc123",
+            "details": [{"security_key": "xyz"}, {"label": "ok"}],
+        },
         "severity": "MILD",
     }
     redacted = _redact_sensitive(data)
@@ -363,3 +367,6 @@ def test_data_lineage_redact_sensitive_keys() -> None:
     assert redacted["severity"] == "MILD"
     assert redacted["api_key"] == "***REDACTED***"
     assert redacted["token"] == "***REDACTED***"
+    assert redacted["nested"]["password"] == "***REDACTED***"
+    assert redacted["nested"]["details"][0]["security_key"] == "***REDACTED***"
+    assert redacted["nested"]["details"][1]["label"] == "ok"

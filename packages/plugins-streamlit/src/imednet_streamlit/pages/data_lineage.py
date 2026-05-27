@@ -15,6 +15,7 @@ import streamlit as st
 from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDeviation
 from imednet.models.study_config import StudyConfiguration
 from imednet_streamlit.auth import get_sdk, get_study_key
+from imednet_streamlit.components import redact_sensitive_payload, render_lineage_panes
 from imednet_workflows import CachedRecordsLoader
 from imednet_workflows.extraction_engine import ExtractionResult, extract_canonical_records
 
@@ -188,20 +189,10 @@ def _find_mapping_rules(domain: str) -> list[dict[str, Any]]:
     ]
 
 
-_SENSITIVE_PATTERNS = frozenset(
-    {"password", "token", "secret", "api_key", "apikey", "key", "credential"}
-)
-
-
 def _redact_sensitive(data: dict[str, Any]) -> dict[str, Any]:
     """Return a copy of *data* with common sensitive keys redacted."""
-    result: dict[str, Any] = {}
-    for k, v in data.items():
-        if any(pat in k.lower() for pat in _SENSITIVE_PATTERNS):
-            result[k] = "***REDACTED***"
-        else:
-            result[k] = v
-    return result
+    redacted = redact_sensitive_payload(data)
+    return redacted if isinstance(redacted, dict) else {}
 
 
 def _render_lineage_trace(
@@ -222,25 +213,11 @@ def _render_lineage_trace(
     raw_record = _find_raw_record(study_key, domain, model_idx, extraction)
     mapping_rules = _find_mapping_rules(domain)
 
-    left_pane, mid_pane, right_pane = st.columns(3)
-
-    with left_pane:
-        st.markdown("**📥 Raw EDC Record**")
-        if raw_record is not None:
-            st.json(raw_record)
-        else:
-            st.info("Raw record not available (no matching source form configured).")
-
-    with mid_pane:
-        st.markdown("**⚙️ Applied Mapping Rules**")
-        if mapping_rules:
-            st.dataframe(pd.DataFrame(mapping_rules), use_container_width=True)
-        else:
-            st.info("No mapping rules configured for this domain.")
-
-    with right_pane:
-        st.markdown("**📤 Canonical Model**")
-        st.json(canonical_model.model_dump(mode="python", by_alias=False))
+    render_lineage_panes(
+        raw_record=raw_record,
+        mapping_rules=mapping_rules,
+        canonical_payload=canonical_model.model_dump(mode="python", by_alias=False),
+    )
 
 
 def _render_config_input() -> None:

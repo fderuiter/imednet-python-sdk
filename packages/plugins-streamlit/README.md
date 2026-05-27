@@ -38,7 +38,7 @@ streamlit run "$(python -c 'import imednet_streamlit.app as app; print(app.__fil
 ## Features
 
 - **Multi-page navigation** — Home, Query Status, Subject Enrollment, Site Performance,
-  and Data Completeness views.
+  Data Completeness, and Data Lineage views.
 - **Secure credential management** — API key and security key are masked inputs stored
   in `st.session_state`; never logged or persisted.
 - **Caching** — All heavy API calls are decorated with `@st.cache_data(ttl=600)` to
@@ -57,3 +57,4 @@ streamlit run "$(python -c 'import imednet_streamlit.app as app; print(app.__fil
 | Subject Enrollment | Enrollment funnel and site-level summaries |
 | Site Performance | Per-site query rate metrics and rankings |
 | Data Completeness | Record status heatmap and form-level summaries |
+| Data Lineage | Drill-down from metrics to raw records, mapping rules, and canonical models |
