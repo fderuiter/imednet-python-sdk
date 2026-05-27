@@ -13,6 +13,7 @@ from imednet.sdk import ImednetSDK
 from .data_extraction import DataExtractionWorkflow
 from .state_ledger import ExtractionStateLedger
 from .subject_data import SubjectDataWorkflow
+from .sync_worker import SyncWorker, SyncWorkerConfig
 
 app = typer.Typer(name="workflows", help="Execute common data workflows.")
 
@@ -75,6 +76,42 @@ def subject_data(
     workflow = SubjectDataWorkflow(sdk)
     data = workflow.get_all_subject_data(study_key, subject_key)
     print(data.model_dump())
+
+
+@app.command("sync-worker")
+@with_sdk
+def sync_worker(
+    sdk: ImednetSDK,
+    study_key: str = STUDY_KEY_ARG,
+    interval: int = typer.Option(900, "--interval", min=1, help="Polling interval in seconds."),
+    once: bool = typer.Option(
+        False,
+        "--once",
+        help="Run a single sync cycle and exit.",
+    ),
+) -> None:
+    """Run an idempotent background cache refresh worker."""
+    from .cached_loader import CachedRecordsLoader
+
+    worker = SyncWorker(
+        CachedRecordsLoader(sdk),
+        config=SyncWorkerConfig(study_key=study_key, interval_seconds=interval),
+    )
+
+    if once:
+        count = worker.run_once()
+        print(f"[green]Synced {count} cached records for study '{study_key}'.[/green]")
+        return
+
+    print(
+        f"[green]Starting sync worker for study '{study_key}' "
+        f"(interval={interval}s). Press Ctrl+C to stop.[/green]"
+    )
+    try:
+        worker.run_forever()
+    except KeyboardInterrupt:  # pragma: no cover - signal handling
+        worker.stop()
+        print("[yellow]Sync worker termination requested. Exiting cleanly.[/yellow]")
 
 
 state_app = typer.Typer(name="state", help="Manage high-water mark execution ledger state.")

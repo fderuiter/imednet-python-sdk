@@ -62,6 +62,7 @@ Available Commands
    imednet record-revisions list <STUDY_KEY>
    imednet jobs status <STUDY_KEY> <BATCH_ID>
    imednet jobs wait <STUDY_KEY> <BATCH_ID> [--interval N] [--timeout N]
+   imednet sync-worker <STUDY_KEY> [--interval N] [--once]
    imednet subject-data <STUDY_KEY> <SUBJECT_KEY>
    imednet export sql <STUDY_KEY> table sqlite:///data.db [options]
    imednet export mongodb <STUDY_KEY> mongodb://localhost:27017 db collection [options]

@@ -123,3 +123,57 @@ def test_schema_profiler_uses_loader_when_records_are_not_supplied() -> None:
 
     loader.load_records.assert_called_once_with("STUDY")
     assert profiles["LAB"].fields["RESULT"].inferred_type == "numeric"
+
+
+def test_schema_profiler_streams_chunked_loader_records() -> None:
+    sdk = MagicMock()
+
+    class _ChunkedLoader:
+        def __init__(self) -> None:
+            self.load_records = MagicMock()
+            self._iter_mock = MagicMock()
+
+        def iter_cached_records(self, study_key: str):
+            self._iter_mock(study_key)
+            return iter(
+                [
+                    Record(
+                        study_key="STUDY",
+                        form_id=10,
+                        form_key="LAB",
+                        record_id=1,
+                        subject_key="S1",
+                        date_modified=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                        record_data={"RESULT": "7.2"},
+                    ),
+                    Record(
+                        study_key="STUDY",
+                        form_id=10,
+                        form_key="LAB",
+                        record_id=2,
+                        subject_key="S2",
+                        date_modified=datetime(2024, 1, 2, tzinfo=timezone.utc),
+                        record_data={"RESULT": "8.1"},
+                    ),
+                ]
+            )
+
+    loader = _ChunkedLoader()
+    sdk.forms.list.return_value = [Form(form_key="LAB", form_name="Labs", form_id=10)]
+    sdk.variables.list.return_value = [
+        Variable(
+            form_id=10,
+            form_key="LAB",
+            variable_name="RESULT",
+            label="Result",
+            variable_type="float",
+        )
+    ]
+
+    profiler = SchemaProfiler(sdk, loader=loader)
+    profile = profiler.profile_records("STUDY")["LAB"]
+
+    loader.load_records.assert_called_once_with("STUDY")
+    loader._iter_mock.assert_called_once_with("STUDY")
+    assert profile.record_count == 2
+    assert profile.fields["RESULT"].population_rate == 100.0

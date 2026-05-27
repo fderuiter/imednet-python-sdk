@@ -79,3 +79,17 @@ def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
 
     assert [item.record_id for item in records] == [1]
     assert sdk.records.list.call_count == 3
+
+
+def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
+    sdk = MagicMock()
+    sdk.records.list.side_effect = [
+        [_record(1, "2024-01-01T00:00:00+00:00"), _record(2, "2024-01-02T00:00:00+00:00")],
+        [_record(1, "2024-01-01T00:00:00+00:00"), _record(2, "2024-01-02T00:00:00+00:00")],
+    ]
+    loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
+
+    loader.load_records("STUDY")
+    records = list(loader.iter_cached_records("STUDY", chunk_size=1))
+
+    assert [record.record_id for record in records] == [1, 2]
