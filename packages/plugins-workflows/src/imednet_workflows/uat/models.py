@@ -57,12 +57,20 @@ class UATVariableSpec(UATBaseModel):
     required: bool = False
     notes: str | None = None
 
-    @model_validator(mode="after")
-    def validate_fixed_strategy(self) -> UATVariableSpec:  # noqa: N804
+    @model_validator(mode="before")
+    @classmethod
+    def validate_fixed_strategy(cls, data: Any) -> Any:
         """Require a fixed value when FIXED strategy is selected."""
-        if self.strategy is VariableTestStrategy.FIXED and self.fixed_value is None:
+        if not isinstance(data, dict):
+            return data
+
+        strategy = data.get("strategy", VariableTestStrategy.SYNTHETIC)
+        fixed_value = data.get("fixed_value", data.get("fixedValue"))
+        if strategy in (VariableTestStrategy.FIXED, VariableTestStrategy.FIXED.value) and (
+            fixed_value is None
+        ):
             raise ValueError("fixed_value must be provided when strategy is 'fixed'.")
-        return self
+        return data
 
 
 class UATFormSpec(UATBaseModel):
@@ -87,12 +95,15 @@ class UATFormSpec(UATBaseModel):
             raise ValueError("subject_count must be between 1 and 100.")
         return value
 
-    @model_validator(mode="after")
-    def validate_unique_variable_names(self) -> UATFormSpec:  # noqa: N804
+    @field_validator("variables")
+    @classmethod
+    def validate_unique_variable_names(
+        cls, variables: list[UATVariableSpec]
+    ) -> list[UATVariableSpec]:
         """Ensure variables are uniquely identified by variable_name."""
         seen_names: set[str] = set()
         duplicates: set[str] = set()
-        for variable in self.variables:
+        for variable in variables:
             if variable.variable_name in seen_names:
                 duplicates.add(variable.variable_name)
             seen_names.add(variable.variable_name)
@@ -101,7 +112,7 @@ class UATFormSpec(UATBaseModel):
             raise ValueError(
                 f"variables contains duplicate variable_name entries: {duplicate_names}."
             )
-        return self
+        return variables
 
 
 class UATSubjectSpec(UATBaseModel):
