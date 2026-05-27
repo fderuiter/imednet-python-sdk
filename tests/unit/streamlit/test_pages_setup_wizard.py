@@ -328,23 +328,23 @@ def test_setup_wizard_mapping_normalization_preview_and_export() -> None:
     fake_st.session_state["wizard_target_form_pd"] = "AE_FORM"
     fake_st.session_state["wizard_target_form_dd"] = "AE_FORM"
     fake_st.selectbox_values = {
-        "wizard_map_form_AE.event_term": "AE_FORM",
-        "wizard_map_field_AE.event_term": "AE_TERM",
+        "wizard_map_form_AE.ae_term": "AE_FORM",
+        "wizard_map_field_AE.ae_term": "AE_TERM",
     }
     _run_setup_wizard(fake_st)
 
     config = fake_st.session_state["mapping_config"]
     assert len(config.mappings) == 1
-    assert config.mappings[0].target_field == "event_term"
+    assert config.mappings[0].target_field == "ae_term"
 
     fake_st.session_state["wizard_step"] = 3
-    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.event_term"
+    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.ae_term"
     fake_st.text_input_values = {
-        "wizard_norm_AE.event_term_y": "true",
-        "wizard_norm_AE.event_term_n": "false",
+        "wizard_norm_AE.ae_term_y": "true",
+        "wizard_norm_AE.ae_term_n": "false",
     }
     _run_setup_wizard(fake_st)
-    assert config.terminology_lookups["AE.event_term"] == {"y": "true", "n": "false"}
+    assert config.terminology_lookups["AE.ae_term"] == {"y": "true", "n": "false"}
 
     fake_st.session_state["wizard_step"] = 4
     _run_setup_wizard(fake_st)
@@ -365,7 +365,7 @@ def test_setup_wizard_mapping_falls_back_when_saved_form_is_missing() -> None:
             "mappings": [
                 {
                     "domain": "AE",
-                    "targetField": "event_term",
+                    "targetField": "ae_term",
                     "sourceFormKey": "MISSING_FORM",
                     "sourceVariableName": "AE_TERM",
                 }
@@ -401,7 +401,7 @@ def test_setup_wizard_preview_filters_invalid_saved_widget_types() -> None:
             "mappings": [
                 {
                     "domain": "AE",
-                    "targetField": "event_term",
+                    "targetField": "ae_term",
                     "sourceFormKey": "AE_FORM",
                     "sourceVariableName": "AE_TERM",
                 }
@@ -516,12 +516,12 @@ def test_setup_wizard_snapshot_controls_and_navigation_work() -> None:
             "mappings": [
                 {
                     "domain": "AE",
-                    "targetField": "event_term",
+                    "targetField": "ae_term",
                     "sourceFormKey": "AE_FORM",
                     "sourceVariableName": "AE_TERM",
                 }
             ],
-            "terminologyLookups": {"AE.event_term": {"y": "yes"}},
+            "terminologyLookups": {"AE.ae_term": {"y": "yes"}},
         }
     )
     fake_st.session_state["discovered_schema"] = {
@@ -544,7 +544,7 @@ def test_setup_wizard_snapshot_controls_and_navigation_work() -> None:
         ],
         "sample_records": [],
     }
-    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.event_term"
+    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.ae_term"
 
     fake_st.button_presses = {"wizard_clone_snapshot"}
     _run_setup_wizard(fake_st)
@@ -573,7 +573,7 @@ def test_setup_wizard_undo_without_snapshot_and_nav_button_paths() -> None:
             "mappings": [
                 {
                     "domain": "AE",
-                    "targetField": "event_term",
+                    "targetField": "ae_term",
                     "sourceFormKey": "AE_FORM",
                     "sourceVariableName": "AE_TERM",
                 }
@@ -600,7 +600,7 @@ def test_setup_wizard_undo_without_snapshot_and_nav_button_paths() -> None:
         ],
         "sample_records": [],
     }
-    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.event_term"
+    fake_st.selectbox_values["wizard_terminology_mapping"] = "AE.ae_term"
 
     fake_st.button_presses = {"wizard_undo_snapshot"}
     _run_setup_wizard(fake_st)
@@ -620,7 +620,7 @@ def test_setup_wizard_preview_handles_empty_records() -> None:
             "mappings": [
                 {
                     "domain": "AE",
-                    "targetField": "event_term",
+                    "targetField": "ae_term",
                     "sourceFormKey": "AE_FORM",
                     "sourceVariableName": "AE_TERM",
                 }

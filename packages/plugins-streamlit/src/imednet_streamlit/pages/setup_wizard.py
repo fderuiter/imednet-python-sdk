@@ -105,11 +105,25 @@ _UX_REVIEW_NOTES = "\n".join(
 )
 
 _CANONICAL_FIELDS = (
-    ("AE", "event_term", "Adverse Event Term"),
-    ("AE", "severity", "Severity"),
-    ("PD", "visit_date", "Visit Date"),
-    ("PD", "status", "Progression Status"),
-    ("DD", "disposition", "Disposition"),
+    ("AE", "subject_key", "Subject Key"),
+    ("AE", "ae_term", "Adverse Event Term (AETERM)"),
+    ("AE", "ae_severity", "Severity (AESEV)"),
+    ("AE", "ae_start_date", "Start Date/Time (AESTDTC)"),
+    ("AE", "ae_end_date", "End Date/Time (AEENDTC)"),
+    ("AE", "ae_outcome", "Outcome (AEOUT)"),
+    ("AE", "ae_relationship", "Relationship (AEREL)"),
+    ("AE", "ae_action_taken", "Action Taken (AEACN)"),
+    ("PD", "subject_key", "Subject Key"),
+    ("PD", "dv_term", "Deviation Term (DVTERM)"),
+    ("PD", "dv_category", "Deviation Category (DVCAT)"),
+    ("PD", "dv_severity", "Deviation Severity"),
+    ("PD", "dv_date", "Deviation Date/Time (DVSTDTC)"),
+    ("PD", "dv_status", "Triage Status"),
+    ("DD", "subject_key", "Subject Key"),
+    ("DD", "dd_term", "Deficiency Term (DDTERM)"),
+    ("DD", "dd_category", "Deficiency Category (DDCAT)"),
+    ("DD", "dd_date", "Deficiency Date/Time (DDSTDTC)"),
+    ("DD", "dd_serious", "Serious Flag"),
 )
 
 _WIDGET_TYPES = ("kpi_card", "bar_chart", "line_chart", "data_table")
