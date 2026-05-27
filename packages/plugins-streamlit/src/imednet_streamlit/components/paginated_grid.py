@@ -44,8 +44,9 @@ def paginated_slice(
     page = st.session_state[f"{key}_page"]
     start = (page - 1) * page_size
     end = min(start + page_size, total_rows)
+    start_display = start + 1 if total_rows else 0
     col_info.caption(
-        f"Page {page} of {total_pages} • Showing {start + 1 if total_rows else 0}-{end} of {total_rows}"
+        f"Page {page} of {total_pages} • Showing {start_display}-{end} of {total_rows}"
     )
 
     start = (page - 1) * page_size

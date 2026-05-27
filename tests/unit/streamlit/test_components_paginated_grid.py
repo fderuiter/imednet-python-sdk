@@ -73,7 +73,9 @@ def test_paginated_slice_moves_to_next_page(monkeypatch) -> None:
 def test_top_n_with_other_adds_remainder_bucket() -> None:
     df = pd.DataFrame({"label": ["A", "B", "C", "D"], "count": [10, 8, 3, 2]})
 
-    result = paginated_grid.top_n_with_other(df, label_column="label", value_column="count", top_n=2)
+    result = paginated_grid.top_n_with_other(
+        df, label_column="label", value_column="count", top_n=2
+    )
 
     assert result["label"].tolist() == ["A", "B", "Other"]
     assert result["count"].tolist() == [10, 8, 5]
