@@ -47,6 +47,7 @@ class _FakeStreamlit:
         self.info_calls: list[str] = []
         self.error_calls: list[str] = []
         self.titles: list[str] = []
+        self.markdown_calls: list[str] = []
 
     def title(self, value: str) -> None:
         self.titles.append(value)
@@ -55,7 +56,7 @@ class _FakeStreamlit:
         return None
 
     def markdown(self, value: str) -> None:
-        return None
+        self.markdown_calls.append(value)
 
     def caption(self, value: str) -> None:
         return None
@@ -259,6 +260,16 @@ def test_setup_wizard_scan_and_next_step() -> None:
     fake_st.button_presses = {"wizard_next"}
     _run_setup_wizard(fake_st)
     assert fake_st.session_state["wizard_step"] == 2
+
+
+def test_setup_wizard_renders_design_specification_sections() -> None:
+    fake_st = _FakeStreamlit()
+    _run_setup_wizard(fake_st)
+
+    joined_markdown = "\n".join(fake_st.markdown_calls)
+    assert "Flowchart / state transitions" in joined_markdown
+    assert "Wireframe mapped to session state" in joined_markdown
+    assert "UX review: Streamlit multi-page alignment" in joined_markdown
 
 
 def test_setup_wizard_mapping_normalization_preview_and_export() -> None:

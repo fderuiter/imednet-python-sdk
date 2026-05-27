@@ -27,6 +27,84 @@ _WIZARD_STEPS = (
     "Export / Save",
 )
 
+_STATE_TRANSITION_DIAGRAM = """```text
+[Step 1: Scan & Profile]
+  ├─ Scan button → discovered_schema, validation_report=None
+  └─ Next (enabled when forms discovered) → Step 2
+
+[Step 2: Field Mapping]
+  ├─ Mapping selectors → mapping_config.mappings
+  ├─ Previous → Step 1
+  └─ Next → Step 3
+
+[Step 3: Terminology Normalization]
+  ├─ Normalization inputs → mapping_config.terminology_lookups
+  ├─ Snapshot controls → _wizard_snapshots / mapping_config restore
+  ├─ Previous → Step 2
+  └─ Next → Step 4
+
+[Step 4: Layout & Visual Configuration]
+  ├─ Widget and layout controls → mapping_config.widgets
+  ├─ Preview metrics → validation_report
+  ├─ Previous → Step 3
+  └─ Next → Step 5
+
+[Step 5: Export / Save]
+  ├─ Download JSON payload
+  ├─ Save locally (.imednet/configs)
+  └─ Previous → Step 4
+
+Global transitions:
+- Numbered nav buttons jump to any step (1..5)
+- wizard_step is clamped to range 1..5 on every transition
+```"""
+
+_SESSION_STATE_WIREFRAME = "\n".join(
+    [
+        "| Wizard step | Primary UI frame | Session state mutations |",
+        "| --- | --- | --- |",
+        (
+            "| 1 | Scan action + AE/PD/DD form selectors | `discovered_schema`, "
+            "`wizard_target_form_*`,<br>`validation_report` reset |"
+        ),
+        (
+            "| 2 | Canonical target cards with source form/field/fallback controls | "
+            "`mapping_config.mappings` |"
+        ),
+        (
+            "| 3 | Mapping selector + raw→normalized value inputs + snapshot controls | "
+            "`mapping_config.terminology_lookups`, `_wizard_snapshots`,"
+            "<br>`mapping_config` restore/reset |"
+        ),
+        (
+            "| 4 | Widget type multiselect + layout slider + preview metrics grid | "
+            "`mapping_config.widgets`, `validation_report` |"
+        ),
+        (
+            "| 5 | JSON preview + download + local save action | writes config file "
+            "locally; no additional session mutation required |"
+        ),
+    ]
+)
+
+_UX_REVIEW_NOTES = "\n".join(
+    [
+        (
+            "- The setup wizard remains a dedicated page in Streamlit multi-page "
+            'navigation (`st.Page(..., title="Setup Wizard")`) and does not fork '
+            "to separate app routes."
+        ),
+        (
+            "- In-page progression is controlled by `wizard_step` so reruns preserve "
+            "context while users move through numbered tabs and Previous/Next controls."
+        ),
+        (
+            "- Guardrails are presented inline (`st.info`) when prerequisites are "
+            "missing, which aligns with Streamlit's rerun-first interaction pattern."
+        ),
+    ]
+)
+
 _CANONICAL_FIELDS = (
     ("AE", "event_term", "Adverse Event Term"),
     ("AE", "severity", "Severity"),
@@ -36,6 +114,16 @@ _CANONICAL_FIELDS = (
 )
 
 _WIDGET_TYPES = ("kpi_card", "bar_chart", "line_chart", "data_table")
+
+
+def _render_design_specification() -> None:
+    st.markdown("### Wizard UX design specification")
+    st.markdown("#### Flowchart / state transitions")
+    st.markdown(_STATE_TRANSITION_DIAGRAM)
+    st.markdown("#### Wireframe mapped to session state")
+    st.markdown(_SESSION_STATE_WIREFRAME)
+    st.markdown("#### UX review: Streamlit multi-page alignment")
+    st.markdown(_UX_REVIEW_NOTES)
 
 
 def _initialise_state(study_key: str) -> None:
@@ -467,6 +555,7 @@ def _step_export(study_key: str) -> None:
 
 def render_page() -> None:
     st.title("🧭 Study Setup Wizard")
+    _render_design_specification()
 
     if not st.session_state.get("_imednet_connected"):
         st.info("Please connect from the sidebar to configure and publish a study mapping.")
