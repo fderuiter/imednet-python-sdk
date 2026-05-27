@@ -345,7 +345,7 @@ def test_get_history_detects_invalid_signature(store: ConfigVersionStore) -> Non
         )
         conn.commit()
 
-    with pytest.raises(ValueError, match="signature verification"):
+    with pytest.raises(ValueError, match="integrity check failed"):
         store.get_history("STUDY-01")
 
 
@@ -375,7 +375,7 @@ def test_rollback_config_detects_invalid_signature(store: ConfigVersionStore) ->
         )
         conn.commit()
 
-    with pytest.raises(ValueError, match="signature verification"):
+    with pytest.raises(ValueError, match="integrity check failed"):
         store.rollback_config("STUDY-01", forged_commit)
 
 
@@ -407,7 +407,7 @@ def test_diff_configs_detects_invalid_signature(store: ConfigVersionStore) -> No
         )
         conn.commit()
 
-    with pytest.raises(ValueError, match="signature verification"):
+    with pytest.raises(ValueError, match="integrity check failed"):
         store.diff_configs(valid_commit, forged_commit)
 
 
