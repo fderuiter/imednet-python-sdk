@@ -4,6 +4,9 @@ DuckDB Integration
 This guide covers the DuckDB and Hive-partitioned Parquet export paths for analytical
 workloads.
 
+For destination-selection guidance across MongoDB, Neo4j, and Snowflake, see
+:doc:`export_destinations`.
+
 For record-to-DataFrame mapping internals, see :doc:`record_mapping`.
 For workflow interaction patterns, see :doc:`workflow_interactions`.
 

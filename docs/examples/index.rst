@@ -39,5 +39,7 @@ Advanced
    custom_retry
    export_long_sql
    multi_study_pipeline
+   mongodb_export
+   neo4j_export
    query_partitioned_lakehouse
    snowflake_export

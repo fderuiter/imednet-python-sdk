@@ -229,6 +229,38 @@ class TestNeo4jExportSink:
             count = sink.write_batch(records, batch_id="STUDY1/F1/0")
         assert count == 5
 
+    def test_write_batch_uses_structure_preserving_payload_shape(self, monkeypatch):
+        import imednet.integrations.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module()
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+        from imednet.integrations.graph import Neo4jExportSink
+
+        record = SimpleNamespace(
+            record_id=1234,
+            form_id=7,
+            visit_id=42,
+            subject_key="SUBJ-001",
+            record_data={"labs": {"hemoglobin": 13.2}, "status": "Complete"},
+        )
+        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
+            count = sink.write_batch([record], batch_id="STUDY1/F7/0")
+
+        assert count == 1
+        run_args = driver.session.return_value.__enter__.return_value.run.call_args
+        assert run_args.args[0] == graph_mod._MERGE_RECORD_CYPHER
+        assert run_args.kwargs["rows"] == [
+            {
+                "record_id": 1234,
+                "form_id": 7,
+                "visit_id": 42,
+                "subject_key": "SUBJ-001",
+                "study_key": "STUDY1",
+                "record_data": {"labs": {"hemoglobin": 13.2}, "status": "Complete"},
+            }
+        ]
+
     def test_write_batch_empty_returns_zero(self, monkeypatch):
         import imednet.integrations.graph as graph_mod
 
