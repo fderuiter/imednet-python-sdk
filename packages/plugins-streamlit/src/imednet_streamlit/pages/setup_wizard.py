@@ -282,17 +282,17 @@ def _step_scan_and_profile(sdk: ImednetSDK, study_key: str) -> None:
 
     form_options = [cast(str, form["form_key"]) for form in forms]
     col_ae, col_pd, col_dd = st.columns(3)
-    st.session_state["wizard_target_form_ae"] = col_ae.selectbox(
+    col_ae.selectbox(
         "AE source form",
         options=form_options,
         key="wizard_target_form_ae",
     )
-    st.session_state["wizard_target_form_pd"] = col_pd.selectbox(
+    col_pd.selectbox(
         "PD source form",
         options=form_options,
         key="wizard_target_form_pd",
     )
-    st.session_state["wizard_target_form_dd"] = col_dd.selectbox(
+    col_dd.selectbox(
         "DD source form",
         options=form_options,
         key="wizard_target_form_dd",
