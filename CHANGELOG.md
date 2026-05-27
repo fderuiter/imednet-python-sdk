@@ -12,6 +12,10 @@
 * Add stability documentation to `docs/contributing.rst` with per-package stability table and deprecation policy.
 * Add mypy `ignore_missing_imports` overrides for optional extras (`typer`, `rich`, `faker`, `sqlalchemy`, `boto3`, `moto`, `openpyxl`) to eliminate spurious import errors.
 
+### Bug Fixes
+
+* require Airflow `>=3.2.0` in the provider package, raise the optional Amazon provider floor to `>=9.0.0`, and harden Airflow connection/context compatibility helpers for Airflow 3.x environments.
+
 ### Migration notes
 
 The following changes affect code that imports from internal implementation packages:

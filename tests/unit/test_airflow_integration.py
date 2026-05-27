@@ -220,6 +220,65 @@ def test_imednet_hook_non_dict_extras(monkeypatch):
     assert sdk._client._client.headers["x-imn-security-key"] == "SEC"
 
 
+def test_imednet_hook_get_extra_json_fallback(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    conn.login = None
+    conn.password = None
+    conn.extra_dejson = None
+    conn.get_extra.return_value = (
+        '{"api_key":"GET_EXTRA_KEY","security_key":"GET_EXTRA_SEC","base_url":"https://get-extra"}'
+    )
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from apache_airflow_providers_imednet.hooks import ImednetHook
+
+    hook = ImednetHook()
+    sdk = hook.get_sdk_client()
+
+    assert sdk._client._client.headers["x-api-key"] == "GET_EXTRA_KEY"
+    assert sdk._client._client.headers["x-imn-security-key"] == "GET_EXTRA_SEC"
+    assert sdk._client.base_url == "https://get-extra"
+
+
+def test_imednet_hook_extra_json_string_fallback(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    conn.login = None
+    conn.password = None
+    conn.extra_dejson = None
+    conn.get_extra = None
+    conn.extra = (
+        '{"api_key":"EXTRA_FIELD_KEY","security_key":"EXTRA_FIELD_SEC","base_url":"https://extra"}'
+    )
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from apache_airflow_providers_imednet.hooks import ImednetHook
+
+    hook = ImednetHook()
+    sdk = hook.get_sdk_client()
+
+    assert sdk._client._client.headers["x-api-key"] == "EXTRA_FIELD_KEY"
+    assert sdk._client._client.headers["x-imn-security-key"] == "EXTRA_FIELD_SEC"
+    assert sdk._client.base_url == "https://extra"
+
+
 def test_imednet_hook_non_string_login(monkeypatch):
     _setup_airflow(monkeypatch)
 
