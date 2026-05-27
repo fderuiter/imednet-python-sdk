@@ -179,7 +179,7 @@ def test_main_returns_skip_when_identifiers_missing(monkeypatch, capsys) -> None
     assert "Smoke record skipped" in out
 
 
-def test_main_returns_skip_on_no_live_data(monkeypatch, capsys) -> None:
+def test_main_returns_failure_on_no_live_data(monkeypatch, capsys) -> None:
     sdk = Mock()
     sdk.__enter__ = Mock(return_value=sdk)
     sdk.__exit__ = Mock(return_value=False)
@@ -190,6 +190,6 @@ def test_main_returns_skip_on_no_live_data(monkeypatch, capsys) -> None:
 
     exit_code = smoke.main([])
 
-    assert exit_code == smoke.SKIP_EXIT_CODE
-    out = capsys.readouterr().out
-    assert "no active studies" in out
+    assert exit_code == 1
+    err = capsys.readouterr().err
+    assert "no active studies" in err

@@ -32,6 +32,8 @@ jobs:
         env:
           IMEDNET_API_KEY: ${{ secrets.IMEDNET_API_KEY }}
           IMEDNET_SECURITY_KEY: ${{ secrets.IMEDNET_SECURITY_KEY }}
+          IMEDNET_BASE_URL: ${{ vars.IMEDNET_BASE_URL }}
           IMEDNET_RUN_E2E: "1"
+          IMEDNET_ALLOW_MUTATION: ${{ vars.IMEDNET_ALLOW_MUTATION }}
         run: |
           poetry run pytest tests/live/ -v

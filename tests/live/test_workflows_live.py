@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from imednet.models.records import RegisterSubjectRequest
@@ -9,14 +7,7 @@ from imednet_workflows import (
     async_get_study_structure,
     get_study_structure,
 )
-
-
-@pytest.fixture(scope="session")
-def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
-    subs = sdk.get_subjects(study_key)
-    if not subs:
-        pytest.skip("No subjects available for workflow tests")
-    return subs[0].subject_key
+from tests.live.helpers import require_mutation
 
 
 def test_get_study_structure(sdk: ImednetSDK, study_key: str) -> None:
@@ -33,8 +24,7 @@ async def test_async_get_study_structure(async_sdk: AsyncImednetSDK, study_key: 
 def test_register_subjects_workflow(
     sdk: ImednetSDK, study_key: str, first_subject_key: str
 ) -> None:
-    if os.getenv("IMEDNET_ALLOW_MUTATION") != "1":
-        pytest.skip("Mutating tests are disabled")
+    require_mutation()
     forms = sdk.get_forms(study_key)
     sites = sdk.get_sites(study_key)
     if not forms or not sites:
@@ -100,15 +90,13 @@ def test_record_mapper_dataframe(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_record_update_submit_batch(sdk: ImednetSDK, study_key: str) -> None:
-    if os.getenv("IMEDNET_ALLOW_MUTATION") != "1":
-        pytest.skip("Mutating tests are disabled")
+    require_mutation()
     job = sdk.workflows.record_update.create_or_update_records(study_key, [])
     assert job.batch_id
 
 
 def test_record_update_register_subject(sdk: ImednetSDK, study_key: str) -> None:
-    if os.getenv("IMEDNET_ALLOW_MUTATION") != "1":
-        pytest.skip("Mutating tests are disabled")
+    require_mutation()
     job = sdk.workflows.record_update.register_subject(
         study_key,
         "FORM",
@@ -122,8 +110,7 @@ def test_record_update_register_subject(sdk: ImednetSDK, study_key: str) -> None
 def test_record_update_update_scheduled(
     sdk: ImednetSDK, study_key: str, first_subject_key: str
 ) -> None:
-    if os.getenv("IMEDNET_ALLOW_MUTATION") != "1":
-        pytest.skip("Mutating tests are disabled")
+    require_mutation()
     job = sdk.workflows.record_update.update_scheduled_record(
         study_key,
         "FORM",
@@ -136,8 +123,7 @@ def test_record_update_update_scheduled(
 
 
 def test_record_update_create_new(sdk: ImednetSDK, study_key: str, first_subject_key: str) -> None:
-    if os.getenv("IMEDNET_ALLOW_MUTATION") != "1":
-        pytest.skip("Mutating tests are disabled")
+    require_mutation()
     job = sdk.workflows.record_update.create_new_record(
         study_key,
         "FORM",
