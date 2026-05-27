@@ -145,10 +145,20 @@ MongoDB exports write schema-preserving record envelopes (metadata + raw
 idempotent ``--upsert`` keyed by ``<study_key>/<record_id>``, and ``--insert-only``
 can be used when strict insert semantics are desired.
 
+Neo4j exports preserve relationships as ``Study → Subject → Visit → Record`` graph
+paths. Use Neo4j when relationship traversal is the primary query shape and keep
+``--create-only`` for append-only loads; otherwise prefer idempotent ``MERGE``
+semantics (the default).
+
+Snowflake exports use staged Parquet + ``PUT`` + ``COPY INTO`` for warehouse-native
+bulk loading. This path is optimized for analytics throughput and requires internal
+stage privileges in Snowflake.
+
 Optional dependency guidance:
 
 .. code-block:: console
 
+   pip install "imednet[mongodb,neo4j,snowflake]"
    pip install "imednet[mongodb]"
    pip install "imednet[neo4j]"
    pip install "imednet[snowflake]"

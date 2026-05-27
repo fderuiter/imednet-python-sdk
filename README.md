@@ -236,6 +236,26 @@ imednet export neo4j MY_STUDY bolt://localhost:7687 neo4j "$NEO4J_PASSWORD"
 imednet export snowflake MY_STUDY acct user "$SNOWFLAKE_PASSWORD" DB PUBLIC WH STAGE TABLE
 ```
 
+Choose destinations based on data shape and operational constraints:
+
+| Destination | Best for | Tradeoffs / constraints |
+|---|---|---|
+| MongoDB (`export mongodb`) | Keeping nested `record_data` payloads intact for app/service reads | Not ideal for relationship traversal across subjects/visits |
+| Neo4j (`export neo4j`) | Querying Study → Subject → Visit → Record relationships | Requires graph modeling and Neo4j ops expertise |
+| Snowflake (`export snowflake`) | High-throughput warehouse loading and SQL analytics | Uses staged Parquet + `PUT`/`COPY INTO`; requires internal stage access |
+
+Install only the target-specific extras you need:
+
+```bash
+pip install "imednet[mongodb]"
+pip install "imednet[neo4j]"
+pip install "imednet[snowflake]"
+```
+
+For architecture decisions and runnable SDK examples, see
+[`docs/export_destinations.rst`](docs/export_destinations.rst) and
+[`docs/examples/`](docs/examples/).
+
 When the connection string uses SQLite, the command splits the output into one
 table per form to avoid the 2000 column limit (in this case, the `table`
 argument is ignored). Pass ``--single-table`` to disable this behaviour and use

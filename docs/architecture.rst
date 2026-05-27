@@ -187,15 +187,15 @@ Adding New Workflows
 Export Sink Architecture
 ------------------------
 
-The SDK supports three distinct export paths.  Choose the right path based
-on the shape of data you want to land at the destination.
+The SDK supports four distinct export paths. Choose the right path based on
+the shape of data you want to land at the destination.
 
 Export Path Decision Matrix
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
-   :widths: 20 35 45
+   :widths: 16 34 50
 
    * - Path
      - When to use
@@ -206,14 +206,18 @@ Export Path Decision Matrix
      - :class:`~imednet_workflows.record_mapper.RecordMapper` →
        ``pandas.DataFrame`` → sink function in
        :mod:`imednet.integrations.export`
-   * - **Structure-preserving**
-     - Destination models relationships natively (property graph,
-       document store).  The clinical hierarchy *Study → Subject → Visit
-       → Record* should be preserved.
+   * - **Document**
+     - Destination is a document store (for example MongoDB) and should keep
+       nested ``record_data`` payloads with metadata envelope fields.
      - :class:`~imednet_workflows.data_extraction.DataExtractionWorkflow`
        → typed :class:`~imednet.models.Record` list →
-       :class:`~imednet.integrations.graph.Neo4jExportSink` or
        :class:`~imednet.integrations.document.MongoDbExportSink`
+   * - **Graph**
+     - Destination models relationships natively (for example Neo4j) and the
+       hierarchy *Study → Subject → Visit → Record* should be preserved.
+     - :class:`~imednet_workflows.data_extraction.DataExtractionWorkflow`
+       → typed :class:`~imednet.models.Record` list →
+       :class:`~imednet.integrations.graph.Neo4jExportSink`
    * - **Warehouse**
      - Destination is a cloud data warehouse with a native bulk loader.
        Records are staged as Parquet files and then COPY'd in a single
@@ -237,8 +241,8 @@ Data flow diagram
        DF --> T3["Parquet (local)"]
 
        DEW --> REC["Typed Record list"]
-       REC --> G["Neo4jExportSink"]
        REC --> D["MongoDbExportSink"]
+       REC --> G["Neo4jExportSink"]
 
        T3 --> W["SnowflakeExportSink (COPY INTO)"]
 
@@ -350,4 +354,3 @@ Adding New Export Sinks
    define a new ``[tool.poetry.extras]`` key.
 5. Re-export the new class from :mod:`imednet.integrations`.
 6. Add unit tests; run ``pytest --cov=imednet.integrations``.
-

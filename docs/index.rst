@@ -44,6 +44,7 @@ Welcome to imednet's documentation!
    :maxdepth: 2
    :caption: Integrations:
 
+   export_destinations
    duckdb_integration
    snowflake_export
 
