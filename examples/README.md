@@ -5,11 +5,13 @@ This directory contains examples demonstrating how to use the iMednet Python SDK
 ## Prerequisites
 
 Before running the examples, you need to set up your environment with your iMednet API credentials.
-Set your credentials by copying the environment template or exporting them directly:
+Set your credentials by creating a `.env` file or exporting them directly:
 
 ```bash
 # Option 1: Use a .env file (recommended)
-cp .env.example .env
+echo "IMEDNET_API_KEY=your_api_key_here" > .env
+echo "IMEDNET_SECURITY_KEY=your_security_key_here" >> .env
+# echo "IMEDNET_BASE_URL=https://edc.prod.imednetapi.com" >> .env
 
 # Option 2: Export directly to your shell
 export IMEDNET_API_KEY="your_api_key_here"

@@ -3,7 +3,9 @@
 Hybrid Entry Point for iMedNet Form Builder.
 
 Usage:
-  cp .env.example .env
+  echo "IMEDNET_API_KEY=your_api_key_here" > .env
+echo "IMEDNET_SECURITY_KEY=your_security_key_here" >> .env
+# echo "IMEDNET_BASE_URL=https://edc.prod.imednetapi.com" >> .env
   # Or export directly:
   # export IMEDNET_API_KEY="your_api_key"
   # export IMEDNET_SECURITY_KEY="your_security_key"

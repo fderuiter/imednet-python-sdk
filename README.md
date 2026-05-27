@@ -126,11 +126,13 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 
 ## Quick Start
 
-Set your credentials by copying the environment template or exporting them directly:
+Set your credentials by creating a `.env` file or exporting them directly:
 
 ```bash
 # Option 1: Use a .env file (recommended)
-cp .env.example .env
+echo "IMEDNET_API_KEY=your_api_key_here" > .env
+echo "IMEDNET_SECURITY_KEY=your_security_key_here" >> .env
+# echo "IMEDNET_BASE_URL=https://edc.prod.imednetapi.com" >> .env
 
 # Option 2: Export directly to your shell
 export IMEDNET_API_KEY="your_api_key"
@@ -151,7 +153,7 @@ from imednet.utils import configure_json_logging
 configure_json_logging()
 
 # Load credentials from .env file or environment variables
-# Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
+# Note: Ensure you've created a `.env` file or exported keys to your shell.
 load_dotenv()
 cfg = load_config()
 
@@ -181,7 +183,7 @@ async def main() -> None:
     configure_json_logging()
 
     # Load credentials from .env file or environment variables
-    # Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
+    # Note: Ensure you've created a `.env` file or exported keys to your shell.
     load_dotenv()
     cfg = load_config()
 

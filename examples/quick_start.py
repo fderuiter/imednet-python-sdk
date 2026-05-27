@@ -14,7 +14,9 @@ script. Optionally set ``IMEDNET_BASE_URL`` for non-default instances.
 
 Example:
 
-    cp .env.example .env
+    echo "IMEDNET_API_KEY=your_api_key_here" > .env
+echo "IMEDNET_SECURITY_KEY=your_security_key_here" >> .env
+# echo "IMEDNET_BASE_URL=https://edc.prod.imednetapi.com" >> .env
     # Or export directly:
     export IMEDNET_API_KEY="your_api_key"
     export IMEDNET_SECURITY_KEY="your_security_key"
@@ -28,7 +30,7 @@ def main() -> None:
     """Run a minimal SDK example using environment variables."""
     configure_json_logging()
     # Load environment variables from .env file if it exists
-    # Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
+    # Note: Ensure you've created a `.env` file or exported keys to your shell.
     load_dotenv()
 
     try:

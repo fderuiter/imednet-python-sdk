@@ -43,16 +43,11 @@ Environment Variables
 Using a .env File
 -----------------
 
-You can create a ``.env`` file in the project root to store these variables.
-A template is provided in ``.env.example``::
+You can create a ``.env`` file in the project root to store these variables::
 
-    cp .env.example .env
-
-Edit the file to add your keys::
-
-    IMEDNET_API_KEY=your_api_key
-    IMEDNET_SECURITY_KEY=your_security_key
-    IMEDNET_BASE_URL=https://edc.prod.imednetapi.com
+    echo "IMEDNET_API_KEY=your_api_key_here" > .env
+    echo "IMEDNET_SECURITY_KEY=your_security_key_here" >> .env
+    echo "IMEDNET_BASE_URL=https://edc.prod.imednetapi.com" >> .env
 
 The CLI loads this file automatically. Other scripts can call
 ``dotenv.load_dotenv()`` to mimic this behaviour.
