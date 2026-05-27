@@ -32,11 +32,19 @@ DRAWER_PATH = (
 
 
 class _FakeContextManager:
+    def __init__(self, streamlit_client: "_FakeStreamlit | None" = None) -> None:
+        self._streamlit_client = streamlit_client
+
     def __enter__(self) -> "_FakeContextManager":
         return self
 
     def __exit__(self, *args: Any) -> None:
         pass
+
+    def button(self, label: str, **kwargs: Any) -> bool:
+        if self._streamlit_client is None:
+            return False
+        return self._streamlit_client.button(label, **kwargs)
 
 
 class _FakeStreamlit:
@@ -47,6 +55,7 @@ class _FakeStreamlit:
         self.multiselect_values: dict[str, list[str]] = {}
         self.text_values: dict[str, str] = {}
         self.selectbox_values: dict[str, str] = {}
+        self.button_presses: set[str] = set()
 
     def title(self, value: str) -> None:
         pass
@@ -57,9 +66,9 @@ class _FakeStreamlit:
     def info(self, value: str) -> None:
         pass
 
-    def columns(self, spec: int | list[Any]) -> list[_FakeContextManager]:
+    def columns(self, spec: int | list[Any], **kwargs: Any) -> list[_FakeContextManager]:
         count = spec if isinstance(spec, int) else len(spec)
-        return [_FakeContextManager() for _ in range(count)]
+        return [_FakeContextManager(self) for _ in range(count)]
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
         self.metrics[label] = value
@@ -86,7 +95,8 @@ class _FakeStreamlit:
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        return False
+        key = kwargs.get("key")
+        return label in self.button_presses or key in self.button_presses
 
     def text_area(self, label: str, **kwargs: Any) -> str:
         return ""
@@ -227,15 +237,14 @@ def test_review_workbench_renders_kpis_and_filters_queue() -> None:
 
 def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
     fake_st = _FakeStreamlit()
-
-    def _always_true(label: str, **kwargs: Any) -> bool:
-        return True
-
-    fake_st.button = _always_true  # type: ignore[assignment]
+    fake_st.button_presses = {
+        "assign_btn_AE-1",
+        "annotation_btn_AE-1",
+        "triage_btn_AE-1",
+    }
     fake_st.text_area = lambda label, **kwargs: "follow-up"  # type: ignore[assignment]
     fake_st.selectbox_values = {
         "Change Assignee": "alice",
-        "Triage Capture": TriageStatus.UNDER_REVIEW.value,
     }
 
     fake_streamlit_module = ModuleType("streamlit")
@@ -243,6 +252,8 @@ def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
     for attr in (
         "subheader",
         "caption",
+        "markdown",
+        "columns",
         "write",
         "selectbox",
         "button",
@@ -256,6 +267,7 @@ def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
         key: sys.modules.get(key)
         for key in (
             "streamlit",
+            "imednet_streamlit.components.triage_drawer",
             "imednet_workflows.triage_store",
         )
     }
@@ -294,3 +306,4 @@ def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
     store.update_status.assert_called_once_with(
         "AE-1", TriageStatus.UNDER_REVIEW, "reviewer", "follow-up"
     )
+    assert fake_st.session_state["_triage_drawer_last_action"]["action"] == "triage"
