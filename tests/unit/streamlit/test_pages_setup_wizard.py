@@ -144,6 +144,33 @@ class _FakeStreamlit:
         self.download_calls.append(kwargs)
 
 
+class _WidgetOwnedSessionState(dict[str, Any]):
+    def __init__(self, initial_state: dict[str, Any]) -> None:
+        super().__init__(initial_state)
+        self._widget_owned_keys: set[str] = set()
+
+    def lock_widget_key(self, key: str) -> None:
+        self._widget_owned_keys.add(key)
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        if key in self._widget_owned_keys:
+            raise RuntimeError(f"session_state key '{key}' is widget-owned")
+        super().__setitem__(key, value)
+
+
+class _StrictWidgetStateFakeStreamlit(_FakeStreamlit):
+    def __init__(self) -> None:
+        super().__init__()
+        self.session_state = _WidgetOwnedSessionState(dict(self.session_state))
+
+    def selectbox(self, label: str, options: list[str], **kwargs: Any) -> str:
+        value = super().selectbox(label, options, **kwargs)
+        key = str(kwargs.get("key") or label)
+        dict.__setitem__(self.session_state, key, value)
+        self.session_state.lock_widget_key(key)
+        return value
+
+
 def _run_setup_wizard(
     fake_st: _FakeStreamlit,
     *,
@@ -279,6 +306,17 @@ def test_setup_wizard_scan_and_next_step() -> None:
     fake_st.button_presses = {"wizard_next"}
     _run_setup_wizard(fake_st)
     assert fake_st.session_state["wizard_step"] == 2
+
+
+def test_setup_wizard_scan_post_scan_rerender_respects_widget_owned_state() -> None:
+    fake_st = _StrictWidgetStateFakeStreamlit()
+    fake_st.button_presses = {"wizard_scan"}
+
+    _run_setup_wizard(fake_st)
+
+    assert fake_st.session_state["wizard_target_form_ae"] == "AE_FORM"
+    assert fake_st.session_state["wizard_target_form_pd"] == "AE_FORM"
+    assert fake_st.session_state["wizard_target_form_dd"] == "AE_FORM"
 
 
 def test_setup_wizard_renders_design_specification_sections() -> None:
