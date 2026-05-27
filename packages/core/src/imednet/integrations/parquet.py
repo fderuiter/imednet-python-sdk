@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 from importlib import import_module
 from types import ModuleType
 from typing import Any, List, Optional
@@ -22,6 +23,29 @@ def _ensure_pyarrow() -> ModuleType:
         ) from error
 
 
+def _cached_records_loader() -> Any:
+    try:
+        return import_module("imednet_workflows.cached_loader").CachedRecordsLoader
+    except ModuleNotFoundError as error:
+        if error.name and error.name.startswith("imednet_workflows"):
+            raise ImportError(
+                "Record export requires the optional 'imednet-workflows' package. "
+                "Install with `pip install imednet-workflows`."
+            ) from error
+        raise
+
+
+def _build_record_mapper(sdk: ImednetSDK, *, chunk_size: int) -> Any:
+    mapper_cls = _record_mapper()
+    parameters = inspect.signature(mapper_cls).parameters
+    kwargs: dict[str, Any] = {}
+    if "chunk_size" in parameters:
+        kwargs["chunk_size"] = chunk_size
+    if "loader" in parameters:
+        kwargs["loader"] = _cached_records_loader()(sdk)
+    return mapper_cls(sdk, **kwargs)
+
+
 def export_to_hive_parquet(
     sdk: ImednetSDK,
     study_key: str,
@@ -30,12 +54,13 @@ def export_to_hive_parquet(
     use_labels_as_columns: bool = False,
     variable_whitelist: Optional[List[str]] = None,
     form_whitelist: Optional[List[int]] = None,
+    chunk_size: int = 5_000,
 ) -> None:
     """Export study records to a Hive-partitioned Parquet directory layout."""
     pyarrow_module = _ensure_pyarrow()
     validate_partition_key(study_key)
 
-    mapper = _record_mapper()(sdk)
+    mapper = _build_record_mapper(sdk, chunk_size=chunk_size)
     storage_engine = PyArrowDatasetPartitionedStorageEngine()
     forms = sdk.forms.list(study_key=study_key)
 
@@ -63,6 +88,34 @@ def export_to_hive_parquet(
         }
 
         record_model = mapper._build_record_model(variable_keys, label_map)
+        iter_records = getattr(mapper, "_iter_records", None)
+        iter_parsed_rows = getattr(mapper, "_iter_parsed_rows", None)
+        if callable(iter_records) and callable(iter_parsed_rows):
+            records = iter_records(
+                study_key,
+                extra_filters={
+                    "formIds": [form.form_id],
+                    **({"variableNames": variable_whitelist} if variable_whitelist else {}),
+                },
+            )
+            for rows, _ in iter_parsed_rows(records, record_model):
+                df = mapper._build_dataframe(
+                    rows,
+                    variable_keys,
+                    label_map,
+                    use_labels_as_columns,
+                )
+                if df.empty:
+                    continue
+                table = pyarrow_module.Table.from_pandas(df, preserve_index=False)
+                storage_engine.write_form_table(
+                    table,
+                    base_dir=base_dir,
+                    study_key=study_key,
+                    form_key=form.form_key,
+                )
+            continue
+
         records = mapper._fetch_records(
             study_key,
             extra_filters={
@@ -77,7 +130,7 @@ def export_to_hive_parquet(
             label_map,
             use_labels_as_columns,
         )
-        table = pyarrow_module.Table.from_pandas(df)
+        table = pyarrow_module.Table.from_pandas(df, preserve_index=False)
         storage_engine.write_form_table(
             table,
             base_dir=base_dir,
