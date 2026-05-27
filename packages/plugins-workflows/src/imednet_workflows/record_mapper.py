@@ -51,7 +51,12 @@ class RecordMapper:
         loader: CachedRecordsLoader | None = None,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
     ) -> None:
-        """Initialize with an :class:`ImednetSDK` instance."""
+        """Initialize with an :class:`ImednetSDK` instance.
+
+        ``loader`` enables cache-backed streaming for large-study workflows.
+        ``chunk_size`` controls the maximum number of records parsed into each
+        yielded batch when using chunked mapping helpers.
+        """
         self.sdk = sdk
         self._loader = loader
         self._pipeline = ChunkedRecordPipeline(chunk_size=chunk_size)
@@ -272,7 +277,13 @@ class RecordMapper:
         variable_whitelist: Optional[List[str]] = None,
         form_whitelist: Optional[List[int]] = None,
     ) -> Iterator[pd.DataFrame]:
-        """Yield mapped record DataFrames in bounded chunks."""
+        """Yield mapped record DataFrames in bounded chunks.
+
+        Each yielded frame contains at most ``chunk_size`` mapped records from
+        this mapper instance. Prefer this method over ``dataframe()`` when
+        processing or exporting large studies so each chunk can be committed
+        before the next batch is parsed.
+        """
         if pd is None:
             raise ImportError(
                 (
@@ -328,7 +339,11 @@ class RecordMapper:
         variable_whitelist: Optional[List[str]] = None,
         form_whitelist: Optional[List[int]] = None,
     ) -> pd.DataFrame:
-        """Return a :class:`pandas.DataFrame` of records for a study."""
+        """Return a :class:`pandas.DataFrame` of records for a study.
+
+        This method still materialises all yielded chunks into one DataFrame.
+        For bounded-memory processing of large studies, prefer ``iter_dataframes()``.
+        """
         if pd is None:
             raise ImportError(
                 (

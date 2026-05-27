@@ -11,6 +11,11 @@ from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet_workflows.record_mapper import RecordMapper
 
+# A 5k-row chunk with two mapped columns should stay comfortably below this
+# threshold; a fully materialized 50k-row mapping regression would be
+# substantially larger.
+_STREAMING_PEAK_BYTES_LIMIT = 35_000_000
+
 
 def test_dataframe_builds_expected_structure() -> None:
     sdk = MagicMock()
@@ -286,4 +291,4 @@ def test_iter_dataframes_streams_large_study_with_bounded_memory() -> None:
 
     loader.sync_records.assert_called_once_with("STUDY")
     assert chunk_sizes == [5_000] * 10
-    assert peak_bytes < 35_000_000
+    assert peak_bytes < _STREAMING_PEAK_BYTES_LIMIT

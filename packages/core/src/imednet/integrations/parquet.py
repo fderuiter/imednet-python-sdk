@@ -36,6 +36,7 @@ def _cached_records_loader() -> Any:
 
 
 def _build_record_mapper(sdk: ImednetSDK, *, chunk_size: int) -> Any:
+    """Build a workflows ``RecordMapper`` without importing the plugin at module import time."""
     mapper_cls = _record_mapper()
     parameters = inspect.signature(mapper_cls).parameters
     kwargs: dict[str, Any] = {}
