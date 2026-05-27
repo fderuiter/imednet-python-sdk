@@ -25,6 +25,7 @@ from imednet_workflows.query_management import QueryManagementWorkflow
 from imednet_workflows.record_mapper import RecordMapper
 from imednet_workflows.record_update import RecordUpdateWorkflow
 from imednet_workflows.subject_data import SubjectDataWorkflow
+from imednet_workflows.uat import StudySchemaInspector
 
 
 class _FakeEntryPoint:
@@ -197,6 +198,7 @@ def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
     assert isinstance(sdk.workflows.record_mapper, RecordMapper)
     assert isinstance(sdk.workflows.record_update, RecordUpdateWorkflow)
     assert isinstance(sdk.workflows.subject_data, SubjectDataWorkflow)
+    assert isinstance(sdk.workflows.uat_inspector, StudySchemaInspector)
 
 
 def test_context_management_closes_client(monkeypatch) -> None:
