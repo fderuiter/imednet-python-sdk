@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
+import pytest
+from pydantic import ValidationError
+
 from imednet.models.triage import (
     TriageAnnotation,
     TriageHistoryEntry,
@@ -84,3 +87,28 @@ def test_triage_json_roundtrip_keeps_enum_values() -> None:
 
     assert dumped["status"] == "RESOLVED"
     assert dumped["annotations"][0]["annotation_id"] == "a-2"
+
+
+def test_triage_models_enforce_schema_constraints() -> None:
+    with pytest.raises(ValidationError):
+        TriageAnnotation.model_validate(
+            {
+                "annotation_id": "   ",
+                "user_id": "reviewer",
+                "comment": "valid",
+                "timestamp": "2024-01-01T00:00:00Z",
+            }
+        )
+
+    with pytest.raises(ValidationError):
+        TriageItem.model_validate(
+            {
+                "item_id": "AE-1002",
+                "study_key": "STUDY-1",
+                "status": "NOT_A_STATUS",
+                "assignee": "reviewer",
+                "severity": "critical",
+                "annotations": [],
+                "history": [],
+            }
+        )
