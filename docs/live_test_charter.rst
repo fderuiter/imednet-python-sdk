@@ -284,7 +284,7 @@ Smoke (``scripts/post_smoke_record.py``)
      - The environment is reachable and the write path works.
    * - Credentials valid, study or form found, but no identifiers available for
        any write scenario
-     - **Skip** (exit 0 + ``::notice::`` annotation)
+     - **Skip** (exit 2 + ``::notice::`` annotation)
      - The environment exists but is not configured for writes.  This is a
        warning, not a failure.
    * - Credentials valid, no studies or no eligible form found
@@ -389,7 +389,7 @@ Green exit (0)
    The write path is confirmed.  Record creation completed within the
    timeout.  Safe to proceed to the full live suite.
 
-Green exit (0) with ``::notice::`` annotations
+Skip exit (2) with ``::notice::`` annotations
    Authentication succeeded but some identifiers (site, subject, or
    interval) were not available.  Fewer scenarios were tested.  Check
    whether the study is correctly populated.
