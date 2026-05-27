@@ -22,6 +22,7 @@ from .study_structure import async_get_study_structure, get_study_structure
 from .subject_data import SubjectDataWorkflow
 from .sync_worker import SyncWorker, SyncWorkerConfig
 from .triage_store import TriageStore
+from .uat import UATSpecification
 
 __all__ = [
     "AsyncJobPoller",
@@ -50,6 +51,7 @@ __all__ = [
     "SyncWorker",
     "SyncWorkerConfig",
     "TriageStore",
+    "UATSpecification",
     "async_get_study_structure",
     "extract_canonical_records",
     "get_cache_connection",
