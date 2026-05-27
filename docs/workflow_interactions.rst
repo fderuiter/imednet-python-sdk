@@ -93,7 +93,7 @@ Usage example
 
 .. code-block:: python
 
-   from imednet.sdk import ImednetSDK
+   from imednet import ImednetSDK
    from imednet_workflows.cached_loader import CachedRecordsLoader
    from imednet_workflows.sync_worker import SyncWorker, SyncWorkerConfig
    import threading
