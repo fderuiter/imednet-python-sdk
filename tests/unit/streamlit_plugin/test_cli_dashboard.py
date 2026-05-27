@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from importlib.machinery import ModuleSpec
 from types import ModuleType
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -8,21 +9,21 @@ from unittest.mock import MagicMock, patch
 
 def test_dashboard_missing_plugin() -> None:
     """When imednet_streamlit is not installed, exit code 1 with helpful message."""
-    from importlib import import_module
+    from importlib.util import find_spec
 
-    original_import_module = import_module
+    original_find_spec = find_spec
 
-    def mock_import_module(name: str, package: str | None = None) -> Any:
-        if name.startswith("imednet_streamlit"):
-            raise ImportError(f"No module named '{name}'")
-        return original_import_module(name, package)
+    def mock_find_spec(name: str, package: str | None = None) -> Any:
+        if name == "imednet_streamlit.app":
+            return None
+        return original_find_spec(name, package)
 
     # Clean up sys.modules to ensure imednet.cli is imported fresh under this patch
     for key in list(sys.modules.keys()):
         if key.startswith("imednet.cli"):
             sys.modules.pop(key, None)
 
-    with patch("importlib.import_module", side_effect=mock_import_module):
+    with patch("importlib.util.find_spec", side_effect=mock_find_spec):
         from typer.testing import CliRunner
 
         from imednet.cli import app
@@ -37,17 +38,16 @@ def test_dashboard_missing_plugin() -> None:
 def test_dashboard_launches_subprocess() -> None:
     """When plugin is installed, subprocess.run is called with correct args."""
     streamlit_mock = ModuleType("streamlit")
-    mock_module = MagicMock()
-    mock_module.__file__ = "/fake/path/app.py"
+    dashboard_spec = ModuleSpec("imednet_streamlit.app", loader=None, origin="/fake/path/app.py")
 
-    from importlib import import_module
+    from importlib.util import find_spec
 
-    original_import_module = import_module
+    original_find_spec = find_spec
 
-    def mock_import_module(name: str, package: str | None = None) -> Any:
-        if name.startswith("imednet_streamlit"):
-            return mock_module
-        return original_import_module(name, package)
+    def mock_find_spec(name: str, package: str | None = None) -> Any:
+        if name == "imednet_streamlit.app":
+            return dashboard_spec
+        return original_find_spec(name, package)
 
     # Clean up sys.modules to ensure imednet.cli is imported fresh under this patch
     for key in list(sys.modules.keys()):
@@ -55,7 +55,7 @@ def test_dashboard_launches_subprocess() -> None:
             sys.modules.pop(key, None)
 
     with patch.dict("sys.modules", {"streamlit": streamlit_mock}):
-        with patch("importlib.import_module", side_effect=mock_import_module):
+        with patch("importlib.util.find_spec", side_effect=mock_find_spec):
             from typer.testing import CliRunner
 
             from imednet.cli import app
