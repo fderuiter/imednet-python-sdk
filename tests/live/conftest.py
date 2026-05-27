@@ -25,6 +25,21 @@ def _typed_value(var_type: str) -> Any:
     return typed_values.value_for(var_type) or ""
 
 
+@pytest.fixture(autouse=True)
+def block_external_requests() -> Generator[None, None, None]:
+    """Override the root-level network guard so live tests can make real HTTP calls.
+
+    The root ``tests/conftest.py`` fixture activates ``respx_mock`` for every
+    non-live test.  Because ``pytestmark = pytest.mark.live`` in this
+    ``conftest.py`` does not reliably propagate the marker in a way that
+    ``get_closest_marker`` can detect inside the autouse fixture, we override
+    the fixture here directly.  Pytest fixture resolution always prefers the
+    more-local definition, so tests under ``tests/live/`` will use this
+    passthrough instead of the root-level blocker.
+    """
+    yield
+
+
 @pytest.fixture(scope="session", autouse=True)
 def _check_live_env() -> None:
     if not RUN_E2E or not (API_KEY and SECURITY_KEY):
