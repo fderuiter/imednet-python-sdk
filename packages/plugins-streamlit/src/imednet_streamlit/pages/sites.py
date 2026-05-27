@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 _HIGH_QUERY_RATE_THRESHOLD = 20.0
 _HIGH_RATE_COLOR = "#ffe0e0"
+_MAX_CHART_SITES = 10
 
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -96,6 +97,30 @@ def _highlight_high_rate(val: float) -> str:
     return f"background-color: {_HIGH_RATE_COLOR}" if val > _HIGH_QUERY_RATE_THRESHOLD else ""
 
 
+def _top_sites_with_other(df: pd.DataFrame, *, rank_column: str, top_n: int = _MAX_CHART_SITES) -> pd.DataFrame:
+    if df.empty:
+        return df
+
+    sorted_df = df.sort_values(rank_column, ascending=False).reset_index(drop=True)
+    top_df = sorted_df.head(top_n).copy()
+    remainder = sorted_df.iloc[top_n:]
+    if remainder.empty:
+        return top_df
+
+    other_row = pd.DataFrame(
+        [
+            {
+                "site_name": "Other",
+                "enrolled_count": remainder["enrolled_count"].sum(),
+                "open_queries": remainder["open_queries"].sum(),
+                "avg_days_open": remainder["avg_days_open"].mean(),
+                "query_rate": remainder["query_rate"].mean(),
+            }
+        ]
+    )
+    return pd.concat([top_df, other_row], ignore_index=True)
+
+
 st.title("🏥 Site Performance")
 
 if st.button("🔄 Refresh Data"):
@@ -129,7 +154,8 @@ col_left, col_right = st.columns([3, 2])
 with col_left:
     st.subheader("Enrollment & Open Queries by Site")
     if not df_metrics.empty:
-        chart_df = df_metrics[["site_name", "enrolled_count", "open_queries"]].melt(
+        chart_source = _top_sites_with_other(df_metrics, rank_column="open_queries")
+        chart_df = chart_source[["site_name", "enrolled_count", "open_queries"]].melt(
             id_vars="site_name",
             value_vars=["enrolled_count", "open_queries"],
             var_name="metric",
@@ -149,7 +175,8 @@ with col_left:
 with col_right:
     st.subheader("Avg Days Open by Site")
     if not df_metrics.empty:
-        days_df = df_metrics[["site_name", "avg_days_open"]].copy()
+        days_source = _top_sites_with_other(df_metrics, rank_column="avg_days_open")
+        days_df = days_source[["site_name", "avg_days_open"]].copy()
         st.altair_chart(
             components.bar_chart(
                 days_df,

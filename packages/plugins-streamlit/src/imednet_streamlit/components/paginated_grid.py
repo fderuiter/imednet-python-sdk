@@ -28,6 +28,7 @@ def paginated_slice(
 
     if f"{key}_page" not in st.session_state:
         st.session_state[f"{key}_page"] = 1
+    st.session_state[f"{key}_page"] = min(max(1, st.session_state[f"{key}_page"]), total_pages)
 
     col_prev, col_info, col_next = st.columns([1, 2, 1])
     if col_prev.button(
@@ -40,9 +41,13 @@ def paginated_slice(
         disabled=st.session_state[f"{key}_page"] >= total_pages,
     ):
         st.session_state[f"{key}_page"] += 1
-    col_info.caption(f"Page {st.session_state[f'{key}_page']} of {total_pages}")
+    page = st.session_state[f"{key}_page"]
+    start = (page - 1) * page_size
+    end = min(start + page_size, total_rows)
+    col_info.caption(
+        f"Page {page} of {total_pages} • Showing {start + 1 if total_rows else 0}-{end} of {total_rows}"
+    )
 
-    page = min(max(1, st.session_state[f"{key}_page"]), total_pages)
     start = (page - 1) * page_size
     end = start + page_size
     return df.iloc[start:end]

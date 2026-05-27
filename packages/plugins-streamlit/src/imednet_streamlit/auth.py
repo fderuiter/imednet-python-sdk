@@ -27,8 +27,11 @@ def _mark_disconnected() -> None:
 
 
 def render_auth_sidebar() -> bool:
-    """
-    Render auth controls in the Streamlit sidebar and cache an SDK when connected.
+    """Render sidebar authentication controls and update session auth state.
+
+    Returns:
+        ``True`` when a valid SDK connection is active in ``st.session_state``;
+        otherwise ``False``.
     """
     with st.sidebar:
         st.header("🔐 Authentication")
@@ -59,7 +62,14 @@ def render_auth_sidebar() -> bool:
 
 
 def get_sdk() -> ImednetSDK:
-    """Return the authenticated SDK from session state."""
+    """Return the authenticated SDK from session state.
+
+    Returns:
+        The connected :class:`imednet.ImednetSDK` instance.
+
+    Raises:
+        RuntimeError: If the user is not connected or no SDK is stored.
+    """
     sdk = st.session_state.get(_KEY_SDK)
     if not st.session_state.get(_KEY_CONNECTED) or sdk is None:
         raise RuntimeError(
@@ -69,7 +79,14 @@ def get_sdk() -> ImednetSDK:
 
 
 def get_study_key() -> str:
-    """Return the selected study key from session state."""
+    """Return the selected study key from session state.
+
+    Returns:
+        The selected study key string.
+
+    Raises:
+        RuntimeError: If no study key is present in session state.
+    """
     study_key = st.session_state.get(_KEY_STUDY_KEY)
     if not isinstance(study_key, str) or not study_key:
         raise RuntimeError("Study key is not set. Call render_auth_sidebar() first.")
@@ -77,6 +94,6 @@ def get_study_key() -> str:
 
 
 def clear_credentials() -> None:
-    """Remove all auth-related state from the Streamlit session."""
+    """Remove all authentication-related state from the Streamlit session."""
     for key in (_KEY_API_KEY, _KEY_SECURITY_KEY, _KEY_STUDY_KEY, _KEY_SDK, _KEY_CONNECTED):
         st.session_state.pop(key, None)

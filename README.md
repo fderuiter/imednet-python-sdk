@@ -88,6 +88,21 @@ pip install "apache-airflow>=2.3.0,<4.0.0" apache-airflow-providers-imednet
 pip install "apache-airflow>=2.3.0,<4.0.0" "apache-airflow-providers-imednet[amazon]"
 ```
 
+### 🖥 Streamlit Dashboard (`imednet-streamlit`)
+
+Interactive reporting dashboards for Clinical Data Managers.
+
+```bash
+pip install imednet-streamlit
+imednet dashboard
+```
+
+Provides:
+- 🔍 Query Status Overview
+- 👥 Subject Enrollment Trends
+- 🏥 Site Performance Metrics
+- 📋 Data Completeness Heatmap
+
 ### Version Pinning
 
 Each workspace package is versioned and released independently. To pin specific versions:
