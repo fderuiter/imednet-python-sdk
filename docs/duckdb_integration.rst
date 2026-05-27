@@ -79,7 +79,7 @@ Example layout:
        └── form_key=DEMOGRAPHICS/
            └── records.parquet
 
-DuckDB query with Hive partition discovery:
+DuckDB query with Hive partition discovery and schema union:
 
 .. code-block:: python
 
@@ -89,7 +89,7 @@ DuckDB query with Hive partition discovery:
    rows = conn.execute(
        """
        SELECT study_key, form_key, COUNT(*)
-       FROM read_parquet('./lake/**/*.parquet', hive_partitioning = true)
+       FROM read_parquet('./lake/**/*.parquet', hive_partitioning = true, union_by_name = true)
        GROUP BY 1, 2
        ORDER BY 1, 2
        """

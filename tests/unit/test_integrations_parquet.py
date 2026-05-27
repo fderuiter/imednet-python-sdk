@@ -103,7 +103,8 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
 def test_hive_parquet_query() -> None:
     assert (
         parquet_mod.hive_parquet_query("/tmp/lake")
-        == "SELECT * FROM read_parquet('/tmp/lake/**/*.parquet', hive_partitioning = true)"
+        == "SELECT * FROM read_parquet('/tmp/lake/**/*.parquet', "
+        "hive_partitioning = true, union_by_name = true)"
     )
 
 
