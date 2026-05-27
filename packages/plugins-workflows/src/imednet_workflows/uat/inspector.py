@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, TypedDict, cast
 
 from pydantic import Field
@@ -27,7 +27,7 @@ class StudySnapshot(ImednetBaseModel):
     """Point-in-time snapshot of a study's structural metadata."""
 
     study_key: str
-    captured_at: datetime = Field(default_factory=datetime.utcnow)
+    captured_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     forms: list[Form]
     variables: list[Variable]
     intervals: list[Interval]
@@ -69,8 +69,9 @@ class StudySchemaInspector:
 
     Supports both sync and async SDK clients. When an async client is used,
     metadata calls are executed concurrently via ``asyncio.gather``.
-    The in-memory cache is per inspector instance and is not thread-safe;
-    use external synchronization or separate inspector instances for concurrent access.
+    The in-memory cache is per inspector instance. It can be shared by concurrent
+    tasks in a single event loop, but is not thread-safe across threads/processes;
+    use external synchronization or separate inspector instances for that access pattern.
     """
 
     def __init__(self, sdk: ImednetSDK | AsyncImednetSDK) -> None:

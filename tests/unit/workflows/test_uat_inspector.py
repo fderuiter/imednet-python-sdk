@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import httpx
@@ -100,7 +101,7 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
     started = 0
     release = asyncio.Event()
 
-    async def delayed_result(name: str, payload):
+    async def delayed_result(name: str, payload: list[Any]) -> list[Any]:
         nonlocal started
         calls[name] += 1
         started += 1
