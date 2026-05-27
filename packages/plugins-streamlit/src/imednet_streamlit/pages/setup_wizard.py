@@ -27,8 +27,7 @@ _WIZARD_STEPS = (
     "Export / Save",
 )
 
-_STATE_TRANSITION_DIAGRAM = """```text
-[Step 1: Scan & Profile]
+_STATE_TRANSITION_DIAGRAM = """[Step 1: Scan & Profile]
   ├─ Scan button → discovered_schema, validation_report=None
   └─ Next (enabled when forms discovered) → Step 2
 
@@ -57,7 +56,7 @@ _STATE_TRANSITION_DIAGRAM = """```text
 Global transitions:
 - Numbered nav buttons jump to any step (1..5)
 - wizard_step is clamped to range 1..5 on every transition
-```"""
+"""
 
 _SESSION_STATE_WIREFRAME = "\n".join(
     [
@@ -119,7 +118,7 @@ _WIDGET_TYPES = ("kpi_card", "bar_chart", "line_chart", "data_table")
 def _render_design_specification() -> None:
     st.markdown("### Wizard UX design specification")
     st.markdown("#### Flowchart / state transitions")
-    st.markdown(_STATE_TRANSITION_DIAGRAM)
+    st.code(_STATE_TRANSITION_DIAGRAM, language="text")
     st.markdown("#### Wireframe mapped to session state")
     st.markdown(_SESSION_STATE_WIREFRAME)
     st.markdown("#### UX review: Streamlit multi-page alignment")
@@ -555,7 +554,8 @@ def _step_export(study_key: str) -> None:
 
 def render_page() -> None:
     st.title("🧭 Study Setup Wizard")
-    _render_design_specification()
+    with st.expander("UX Design Specification", expanded=False):
+        _render_design_specification()
 
     if not st.session_state.get("_imednet_connected"):
         st.info("Please connect from the sidebar to configure and publish a study mapping.")
