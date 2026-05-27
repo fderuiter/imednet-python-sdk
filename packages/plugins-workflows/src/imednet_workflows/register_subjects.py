@@ -6,7 +6,6 @@ It provides a simple, robust interface for registering one or more subjects.
 
 from typing import TYPE_CHECKING, List, Optional
 
-from imednet.errors import ApiError
 from imednet.models.jobs import Job
 from imednet.models.records import RegisterSubjectRequest
 
@@ -49,7 +48,7 @@ class RegisterSubjectsWorkflow:
         Raises:
             ApiError: If the API call fails.
         """
-        # Validate sites and subjects before posting
+        # Validate that each site exists before posting
         sites = {s.site_name for s in self._sdk.sites.list(study_key=study_key)}
         errors: List[str] = []
         for idx, subj in enumerate(subjects):
@@ -57,15 +56,6 @@ class RegisterSubjectsWorkflow:
                 errors.append(f"Index {idx}: siteName is required")
             elif subj.site_name not in sites:
                 errors.append(f"Index {idx}: site '{subj.site_name}' not found")
-            if not subj.subject_key:
-                errors.append(f"Index {idx}: subjectKey is required")
-            else:
-                try:
-                    self._sdk.subjects.get(study_key, subj.subject_key)
-                except (ApiError, ValueError):
-                    errors.append(
-                        f"Index {idx}: subject with subjectKey {subj.subject_key} not found"
-                    )
 
         if errors:
             raise ValueError("; ".join(errors))

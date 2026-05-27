@@ -30,10 +30,8 @@ def test_register_subjects_workflow(
     if not forms or not sites:
         pytest.skip("No forms/sites for subject registration")
     req = RegisterSubjectRequest(
-        form_key=forms[0].form_key,
-        site_name=sites[0].site_name,
-        subject_key=first_subject_key,
-        data={},
+        formKey=forms[0].form_key,
+        siteName=sites[0].site_name,
     )
     wf = RegisterSubjectsWorkflow(sdk)
     job = wf.register_subjects(study_key, [req])

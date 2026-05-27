@@ -61,9 +61,9 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
     elif origin is dict:
         normalizer = parse_dict_or_default
     elif annotation is str:
-        normalizer = _optional_str if optional else parse_str_or_default
+        normalizer = _optional_str if optional else parse_str_or_default  # type: ignore[assignment]
     elif annotation is int:
-        normalizer = _optional_int if optional else parse_int_or_default
+        normalizer = _optional_int if optional else parse_int_or_default  # type: ignore[assignment]
     elif annotation is bool:
         normalizer = _optional_bool if optional else parse_bool
     elif annotation is datetime:
