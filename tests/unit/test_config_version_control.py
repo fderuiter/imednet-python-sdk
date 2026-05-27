@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -317,3 +318,119 @@ def test_multiple_studies_independent(store: ConfigVersionStore) -> None:
     assert hist_a[0]["version_tag"] == "1.0.0"
     assert len(hist_b) == 1
     assert hist_b[0]["version_tag"] == "2.0.0"
+
+
+def test_get_history_detects_invalid_signature(store: ConfigVersionStore) -> None:
+    config_json = json.dumps(
+        _make_config(version="9.9.9").model_dump(mode="json", by_alias=True),
+        sort_keys=True,
+    )
+    with sqlite3.connect(store.db_path) as conn:
+        conn.execute(
+            """
+            INSERT INTO config_commits
+                (commit_id, study_key, version_tag, config_data,
+                 modified_by, description, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                "0" * 64,
+                "STUDY-01",
+                "9.9.9",
+                config_json,
+                "alice",
+                "forged",
+                "2026-01-01T00:00:00+00:00",
+            ),
+        )
+        conn.commit()
+
+    with pytest.raises(ValueError, match="signature verification"):
+        store.get_history("STUDY-01")
+
+
+def test_rollback_config_detects_invalid_signature(store: ConfigVersionStore) -> None:
+    config_json = json.dumps(
+        _make_config(version="9.9.9").model_dump(mode="json", by_alias=True),
+        sort_keys=True,
+    )
+    forged_commit = "f" * 64
+    with sqlite3.connect(store.db_path) as conn:
+        conn.execute(
+            """
+            INSERT INTO config_commits
+                (commit_id, study_key, version_tag, config_data,
+                 modified_by, description, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                forged_commit,
+                "STUDY-01",
+                "9.9.9",
+                config_json,
+                "alice",
+                "forged",
+                "2026-01-01T00:00:00+00:00",
+            ),
+        )
+        conn.commit()
+
+    with pytest.raises(ValueError, match="signature verification"):
+        store.rollback_config("STUDY-01", forged_commit)
+
+
+def test_diff_configs_detects_invalid_signature(store: ConfigVersionStore) -> None:
+    valid = _make_config(version="1.0.0")
+    valid_commit = store.commit_config("STUDY-01", valid, user="alice", desc="valid")
+    forged_json = json.dumps(
+        _make_config(version="2.0.0").model_dump(mode="json", by_alias=True),
+        sort_keys=True,
+    )
+    forged_commit = "a" * 64
+    with sqlite3.connect(store.db_path) as conn:
+        conn.execute(
+            """
+            INSERT INTO config_commits
+                (commit_id, study_key, version_tag, config_data,
+                 modified_by, description, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                forged_commit,
+                "STUDY-01",
+                "2.0.0",
+                forged_json,
+                "alice",
+                "forged",
+                "2026-01-01T00:00:00+00:00",
+            ),
+        )
+        conn.commit()
+
+    with pytest.raises(ValueError, match="signature verification"):
+        store.diff_configs(valid_commit, forged_commit)
+
+
+def test_history_rows_cannot_be_updated(store: ConfigVersionStore) -> None:
+    config = _make_config(version="1.0.0")
+    commit_id = store.commit_config("STUDY-01", config, user="alice", desc="base")
+
+    with (
+        sqlite3.connect(store.db_path) as conn,
+        pytest.raises(sqlite3.IntegrityError, match="immutable"),
+    ):
+        conn.execute(
+            "UPDATE config_commits SET version_tag = ? WHERE commit_id = ?",
+            ("9.9.9", commit_id),
+        )
+
+
+def test_history_rows_cannot_be_deleted(store: ConfigVersionStore) -> None:
+    config = _make_config(version="1.0.0")
+    commit_id = store.commit_config("STUDY-01", config, user="alice", desc="base")
+
+    with (
+        sqlite3.connect(store.db_path) as conn,
+        pytest.raises(sqlite3.IntegrityError, match="immutable"),
+    ):
+        conn.execute("DELETE FROM config_commits WHERE commit_id = ?", (commit_id,))
