@@ -7,7 +7,11 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   release-please:
@@ -17,12 +21,7 @@ jobs:
         id: release
         uses: googleapis/release-please-action@v4
         with:
-          # A PAT is required here instead of GITHUB_TOKEN.
-          # GitHub blocks new workflow runs for events (tag pushes, releases)
-          # created by GITHUB_TOKEN, so the publish jobs in main.yml would
-          # always be skipped. Using a PAT causes the tag push to trigger the
-          # Pipeline workflow normally.
-          # Create a classic PAT with `repo` scope (or a fine-grained PAT with
-          # Contents: Read & Write + Workflows: Read & Write) and add it as a
-          # repository secret named RELEASE_PLEASE_TOKEN.
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          # Use GITHUB_TOKEN for release-please operations.
+          # PyPI deployment is handled in main.yml on release commits to main,
+          # so publishing does not depend on tag-triggered workflow runs.
+          token: ${{ secrets.GITHUB_TOKEN }}
