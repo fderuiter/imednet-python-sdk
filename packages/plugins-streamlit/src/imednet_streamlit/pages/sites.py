@@ -109,14 +109,21 @@ def _top_sites_with_other(
     if remainder.empty:
         return top_df
 
+    enrolled_sum = remainder["enrolled_count"].sum()
+    open_queries_sum = remainder["open_queries"].sum()
+    weighted_days_open = (
+        (remainder["avg_days_open"] * remainder["open_queries"]).sum() / open_queries_sum
+        if open_queries_sum > 0
+        else remainder["avg_days_open"].mean()
+    )
     other_row = pd.DataFrame(
         [
             {
                 "site_name": "Other",
-                "enrolled_count": remainder["enrolled_count"].sum(),
-                "open_queries": remainder["open_queries"].sum(),
-                "avg_days_open": remainder["avg_days_open"].mean(),
-                "query_rate": remainder["query_rate"].mean(),
+                "enrolled_count": enrolled_sum,
+                "open_queries": open_queries_sum,
+                "avg_days_open": weighted_days_open,
+                "query_rate": round(open_queries_sum / max(enrolled_sum, 1) * 100, 1),
             }
         ]
     )
