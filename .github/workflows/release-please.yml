@@ -25,3 +25,4 @@ jobs:
           # PyPI deployment is handled in main.yml on release commits to main,
           # so publishing does not depend on tag-triggered workflow runs.
           token: ${{ secrets.GITHUB_TOKEN }}
+          skip-github-release: true
