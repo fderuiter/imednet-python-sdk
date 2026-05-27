@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import re
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -18,13 +20,23 @@ Operational guardrails:
 - Discovery and export tasks use retries and execution timeouts.
 - The DAG limits parallel workload with ``max_active_runs``/``max_active_tasks``.
 - Exports run in an Airflow pool (``imednet_exports``) for shared resource control.
+  Create this pool in Airflow with a slot count that matches your backend limits.
 """
+
+IMEDNET_CONN_ID = "imednet_default"
+IMEDNET_EXPORT_POOL = "imednet_exports"
+IMEDNET_EXPORT_ROOT = os.getenv("IMEDNET_EXPORT_ROOT", "/tmp/imednet_exports")
 
 default_args = {
     "start_date": datetime(2024, 1, 1),
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
 }
+
+
+def _safe_study_path_fragment(study_key: str) -> str:
+    """Return a filesystem-safe filename token from a study key."""
+    return re.sub(r"[^A-Za-z0-9_-]", "_", study_key).strip("_-") or "study"
 
 
 with DAG(
@@ -45,21 +57,27 @@ with DAG(
     )
     def discover_export_targets() -> list[dict[str, Any]]:
         """Enumerate per-study export targets only (no extraction or writes)."""
-        hook = ImednetHook("imednet_default")
+        hook = ImednetHook(IMEDNET_CONN_ID)
+        try:
+            study_keys = hook.list_study_keys()
+        except Exception as exc:
+            raise RuntimeError("Failed to discover study keys from iMednet.") from exc
         return [
             {
                 "study_key": study_key,
-                "output_path": f"/tmp/imednet_exports/{study_key}.csv",
+                "output_path": (
+                    f"{IMEDNET_EXPORT_ROOT}/{_safe_study_path_fragment(study_key)}.csv"
+                ),
                 "export_kwargs": {"index": False},
             }
-            for study_key in hook.list_study_keys()
+            for study_key in study_keys
         ]
 
     ImednetExportOperator.partial(
         task_id="export_records",
         export_func="export_to_csv",
-        imednet_conn_id="imednet_default",
-        pool="imednet_exports",
+        imednet_conn_id=IMEDNET_CONN_ID,
+        pool=IMEDNET_EXPORT_POOL,
         retries=3,
         retry_delay=timedelta(minutes=10),
         execution_timeout=timedelta(minutes=30),
