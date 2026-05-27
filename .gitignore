@@ -57,6 +57,7 @@ logs/
 
 # dotenv
 .env.*
+.streamlit/secrets.toml
 
 # mypy
 .mypy_cache/

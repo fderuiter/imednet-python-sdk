@@ -9,23 +9,23 @@ def kpi_card(
     delta: str | None = None,
     help: str | None = None,
 ) -> None:
-    """Renders a single KPI metric card using st.metric."""
+    """Render a single KPI metric card.
+
+    Args:
+        label: Metric label displayed above the value.
+        value: Metric value displayed in the card.
+        delta: Optional delta text (for trend direction).
+        help: Optional tooltip/help text.
+    """
     st.metric(label=label, value=value, delta=delta, help=help)
 
 
 def kpi_row(metrics: list[dict]) -> None:
-    """
-    Renders a horizontal row of KPI cards.
+    """Render a horizontal row of KPI metric cards.
 
-    :param metrics:
-        List of dicts with keys: label, value, delta (optional), help (optional)
-
-    Example::
-
-        kpi_row([
-            {"label": "Open Queries", "value": 42},
-            {"label": "Subjects Enrolled", "value": 120, "delta": "+5 this week"},
-        ])
+    Args:
+        metrics: Sequence of metric dictionaries with ``label`` and ``value`` keys.
+            Optional keys are ``delta`` and ``help``.
     """
     cols = st.columns(len(metrics))
     for col, metric in zip(cols, metrics):

@@ -20,7 +20,20 @@ def bar_chart(
     x_title: str | None = None,
     y_title: str | None = None,
 ) -> alt.Chart:
-    """Returns an Altair horizontal bar chart."""
+    """Build a horizontal Altair bar chart.
+
+    Args:
+        df: Source DataFrame for the chart.
+        x: Quantitative column for the x-axis.
+        y: Categorical column for the y-axis.
+        color: Optional categorical column for grouped colors.
+        title: Optional chart title.
+        x_title: Optional x-axis label override.
+        y_title: Optional y-axis label override.
+
+    Returns:
+        Configured Altair chart object.
+    """
     chart = alt.Chart(df).mark_bar()
     if color:
         chart = chart.encode(
@@ -47,7 +60,18 @@ def line_chart(
     color: str | None = None,
     title: str = "",
 ) -> alt.Chart:
-    """Returns an Altair temporal line chart with tooltip."""
+    """Build an Altair temporal line chart.
+
+    Args:
+        df: Source DataFrame for the chart.
+        x: Temporal column for the x-axis.
+        y: Quantitative column for the y-axis.
+        color: Optional categorical column for grouped lines.
+        title: Optional chart title.
+
+    Returns:
+        Configured Altair chart object.
+    """
     chart = alt.Chart(df).mark_line(point=True)
     if color:
         chart = chart.encode(
@@ -73,7 +97,17 @@ def pie_chart(
     color: str,
     title: str = "",
 ) -> alt.Chart:
-    """Returns an Altair arc/pie chart."""
+    """Build an Altair pie chart.
+
+    Args:
+        df: Source DataFrame for the chart.
+        theta: Quantitative column used for slice size.
+        color: Categorical column used for slice color.
+        title: Optional chart title.
+
+    Returns:
+        Configured Altair chart object.
+    """
     return (
         alt.Chart(df)
         .mark_arc()
