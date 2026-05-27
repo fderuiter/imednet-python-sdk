@@ -145,7 +145,7 @@ def hive_parquet_query(base_dir: str) -> str:
     escaped_base_dir = base_dir.replace("'", "''")
     return (
         f"SELECT * FROM read_parquet('{escaped_base_dir}/**/*.parquet', "
-        "hive_partitioning = true)"
+        "hive_partitioning = true, union_by_name = true)"
     )
 
 
