@@ -112,4 +112,4 @@ def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
     for interval in intervals:
         if not getattr(interval, "disabled", False):
             return interval.interval_name
-    raise NoLiveDataError("No active intervals available for live tests")
+    raise NoLiveDataError(f"No active intervals available for study {study_key}")

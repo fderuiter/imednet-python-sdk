@@ -15,6 +15,8 @@ API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
+ALLOW_MUTATION = os.getenv("IMEDNET_ALLOW_MUTATION") == "1"
+STUDY_KEY_OVERRIDE = os.getenv("IMEDNET_STUDY_KEY")
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +27,36 @@ def _typed_value(var_type: str) -> Any:
     return typed_values.value_for(var_type) or ""
 
 
+def _print_startup_context() -> None:
+    """Print environment context so operators can verify the correct target."""
+    print("\n[live-tests] ── startup context ──────────────────────────")
+    print(f"[live-tests]   IMEDNET_RUN_E2E       : {os.getenv('IMEDNET_RUN_E2E', '(not set)')}")
+    print(
+        f"[live-tests]   IMEDNET_ALLOW_MUTATION: {os.getenv('IMEDNET_ALLOW_MUTATION', '(not set)')}"
+    )
+    if STUDY_KEY_OVERRIDE:
+        print(f"[live-tests]   IMEDNET_STUDY_KEY     : {STUDY_KEY_OVERRIDE} (pinned)")
+    else:
+        print("[live-tests]   IMEDNET_STUDY_KEY     : (auto-discover)")
+    print(f"[live-tests]   IMEDNET_BASE_URL      : {BASE_URL or '(default)'}")
+    print("[live-tests] ───────────────────────────────────────────────\n")
+
+
 @pytest.fixture(scope="session", autouse=True)
 def _check_live_env() -> None:
+    _print_startup_context()
     if not RUN_E2E or not (API_KEY and SECURITY_KEY):
         pytest.skip(
             "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY "
             "to run live tests"
         )
-    logger.info("Live test environment configured")
+    logger.info("Live test environment configured (mutation=%s)", ALLOW_MUTATION)
+
+
+@pytest.fixture(scope="session")
+def allow_mutation() -> bool:
+    """Return ``True`` when ``IMEDNET_ALLOW_MUTATION=1`` is set."""
+    return ALLOW_MUTATION
 
 
 @pytest.fixture(scope="session")
@@ -173,3 +197,4 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
     loop = asyncio.new_event_loop()
     yield loop
     loop.close()
+
