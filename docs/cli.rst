@@ -47,6 +47,7 @@ Command Hierarchy
        A --> K(workflows)
        K --> K1("extract-records")
        A --> L("subject-data")
+       A --> M("sync-worker")
 
 Available Commands
 ------------------
@@ -226,3 +227,26 @@ Subject Data
 The command prints a nested JSON structure containing the subject's visits, forms, and
 variable values. This is helpful for debugging or exporting an individual subject's
 dataset.
+
+Background Sync Worker
+----------------------
+
+``sync-worker`` runs a non-blocking incremental cache refresh in the
+foreground of a dedicated process so that other consumers (e.g. a Streamlit
+dashboard) can read the SQLite cache without waiting for API calls.
+
+.. code-block:: console
+
+   imednet sync-worker MY_STUDY --interval 900
+   imednet sync-worker MY_STUDY --once
+
+``--interval`` sets the polling interval in seconds (default: 900).  Use
+``--once`` to perform a single sync cycle and exit immediately — useful for
+scheduled jobs (cron, Airflow, etc.).
+
+Press **Ctrl+C** to request a graceful shutdown of the daemon loop.
+
+The worker writes to a local SQLite cache opened in WAL mode so that reader
+connections are never blocked while a sync cycle is in progress.  A
+:class:`filelock.FileLock` placed beside the database file prevents concurrent
+writers from corrupting it.
