@@ -2,23 +2,33 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
-
-if TYPE_CHECKING:
-    from airflow.utils.context import Context
-else:  # pragma: no cover - typing fallback for optional Airflow dependency
-    Context = Dict[str, Any]
-
-from airflow.models import BaseOperator
+from collections.abc import Callable, Mapping, Sequence
+from typing import Any, cast
 
 from .. import export
+from .._airflow_compat import AirflowException, Context
 from ..hooks import ImednetHook
+
+try:  # pragma: no cover - optional Airflow dependency
+    from airflow.models import BaseOperator  # type: ignore
+except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
+
+    class BaseOperator:  # type: ignore
+        template_fields: Sequence[str] = ()
+
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            pass
+
+
+_ALLOWED_EXPORT_FUNCTIONS = frozenset(export.__all__)
 
 
 class ImednetExportOperator(BaseOperator):
     """Export study records using helpers from :mod:`imednet.integrations.export`."""
 
-    template_fields: Sequence[str] = ("study_key", "output_path")
+    mapped_runtime_fields: Sequence[str] = ("study_key", "output_path", "export_kwargs")
+    template_fields: Sequence[str] = mapped_runtime_fields
+    template_fields_renderers = {"export_kwargs": "json"}
 
     def __init__(
         self,
@@ -26,7 +36,7 @@ class ImednetExportOperator(BaseOperator):
         study_key: str,
         output_path: str,
         export_func: str = "export_to_csv",
-        export_kwargs: Optional[Dict[str, Any]] = None,
+        export_kwargs: Mapping[str, Any] | None = None,
         imednet_conn_id: str = "imednet_default",
         **kwargs: Any,
     ) -> None:
@@ -34,14 +44,32 @@ class ImednetExportOperator(BaseOperator):
         self.study_key = study_key
         self.output_path = output_path
         self.export_func = export_func
-        self.export_kwargs = export_kwargs or {}
+        self.export_kwargs = dict(export_kwargs or {})
         self.imednet_conn_id = imednet_conn_id
 
+    def _get_export_callable(self) -> Callable[..., None]:
+        if self.export_func not in _ALLOWED_EXPORT_FUNCTIONS:
+            supported = ", ".join(sorted(_ALLOWED_EXPORT_FUNCTIONS))
+            raise AirflowException(
+                f"Unsupported export_func '{self.export_func}'. Expected one of: {supported}"
+            )
+        return cast(Callable[..., None], getattr(export, self.export_func))
+
+    def _get_sdk(self):
+        return ImednetHook(self.imednet_conn_id).get_sdk_client()
+
+    def _get_runtime_export_kwargs(self) -> dict[str, Any]:
+        return dict(self.export_kwargs)
+
     def execute(self, context: Context) -> str:
-        hook = ImednetHook(self.imednet_conn_id)
-        sdk = hook.get_conn()
-        export_callable = getattr(export, self.export_func)
-        export_callable(sdk, self.study_key, self.output_path, **self.export_kwargs)
+        export_callable = self._get_export_callable()
+        sdk = self._get_sdk()
+        export_callable(
+            sdk,
+            self.study_key,
+            self.output_path,
+            **self._get_runtime_export_kwargs(),
+        )
         return self.output_path
 
 

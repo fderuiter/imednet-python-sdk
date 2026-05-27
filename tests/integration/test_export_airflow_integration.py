@@ -70,14 +70,15 @@ def test_imednet_export_operator(monkeypatch):
     import apache_airflow_providers_imednet.operators.export as export_ops
     from apache_airflow_providers_imednet import ImednetExportOperator
 
-    hook = MagicMock(get_conn=MagicMock(return_value=MagicMock()))
+    sdk = MagicMock()
+    hook = MagicMock(get_sdk_client=MagicMock(return_value=sdk))
     monkeypatch.setattr(export_ops, "ImednetHook", MagicMock(return_value=hook))
     monkeypatch.setattr(export_mod, "export_to_csv", MagicMock())
 
     op = ImednetExportOperator(task_id="t", study_key="S", output_path="p")
     result = op.execute({})
 
-    export_mod.export_to_csv.assert_called_once_with(hook.get_conn(), "S", "p")
+    export_mod.export_to_csv.assert_called_once_with(sdk, "S", "p")
     assert result == "p"
     sys.modules.pop("apache_airflow_providers_imednet", None)
 
