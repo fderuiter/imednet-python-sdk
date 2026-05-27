@@ -3,6 +3,8 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
+from .paginated_grid import paginated_slice
+
 
 def filterable_dataframe(df: pd.DataFrame, key: str, height: int = 400) -> None:
     """
@@ -14,4 +16,5 @@ def filterable_dataframe(df: pd.DataFrame, key: str, height: int = 400) -> None:
     if query:
         mask = df.apply(lambda col: col.astype(str).str.contains(query, case=False, na=False))
         df = df[mask.any(axis=1)]
-    st.dataframe(df, use_container_width=True, height=height)
+    page_df = paginated_slice(df, key=key)
+    st.dataframe(page_df, use_container_width=True, height=height)

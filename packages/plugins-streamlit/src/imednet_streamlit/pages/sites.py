@@ -168,7 +168,8 @@ if not df_metrics.empty:
 else:
     df_display = pd.DataFrame(columns=display_cols)
 
-styled = df_display.style.map(_highlight_high_rate, subset=["query_rate"])
+page_df = components.paginated_slice(df_display, key="sites_metrics_table")
+styled = page_df.style.map(_highlight_high_rate, subset=["query_rate"])
 st.dataframe(styled, use_container_width=True)
 
 components.csv_download_button(df_display, filename="site_metrics.csv")

@@ -141,7 +141,13 @@ def _build_incomplete_form_counts(df: pd.DataFrame) -> pd.DataFrame:
     if incomplete.empty:
         return pd.DataFrame(columns=["form_name", "count"])
 
-    return incomplete.groupby("form_name").size().reset_index(name="count").nlargest(10, "count")
+    grouped = incomplete.groupby("form_name").size().reset_index(name="count")
+    return components.top_n_with_other(
+        grouped,
+        label_column="form_name",
+        value_column="count",
+        top_n=10,
+    )
 
 
 def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:

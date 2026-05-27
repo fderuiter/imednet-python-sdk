@@ -119,8 +119,11 @@ with col_left:
 with col_right:
     st.subheader("Top 10 Variables")
     if not df_filtered.empty:
-        var_counts = (
-            df_filtered.groupby("variable").size().reset_index(name="count").nlargest(10, "count")
+        var_counts = components.top_n_with_other(
+            df_filtered.groupby("variable").size().reset_index(name="count"),
+            label_column="variable",
+            value_column="count",
+            top_n=10,
         )
         st.altair_chart(
             components.bar_chart(var_counts, x="count", y="variable", title="Top Variables"),

@@ -1,6 +1,7 @@
 """Workflow helpers built on top of the iMednet SDK."""
 
 from .cached_loader import CachedRecordsLoader, get_cache_connection
+from .chunked_pipeline import ChunkedRecordPipeline, iter_chunks
 from .config_version_control import ConfigVersionStore
 from .duckdb_centralizer import DuckDBIngestionWorkflow
 from .extraction_engine import ExtractionResult, extract_canonical_records
@@ -19,11 +20,13 @@ from .standards_validation import (
 from .state_ledger import ExtractionStateLedger, LedgerState, StreamState
 from .study_structure import async_get_study_structure, get_study_structure
 from .subject_data import SubjectDataWorkflow
+from .sync_worker import SyncWorker, SyncWorkerConfig
 from .triage_store import TriageStore
 
 __all__ = [
     "AsyncJobPoller",
     "CachedRecordsLoader",
+    "ChunkedRecordPipeline",
     "ConfigVersionStore",
     "DuckDBIngestionWorkflow",
     "ExtractionResult",
@@ -44,9 +47,12 @@ __all__ = [
     "StandardsReadinessValidator",
     "StreamState",
     "SubjectDataWorkflow",
+    "SyncWorker",
+    "SyncWorkerConfig",
     "TriageStore",
     "async_get_study_structure",
     "extract_canonical_records",
     "get_cache_connection",
+    "iter_chunks",
     "get_study_structure",
 ]

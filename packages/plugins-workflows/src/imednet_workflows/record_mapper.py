@@ -12,6 +12,8 @@ from pydantic import BaseModel, Field, ValidationError, create_model
 from imednet.endpoints.records import Record as RecordModel  # type: ignore[attr-defined]
 from imednet.endpoints.variables import Variable as VariableModel  # type: ignore[attr-defined]
 
+from .chunked_pipeline import ChunkedRecordPipeline, iter_chunks
+
 if TYPE_CHECKING:
     from imednet.sdk import ImednetSDK
 
@@ -43,6 +45,7 @@ class RecordMapper:
     def __init__(self, sdk: "ImednetSDK") -> None:
         """Initialize with an :class:`ImednetSDK` instance."""
         self.sdk = sdk
+        self._pipeline = ChunkedRecordPipeline()
 
     # ------------------------------------------------------------------
     # Helper methods
@@ -115,35 +118,43 @@ class RecordMapper:
             logger.error("Failed to fetch records for study '%s': %s", study_key, exc)
             return []
 
+    def _parse_record(
+        self,
+        rec: RecordModel,
+        record_model: Type[BaseModel],
+    ) -> Dict[str, Any]:
+        meta = {
+            "recordId": rec.record_id,
+            "subjectKey": rec.subject_key,
+            "visitId": rec.visit_id,
+            "formId": rec.form_id,
+            "recordStatus": rec.record_status,
+            "dateCreated": rec.date_created.isoformat() if rec.date_created else None,
+        }
+        data = rec.record_data if isinstance(rec.record_data, dict) else {}
+        parsed = record_model(**data).model_dump(by_alias=False)
+        return {**meta, **parsed}
+
     def _parse_records(
         self, records: List[RecordModel], record_model: Type[BaseModel]
     ) -> Tuple[List[Dict[str, Any]], int]:
         """Parse raw records into row dictionaries and count failures."""
         rows: List[Dict[str, Any]] = []
         errors = 0
-        for rec in records:
-            try:
-                meta = {
-                    "recordId": rec.record_id,
-                    "subjectKey": rec.subject_key,
-                    "visitId": rec.visit_id,
-                    "formId": rec.form_id,
-                    "recordStatus": rec.record_status,
-                    "dateCreated": rec.date_created.isoformat() if rec.date_created else None,
-                }
-                data = rec.record_data if isinstance(rec.record_data, dict) else {}
-                parsed = record_model(**data).model_dump(by_alias=False)
-                rows.append({**meta, **parsed})
-            except (ValidationError, TypeError) as exc:
-                errors += 1
-                logger.warning(
-                    "Failed to parse record data for recordId %s: %s",
-                    rec.record_id,
-                    exc,
-                )
-            except Exception as exc:  # pragma: no cover - unexpected
-                errors += 1
-                logger.error("Unexpected error processing recordId %s: %s", rec.record_id, exc)
+        for chunk in iter_chunks(records, chunk_size=self._pipeline.chunk_size):
+            for rec in chunk:
+                try:
+                    rows.append(self._parse_record(rec, record_model))
+                except (ValidationError, TypeError) as exc:
+                    errors += 1
+                    logger.warning(
+                        "Failed to parse record data for recordId %s: %s",
+                        rec.record_id,
+                        exc,
+                    )
+                except Exception as exc:  # pragma: no cover - unexpected
+                    errors += 1
+                    logger.error("Unexpected error processing recordId %s: %s", rec.record_id, exc)
         return rows, errors
 
     def _build_dataframe(

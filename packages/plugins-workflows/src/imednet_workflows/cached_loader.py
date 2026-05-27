@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from collections.abc import Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable, cast
 
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from imednet.models.records import Record
+
+from .chunked_pipeline import DEFAULT_CHUNK_SIZE
 
 if TYPE_CHECKING:
     from imednet.sdk import ImednetSDK
@@ -61,12 +64,25 @@ class CachedRecordsLoader:
         self, study_key: str, *, conn: sqlite3.Connection | None = None
     ) -> list[Record]:
         """Return cached records for ``study_key`` without contacting the API."""
+        return list(self.iter_cached_records(study_key, conn=conn))
+
+    def iter_cached_records(
+        self,
+        study_key: str,
+        *,
+        conn: sqlite3.Connection | None = None,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
+    ) -> Iterator[Record]:
+        """Yield cached records for ``study_key`` in bounded chunks."""
+        if chunk_size <= 0:
+            raise ValueError("chunk_size must be greater than zero")
+
         close_conn = False
         if conn is None:
             conn = get_cache_connection(self.db_path)
             close_conn = True
         try:
-            rows = conn.execute(
+            cursor = conn.execute(
                 """
                 SELECT payload
                 FROM record_cache
@@ -74,8 +90,13 @@ class CachedRecordsLoader:
                 ORDER BY record_id
                 """,
                 (study_key,),
-            ).fetchall()
-            return [Record.from_json(json.loads(cast(str, row["payload"]))) for row in rows]
+            )
+            while True:
+                rows = cursor.fetchmany(chunk_size)
+                if not rows:
+                    break
+                for row in rows:
+                    yield Record.from_json(json.loads(cast(str, row["payload"])))
         finally:
             if close_conn:
                 conn.close()

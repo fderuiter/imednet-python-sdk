@@ -110,12 +110,16 @@ def _make_fake_components_module() -> ModuleType:
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
         pass
 
+    def _noop_top_n_with_other(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
+        return df
+
     mod.kpi_row = _noop_kpi_row  # type: ignore[attr-defined]
     mod.bar_chart = _noop_bar_chart  # type: ignore[attr-defined]
     mod.line_chart = _noop_line_chart  # type: ignore[attr-defined]
     mod.filterable_dataframe = _noop_filterable_dataframe  # type: ignore[attr-defined]
     mod.csv_download_button = _noop_csv_download_button  # type: ignore[attr-defined]
     mod.excel_download_button = _noop_excel_download_button  # type: ignore[attr-defined]
+    mod.top_n_with_other = _noop_top_n_with_other  # type: ignore[attr-defined]
     return mod
 
 

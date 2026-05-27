@@ -566,6 +566,40 @@ def test_subject_data_calls_workflow(
     workflow.get_all_subject_data.assert_called_once_with("STUDY", "SUBJ")
 
 
+def test_sync_worker_once_command(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    worker = MagicMock()
+    worker.run_once.return_value = 42
+    loader_cls = MagicMock()
+    monkeypatch.setattr("imednet_workflows.cached_loader.CachedRecordsLoader", loader_cls)
+    monkeypatch.setattr("imednet_workflows.cli.SyncWorker", MagicMock(return_value=worker))
+
+    result = runner.invoke(cli.app, ["sync-worker", "STUDY", "--interval", "5", "--once"])
+
+    assert result.exit_code == 0
+    loader_cls.assert_called_once_with(sdk)
+    worker.run_once.assert_called_once_with()
+    assert "Synced 42 cached records" in result.stdout
+
+
+def test_sync_worker_command_handles_keyboard_interrupt(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    worker = MagicMock()
+    worker.run_forever.side_effect = KeyboardInterrupt()
+    loader_cls = MagicMock()
+    monkeypatch.setattr("imednet_workflows.cached_loader.CachedRecordsLoader", loader_cls)
+    monkeypatch.setattr("imednet_workflows.cli.SyncWorker", MagicMock(return_value=worker))
+
+    result = runner.invoke(cli.app, ["sync-worker", "STUDY", "--interval", "1"])
+
+    assert result.exit_code == 0
+    loader_cls.assert_called_once_with(sdk)
+    worker.stop.assert_called_once_with()
+    assert "Sync worker termination requested. Exiting cleanly." in result.stdout
+
+
 def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
     obj = MagicMock()
     obj.description = "Q1"

@@ -119,6 +119,11 @@ def _register_missing_workflow_commands() -> None:
         """Retrieve all data for a single subject (missing plugin)."""
         _missing_plugin()
 
+    @app.command("sync-worker")
+    def missing_sync_worker() -> None:
+        """Run a background cache synchronization worker (missing plugin)."""
+        _missing_plugin()
+
     app.add_typer(workflows_app)
 
 
@@ -180,6 +185,7 @@ try:  # pragma: no cover - optional workflows plugin
     ).SubjectDataWorkflow  # noqa: F401
     app.add_typer(workflows_cli.app)
     app.command("subject-data")(workflows_cli.subject_data)
+    app.command("sync-worker")(workflows_cli.sync_worker)
 except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover - optional plugin
     DataExtractionWorkflow = None  # type: ignore[assignment]
     SubjectDataWorkflow = None  # type: ignore[assignment]
