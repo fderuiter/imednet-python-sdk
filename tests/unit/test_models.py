@@ -6,6 +6,7 @@ import pytest
 from pydantic import BaseModel, ValidationError
 
 import imednet.models as models
+from imednet.models.study_config import StudyConfiguration
 
 
 def _build_value(annotation: Any) -> Any:
@@ -43,7 +44,7 @@ def _build_sample_data(cls: type[BaseModel]) -> Any:
     data = {}
     for name, field in cls.model_fields.items():
         data[field.alias or name] = _build_value(field.annotation)
-    if cls.__name__ == "StudyConfiguration":
+    if issubclass(cls, StudyConfiguration):
         data["reportingProfile"] = "general"
     return data
 
