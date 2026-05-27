@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import threading
 from collections.abc import Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable, cast
@@ -17,6 +18,22 @@ if TYPE_CHECKING:
 
 DEFAULT_CACHE_DIR = Path.home() / ".imednet" / "cache"
 
+# Per-DB-path locks that serialise _initialise_cache across threads within the
+# same process.  Switching an SQLite database to WAL journal mode requires a
+# brief exclusive lock; if multiple threads attempt the switch simultaneously
+# they all race for that lock and the losers immediately raise
+# ``sqlite3.OperationalError: database is locked``.  Serialising initialisation
+# eliminates the race entirely.  The dict grows at most one entry per distinct
+# database file, which is negligible.
+_db_init_locks: dict[str, threading.Lock] = {}
+_db_init_locks_guard = threading.Lock()
+
+
+def _get_db_init_lock(resolved_path: Path) -> threading.Lock:
+    key = str(resolved_path)
+    with _db_init_locks_guard:
+        return _db_init_locks.setdefault(key, threading.Lock())
+
 
 def get_cache_connection(db_path: str | Path) -> sqlite3.Connection:
     """Return a SQLite connection configured for concurrent cache access."""
@@ -24,6 +41,10 @@ def get_cache_connection(db_path: str | Path) -> sqlite3.Connection:
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(resolved_path, timeout=30.0)
     conn.row_factory = sqlite3.Row
+    # busy_timeout instructs SQLite to retry at the C level on SQLITE_BUSY
+    # (e.g. during the WAL transition); this complements Python's connect
+    # timeout and is also effective in cross-process scenarios.
+    conn.execute("PRAGMA busy_timeout=30000;")
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA synchronous=NORMAL;")
     return conn
@@ -123,25 +144,27 @@ class CachedRecordsLoader:
                 )
 
     def _initialise_cache(self) -> None:
-        conn = get_cache_connection(self.db_path)
-        try:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS record_cache (
-                    study_key TEXT NOT NULL,
-                    record_id INTEGER NOT NULL,
-                    form_key TEXT NOT NULL,
-                    date_modified TEXT NOT NULL,
-                    payload TEXT NOT NULL,
-                    PRIMARY KEY (study_key, record_id)
-                )
-                """)
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
-                ON record_cache (study_key, date_modified)
-                """)
-            conn.commit()
-        finally:
-            conn.close()
+        resolved = Path(self.db_path).expanduser().resolve()
+        with _get_db_init_lock(resolved):
+            conn = get_cache_connection(self.db_path)
+            try:
+                conn.execute("""
+                    CREATE TABLE IF NOT EXISTS record_cache (
+                        study_key TEXT NOT NULL,
+                        record_id INTEGER NOT NULL,
+                        form_key TEXT NOT NULL,
+                        date_modified TEXT NOT NULL,
+                        payload TEXT NOT NULL,
+                        PRIMARY KEY (study_key, record_id)
+                    )
+                    """)
+                conn.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
+                    ON record_cache (study_key, date_modified)
+                    """)
+                conn.commit()
+            finally:
+                conn.close()
 
     def _get_high_water_mark(self, conn: sqlite3.Connection, study_key: str) -> str | None:
         row = conn.execute(
