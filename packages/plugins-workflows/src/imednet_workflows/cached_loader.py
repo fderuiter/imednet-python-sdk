@@ -9,7 +9,9 @@ from typing import TYPE_CHECKING, Any, Iterable, cast
 
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
+from imednet.core.endpoint.base import SyncListGetEndpoint
 from imednet.models.records import Record
+from imednet.utils.filters import build_filter_string
 
 from .chunked_pipeline import DEFAULT_CHUNK_SIZE
 
@@ -176,10 +178,14 @@ class CachedRecordsLoader:
         return cast(str | None, row["max_date_modified"])
 
     def _fetch_delta_records(self, study_key: str, high_water_mark: str | None) -> list[Record]:
-        filters: dict[str, Any] = {"study_key": study_key, "record_data_filter": None}
-        if high_water_mark:
-            filters["date_modified"] = (">", high_water_mark)
-        return self._list_records(**filters)
+        if not high_water_mark:
+            return self._list_records(study_key=study_key, record_data_filter=None)
+
+        delta_filter = build_filter_string({"date_modified": (">=", high_water_mark)})
+        return self._list_records_with_filter_override(
+            study_key=study_key,
+            filter_string=delta_filter,
+        )
 
     def _fetch_active_record_ids(self, study_key: str) -> set[int]:
         records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
@@ -193,6 +199,28 @@ class CachedRecordsLoader:
             reraise=True,
         )
         return cast(list[Record], retryer(self._sdk.records.list, **filters))
+
+    def _list_records_with_filter_override(
+        self, *, study_key: str, filter_string: str
+    ) -> list[Record]:
+        retryer = Retrying(
+            stop=stop_after_attempt(self._retry_attempts),
+            wait=wait_exponential(multiplier=1, min=1, max=8),
+            retry=retry_if_exception_type(Exception),
+            reraise=True,
+        )
+        endpoint = cast(SyncListGetEndpoint[Record], self._sdk.records)
+        return cast(
+            list[Record],
+            retryer(
+                endpoint._list_sync,
+                endpoint._require_sync_client(),
+                endpoint.PAGINATOR_CLS,
+                study_key=study_key,
+                extra_params={"filter": filter_string},
+                record_data_filter=None,
+            ),
+        )
 
     def _upsert_records(self, conn: sqlite3.Connection, records: Iterable[Record]) -> None:
         payloads = [
