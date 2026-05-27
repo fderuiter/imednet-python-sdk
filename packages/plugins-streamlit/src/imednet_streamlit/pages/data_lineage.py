@@ -263,7 +263,7 @@ def _render_config_input() -> None:
                     st.session_state[_KEY_CONFIG] = config
                     st.success("Configuration loaded.")
                 except Exception as exc:  # pragma: no cover - defensive runtime UI handling
-                    st.error(f"Invalid StudyConfiguration JSON: {exc}")
+                    st.error(f"Invalid StudyConfiguration JSON ({type(exc).__name__}): {exc}")
             else:
                 st.session_state.pop(_KEY_CONFIG, None)
                 st.success("Configuration cleared.")
@@ -289,7 +289,7 @@ def render_page() -> None:
             _load_data(study_key)
             st.success("Records loaded.")
         except Exception as exc:  # pragma: no cover - defensive runtime UI handling
-            st.error(f"Unable to load records ({type(exc).__name__}).")
+            st.error(f"Unable to load records ({type(exc).__name__}): {exc}")
             return
 
     extraction: ExtractionResult | None = st.session_state.get(_KEY_EXTRACTION)
