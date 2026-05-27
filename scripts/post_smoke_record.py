@@ -14,6 +14,11 @@ Usage:
 
 ``--timeout`` controls how long to wait for the record creation job to
 finish before giving up. The default is 90 seconds.
+
+Exit codes:
+* 0 = at least one smoke record was created successfully
+* 1 = runtime failure
+* 2 = smoke prerequisites missing (skipped)
 """
 
 import argparse
@@ -38,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 POLL_TIMEOUT = 90
+SKIP_EXIT_CODE = 2
 
 
 def authenticate() -> ImednetSDK:
@@ -197,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
                     scenarios.append({"subject_key": subject_key, "interval_name": interval_name})
             if not scenarios:
                 print("::notice:: Smoke record skipped – no identifiers available")
-                return 0
+                return SKIP_EXIT_CODE
             logger.info("Scenarios: %s", scenarios)
             for extra in scenarios:
                 record = build_record(sdk, study_key, form_key, **extra)
@@ -205,7 +211,7 @@ def main(argv: list[str] | None = None) -> int:
                 submit_record(sdk, study_key, record, timeout=args.timeout)
     except NoLiveDataError as exc:
         print(f"::notice:: Smoke record skipped – {exc}")
-        return 0
+        return SKIP_EXIT_CODE
     except Exception as exc:  # pragma: no cover - runtime safeguard
         print(f"Smoke record failed: {exc}", file=sys.stderr)
         return 1

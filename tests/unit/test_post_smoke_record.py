@@ -162,3 +162,34 @@ def test_main_verbose_logs(monkeypatch, caplog) -> None:
     assert "Scenarios: [{'subject_key': 'SUB'}]" in logs
     assert "'data': '***'" in logs
     assert "Batch B1 COMPLETED" in logs
+
+
+def test_main_returns_skip_when_identifiers_missing(monkeypatch, capsys) -> None:
+    sdk = Mock()
+    sdk.__enter__ = Mock(return_value=sdk)
+    sdk.__exit__ = Mock(return_value=False)
+    monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
+    monkeypatch.setattr(smoke, "discover_keys", Mock(return_value=("ST", "F1")))
+    monkeypatch.setattr(smoke, "discover_identifiers", Mock(return_value=(None, None, None)))
+
+    exit_code = smoke.main([])
+
+    assert exit_code == smoke.SKIP_EXIT_CODE
+    out = capsys.readouterr().out
+    assert "Smoke record skipped" in out
+
+
+def test_main_returns_skip_on_no_live_data(monkeypatch, capsys) -> None:
+    sdk = Mock()
+    sdk.__enter__ = Mock(return_value=sdk)
+    sdk.__exit__ = Mock(return_value=False)
+    monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
+    monkeypatch.setattr(
+        smoke, "discover_keys", Mock(side_effect=smoke.NoLiveDataError("no active studies"))
+    )
+
+    exit_code = smoke.main([])
+
+    assert exit_code == smoke.SKIP_EXIT_CODE
+    out = capsys.readouterr().out
+    assert "no active studies" in out
