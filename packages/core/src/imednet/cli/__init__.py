@@ -3,6 +3,8 @@ from __future__ import annotations
 import subprocess
 import sys
 from importlib import import_module
+from importlib.util import find_spec
+from typing import NoReturn
 
 try:
     # typer[all] also pulls in rich; checking both ensures a clear error
@@ -127,7 +129,7 @@ def _register_missing_workflow_commands() -> None:
     app.add_typer(workflows_app)
 
 
-def _exit_missing_dashboard_plugin() -> None:
+def _exit_missing_dashboard_plugin() -> NoReturn:
     typer.secho(
         "Dashboard plugin not found. Install it with:\n" "  pip install imednet-streamlit",
         fg=typer.colors.RED,
@@ -149,12 +151,11 @@ def run_dashboard(
     ),
 ) -> None:
     """Launch the interactive iMednet Streamlit reporting dashboard."""
-    try:
-        _app_module = import_module("imednet_streamlit.app")
-    except (ImportError, ModuleNotFoundError):
+    dashboard_spec = find_spec("imednet_streamlit.app")
+    if dashboard_spec is None:
         _exit_missing_dashboard_plugin()
 
-    app_path = _app_module.__file__
+    app_path = dashboard_spec.origin
     if app_path is None:
         typer.secho("Cannot resolve dashboard app path.", fg=typer.colors.RED)
         raise typer.Exit(code=1)
@@ -192,10 +193,9 @@ except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover -
     _register_missing_workflow_commands()
 
 
-try:  # pragma: no cover - optional streamlit plugin
-    import_module("imednet_streamlit.app")
+if find_spec("imednet_streamlit.app") is not None:  # pragma: no cover - optional streamlit plugin
     app.command("dashboard")(run_dashboard)
-except (ImportError, ModuleNotFoundError):  # pragma: no cover
+else:  # pragma: no cover
     _register_missing_dashboard_commands()
 
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import importlib.util
 from types import ModuleType
 from unittest.mock import MagicMock
 
@@ -27,14 +28,14 @@ def cli_module() -> ModuleType:
 def test_dashboard_command_falls_back_when_plugin_missing(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    real_import_module = importlib.import_module
+    real_find_spec = importlib.util.find_spec
 
-    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+    def fake_find_spec(name: str, package: str | None = None) -> object | None:
         if name == "imednet_streamlit.app":
-            raise ModuleNotFoundError("No module named 'imednet_streamlit'")
-        return real_import_module(name, package)
+            return None
+        return real_find_spec(name, package)
 
-    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
     reloaded_cli = importlib.reload(cli_module)
 
     help_result = runner.invoke(reloaded_cli.app, ["--help"])
@@ -49,16 +50,15 @@ def test_dashboard_command_falls_back_when_plugin_missing(
 def test_dashboard_command_runs_streamlit_when_plugin_present(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    real_import_module = importlib.import_module
-    streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
+    real_find_spec = importlib.util.find_spec
+    dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
-    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+    def fake_find_spec(name: str, package: str | None = None) -> object | None:
         if name == "imednet_streamlit.app":
-            return streamlit_module
-        return real_import_module(name, package)
+            return dashboard_spec
+        return real_find_spec(name, package)
 
-    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
     reloaded_cli = importlib.reload(cli_module)
     mock_result = MagicMock(returncode=0)
     subprocess_run = MagicMock(return_value=mock_result)
@@ -91,16 +91,15 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
 def test_dashboard_command_uses_default_options(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    real_import_module = importlib.import_module
-    streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
+    real_find_spec = importlib.util.find_spec
+    dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
-    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+    def fake_find_spec(name: str, package: str | None = None) -> object | None:
         if name == "imednet_streamlit.app":
-            return streamlit_module
-        return real_import_module(name, package)
+            return dashboard_spec
+        return real_find_spec(name, package)
 
-    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
     reloaded_cli = importlib.reload(cli_module)
     mock_result = MagicMock(returncode=0)
     subprocess_run = MagicMock(return_value=mock_result)
@@ -125,16 +124,15 @@ def test_dashboard_command_uses_default_options(
 def test_dashboard_command_fails_when_app_path_missing(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    real_import_module = importlib.import_module
-    streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = None
+    real_find_spec = importlib.util.find_spec
+    dashboard_spec = MagicMock(origin=None)
 
-    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+    def fake_find_spec(name: str, package: str | None = None) -> object | None:
         if name == "imednet_streamlit.app":
-            return streamlit_module
-        return real_import_module(name, package)
+            return dashboard_spec
+        return real_find_spec(name, package)
 
-    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
     reloaded_cli = importlib.reload(cli_module)
 
     result = runner.invoke(reloaded_cli.app, ["dashboard"])
@@ -145,16 +143,15 @@ def test_dashboard_command_fails_when_app_path_missing(
 def test_dashboard_command_propagates_streamlit_failure(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    real_import_module = importlib.import_module
-    streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
+    real_find_spec = importlib.util.find_spec
+    dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
-    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+    def fake_find_spec(name: str, package: str | None = None) -> object | None:
         if name == "imednet_streamlit.app":
-            return streamlit_module
-        return real_import_module(name, package)
+            return dashboard_spec
+        return real_find_spec(name, package)
 
-    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
     reloaded_cli = importlib.reload(cli_module)
     mock_result = MagicMock(returncode=7)
     subprocess_run = MagicMock(return_value=mock_result)
@@ -168,16 +165,15 @@ def test_dashboard_command_propagates_streamlit_failure(
 def test_dashboard_command_handles_subprocess_oserror(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    real_import_module = importlib.import_module
-    streamlit_module = ModuleType("imednet_streamlit.app")
-    streamlit_module.__file__ = FAKE_DASHBOARD_PATH
+    real_find_spec = importlib.util.find_spec
+    dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
-    def fake_import_module(name: str, package: str | None = None) -> ModuleType:
+    def fake_find_spec(name: str, package: str | None = None) -> object | None:
         if name == "imednet_streamlit.app":
-            return streamlit_module
-        return real_import_module(name, package)
+            return dashboard_spec
+        return real_find_spec(name, package)
 
-    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
     reloaded_cli = importlib.reload(cli_module)
     subprocess_run = MagicMock(side_effect=FileNotFoundError("streamlit not found"))
     monkeypatch.setattr(reloaded_cli.subprocess, "run", subprocess_run)
