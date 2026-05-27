@@ -169,3 +169,50 @@ def test_discover_interval_name_raises_when_empty() -> None:
 
     with pytest.raises(NoLiveDataError):
         discover_interval_name(sdk, "S")
+
+
+def test_discover_site_name_case_insensitive() -> None:
+    """Status matching must be case-insensitive per the live-test charter."""
+    sdk = MagicMock()
+    sdk.sites.list.return_value = [
+        MagicMock(site_name="Lower", site_enrollment_status="active"),
+        MagicMock(site_name="Upper", site_enrollment_status="ACTIVE"),
+        MagicMock(site_name="Mixed", site_enrollment_status="Active"),
+    ]
+
+    assert discover_site_name(sdk, "S") == "Lower"
+
+
+def test_discover_subject_key_case_insensitive() -> None:
+    """Status matching must be case-insensitive per the live-test charter."""
+    sdk = MagicMock()
+    sdk.subjects.list.return_value = [
+        MagicMock(subject_key="S1", subject_status="ACTIVE"),
+        MagicMock(subject_key="S2", subject_status="Active"),
+    ]
+
+    assert discover_subject_key(sdk, "S") == "S1"
+
+
+def test_discover_site_name_raises_when_none_active() -> None:
+    """Sites with no active status should raise even when the list is non-empty."""
+    sdk = MagicMock()
+    sdk.sites.list.return_value = [
+        MagicMock(site_enrollment_status="Closed"),
+        MagicMock(site_enrollment_status="Inactive"),
+    ]
+
+    with pytest.raises(NoLiveDataError, match="No active sites"):
+        discover_site_name(sdk, "S")
+
+
+def test_discover_subject_key_raises_when_none_active() -> None:
+    """Subjects with no active status should raise even when the list is non-empty."""
+    sdk = MagicMock()
+    sdk.subjects.list.return_value = [
+        MagicMock(subject_status="Withdrawn"),
+        MagicMock(subject_status="Inactive"),
+    ]
+
+    with pytest.raises(NoLiveDataError, match="No active subjects"):
+        discover_subject_key(sdk, "S")

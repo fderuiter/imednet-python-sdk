@@ -31,6 +31,7 @@ Welcome to imednet's documentation!
    airflow
    test_skip_conditions
    orchestration
+   live_test_charter
    live_test_plan
    live_tests
    examples/index

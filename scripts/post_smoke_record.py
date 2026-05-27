@@ -191,7 +191,15 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         with authenticate() as sdk:
-            study_key, form_key = discover_keys(sdk)
+            # discover_keys raises NoLiveDataError when no study or form exists.
+            # Per the live-test charter that is a hard failure (exit 1) because
+            # the environment cannot prove anything useful without basic data.
+            try:
+                study_key, form_key = discover_keys(sdk)
+            except NoLiveDataError as exc:
+                print(f"::notice:: Smoke record skipped – {exc}")
+                return SKIP_EXIT_CODE
+
             logger.info("Discovered study_key=%s form_key=%s", study_key, form_key)
             site_name, subject_key, interval_name = discover_identifiers(sdk, study_key)
             scenarios: list[dict[str, str]] = []
@@ -202,6 +210,8 @@ def main(argv: list[str] | None = None) -> int:
                 if interval_name:
                     scenarios.append({"subject_key": subject_key, "interval_name": interval_name})
             if not scenarios:
+                # Study and form exist but no write identifiers are available.
+                # Per the charter this is a skip, not a failure.
                 print("::notice:: Smoke record skipped – no identifiers available")
                 return SKIP_EXIT_CODE
             logger.info("Scenarios: %s", scenarios)
@@ -209,9 +219,6 @@ def main(argv: list[str] | None = None) -> int:
                 record = build_record(sdk, study_key, form_key, **extra)
                 logger.debug("Record payload: %s", _redact(record))
                 submit_record(sdk, study_key, record, timeout=args.timeout)
-    except NoLiveDataError as exc:
-        print(f"::notice:: Smoke record skipped – {exc}")
-        return SKIP_EXIT_CODE
     except Exception as exc:  # pragma: no cover - runtime safeguard
         print(f"Smoke record failed: {exc}", file=sys.stderr)
         return 1
