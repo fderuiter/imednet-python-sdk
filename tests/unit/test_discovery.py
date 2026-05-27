@@ -3,9 +3,9 @@ from unittest.mock import Mock
 import pytest
 
 from imednet.discovery import (
-    NoLiveDataError,
     ELIGIBLE_SITE_STATUSES,
     ELIGIBLE_SUBJECT_STATUSES,
+    NoLiveDataError,
     discover_form_key,
     discover_interval_name,
     discover_site_name,
@@ -17,7 +17,6 @@ from imednet.models.forms import Form
 from imednet.models.intervals import Interval
 from imednet.models.sites import Site
 from imednet.models.subjects import Subject
-
 
 # ---------------------------------------------------------------------------
 # is_site_eligible

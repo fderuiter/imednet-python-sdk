@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 # ``ENROLLMENT_OPEN`` is the primary write-path status in the observed DEV
 # environment.  ``active`` is kept for backward compatibility with environments
 # that use a simpler vocabulary.
-ELIGIBLE_SITE_STATUSES: frozenset[str] = frozenset(
-    {"active", "enrollment_open"}
-)
+ELIGIBLE_SITE_STATUSES: frozenset[str] = frozenset({"active", "enrollment_open"})
 
 # Subject workflow statuses treated as eligible for smoke/live use.
 # ``Registered``, ``Baseline``, and ``Enrolled`` are the observed DEV values;
@@ -75,9 +73,7 @@ def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
         study_key,
         counts,
     )
-    raise NoLiveDataError(
-        f"No active sites available for live tests (encountered: {counts})"
-    )
+    raise NoLiveDataError(f"No active sites available for live tests (encountered: {counts})")
 
 
 def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
@@ -101,9 +97,7 @@ def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
         study_key,
         counts,
     )
-    raise NoLiveDataError(
-        f"No active subjects available for live tests (encountered: {counts})"
-    )
+    raise NoLiveDataError(f"No active subjects available for live tests (encountered: {counts})")
 
 
 def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
