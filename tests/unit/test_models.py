@@ -43,6 +43,8 @@ def _build_sample_data(cls: type[BaseModel]) -> Any:
     data = {}
     for name, field in cls.model_fields.items():
         data[field.alias or name] = _build_value(field.annotation)
+    if cls.__name__ == "StudyConfiguration":
+        data["reportingProfile"] = "general"
     return data
 
 
