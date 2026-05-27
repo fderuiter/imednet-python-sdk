@@ -8,6 +8,7 @@ import pytest
 import pytest_asyncio
 
 ROOT = Path(__file__).resolve().parents[1]
+LIVE_TESTS_DIR = (ROOT / "tests" / "live").resolve()
 for source_root in (
     ROOT / "packages" / "core" / "src",
     ROOT / "packages" / "plugins-workflows" / "src",
@@ -46,7 +47,7 @@ def _is_live_test(node: object) -> bool:
     if node_path is None:
         return False
 
-    return Path(str(node_path)).resolve().is_relative_to((ROOT / "tests" / "live").resolve())
+    return Path(str(node_path)).resolve().is_relative_to(LIVE_TESTS_DIR)
 
 
 @pytest.fixture(autouse=True)

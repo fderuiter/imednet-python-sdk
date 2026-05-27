@@ -27,6 +27,7 @@ class _DummyRequest:
 
 
 def _run_guard(request: _DummyRequest) -> None:
+    """Execute the autouse fixture function directly for deterministic unit assertions."""
     fixture = test_conftest.block_external_requests.__wrapped__
     guard = fixture(request=request)
     next(guard)
