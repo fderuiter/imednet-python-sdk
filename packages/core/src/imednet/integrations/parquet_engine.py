@@ -142,6 +142,8 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         finally:
             shutil.rmtree(staging_base_dir, ignore_errors=True)
             if not commit_succeeded:
+                # Roll back any empty, reader-visible partition directories that
+                # may have been created before the atomic move failed.
                 current_path = final_partition_dir
                 while current_path != base_path:
                     try:

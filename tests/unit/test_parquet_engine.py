@@ -69,6 +69,10 @@ class _FakePyArrowModule:
         return values
 
 
+def _raise_replace_failure(*_args: Any) -> None:
+    raise OSError("rename failed")
+
+
 def test_pyarrow_dataset_partitioned_storage_engine_defaults(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -141,7 +145,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_cleans_visible_dirs_on_commi
     )
     monkeypatch.setattr(
         "imednet.integrations.parquet_engine.os.replace",
-        lambda *_args: (_ for _ in ()).throw(OSError("rename failed")),
+        _raise_replace_failure,
     )
 
     with pytest.raises(OSError, match="rename failed"):
