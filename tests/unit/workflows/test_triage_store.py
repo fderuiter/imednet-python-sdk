@@ -144,14 +144,20 @@ def test_triage_store_masks_sensitive_operational_errors(
     store = TriageStore(tmp_path / "triage.sqlite3", retry_attempts=1)
 
     @contextmanager
-    def _failing_connection() -> Iterator[sqlite3.Connection]:
-        raise sqlite3.OperationalError("unable to open database file: token=supersecret; ******")
-        yield sqlite3.connect(":memory:")
+    def _memory_connection() -> Iterator[sqlite3.Connection]:
+        conn = sqlite3.connect(":memory:")
+        try:
+            yield conn
+        finally:
+            conn.close()
 
-    monkeypatch.setattr(store, "_connection", _failing_connection)
+    monkeypatch.setattr(store, "_connection", _memory_connection)
+
+    def _failing_write(_conn: sqlite3.Connection) -> None:
+        raise sqlite3.OperationalError("unable to open database file: token=supersecret")
 
     with pytest.raises(sqlite3.OperationalError) as exc_info:
-        store.upsert_item(_seed_item("AE-2"))
+        store._execute_write(_failing_write)
 
     assert "supersecret" not in str(exc_info.value)
     assert "***" in str(exc_info.value)

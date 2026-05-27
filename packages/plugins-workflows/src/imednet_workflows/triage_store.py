@@ -16,10 +16,15 @@ from imednet.models.triage import TriageAnnotation, TriageHistoryEntry, TriageIt
 _SAFE_SQL_IDENTIFIER = re.compile(r"^[A-Za-z0-9._:-]+$")
 _SENSITIVE_QUERY_KEYS = {"api_key", "password", "secret", "security_key", "token"}
 _SENSITIVE_PATTERN_KEYS = ("api[_-]?key", "password", "secret", "security[_-]?key", "token")
-_SENSITIVE_PATTERN = re.compile(
-    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"']?)([^,;\r\n]*?)\3(?=,|;|$)"
+_SENSITIVE_QUOTED_PATTERN = re.compile(
+    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"'])(.*?)\3"
+)
+_SENSITIVE_UNQUOTED_PATTERN = re.compile(
+    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([^\s,;]+)"
 )
 _LATEST_SCHEMA_VERSION = 1
+_SQLITE_BUSY_TIMEOUT_MS = 30_000
+_RETRY_BASE_DELAY_SECONDS = 0.05
 
 
 class TriageStore:
@@ -49,7 +54,7 @@ class TriageStore:
                 f"{self._redact_error_text(str(exc))}"
             ) from exc
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA busy_timeout = 30000;")
+        conn.execute(f"PRAGMA busy_timeout = {_SQLITE_BUSY_TIMEOUT_MS};")
         conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("PRAGMA synchronous=NORMAL;")
         conn.execute("PRAGMA foreign_keys=ON;")
@@ -128,7 +133,7 @@ class TriageStore:
             except sqlite3.OperationalError as exc:
                 last_error = exc
                 if attempt < self._retry_attempts - 1:
-                    time.sleep(0.05 * (attempt + 1))
+                    time.sleep(_RETRY_BASE_DELAY_SECONDS * (attempt + 1))
         if last_error is not None:
             raise sqlite3.OperationalError(
                 f"SQLite write failed for triage store at "
@@ -490,7 +495,7 @@ class TriageStore:
                 """
                 UPDATE triage_items
                 SET created_at = ?
-                WHERE created_at IS NULL OR created_at = ''
+                WHERE created_at IS NULL
                 """,
                 (now,),
             )
@@ -500,7 +505,7 @@ class TriageStore:
                 """
                 UPDATE triage_items
                 SET updated_at = ?
-                WHERE updated_at IS NULL OR updated_at = ''
+                WHERE updated_at IS NULL
                 """,
                 (now,),
             )
@@ -526,7 +531,11 @@ class TriageStore:
         return urlunsplit((split.scheme, netloc, split.path, redacted_query, split.fragment))
 
     def _redact_error_text(self, message: str) -> str:
-        return _SENSITIVE_PATTERN.sub(
-            lambda match: f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}",
+        redacted = _SENSITIVE_QUOTED_PATTERN.sub(
+            lambda match: f"{match.group(1)}{match.group(2)}***",
             message,
+        )
+        return _SENSITIVE_UNQUOTED_PATTERN.sub(
+            lambda match: f"{match.group(1)}{match.group(2)}***",
+            redacted,
         )
