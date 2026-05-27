@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date, datetime
 from typing import Any, Dict, List, Mapping, MutableMapping, TypeAlias, Union, cast
 
@@ -40,15 +41,48 @@ class ImednetHook(BaseHook):
         cleaned = value.strip()
         return cleaned or None
 
+    @staticmethod
+    def _parsed_extras(value: object) -> MutableMapping[str, object] | None:
+        """Return parsed connection extras when value is a dict-like payload."""
+        if isinstance(value, Mapping):
+            return cast(MutableMapping[str, object], dict(value))
+        if isinstance(value, str):
+            try:
+                parsed = json.loads(value)
+            except json.JSONDecodeError:
+                return None
+            if isinstance(parsed, dict):
+                return cast(MutableMapping[str, object], parsed)
+        return None
+
+    @classmethod
+    def _connection_extras(cls, conn: object) -> MutableMapping[str, object]:
+        """Resolve extras from Airflow connection objects across API versions."""
+        extras = cls._parsed_extras(getattr(conn, "extra_dejson", None))
+        if extras is not None:
+            return extras
+
+        get_extra = getattr(conn, "get_extra", None)
+        if callable(get_extra):
+            try:
+                raw_extra = get_extra()
+            except Exception:
+                raw_extra = None
+            extras = cls._parsed_extras(raw_extra)
+            if extras is not None:
+                return extras
+
+        extras = cls._parsed_extras(getattr(conn, "extra", None))
+        if extras is not None:
+            return extras
+        return {}
+
     def _resolved_config(self) -> Config:
         """Resolve hook configuration from Airflow connection fields and env fallback."""
         from airflow.hooks.base import BaseHook
 
         conn = BaseHook.get_connection(self.imednet_conn_id)
-        extras = getattr(conn, "extra_dejson", {}) or {}
-        if not isinstance(extras, dict):
-            extras = {}
-        extras_dict = cast(MutableMapping[str, object], extras)
+        extras_dict = self._connection_extras(conn)
 
         config = load_config(
             api_key=self._string_or_none(extras_dict.get("api_key"))
