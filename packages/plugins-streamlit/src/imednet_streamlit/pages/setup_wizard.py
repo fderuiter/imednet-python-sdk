@@ -108,6 +108,7 @@ _CANONICAL_FIELDS = (
     ("AE", "subject_key", "Subject Key"),
     ("AE", "ae_term", "Adverse Event Term (AETERM)"),
     ("AE", "ae_severity", "Severity (AESEV)"),
+    ("AE", "ae_serious", "Serious Adverse Event Flag (AESER)"),
     ("AE", "ae_start_date", "Start Date/Time (AESTDTC)"),
     ("AE", "ae_end_date", "End Date/Time (AEENDTC)"),
     ("AE", "ae_outcome", "Outcome (AEOUT)"),
@@ -324,26 +325,37 @@ def _step_field_mapping() -> None:
         col_form, col_field, col_fallback = st.columns([2, 2, 1.5])
 
         form_options = ["", *selected_forms]
+        auto_form = (
+            cast(str, st.session_state.get(f"wizard_target_form_{domain.lower()}") or "")
+            if target_field == "subject_key"
+            else ""
+        )
+        default_form = (
+            existing.source_form_key
+            if existing and existing.source_form_key in form_options
+            else auto_form if auto_form in form_options else ""
+        )
         selected_form = col_form.selectbox(
             "Source form",
             options=form_options,
-            index=(
-                form_options.index(existing.source_form_key)
-                if existing and existing.source_form_key in form_options
-                else 0
-            ),
+            index=form_options.index(default_form),
             key=f"wizard_map_form_{mapping_key}",
         )
 
         field_options = ["", *candidates_by_form.get(selected_form, [])]
+        if target_field == "subject_key":
+            field_options = list(
+                dict.fromkeys(["", "subject_key", "subjectKey", *field_options[1:]])
+            )
+        default_field = ""
+        if existing and existing.source_variable_name in field_options:
+            default_field = existing.source_variable_name
+        elif target_field == "subject_key":
+            default_field = "subject_key" if "subject_key" in field_options else "subjectKey"
         selected_field = col_field.selectbox(
             "Source field",
             options=field_options,
-            index=(
-                field_options.index(existing.source_variable_name)
-                if existing and existing.source_variable_name in field_options
-                else 0
-            ),
+            index=field_options.index(default_field),
             key=f"wizard_map_field_{mapping_key}",
         )
 
