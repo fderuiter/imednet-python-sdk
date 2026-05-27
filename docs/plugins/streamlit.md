@@ -61,6 +61,14 @@ security_key = "your-security-key"
 - Subject × form completion heatmap
 - Top incomplete forms with truncation defaults
 
+### Review Workbench
+- KPI cards showing open queue count, items with SLA aging > 72 hours, and resolved count
+- Color-coded severity pills (red for Critical/Severe, amber for Warning, blue for Info)
+- Filterable queue grid by severity, category (Adverse Event, Deviation, Deficiency), and assignee
+- Subject key search across all queue items
+- Triage drawer for item assignment, annotation, and status transition
+- Backed by the local `TriageStore` SQLite database (default: `~/.imednet/triage.sqlite3`)
+
 ## Configuration Reference
 
 | Option | Description | Default |
