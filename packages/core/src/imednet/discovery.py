@@ -27,14 +27,13 @@ def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
 def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
     """Return the first active site name for ``study_key``.
 
-    Status matching is case-insensitive and uses substring containment so
-    that values such as ``"Active"``, ``"active"``, or ``"ACTIVE"`` are all
-    treated as eligible.
+    Status matching is case-insensitive so that values such as ``"Active"``,
+    ``"active"``, or ``"ACTIVE"`` are all treated as eligible.
     """
     sites = sdk.sites.list(study_key=study_key)
     for site in sites:
         status = getattr(site, "site_enrollment_status", "") or ""
-        if "active" in status.lower():
+        if status.lower() == "active":
             return site.site_name
     raise NoLiveDataError(f"No active sites available for study {study_key}")
 
@@ -42,14 +41,13 @@ def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
 def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
     """Return the first active subject key for ``study_key``.
 
-    Status matching is case-insensitive and uses substring containment so
-    that values such as ``"Active"``, ``"active"``, or ``"ACTIVE"`` are all
-    treated as eligible.
+    Status matching is case-insensitive so that values such as ``"Active"``,
+    ``"active"``, or ``"ACTIVE"`` are all treated as eligible.
     """
     subjects = sdk.subjects.list(study_key=study_key)
     for subject in subjects:
         status = getattr(subject, "subject_status", "") or ""
-        if "active" in status.lower():
+        if status.lower() == "active":
             return subject.subject_key
     raise NoLiveDataError(f"No active subjects available for study {study_key}")
 

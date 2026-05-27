@@ -136,7 +136,7 @@ def test_discover_site_name_raises_when_none_active() -> None:
     sdk = MagicMock()
     sdk.sites.list.return_value = [
         MagicMock(site_enrollment_status="Closed"),
-        MagicMock(site_enrollment_status="Pending"),
+        MagicMock(site_enrollment_status="Inactive"),
     ]
 
     with pytest.raises(NoLiveDataError, match="No active sites"):
@@ -148,7 +148,7 @@ def test_discover_subject_key_raises_when_none_active() -> None:
     sdk = MagicMock()
     sdk.subjects.list.return_value = [
         MagicMock(subject_status="Withdrawn"),
-        MagicMock(subject_status="Screening"),
+        MagicMock(subject_status="Inactive"),
     ]
 
     with pytest.raises(NoLiveDataError, match="No active subjects"):

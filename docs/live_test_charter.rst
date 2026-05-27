@@ -224,17 +224,18 @@ The following table documents which statuses are treated as eligible.
      - same
    * - Site
      - any (first returned)
-     - ``site_enrollment_status`` contains ``active`` (case-insensitive)
+     - ``site_enrollment_status`` equals ``active`` (case-insensitive)
    * - Subject
      - any (first returned)
-     - ``subject_status`` contains ``active`` (case-insensitive)
+     - ``subject_status`` equals ``active`` (case-insensitive)
    * - Interval
      - ``disabled=false``
      - same
 
-Status checks are **case-insensitive substring matches**, not exact equality.
+Status checks are **case-insensitive equality checks**, not substring matches.
 This prevents false rejections when server environments use values like
-``"Active"`` or ``"ACTIVE"``.
+``"Active"`` or ``"ACTIVE"``, while avoiding false positives from statuses
+like ``"Inactive"`` or ``"Deactivated"``.
 
 ----
 
