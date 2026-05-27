@@ -28,7 +28,7 @@ After each successful ``COPY INTO``, a manifest entry is appended to
 Optional dependencies
 ---------------------
 * ``snowflake-connector-python`` (``pip install 'imednet[snowflake]'``)
-* ``pyarrow`` (included in ``imednet[export]``)
+* ``pyarrow`` (included in ``imednet[snowflake]``)
 
 Both are imported lazily at connection / write time.
 
@@ -129,7 +129,7 @@ class SnowflakeSinkConfig(SinkConfig):
 
 def _records_to_arrow_table(records: Sequence[Any]) -> Any:
     """Convert *records* to a ``pyarrow.Table``."""
-    pa = _require_optional_dep("pyarrow", "export")
+    pa = _require_optional_dep("pyarrow", "snowflake")
     rows = [
         {
             "record_id": getattr(r, "record_id", None),
@@ -244,7 +244,7 @@ class SnowflakeExportSink(ExportSink):
         arrow_table = _records_to_arrow_table(records)
         safe_batch = batch_id.replace("/", "_").replace(" ", "_")
         local_path = Path(self._staging_dir) / f"{safe_batch}.parquet"
-        pq = _require_optional_dep("pyarrow.parquet", "export")
+        pq = _require_optional_dep("pyarrow.parquet", "snowflake")
         pq.write_table(arrow_table, str(local_path))
 
         cfg = self._cfg
