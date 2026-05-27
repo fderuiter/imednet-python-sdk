@@ -24,12 +24,33 @@ jobs:
         run: |
           poetry install --with dev
       - name: Post smoke record
+        id: smoke_record
         env:
           IMEDNET_API_KEY: ${{ secrets.APIKEY }}
           IMEDNET_SECURITY_KEY: ${{ secrets.SECURITYKEY }}
           IMEDNET_BASE_URL: ${{ vars.BASE_URL }}
         run: |
+          set +e
           poetry run python scripts/post_smoke_record.py --verbose 2>&1 | tee smoke.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          set -e
+      - name: Evaluate smoke result
+        run: |
+          status="${{ steps.smoke_record.outputs.exit_code }}"
+          case "$status" in
+            0)
+              echo "::notice:: Smoke status: passed"
+              exit 0
+              ;;
+            2)
+              echo "::notice:: Smoke status: skipped (missing live identifiers)"
+              ;;
+            *)
+              echo "::error:: Smoke status: failed"
+              ;;
+          esac
+          exit 1
       - name: Upload smoke log
         if: always()
         uses: actions/upload-artifact@v4

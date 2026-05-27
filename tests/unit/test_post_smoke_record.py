@@ -164,27 +164,7 @@ def test_main_verbose_logs(monkeypatch, caplog) -> None:
     assert "Batch B1 COMPLETED" in logs
 
 
-def test_main_exits_red_when_no_study(monkeypatch, capsys) -> None:
-    """Per the live-test charter, missing study/form is a hard failure (exit 1)."""
-    sdk = Mock()
-    sdk.__enter__ = Mock(return_value=sdk)
-    sdk.__exit__ = Mock(return_value=False)
-    monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
-    monkeypatch.setattr(
-        smoke,
-        "discover_keys",
-        Mock(side_effect=smoke.NoLiveDataError("No studies available")),
-    )
-
-    result = smoke.main([])
-
-    assert result == 1
-    err = capsys.readouterr().err
-    assert "No studies available" in err
-
-
-def test_main_exits_green_when_no_identifiers(monkeypatch, capsys) -> None:
-    """Per the live-test charter, no write identifiers is a skip (exit 0 + notice)."""
+def test_main_returns_skip_when_identifiers_missing(monkeypatch, capsys) -> None:
     sdk = Mock()
     sdk.__enter__ = Mock(return_value=sdk)
     sdk.__exit__ = Mock(return_value=False)
@@ -192,9 +172,24 @@ def test_main_exits_green_when_no_identifiers(monkeypatch, capsys) -> None:
     monkeypatch.setattr(smoke, "discover_keys", Mock(return_value=("ST", "F1")))
     monkeypatch.setattr(smoke, "discover_identifiers", Mock(return_value=(None, None, None)))
 
-    result = smoke.main([])
+    exit_code = smoke.main([])
 
-    assert result == 0
+    assert exit_code == smoke.SKIP_EXIT_CODE
     out = capsys.readouterr().out
-    assert "::notice::" in out
-    assert "no identifiers" in out
+    assert "Smoke record skipped" in out
+
+
+def test_main_returns_skip_on_no_live_data(monkeypatch, capsys) -> None:
+    sdk = Mock()
+    sdk.__enter__ = Mock(return_value=sdk)
+    sdk.__exit__ = Mock(return_value=False)
+    monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
+    monkeypatch.setattr(
+        smoke, "discover_keys", Mock(side_effect=smoke.NoLiveDataError("no active studies"))
+    )
+
+    exit_code = smoke.main([])
+
+    assert exit_code == smoke.SKIP_EXIT_CODE
+    out = capsys.readouterr().out
+    assert "no active studies" in out
