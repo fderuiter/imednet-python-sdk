@@ -29,6 +29,14 @@ class _FakeColumn:
         self._parent.metric(label, value, **kwargs)
 
 
+class _FakeContextManager:
+    def __enter__(self) -> "_FakeContextManager":
+        return self
+
+    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        return None
+
+
 class _FakeStreamlit:
     def __init__(self) -> None:
         self.session_state: dict[str, Any] = {
@@ -47,6 +55,9 @@ class _FakeStreamlit:
         self.info_calls: list[str] = []
         self.error_calls: list[str] = []
         self.titles: list[str] = []
+        self.markdown_calls: list[str] = []
+        self.code_calls: list[str] = []
+        self.expander_calls: list[tuple[str, bool]] = []
 
     def title(self, value: str) -> None:
         self.titles.append(value)
@@ -55,10 +66,17 @@ class _FakeStreamlit:
         return None
 
     def markdown(self, value: str) -> None:
-        return None
+        self.markdown_calls.append(value)
 
     def caption(self, value: str) -> None:
         return None
+
+    def expander(self, label: str, *, expanded: bool = False) -> _FakeContextManager:
+        self.expander_calls.append((label, expanded))
+        return _FakeContextManager()
+
+    def code(self, body: str, *, language: str = "") -> None:
+        self.code_calls.append(body)
 
     def progress(self, value: float) -> None:
         return None
@@ -142,6 +160,8 @@ def _run_setup_wizard(
         "subheader",
         "markdown",
         "caption",
+        "expander",
+        "code",
         "progress",
         "success",
         "warning",
@@ -259,6 +279,18 @@ def test_setup_wizard_scan_and_next_step() -> None:
     fake_st.button_presses = {"wizard_next"}
     _run_setup_wizard(fake_st)
     assert fake_st.session_state["wizard_step"] == 2
+
+
+def test_setup_wizard_renders_design_specification_sections() -> None:
+    fake_st = _FakeStreamlit()
+    _run_setup_wizard(fake_st)
+
+    joined_markdown = "\n".join(fake_st.markdown_calls)
+    assert ("UX Design Specification", False) in fake_st.expander_calls
+    assert any("Step 1: Scan & Profile" in body for body in fake_st.code_calls)
+    assert "Flowchart / state transitions" in joined_markdown
+    assert "Wireframe mapped to session state" in joined_markdown
+    assert "UX review: Streamlit multi-page alignment" in joined_markdown
 
 
 def test_setup_wizard_mapping_normalization_preview_and_export() -> None:
