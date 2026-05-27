@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from imednet.models.json_base import JsonModel
+from imednet.models.standards import PROFILE_REGISTRY
 
 
 class MappingRule(JsonModel):
@@ -40,3 +41,13 @@ class StudyConfiguration(JsonModel):
         default_factory=dict, alias="terminologyLookups"
     )
     widgets: list[WidgetConfig] = Field(default_factory=list, alias="widgets")
+
+    @field_validator("reporting_profile", mode="before")
+    @classmethod
+    def _validate_reporting_profile(cls, value: object) -> object:
+        profile_name = str(value).strip().lower()
+        if profile_name in PROFILE_REGISTRY.list_profiles():
+            return profile_name
+
+        available_profiles = ", ".join(PROFILE_REGISTRY.list_profiles())
+        raise ValueError(f"reportingProfile must be one of: {available_profiles}")

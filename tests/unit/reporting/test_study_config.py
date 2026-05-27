@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
 
 
@@ -63,3 +66,13 @@ def test_study_configuration_accepts_snake_case_field_names() -> None:
     assert dumped["reportingProfile"] == "general"
     assert dumped["mappings"][0]["targetField"] == "dvSeverity"
     assert dumped["widgets"][0]["layoutCols"] == 12
+
+
+def test_study_configuration_rejects_unknown_reporting_profile() -> None:
+    with pytest.raises(ValidationError, match="reportingProfile must be one of"):
+        StudyConfiguration.model_validate(
+            {
+                "studyKey": "STUDY-003",
+                "reportingProfile": "custom",
+            }
+        )
