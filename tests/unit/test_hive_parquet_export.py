@@ -117,7 +117,8 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
 def test_hive_parquet_query_returns_correct_string() -> None:
     assert (
         parquet_mod.hive_parquet_query("/tmp/lake")
-        == "SELECT * FROM read_parquet('/tmp/lake/**/*.parquet', hive_partitioning = true)"
+        == "SELECT * FROM read_parquet('/tmp/lake/**/*.parquet', "
+        "hive_partitioning = true, union_by_name = true)"
     )
 
 
