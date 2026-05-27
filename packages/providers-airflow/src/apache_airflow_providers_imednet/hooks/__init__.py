@@ -1,9 +1,25 @@
 """Airflow hook for retrieving an :class:`ImednetSDK` instance."""
 
+from __future__ import annotations
+
+from datetime import date, datetime
+from typing import Any, Dict, List, Mapping, MutableMapping, Union, cast
+
 from airflow.hooks.base import BaseHook
 
-from imednet.config import load_config
+from imednet.config import Config, load_config
 from imednet.sdk import ImednetSDK
+
+Primitive = Union[str, int, float, bool, None]
+PrimitiveContainer = Union[Primitive, List["PrimitiveContainer"], Dict[str, "PrimitiveContainer"]]
+_SENSITIVE_KEYS = {
+    "api_key",
+    "security_key",
+    "authorization",
+    "token",
+    "x-api-key",
+    "x-imn-security-key",
+}
 
 
 class ImednetHook(BaseHook):
@@ -13,32 +29,95 @@ class ImednetHook(BaseHook):
         super().__init__()
         self.imednet_conn_id = imednet_conn_id
 
-    def get_conn(self) -> ImednetSDK:  # type: ignore[override]
+    @staticmethod
+    def _string_or_none(value: object) -> str | None:
+        if not isinstance(value, str):
+            return None
+        cleaned = value.strip()
+        return cleaned or None
+
+    def _resolved_config(self) -> Config:
         from airflow.hooks.base import BaseHook
 
         conn = BaseHook.get_connection(self.imednet_conn_id)
         extras = getattr(conn, "extra_dejson", {}) or {}
         if not isinstance(extras, dict):
             extras = {}
-        base_url = extras.get("base_url")
-        if base_url is not None:
-            base_url = str(base_url)
-        login = getattr(conn, "login", None)
-        if not isinstance(login, str):
-            login = None
-        password = getattr(conn, "password", None)
-        if not isinstance(password, str):
-            password = None
+        extras_dict = cast(MutableMapping[str, object], extras)
+
         config = load_config(
-            api_key=extras.get("api_key") or login,
-            security_key=extras.get("security_key") or password,
-            base_url=base_url,
+            api_key=self._string_or_none(extras_dict.get("api_key"))
+            or self._string_or_none(getattr(conn, "login", None)),
+            security_key=self._string_or_none(extras_dict.get("security_key"))
+            or self._string_or_none(getattr(conn, "password", None)),
+            base_url=self._string_or_none(extras_dict.get("base_url")),
         )
+        return config
+
+    @classmethod
+    def _to_primitive(cls, value: Any) -> PrimitiveContainer:
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return cast(Primitive, value)
+        if isinstance(value, (date, datetime)):
+            return value.isoformat()
+        if hasattr(value, "model_dump"):
+            value = value.model_dump(mode="json", by_alias=True)  # type: ignore[assignment]
+        if isinstance(value, Mapping):
+            output: Dict[str, PrimitiveContainer] = {}
+            for key, item in value.items():
+                key_str = str(key)
+                if key_str.lower() in _SENSITIVE_KEYS:
+                    output[key_str] = "***"
+                else:
+                    output[key_str] = cls._to_primitive(item)
+            return output
+        if isinstance(value, (list, tuple, set)):
+            return [cls._to_primitive(item) for item in value]
+        return str(value)
+
+    def get_sdk_client(self) -> ImednetSDK:
+        """Return an SDK client for use within task execution context."""
+        config = self._resolved_config()
         return ImednetSDK(
             api_key=config.api_key,
             security_key=config.security_key,
             base_url=config.base_url,
         )
+
+    def get_conn(self) -> ImednetSDK:  # type: ignore[override]
+        """Backward compatible alias for :meth:`get_sdk_client`."""
+        return self.get_sdk_client()
+
+    def describe_connection(self) -> Dict[str, PrimitiveContainer]:
+        """Return redacted primitive metadata about resolved hook configuration."""
+        config = self._resolved_config()
+        return {
+            "imednet_conn_id": self.imednet_conn_id,
+            "base_url": self._to_primitive(config.base_url),
+            "api_key": "***",
+            "security_key": "***",
+            "api_key_configured": bool(config.api_key),
+            "security_key_configured": bool(config.security_key),
+        }
+
+    def list_studies_metadata(self) -> List[Dict[str, PrimitiveContainer]]:
+        """Return primitive, serialization-safe study metadata for task mapping."""
+        studies = self.get_sdk_client().studies.list()
+        metadata: List[Dict[str, PrimitiveContainer]] = []
+        for study in studies:
+            primitive_study = self._to_primitive(study)
+            if isinstance(primitive_study, dict):
+                metadata.append(primitive_study)
+        return metadata
+
+    def list_study_keys(self) -> List[str]:
+        """Return primitive study keys for mapped Airflow task expansion."""
+        keys: List[str] = []
+        for study in self.list_studies_metadata():
+            study_key = study.get("studyKey") or study.get("study_key")
+            if isinstance(study_key, str) and study_key:
+                keys.append(study_key)
+        return keys
 
 
 __all__ = ["ImednetHook"]

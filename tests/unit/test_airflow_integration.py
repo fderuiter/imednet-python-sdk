@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime, timezone
 from types import ModuleType
 from unittest.mock import MagicMock
 
@@ -174,3 +175,97 @@ def test_imednet_hook_non_string_password(monkeypatch):
     sdk = hook.get_conn()
     assert sdk._client._client.headers["x-api-key"] == "KEY"
     assert sdk._client._client.headers["x-imn-security-key"] == "FALLBACK_SEC"
+
+
+def test_imednet_hook_environment_fallback(monkeypatch):
+    _setup_airflow(monkeypatch)
+    monkeypatch.setenv("IMEDNET_API_KEY", "ENV_KEY")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "ENV_SEC")
+
+    conn = MagicMock()
+    conn.login = None
+    conn.password = None
+    conn.extra_dejson = {"api_key": 123, "security_key": object(), "base_url": 456}
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from apache_airflow_providers_imednet.hooks import ImednetHook
+
+    hook = ImednetHook()
+    sdk = hook.get_sdk_client()
+    assert sdk._client._client.headers["x-api-key"] == "ENV_KEY"
+    assert sdk._client._client.headers["x-imn-security-key"] == "ENV_SEC"
+    assert sdk._client.base_url != "456"
+
+
+def test_imednet_hook_describe_connection_redacts_credentials(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    conn.login = "KEY"
+    conn.password = "SEC"
+    conn.extra_dejson = {"base_url": "https://example.com", "api_key": "EXTRA_KEY"}
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from apache_airflow_providers_imednet.hooks import ImednetHook
+
+    hook = ImednetHook("imednet_custom")
+    metadata = hook.describe_connection()
+
+    assert metadata == {
+        "imednet_conn_id": "imednet_custom",
+        "base_url": "https://example.com",
+        "api_key": "***",
+        "security_key": "***",
+        "api_key_configured": True,
+        "security_key_configured": True,
+    }
+
+
+def test_imednet_hook_study_discovery_serialization_safe(monkeypatch):
+    _setup_airflow(monkeypatch)
+
+    from apache_airflow_providers_imednet.hooks import ImednetHook
+
+    class _StudyModel:
+        def model_dump(self, mode="json", by_alias=True):
+            assert mode == "json"
+            assert by_alias is True
+            return {
+                "studyKey": "S-001",
+                "dateModified": datetime(2025, 1, 1, tzinfo=timezone.utc),
+                "api_key": "SECRET",
+                "flags": ("a", "b"),
+            }
+
+    sdk = MagicMock()
+    sdk.studies.list.return_value = [_StudyModel()]
+
+    hook = ImednetHook()
+    monkeypatch.setattr(hook, "get_sdk_client", MagicMock(return_value=sdk))
+
+    metadata = hook.list_studies_metadata()
+    keys = hook.list_study_keys()
+
+    assert metadata == [
+        {
+            "studyKey": "S-001",
+            "dateModified": "2025-01-01T00:00:00+00:00",
+            "api_key": "***",
+            "flags": ["a", "b"],
+        }
+    ]
+    assert keys == ["S-001"]

@@ -62,6 +62,18 @@ environment. The hook merges these settings with values from
 ``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default)
 when writing to S3.
 
+For task-mapping discovery steps, ``ImednetHook`` provides explicit helper methods:
+
+- ``get_sdk_client()`` returns the live :class:`~imednet.ImednetSDK` for use only
+  inside task execution context.
+- ``list_studies_metadata()`` returns JSON-serializable primitive dictionaries
+  (with sensitive keys redacted) for safe mapped task expansion.
+- ``list_study_keys()`` returns primitive study keys only.
+- ``describe_connection()`` returns redacted connection metadata and never exposes
+  raw credentials.
+
+``get_conn()`` is kept as a backward-compatible alias to ``get_sdk_client()``.
+
 Operators and Sensors
 ---------------------
 The Airflow integration organizes hooks, operators, and sensors in dedicated subpackages for clarity.
