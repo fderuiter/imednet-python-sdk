@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any, Iterable, cast
 
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from imednet.core.endpoint.base import SyncListGetEndpoint
 from imednet.models.records import Record
 from imednet.utils.filters import build_filter_string
 
@@ -181,6 +180,8 @@ class CachedRecordsLoader:
         if not high_water_mark:
             return self._list_records(study_key=study_key, record_data_filter=None)
 
+        # Use >= to avoid missing updates that share the high-water-mark timestamp.
+        # _upsert_records keeps refresh idempotent by deduplicating on (study_key, record_id).
         delta_filter = build_filter_string({"date_modified": (">=", high_water_mark)})
         return self._list_records_with_filter_override(
             study_key=study_key,
@@ -203,19 +204,34 @@ class CachedRecordsLoader:
     def _list_records_with_filter_override(
         self, *, study_key: str, filter_string: str
     ) -> list[Record]:
+        """List records using an explicit raw ``filter`` query parameter.
+
+        This bypasses automatic filter construction so incremental sync can
+        send only the timestamp predicate (without ``studyKey``).
+        """
         retryer = Retrying(
             stop=stop_after_attempt(self._retry_attempts),
             wait=wait_exponential(multiplier=1, min=1, max=8),
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        endpoint = cast(SyncListGetEndpoint[Record], self._sdk.records)
+        endpoint = self._sdk.records
+        list_sync = getattr(endpoint, "_list_sync", None)
+        require_sync_client = getattr(endpoint, "_require_sync_client", None)
+        paginator_cls = getattr(endpoint, "PAGINATOR_CLS", None)
+        if not callable(list_sync) or not callable(require_sync_client) or paginator_cls is None:
+            raise TypeError(
+                "Records endpoint does not support raw filter overrides: "
+                "_list_sync, _require_sync_client, and PAGINATOR_CLS are required"
+            )
         return cast(
             list[Record],
             retryer(
-                endpoint._list_sync,
-                endpoint._require_sync_client(),
-                endpoint.PAGINATOR_CLS,
+                # _list_sync signature:
+                # (client, paginator_cls, *, study_key, extra_params, **filters)
+                list_sync,
+                require_sync_client(),
+                paginator_cls,
                 study_key=study_key,
                 extra_params={"filter": filter_string},
                 record_data_filter=None,
