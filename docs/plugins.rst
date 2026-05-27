@@ -24,8 +24,8 @@ dashboard that consumes the core SDK.  It is intentionally isolated so that
 users deploying the SDK in serverless or batch environments are not forced to
 install the large ``streamlit`` and ``altair`` binaries.
 
-For the full end-user walkthrough and configuration reference, see
-``docs/plugins/streamlit.md`` in the repository.
+For the full end-user walkthrough and configuration reference, see the
+`Streamlit plugin guide <plugins/streamlit.md>`_.
 
 Installation
 ~~~~~~~~~~~~

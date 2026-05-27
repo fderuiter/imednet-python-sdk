@@ -30,7 +30,7 @@ Use the sidebar to connect:
 3. Enter Study Key
 4. Click **Connect**
 
-### Streamlit Secrets (shared deployments)
+### Using Streamlit Secrets (for shared deployments)
 
 ```toml
 # .streamlit/secrets.toml (DO NOT COMMIT)
@@ -38,6 +38,10 @@ Use the sidebar to connect:
 api_key = "your-api-key"
 security_key = "your-security-key"
 ```
+
+`.streamlit/secrets.toml` is already ignored by this repository's `.gitignore`;
+keep credentials in that file only for local/shared deployment configuration and
+never commit secret values.
 
 ## Dashboard Pages
 
@@ -53,6 +57,8 @@ security_key = "your-security-key"
 
 ### Site Performance
 - Site-level query rate KPIs
+- Query rate = total open queries / active subjects for the selected time window
+- Conditional formatting thresholds: green (< 0.5), amber (0.5–1.0), red (> 1.0)
 - Top-site chart truncation with `"Other"` bucket for large studies
 - Query-rate highlighting in paginated tables
 
@@ -60,6 +66,7 @@ security_key = "your-security-key"
 - Record status breakdown
 - Subject × form completion heatmap
 - Top incomplete forms with truncation defaults
+- Large studies may load slower; narrow filters before exporting very large tables
 
 ### Review Workbench
 - KPI cards showing open queue count, items with SLA aging > 72 hours, and resolved count
