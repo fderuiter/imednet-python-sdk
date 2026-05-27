@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import sqlite3
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Iterator
 
 import pytest
 
@@ -97,3 +100,64 @@ def test_triage_store_rejects_empty_annotation_comment(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="must not be empty"):
         store.add_annotation("DD-4", "triager", "   ")
+
+
+def test_triage_store_migrates_legacy_schema(tmp_path: Path) -> None:
+    db_path = tmp_path / "triage.sqlite3"
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("""
+            CREATE TABLE triage_items (
+                item_id TEXT PRIMARY KEY,
+                study_key TEXT NOT NULL,
+                status TEXT NOT NULL,
+                assignee TEXT,
+                severity TEXT NOT NULL
+            )
+            """)
+        conn.execute(
+            """
+            INSERT INTO triage_items (item_id, study_key, status, assignee, severity)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            ("AE-legacy", "STUDY-A", TriageStatus.NEW.value, "triager", "critical"),
+        )
+        conn.commit()
+
+    store = TriageStore(db_path)
+    migrated_item = store.get_triage_item("AE-legacy")
+    assert migrated_item is not None
+    assert migrated_item.item_id == "AE-legacy"
+
+    with sqlite3.connect(db_path) as conn:
+        columns = {
+            str(row[1]) for row in conn.execute("PRAGMA table_info(triage_items)").fetchall()
+        }
+        version = int(conn.execute("PRAGMA user_version").fetchone()[0])
+
+    assert {"created_at", "updated_at"}.issubset(columns)
+    assert version == 1
+
+
+def test_triage_store_masks_sensitive_operational_errors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = TriageStore(tmp_path / "triage.sqlite3", retry_attempts=1)
+
+    @contextmanager
+    def _memory_connection() -> Iterator[sqlite3.Connection]:
+        conn = sqlite3.connect(":memory:")
+        try:
+            yield conn
+        finally:
+            conn.close()
+
+    monkeypatch.setattr(store, "_connection", _memory_connection)
+
+    def _failing_write(_conn: sqlite3.Connection) -> None:
+        raise sqlite3.OperationalError("unable to open database file: token=supersecret")
+
+    with pytest.raises(sqlite3.OperationalError) as exc_info:
+        store._execute_write(_failing_write)
+
+    assert "supersecret" not in str(exc_info.value)
+    assert "***" in str(exc_info.value)

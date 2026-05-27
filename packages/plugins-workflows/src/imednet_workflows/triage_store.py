@@ -2,16 +2,29 @@ from __future__ import annotations
 
 import re
 import sqlite3
+import time
 import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
 from typing import Callable, Iterator, Optional
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from imednet.models.triage import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
 
 _SAFE_SQL_IDENTIFIER = re.compile(r"^[A-Za-z0-9._:-]+$")
+_SENSITIVE_QUERY_KEYS = {"api_key", "password", "secret", "security_key", "token"}
+_SENSITIVE_PATTERN_KEYS = ("api[_-]?key", "password", "secret", "security[_-]?key", "token")
+_SENSITIVE_QUOTED_PATTERN = re.compile(
+    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"'])(.*?)\3"
+)
+_SENSITIVE_UNQUOTED_PATTERN = re.compile(
+    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([^\s,;]+)"
+)
+_LATEST_SCHEMA_VERSION = 1
+_SQLITE_BUSY_TIMEOUT_MS = 30_000
+_RETRY_BASE_DELAY_SECONDS = 0.05
 
 
 class TriageStore:
@@ -33,8 +46,15 @@ class TriageStore:
 
     @contextmanager
     def _connection(self) -> Iterator[sqlite3.Connection]:
-        conn = sqlite3.connect(self.db_path, timeout=self._timeout)
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=self._timeout)
+        except sqlite3.Error as exc:
+            raise sqlite3.OperationalError(
+                f"Unable to open triage store at {self._redact_sqlite_target(str(self.db_path))}: "
+                f"{self._redact_error_text(str(exc))}"
+            ) from exc
         conn.row_factory = sqlite3.Row
+        conn.execute(f"PRAGMA busy_timeout = {_SQLITE_BUSY_TIMEOUT_MS};")
         conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("PRAGMA synchronous=NORMAL;")
         conn.execute("PRAGMA foreign_keys=ON;")
@@ -45,6 +65,7 @@ class TriageStore:
 
     def _initialize_schema(self) -> None:
         with self._connection() as conn:
+            current_version = int(conn.execute("PRAGMA user_version").fetchone()[0])
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS triage_items (
                     item_id TEXT PRIMARY KEY,
@@ -90,6 +111,9 @@ class TriageStore:
                 CREATE INDEX IF NOT EXISTS idx_triage_history_item
                 ON triage_history(item_id, timestamp)
                 """)
+            if current_version < _LATEST_SCHEMA_VERSION:
+                self._migrate_schema(conn)
+                conn.execute(f"PRAGMA user_version = {_LATEST_SCHEMA_VERSION}")
             conn.commit()
 
     def get_journal_mode(self) -> str:
@@ -99,7 +123,7 @@ class TriageStore:
 
     def _execute_write(self, callback: Callable[[sqlite3.Connection], None]) -> None:
         last_error: sqlite3.OperationalError | None = None
-        for _ in range(self._retry_attempts):
+        for attempt in range(self._retry_attempts):
             try:
                 with self._lock:
                     with self._connection() as conn:
@@ -108,8 +132,14 @@ class TriageStore:
                 return
             except sqlite3.OperationalError as exc:
                 last_error = exc
+                if attempt < self._retry_attempts - 1:
+                    time.sleep(_RETRY_BASE_DELAY_SECONDS * (attempt + 1))
         if last_error is not None:
-            raise last_error
+            raise sqlite3.OperationalError(
+                f"SQLite write failed for triage store at "
+                f"{self._redact_sqlite_target(str(self.db_path))}: "
+                f"{self._redact_error_text(str(last_error))}"
+            ) from last_error
 
     def upsert_item(self, item: TriageItem) -> None:
         now = datetime.now(timezone.utc).isoformat()
@@ -453,3 +483,59 @@ class TriageStore:
             )
             for row in rows
         ]
+
+    def _migrate_schema(self, conn: sqlite3.Connection) -> None:
+        columns = {
+            str(row["name"]) for row in conn.execute("PRAGMA table_info(triage_items)").fetchall()
+        }
+        now = datetime.now(timezone.utc).isoformat()
+        if "created_at" not in columns:
+            conn.execute("ALTER TABLE triage_items ADD COLUMN created_at TEXT")
+            conn.execute(
+                """
+                UPDATE triage_items
+                SET created_at = ?
+                WHERE created_at IS NULL
+                """,
+                (now,),
+            )
+        if "updated_at" not in columns:
+            conn.execute("ALTER TABLE triage_items ADD COLUMN updated_at TEXT")
+            conn.execute(
+                """
+                UPDATE triage_items
+                SET updated_at = ?
+                WHERE updated_at IS NULL
+                """,
+                (now,),
+            )
+
+    def _redact_sqlite_target(self, target: str) -> str:
+        if "://" not in target and not target.startswith("file:"):
+            return target
+
+        split = urlsplit(target)
+        netloc = split.netloc
+        if "@" in netloc:
+            _, host = netloc.rsplit("@", 1)
+            netloc = f"***@{host}"
+
+        query_parts = parse_qsl(split.query, keep_blank_values=True)
+        redacted_query = urlencode(
+            [
+                (key, "***" if key.lower() in _SENSITIVE_QUERY_KEYS else value)
+                for key, value in query_parts
+            ],
+            doseq=True,
+        )
+        return urlunsplit((split.scheme, netloc, split.path, redacted_query, split.fragment))
+
+    def _redact_error_text(self, message: str) -> str:
+        redacted = _SENSITIVE_QUOTED_PATTERN.sub(
+            lambda match: f"{match.group(1)}{match.group(2)}***",
+            message,
+        )
+        return _SENSITIVE_UNQUOTED_PATTERN.sub(
+            lambda match: f"{match.group(1)}{match.group(2)}***",
+            redacted,
+        )
