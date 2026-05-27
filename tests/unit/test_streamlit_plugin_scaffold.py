@@ -583,6 +583,8 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
         "pages/records.py",
         "pages/setup_wizard.py",
         "pages/review_workbench.py",
+        "pages/publisher_wizard.py",
+        "pages/data_lineage.py",
     ]
 
 
@@ -597,6 +599,8 @@ def test_streamlit_pages_scaffold_exists() -> None:
     assert (pages_root / "records.py").is_file()
     assert (pages_root / "setup_wizard.py").is_file()
     assert (pages_root / "review_workbench.py").is_file()
+    assert (pages_root / "publisher_wizard.py").is_file()
+    assert (pages_root / "data_lineage.py").is_file()
 
 
 def test_streamlit_pages_execute_without_exceptions() -> None:
