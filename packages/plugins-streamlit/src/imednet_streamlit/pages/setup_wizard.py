@@ -351,7 +351,10 @@ def _step_field_mapping() -> None:
         if existing and existing.source_variable_name in field_options:
             default_field = existing.source_variable_name
         elif target_field == "subject_key":
-            default_field = "subject_key" if "subject_key" in field_options else "subjectKey"
+            for candidate in ("subject_key", "subjectKey"):
+                if candidate in field_options:
+                    default_field = candidate
+                    break
         selected_field = col_field.selectbox(
             "Source field",
             options=field_options,
