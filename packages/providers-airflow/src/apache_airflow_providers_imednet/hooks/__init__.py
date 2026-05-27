@@ -66,7 +66,7 @@ class ImednetHook(BaseHook):
         if callable(get_extra):
             try:
                 raw_extra = get_extra()
-            except Exception:
+            except (AttributeError, TypeError, ValueError):
                 raw_extra = None
             extras = cls._parsed_extras(raw_extra)
             if extras is not None:
