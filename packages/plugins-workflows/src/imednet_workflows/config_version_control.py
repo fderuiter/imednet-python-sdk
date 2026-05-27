@@ -71,6 +71,20 @@ class ConfigVersionStore:
                 "CREATE INDEX IF NOT EXISTS idx_config_commits_study"
                 " ON config_commits (study_key, timestamp)"
             )
+            conn.execute("""
+                CREATE TRIGGER IF NOT EXISTS trg_config_commits_no_update
+                BEFORE UPDATE ON config_commits
+                BEGIN
+                    SELECT RAISE(ABORT, 'config_commits is immutable');
+                END;
+            """)
+            conn.execute("""
+                CREATE TRIGGER IF NOT EXISTS trg_config_commits_no_delete
+                BEFORE DELETE ON config_commits
+                BEGIN
+                    SELECT RAISE(ABORT, 'config_commits is immutable');
+                END;
+            """)
             conn.commit()
 
     # ------------------------------------------------------------------
@@ -149,15 +163,21 @@ class ConfigVersionStore:
         with self._lock, self._connection() as conn:
             rows = conn.execute(
                 """
-                SELECT commit_id, study_key, version_tag, modified_by,
-                       description, timestamp
+                SELECT commit_id, study_key, version_tag, config_data,
+                       modified_by, description, timestamp
                 FROM   config_commits
                 WHERE  study_key = ?
                 ORDER  BY timestamp ASC
                 """,
                 (study_key,),
             ).fetchall()
-        return [dict(row) for row in rows]
+        history: list[dict[str, Any]] = []
+        for row in rows:
+            commit = dict(row)
+            self._verify_commit_signature(commit["commit_id"], commit["config_data"])
+            commit.pop("config_data")
+            history.append(commit)
+        return history
 
     def diff_configs(self, commit_a: str, commit_b: str) -> dict[str, Any]:
         """Compute a property-level diff between two commits.
@@ -217,11 +237,16 @@ class ConfigVersionStore:
         """
         with self._lock, self._connection() as conn:
             row = conn.execute(
-                "SELECT config_data FROM config_commits WHERE commit_id = ? AND study_key = ?",
+                """
+                SELECT commit_id, config_data
+                FROM config_commits
+                WHERE commit_id = ? AND study_key = ?
+                """,
                 (commit_id, study_key),
             ).fetchone()
         if row is None:
             raise KeyError(f"Commit {commit_id!r} not found for study {study_key!r}.")
+        self._verify_commit_signature(row["commit_id"], row["config_data"])
         return StudyConfiguration.model_validate_json(row["config_data"])
 
     # ------------------------------------------------------------------
@@ -231,12 +256,17 @@ class ConfigVersionStore:
     def _fetch_config_data(self, commit_id: str) -> dict[str, Any]:
         with self._lock, self._connection() as conn:
             row = conn.execute(
-                "SELECT config_data FROM config_commits WHERE commit_id = ?",
+                "SELECT commit_id, config_data FROM config_commits WHERE commit_id = ?",
                 (commit_id,),
             ).fetchone()
         if row is None:
             raise KeyError(f"Commit {commit_id!r} not found.")
+        self._verify_commit_signature(row["commit_id"], row["config_data"])
         return json.loads(row["config_data"])  # type: ignore[no-any-return]
+
+    def _verify_commit_signature(self, commit_id: str, config_data: str) -> None:
+        if _sha256_of(config_data) != commit_id:
+            raise ValueError(f"Commit {commit_id!r} failed hash signature verification.")
 
 
 def _flatten(data: Any, prefix: str = "") -> dict[str, Any]:
