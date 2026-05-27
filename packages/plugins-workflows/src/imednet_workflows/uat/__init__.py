@@ -1,5 +1,6 @@
 """UAT specification models."""
 
+from .inspector import StudySchemaInspector, StudySnapshot
 from .models import (
     RecordTestType,
     UATFormSpec,
@@ -11,6 +12,8 @@ from .models import (
 
 __all__ = [
     "RecordTestType",
+    "StudySchemaInspector",
+    "StudySnapshot",
     "UATFormSpec",
     "UATSpecification",
     "UATSubjectSpec",
