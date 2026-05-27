@@ -45,7 +45,10 @@ class StudyConfiguration(JsonModel):
     @field_validator("reporting_profile", mode="before")
     @classmethod
     def _validate_reporting_profile(cls, value: object) -> object:
-        profile_name = str(value).strip().lower()
+        if not isinstance(value, str):
+            raise ValueError("reportingProfile must be a string.")
+
+        profile_name = value.strip().lower()
         if profile_name in PROFILE_REGISTRY.list_profiles():
             return profile_name
 
