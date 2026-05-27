@@ -16,6 +16,7 @@ from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
 from imednet.sdk import ImednetSDK
+from tests.live.helpers import require_mutation
 
 
 def test_list_studies(sdk: ImednetSDK) -> None:
@@ -141,6 +142,7 @@ def test_create_record_and_poll_job(
     study_key: str,
     record_payload: dict[str, Any],
 ) -> None:
+    require_mutation()
     job = sdk.records.create(study_key, [record_payload])
     assert job.batch_id
     polled = sdk.jobs.get(study_key, job.batch_id)

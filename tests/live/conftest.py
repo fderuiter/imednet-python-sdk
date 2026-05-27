@@ -5,9 +5,15 @@ from typing import Any, AsyncIterator, Callable, Generator, Iterator
 
 import pytest
 
+from imednet.discovery import (
+    NoLiveDataError,
+    discover_interval_name,
+    discover_site_name,
+    discover_subject_key,
+)
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 from imednet.testing import typed_values
-from tests.live.helpers import get_form_key, get_study_key
+from tests.live.helpers import get_form_key, get_study_key, require_mutation
 
 pytestmark = pytest.mark.live
 
@@ -15,6 +21,9 @@ API_KEY = os.getenv("IMEDNET_API_KEY")
 SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
 BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
+ALLOW_MUTATION = os.getenv("IMEDNET_ALLOW_MUTATION") == "1"
+STUDY_KEY_OVERRIDE = os.getenv("IMEDNET_STUDY_KEY")
+BATCH_ID_OVERRIDE = os.getenv("IMEDNET_BATCH_ID")
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +34,36 @@ def _typed_value(var_type: str) -> Any:
     return typed_values.value_for(var_type) or ""
 
 
+def _print_startup_context() -> None:
+    """Print environment context so operators can verify the correct target."""
+    print("\n[live-tests] ── startup context ──────────────────────────")
+    print(f"[live-tests]   IMEDNET_RUN_E2E       : {os.getenv('IMEDNET_RUN_E2E', '(not set)')}")
+    print(
+        f"[live-tests]   IMEDNET_ALLOW_MUTATION: {os.getenv('IMEDNET_ALLOW_MUTATION', '(not set)')}"
+    )
+    if STUDY_KEY_OVERRIDE:
+        print(f"[live-tests]   IMEDNET_STUDY_KEY     : {STUDY_KEY_OVERRIDE} (pinned)")
+    else:
+        print("[live-tests]   IMEDNET_STUDY_KEY     : (auto-discover)")
+    print(f"[live-tests]   IMEDNET_BASE_URL      : {BASE_URL or '(default)'}")
+    print("[live-tests] ───────────────────────────────────────────────\n")
+
+
 @pytest.fixture(scope="session", autouse=True)
 def _check_live_env() -> None:
+    _print_startup_context()
     if not RUN_E2E or not (API_KEY and SECURITY_KEY):
         pytest.skip(
             "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY "
             "to run live tests"
         )
-    logger.info("Live test environment configured")
+    logger.info("Live test environment configured (mutation=%s)", ALLOW_MUTATION)
+
+
+@pytest.fixture(scope="session")
+def allow_mutation() -> bool:
+    """Return ``True`` when ``IMEDNET_ALLOW_MUTATION=1`` is set."""
+    return ALLOW_MUTATION
 
 
 @pytest.fixture(scope="session")
@@ -67,30 +98,40 @@ def first_form_key(sdk: ImednetSDK, study_key: str) -> str:
 
 @pytest.fixture(scope="session")
 def first_site_name(sdk: ImednetSDK, study_key: str) -> str:
-    sites = sdk.sites.list(study_key=study_key)
-    if not sites:
-        pytest.skip(f"No sites available for study {study_key}")
-    return sites[0].site_name
+    try:
+        return discover_site_name(sdk, study_key)
+    except NoLiveDataError as exc:
+        pytest.skip(str(exc))
 
 
 @pytest.fixture(scope="session")
 def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
-    subjects = sdk.subjects.list(study_key=study_key)
-    if not subjects:
-        pytest.skip(f"No subjects available for study {study_key}")
-    return subjects[0].subject_key
+    try:
+        return discover_subject_key(sdk, study_key)
+    except NoLiveDataError as exc:
+        pytest.skip(str(exc))
 
 
 @pytest.fixture(scope="session")
 def first_interval_name(sdk: ImednetSDK, study_key: str) -> str:
-    intervals = sdk.intervals.list(study_key=study_key)
-    if not intervals:
-        pytest.skip(f"No intervals available for study {study_key}")
-    return intervals[0].interval_name
+    try:
+        return discover_interval_name(sdk, study_key)
+    except NoLiveDataError as exc:
+        pytest.skip(str(exc))
 
 
 @pytest.fixture(scope="session")
 def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> str:
+    """Return a batch ID for job-polling tests.
+
+    Uses ``IMEDNET_BATCH_ID`` when set (read-only path).  Otherwise requires
+    ``IMEDNET_ALLOW_MUTATION=1`` and creates a record to obtain a fresh batch ID.
+    """
+    if BATCH_ID_OVERRIDE:
+        return BATCH_ID_OVERRIDE
+
+    require_mutation()
+
     variables = sdk.variables.list(study_key=study_key, formKey=first_form_key)
     if not variables:
         pytest.skip(f"No variables available for form {first_form_key}")

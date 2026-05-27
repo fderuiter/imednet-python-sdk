@@ -14,6 +14,11 @@ Usage:
 
 ``--timeout`` controls how long to wait for the record creation job to
 finish before giving up. The default is 90 seconds.
+
+Exit codes:
+* 0 = at least one smoke record was created successfully
+* 1 = runtime failure
+* 2 = smoke prerequisites missing (skipped)
 """
 
 import argparse
@@ -38,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 POLL_TIMEOUT = 90
+SKIP_EXIT_CODE = 2
 
 
 def authenticate() -> ImednetSDK:
@@ -185,7 +191,12 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         with authenticate() as sdk:
-            study_key, form_key = discover_keys(sdk)
+            try:
+                study_key, form_key = discover_keys(sdk)
+            except NoLiveDataError as exc:
+                print(f"::error:: Smoke record failed – {exc}", file=sys.stderr)
+                return 1
+
             logger.info("Discovered study_key=%s form_key=%s", study_key, form_key)
             site_name, subject_key, interval_name = discover_identifiers(sdk, study_key)
             scenarios: list[dict[str, str]] = []
@@ -196,16 +207,15 @@ def main(argv: list[str] | None = None) -> int:
                 if interval_name:
                     scenarios.append({"subject_key": subject_key, "interval_name": interval_name})
             if not scenarios:
+                # Study and form exist but no write identifiers are available.
+                # Per the charter this is a skip, not a failure.
                 print("::notice:: Smoke record skipped – no identifiers available")
-                return 0
+                return SKIP_EXIT_CODE
             logger.info("Scenarios: %s", scenarios)
             for extra in scenarios:
                 record = build_record(sdk, study_key, form_key, **extra)
                 logger.debug("Record payload: %s", _redact(record))
                 submit_record(sdk, study_key, record, timeout=args.timeout)
-    except NoLiveDataError as exc:
-        print(f"::notice:: Smoke record skipped – {exc}")
-        return 0
     except Exception as exc:  # pragma: no cover - runtime safeguard
         print(f"Smoke record failed: {exc}", file=sys.stderr)
         return 1

@@ -8,6 +8,7 @@ import pytest
 import pytest_asyncio
 
 ROOT = Path(__file__).resolve().parents[1]
+LIVE_TESTS_DIR = (ROOT / "tests" / "live").resolve()
 for source_root in (
     ROOT / "packages" / "core" / "src",
     ROOT / "packages" / "plugins-workflows" / "src",
@@ -28,11 +29,25 @@ def block_external_requests(request: pytest.FixtureRequest):
     share a single strict router; tests cannot bypass the guard by opening
     their own ``respx.mock`` context or decorator.
     """
-    if request.node.get_closest_marker("live"):
+    if _is_live_test(request.node):
         yield
         return
     request.getfixturevalue("respx_mock")
     yield
+
+
+def _is_live_test(node: object) -> bool:
+    if not hasattr(node, "get_closest_marker"):
+        return False
+
+    if node.get_closest_marker("live"):
+        return True
+
+    node_path = getattr(node, "path", None)
+    if node_path is None:
+        return False
+
+    return Path(str(node_path)).resolve().is_relative_to(LIVE_TESTS_DIR)
 
 
 @pytest.fixture(autouse=True)

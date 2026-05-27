@@ -3,6 +3,7 @@ from typing import Any
 import pytest
 
 from imednet.sdk import AsyncImednetSDK
+from tests.live.helpers import require_mutation
 
 
 @pytest.mark.asyncio(scope="session")
@@ -115,6 +116,7 @@ async def test_async_create_and_poll(
     study_key: str,
     record_payload: dict[str, Any],
 ) -> None:
+    require_mutation()
     job = await async_sdk.records.async_create(study_key, [record_payload])
     polled = await async_sdk.jobs.async_get(study_key, job.batch_id)
     assert polled.batch_id == job.batch_id
