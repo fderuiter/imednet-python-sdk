@@ -124,4 +124,6 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
         "pages/records.py",
         "pages/setup_wizard.py",
         "pages/review_workbench.py",
+        "pages/publisher_wizard.py",
+        "pages/data_lineage.py",
     ]

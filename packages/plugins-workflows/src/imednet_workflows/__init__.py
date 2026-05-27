@@ -1,6 +1,7 @@
 """Workflow helpers built on top of the iMednet SDK."""
 
 from .cached_loader import CachedRecordsLoader, get_cache_connection
+from .config_version_control import ConfigVersionStore
 from .duckdb_centralizer import DuckDBIngestionWorkflow
 from .extraction_engine import ExtractionResult, extract_canonical_records
 from .job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
@@ -23,6 +24,7 @@ from .triage_store import TriageStore
 __all__ = [
     "AsyncJobPoller",
     "CachedRecordsLoader",
+    "ConfigVersionStore",
     "DuckDBIngestionWorkflow",
     "ExtractionResult",
     "ExtractionStateLedger",

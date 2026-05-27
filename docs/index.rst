@@ -38,6 +38,7 @@ Welcome to imednet's documentation!
    issue_management
    project_standards
    triage_playbook
+   governance
 
 .. toctree::
    :maxdepth: 2
