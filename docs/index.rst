@@ -45,6 +45,7 @@ Welcome to imednet's documentation!
    :caption: Integrations:
 
    duckdb_integration
+   snowflake_export
 
 .. toctree::
    :maxdepth: 2
