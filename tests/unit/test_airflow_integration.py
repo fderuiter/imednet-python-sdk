@@ -229,8 +229,8 @@ def test_imednet_hook_get_extra_json_fallback(monkeypatch):
     conn.extra_dejson = None
     conn.get_extra = MagicMock(
         return_value=(
-        '{"api_key":"GET_EXTRA_KEY","security_key":"GET_EXTRA_SEC","base_url":"https://get-extra"}'
-    )
+            '{"api_key":"GET_EXTRA_KEY","security_key":"GET_EXTRA_SEC","base_url":"https://get-extra"}'
+        )
     )
 
     import airflow.hooks.base as hooks_base
