@@ -630,14 +630,17 @@ def test_no_open_queries_site_metrics_shows_zero() -> None:
 
 
 def test_empty_subjects_does_not_crash_and_zero_enrolled() -> None:
-    """Page renders without error when the study has no subjects."""
+    """Page renders without error when the subjects API returns an empty list.
+
+    The enrolled-subjects count is derived from records (not the subjects endpoint),
+    so 2 records with distinct subject keys → enrolled_subjects=2 and AE rate = 2/2 = 1.0.
+    """
     fake_st = _run_page_extended(empty_subjects=True)
     kpi_maps = [_kpi_dict(row) for row in fake_st.kpi_rows]
 
     ae_kpis = next(kpi for kpi in kpi_maps if "Total AEs" in kpi)
-    # 2 AEs present from extraction; enrolled count comes from unique subjects in
-    # records (2 records → 2 subjects), so rate = 2 / 2 = 1.0
     assert ae_kpis["Total AEs"] == 2
+    # enrolled_subjects = records_filtered["subject_key"].nunique() = 2
     assert ae_kpis["AE Rate"] == 1.0
 
 
@@ -748,8 +751,9 @@ def test_protocol_deviation_tab_rate_and_major_count() -> None:
     pd_kpis = next(kpi for kpi in kpi_maps if "Total Deviations" in kpi)
     assert pd_kpis["Total Deviations"] == 2
     assert pd_kpis["Major Deviations"] == 1
-    # Rate = total / enrolled = 2 / 1 (1 unique subject in records) ≥ 0
-    assert pd_kpis["Deviation Rate"] >= 0
+    # Default records contain 2 distinct subjects (SUBJ-001 and SUBJ-002),
+    # so enrolled_subjects = 2.  Rate = 2 total deviations / 2 enrolled = 1.0.
+    assert pd_kpis["Deviation Rate"] == 1.0
 
 
 def test_ae_filter_cascades_to_pd_table_via_site_filter() -> None:
