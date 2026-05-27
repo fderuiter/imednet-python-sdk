@@ -3,6 +3,11 @@ name: Pipeline
 on:
   push:
     branches: [main]
+    tags:
+      - "imednet-v*.*.*"
+      - "imednet-workflows-v*.*.*"
+      - "apache-airflow-providers-imednet-v*.*.*"
+      - "imednet-streamlit-v*.*.*"
   pull_request:
     branches: [main]
 
@@ -220,5 +225,86 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # ------------------------------------------------------------------
+  # JOB 6: PUBLISH TO PYPI (Only on package-specific tags)
+  # release-please manifest mode creates tags of the form
+  #   <package-name>-v<version>, e.g. imednet-v0.7.0
+  # Each job publishes exactly the package whose tag triggered the run.
+  # NOTE: release-please.yml must use a PAT (RELEASE_PLEASE_TOKEN) rather
+  # than GITHUB_TOKEN, otherwise GitHub suppresses the tag-push event and
+  # these jobs are always skipped.
+  # ------------------------------------------------------------------
+  publish-core:
+    name: Publish imednet to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/imednet-v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Core Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-core
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-workflows:
+    name: Publish imednet-workflows to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/imednet-workflows-v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Workflows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-workflows
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-providers:
+    name: Publish apache-airflow-providers-imednet to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/apache-airflow-providers-imednet-v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Providers Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-providers
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-streamlit:
+    name: Publish imednet-streamlit to PyPI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/imednet-streamlit-v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Streamlit Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-streamlit
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
 

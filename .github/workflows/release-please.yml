@@ -12,66 +12,17 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    outputs:
-      releases_created: ${{ steps.release.outputs.releases_created }}
-      core_released: ${{ steps.release.outputs['packages/core--release_created'] }}
-      workflows_released: ${{ steps.release.outputs['packages/plugins-workflows--release_created'] }}
-      providers_released: ${{ steps.release.outputs['packages/providers-airflow--release_created'] }}
-      streamlit_released: ${{ steps.release.outputs['packages/plugins-streamlit--release_created'] }}
     steps:
       - name: Run Release Please
         id: release
         uses: googleapis/release-please-action@v4
-
-  # ------------------------------------------------------------------
-  # PUBLISH TO PYPI
-  # Runs in this workflow (not via tag push) because GitHub does not
-  # fire new workflow runs for events created by GITHUB_TOKEN — so tag
-  # pushes from release-please would never trigger main.yml's publish
-  # jobs. Instead we publish here, directly after releases are created.
-  # Only packages that were part of this release are built & published.
-  # ------------------------------------------------------------------
-  publish:
-    name: Publish to PyPI
-    needs: release-please
-    if: needs.release-please.outputs.releases_created == 'true'
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-
-      - uses: abatilo/actions-poetry@v2
-
-      - name: Install Dependencies
-        run: poetry install --with dev
-
-      - name: Build released packages
-        run: |
-          mkdir -p dist
-          if [ "${{ needs.release-please.outputs.core_released }}" = "true" ]; then
-            (cd packages/core && poetry build)
-            cp packages/core/dist/* dist/
-          fi
-          if [ "${{ needs.release-please.outputs.workflows_released }}" = "true" ]; then
-            (cd packages/plugins-workflows && poetry build)
-            cp packages/plugins-workflows/dist/* dist/
-          fi
-          if [ "${{ needs.release-please.outputs.providers_released }}" = "true" ]; then
-            (cd packages/providers-airflow && poetry build)
-            cp packages/providers-airflow/dist/* dist/
-          fi
-          if [ "${{ needs.release-please.outputs.streamlit_released }}" = "true" ]; then
-            (cd packages/plugins-streamlit && poetry build)
-            cp packages/plugins-streamlit/dist/* dist/
-          fi
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: dist/
+          # A PAT is required here instead of GITHUB_TOKEN.
+          # GitHub blocks new workflow runs for events (tag pushes, releases)
+          # created by GITHUB_TOKEN, so the publish jobs in main.yml would
+          # always be skipped. Using a PAT causes the tag push to trigger the
+          # Pipeline workflow normally.
+          # Create a classic PAT with `repo` scope (or a fine-grained PAT with
+          # Contents: Read & Write + Workflows: Read & Write) and add it as a
+          # repository secret named RELEASE_PLEASE_TOKEN.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
