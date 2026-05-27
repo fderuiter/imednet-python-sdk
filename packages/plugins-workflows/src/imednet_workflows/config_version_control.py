@@ -9,11 +9,12 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
-from typing import Any, Dict, Iterator, List
+from typing import Any
 
 from imednet.models.study_config import StudyConfiguration
 
@@ -132,7 +133,7 @@ class ConfigVersionStore:
 
         return commit_id
 
-    def get_history(self, study_key: str) -> List[Dict[str, Any]]:
+    def get_history(self, study_key: str) -> list[dict[str, Any]]:
         """Return all commits for *study_key*, ordered oldest-first.
 
         Args:
@@ -158,7 +159,7 @@ class ConfigVersionStore:
             ).fetchall()
         return [dict(row) for row in rows]
 
-    def diff_configs(self, commit_a: str, commit_b: str) -> Dict[str, Any]:
+    def diff_configs(self, commit_a: str, commit_b: str) -> dict[str, Any]:
         """Compute a property-level diff between two commits.
 
         Compares the flat JSON key space of the two commits.  Returns a dict
@@ -227,7 +228,7 @@ class ConfigVersionStore:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _fetch_config_data(self, commit_id: str) -> Dict[str, Any]:
+    def _fetch_config_data(self, commit_id: str) -> dict[str, Any]:
         with self._lock, self._connection() as conn:
             row = conn.execute(
                 "SELECT config_data FROM config_commits WHERE commit_id = ?",
@@ -238,9 +239,9 @@ class ConfigVersionStore:
         return json.loads(row["config_data"])  # type: ignore[no-any-return]
 
 
-def _flatten(data: Any, prefix: str = "") -> Dict[str, Any]:
+def _flatten(data: Any, prefix: str = "") -> dict[str, Any]:
     """Recursively flatten a nested dict/list into dot-notation keys."""
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     if isinstance(data, dict):
         for key, value in data.items():
             full_key = f"{prefix}.{key}" if prefix else key

@@ -262,7 +262,7 @@ def _render_publish_action(
             # Duplicate commit — config is already up-to-date
             st.info(str(exc))
         except Exception as exc:  # pragma: no cover - defensive runtime UI handling
-            st.error(f"Publish failed: {exc}")
+            st.error(f"Publish failed ({type(exc).__name__}): {exc}")
 
 
 def _bump_patch(version: str) -> str:
