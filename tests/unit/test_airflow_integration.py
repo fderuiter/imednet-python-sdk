@@ -185,6 +185,7 @@ def test_imednet_hook_environment_fallback(monkeypatch):
     conn = MagicMock()
     conn.login = None
     conn.password = None
+    # Intentionally invalid non-string extras to verify env fallback normalization.
     conn.extra_dejson = {"api_key": 123, "security_key": object(), "base_url": 456}
 
     import airflow.hooks.base as hooks_base
@@ -233,6 +234,32 @@ def test_imednet_hook_describe_connection_redacts_credentials(monkeypatch):
         "api_key_configured": True,
         "security_key_configured": True,
     }
+
+
+def test_imednet_hook_prefers_extras_over_environment(monkeypatch):
+    _setup_airflow(monkeypatch)
+    monkeypatch.setenv("IMEDNET_API_KEY", "ENV_KEY")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "ENV_SEC")
+
+    conn = MagicMock()
+    conn.login = "LOGIN_KEY"
+    conn.password = "LOGIN_SEC"
+    conn.extra_dejson = {"api_key": "EXTRA_KEY", "security_key": "EXTRA_SEC"}
+
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    from apache_airflow_providers_imednet.hooks import ImednetHook
+
+    hook = ImednetHook()
+    sdk = hook.get_sdk_client()
+    assert sdk._client._client.headers["x-api-key"] == "EXTRA_KEY"
+    assert sdk._client._client.headers["x-imn-security-key"] == "EXTRA_SEC"
 
 
 def test_imednet_hook_study_discovery_serialization_safe(monkeypatch):

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Any, Dict, List, Mapping, MutableMapping, Union, cast
+from typing import Any, Dict, List, Mapping, MutableMapping, TypeAlias, Union, cast
 
 from airflow.hooks.base import BaseHook
 
@@ -11,7 +11,10 @@ from imednet.config import Config, load_config
 from imednet.sdk import ImednetSDK
 
 Primitive = Union[str, int, float, bool, None]
-PrimitiveContainer = Union[Primitive, List["PrimitiveContainer"], Dict[str, "PrimitiveContainer"]]
+# Primitive-only payload contract for discovery helpers that feed Airflow mapping/XCom.
+PrimitiveContainer: TypeAlias = Union[
+    Primitive, List["PrimitiveContainer"], Dict[str, "PrimitiveContainer"]
+]
 _SENSITIVE_KEYS = {
     "api_key",
     "security_key",
@@ -31,12 +34,14 @@ class ImednetHook(BaseHook):
 
     @staticmethod
     def _string_or_none(value: object) -> str | None:
+        """Return a stripped string or ``None`` for non-string/blank values."""
         if not isinstance(value, str):
             return None
         cleaned = value.strip()
         return cleaned or None
 
     def _resolved_config(self) -> Config:
+        """Resolve hook configuration from Airflow connection fields and env fallback."""
         from airflow.hooks.base import BaseHook
 
         conn = BaseHook.get_connection(self.imednet_conn_id)
@@ -56,12 +61,19 @@ class ImednetHook(BaseHook):
 
     @classmethod
     def _to_primitive(cls, value: Any) -> PrimitiveContainer:
+        """Recursively normalize values to primitive containers with credential redaction.
+
+        Pydantic-style objects are first converted via ``model_dump(mode="json", by_alias=True)``.
+        Dictionaries are traversed recursively and sensitive keys are masked. Unknown
+        object types fall back to ``str(value)`` so discovery outputs remain serializable.
+        """
         if value is None or isinstance(value, (str, int, float, bool)):
             return cast(Primitive, value)
         if isinstance(value, (date, datetime)):
             return value.isoformat()
         if hasattr(value, "model_dump"):
-            value = value.model_dump(mode="json", by_alias=True)  # type: ignore[assignment]
+            dumped = value.model_dump(mode="json", by_alias=True)
+            value = cast(Any, dumped)
         if isinstance(value, Mapping):
             output: Dict[str, PrimitiveContainer] = {}
             for key, item in value.items():
