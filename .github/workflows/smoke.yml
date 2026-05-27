@@ -37,19 +37,20 @@ jobs:
           set -e
       - name: Evaluate smoke result
         run: |
-          case "${{ steps.smoke_record.outputs.exit_code }}" in
+          status="${{ steps.smoke_record.outputs.exit_code }}"
+          case "$status" in
             0)
               echo "::notice:: Smoke status: passed"
+              exit 0
               ;;
             2)
               echo "::notice:: Smoke status: skipped (missing live identifiers)"
-              exit 1
               ;;
             *)
               echo "::error:: Smoke status: failed"
-              exit 1
               ;;
           esac
+          exit 1
       - name: Upload smoke log
         if: always()
         uses: actions/upload-artifact@v4

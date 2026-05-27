@@ -17,8 +17,8 @@ finish before giving up. The default is 90 seconds.
 
 Exit codes:
 * 0 = at least one smoke record was created successfully
-* 2 = smoke prerequisites missing (skipped)
 * 1 = runtime failure
+* 2 = smoke prerequisites missing (skipped)
 """
 
 import argparse
