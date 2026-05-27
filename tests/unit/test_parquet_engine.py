@@ -129,6 +129,33 @@ def test_pyarrow_dataset_partitioned_storage_engine_cleans_staging_on_failure(
     assert not (tmp_path / "study_key=STUDY_A").exists()
 
 
+def test_pyarrow_dataset_partitioned_storage_engine_cleans_visible_dirs_on_commit_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_pa = _FakePyArrowModule()
+    fake_ds = _FakeDatasetModule()
+    monkeypatch.setattr(
+        "imednet.integrations.parquet_engine._import_pyarrow",
+        lambda: (fake_pa, fake_ds),
+    )
+    monkeypatch.setattr(
+        "imednet.integrations.parquet_engine.os.replace",
+        lambda *_args: (_ for _ in ()).throw(OSError("rename failed")),
+    )
+
+    with pytest.raises(OSError, match="rename failed"):
+        PyArrowDatasetPartitionedStorageEngine().write_form_table(
+            _FakeTable(),
+            base_dir=str(tmp_path),
+            study_key="STUDY_A",
+            form_key="DEMOGRAPHICS",
+        )
+
+    assert not (tmp_path / ".imednet_staging").exists()
+    assert not (tmp_path / "study_key=STUDY_A").exists()
+
+
 def test_pyarrow_dataset_partitioned_storage_engine_schema_drift_duckdb(
     tmp_path: Path,
 ) -> None:
