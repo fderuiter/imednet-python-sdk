@@ -18,38 +18,27 @@ For ``ImednetToS3Operator`` support, install the provider's ``amazon`` extra:
 
    pip install "apache-airflow>=2.3.0,<4.0.0" "apache-airflow-providers-imednet[amazon]"
 
-Example DAG
------------
+Production Reference DAG
+------------------------
 
-.. code-block:: python
+Use ``examples/airflow/multi_study_pipeline.py`` as the recommended production
+pattern for dynamic task mapping deployments. It demonstrates lightweight
+TaskFlow discovery feeding mapped provider operators while keeping execution
+logic inside mapped tasks.
 
-   from datetime import datetime
-   from airflow import DAG
-   from apache_airflow_providers_imednet import ImednetToS3Operator, ImednetJobSensor
+.. literalinclude:: ../examples/airflow/multi_study_pipeline.py
+   :language: python
 
-   default_args = {"start_date": datetime(2024, 1, 1)}
+Operational safeguards highlighted in the reference DAG:
 
-   with DAG(
-       dag_id="imednet_example",
-       schedule_interval=None,
-       default_args=default_args,
-       catchup=False,
-   ) as dag:
-       export_records = ImednetToS3Operator(
-           task_id="export_records",
-           study_key="STUDY_KEY",
-           s3_bucket="your-bucket",
-           s3_key="imednet/records.json",
-       )
+- Discovery only enumerates work items and returns JSON-serializable values.
+- Retries and ``execution_timeout`` are configured for both discovery and
+  mapped export execution.
+- ``max_active_runs`` and ``max_active_tasks`` constrain DAG-level concurrency.
+- ``pool`` is set on the mapped operator for shared-resource throttling.
 
-       wait_for_job = ImednetJobSensor(
-           task_id="wait_for_job",
-           study_key="STUDY_KEY",
-           batch_id="BATCH_ID",
-           poke_interval=60,
-       )
-
-       export_records >> wait_for_job
+Additional single-purpose DAGs are available in ``examples/airflow/`` for
+focused operator/sensor usage patterns.
 
 Connections
 -----------
@@ -76,18 +65,17 @@ For task-mapping discovery steps, ``ImednetHook`` provides explicit helper metho
 
 Operators and Sensors
 ---------------------
-The Airflow integration organizes hooks, operators, and sensors in dedicated subpackages for clarity.
+The Airflow integration organizes hooks, operators, and sensors in dedicated
+subpackages for clarity.
 
 ``ImednetExportOperator`` saves records to a local file using helpers from
 ``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3
 and ``ImednetJobSensor`` waits for an export job to complete. All operators use
 ``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance from an
-Airflow connection. For dynamic task mapping, keep static settings such as
-``export_func`` and ``imednet_conn_id`` in ``.partial(...)`` and map only the
-runtime fields ``study_key``, ``output_path``, and ``export_kwargs``. Ensure
-``output_path`` resolves to a unique value per mapped task instance, for example
-by expanding a list of per-study destinations or by templating with
-``{{ ti.map_index }}``.
+Airflow connection. The production reference DAG above shows the recommended
+dynamic-mapping pattern: keep static settings (for example ``export_func`` and
+``imednet_conn_id``) in ``.partial(...)`` and map only runtime fields
+(``study_key``, ``output_path``, ``export_kwargs``).
 
 .. code-block:: python
 

@@ -31,5 +31,10 @@ so failures in one study do not affect others. The orchestrator collects
 results in a normalized :data:`~imednet.orchestration.OrchestratorResult`
 dict keyed by study key.
 
+For the recommended Airflow production pattern (TaskFlow discovery feeding
+mapped provider operators with retries/timeouts/concurrency guardrails), see
+:doc:`../airflow` and
+``examples/airflow/multi_study_pipeline.py``.
+
 .. literalinclude:: ../../examples/workflows/multi_study_pipeline.py
    :language: python
