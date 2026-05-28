@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from imednet.models.triage import TriageItem, TriageStatus
+from imednet.spi.models import TriageItem, TriageStatus
 from imednet_streamlit.auth import get_study_key
 from imednet_streamlit.components.triage_drawer import render_triage_drawer
 from imednet_workflows.triage_store import TriageStore

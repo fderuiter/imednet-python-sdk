@@ -6,8 +6,8 @@ import asyncio
 import time
 from typing import Awaitable, Callable
 
-from imednet.constants import TERMINAL_JOB_STATES
-from imednet.models import JobStatus
+from imednet.spi.constants import TERMINAL_JOB_STATES
+from imednet.spi.models import JobStatus
 
 
 class JobTimeoutError(TimeoutError):

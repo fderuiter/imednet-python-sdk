@@ -7,9 +7,9 @@ from typing import Sequence
 import pandas as pd
 import streamlit as st
 
-from imednet.models import Record
-from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDeviation
-from imednet.models.study_config import StudyConfiguration
+from imednet.spi.models import Record
+from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation
+from imednet.spi.models import StudyConfiguration
 from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
 

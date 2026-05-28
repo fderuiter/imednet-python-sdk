@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from imednet.models import Query, Record, Subject, Visit
+from imednet.spi.models import Query, Record, Subject, Visit
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 
 class SubjectComprehensiveData(BaseModel):

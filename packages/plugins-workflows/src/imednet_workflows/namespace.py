@@ -12,7 +12,7 @@ from .subject_data import SubjectDataWorkflow
 from .uat import StudySchemaInspector
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 
 class Workflows:

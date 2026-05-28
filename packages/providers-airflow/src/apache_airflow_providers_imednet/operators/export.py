@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any, cast
 
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 
 from .. import export
 from .._airflow_compat import AirflowException, Context

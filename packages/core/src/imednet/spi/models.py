@@ -1,0 +1,1 @@
+from imednet.models import *

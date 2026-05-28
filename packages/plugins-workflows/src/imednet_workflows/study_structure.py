@@ -2,17 +2,17 @@ import asyncio
 from typing import TYPE_CHECKING, Dict, List
 
 # Import potential exceptions
-from imednet.errors import ImednetError
+from imednet.spi.errors import ImednetError
 
 # Import the models we need
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
-from imednet.models.study_structure import FormStructure, IntervalStructure, StudyStructure
-from imednet.models.variables import Variable
+from imednet.spi.models import Form
+from imednet.spi.models import Interval
+from imednet.spi.models import FormStructure, IntervalStructure, StudyStructure
+from imednet.spi.models import Variable
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:
-    from imednet.sdk import AsyncImednetSDK, ImednetSDK
+    from imednet import AsyncImednetSDK, ImednetSDK
 
 
 def _build_study_structure(

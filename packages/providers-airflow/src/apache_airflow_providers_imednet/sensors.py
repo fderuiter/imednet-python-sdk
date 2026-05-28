@@ -15,7 +15,7 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
             pass
 
 
-from imednet.sdk import ImednetSDK
+from imednet import ImednetSDK
 
 from ._airflow_compat import AirflowException, Context
 from .hooks import ImednetHook

@@ -32,7 +32,7 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
             raise ImportError(_MISSING_AMAZON_PROVIDER_MESSAGE)
 
 
-from imednet.sdk import ImednetSDK  # noqa: E402 - imported after optional Airflow stubs
+from imednet import ImednetSDK  # noqa: E402 - imported after optional Airflow stubs
 
 from ..hooks import ImednetHook  # noqa: E402 - imported after optional Airflow stubs
 

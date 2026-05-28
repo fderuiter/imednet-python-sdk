@@ -11,7 +11,7 @@ from typing import Any
 from pydantic import ConfigDict, Field, field_validator, model_validator
 from pydantic.alias_generators import to_camel
 
-from imednet.models.base import ImednetBaseModel
+from imednet.spi.models import ImednetBaseModel
 
 
 class UATBaseModel(ImednetBaseModel):

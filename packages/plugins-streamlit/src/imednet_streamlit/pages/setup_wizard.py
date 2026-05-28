@@ -9,7 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from imednet import ImednetSDK
-from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
+from imednet.spi.models import MappingRule, StudyConfiguration, WidgetConfig
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_workflows import CachedRecordsLoader, SchemaProfiler
 

@@ -5,7 +5,7 @@ from typing import Sequence
 
 import streamlit as st
 
-from imednet.models.triage import TriageItem, TriageStatus
+from imednet.spi.models import TriageItem, TriageStatus
 from imednet_workflows.triage_store import TriageStore
 
 _LAST_ACTION_KEY = "_triage_drawer_last_action"

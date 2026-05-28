@@ -3,13 +3,13 @@
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 
-from imednet.models import Job
-from imednet.validation.cache import AsyncSchemaValidator, SchemaCache, SchemaValidator
+from imednet.spi.models import Job
+from imednet.spi.validation import AsyncSchemaValidator, SchemaCache, SchemaValidator
 
 from .job_poller import AsyncJobPoller, JobPoller
 
 if TYPE_CHECKING:
-    from imednet.sdk import AsyncImednetSDK, ImednetSDK
+    from imednet import AsyncImednetSDK, ImednetSDK
 
 SDKLike = Union["ImednetSDK", "AsyncImednetSDK"]
 
