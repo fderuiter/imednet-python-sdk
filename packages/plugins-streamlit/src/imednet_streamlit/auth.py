@@ -3,6 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 from imednet import ImednetSDK
+from imednet.spi.facade import ImednetFacade
 
 _KEY_API_KEY = "_imednet_api_key"
 _KEY_SECURITY_KEY = "_imednet_security_key"
@@ -61,11 +62,11 @@ def render_auth_sidebar() -> bool:
     return bool(st.session_state.get(_KEY_CONNECTED))
 
 
-def get_sdk() -> ImednetSDK:
+def get_sdk() -> ImednetFacade:
     """Return the authenticated SDK from session state.
 
     Returns:
-        The connected :class:`imednet.ImednetSDK` instance.
+        The connected :class:`imednet.spi.facade.ImednetFacade` instance.
 
     Raises:
         RuntimeError: If the user is not connected or no SDK is stored.

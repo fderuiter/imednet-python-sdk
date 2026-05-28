@@ -260,12 +260,31 @@ class SDKConvenienceMixin:
         study_key: str,
         records_data: List[JsonDict],
         email_notify: Union[bool, str, None] = None,
+        *,
+        schema: Any = None,
     ) -> Job:
         """Create records in the specified study."""
         return self.records.create(
             study_key,
             records_data,
             email_notify=email_notify,
+            schema=schema,
+        )
+
+    async def async_create_record(
+        self: AsyncSDKProtocol,
+        study_key: str,
+        records_data: List[JsonDict],
+        email_notify: Union[bool, str, None] = None,
+        *,
+        schema: Any = None,
+    ) -> Job:
+        """Asynchronously create records in the specified study."""
+        return await self.records.async_create(
+            study_key,
+            records_data,
+            email_notify=email_notify,
+            schema=schema,
         )
 
     def poll_job(

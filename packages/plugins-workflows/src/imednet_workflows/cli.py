@@ -8,7 +8,7 @@ from rich import print
 
 from imednet.spi.cli import with_sdk
 from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args
-from imednet import ImednetSDK
+from imednet.spi.facade import ImednetFacade
 
 from .data_extraction import DataExtractionWorkflow
 from .state_ledger import ExtractionStateLedger
@@ -21,7 +21,7 @@ app = typer.Typer(name="workflows", help="Execute common data workflows.")
 @app.command("extract-records")
 @with_sdk
 def extract_records(
-    sdk: ImednetSDK,
+    sdk: ImednetFacade,
     study_key: str = STUDY_KEY_ARG,
     record_filter: Optional[List[str]] = typer.Option(
         None,
@@ -68,7 +68,7 @@ def extract_records(
 
 @with_sdk
 def subject_data(
-    sdk: ImednetSDK,
+    sdk: ImednetFacade,
     study_key: str = STUDY_KEY_ARG,
     subject_key: str = typer.Argument(..., help="The key identifying the subject."),
 ) -> None:
@@ -81,7 +81,7 @@ def subject_data(
 @app.command("sync-worker")
 @with_sdk
 def sync_worker(
-    sdk: ImednetSDK,
+    sdk: ImednetFacade,
     study_key: str = STUDY_KEY_ARG,
     interval: int = typer.Option(900, "--interval", min=1, help="Polling interval in seconds."),
     once: bool = typer.Option(

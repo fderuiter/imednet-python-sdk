@@ -158,7 +158,7 @@ def test_queries_page_renders_with_mock_sdk() -> None:
 
     # Mock sdk
     mock_sdk = MagicMock()
-    mock_sdk.queries.list.return_value = []
+    mock_sdk.get_queries.return_value = []
 
     # Mock auth module
     fake_auth_module = ModuleType("imednet_streamlit.auth")
@@ -265,7 +265,7 @@ def test_queries_page_populated_and_filters_and_refresh() -> None:
     mock_q.date_modified = pd.Timestamp(datetime.datetime(2024, 1, 11))
 
     mock_sdk = MagicMock()
-    mock_sdk.queries.list.return_value = [mock_q]
+    mock_sdk.get_queries.return_value = [mock_q]
 
     # Mock auth module
     fake_auth_module = ModuleType("imednet_streamlit.auth")

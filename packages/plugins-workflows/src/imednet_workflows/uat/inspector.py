@@ -15,7 +15,7 @@ from imednet.spi.models import Site
 from imednet.spi.models import Variable
 
 if TYPE_CHECKING:
-    from imednet import AsyncImednetSDK, ImednetSDK
+    from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
 
 
 class FormVariableMap(TypedDict):
@@ -74,7 +74,7 @@ class StudySchemaInspector:
     use external synchronization or separate inspector instances for that access pattern.
     """
 
-    def __init__(self, sdk: ImednetSDK | AsyncImednetSDK) -> None:
+    def __init__(self, sdk: ImednetFacade | AsyncImednetSDK) -> None:
         self._sdk = sdk
         self._cache: dict[str, StudySnapshot] = {}
 
@@ -111,10 +111,10 @@ class StudySchemaInspector:
         sdk = cast("ImednetSDK", self._sdk)
         snapshot = StudySnapshot(
             study_key=study_key,
-            forms=sdk.forms.list(study_key),
-            variables=sdk.variables.list(study_key),
-            intervals=sdk.intervals.list(study_key),
-            sites=sdk.sites.list(study_key),
+            forms=sdk.get_forms(study_key),
+            variables=sdk.get_variables(study_key),
+            intervals=sdk.get_intervals(study_key),
+            sites=sdk.get_sites(study_key),
         )
         self._cache[study_key] = snapshot
         return snapshot
@@ -127,10 +127,10 @@ class StudySchemaInspector:
 
         sdk = cast("AsyncImednetSDK", self._sdk)
         forms, variables, intervals, sites = await asyncio.gather(
-            sdk.forms.async_list(study_key),
-            sdk.variables.async_list(study_key),
-            sdk.intervals.async_list(study_key),
-            sdk.sites.async_list(study_key),
+            sdk.async_get_forms(study_key),
+            sdk.async_get_variables(study_key),
+            sdk.async_get_intervals(study_key),
+            sdk.async_get_sites(study_key),
         )
 
         snapshot = StudySnapshot(

@@ -50,35 +50,35 @@ def test_study_snapshot_builds_indexes_and_filters() -> None:
 
 def test_inspect_uses_cache_and_force_refresh() -> None:
     sdk = MagicMock()
-    sdk.forms.list.return_value = [Form(form_key="F1", form_name="Form 1")]
-    sdk.variables.list.return_value = [Variable(variable_name="V1", form_key="F1")]
-    sdk.intervals.list.return_value = [Interval(interval_name="Baseline")]
-    sdk.sites.list.return_value = [Site(site_name="Site A")]
+    sdk.get_forms.return_value = [Form(form_key="F1", form_name="Form 1")]
+    sdk.get_variables.return_value = [Variable(variable_name="V1", form_key="F1")]
+    sdk.get_intervals.return_value = [Interval(interval_name="Baseline")]
+    sdk.get_sites.return_value = [Site(site_name="Site A")]
 
     inspector = StudySchemaInspector(sdk)
     first = inspector.inspect("ST")
     second = inspector.inspect("ST")
 
     assert first is second
-    sdk.forms.list.assert_called_once_with("ST")
-    sdk.variables.list.assert_called_once_with("ST")
-    sdk.intervals.list.assert_called_once_with("ST")
-    sdk.sites.list.assert_called_once_with("ST")
+    sdk.get_forms.assert_called_once_with("ST")
+    sdk.get_variables.assert_called_once_with("ST")
+    sdk.get_intervals.assert_called_once_with("ST")
+    sdk.get_sites.assert_called_once_with("ST")
 
     third = inspector.inspect("ST", force_refresh=True)
     assert third is not second
-    assert sdk.forms.list.call_count == 2
-    assert sdk.variables.list.call_count == 2
-    assert sdk.intervals.list.call_count == 2
-    assert sdk.sites.list.call_count == 2
+    assert sdk.get_forms.call_count == 2
+    assert sdk.get_variables.call_count == 2
+    assert sdk.get_intervals.call_count == 2
+    assert sdk.get_sites.call_count == 2
 
 
 def test_clear_cache_for_single_key_and_all_keys() -> None:
     sdk = MagicMock()
-    sdk.forms.list.return_value = []
-    sdk.variables.list.return_value = []
-    sdk.intervals.list.return_value = []
-    sdk.sites.list.return_value = []
+    sdk.get_forms.return_value = []
+    sdk.get_variables.return_value = []
+    sdk.get_intervals.return_value = []
+    sdk.get_sites.return_value = []
 
     inspector = StudySchemaInspector(sdk)
     inspector.inspect("S1")
@@ -86,12 +86,12 @@ def test_clear_cache_for_single_key_and_all_keys() -> None:
 
     inspector.clear_cache("S1")
     inspector.inspect("S1")
-    assert sdk.forms.list.call_count == 3
+    assert sdk.get_forms.call_count == 3
 
     inspector.clear_cache()
     inspector.inspect("S1")
     inspector.inspect("S2")
-    assert sdk.forms.list.call_count == 5
+    assert sdk.get_forms.call_count == 5
 
 
 @pytest.mark.asyncio
@@ -110,16 +110,16 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
         await release.wait()
         return payload
 
-    sdk.forms.async_list = lambda study_key: delayed_result(
+    sdk.async_get_forms = lambda study_key: delayed_result(
         "forms", [Form(form_key="F1", form_name="Form 1")]
     )
-    sdk.variables.async_list = lambda study_key: delayed_result(
+    sdk.async_get_variables = lambda study_key: delayed_result(
         "variables", [Variable(variable_name="V1", form_key="F1")]
     )
-    sdk.intervals.async_list = lambda study_key: delayed_result(
+    sdk.async_get_intervals = lambda study_key: delayed_result(
         "intervals", [Interval(interval_name="Baseline")]
     )
-    sdk.sites.async_list = lambda study_key: delayed_result("sites", [Site(site_name="Site A")])
+    sdk.async_get_sites = lambda study_key: delayed_result("sites", [Site(site_name="Site A")])
 
     inspector = StudySchemaInspector(sdk)
     snapshot = await asyncio.wait_for(inspector.async_inspect("ST"), timeout=0.5)
@@ -132,19 +132,19 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
 @pytest.mark.asyncio
 async def test_async_inspect_force_refresh_bypasses_cache() -> None:
     sdk = MagicMock()
-    sdk.forms.async_list = AsyncMock(return_value=[])
-    sdk.variables.async_list = AsyncMock(return_value=[])
-    sdk.intervals.async_list = AsyncMock(return_value=[])
-    sdk.sites.async_list = AsyncMock(return_value=[])
+    sdk.async_get_forms = AsyncMock(return_value=[])
+    sdk.async_get_variables = AsyncMock(return_value=[])
+    sdk.async_get_intervals = AsyncMock(return_value=[])
+    sdk.async_get_sites = AsyncMock(return_value=[])
 
     inspector = StudySchemaInspector(sdk)
     await inspector.async_inspect("ST")
     await inspector.async_inspect("ST", force_refresh=True)
 
-    assert sdk.forms.async_list.await_count == 2
-    assert sdk.variables.async_list.await_count == 2
-    assert sdk.intervals.async_list.await_count == 2
-    assert sdk.sites.async_list.await_count == 2
+    assert sdk.async_get_forms.await_count == 2
+    assert sdk.async_get_variables.await_count == 2
+    assert sdk.async_get_intervals.await_count == 2
+    assert sdk.async_get_sites.await_count == 2
 
 
 def test_inspect_with_async_sdk_raises_type_error() -> None:

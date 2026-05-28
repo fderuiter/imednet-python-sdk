@@ -12,12 +12,12 @@ def test_create_or_update_records_no_wait() -> None:
     sdk = MagicMock()
     sdk._async_client = None
     job = Job(jobId="1", batchId="1", state="PROCESSING")
-    sdk.records.create.return_value = job
+    sdk.create_record.return_value = job
 
     wf = RecordUpdateWorkflow(sdk)
     result = wf.create_or_update_records("STUDY", [{"a": 1}])
 
-    sdk.records.create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    sdk.create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
     assert result == job
 
 
@@ -26,8 +26,8 @@ def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
     sdk._async_client = None
     initial_job = Job(jobId="1", batchId="1", state="PROCESSING")
     completed_job = Job(jobId="1", batchId="1", state="COMPLETED")
-    sdk.records.create.return_value = initial_job
-    sdk.jobs.get.side_effect = [initial_job, completed_job]
+    sdk.create_record.return_value = initial_job
+    sdk.get_job.side_effect = [initial_job, completed_job]
 
     wf = RecordUpdateWorkflow(sdk)
     # patch sleep to avoid delay
@@ -40,8 +40,8 @@ def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
         timeout=5,
     )
 
-    sdk.records.create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
-    sdk.jobs.get.assert_called_with("STUDY", "1")
+    sdk.create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    sdk.get_job.assert_called_with("STUDY", "1")
     assert result.state == "COMPLETED"
 
 
@@ -99,10 +99,10 @@ def test_create_or_update_records_validation() -> None:
         wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
     sdk.records.create.assert_not_called()
 
-    sdk.records.create.return_value = Job(jobId="1", batchId="1", state="PROCESSING")
+    sdk.create_record.return_value = Job(jobId="1", batchId="1", state="PROCESSING")
     wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
     sdk.variables.list.assert_called_once_with(study_key="STUDY")
-    sdk.records.create.assert_called_once_with(
+    sdk.create_record.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
     )
 
@@ -265,7 +265,7 @@ def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
 
     # Return a job with no batch_id
     job = Job(jobId="1", batchId="", state="PROCESSING")
-    sdk.records.create.return_value = job
+    sdk.create_record.return_value = job
 
     # Provide variable so form validation passes
     var = Variable(
@@ -317,12 +317,12 @@ async def test_async_create_or_update_records_no_wait() -> None:
     sdk = MagicMock()
     sdk._async_client = True
     job = Job(jobId="1", batchId="1", state="PROCESSING")
-    sdk.records.async_create = AsyncMock(return_value=job)
+    sdk.async_create_record = AsyncMock(return_value=job)
 
     wf = RecordUpdateWorkflow(sdk)
     result = await wf.async_create_or_update_records("STUDY", [{"a": 1}])
 
-    sdk.records.async_create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    sdk.async_create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
     assert result == job
 
 
@@ -332,8 +332,8 @@ async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -
     sdk._async_client = True
     initial_job = Job(jobId="1", batchId="1", state="PROCESSING")
     completed_job = Job(jobId="1", batchId="1", state="COMPLETED")
-    sdk.records.async_create = AsyncMock(return_value=initial_job)
-    sdk.jobs.async_get = AsyncMock(side_effect=[initial_job, completed_job])
+    sdk.async_create_record = AsyncMock(return_value=initial_job)
+    sdk.async_get_job = AsyncMock(side_effect=[initial_job, completed_job])
 
     wf = RecordUpdateWorkflow(sdk)
     import anyio
@@ -347,8 +347,8 @@ async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -
         timeout=5,
     )
 
-    sdk.records.async_create.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
-    sdk.jobs.async_get.assert_called_with("STUDY", "1")
+    sdk.async_create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    sdk.async_get_job.assert_called_with("STUDY", "1")
     assert result.state == "COMPLETED"
 
 
@@ -373,18 +373,18 @@ async def test_async_create_or_update_records_validation() -> None:
         formKey="F1",
     )
     sdk.variables.async_list = AsyncMock(return_value=[var])
-    sdk.records.async_create = AsyncMock()
+    sdk.async_create_record = AsyncMock()
 
     wf = RecordUpdateWorkflow(sdk)
 
     with pytest.raises(ValidationError):
         await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
-    sdk.records.async_create.assert_not_called()
+    sdk.async_create_record.assert_not_called()
 
-    sdk.records.async_create.return_value = Job(jobId="1", batchId="1", state="PROCESSING")
+    sdk.async_create_record = AsyncMock(return_value=Job(jobId="1", batchId="1", state="PROCESSING"))
     await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
     sdk.variables.async_list.assert_called_once_with(study_key="STUDY")
-    sdk.records.async_create.assert_called_once_with(
+    sdk.async_create_record.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
     )
 
@@ -394,7 +394,7 @@ async def test_async_create_or_update_records_wait_for_completion_no_batch_id() 
     sdk = MagicMock()
     sdk._async_client = True
     job = Job(jobId="1", batchId="", state="PROCESSING")
-    sdk.records.async_create = AsyncMock(return_value=job)
+    sdk.async_create_record = AsyncMock(return_value=job)
     var = Variable(
         studyKey="STUDY",
         variableId=1,

@@ -14,22 +14,22 @@ def test_get_all_subject_data_aggregates_across_endpoints() -> None:
     record = Record(record_id=1, subject_key="S1", visit_id=1)
     query = Query(query_comments=[])
 
-    sdk.subjects.list.return_value = [subject]
-    sdk.visits.list.return_value = [visit]
-    sdk.records.list.return_value = [record]
-    sdk.queries.list.return_value = [query]
+    sdk.get_subjects.return_value = [subject]
+    sdk.get_visits.return_value = [visit]
+    sdk.get_records.return_value = [record]
+    sdk.get_queries.return_value = [query]
 
     wf = SubjectDataWorkflow(sdk)
     result = wf.get_all_subject_data("STUDY", "S1")
 
-    sdk.subjects.list.assert_called_once_with("STUDY", subject_key="S1")
-    assert sdk.subjects.list.call_args.kwargs == {"subject_key": "S1"}
-    sdk.visits.list.assert_called_once_with("STUDY", subject_key="S1")
-    assert sdk.visits.list.call_args.kwargs == {"subject_key": "S1"}
-    sdk.records.list.assert_called_once_with("STUDY", subject_key="S1")
-    assert sdk.records.list.call_args.kwargs == {"subject_key": "S1"}
-    sdk.queries.list.assert_called_once_with("STUDY", subject_key="S1")
-    assert sdk.queries.list.call_args.kwargs == {"subject_key": "S1"}
+    sdk.get_subjects.assert_called_once_with("STUDY", subject_key="S1")
+    assert sdk.get_subjects.call_args.kwargs == {"subject_key": "S1"}
+    sdk.get_visits.assert_called_once_with("STUDY", subject_key="S1")
+    assert sdk.get_visits.call_args.kwargs == {"subject_key": "S1"}
+    sdk.get_records.assert_called_once_with("STUDY", subject_key="S1")
+    assert sdk.get_records.call_args.kwargs == {"subject_key": "S1"}
+    sdk.get_queries.assert_called_once_with("STUDY", subject_key="S1")
+    assert sdk.get_queries.call_args.kwargs == {"subject_key": "S1"}
 
     assert result.subject_details == subject
     assert result.visits == [visit]

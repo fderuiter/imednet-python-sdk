@@ -9,7 +9,7 @@ from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 _HIGH_QUERY_RATE_THRESHOLD = 20.0
 _HIGH_RATE_COLOR = "#ffe0e0"
@@ -18,14 +18,14 @@ _MAX_CHART_SITES = 10
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_site_metrics(
-    _sdk: ImednetSDK, study_key: str, *, now_utc: pd.Timestamp | None = None
+    _sdk: ImednetFacade, study_key: str, *, now_utc: pd.Timestamp | None = None
 ) -> pd.DataFrame:
     """Build site metrics with site/query counts, rates, and average days open."""
     from imednet_workflows.query_management import QueryManagementWorkflow
 
     # --- Subjects ---
     subject_cols = ["subject_key", "site_name", "deleted"]
-    subjects = _sdk.subjects.list(study_key=study_key)
+    subjects = _sdk.get_subjects(study_key=study_key)
     df_subjects = pd.DataFrame(
         [
             {

@@ -12,13 +12,13 @@ from .subject_data import SubjectDataWorkflow
 from .uat import StudySchemaInspector
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 
 class Workflows:
     """Namespace for accessing workflow classes."""
 
-    def __init__(self, sdk_instance: ImednetSDK):
+    def __init__(self, sdk_instance: ImednetFacade):
         self.data_extraction = DataExtractionWorkflow(sdk_instance)
         self.query_management = QueryManagementWorkflow(sdk_instance)
         self.record_mapper = RecordMapper(sdk_instance)

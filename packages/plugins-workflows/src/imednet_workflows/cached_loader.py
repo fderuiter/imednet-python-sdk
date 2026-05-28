@@ -15,7 +15,7 @@ from imednet.spi.utils import build_filter_string
 from .chunked_pipeline import DEFAULT_CHUNK_SIZE
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 DEFAULT_CACHE_DIR = Path.home() / ".imednet" / "cache"
 
@@ -56,7 +56,7 @@ class CachedRecordsLoader:
 
     def __init__(
         self,
-        sdk: "ImednetSDK",
+        sdk: "ImednetFacade",
         *,
         cache_dir: str | Path | None = None,
         database_name: str = "records_cache.sqlite3",
@@ -199,7 +199,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        return cast(list[Record], retryer(self._sdk.records.list, **filters))
+        return cast(list[Record], retryer(self._sdk.get_records, **filters))
 
     def _list_records_with_filter_override(
         self, *, study_key: str, filter_string: str

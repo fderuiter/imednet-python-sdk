@@ -9,13 +9,13 @@ from .data_extraction import DataExtractionWorkflow
 
 if TYPE_CHECKING:
     from imednet.spi.models import RecordRevision
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 
 class DuckDBIngestionWorkflow:
     """Incremental eCRF centralization pipeline using a bronze/silver DuckDB layout."""
 
-    def __init__(self, sdk: "ImednetSDK", db_path: str) -> None:
+    def __init__(self, sdk: "ImednetFacade", db_path: str) -> None:
         try:
             import duckdb
         except ImportError as error:

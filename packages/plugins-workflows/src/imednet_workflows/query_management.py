@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from imednet.spi.models import Query
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 
 class QueryManagementWorkflow:
@@ -16,7 +16,7 @@ class QueryManagementWorkflow:
         sdk: An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):
+    def __init__(self, sdk: "ImednetFacade"):
         self._sdk = sdk
 
     @staticmethod
@@ -60,7 +60,7 @@ class QueryManagementWorkflow:
         filters = dict(additional_filter) if additional_filter else {}
 
         # Fetch potentially relevant queries
-        all_matching_queries = self._sdk.queries.list(study_key, **filters, **kwargs)
+        all_matching_queries = self._sdk.get_queries(study_key, **filters, **kwargs)
 
         open_queries: List[Query] = []
         for query in all_matching_queries:
@@ -94,7 +94,7 @@ class QueryManagementWorkflow:
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
-        return self._sdk.queries.list(study_key, **final_filter_dict, **kwargs)
+        return self._sdk.get_queries(study_key, **final_filter_dict, **kwargs)
 
     def get_queries_by_site(
         self,
@@ -115,7 +115,7 @@ class QueryManagementWorkflow:
         Returns:
             A list of Query objects for the specified site.
         """
-        subjects = self._sdk.subjects.list(study_key, site_name=site_key)
+        subjects = self._sdk.get_subjects(study_key, site_name=site_key)
         subject_keys = [s.subject_key for s in subjects]
         if not subject_keys:
             return []
@@ -124,7 +124,7 @@ class QueryManagementWorkflow:
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
-        return self._sdk.queries.list(study_key, **final_filter_dict, **kwargs)
+        return self._sdk.get_queries(study_key, **final_filter_dict, **kwargs)
 
     def get_query_state_counts(self, study_key: str, **kwargs: Any) -> Dict[str, int]:
         """
@@ -145,7 +145,7 @@ class QueryManagementWorkflow:
         Returns:
             A dictionary with keys 'open', 'closed', 'unknown' and their respective counts.
         """
-        all_queries = self._sdk.queries.list(study_key, **kwargs)
+        all_queries = self._sdk.get_queries(study_key, **kwargs)
         # Initialize counts for all possible states
         state_counts: Dict[str, int] = {"open": 0, "closed": 0, "unknown": 0}
 

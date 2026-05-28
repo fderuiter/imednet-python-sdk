@@ -8,7 +8,7 @@ include = [{ path = "src/imednet_workflows/py.typed", format = ["sdist", "wheel"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-imednet = { path = "../core", develop = true }
+imednet = "^0.8.0"
 pandas = ">=2.2.3,<3.0.0"
 typer = { extras = ["all"], version = "^0.15.2" }
 

@@ -1168,7 +1168,7 @@ files = [
 
 [[package]]
 name = "imednet"
-version = "0.7.0"
+version = "0.8.0"
 description = "Unofficial Python SDK for the iMednet clinical trials API"
 optional = false
 python-versions = "^3.10"
@@ -1202,7 +1202,7 @@ url = "packages/core"
 
 [[package]]
 name = "imednet-streamlit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Interactive Streamlit reporting dashboards for iMednet EDC."
 optional = false
 python-versions = "^3.10"
@@ -1212,8 +1212,8 @@ develop = true
 
 [package.dependencies]
 altair = ">=5.0.0"
-imednet = {path = "../core", develop = true}
-imednet-workflows = {path = "../plugins-workflows", develop = true}
+imednet = "^0.8.0"
+imednet-workflows = "^0.6.0"
 pandas = ">=2.0.0"
 streamlit = ">=1.30.0"
 
@@ -1223,7 +1223,7 @@ url = "packages/plugins-streamlit"
 
 [[package]]
 name = "imednet-workflows"
-version = "0.5.3"
+version = "0.6.0"
 description = "Workflow plugin package for the iMednet Python SDK"
 optional = false
 python-versions = "^3.10"
@@ -1232,7 +1232,7 @@ files = []
 develop = true
 
 [package.dependencies]
-imednet = {path = "../core", develop = true}
+imednet = "^0.8.0"
 pandas = ">=2.2.3,<3.0.0"
 typer = {version = "^0.15.2", extras = ["all"]}
 
