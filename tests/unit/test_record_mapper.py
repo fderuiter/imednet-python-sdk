@@ -35,7 +35,7 @@ def test_dataframe_builds_expected_structure() -> None:
         assert kwargs == {"study_key": "STUDY"}
         return variables
 
-    sdk.variables.list.side_effect = var_list
+    sdk.get_variables.side_effect = var_list
     records = [
         Record(
             record_id=1,
@@ -47,13 +47,13 @@ def test_dataframe_builds_expected_structure() -> None:
             record_data={"VAR1": "a", "VAR2": "b"},
         )
     ]
-    sdk.records.list.return_value = records
+    sdk.get_records.return_value = records
 
     mapper = RecordMapper(sdk)
     df = mapper.dataframe("STUDY", visit_key="1")
 
-    sdk.variables.list.assert_called_once_with(study_key="STUDY")
-    sdk.records.list.assert_called_once_with(
+    sdk.get_variables.assert_called_once_with(study_key="STUDY")
+    sdk.get_records.assert_called_once_with(
         study_key="STUDY",
         record_data_filter=None,
         visitId=1,
@@ -89,7 +89,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
         }
         return [variables[0]]
 
-    sdk.variables.list.side_effect = var_list
+    sdk.get_variables.side_effect = var_list
     record = Record(
         record_id=1,
         subject_key="S1",
@@ -115,17 +115,17 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
         }
         return [record]
 
-    sdk.records.list.side_effect = rec_list
+    sdk.get_records.side_effect = rec_list
 
     mapper = RecordMapper(sdk)
     df = mapper.dataframe("STUDY", variable_whitelist=["VAR1"], form_whitelist=[10])
 
-    sdk.variables.list.assert_called_once_with(
+    sdk.get_variables.assert_called_once_with(
         study_key="STUDY",
         variableNames=["VAR1"],
         formIds=[10],
     )
-    sdk.records.list.assert_called_once_with(
+    sdk.get_records.assert_called_once_with(
         study_key="STUDY",
         record_data_filter=None,
         variableNames=["VAR1"],
@@ -144,7 +144,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
 
 def test_dataframe_empty_when_no_variables() -> None:
     sdk = MagicMock()
-    sdk.variables.list.return_value = []
+    sdk.get_variables.return_value = []
     mapper = RecordMapper(sdk)
     df = mapper.dataframe("STUDY")
     assert df.empty
@@ -152,8 +152,8 @@ def test_dataframe_empty_when_no_variables() -> None:
 
 def test_invalid_visit_key_logs_warning(caplog) -> None:
     sdk = MagicMock()
-    sdk.variables.list.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
-    sdk.records.list.return_value = []
+    sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
+    sdk.get_records.return_value = []
     mapper = RecordMapper(sdk)
 
     with caplog.at_level("WARNING"):
@@ -161,13 +161,13 @@ def test_invalid_visit_key_logs_warning(caplog) -> None:
 
     assert df.empty
     assert "Invalid visit_key" in caplog.text
-    sdk.records.list.assert_called_once_with(study_key="S", record_data_filter=None)
+    sdk.get_records.assert_called_once_with(study_key="S", record_data_filter=None)
 
 
 def test_records_fetch_error_returns_empty(caplog) -> None:
     sdk = MagicMock()
-    sdk.variables.list.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
-    sdk.records.list.side_effect = Exception("boom")
+    sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
+    sdk.get_records.side_effect = Exception("boom")
     mapper = RecordMapper(sdk)
 
     with caplog.at_level("ERROR"):
@@ -179,7 +179,7 @@ def test_records_fetch_error_returns_empty(caplog) -> None:
 
 def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
     sdk = MagicMock()
-    sdk.variables.list.return_value = [Variable(variable_name="V", label="L", form_id=1)]
+    sdk.get_variables.return_value = [Variable(variable_name="V", label="L", form_id=1)]
     record = Record(
         record_id=1,
         subject_key="S1",
@@ -189,7 +189,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
         date_created=datetime.now(),
         record_data={"V": "x"},
     )
-    sdk.records.list.return_value = [record]
+    sdk.get_records.return_value = [record]
 
     class DummyModel(BaseModel):
         def __init__(self, **kwargs):
@@ -273,7 +273,7 @@ def test_iter_dataframes_streams_large_study_with_bounded_memory() -> None:
                 )
 
     sdk = MagicMock()
-    sdk.variables.list.return_value = [
+    sdk.get_variables.return_value = [
         Variable(variable_name="AGE", label="Age", form_id=10),
         Variable(variable_name="COMMENT", label="Comment", form_id=10),
     ]

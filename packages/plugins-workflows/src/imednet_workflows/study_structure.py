@@ -12,7 +12,7 @@ from imednet.spi.models import Variable
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:
-    from imednet import AsyncImednetSDK, ImednetSDK
+    from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
 
 
 def _build_study_structure(
@@ -41,7 +41,7 @@ def _build_study_structure(
     return StudyStructure(study_key=study_key, intervals=interval_structures)  # type: ignore[call-arg]
 
 
-def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
+def get_study_structure(sdk: "ImednetFacade", study_key: str) -> StudyStructure:
     """Fetches and aggregates study structure information (intervals, forms, variables).
 
     Args:
@@ -56,9 +56,9 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
     """
     try:
         # Fetch all components concurrently (if async were used) or sequentially
-        intervals: List[Interval] = sdk.intervals.list(study_key)
-        forms: List[Form] = sdk.forms.list(study_key)
-        variables: List[Variable] = sdk.variables.list(study_key)
+        intervals: List[Interval] = sdk.get_intervals(study_key)
+        forms: List[Form] = sdk.get_forms(study_key)
+        variables: List[Variable] = sdk.get_variables(study_key)
 
         return _build_study_structure(study_key, intervals, forms, variables)
 
@@ -69,13 +69,13 @@ def get_study_structure(sdk: "ImednetSDK", study_key: str) -> StudyStructure:
         ) from e
 
 
-async def async_get_study_structure(sdk: "AsyncImednetSDK", study_key: str) -> StudyStructure:
+async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -> StudyStructure:
     """Asynchronous variant of :func:`get_study_structure`."""
     try:
         intervals, forms, variables = await asyncio.gather(
-            sdk.intervals.async_list(study_key),
-            sdk.forms.async_list(study_key),
-            sdk.variables.async_list(study_key),
+            sdk.async_get_intervals(study_key),
+            sdk.async_get_forms(study_key),
+            sdk.async_get_variables(study_key),
         )
 
         return _build_study_structure(study_key, intervals, forms, variables)

@@ -14,7 +14,7 @@ def _fetch_queries(_sdk: object, study_key: str) -> pd.DataFrame:
 
     workflow = QueryManagementWorkflow(sdk=_sdk)  # type: ignore[arg-type]
     open_q = workflow.get_open_queries(study_key=study_key)
-    all_q = _sdk.queries.list(study_key=study_key)  # type: ignore[attr-defined]
+    all_q = _sdk.get_queries(study_key=study_key)  # type: ignore[attr-defined]
     open_ids = {q.annotation_id for q in open_q}
     rows = []
     for q in all_q:

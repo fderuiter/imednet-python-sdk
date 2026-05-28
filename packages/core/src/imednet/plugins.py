@@ -40,10 +40,10 @@ Example factory::
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, Union, runtime_checkable
 
 if TYPE_CHECKING:
-    from .sdk import _BaseSDK
+    from .spi.facade import AsyncImednetFacade, ImednetFacade
 
 
 @runtime_checkable
@@ -87,7 +87,7 @@ class PluginProtocol(Protocol):
         assert isinstance(create_workflows, PluginProtocol)
     """
 
-    def __call__(self, sdk_instance: "_BaseSDK") -> WorkflowsNamespaceProtocol: ...
+    def __call__(self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]) -> WorkflowsNamespaceProtocol: ...
 
 
 __all__ = [

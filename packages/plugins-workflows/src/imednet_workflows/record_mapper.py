@@ -17,7 +17,7 @@ from .cached_loader import CachedRecordsLoader
 from .chunked_pipeline import DEFAULT_CHUNK_SIZE, ChunkedRecordPipeline, iter_chunks
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 # Setup basic logging
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ class RecordMapper:
 
     def __init__(
         self,
-        sdk: "ImednetSDK",
+        sdk: "ImednetFacade",
         *,
         loader: CachedRecordsLoader | None = None,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
@@ -77,7 +77,7 @@ class RecordMapper:
         if form_whitelist is not None:
             filters["formIds"] = form_whitelist
 
-        variables: List[VariableModel] = self.sdk.variables.list(
+        variables: List[VariableModel] = self.sdk.get_variables(
             study_key=study_key,
             **filters,
         )
@@ -123,7 +123,7 @@ class RecordMapper:
                     visit_key,
                 )
         try:
-            return self.sdk.records.list(
+            return self.sdk.get_records(
                 study_key=study_key,
                 record_data_filter=None,
                 **filters,

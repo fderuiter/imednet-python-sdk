@@ -235,7 +235,7 @@ def test_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
         calls["subjects"] = (study_key, kw)
         return ["SUB"]
 
-    def fake_create(study_key, records_data, email_notify=None):
+    def fake_create(study_key, records_data, email_notify=None, schema=None):
         calls["create"] = (study_key, records_data, email_notify)
         return "JOB"
 

@@ -7,7 +7,7 @@ plugins, and providers, decoupling them from internal core implementation detail
 
 from imednet.integrations import export
 
-from . import cli, constants, endpoints, errors, models, utils, validation
+from . import cli, constants, endpoints, errors, facade, models, utils, validation
 
 __all__ = [
     "cli",
@@ -15,6 +15,7 @@ __all__ = [
     "endpoints",
     "errors",
     "export",
+    "facade",
     "models",
     "utils",
     "validation",

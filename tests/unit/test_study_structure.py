@@ -24,21 +24,21 @@ def test_get_study_structure_aggregates_related_data(async_mode: bool) -> None:
     variable = Variable(variable_id=1, variable_name="V1", label="Var 1", form_id=1)
 
     if async_mode:
-        sdk.intervals.async_list = AsyncMock(return_value=[interval])
-        sdk.forms.async_list = AsyncMock(return_value=[form])
-        sdk.variables.async_list = AsyncMock(return_value=[variable])
+        sdk.async_get_intervals = AsyncMock(return_value=[interval])
+        sdk.async_get_forms = AsyncMock(return_value=[form])
+        sdk.async_get_variables = AsyncMock(return_value=[variable])
         structure = asyncio.run(async_get_study_structure(sdk, "STUDY"))
-        sdk.intervals.async_list.assert_awaited_once_with("STUDY")
-        sdk.forms.async_list.assert_awaited_once_with("STUDY")
-        sdk.variables.async_list.assert_awaited_once_with("STUDY")
+        sdk.async_get_intervals.assert_awaited_once_with("STUDY")
+        sdk.async_get_forms.assert_awaited_once_with("STUDY")
+        sdk.async_get_variables.assert_awaited_once_with("STUDY")
     else:
-        sdk.intervals.list.return_value = [interval]
-        sdk.forms.list.return_value = [form]
-        sdk.variables.list.return_value = [variable]
+        sdk.get_intervals.return_value = [interval]
+        sdk.get_forms.return_value = [form]
+        sdk.get_variables.return_value = [variable]
         structure = get_study_structure(sdk, "STUDY")
-        sdk.intervals.list.assert_called_once_with("STUDY")
-        sdk.forms.list.assert_called_once_with("STUDY")
-        sdk.variables.list.assert_called_once_with("STUDY")
+        sdk.get_intervals.assert_called_once_with("STUDY")
+        sdk.get_forms.assert_called_once_with("STUDY")
+        sdk.get_variables.assert_called_once_with("STUDY")
 
     assert structure.study_key == "STUDY"
     assert structure.intervals[0].forms[0].variables[0].variable_name == "V1"

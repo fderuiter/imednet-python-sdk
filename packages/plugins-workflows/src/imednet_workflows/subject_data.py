@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from imednet.spi.models import Query, Record, Subject, Visit
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 
 class SubjectComprehensiveData(BaseModel):
@@ -31,7 +31,7 @@ class SubjectDataWorkflow:
         sdk: An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):
+    def __init__(self, sdk: "ImednetFacade"):
         self._sdk = sdk
 
     def get_all_subject_data(self, study_key: str, subject_key: str) -> SubjectComprehensiveData:
@@ -49,18 +49,18 @@ class SubjectDataWorkflow:
         subject_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
 
         # Fetch Subject Details
-        subject_list = self._sdk.subjects.list(study_key, **subject_filter_dict)
+        subject_list = self._sdk.get_subjects(study_key, **subject_filter_dict)
         if subject_list:
             results.subject_details = subject_list[0]
 
         # Fetch Visits
-        results.visits = self._sdk.visits.list(study_key, **subject_filter_dict)
+        results.visits = self._sdk.get_visits(study_key, **subject_filter_dict)
 
         # Fetch Records
-        results.records = self._sdk.records.list(study_key, **subject_filter_dict)
+        results.records = self._sdk.get_records(study_key, **subject_filter_dict)
 
         # Fetch Queries
-        results.queries = self._sdk.queries.list(study_key, **subject_filter_dict)
+        results.queries = self._sdk.get_queries(study_key, **subject_filter_dict)
 
         return results
 

@@ -15,7 +15,7 @@ from imednet.spi.validation import SchemaCache
 from .cached_loader import CachedRecordsLoader
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 _SCHEMA_TYPE_MAP = {
     "bool": "boolean",
@@ -54,7 +54,7 @@ class FormProfile(BaseModel):
 class SchemaProfiler:
     """Profile form and record-data population across cached records."""
 
-    def __init__(self, sdk: "ImednetSDK", loader: CachedRecordsLoader | None = None) -> None:
+    def __init__(self, sdk: "ImednetFacade", loader: CachedRecordsLoader | None = None) -> None:
         self._sdk = sdk
         self._loader = loader
 
@@ -65,8 +65,8 @@ class SchemaProfiler:
         records: Iterable[Record] | None = None,
     ) -> dict[str, FormProfile]:
         """Return per-form field profiling statistics for ``study_key``."""
-        forms = self._sdk.forms.list(study_key=study_key)
-        variables = self._sdk.variables.list(study_key=study_key)
+        forms = self._sdk.get_forms(study_key=study_key)
+        variables = self._sdk.get_variables(study_key=study_key)
         schema = SchemaCache()
         schema.populate(variables)
         form_names = {form.form_key: form.form_name for form in forms}

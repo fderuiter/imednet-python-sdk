@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from imednet.spi.models import Record, RecordRevision
 
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 
 class DataExtractionWorkflow:
@@ -16,7 +16,7 @@ class DataExtractionWorkflow:
         sdk: An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):
+    def __init__(self, sdk: "ImednetFacade"):
         self._sdk = sdk
 
     def extract_records_by_criteria(
@@ -43,7 +43,7 @@ class DataExtractionWorkflow:
         """
         matching_subject_keys: Optional[List[str]] = None
         if subject_filter:
-            subjects = self._sdk.subjects.list(study_key, **subject_filter)
+            subjects = self._sdk.get_subjects(study_key, **subject_filter)
             matching_subject_keys = [s.subject_key for s in subjects]
             if not matching_subject_keys:
                 return []
@@ -54,7 +54,7 @@ class DataExtractionWorkflow:
             # Client-side filtering for subject_key on visits is still needed
             # as build_filter_string doesn't handle complex AND/OR structures easily
             # from separate filter dictionaries.
-            visits = self._sdk.visits.list(study_key, **visit_filter)
+            visits = self._sdk.get_visits(study_key, **visit_filter)
 
             if matching_subject_keys:
                 visits = [v for v in visits if v.subject_key in matching_subject_keys]
@@ -71,7 +71,7 @@ class DataExtractionWorkflow:
         # Client-side filtering is used below for subject/visit matching,
         # so no need to add complex 'in' clauses here even if build_filter_string supported it.
 
-        records = self._sdk.records.list(
+        records = self._sdk.get_records(
             study_key=study_key,
             record_data_filter=None,
             **final_record_filter_dict,
@@ -121,7 +121,7 @@ class DataExtractionWorkflow:
             date_kwargs["end_date"] = end_date
 
         # Fetch record revisions
-        revisions = self._sdk.record_revisions.list(
+        revisions = self._sdk.get_record_revisions(
             study_key,
             **final_filter_dict,
             **date_kwargs,

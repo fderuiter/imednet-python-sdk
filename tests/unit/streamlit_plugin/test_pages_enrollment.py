@@ -185,8 +185,8 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
     mock_site.model_dump.return_value = {"site_name": "Site A", "site_enrollment_status": "Open"}
 
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = mock_subjects
-    mock_sdk.sites.list.return_value = [mock_site]
+    mock_sdk.get_subjects.return_value = mock_subjects
+    mock_sdk.get_sites.return_value = [mock_site]
 
     # Mock auth module
     fake_auth_module = ModuleType("imednet_streamlit.auth")
@@ -274,8 +274,8 @@ def test_enrollment_page_empty_and_filters_and_refresh() -> None:
     mock_site.model_dump.return_value = {"site_name": "Site A", "site_enrollment_status": "Open"}
 
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = []
-    mock_sdk.sites.list.return_value = [mock_site]
+    mock_sdk.get_subjects.return_value = []
+    mock_sdk.get_sites.return_value = [mock_site]
 
     # Mock auth module
     fake_auth_module = ModuleType("imednet_streamlit.auth")
@@ -308,7 +308,7 @@ def test_enrollment_page_empty_and_filters_and_refresh() -> None:
         res = _fetch_sites(mock_sdk, "STUDY")
         assert len(res) == 1
 
-        mock_sdk.sites.list.return_value = []
+        mock_sdk.get_sites.return_value = []
         res_empty = _fetch_sites(mock_sdk, "STUDY")
         assert res_empty.empty
     finally:

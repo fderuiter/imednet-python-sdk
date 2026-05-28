@@ -44,7 +44,7 @@ def _resolve_form_name(form: object) -> str:
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
-    records = _sdk.records.list(study_key=study_key)  # type: ignore[attr-defined]
+    records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
     rows = [
         {
             "record_id": r.record_id,
@@ -69,7 +69,7 @@ def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_form_metadata(_sdk: object, study_key: str) -> pd.DataFrame:
-    forms = _sdk.forms.list(study_key=study_key)  # type: ignore[attr-defined]
+    forms = _sdk.get_forms(study_key=study_key)  # type: ignore[attr-defined]
     rows = [{"form_key": f.form_key, "form_name": _resolve_form_name(f)} for f in forms]
     return pd.DataFrame(rows, columns=FORM_COLUMNS)
 

@@ -9,8 +9,8 @@ from imednet_workflows.data_extraction import DataExtractionWorkflow
 
 def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
     sdk = MagicMock()
-    sdk.subjects.list.return_value = [Subject(subject_key="S1"), Subject(subject_key="S2")]
-    sdk.visits.list.return_value = [
+    sdk.get_subjects.return_value = [Subject(subject_key="S1"), Subject(subject_key="S2")]
+    sdk.get_visits.return_value = [
         Visit(visit_id=1, subject_key="S1"),
         Visit(visit_id=2, subject_key="S2"),
     ]
@@ -19,7 +19,7 @@ def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
         Record(record_id=2, subject_key="S2", visit_id=2),
         Record(record_id=3, subject_key="S1", visit_id=99),
     ]
-    sdk.records.list.return_value = records
+    sdk.get_records.return_value = records
 
     wf = DataExtractionWorkflow(sdk)
     result = wf.extract_records_by_criteria(
@@ -28,12 +28,12 @@ def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
         visit_filter={"visit_id": 1},
     )
 
-    sdk.subjects.list.assert_called_once_with("STUDY", status="active")
-    assert sdk.subjects.list.call_args.kwargs == {"status": "active"}
-    sdk.visits.list.assert_called_once_with("STUDY", visit_id=1)
-    assert sdk.visits.list.call_args.kwargs == {"visit_id": 1}
-    sdk.records.list.assert_called_once_with(study_key="STUDY", record_data_filter=None)
-    assert sdk.records.list.call_args.kwargs == {"study_key": "STUDY", "record_data_filter": None}
+    sdk.get_subjects.assert_called_once_with("STUDY", status="active")
+    assert sdk.get_subjects.call_args.kwargs == {"status": "active"}
+    sdk.get_visits.assert_called_once_with("STUDY", visit_id=1)
+    assert sdk.get_visits.call_args.kwargs == {"visit_id": 1}
+    sdk.get_records.assert_called_once_with(study_key="STUDY", record_data_filter=None)
+    assert sdk.get_records.call_args.kwargs == {"study_key": "STUDY", "record_data_filter": None}
 
     assert [r.record_id for r in result] == [1, 2]
 
@@ -41,7 +41,7 @@ def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
 def test_extract_audit_trail_builds_filters_and_dates() -> None:
     sdk = MagicMock()
     revisions = [RecordRevision(record_revision_id=1)]
-    sdk.record_revisions.list.return_value = revisions
+    sdk.get_record_revisions.return_value = revisions
 
     wf = DataExtractionWorkflow(sdk)
     result = wf.extract_audit_trail(
@@ -52,14 +52,14 @@ def test_extract_audit_trail_builds_filters_and_dates() -> None:
         status="open",
     )
 
-    sdk.record_revisions.list.assert_called_once_with(
+    sdk.get_record_revisions.assert_called_once_with(
         "STUDY",
         role="data",
         status="open",
         start_date="2021-01-01",
         end_date="2021-01-02",
     )
-    assert sdk.record_revisions.list.call_args.kwargs == {
+    assert sdk.get_record_revisions.call_args.kwargs == {
         "role": "data",
         "status": "open",
         "start_date": "2021-01-01",

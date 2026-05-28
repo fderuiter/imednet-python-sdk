@@ -163,15 +163,15 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
     fake_streamlit_module.sidebar = fake_st.sidebar  # type: ignore[attr-defined]
 
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = [
+    mock_sdk.get_subjects.return_value = [
         SimpleNamespace(subject_key="SUBJ-001", site_name="Site A", deleted=False),
         SimpleNamespace(subject_key="SUBJ-002", site_name="Site B", deleted=False),
     ]
-    mock_sdk.forms.list.return_value = [
+    mock_sdk.get_forms.return_value = [
         SimpleNamespace(form_key="AE", form_name="Adverse Event"),
         SimpleNamespace(form_key="PD", form_name="Protocol Deviation"),
     ]
-    mock_sdk.records.list.return_value = [
+    mock_sdk.get_records.return_value = [
         SimpleNamespace(
             record_id=1,
             subject_key="SUBJ-001",
@@ -424,20 +424,20 @@ def _run_page_extended(
 
     mock_sdk = MagicMock()
     if empty_subjects:
-        mock_sdk.subjects.list.return_value = []
+        mock_sdk.get_subjects.return_value = []
     else:
-        mock_sdk.subjects.list.return_value = [
+        mock_sdk.get_subjects.return_value = [
             SimpleNamespace(subject_key="SUBJ-001", site_name="Site A", deleted=False),
             SimpleNamespace(subject_key="SUBJ-002", site_name="Site B", deleted=False),
         ]
-    mock_sdk.forms.list.return_value = [
+    mock_sdk.get_forms.return_value = [
         SimpleNamespace(form_key="AE", form_name="Adverse Event"),
         SimpleNamespace(form_key="PD", form_name="Protocol Deviation"),
     ]
     if records_override is not None:
-        mock_sdk.records.list.return_value = records_override
+        mock_sdk.get_records.return_value = records_override
     else:
-        mock_sdk.records.list.return_value = [
+        mock_sdk.get_records.return_value = [
             SimpleNamespace(
                 record_id=1,
                 subject_key="SUBJ-001",

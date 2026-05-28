@@ -11,8 +11,8 @@ from imednet_workflows.schema_profiler import SchemaProfiler
 
 def test_schema_profiler_builds_form_and_field_profiles() -> None:
     sdk = MagicMock()
-    sdk.forms.list.return_value = [Form(form_key="AE", form_name="Adverse Events", form_id=10)]
-    sdk.variables.list.return_value = [
+    sdk.get_forms.return_value = [Form(form_key="AE", form_name="Adverse Events", form_id=10)]
+    sdk.get_variables.return_value = [
         Variable(
             form_id=10,
             form_key="AE",
@@ -77,8 +77,8 @@ def test_schema_profiler_builds_form_and_field_profiles() -> None:
     profiler = SchemaProfiler(sdk)
     profiles = profiler.profile_records("STUDY", records=records)
 
-    sdk.forms.list.assert_called_once_with(study_key="STUDY")
-    sdk.variables.list.assert_called_once_with(study_key="STUDY")
+    sdk.get_forms.assert_called_once_with(study_key="STUDY")
+    sdk.get_variables.assert_called_once_with(study_key="STUDY")
 
     form_profile = profiles["AE"]
     assert form_profile.form_name == "Adverse Events"
@@ -107,8 +107,8 @@ def test_schema_profiler_uses_loader_when_records_are_not_supplied() -> None:
             record_data={"RESULT": "7.2"},
         )
     ]
-    sdk.forms.list.return_value = [Form(form_key="LAB", form_name="Labs", form_id=10)]
-    sdk.variables.list.return_value = [
+    sdk.get_forms.return_value = [Form(form_key="LAB", form_name="Labs", form_id=10)]
+    sdk.get_variables.return_value = [
         Variable(
             form_id=10,
             form_key="LAB",
@@ -160,8 +160,8 @@ def test_schema_profiler_streams_chunked_loader_records() -> None:
             )
 
     loader = _ChunkedLoader()
-    sdk.forms.list.return_value = [Form(form_key="LAB", form_name="Labs", form_id=10)]
-    sdk.variables.list.return_value = [
+    sdk.get_forms.return_value = [Form(form_key="LAB", form_name="Labs", form_id=10)]
+    sdk.get_variables.return_value = [
         Variable(
             form_id=10,
             form_key="LAB",

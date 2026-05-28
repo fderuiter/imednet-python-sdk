@@ -69,7 +69,7 @@ def _fetch_subjects_df(_sdk: object, study_key: str) -> pd.DataFrame:
             "site_name": str(subject.site_name or ""),
             "deleted": bool(subject.deleted),
         }
-        for subject in _sdk.subjects.list(study_key=study_key)  # type: ignore[attr-defined]
+        for subject in _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
     ]
     if not rows:
         return pd.DataFrame(columns=["subject_key", "site_name", "deleted"])
@@ -79,12 +79,12 @@ def _fetch_subjects_df(_sdk: object, study_key: str) -> pd.DataFrame:
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_records(_sdk: object, study_key: str) -> list[Record]:
-    return list(_sdk.records.list(study_key=study_key))  # type: ignore[attr-defined]
+    return list(_sdk.get_records(study_key=study_key))  # type: ignore[attr-defined]
 
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_forms_df(_sdk: object, study_key: str) -> pd.DataFrame:
-    forms = _sdk.forms.list(study_key=study_key)  # type: ignore[attr-defined]
+    forms = _sdk.get_forms(study_key=study_key)  # type: ignore[attr-defined]
     return pd.DataFrame(
         [
             {

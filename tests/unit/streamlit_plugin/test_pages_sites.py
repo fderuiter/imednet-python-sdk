@@ -158,7 +158,7 @@ def test_sites_page_renders_with_mock_sdk() -> None:
 
     # Mock sdk
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = []
+    mock_sdk.get_subjects.return_value = []
 
     # Mock auth module
     fake_auth_module = ModuleType("imednet_streamlit.auth")
@@ -251,7 +251,7 @@ def test_sites_page_populated_and_refresh() -> None:
     mock_sub.deleted = False
 
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = [mock_sub]
+    mock_sdk.get_subjects.return_value = [mock_sub]
 
     # Mock query with a high rate or query to hit highlight threshold and group aggregate
     import datetime

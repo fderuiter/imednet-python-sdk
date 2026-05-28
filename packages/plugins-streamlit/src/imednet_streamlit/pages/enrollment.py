@@ -12,7 +12,7 @@ from imednet_streamlit.auth import get_sdk, get_study_key
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_subjects(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all subjects and returns a normalized DataFrame (deleted excluded)."""
-    subjects = _sdk.subjects.list(study_key=study_key)  # type: ignore[attr-defined]
+    subjects = _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
     rows = [
         {
             "subject_id": s.subject_id,
@@ -43,7 +43,7 @@ def _fetch_subjects(_sdk: object, study_key: str) -> pd.DataFrame:
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_sites(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all sites and returns a normalized DataFrame."""
-    sites = _sdk.sites.list(study_key=study_key)  # type: ignore[attr-defined]
+    sites = _sdk.get_sites(study_key=study_key)  # type: ignore[attr-defined]
     if not sites:
         return pd.DataFrame()
     return pd.DataFrame([s.model_dump() for s in sites])

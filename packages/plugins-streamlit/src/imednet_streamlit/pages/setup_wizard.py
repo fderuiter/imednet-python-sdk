@@ -8,7 +8,7 @@ from typing import Any, cast
 import pandas as pd
 import streamlit as st
 
-from imednet import ImednetSDK
+from imednet.spi.facade import ImednetFacade
 from imednet.spi.models import MappingRule, StudyConfiguration, WidgetConfig
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_workflows import CachedRecordsLoader, SchemaProfiler
@@ -170,7 +170,7 @@ def _sanitise_study_key(study_key: str) -> str:
     return safe_study_key or "study"
 
 
-def _scan_schema(sdk: ImednetSDK, study_key: str) -> dict[str, Any]:
+def _scan_schema(sdk: ImednetFacade, study_key: str) -> dict[str, Any]:
     loader = CachedRecordsLoader(sdk=sdk)
     records = loader.load_records(study_key)
     profiler = SchemaProfiler(sdk=sdk, loader=loader)
@@ -258,7 +258,7 @@ def _existing_mapping_index(
     return None
 
 
-def _step_scan_and_profile(sdk: ImednetSDK, study_key: str) -> None:
+def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
     st.subheader("1. Scan & Profile Study Structure")
     st.markdown(
         "Discover forms, profile field populations, and choose source forms "

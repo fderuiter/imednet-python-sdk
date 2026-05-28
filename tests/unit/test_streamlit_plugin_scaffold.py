@@ -231,7 +231,7 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
 
     # Fake auth module
     mock_sdk = MagicMock()
-    mock_sdk.queries.list.return_value = []
+    mock_sdk.get_queries.return_value = []
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]
     fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
@@ -326,7 +326,7 @@ def _run_sites_page(
     fake_streamlit_module.sidebar = fake_st.sidebar  # type: ignore[attr-defined]
 
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = subjects or []
+    mock_sdk.get_subjects.return_value = subjects or []
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]
     fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
@@ -417,8 +417,8 @@ def _run_records_page(
     fake_streamlit_module.sidebar = fake_st.sidebar  # type: ignore[attr-defined]
 
     mock_sdk = MagicMock()
-    mock_sdk.records.list.return_value = records or []
-    mock_sdk.forms.list.return_value = forms or []
+    mock_sdk.get_records.return_value = records or []
+    mock_sdk.get_forms.return_value = forms or []
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]
     fake_auth_module.get_study_key = lambda: "STUDY"  # type: ignore[attr-defined]
@@ -748,7 +748,7 @@ def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> 
     prepare_records_dataframe = records_globals["_prepare_records_dataframe"]
 
     mock_sdk = MagicMock()
-    mock_sdk.records.list.return_value = [
+    mock_sdk.get_records.return_value = [
         SimpleNamespace(
             record_id=1,
             form_key="AE",
@@ -889,8 +889,8 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
     mock_site.model_dump.return_value = {"site_name": "Site A", "site_enrollment_status": "Open"}
 
     mock_sdk = MagicMock()
-    mock_sdk.subjects.list.return_value = mock_subjects
-    mock_sdk.sites.list.return_value = [mock_site]
+    mock_sdk.get_subjects.return_value = mock_subjects
+    mock_sdk.get_sites.return_value = [mock_site]
 
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_sdk = lambda: mock_sdk  # type: ignore[attr-defined]

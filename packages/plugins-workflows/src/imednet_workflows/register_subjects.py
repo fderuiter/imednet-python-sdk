@@ -11,7 +11,7 @@ from imednet.spi.models import RegisterSubjectRequest
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:
-    from imednet import ImednetSDK
+    from imednet.spi.facade import ImednetFacade
 
 
 class RegisterSubjectsWorkflow:
@@ -22,7 +22,7 @@ class RegisterSubjectsWorkflow:
         _sdk (ImednetSDK): An instance of the ImednetSDK.
     """
 
-    def __init__(self, sdk: "ImednetSDK"):  # Use string literal for type hint
+    def __init__(self, sdk: "ImednetFacade"):  # Use string literal for type hint
         self._sdk = sdk
 
     def register_subjects(
@@ -49,7 +49,7 @@ class RegisterSubjectsWorkflow:
             ApiError: If the API call fails.
         """
         # Validate that each site exists before posting
-        sites = {s.site_name for s in self._sdk.sites.list(study_key=study_key)}
+        sites = {s.site_name for s in self._sdk.get_sites(study_key=study_key)}
         errors: List[str] = []
         for idx, subj in enumerate(subjects):
             if not subj.site_name:
@@ -62,7 +62,7 @@ class RegisterSubjectsWorkflow:
 
         subjects_data = [s.model_dump(by_alias=True) for s in subjects]
 
-        response = self._sdk.records.create(
+        response = self._sdk.create_record(
             study_key=study_key, records_data=subjects_data, email_notify=email_notify
         )
         return response
