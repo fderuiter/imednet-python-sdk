@@ -241,8 +241,11 @@ class MultiStudyOrchestrator:
         results: dict[str, OrchestratorResult] = {}
         start_times: dict[Future[Any], float] = {}
         limiter = AdaptiveConcurrencyLimiter(self._max_workers)
+        
+        timeout_seconds = 300.0  # Mandatory maximum timeout for concurrent groups
+        executor = ThreadPoolExecutor(max_workers=self._max_workers)
 
-        with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
+        try:
             future_to_study: dict[Future[Any], str] = {}
 
             for study_key in target_studies:
@@ -260,40 +263,54 @@ class MultiStudyOrchestrator:
                 future_to_study[future] = study_key
                 start_times[future] = time.monotonic()
 
-            for future in as_completed(future_to_study):
-                study_key = future_to_study[future]
-                duration = time.monotonic() - start_times[future]
-                
-                # Record latency for backpressure
-                limiter.record_latency(duration)
+            try:
+                for future in as_completed(future_to_study, timeout=timeout_seconds):
+                    study_key = future_to_study[future]
+                    duration = time.monotonic() - start_times[future]
+                    
+                    # Record latency for backpressure
+                    limiter.record_latency(duration)
 
-                try:
-                    data = future.result()
-                    results[study_key] = OrchestratorResult(
-                        status="SUCCESS",
-                        data=data,
-                        error=None,
-                        duration_seconds=round(duration, _DURATION_PRECISION),
-                    )
-                    logger.info(
-                        "[%s] Pipeline completed successfully in %.2fs.",
-                        study_key,
-                        duration,
-                    )
-                except Exception as exc:  # noqa: BLE001 - broad catch for per-study isolation.
-                    results[study_key] = OrchestratorResult(
-                        status="FAILED",
-                        data=None,
-                        error=repr(exc),
-                        duration_seconds=round(duration, _DURATION_PRECISION),
-                    )
-                    logger.error(
-                        "[%s] Pipeline execution failed after %.2fs: %s",
-                        study_key,
-                        duration,
-                        repr(exc),
-                        exc_info=True,
-                    )
+                    try:
+                        data = future.result()
+                        results[study_key] = OrchestratorResult(
+                            status="SUCCESS",
+                            data=data,
+                            error=None,
+                            duration_seconds=round(duration, _DURATION_PRECISION),
+                        )
+                        logger.info(
+                            "[%s] Pipeline completed successfully in %.2fs.",
+                            study_key,
+                            duration,
+                        )
+                    except Exception as exc:  # noqa: BLE001 - broad catch for per-study isolation.
+                        results[study_key] = OrchestratorResult(
+                            status="FAILED",
+                            data=None,
+                            error=repr(exc),
+                            duration_seconds=round(duration, _DURATION_PRECISION),
+                        )
+                        logger.error(
+                            "[%s] Pipeline execution failed after %.2fs: %s",
+                            study_key,
+                            duration,
+                            repr(exc),
+                            exc_info=True,
+                        )
+            except TimeoutError:
+                logger.error("Global orchestration timeout (%.2fs) reached. Aborting pending studies.", timeout_seconds)
+                for future, study_key in future_to_study.items():
+                    if not future.done():
+                        duration = time.monotonic() - start_times[future]
+                        results[study_key] = OrchestratorResult(
+                            status="FAILED",
+                            data=None,
+                            error="TimeoutError: Global orchestration timeout reached.",
+                            duration_seconds=round(duration, _DURATION_PRECISION),
+                        )
+        finally:
+            executor.shutdown(wait=False, cancel_futures=True)
 
         return results
 

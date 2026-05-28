@@ -56,6 +56,13 @@ def reset_study_context_between_tests():
     yield
     clear_study_context()
 
+@pytest.fixture(autouse=True)
+def reset_circuit_breaker_between_tests():
+    from imednet.core.http.circuit_breaker import get_global_circuit_breaker
+    get_global_circuit_breaker().reset()
+    yield
+    get_global_circuit_breaker().reset()
+
 
 class DummyResponse:
     def __init__(self, data):
