@@ -88,3 +88,24 @@ def test_json_model_from_json_method() -> None:
     model = SampleModel.from_json(data)
     assert model.flag is True
     assert model.count == 5
+
+def test_json_model_structural_shift(caplog):
+    import logging
+    class NestedModel(JsonModel):
+        id: int
+
+    class TestModel(JsonModel):
+        nested: NestedModel
+        items: list[NestedModel]
+
+    with caplog.at_level(logging.WARNING):
+        # API returns list instead of object for `nested`
+        # API returns object instead of list for `items`
+        model = TestModel.from_json({
+            "nested": [{"id": 1}],
+            "items": {"id": 2}
+        })
+        assert model.nested.id == 1
+        assert len(model.items) == 1
+        assert model.items[0].id == 2
+        assert "Structural shift detected" in caplog.text

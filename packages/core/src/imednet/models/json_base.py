@@ -38,6 +38,13 @@ def _optional_datetime(v: Any) -> Any:
     return None if not v else parse_datetime(v)
 
 
+def _extract_single_item(v: Any) -> Any:
+    if isinstance(v, list) and len(v) > 0 and isinstance(v[0], dict):
+        import logging
+        logging.getLogger(__name__).warning("Structural shift detected: API returned a list where an object was expected. Coercing by extracting the first item.")
+        return v[0]
+    return v
+
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
     if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
         return _NORMALIZERS[cls][field_name]
@@ -68,6 +75,8 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
         normalizer = _optional_bool if optional else parse_bool
     elif annotation is datetime:
         normalizer = _optional_datetime if optional else parse_datetime
+    elif isinstance(annotation, type) and issubclass(annotation, BaseModel):
+        normalizer = _extract_single_item
 
     if cls not in _NORMALIZERS:
         _NORMALIZERS[cls] = {}
@@ -75,11 +84,13 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
     return normalizer
 
 
+import os
+
 class JsonModel(BaseModel):
     """Base model with shared JSON parsing helpers."""
 
     model_config = ConfigDict(
-        extra="ignore",
+        extra="forbid" if os.environ.get("IMEDNET_STRICT_MODE", "").lower() in ("1", "true") else "ignore",
         populate_by_name=True,
         str_strip_whitespace=True,
     )

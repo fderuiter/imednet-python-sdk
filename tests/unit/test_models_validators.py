@@ -125,6 +125,23 @@ def test_parse_bool_string_float():
     assert validators.parse_bool("invalid") is False
 
 
+def test_parse_dict_or_default_structural_shift(caplog):
+    import logging
+    with caplog.at_level(logging.WARNING):
+        result = validators.parse_dict_or_default([{"a": 1}, {"b": 2}])
+        assert result == {"a": 1}
+        assert "Structural shift detected: API returned a list where an object was expected. Coercing by extracting the first item." in caplog.text
+
+    result_empty = validators.parse_dict_or_default([])
+    assert result_empty == {}
+
+def test_parse_list_or_default_structural_shift(caplog):
+    import logging
+    with caplog.at_level(logging.WARNING):
+        result = validators.parse_list_or_default({"a": 1})
+        assert result == [{"a": 1}]
+        assert "Structural shift detected: API returned an object where a list was expected. Coercing by wrapping in a list." in caplog.text
+
 def test_parse_bool_invalid_float():
     # To cover the 'except (ValueError, TypeError)' block in parse_bool float fallback
     assert validators.parse_bool("1invalid") is False
