@@ -57,10 +57,10 @@ class CircuitBreaker:
         with self._lock:
             state = self.state
             if state == CircuitState.OPEN:
-                raise CircuitBreakerError("Circuit breaker is OPEN. Suspended Mode.")
+                raise CircuitBreakerError("fail-fast is active: circuit is open")
             elif state == CircuitState.HALF_OPEN:
                 if self._half_open_probes >= self.half_open_max_probes:
-                    raise CircuitBreakerError("Circuit breaker is HALF_OPEN. Probe limit reached. Suspended Mode.")
+                    raise CircuitBreakerError("fail-fast is active: probe limit reached")
                 self._half_open_probes += 1
 
     def record_success(self) -> None:
@@ -84,6 +84,14 @@ class CircuitBreaker:
                 if self._consecutive_failures >= self.failure_threshold:
                     self._state = CircuitState.OPEN
                     logger.warning("Circuit breaker transitioned to OPEN state after consecutive failures.")
+
+    def reset(self) -> None:
+        """Reset the circuit breaker to its initial CLOSED state."""
+        with self._lock:
+            self._state = CircuitState.CLOSED
+            self._consecutive_failures = 0
+            self._last_failure_time = 0.0
+            self._half_open_probes = 0
 
 # Global instance
 _global_circuit_breaker = CircuitBreaker()

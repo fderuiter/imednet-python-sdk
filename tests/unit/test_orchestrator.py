@@ -18,7 +18,15 @@ def _make_study(study_key: str) -> Study:
 
 
 def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> None:
-    clock_values = iter(values)
+    def infinite_clock():
+        for v in values:
+            yield v
+        last_v = values[-1] if values else 0.0
+        while True:
+            last_v += 0.01
+            yield last_v
+    
+    clock_values = infinite_clock()
     monkeypatch.setattr(
         "imednet.orchestration.orchestrator.time.monotonic",
         lambda: next(clock_values),
