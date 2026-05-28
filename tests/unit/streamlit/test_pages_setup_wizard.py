@@ -470,38 +470,42 @@ def test_setup_wizard_preview_filters_invalid_saved_widget_types() -> None:
     ]
 
 
-def test_setup_wizard_save_local_sanitises_filename(tmp_path: Path, monkeypatch: Any) -> None:
+def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 5
-    fake_st.session_state["_imednet_study_key"] = "../Bad/Name"
-    fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
-    fake_st.button_presses = {"wizard_save_local"}
+    fake_st.session_state["_imednet_study_key"] = "STUDY-123"
+    fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY-123")
+    fake_st.button_presses = {"wizard_save_managed"}
 
-    monkeypatch.setattr(Path, "cwd", classmethod(lambda cls: tmp_path))
+    class MockStore:
+        def commit_config(self, study_key, config, user, desc):
+            self.study_key = study_key
+            self.user = user
+
+    mock_store = MockStore()
+    monkeypatch.setattr("imednet_workflows.config_version_control.ConfigVersionStore", lambda: mock_store)
 
     _run_setup_wizard(fake_st)
 
-    output_file = tmp_path / ".imednet" / "configs" / "bad_name_study_configuration.json"
-    assert output_file.is_file()
-    assert fake_st.success_calls[-1] == f"Saved to {output_file}"
+    assert mock_store.study_key == "STUDY-123"
+    assert "Successfully saved" in fake_st.success_calls[-1]
 
 
-def test_setup_wizard_save_local_reports_oserror(monkeypatch: Any, tmp_path: Path) -> None:
+def test_setup_wizard_save_managed_reports_error(monkeypatch: Any) -> None:
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 5
     fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
-    fake_st.button_presses = {"wizard_save_local"}
+    fake_st.button_presses = {"wizard_save_managed"}
 
-    monkeypatch.setattr(Path, "cwd", classmethod(lambda cls: tmp_path))
-    monkeypatch.setattr(
-        Path,
-        "write_text",
-        lambda self, data, encoding=None: (_ for _ in ()).throw(OSError("boom")),
-    )
+    class MockStore:
+        def commit_config(self, study_key, config, user, desc):
+            raise OSError("boom")
+
+    monkeypatch.setattr("imednet_workflows.config_version_control.ConfigVersionStore", lambda: MockStore())
 
     _run_setup_wizard(fake_st)
 
-    assert fake_st.error_calls[-1] == "Unable to save configuration locally."
+    assert "Unable to save configuration:" in fake_st.error_calls[-1]
 
 
 def test_setup_wizard_shows_prerequisite_info_messages() -> None:

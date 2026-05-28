@@ -25,6 +25,7 @@ setup_wizard_page = st.Page("pages/setup_wizard.py", title="Setup Wizard", icon=
 review_workbench_page = st.Page("pages/review_workbench.py", title="Review Workbench", icon="🧪")
 publisher_wizard_page = st.Page("pages/publisher_wizard.py", title="Publisher Wizard", icon="🏛️")
 data_lineage_page = st.Page("pages/data_lineage.py", title="Data Lineage", icon="🔭")
+admin_page = st.Page("pages/admin.py", title="Enterprise Admin", icon="🏢")
 
 if is_connected:
     nav = st.navigation(
@@ -39,9 +40,11 @@ if is_connected:
             review_workbench_page,
             publisher_wizard_page,
             data_lineage_page,
+            admin_page,
         ]
     )
 else:
-    nav = st.navigation([home_page])
+    nav = st.navigation([home_page, admin_page])
 
 nav.run()
+
