@@ -7,7 +7,7 @@ from the API, handling pagination seamlessly.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Generic, List, TypeVar
+from typing import Any, Callable, Dict, Generic, List, TypeVar, Iterator, AsyncIterator
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
@@ -48,7 +48,7 @@ class ListOperation(Generic[T]):
         self,
         client: RequestorProtocol,
         paginator_cls: type[Paginator],
-    ) -> List[T]:
+    ) -> Iterator[T]:
         """
         Execute synchronous list request.
 
@@ -57,7 +57,7 @@ class ListOperation(Generic[T]):
             paginator_cls: The paginator class to use.
 
         Returns:
-            A list of parsed items.
+            An iterator of parsed items.
         """
         paginator = paginator_cls(
             client,
@@ -65,13 +65,13 @@ class ListOperation(Generic[T]):
             params=self.params,
             page_size=self.page_size,
         )
-        return [self.parse_func(item) for item in paginator]
+        return (self.parse_func(item) for item in paginator)
 
-    async def execute_async(
+    def execute_async(
         self,
         client: AsyncRequestorProtocol,
         paginator_cls: type[AsyncPaginator],
-    ) -> List[T]:
+    ) -> AsyncIterator[T]:
         """
         Execute asynchronous list request.
 
@@ -80,7 +80,7 @@ class ListOperation(Generic[T]):
             paginator_cls: The async paginator class to use.
 
         Returns:
-            A list of parsed items.
+            An async iterator of parsed items.
         """
         paginator = paginator_cls(
             client,
@@ -88,4 +88,7 @@ class ListOperation(Generic[T]):
             params=self.params,
             page_size=self.page_size,
         )
-        return [self.parse_func(item) async for item in paginator]
+        async def _generator():
+            async for item in paginator:
+                yield self.parse_func(item)
+        return _generator()

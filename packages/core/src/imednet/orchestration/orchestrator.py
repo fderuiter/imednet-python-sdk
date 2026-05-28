@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import logging
 import time
+import threading
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from typing import Any, Optional
 
@@ -50,6 +51,61 @@ logger = logging.getLogger(__name__)
 _DURATION_PRECISION = 4
 
 
+class AdaptiveConcurrencyLimiter:
+    """Manages adaptive backpressure by limiting concurrency based on task latency."""
+
+    def __init__(self, initial_concurrency: int):
+        self._max_concurrency = initial_concurrency
+        self._current_concurrency = 0
+        self._cond = threading.Condition()
+        self._latency_baseline: Optional[float] = None
+        self._lock = threading.Lock()
+        self._min_concurrency = 1
+        self._initial_concurrency = initial_concurrency
+
+    def acquire(self) -> None:
+        with self._cond:
+            while self._current_concurrency >= self._max_concurrency:
+                self._cond.wait()
+            self._current_concurrency += 1
+
+    def release(self) -> None:
+        with self._cond:
+            self._current_concurrency -= 1
+            self._cond.notify_all()
+
+    def record_latency(self, latency: float) -> None:
+        with self._lock:
+            if self._latency_baseline is None:
+                self._latency_baseline = latency
+            else:
+                # If latency is significantly higher than baseline (e.g., 2x), reduce concurrency
+                if latency > self._latency_baseline * 2.0:
+                    with self._cond:
+                        new_max = max(self._min_concurrency, self._max_concurrency - 1)
+                        if new_max < self._max_concurrency:
+                            logger.warning(
+                                "Adaptive backpressure: downstream latency increased "
+                                "(%.2fs vs baseline %.2fs). Reducing max concurrency to %d.",
+                                latency, self._latency_baseline, new_max
+                            )
+                            self._max_concurrency = new_max
+                # If latency is good, slowly recover concurrency
+                elif latency <= self._latency_baseline * 1.2:
+                    with self._cond:
+                        new_max = min(self._initial_concurrency, self._max_concurrency + 1)
+                        if new_max > self._max_concurrency:
+                            logger.info(
+                                "Adaptive backpressure: downstream latency recovered. "
+                                "Increasing max concurrency to %d.", new_max
+                            )
+                            self._max_concurrency = new_max
+                            self._cond.notify_all()
+                
+                # Update baseline with exponential moving average
+                self._latency_baseline = 0.8 * self._latency_baseline + 0.2 * latency
+
+
 def _run_with_context(
     study_key: str,
     sdk: Any,
@@ -57,6 +113,7 @@ def _run_with_context(
     func: StudyWorkerCallable[Any],
     args: tuple[Any, ...],
     kwargs: dict[str, Any],
+    limiter: Optional[AdaptiveConcurrencyLimiter] = None,
 ) -> Any:
     """Execute *func* inside the ``study_context()`` context manager.
 
@@ -65,8 +122,14 @@ def _run_with_context(
     without an explicit ``study_key`` argument) will correctly resolve to this
     thread's ``study_key``.
     """
-    with _study_context(study_key):
-        return func(study_key, sdk, study_logger, *args, **kwargs)
+    if limiter:
+        limiter.acquire()
+    try:
+        with _study_context(study_key):
+            return func(study_key, sdk, study_logger, *args, **kwargs)
+    finally:
+        if limiter:
+            limiter.release()
 
 
 class MultiStudyOrchestrator:
@@ -177,6 +240,7 @@ class MultiStudyOrchestrator:
 
         results: dict[str, OrchestratorResult] = {}
         start_times: dict[Future[Any], float] = {}
+        limiter = AdaptiveConcurrencyLimiter(self._max_workers)
 
         with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
             future_to_study: dict[Future[Any], str] = {}
@@ -191,6 +255,7 @@ class MultiStudyOrchestrator:
                     pipeline_func,
                     args,
                     kwargs,
+                    limiter,
                 )
                 future_to_study[future] = study_key
                 start_times[future] = time.monotonic()
@@ -198,6 +263,9 @@ class MultiStudyOrchestrator:
             for future in as_completed(future_to_study):
                 study_key = future_to_study[future]
                 duration = time.monotonic() - start_times[future]
+                
+                # Record latency for backpressure
+                limiter.record_latency(duration)
 
                 try:
                     data = future.result()

@@ -5,7 +5,7 @@ Base endpoint mix-in for all API resource endpoints.
 from __future__ import annotations
 
 import warnings
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Iterator, AsyncIterator
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -196,7 +196,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         study_key: Optional[str] = None,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T]:
+    ) -> Iterator[T]:
         state = self._prepare_list_request(study_key, extra_params, filters)
         return ListOperation[T](
             path=state.path,
@@ -205,7 +205,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_sync(client, paginator_cls)
 
-    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> List[T]:
+    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T]:
         # Cast FilterValue → Any at the public/internal boundary to satisfy
         # mypy's invariant dict type-checking on `_list_sync`'s **filters: Any.
         _filters: Dict[str, Any] = dict(filters)
@@ -230,7 +230,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
             item_id=item_id,
             filters=filters,
             validate_func=self._validate_get_result,
-            list_sync_func=self._list_sync,
+            list_sync_func=lambda *a, **k: list(self._list_sync(*a, **k)),
         )
         return operation.execute_sync(client, paginator_cls)
 
@@ -252,7 +252,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
     ) -> None:
         super().__init__(ctx=ctx, async_client=async_client)
 
-    async def _list_async(
+    def _list_async(
         self,
         client: AsyncRequestorProtocol,
         paginator_cls: type[AsyncPaginator],
@@ -260,19 +260,19 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         study_key: Optional[str] = None,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T]:
+    ) -> AsyncIterator[T]:
         state = self._prepare_list_request(study_key, extra_params, filters)
-        return await ListOperation[T](
+        return ListOperation[T](
             path=state.path,
             params=state.params,
             page_size=self.PAGE_SIZE,
             parse_func=self._resolve_parse_func(),
         ).execute_async(client, paginator_cls)
 
-    async def async_list(self, study_key: Optional[str] = None, **filters: FilterValue) -> List[T]:
+    def async_list(self, study_key: Optional[str] = None, **filters: FilterValue) -> AsyncIterator[T]:
         # Cast FilterValue → Any at the public/internal boundary.
         _filters: Dict[str, Any] = dict(filters)
-        return await self._list_async(
+        return self._list_async(
             self._require_async_client(),
             self.ASYNC_PAGINATOR_CLS,
             study_key=study_key,
@@ -293,9 +293,15 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
             item_id=item_id,
             filters=filters,
             validate_func=self._validate_get_result,
-            list_async_func=self._list_async,
+            list_async_func=self._list_async_for_get,
         )
         return await operation.execute_async(client, paginator_cls)
+
+    async def _list_async_for_get(self, *a: Any, **k: Any) -> List[T]:
+        res = []
+        async for item in self._list_async(*a, **k):
+            res.append(item)
+        return res
 
     async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T:
         self._require_item_id(item_id)
