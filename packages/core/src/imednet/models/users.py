@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from imednet.models.engine import ModelEngine
+
 from datetime import datetime
 from typing import List
 
@@ -11,27 +13,13 @@ from imednet.models.json_base import JsonModel
 class Role(JsonModel):
     """A role assigned to a user within a study or community."""
 
-    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
-    date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
-    role_id: str = Field("", alias="roleId")
-    community_id: int = Field(0, alias="communityId")
-    name: str = Field("", alias="name")
-    description: str = Field("", alias="description")
-    level: int = Field(0, alias="level")
-    type: str = Field("", alias="type")
-    inactive: bool = Field(False, alias="inactive")
 
+
+Role = ModelEngine.get_model('Role', Role)
 
 class User(JsonModel):
     """A user account in the system."""
 
-    user_id: str = Field("", alias="userId")
-    login: str = Field("", alias="login")
-    first_name: str = Field("", alias="firstName")
-    last_name: str = Field("", alias="lastName")
-    email: str = Field("", alias="email")
-    user_active_in_study: bool = Field(False, alias="userActiveInStudy")
-    roles: List[Role] = Field(default_factory=list, alias="roles")
 
     @computed_field
     def name(self) -> str:
@@ -41,3 +29,5 @@ class User(JsonModel):
         """
         # will strip extra spaces if either is empty
         return " ".join(filter(None, (self.first_name, self.last_name)))
+User = ModelEngine.get_model('User', User)
+

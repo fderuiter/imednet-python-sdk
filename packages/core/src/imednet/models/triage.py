@@ -34,7 +34,7 @@ class TriageHistoryEntry(JsonModel):
     comment: Optional[str] = None
     timestamp: datetime
 
-    @field_validator("comment", mode="before")
+    @field_validator("comment", check_fields=False, mode="before")
     @classmethod
     def _normalise_comment(cls, value: object) -> object:
         if value is None:

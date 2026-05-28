@@ -42,7 +42,7 @@ class StudyConfiguration(JsonModel):
     )
     widgets: list[WidgetConfig] = Field(default_factory=list, alias="widgets")
 
-    @field_validator("reporting_profile", mode="before")
+    @field_validator("reporting_profile", check_fields=False, mode="before")
     @classmethod
     def _validate_reporting_profile(cls, value: object) -> object:
         if not isinstance(value, str):

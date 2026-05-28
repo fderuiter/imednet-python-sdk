@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from imednet.models.engine import ModelEngine
+
 from datetime import datetime
 from typing import List
 
@@ -21,26 +23,7 @@ class FormSummary(JsonModel):
 class Interval(JsonModel):
     """Represents a visit interval or event within the study timeline."""
 
-    study_key: str = Field("", alias="studyKey")
-    interval_id: int = Field(0, alias="intervalId")
-    interval_name: str = Field("", alias="intervalName")
-    interval_description: str = Field("", alias="intervalDescription")
-    interval_sequence: int = Field(0, alias="intervalSequence")
-    interval_group_id: int = Field(0, alias="intervalGroupId")
-    interval_group_name: str = Field("", alias="intervalGroupName")
-    disabled: bool = Field(False, alias="disabled")
-    date_created: datetime = Field(default_factory=datetime.now, alias="dateCreated")
-    date_modified: datetime = Field(default_factory=datetime.now, alias="dateModified")
-    timeline: str = Field("", alias="timeline")
-    defined_using_interval: str = Field("", alias="definedUsingInterval")
-    window_calculation_form: str = Field("", alias="windowCalculationForm")
-    window_calculation_date: str = Field("", alias="windowCalculationDate")
-    actual_date_form: str = Field("", alias="actualDateForm")
-    actual_date: str = Field("", alias="actualDate")
-    due_date_will_be_in: int = Field(0, alias="dueDateWillBeIn")
-    negative_slack: int = Field(0, alias="negativeSlack")
-    positive_slack: int = Field(0, alias="positiveSlack")
-    epro_grace_period: int = Field(0, alias="eproGracePeriod")
-    forms: List[FormSummary] = Field(default_factory=list, alias="forms")
 
     pass
+Interval = ModelEngine.get_model('Interval', Interval)
+
