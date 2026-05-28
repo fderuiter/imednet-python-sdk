@@ -336,10 +336,14 @@ def export_to_snowflake(
     config: SnowflakeSinkConfig,
 ) -> int:
     """Export study records to Snowflake using :class:`SnowflakeExportSink`."""
+    from .sink_base import apply_quality_gate
+
     records = sdk.records.list(study_key=study_key, record_data_filter=None)
+    filtered_records = list(apply_quality_gate(sdk, study_key, records, config))
+
     total_written = 0
     with SnowflakeExportSink(config=config) as sink:
-        for index, batch in enumerate(iter_batches(records, config.batch_size)):
+        for index, batch in enumerate(iter_batches(filtered_records, config.batch_size)):
             total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
     return total_written
 
