@@ -1,9 +1,19 @@
-.PHONY: docs
+.PHONY: docs test-containers
 
 SPHINXOPTS    ?= -W --keep-going
 SPHINXBUILD   ?= sphinx-build
 SPHINXAPIDOC  ?= sphinx-apidoc
 APIDIR        = docs/api
+
+test-containers:
+	@echo "Starting ephemeral containerized databases..."
+	docker compose up -d
+	@echo "Waiting for databases to initialize..."
+	sleep 15
+	@echo "Running integration tests..."
+	IMEDNET_TEST_CONTAINERS=1 poetry run pytest tests/integration/test_containerized_sinks.py -v || true
+	@echo "Cleaning up containers..."
+	docker compose down -v
 
 docs:
 	@echo "Cleaning old API docs..."
