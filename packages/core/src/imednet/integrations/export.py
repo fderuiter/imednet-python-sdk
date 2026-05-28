@@ -11,6 +11,7 @@ except ImportError:
     pd = None  # type: ignore
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
+from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
 
 from .. import ImednetClient
 from ..sdk import ImednetSDK
@@ -34,6 +35,23 @@ def _record_mapper() -> Any:
                 "Install with `pip install imednet-workflows`."
             ) from error
         raise
+
+
+def _mask_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Mask sensitive fields in the DataFrame based on the global registry."""
+    sensitive_cols = [col for col in df.columns if global_sensitivity_registry.is_sensitive(str(col))]
+    for col in sensitive_cols:
+        df[col] = "***MASKED***"
+
+    try:
+        object_cols = df.drop(columns=sensitive_cols).select_dtypes(include=[object, "str"]).columns
+    except TypeError:
+        object_cols = df.drop(columns=sensitive_cols).select_dtypes(include=[object]).columns
+
+    for col in object_cols:
+        df[col] = df[col].apply(mask_clinical_phi)
+
+    return df
 
 
 def _to_sql_with_chunking(
@@ -109,6 +127,7 @@ def _prepare_export_df(
         variable_whitelist=variable_whitelist,
         form_whitelist=form_whitelist,
     )
+    df = _mask_df(df)
     if sanitize:
         df = _sanitize_df(df)
     return df
@@ -382,6 +401,7 @@ def export_to_duckdb_by_form(
                 variable_whitelist=variable_whitelist,
                 form_whitelist=[form.form_id],
             )
+            df = _mask_df(df)
 
             conn.register(_DUCKDB_DF_ALIAS, df)
             conn.execute(
@@ -448,6 +468,7 @@ def export_to_sql_by_form(
         if isinstance(df, pd.DataFrame):
             dup_mask = df.columns.str.lower().duplicated()
             df = df.loc[:, ~dup_mask]
+            df = _mask_df(df)
         _to_sql_with_chunking(
             df,
             form.form_key,
@@ -484,12 +505,17 @@ def export_to_long_sql(
     for rec in records:
         timestamp = rec.date_modified
         for name, value in (rec.record_data or {}).items():
+            if global_sensitivity_registry.is_sensitive(name):
+                masked_value = "***MASKED***"
+            else:
+                masked_value = mask_clinical_phi(value)
+
             rows.append(
                 {
                     "record_id": rec.record_id,
                     "form_id": rec.form_id,
                     "variable_name": name,
-                    "value": value,
+                    "value": masked_value,
                     "timestamp": timestamp,
                 }
             )
