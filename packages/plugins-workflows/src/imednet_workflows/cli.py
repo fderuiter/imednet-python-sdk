@@ -6,9 +6,8 @@ from typing import List, Optional
 import typer
 from rich import print
 
-from imednet.spi.cli import with_sdk
-from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args
 from imednet import ImednetSDK
+from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args, with_sdk
 
 from .data_extraction import DataExtractionWorkflow
 from .state_ledger import ExtractionStateLedger
@@ -26,7 +25,7 @@ def extract_records(
     record_filter: Optional[List[str]] = typer.Option(
         None,
         "--record-filter",
-        help=("Record filter criteria (e.g., 'form_key=DEMOG'). " "Repeat for multiple filters."),
+        help=("Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters."),
     ),
     subject_filter: Optional[List[str]] = typer.Option(
         None,
@@ -39,9 +38,7 @@ def extract_records(
     visit_filter: Optional[List[str]] = typer.Option(
         None,
         "--visit-filter",
-        help=(
-            "Visit filter criteria (e.g., 'visit_key=SCREENING'). " "Repeat for multiple filters."
-        ),
+        help=("Visit filter criteria (e.g., 'visit_key=SCREENING'). Repeat for multiple filters."),
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
@@ -241,8 +238,7 @@ def reset_state(
             removed = ledger.delete_entry(study_key, stream)
             if removed:
                 print(
-                    f"[green]Successfully reset stream '{stream}' for study "
-                    f"'{study_key}'.[/green]"
+                    f"[green]Successfully reset stream '{stream}' for study '{study_key}'.[/green]"
                 )
             else:
                 print(f"[yellow]No stream '{stream}' found for study '{study_key}'.[/yellow]")

@@ -62,10 +62,10 @@ def test_imednet_export_operator(monkeypatch):
     hooks_pkg.base = hooks_base
     airflow.hooks = hooks_pkg
     airflow.models = models_mod
-    monkeypatch.setitem(sys.modules, "airflow", airflow)
-    monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
-    monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
-    monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
+    pass
+    pass
+    pass
+    pass
 
     import apache_airflow_providers_imednet.operators.export as export_ops
     from apache_airflow_providers_imednet import ImednetExportOperator
@@ -84,34 +84,14 @@ def test_imednet_export_operator(monkeypatch):
 
 
 def test_imednet_hook_returns_sdk(monkeypatch):
-    airflow = ModuleType("airflow")
-    hooks_pkg = ModuleType("airflow.hooks")
-    hooks_base = ModuleType("airflow.hooks.base")
-    models_mod = ModuleType("airflow.models")
+    import types
 
-    class DummyBaseHook:
-        @classmethod
-        def get_connection(cls, conn_id):
-            return SimpleNamespace(
-                login="KEY", password="SEC", extra_dejson={"base_url": "https://x"}
-            )
+    from airflow.hooks.base import BaseHook
 
-    class DummyBaseOperator:
-        template_fields = ()
-
-        def __init__(self, **kwargs):
-            pass
-
-    hooks_base.BaseHook = DummyBaseHook
-    models_mod.BaseOperator = DummyBaseOperator
-    hooks_pkg.base = hooks_base
-    airflow.hooks = hooks_pkg
-    airflow.models = models_mod
-    monkeypatch.setitem(sys.modules, "airflow", airflow)
-    monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
-    monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
-    monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
-
+    conn = types.SimpleNamespace(
+        login="KEY", password="SEC", extra_dejson={"base_url": "https://x"}
+    )
+    monkeypatch.setattr(BaseHook, "get_connection", classmethod(lambda cls, cid: conn))
     from apache_airflow_providers_imednet import ImednetHook
 
     hook = ImednetHook()
@@ -199,7 +179,7 @@ def test_to_s3_operator_uploads(monkeypatch):
         "airflow.exceptions": exc_mod,
     }
     for name, mod in modules.items():
-        monkeypatch.setitem(sys.modules, name, mod)
+        pass
 
     import importlib
 

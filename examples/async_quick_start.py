@@ -23,7 +23,7 @@ Example::
     export IMEDNET_SECURITY_KEY="your_security_key"
     # Optional: Custom base URL for the API endpoint
     # export IMEDNET_BASE_URL="https://edc.prod.imednetapi.com"
-    poetry run python examples/async_quick_start.py
+    uv run python examples/async_quick_start.py
 """
 
 

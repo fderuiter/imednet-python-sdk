@@ -43,9 +43,9 @@ def test_export_to_csv_sanitization(tmp_path, mock_record_mapper):
             if "Pandas4Warning" in str(warning.category.__name__)
             or "select_dtypes" in str(warning.message)
         ]
-        assert (
-            not relevant_warnings
-        ), f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        assert not relevant_warnings, (
+            f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        )
 
     content = path.read_text()
     # Check that unsafe content is prefixed with a single quote
@@ -89,9 +89,9 @@ def test_export_to_excel_sanitization(tmp_path, mock_record_mapper, monkeypatch)
             if "Pandas4Warning" in str(warning.category.__name__)
             or "select_dtypes" in str(warning.message)
         ]
-        assert (
-            not relevant_warnings
-        ), f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        assert not relevant_warnings, (
+            f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        )
 
     assert captured_df is not None
     assert captured_df["unsafe"].iloc[0] == "'=cmd"

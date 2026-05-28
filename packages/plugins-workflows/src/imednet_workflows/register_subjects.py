@@ -6,8 +6,7 @@ It provides a simple, robust interface for registering one or more subjects.
 
 from typing import TYPE_CHECKING, List, Optional
 
-from imednet.spi.models import Job
-from imednet.spi.models import RegisterSubjectRequest
+from imednet.spi.models import Job, RegisterSubjectRequest
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:

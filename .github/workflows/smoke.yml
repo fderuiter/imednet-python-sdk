@@ -19,10 +19,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - uses: abatilo/actions-poetry@v2
+      - uses: astral-sh/setup-uv@v5
       - name: Install dependencies
         run: |
-          poetry install --with dev
+          uv sync
       - name: Post smoke record
         id: smoke_record
         env:
@@ -31,7 +31,7 @@ jobs:
           IMEDNET_BASE_URL: ${{ vars.BASE_URL }}
         run: |
           set +e
-          poetry run python scripts/post_smoke_record.py --verbose 2>&1 | tee smoke.log
+          uv run python scripts/post_smoke_record.py --verbose 2>&1 | tee smoke.log
           code=${PIPESTATUS[0]}
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           set -e
@@ -65,4 +65,4 @@ jobs:
           IMEDNET_BASE_URL: ${{ vars.BASE_URL }}
           IMEDNET_RUN_E2E: "1"
         run: |
-          poetry run pytest -vv -s --log-cli-level=INFO tests/live
+          uv run pytest -vv -s --log-cli-level=INFO tests/live

@@ -1,19 +1,28 @@
-[tool.poetry]
+[project]
 name = "apache-airflow-providers-imednet"
 version = "0.6.0"
 description = "Apache Airflow provider for iMednet"
-authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
-packages = [{ include = "apache_airflow_providers_imednet", from = "src" }]
+authors = [
+    { name = "Frederick de Ruiter", email = "127706008+fderuiter@users.noreply.github.com" }
+]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "imednet",
+    "apache-airflow>=2.7.0,<3.0.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-imednet = { path = "../core", develop = true }
-apache-airflow = ">=3.2.0,<4.0.0"
-apache-airflow-providers-amazon = { version = ">=9.0.0", optional = true }
-
-[tool.poetry.extras]
-amazon = ["apache-airflow-providers-amazon"]
+[project.optional-dependencies]
+amazon = ["apache-airflow-providers-amazon>=9.0.0"]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/apache_airflow_providers_imednet"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/apache_airflow_providers_imednet"]
+
+[tool.uv.sources]
+imednet = { workspace = true }

@@ -4,9 +4,14 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
-from imednet.spi.models import Record
-from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation
-from imednet.spi.models import MappingRule, StudyConfiguration
+from imednet.spi.models import (
+    AdverseEvent,
+    DeviceDeficiency,
+    MappingRule,
+    ProtocolDeviation,
+    Record,
+    StudyConfiguration,
+)
 
 _DOMAIN_MODEL_MAP = {
     "AE": AdverseEvent,

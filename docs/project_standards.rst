@@ -7,7 +7,7 @@ repository. It is a contributor-facing companion to ``AGENTS.md``.
 Dependency policy
 -----------------
 
-Use the dependency stack already declared in ``pyproject.toml`` and ``poetry.lock``.
+Use the dependency stack already declared in ``pyproject.toml`` and ``uv.lock``.
 The current source of truth includes:
 
 - ``httpx`` for HTTP transport
@@ -17,7 +17,7 @@ The current source of truth includes:
 - ``respx`` for HTTP mocking in tests
 - ``mypy`` for type checking
 - ``ruff`` for linting
-- ``black`` and ``isort`` for formatting
+- ``ruff`` for formatting
 
 Do not introduce new runtime or development dependencies without explicit approval.
 
@@ -29,13 +29,13 @@ policy:
 
 .. code-block:: bash
 
-   poetry run black --check .
-   poetry run isort --check --profile black .
-   poetry run ruff check .
-   poetry run mypy packages/core/src/imednet
-   poetry run mypy packages/plugins-workflows/src/imednet_workflows
-   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-   poetry run pytest -q \
+   uv run ruff format --check .
+   uv run ruff check .
+   uv run ruff check .
+   uv run mypy packages/core/src/imednet
+   uv run mypy packages/plugins-workflows/src/imednet_workflows
+   uv run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+   uv run pytest -q \
      --cov=imednet \
      --cov=imednet_workflows \
      --cov=apache_airflow_providers_imednet \

@@ -5,10 +5,14 @@ from typing import TYPE_CHECKING, Dict, List
 from imednet.spi.errors import ImednetError
 
 # Import the models we need
-from imednet.spi.models import Form
-from imednet.spi.models import Interval
-from imednet.spi.models import FormStructure, IntervalStructure, StudyStructure
-from imednet.spi.models import Variable
+from imednet.spi.models import (
+    Form,
+    FormStructure,
+    Interval,
+    IntervalStructure,
+    StudyStructure,
+    Variable,
+)
 
 # Use TYPE_CHECKING to avoid circular import at runtime
 if TYPE_CHECKING:

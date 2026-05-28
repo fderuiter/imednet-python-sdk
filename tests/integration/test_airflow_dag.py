@@ -1,3 +1,5 @@
+import os
+import time
 from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import MagicMock
@@ -20,6 +22,7 @@ def test_dag_runs(monkeypatch):
 
     s3 = boto3.client("s3", region_name="us-east-1")
     s3.create_bucket(Bucket="bucket")
+    os.system("airflow db init")
 
     sdk = MagicMock()
     sdk.records.list.return_value = [SimpleNamespace(model_dump=lambda: {"id": 1})]
@@ -37,7 +40,9 @@ def test_dag_runs(monkeypatch):
         wait = ImednetJobSensor(task_id="wait", study_key="S", batch_id="ID")
         export >> wait
 
-    dagrun = dag.create_dagrun(execution_date=datetime(2024, 1, 1), state=State.RUNNING)
+    dagrun = dag.create_dagrun(
+        run_id=f"test_run_{time.time()}", execution_date=datetime.now(), state=State.RUNNING
+    )
 
     ti_export = TaskInstance(export, dagrun.execution_date)
     ti_export.task = export

@@ -166,8 +166,7 @@ class MongoDbExportSink(ExportSink):
             self._collection = db[self._collection_name]
         except Exception as exc:
             raise ExportConfigurationError(
-                f"Cannot connect to MongoDB at {redacted}. "
-                f"Driver error type: {type(exc).__name__}"
+                f"Cannot connect to MongoDB at {redacted}. Driver error type: {type(exc).__name__}"
             ) from exc
 
     # ------------------------------------------------------------------
@@ -228,8 +227,7 @@ class MongoDbExportSink(ExportSink):
                     time.sleep(delay)
 
         raise ExportBatchError(
-            f"Batch {batch_id!r} failed after {self.config.max_retries + 1} "
-            f"attempts: {last_exc}",
+            f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {last_exc}",
             batch_id=batch_id,
         )
 

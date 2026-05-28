@@ -1,10 +1,12 @@
-[tool.poetry]
+[project]
 name = "imednet"
 version = "0.8.0"
 description = "Unofficial Python SDK for the iMednet clinical trials API"
-authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
+authors = [
+    { name = "Frederick de Ruiter", email = "127706008+fderuiter@users.noreply.github.com" }
+]
 readme = "README.md"
-license = "MIT"
+license = { text = "MIT" }
 keywords = ["imednet", "clinical trials", "sdk", "api"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -19,53 +21,44 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
     "Typing :: Typed",
 ]
-maintainers = ["Frederick de Ruiter <fpderuiter@gmail.com>"]
-packages = [{ include = "imednet", from = "src" }]
-include = [{ path = "src/imednet/py.typed", format = ["sdist", "wheel"] }]
+maintainers = [
+    { name = "Frederick de Ruiter", email = "fpderuiter@gmail.com" }
+]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "h11==0.16.0",
+    "pydantic>=2.11.3",
+    "httpx>=0.28.1",
+    "tenacity>=9.1.2",
+    "python-dotenv>=1.2.2",
+    "python-json-logger>=2.0.7",
+    "urllib3>=2.7.0",
+    "filelock>=3.20.3",
+    "pygments>=2.19.2",
+    "cryptography>=41.0.0",
+]
+
+[project.urls]
 repository = "https://github.com/fderuiter/imednet-python-sdk"
 homepage = "https://github.com/fderuiter/imednet-python-sdk"
 
-[tool.poetry.scripts]
+[project.scripts]
 imednet = "imednet.cli:app"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-h11 = "0.16.0"
-pydantic = "^2.11.3"
-httpx = "^0.28.1"
-tenacity = "^9.1.2"
-python-dotenv = ">=1.2.2"
-typer = { extras = ["all"], version = "^0.15.2", optional = true }
-python-json-logger = "^2.0.7"
-urllib3 = "^2.7.0"
-filelock = "^3.20.3"
-pygments = "^2.19.2"
-cryptography = ">=46.0.7"
-pandas = { version = ">=2.2.3,<3.0.0", optional = true }
-sqlalchemy = { version = ">=2.0,<3.0", optional = true }
-openpyxl = { version = ">=3.1,<4.0", optional = true }
-pyarrow = { version = ">=14.0.1", optional = true }
-duckdb = { version = ">=1.1.0", optional = true }
-neo4j = { version = ">=5.0,<6.0", optional = true }
-pymongo = { version = ">=4.0,<5.0", optional = true }
-snowflake-connector-python = { version = ">=3.0,<4.0", optional = true }
-
-[tool.poetry.extras]
-# Install via: pip install 'imednet[cli]'
-# typer[all] transitively includes rich and other CLI rendering dependencies.
-cli = ["typer"]
-# Install via: pip install 'imednet[duckdb]'
-duckdb = ["duckdb"]
-# Install via: pip install 'imednet[export]'
-# Includes all export dependencies (CSV, Excel, Parquet, SQL, DuckDB)
-export = ["pandas", "sqlalchemy", "pyarrow", "openpyxl", "duckdb"]
-# Install via: pip install 'imednet[neo4j]'
-neo4j = ["neo4j"]
-# Install via: pip install 'imednet[mongodb]'
-mongodb = ["pymongo"]
-# Install via: pip install 'imednet[snowflake]'
-snowflake = ["snowflake-connector-python", "pyarrow"]
+[project.optional-dependencies]
+cli = ["typer[all]>=0.15.2,<0.16.0"]
+duckdb = ["duckdb>=1.1.0"]
+export = ["pandas>=2.0.0,<2.2.0", "sqlalchemy>=1.4", "pyarrow>=14.0.1", "openpyxl>=3.1,<4.0", "duckdb>=1.1.0"]
+neo4j = ["neo4j>=5.0,<6.0"]
+mongodb = ["pymongo>=4.0,<5.0"]
+snowflake = ["snowflake-connector-python>=3.0,<4.0", "pyarrow>=14.0.1"]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/imednet"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/imednet"]

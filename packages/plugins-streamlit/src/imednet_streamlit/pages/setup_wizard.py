@@ -333,7 +333,9 @@ def _step_field_mapping() -> None:
         default_form = (
             existing.source_form_key
             if existing and existing.source_form_key in form_options
-            else auto_form if auto_form in form_options else ""
+            else auto_form
+            if auto_form in form_options
+            else ""
         )
         selected_form = col_form.selectbox(
             "Source form",

@@ -28,17 +28,15 @@ Describe the tests added or updated. If tests were intentionally skipped, explai
 ## Quality Gate Checklist
 
 ### Formatting & linting
-- [ ] `poetry run black --check .`
-- [ ] `poetry run isort --check --profile black .`
-- [ ] `poetry run ruff check .`
+- [ ] `uv run ruff check .`
 
 ### Type checking (run for each affected package)
-- [ ] `poetry run mypy packages/core/src/imednet`
-- [ ] `poetry run mypy packages/plugins-workflows/src/imednet_workflows` _(if workflows changed)_
-- [ ] `poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet` _(if Airflow changed)_
+- [ ] `uv run mypy packages/core/src/imednet`
+- [ ] `uv run mypy packages/plugins-workflows/src/imednet_workflows` _(if workflows changed)_
+- [ ] `uv run mypy packages/providers-airflow/src/apache_airflow_providers_imednet` _(if Airflow changed)_
 
 ### Tests
-- [ ] `poetry run pytest -q --cov=imednet --cov=imednet_workflows --cov=apache_airflow_providers_imednet --cov-fail-under=90`
+- [ ] `uv run pytest -q --cov=imednet --cov=imednet_workflows --cov=apache_airflow_providers_imednet --cov-fail-under=90`
 - [ ] All new and existing tests pass
 - [ ] Coverage remains >= 90%
 

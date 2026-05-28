@@ -247,7 +247,7 @@ def test_publisher_wizard_authorized_publish_succeeds(tmp_path: Path) -> None:
     store = _make_committed_store(tmp_path)
     history = store.get_history("STUDY-01")
     commit_id_display = (
-        f"1.0.0 — {history[0]['commit_id'][:12]} by alice " f"({history[0]['timestamp'][:19]})"
+        f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
     )
 
     fake_st = _FakeStreamlit()
@@ -282,7 +282,7 @@ def test_publisher_wizard_admin_can_publish(tmp_path: Path) -> None:
     store = _make_committed_store(tmp_path)
     history = store.get_history("STUDY-01")
     commit_id_display = (
-        f"1.0.0 — {history[0]['commit_id'][:12]} by alice " f"({history[0]['timestamp'][:19]})"
+        f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
     )
 
     fake_st = _FakeStreamlit()

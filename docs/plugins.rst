@@ -267,7 +267,7 @@ Add the following to your package's ``pyproject.toml``:
 
 .. code-block:: toml
 
-    [tool.poetry.plugins."imednet.plugins"]
+    [project.entry-points."imednet.plugins"]
     workflows = "myplugin.namespace:create_workflows"
 
 Or, when using ``setuptools``, in ``setup.cfg``:

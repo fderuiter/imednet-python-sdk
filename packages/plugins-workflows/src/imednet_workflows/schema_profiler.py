@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from imednet.spi.models import Record
-from imednet.spi.models import Variable
+from imednet.spi.models import Record, Variable
 from imednet.spi.validation import SchemaCache
 
 from .cached_loader import CachedRecordsLoader

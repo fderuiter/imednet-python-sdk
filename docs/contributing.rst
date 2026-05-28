@@ -118,13 +118,13 @@ Run these commands and ensure **≥90%** test coverage before opening a pull req
 
 .. code-block:: bash
 
-   poetry run black --check .
-   poetry run isort --check --profile black .
-   poetry run ruff check .
-   poetry run mypy packages/core/src/imednet
-   poetry run mypy packages/plugins-workflows/src/imednet_workflows
-   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-   poetry run pytest -q \
+   uv run ruff format --check .
+   uv run ruff check .
+   uv run ruff check .
+   uv run mypy packages/core/src/imednet
+   uv run mypy packages/plugins-workflows/src/imednet_workflows
+   uv run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+   uv run pytest -q \
      --cov=imednet \
      --cov=imednet_workflows \
      --cov=apache_airflow_providers_imednet \
@@ -177,13 +177,13 @@ Releases are fully automated and driven by merged PR titles:
 
    .. code-block:: bash
 
-      poetry run black --check .
-      poetry run isort --check --profile black .
-      poetry run ruff check .
-      poetry run mypy packages/core/src/imednet
-      poetry run mypy packages/plugins-workflows/src/imednet_workflows
-      poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-      poetry run pytest -q \
+      uv run ruff format --check .
+   uv run ruff check .
+      uv run ruff check .
+      uv run mypy packages/core/src/imednet
+      uv run mypy packages/plugins-workflows/src/imednet_workflows
+      uv run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+      uv run pytest -q \
         --cov=imednet \
         --cov=imednet_workflows \
         --cov=apache_airflow_providers_imednet \

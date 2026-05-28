@@ -146,8 +146,6 @@ body:
     attributes:
       label: Verification requirements
       value: |
-        - black --check
-        - isort --check --profile black
         - ruff check
         - mypy (affected packages)
         - pytest with coverage >= 90%

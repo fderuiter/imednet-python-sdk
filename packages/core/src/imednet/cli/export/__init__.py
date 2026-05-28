@@ -279,8 +279,7 @@ def export_neo4j(
         print(
             "[bold red]Error:[/bold red] "
             + escape(
-                "neo4j is required for Neo4j export. "
-                "Install with \"pip install 'imednet[neo4j]'\"."
+                "neo4j is required for Neo4j export. Install with \"pip install 'imednet[neo4j]'\"."
             )
         )
         raise typer.Exit(code=1)

@@ -10,7 +10,7 @@ Posts one record for each supported scenario:
 * scheduled visit update
 
 Usage:
-    poetry run python scripts/post_smoke_record.py [--timeout SECONDS]
+    uv run python scripts/post_smoke_record.py [--timeout SECONDS]
 
 ``--timeout`` controls how long to wait for the record creation job to
 finish before giving up. The default is 90 seconds.

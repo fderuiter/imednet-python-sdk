@@ -4,9 +4,11 @@ Compatibility facades for exposing internal endpoint methods safely.
 
 from typing import Any, Optional
 
+
 def is_async_client(sdk: Any) -> bool:
     """Check if the SDK is using an async client."""
     return getattr(sdk, "_async_client", None) is not None
+
 
 def execute_list_sync(endpoint: Any, study_key: Optional[str] = None, **filters: Any) -> Any:
     """Stable facade to execute synchronous list operations on endpoints."""
@@ -23,6 +25,7 @@ def execute_list_sync(endpoint: Any, study_key: Optional[str] = None, **filters:
         study_key=study_key,
         **filters,
     )
+
 
 def execute_list_async(endpoint: Any, study_key: Optional[str] = None, **filters: Any) -> Any:
     """Stable facade to execute asynchronous list operations on endpoints."""

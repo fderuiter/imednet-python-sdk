@@ -119,7 +119,7 @@ body:
       label: Installation method
       options:
         - pip (PyPI)
-        - poetry add
+        - uv add
         - installed from source / git clone
         - other
     validations:

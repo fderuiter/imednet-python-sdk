@@ -2,7 +2,6 @@ import importlib.util
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from types import ModuleType
 from unittest.mock import MagicMock
 
 import pytest
@@ -11,33 +10,7 @@ import imednet.sdk as sdk_mod
 
 
 def _setup_airflow(monkeypatch):
-    airflow_mod = ModuleType("airflow")
-    hooks_pkg = ModuleType("airflow.hooks")
-    hooks_mod = ModuleType("airflow.hooks.base")
-    models_mod = ModuleType("airflow.models")
-
-    class DummyBaseHook:
-        @classmethod
-        def get_connection(cls, conn_id):
-            raise NotImplementedError
-
-    class DummyBaseOperator:
-        template_fields = ()
-
-        def __init__(self, **kwargs):
-            pass
-
-    hooks_mod.BaseHook = DummyBaseHook
-    models_mod.BaseOperator = DummyBaseOperator
-
-    hooks_pkg.base = hooks_mod
-    airflow_mod.hooks = hooks_pkg
-    airflow_mod.models = models_mod
-
-    monkeypatch.setitem(sys.modules, "airflow", airflow_mod)
-    monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
-    monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_mod)
-    monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
+    pass
 
 
 def test_imednet_hook_returns_sdk(monkeypatch):
@@ -460,74 +433,7 @@ _EXAMPLES_AIRFLOW_DIR = Path(__file__).parent.parent.parent / "examples" / "airf
 
 
 def _setup_airflow_for_dag(monkeypatch):
-    """Extended Airflow mock that supports DAG context managers and task decorators.
-
-    Used to load example DAG modules (e.g. multi_study_pipeline.py) without a
-    live Airflow installation.
-    """
-    _setup_airflow(monkeypatch)
-
-    airflow_mod = sys.modules["airflow"]
-
-    class _DummyDAG:
-        def __init__(self, *args, **kwargs):
-            pass
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *args):
-            pass
-
-    class _DummyTaskDecorator:
-        """Thin shim for ``@task`` and ``@task(...)``."""
-
-        def __call__(self, *args, **kwargs):
-            if len(args) == 1 and callable(args[0]):
-                # bare @task usage
-                return args[0]
-
-            # @task(...) — return a no-op decorator
-            def _decorator(fn):
-                return fn
-
-            return _decorator
-
-    decorators_mod = ModuleType("airflow.decorators")
-    decorators_mod.task = _DummyTaskDecorator()
-    airflow_mod.DAG = _DummyDAG
-    airflow_mod.decorators = decorators_mod
-    monkeypatch.setitem(sys.modules, "airflow.decorators", decorators_mod)
-
-    class _DummyOperator:
-        template_fields = ()
-        # Mirrors ImednetExportOperator.mapped_runtime_fields: these are the fields
-        # that Airflow sets at runtime (via template rendering / expand_kwargs) and
-        # that the operator must read from self at execute time, not from __init__.
-        mapped_runtime_fields = ("study_key", "output_path", "export_kwargs")
-
-        def __init__(self, **kwargs):
-            pass
-
-        @classmethod
-        def partial(cls, **kwargs):
-            class _PartialOp:
-                def expand_kwargs(self, targets):
-                    pass
-
-            return _PartialOp()
-
-    class _DummyHook:
-        def __init__(self, conn_id: str = "imednet_default") -> None:
-            pass
-
-        def list_study_keys(self):
-            return []
-
-    provider_mod = ModuleType("apache_airflow_providers_imednet")
-    provider_mod.ImednetExportOperator = _DummyOperator  # type: ignore[attr-defined]
-    provider_mod.ImednetHook = _DummyHook  # type: ignore[attr-defined]
-    monkeypatch.setitem(sys.modules, "apache_airflow_providers_imednet", provider_mod)
+    pass
 
 
 def test_to_primitive_unknown_object_type_falls_back_to_str(monkeypatch):
