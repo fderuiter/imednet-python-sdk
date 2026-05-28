@@ -14,15 +14,13 @@ from typing import Any
 import streamlit as st
 
 from imednet.spi.models import StudyConfiguration
-from imednet_streamlit.auth import get_study_key
+from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_workflows.config_version_control import ConfigVersionStore
 
 # ---------------------------------------------------------------------------
 # Session-state keys
 # ---------------------------------------------------------------------------
 _KEY_CONNECTED = "_imednet_connected"
-_KEY_USER = "_publisher_user"
-_KEY_ROLE = "_publisher_role"
 _KEY_COMMIT_ID = "_publisher_commit_id"
 _KEY_CONFIG_STORE_PATH = "_publisher_store_path"
 
@@ -36,28 +34,19 @@ def _get_store() -> ConfigVersionStore:
     return ConfigVersionStore(db_path=str(path))
 
 
-def _render_auth_section() -> tuple[str, str]:
-    """Render user identity inputs; return (user, role)."""
+def _render_auth_section() -> tuple[str, list[str]]:
+    """Render user identity info resolved from auth session; return (user_id, roles)."""
     st.subheader("🔐 Publisher Identity")
+    sdk = get_sdk()
+    roles = sdk.auth.get_user_roles()
+    user_id = sdk.auth.get_user_id() or ""
+    
     st.markdown(
-        "Enter your identity to authenticate publish actions.  "
-        "Only **manager** or **admin** roles may approve and publish."
+        "Identity and roles are now automatically resolved from your secure session.  \n"
+        f"**User ID:** {user_id or 'Unknown'}  \n"
+        f"**Roles:** {', '.join(roles) if roles else 'None'}"
     )
-    col_user, col_role = st.columns(2)
-    user = col_user.text_input(
-        "Username",
-        value=st.session_state.get(_KEY_USER, ""),
-        key=_KEY_USER,
-    )
-    role = col_role.selectbox(
-        "Role",
-        options=["viewer", "reviewer", "manager", "admin"],
-        index=["viewer", "reviewer", "manager", "admin"].index(
-            st.session_state.get(_KEY_ROLE, "viewer")
-        ),
-        key=_KEY_ROLE,
-    )
-    return user, str(role)
+    return user_id, roles
 
 
 def _render_commit_selector(study_key: str, store: ConfigVersionStore) -> str | None:
@@ -209,16 +198,16 @@ def _render_publish_action(
     commit_id: str,
     config: StudyConfiguration,
     user: str,
-    role: str,
+    roles: list[str],
     all_checks_passed: bool,
 ) -> None:
     """Render the approval gate and publish button."""
     st.subheader("🚀 Publish to Production")
 
-    is_authorized = role in _AUTHORIZED_ROLES
+    is_authorized = bool(set(roles).intersection(_AUTHORIZED_ROLES))
     if not is_authorized:
         st.warning(
-            f"Role **{role!r}** is not authorised to publish.  "
+            f"Roles **{roles}** are not authorised to publish.  "
             "Ask a **manager** or **admin** to perform this action."
         )
         st.button("Approve & Publish to Production", disabled=True, key="publisher_publish_btn")
@@ -236,7 +225,7 @@ def _render_publish_action(
 
     st.info(
         f"Publishing commit **{commit_id[:12]}** (v{config.version}) "
-        f"for study **{study_key}** as **{user}** ({role})."
+        f"for study **{study_key}** as **{user}** ({roles})."
     )
 
     if st.button("Approve & Publish to Production", key="publisher_publish_btn"):
@@ -247,11 +236,13 @@ def _render_publish_action(
                     "version": _bump_patch(config.version),
                 }
             )
+            sdk = get_sdk()
             new_commit_id = store.commit_config(
                 study_key=study_key,
                 config=bumped,
+                desc=f"Published to production by {user} ({roles})",
+                sdk=sdk,
                 user=user,
-                desc=f"Published to production by {user} ({role})",
             )
             st.success(
                 f"✅ Published successfully.  "
@@ -292,7 +283,7 @@ def render_page() -> None:
 
     store = _get_store()
 
-    user, role = _render_auth_section()
+    user, roles = _render_auth_section()
     st.divider()
 
     commit_id = _render_commit_selector(study_key, store)
@@ -314,7 +305,7 @@ def render_page() -> None:
     st.divider()
     all_passed, _report = _render_validation_checklist(config)
     st.divider()
-    _render_publish_action(study_key, store, commit_id, config, user, role, all_passed)
+    _render_publish_action(study_key, store, commit_id, config, user, roles, all_passed)
 
 
 render_page()

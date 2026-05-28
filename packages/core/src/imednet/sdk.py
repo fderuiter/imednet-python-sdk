@@ -176,6 +176,10 @@ class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
         self.workflows = self._init_workflows()
 
     @property
+    def auth(self) -> Any:
+        return getattr(self._client, "auth", None)
+
+    @property
     def retry_policy(self) -> RetryPolicy:
         return self._client.retry_policy
 
@@ -274,6 +278,10 @@ class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
 
         self._init_endpoints()
         self.workflows = self._init_workflows()
+
+    @property
+    def auth(self) -> Any:
+        return getattr(self._async_client, "auth", None)
 
     @property
     def retry_policy(self) -> RetryPolicy:
