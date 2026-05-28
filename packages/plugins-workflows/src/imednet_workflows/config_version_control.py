@@ -101,8 +101,10 @@ class ConfigVersionStore:
         self,
         study_key: str,
         config: StudyConfiguration,
-        user: str,
         desc: str,
+        *,
+        sdk: Any = None,
+        user: str = "",
     ) -> str:
         """Serialise *config*, compute its SHA-256 hash, and persist the commit.
 
@@ -110,16 +112,41 @@ class ConfigVersionStore:
             study_key: Identifies the study this configuration belongs to.
             config: The :class:`~imednet.models.study_config.StudyConfiguration`
                 to store.
-            user: Identifier of the person or process making the change.
             desc: Human-readable description of what changed.
+            sdk: The SDK instance used to verify server-side permissions.
+            user: (Deprecated) Identifier of the person or process making the change.
 
         Returns:
             The ``commit_id`` (SHA-256 hex digest of the serialised JSON body).
 
         Raises:
-            ValueError: If a commit with the same content hash already exists
-                for this study, indicating a no-op duplicate.
+            ValueError: If a commit with the same content hash already exists.
+            PermissionError: If the authenticated session does not have manager/admin role.
         """
+        if sdk is not None:
+            roles = sdk.auth.get_user_roles()
+            
+            # Legacy fallback: if using static keys, validate server-side by making an API call
+            if not roles and hasattr(sdk.auth, "api_key") and getattr(sdk.auth, "api_key"):
+                try:
+                    # Validate the key has access by requesting study data
+                    sdk.get_sites(study_key, limit=1)
+                    roles = ["admin"]  # Legacy keys with access map to admin
+                except Exception as exc:
+                    raise PermissionError(f"Server-side authorization failure for legacy key: {exc}")
+
+            if not roles or ("admin" not in roles and "manager" not in roles):
+                raise PermissionError("Server-side authorization failure: user lacks manager or admin role required to publish.")
+            
+            user_id = sdk.auth.get_user_id()
+            if user_id and user_id != "api-key-user":
+                user = user_id
+            elif not user and user_id == "api-key-user":
+                user = "legacy-api-key"
+        
+        if not user:
+            raise ValueError("A user identifier is required to commit.")
+
         config_json = json.dumps(config.model_dump(mode="json", by_alias=True), sort_keys=True)
         commit_id = _sha256_of(config_json)
         timestamp = datetime.now(timezone.utc).isoformat()

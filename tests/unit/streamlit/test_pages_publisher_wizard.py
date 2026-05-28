@@ -167,6 +167,18 @@ def _run_publisher_wizard(
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_study_key = lambda: study_key  # type: ignore[attr-defined]
 
+    class FakeAuth:
+        def get_user_roles(self):
+            # Read from session state simulator instead of UI
+            return [fake_st.selectbox_values.get("_publisher_role", "viewer")]
+        def get_user_id(self):
+            return fake_st.text_input_values.get("_publisher_user", "")
+
+    class FakeSDK:
+        auth = FakeAuth()
+
+    fake_auth_module.get_sdk = lambda: FakeSDK()  # type: ignore[attr-defined]
+
     # Patch ConfigVersionStore so the page uses our test store
     fake_vcm = ModuleType("imednet_workflows.config_version_control")
     fake_vcm.ConfigVersionStore = lambda **kwargs: store  # type: ignore[attr-defined]

@@ -19,6 +19,16 @@ class ApiKeyAuth:
             HEADER_SECURITY_KEY: self.security_key,
         }
 
+    def get_user_roles(self) -> list[str]:
+        # Server-side role resolution for API keys would require an API call.
+        # For legacy fallback, this could be handled at the endpoint level,
+        # but here we return empty or "admin" if we trust the key.
+        # We will let the API handle authorization.
+        return []
+
+    def get_user_id(self) -> str | None:
+        return "api-key-user"
+
     def __repr__(self) -> str:
         return "ApiKeyAuth(api_key='********', security_key='********')"
 

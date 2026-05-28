@@ -1,6 +1,6 @@
 """Authentication strategy protocol."""
 
-from typing import Dict, Protocol, runtime_checkable
+from typing import Dict, List, Optional, Protocol, runtime_checkable
 
 
 @runtime_checkable
@@ -14,3 +14,12 @@ class AuthStrategy(Protocol):
     def get_headers(self) -> Dict[str, str]:
         """Return authentication headers."""
         ...
+
+    def get_user_roles(self) -> List[str]:
+        """Return resolved roles for the user, if available."""
+        ...
+
+    def get_user_id(self) -> Optional[str]:
+        """Return user identity, if available."""
+        ...
+
