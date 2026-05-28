@@ -23,6 +23,25 @@ Example configuration::
    tracer = trace.get_tracer(__name__)
    client = Client(api_key="A", security_key="B", tracer=tracer)
 
+Contract Drift Telemetry
+------------------------
+
+The SDK proactively monitors API responses for schema drift against its internal models.
+When an undocumented field is received or a field changes type, the SDK logs a warning
+via the ``imednet.drift`` logger.
+
+These logs allow developers to identify breaking API changes or additive field additions
+before they cause systemic regressions. 
+
+**Additive Drift:** New undocumented fields are logged as additive drift. The SDK drops
+these fields during model creation but warns the user.
+**Destructive Drift:** Missing required fields or changed field types (e.g. from integer
+to dictionary) are logged as destructive drift. In many cases these will raise
+validation errors, but the drift logger isolates the root cause.
+
+To monitor for drift, ensure your application captures warnings from the ``imednet.drift``
+logger.
+
 Request Lifecycle
 -----------------
 

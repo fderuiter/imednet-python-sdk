@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Callable, Dict, Union, get_args, get_origin
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 from typing_extensions import Self
 
 from imednet.utils.validators import (
@@ -98,7 +98,44 @@ class JsonModel(BaseModel):
     @classmethod
     def from_json(cls, data: Any) -> Self:
         """Validate data coming from JSON APIs."""
-        return cls.model_validate(data)
+        try:
+            return cls.model_validate(data)
+        except Exception as e:
+            import logging
+            logging.getLogger("imednet.drift").warning(
+                f"Drift detected (destructive): {cls.__name__} validation failed: {e}"
+            )
+            raise
+
+    @model_validator(mode="before")
+    @classmethod
+    def _detect_drift(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+            
+        import logging
+        logger = logging.getLogger("imednet.drift")
+        
+        defined_fields = set(cls.model_fields.keys())
+        for name, field in cls.model_fields.items():
+            if field.alias:
+                defined_fields.add(field.alias)
+                
+        incoming_keys = set(data.keys())
+        
+        unexpected_fields = incoming_keys - defined_fields
+        if unexpected_fields:
+            logger.warning(f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}")
+            
+        missing_fields = []
+        for name, field in cls.model_fields.items():
+            if field.is_required():
+                if name not in incoming_keys and (not field.alias or field.alias not in incoming_keys):
+                    missing_fields.append(name)
+        if missing_fields:
+            logger.warning(f"Drift detected (destructive): {cls.__name__} missing required fields: {', '.join(sorted(missing_fields))}")
+            
+        return data
 
     @field_validator("*", mode="before")
     def _normalise(cls, v: Any, info: Any) -> Any:  # noqa: D401
