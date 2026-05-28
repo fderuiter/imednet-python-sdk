@@ -58,6 +58,16 @@ make docs
 ```
 Coverage must stay ≥ 90%.
 
+### Containerized Integration Tests
+
+To run the containerized integration tests for the MongoDB and Neo4j sinks locally using ephemeral Docker containers, run the following single command:
+
+```bash
+make test-containers
+```
+
+This will automatically spin up the required database containers, run the verification tests, and tear the containers down afterwards.
+
 ## Incremental typing ratchet
 Typing rigor is increased incrementally across workspace packages instead of one
 strict-mode migration.

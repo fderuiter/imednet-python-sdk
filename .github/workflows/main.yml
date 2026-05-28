@@ -168,10 +168,17 @@ jobs:
       - name: Install Dependencies
         run: poetry install --with dev
 
+      - name: Start Containerized Databases
+        run: |
+          docker compose up -d
+          # Wait for databases to be ready
+          sleep 15
+          
       - name: Run Tests
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
+          IMEDNET_TEST_CONTAINERS: "1"
         run: |
           poetry run pytest -q \
             --cov=imednet \
@@ -182,6 +189,10 @@ jobs:
             --cov-fail-under=90 \
             -m "not live" \
             --ignore=tests/live/
+
+      - name: Stop and Cleanup Containers
+        if: always()
+        run: docker compose down -v
 
   # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
