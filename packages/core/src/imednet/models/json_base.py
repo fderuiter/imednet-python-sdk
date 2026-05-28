@@ -137,7 +137,7 @@ class JsonModel(BaseModel):
             
         return data
 
-    @field_validator("*", mode="before")
+    @field_validator("*", check_fields=False, mode="before")
     def _normalise(cls, v: Any, info: Any) -> Any:  # noqa: D401
         """Normalize common primitive types before validation."""
         if not info.field_name:

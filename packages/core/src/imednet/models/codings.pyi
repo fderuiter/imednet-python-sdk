@@ -1,0 +1,23 @@
+from datetime import datetime
+from typing import Any, Optional, Dict, List
+from imednet.models.json_base import JsonModel
+
+class Coding(JsonModel):
+    study_key: Optional[str]
+    site_name: Optional[str]
+    site_id: Optional[int]
+    subject_id: Optional[int]
+    subject_key: Optional[str]
+    form_id: Optional[int]
+    form_name: Optional[str]
+    form_key: Optional[str]
+    record_id: Optional[int]
+    variable: Optional[str]
+    value: Optional[str]
+    coding_id: Optional[int]
+    code: Optional[str]
+    coded_by: Optional[str]
+    dictionary_name: Optional[str]
+    dictionary_version: Optional[str]
+    date_coded: Optional[str]
+
