@@ -13,7 +13,7 @@ from typing import Any
 
 import streamlit as st
 
-from imednet.models.study_config import StudyConfiguration
+from imednet.spi.models import StudyConfiguration
 from imednet_streamlit.auth import get_study_key
 from imednet_workflows.config_version_control import ConfigVersionStore
 

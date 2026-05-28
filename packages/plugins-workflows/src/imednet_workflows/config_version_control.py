@@ -16,7 +16,7 @@ from pathlib import Path
 from threading import RLock
 from typing import Any
 
-from imednet.models.study_config import StudyConfiguration
+from imednet.spi.models import StudyConfiguration
 
 _DEFAULT_DB_PATH = Path.home() / ".imednet" / "config_versions.sqlite3"
 

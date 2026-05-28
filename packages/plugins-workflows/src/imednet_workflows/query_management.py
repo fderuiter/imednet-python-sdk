@@ -2,10 +2,10 @@
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
-from imednet.models import Query
+from imednet.spi.models import Query
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 
 class QueryManagementWorkflow:

@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from imednet.models.records import Record
-from imednet.models.variables import Variable
-from imednet.validation.cache import SchemaCache
+from imednet.spi.models import Record
+from imednet.spi.models import Variable
+from imednet.spi.validation import SchemaCache
 
 from .cached_loader import CachedRecordsLoader
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 _SCHEMA_TYPE_MAP = {
     "bool": "boolean",

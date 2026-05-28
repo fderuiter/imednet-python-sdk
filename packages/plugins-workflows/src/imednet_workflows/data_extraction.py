@@ -2,10 +2,10 @@
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
-from imednet.models import Record, RecordRevision
+from imednet.spi.models import Record, RecordRevision
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 
 class DataExtractionWorkflow:

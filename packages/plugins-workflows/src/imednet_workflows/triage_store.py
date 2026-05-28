@@ -11,7 +11,7 @@ from threading import RLock
 from typing import Callable, Iterator, Optional
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from imednet.models.triage import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
+from imednet.spi.models import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
 
 _SAFE_SQL_IDENTIFIER = re.compile(r"^[A-Za-z0-9._:-]+$")
 _SENSITIVE_QUERY_KEYS = {"api_key", "password", "secret", "security_key", "token"}

@@ -4,8 +4,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from imednet.models.standards import StandardsProfile, ValidationViolation
-from imednet.utils.validators import is_boolean_token, is_missing_value, parse_bool
+from imednet.spi.models import StandardsProfile, ValidationViolation
+from imednet.spi.utils import is_boolean_token, is_missing_value, parse_bool
 
 
 class NormalizationResult(BaseModel):

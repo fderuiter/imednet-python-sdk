@@ -37,10 +37,14 @@ def test_core_does_not_import_cli():
     """Ensure no file outside of imednet/cli/ imports the cli module."""
     core_dir = Path(imednet.__file__).parent
     cli_dir = core_dir / "cli"
+    spi_dir = core_dir / "spi"
 
     for file in get_all_python_files(core_dir):
         # Skip CLI directory itself and its subdirectories
         if cli_dir in file.parents or file.parent == cli_dir:
+            continue
+        # Skip SPI directory because it intentionally re-exports the CLI module for extensions
+        if spi_dir in file.parents or file.parent == spi_dir:
             continue
 
         imports = get_imports_from_file(file)
@@ -78,6 +82,37 @@ def test_workflows_does_not_import_providers():
             assert not imp.startswith(
                 "apache_airflow_providers_imednet"
             ), f"File {file} has hard import of {imp}"
+
+
+def test_extensions_use_spi():
+    """Ensure extension packages use the SPI or top-level public API and not core internals."""
+    # We will check packages/plugins-workflows, packages/plugins-streamlit, and packages/providers-airflow
+    app_dir = Path(imednet.__file__).parent.parent.parent.parent
+    packages_dir = app_dir / "packages"
+    
+    extension_dirs = [
+        packages_dir / "plugins-workflows" / "src",
+        packages_dir / "plugins-streamlit" / "src",
+        packages_dir / "providers-airflow" / "src",
+    ]
+
+    for ext_dir in extension_dirs:
+        if not ext_dir.exists():
+            continue
+            
+        for file in get_all_python_files(ext_dir):
+            imports = get_imports_from_file(file)
+            for imp in imports:
+                # If they import imednet, it must be the top level (e.g. `imednet` itself) 
+                # or through the SPI `imednet.spi`
+                if imp.startswith("imednet.") and not imp.startswith("imednet.spi"):
+                    # The only allowed exceptions are imednet.sdk, imednet.config or something imported via top-level.
+                    # Usually, they should just `from imednet import ImednetSDK` which is `imp == "imednet"` 
+                    # If imp == "imednet", we don't catch it here.
+                    pytest.fail(
+                        f"Architectural violation: {file} imports '{imp}'. "
+                        "Extensions must use the SPI ('imednet.spi') instead of core internals."
+                    )
 
 
 def test_endpoint_no_shared_mutable_state():

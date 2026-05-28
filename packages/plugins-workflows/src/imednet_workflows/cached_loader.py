@@ -9,13 +9,13 @@ from typing import TYPE_CHECKING, Any, Iterable, cast
 
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from imednet.models.records import Record
-from imednet.utils.filters import build_filter_string
+from imednet.spi.models import Record
+from imednet.spi.utils import build_filter_string
 
 from .chunked_pipeline import DEFAULT_CHUNK_SIZE
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 DEFAULT_CACHE_DIR = Path.home() / ".imednet" / "cache"
 

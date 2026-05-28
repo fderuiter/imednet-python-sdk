@@ -10,14 +10,14 @@ except ImportError:
     pd = None  # type: ignore
 from pydantic import BaseModel, Field, ValidationError, create_model
 
-from imednet.endpoints.records import Record as RecordModel  # type: ignore[attr-defined]
-from imednet.endpoints.variables import Variable as VariableModel  # type: ignore[attr-defined]
+from imednet.spi.endpoints import Record as RecordModel  # type: ignore[attr-defined]
+from imednet.spi.endpoints import Variable as VariableModel  # type: ignore[attr-defined]
 
 from .cached_loader import CachedRecordsLoader
 from .chunked_pipeline import DEFAULT_CHUNK_SIZE, ChunkedRecordPipeline, iter_chunks
 
 if TYPE_CHECKING:
-    from imednet.sdk import ImednetSDK
+    from imednet import ImednetSDK
 
 # Setup basic logging
 logger = logging.getLogger(__name__)

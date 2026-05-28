@@ -6,9 +6,9 @@ from typing import List, Optional
 import typer
 from rich import print
 
-from imednet.cli.decorators import with_sdk
-from imednet.cli.utils import STUDY_KEY_ARG, parse_filter_args
-from imednet.sdk import ImednetSDK
+from imednet.spi.cli import with_sdk
+from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args
+from imednet import ImednetSDK
 
 from .data_extraction import DataExtractionWorkflow
 from .state_ledger import ExtractionStateLedger
