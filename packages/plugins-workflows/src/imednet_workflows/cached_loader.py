@@ -216,22 +216,13 @@ class CachedRecordsLoader:
             reraise=True,
         )
         endpoint = self._sdk.records
-        list_sync = getattr(endpoint, "_list_sync", None)
-        require_sync_client = getattr(endpoint, "_require_sync_client", None)
-        paginator_cls = getattr(endpoint, "PAGINATOR_CLS", None)
-        if not callable(list_sync) or not callable(require_sync_client) or paginator_cls is None:
-            raise TypeError(
-                "Records endpoint does not support raw filter overrides: "
-                "_list_sync, _require_sync_client, and PAGINATOR_CLS are required"
-            )
+        from imednet.compat.v1 import execute_list_sync
+
         return cast(
             list[Record],
             retryer(
-                # _list_sync signature:
-                # (client, paginator_cls, *, study_key, extra_params, **filters)
-                list_sync,
-                require_sync_client(),
-                paginator_cls,
+                execute_list_sync,
+                endpoint,
                 study_key=study_key,
                 extra_params={"filter": filter_string},
                 record_data_filter=None,
