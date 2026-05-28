@@ -1,12 +1,16 @@
 name: Live Integration Tests
 
 on:
+  pull_request_target:
+    branches:
+      - main
   workflow_dispatch:
   schedule:
     - cron: "0 2 1 * *"
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   live-validation:
@@ -16,6 +20,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,12 +34,58 @@ jobs:
       - name: Install Dependencies
         run: poetry install --with dev
 
-      - name: Execute Live Test Suite
+      - name: Run Smoke Tests
+        env:
+          IMEDNET_API_KEY: ${{ secrets.IMEDNET_API_KEY }}
+          IMEDNET_SECURITY_KEY: ${{ secrets.IMEDNET_SECURITY_KEY }}
+          IMEDNET_BASE_URL: ${{ vars.IMEDNET_BASE_URL }}
+        run: |
+          poetry run python scripts/post_smoke_record.py
+
+      - name: Execute Live Test Suite & Detect Drift
+        id: live_tests
+        continue-on-error: true
         env:
           IMEDNET_API_KEY: ${{ secrets.IMEDNET_API_KEY }}
           IMEDNET_SECURITY_KEY: ${{ secrets.IMEDNET_SECURITY_KEY }}
           IMEDNET_BASE_URL: ${{ vars.IMEDNET_BASE_URL }}
           IMEDNET_RUN_E2E: "1"
           IMEDNET_ALLOW_MUTATION: ${{ vars.IMEDNET_ALLOW_MUTATION }}
+          IMEDNET_STRICT_MODE: "1"
         run: |
-          poetry run pytest tests/live/ -v
+          set +e
+          poetry run pytest tests/live/ -v --log-cli-level=WARNING > pytest_output.txt 2>&1
+          EXIT_CODE=$?
+          set -e
+          
+          echo "pytest_exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          
+          grep -i -E "(ValidationError|Structural shift detected|extra fields not permitted)" pytest_output.txt > drift_report.txt || true
+          
+          if [ -s drift_report.txt ]; then
+            echo "drift_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "drift_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post Drift Report
+        if: steps.live_tests.outputs.drift_detected == 'true' && github.event_name == 'pull_request_target'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('drift_report.txt', 'utf8');
+            const body = `### ⚠️ API Drift Detected\n\nThe live integration tests detected schema drift or structural poly-type shifts:\n\n\`\`\`\n${report.substring(0, 60000)}\n\`\`\``;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Fail if tests failed
+        if: steps.live_tests.outputs.pytest_exit_code != '0'
+        run: |
+          cat pytest_output.txt
+          exit ${{ steps.live_tests.outputs.pytest_exit_code }}

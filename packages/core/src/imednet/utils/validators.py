@@ -128,6 +128,8 @@ def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list)
         return default_factory()
     if isinstance(v, list):
         return v
+    import logging
+    logging.getLogger(__name__).warning("Structural shift detected: API returned an object where a list was expected. Coercing by wrapping in a list.")
     return [v]
 
 
@@ -141,4 +143,10 @@ def parse_dict_or_default(
         return default_factory()
     if isinstance(v, dict):
         return v
+    if isinstance(v, list):
+        if len(v) > 0 and isinstance(v[0], dict):
+            import logging
+            logging.getLogger(__name__).warning("Structural shift detected: API returned a list where an object was expected. Coercing by extracting the first item.")
+            return v[0]
+        return default_factory()
     return default_factory()  # fallback if not a dict
