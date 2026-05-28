@@ -89,8 +89,14 @@ def parse_bool(v: Any) -> bool:
                 return bool(float(val))
             except (ValueError, TypeError):
                 pass
-    if isinstance(v, (int, float)):
+        
+        import logging
+        logging.getLogger("imednet.drift").warning(f"Drift detected (destructive): type-changed field. Expected bool, got str (value: {v!r})")
+    elif isinstance(v, (int, float)):
         return bool(v)
+    elif v is not None:
+        import logging
+        logging.getLogger("imednet.drift").warning(f"Drift detected (destructive): type-changed field. Expected bool, got {type(v).__name__} (value: {v!r})")
     return False
 
 
@@ -110,6 +116,8 @@ def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
         except (ValueError, TypeError, OverflowError):
             if strict:
                 raise
+            import logging
+            logging.getLogger("imednet.drift").warning(f"Drift detected (destructive): type-changed field. Expected int, got {type(v).__name__} (value: {v!r})")
             return default
 
 

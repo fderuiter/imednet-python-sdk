@@ -1,6 +1,6 @@
 permissions:
   contents: read
-name: Smoke
+name: Contract Guardrail
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  smoke:
+  validate:
     if: github.actor == github.repository_owner
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +23,18 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --with dev
+      - name: Install Newman
+        run: npm install -g newman
+      - name: Run Postman tests
+        env:
+          API_KEY: ${{ secrets.APIKEY }}
+          SECURITY_KEY: ${{ secrets.SECURITYKEY }}
+          BASE_URL: ${{ vars.BASE_URL }}
+        run: |
+          newman run imednet.postman_collection.json \
+            --env-var "api_key=$API_KEY" \
+            --env-var "security_key=$SECURITY_KEY" \
+            --env-var "base_url=$BASE_URL" > postman.log 2>&1
       - name: Post smoke record
         id: smoke_record
         env:
@@ -41,23 +53,15 @@ jobs:
           case "$status" in
             0)
               echo "::notice:: Smoke status: passed"
-              exit 0
               ;;
             2)
               echo "::notice:: Smoke status: skipped (missing live identifiers)"
-              exit 0
               ;;
             *)
               echo "::error:: Smoke status: failed"
+              exit 1
               ;;
           esac
-          exit 1
-      - name: Upload smoke log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: smoke-log
-          path: smoke.log
       - name: Run live tests
         env:
           IMEDNET_API_KEY: ${{ secrets.APIKEY }}
@@ -65,4 +69,29 @@ jobs:
           IMEDNET_BASE_URL: ${{ vars.BASE_URL }}
           IMEDNET_RUN_E2E: "1"
         run: |
-          poetry run pytest -vv -s --log-cli-level=INFO tests/live
+          poetry run pytest -vv -s --log-cli-level=INFO tests/live 2>&1 | tee live_tests.log
+      - name: Analyze API Drift
+        if: always()
+        run: |
+          # Count drift logs
+          touch smoke.log live_tests.log
+          drift_count=$(grep -c "Drift detected" smoke.log live_tests.log | awk -F: '{sum+=$2} END {print sum}')
+          echo "Found $drift_count drift logs."
+          
+          if [ "$drift_count" -gt 0 ]; then
+            echo "::warning:: Significant API drift detected ($drift_count instances). Upstream contract has changed."
+            # We can choose to fail the build if drift logs exceed a threshold
+            if [ "$drift_count" -gt 20 ]; then
+              echo "::error:: Drift threshold exceeded. Triggering alert."
+              exit 1
+            fi
+          fi
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-logs
+          path: |
+            smoke.log
+            live_tests.log
+            postman.log
