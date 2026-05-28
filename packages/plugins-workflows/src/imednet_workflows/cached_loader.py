@@ -216,15 +216,13 @@ class CachedRecordsLoader:
             reraise=True,
         )
         endpoint = self._sdk.records
-        from imednet.compat.v1 import execute_list_sync
 
         return cast(
             list[Record],
             retryer(
-                execute_list_sync,
-                endpoint,
+                endpoint.list,
                 study_key=study_key,
-                extra_params={"filter": filter_string},
+                filter=filter_string,
                 record_data_filter=None,
             ),
         )

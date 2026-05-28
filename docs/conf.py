@@ -55,10 +55,6 @@ if "pandas" not in sys.modules:
     pandas_stub.json_normalize = json_normalize
     sys.modules["pandas"] = pandas_stub
 
-for mod in ["numpy", "matplotlib"]:
-    if mod not in sys.modules:
-        sys.modules[mod] = types.ModuleType(mod)
-
 from imednet import __version__ as imednet_version  # noqa: E402
 
 project = "imednet"

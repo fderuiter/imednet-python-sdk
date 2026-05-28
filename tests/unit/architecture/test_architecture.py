@@ -88,7 +88,7 @@ def test_extensions_use_spi():
     """Ensure extension packages use the SPI or top-level public API and not core internals."""
     # We will check packages/plugins-workflows, packages/plugins-streamlit, and packages/providers-airflow
     app_dir = Path(imednet.__file__).parent.parent.parent.parent
-    packages_dir = app_dir / "packages"
+    packages_dir = app_dir
     
     extension_dirs = [
         packages_dir / "plugins-workflows" / "src",
