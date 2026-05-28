@@ -1,10 +1,21 @@
 import json
 
 import httpx
+from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from imednet.errors import ApiError, ClientError
 
 from .models import Layout
+
+trace: "Any" = None
+try:
+    from opentelemetry import trace as _trace
+
+    trace = _trace
+except ImportError:
+    pass
+
+from typing import Any
 
 
 class FormDesignerClient:
@@ -28,6 +39,11 @@ class FormDesignerClient:
         self.phpsessid = phpsessid
         self.timeout = timeout
         self.session = httpx.Client(timeout=timeout)
+
+        if trace is not None:
+            self._tracer = trace.get_tracer(__name__)
+        else:
+            self._tracer = None
 
     def save_form(
         self,
@@ -98,24 +114,55 @@ class FormDesignerClient:
             "__internal_ajax_request": "1",
         }
 
-        response = self.session.post(url, data=payload, headers=headers)
+        retryer = Retrying(
+            stop=stop_after_attempt(4),
+            retry=retry_if_exception_type((httpx.RequestError, httpx.HTTPStatusError)),
+            wait=wait_exponential(multiplier=0.1),
+            reraise=True,
+        )
 
-        response.raise_for_status()
+        def _execute_request() -> str:
+            response = self.session.post(url, data=payload, headers=headers)
+            response.raise_for_status()
 
-        # Check for application-level errors (often returned as 200 OK but with error text)
-        # However, the requirement says "Signals the backend to return a JSON response"
-        # So we should try to parse it.
-        try:
-            resp_data = response.json()
-            # If it's JSON, it usually contains status info.
-            # Example success: {"success": true, ...}
-            # Example error: {"error": "..."}
-            if isinstance(resp_data, dict) and resp_data.get("error"):
-                raise ApiError(
-                    f"Server Error: {resp_data['error']}", status_code=response.status_code
-                )
-        except json.JSONDecodeError as exc:
-            # Fallback if not JSON (legacy endpoints sometimes return HTML on error)
-            raise ApiError(response.text, status_code=response.status_code) from exc
+            # Check for application-level errors (often returned as 200 OK but with error text)
+            # However, the requirement says "Signals the backend to return a JSON response"
+            # So we should try to parse it.
+            try:
+                resp_data = response.json()
+                # If it's JSON, it usually contains status info.
+                # Example success: {"success": true, ...}
+                # Example error: {"error": "..."}
+                if isinstance(resp_data, dict) and resp_data.get("error"):
+                    raise ApiError(
+                        f"Server Error: {resp_data['error']}", status_code=response.status_code
+                    )
+            except json.JSONDecodeError as exc:
+                # Fallback if not JSON (legacy endpoints sometimes return HTML on error)
+                raise ApiError(response.text, status_code=response.status_code) from exc
 
-        return response.text
+            return response.text
+
+        if self._tracer:
+            with self._tracer.start_as_current_span(
+                "form_designer.save_form",
+                attributes={
+                    "form_id": form_id,
+                    "community_id": community_id,
+                    "revision": revision,
+                },
+            ) as span:
+                try:
+                    result = retryer(_execute_request)
+                    span.set_attribute("success", True)
+                    if trace is not None:
+                        span.set_status(trace.Status(trace.StatusCode.OK))
+                    return result
+                except Exception as e:
+                    span.record_exception(e)
+                    if trace is not None:
+                        span.set_status(trace.Status(trace.StatusCode.ERROR))
+                    span.set_attribute("success", False)
+                    raise
+        else:
+            return retryer(_execute_request)
