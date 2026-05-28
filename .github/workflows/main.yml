@@ -167,18 +167,11 @@ jobs:
 
       - name: Install Dependencies
         run: poetry install --with dev
-
-      - name: Start Containerized Databases
-        run: |
-          docker compose up -d
-          # Wait for databases to be ready
-          sleep 15
           
       - name: Run Tests
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
-          IMEDNET_TEST_CONTAINERS: "1"
         run: |
           poetry run pytest -q \
             --cov=imednet \
@@ -190,9 +183,43 @@ jobs:
             -m "not live" \
             --ignore=tests/live/
 
-      - name: Stop and Cleanup Containers
-        if: always()
-        run: docker compose down -v
+  # ------------------------------------------------------------------
+  # JOB 3.5: INTEGRATION SANDBOX (Hermetic testing for localizable sinks)
+  # ------------------------------------------------------------------
+  integration-sandbox:
+    name: Hermetic Integration Sandbox
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            export_logic:
+              - 'packages/core/src/imednet/integrations/**'
+              - 'docker-compose.yml'
+              - 'tests/integration/test_containerized_sinks.py'
+              
+      - uses: actions/setup-python@v5
+        if: steps.filter.outputs.export_logic == 'true'
+        with:
+          python-version: "3.10"
+
+      - uses: abatilo/actions-poetry@v2
+        if: steps.filter.outputs.export_logic == 'true'
+
+      - name: Install Dependencies
+        if: steps.filter.outputs.export_logic == 'true'
+        run: poetry install --with dev
+
+      - name: Run Hermetic Integration Sandbox
+        if: steps.filter.outputs.export_logic == 'true'
+        env:
+          IMEDNET_API_KEY: dummy
+          IMEDNET_SECURITY_KEY: dummy
+        run: make test-containers
 
   # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
