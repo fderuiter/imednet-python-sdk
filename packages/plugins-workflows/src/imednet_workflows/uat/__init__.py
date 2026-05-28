@@ -9,6 +9,7 @@ from .models import (
     UATVariableSpec,
     VariableTestStrategy,
 )
+from .engine import UATExecutionEngine, EditCheckResultStatus, EditCheckVerificationReport
 
 __all__ = [
     "RecordTestType",
@@ -19,4 +20,7 @@ __all__ = [
     "UATSubjectSpec",
     "UATVariableSpec",
     "VariableTestStrategy",
+    "UATExecutionEngine",
+    "EditCheckResultStatus",
+    "EditCheckVerificationReport",
 ]
