@@ -181,6 +181,47 @@ def validate_record_data(
         _check_type(variables[name].variable_type, value)
 
 
+def calculate_readiness_score(
+    schema: BaseSchemaCache[Any],
+    form_key: str,
+    data: Dict[str, Any],
+) -> Tuple[float, list[str]]:
+    """Calculate the schema readiness score for a record's data.
+
+    Returns:
+        A tuple of (score, list of validation failure reasons).
+    """
+    variables = schema.variables_for_form(form_key)
+    if not variables:
+        return 0.0, [f"Unknown form {form_key}"]
+
+    expected_count = len(variables)
+    if expected_count == 0:
+        return 100.0, []
+
+    valid_count = 0
+    reasons = []
+
+    unknown = [k for k in data if k not in variables]
+    if unknown:
+        reasons.append(f"Unknown variables: {', '.join(unknown)}")
+
+    for name, var in variables.items():
+        if name not in data:
+            reasons.append(f"Missing expected variable: {name}")
+            continue
+
+        value = data[name]
+        try:
+            _check_type(var.variable_type, value)
+            valid_count += 1
+        except Exception as e:
+            reasons.append(f"Variable {name} invalid: {str(e)}")
+
+    score = (valid_count / expected_count) * 100.0
+    return score, reasons
+
+
 def validate_record_entry(
     schema: BaseSchemaCache[Any],
     record: Dict[str, Any],

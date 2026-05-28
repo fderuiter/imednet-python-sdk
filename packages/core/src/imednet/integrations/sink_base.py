@@ -76,7 +76,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import TracebackType
-from typing import Any, Iterator, Optional, Sequence, Type
+from typing import Any, Iterable, Iterator, Optional, Sequence, Type
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +112,8 @@ class SinkConfig:
     retry_backoff: float = _DEFAULT_RETRY_BACKOFF
     idempotent: bool = True
     extra: dict[str, Any] = field(default_factory=dict)
+    quality_gate_enabled: bool = False
+    min_schema_readiness_score: float = 100.0
 
 
 # ---------------------------------------------------------------------------
@@ -264,6 +266,71 @@ def _require_optional_dep(package: str, extras_key: str) -> Any:
                 f"Install with `pip install 'imednet[{extras_key}]'`."
             ) from error
         raise
+
+
+def apply_quality_gate(
+    sdk: Any, study_key: str, records: Iterable[Any], config: SinkConfig
+) -> Iterator[Any]:
+    """Filter records based on minimum schema readiness score if enabled."""
+    if not config.quality_gate_enabled:
+        yield from records
+        return
+
+    from imednet.validation.cache import SchemaValidator, calculate_readiness_score
+
+    validator = SchemaValidator(sdk)
+    validator.refresh(study_key)
+
+    dropped_count = 0
+
+    for record in records:
+        if hasattr(record, "model_dump"):
+            rec_dict = record.model_dump()
+        elif hasattr(record, "__dict__"):
+            rec_dict = {
+                "form_key": getattr(record, "form_key", None),
+                "form_id": getattr(record, "form_id", None),
+                "data": getattr(record, "record_data", {}),
+                "record_id": getattr(record, "record_id", None),
+            }
+        elif isinstance(record, dict):
+            rec_dict = record
+        else:
+            rec_dict = {"data": {}}
+
+        fk = rec_dict.get("formKey") or rec_dict.get("form_key")
+        if not fk:
+            fid = rec_dict.get("formId") or rec_dict.get("form_id") or 0
+            fk = validator.schema.form_key_from_id(fid)
+
+        if not fk:
+            logger.info(
+                "Dropped record %s: Unknown form",
+                rec_dict.get("record_id", "Unknown")
+            )
+            dropped_count += 1
+            continue
+
+        data = rec_dict.get("data", {})
+        if data is None:
+            data = {}
+        score, reasons = calculate_readiness_score(validator.schema, fk, data)
+
+        if score < config.min_schema_readiness_score:
+            logger.info(
+                "Dropped record %s (Score: %.1f < %.1f). Reasons: %s",
+                rec_dict.get("record_id", "Unknown"),
+                score,
+                config.min_schema_readiness_score,
+                "; ".join(reasons),
+            )
+            dropped_count += 1
+            continue
+
+        yield record
+
+    if dropped_count > 0:
+        logger.info("Quality gate dropped %d records in total.", dropped_count)
 
 
 def iter_batches(records: Sequence[Any], batch_size: int) -> Iterator[Sequence[Any]]:
