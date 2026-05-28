@@ -9,6 +9,8 @@ from typing import (
     Type,
     TypeVar,
     runtime_checkable,
+    Iterator,
+    AsyncIterator,
 )
 
 from imednet.core.paginator import AsyncPaginator, Paginator
@@ -63,11 +65,11 @@ class ListEndpointProtocol(Protocol[T]):
         study_key: Optional[str] = None,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T]:
+    ) -> Iterator[T]:
         """List items synchronously."""
         ...
 
-    async def _list_async(
+    def _list_async(
         self,
         client: AsyncRequestorProtocol,
         paginator_cls: type[AsyncPaginator],
@@ -75,7 +77,7 @@ class ListEndpointProtocol(Protocol[T]):
         study_key: Optional[str] = None,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> List[T]:
+    ) -> AsyncIterator[T]:
         """List items asynchronously."""
         ...
 
@@ -95,13 +97,13 @@ class SupportsGet(Protocol[T_co]):
 class SupportsList(Protocol[T_co]):
     """Protocol for resources that support ``list`` operations."""
 
-    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Sequence[T_co]:
+    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T_co]:
         """List items synchronously."""
         ...
 
-    async def async_list(
+    def async_list(
         self, study_key: Optional[str] = None, **filters: FilterValue
-    ) -> Sequence[T_co]:
+    ) -> AsyncIterator[T_co]:
         """List items asynchronously."""
         ...
 
