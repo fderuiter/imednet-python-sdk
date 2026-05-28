@@ -573,7 +573,7 @@ def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
     assert len(fake_st.navigation_calls) == 1
     nav = fake_st.navigation_calls[0]
     assert nav.ran is True
-    assert [page["path"] for page in nav.pages] == ["pages/home.py"]
+    assert [page["path"] for page in nav.pages] == ["pages/home.py", "pages/admin.py"]
 
 
 def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
@@ -593,6 +593,7 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
         "pages/review_workbench.py",
         "pages/publisher_wizard.py",
         "pages/data_lineage.py",
+        "pages/admin.py",
     ]
 
 

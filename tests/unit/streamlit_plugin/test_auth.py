@@ -16,23 +16,30 @@ class _SidebarContext:
 
 
 class _FakeStreamlit:
-    def __init__(self, *, text_values: dict[str, str], connect_clicked: bool) -> None:
+    def __init__(self, *, logged_in: bool = False, connect_clicked: bool = False, selected_study: str = "STUDY") -> None:
         self.session_state: dict[str, object] = {}
         self.sidebar = _SidebarContext()
-        self._text_values = text_values
         self._connect_clicked = connect_clicked
         self.success_messages: list[str] = []
         self.error_messages: list[str] = []
+        self.warning_messages: list[str] = []
+        self.info_messages: list[str] = []
+        
+        self.user = {"email": "test@enterprise.com", "is_logged_in": logged_in} if logged_in else {}
+        self.login_called = False
+        self._selected_study = selected_study
 
     def header(self, _: str) -> None:
         pass
 
     def text_input(self, label: str, **kwargs: object) -> str:
         key = kwargs["key"]
-        assert isinstance(key, str)
-        value = self._text_values.get(label, "")
-        self.session_state[key] = value
-        return value
+        self.session_state[key] = ""
+        return ""
+        
+    def selectbox(self, label: str, options: list[str], key: str) -> str:
+        self.session_state[key] = self._selected_study
+        return self._selected_study
 
     def button(self, _: str) -> bool:
         return self._connect_clicked
@@ -42,23 +49,32 @@ class _FakeStreamlit:
 
     def error(self, message: str) -> None:
         self.error_messages.append(message)
+        
+    def warning(self, message: str) -> None:
+        self.warning_messages.append(message)
+        
+    def info(self, message: str) -> None:
+        self.info_messages.append(message)
+        
+    def login(self) -> None:
+        self.login_called = True
 
 
 def test_render_auth_sidebar_not_connected_returns_false(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake_st = _FakeStreamlit(text_values={}, connect_clicked=False)
+    fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
     assert auth.render_auth_sidebar() is False
+    assert len(fake_st.info_messages) > 0
 
 
 def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    fake_st = _FakeStreamlit(
-        text_values={"API Key": "api-key", "Security Key": "security-key", "Study Key": "STUDY"},
-        connect_clicked=True,
-    )
+    fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True, selected_study="STUDY")
     monkeypatch.setattr(auth, "st", fake_st)
+    monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
+    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec"))
     sentinel_sdk = SimpleNamespace(name="sdk")
 
     def _fake_store_sdk(**_: object) -> None:
@@ -73,12 +89,10 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     assert auth.render_auth_sidebar() is True
     assert auth.get_sdk() is sentinel_sdk
     assert auth.get_study_key() == "STUDY"
-    assert auth._KEY_API_KEY not in fake_st.session_state
-    assert auth._KEY_SECURITY_KEY not in fake_st.session_state
 
 
 def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake_st = _FakeStreamlit(text_values={}, connect_clicked=False)
+    fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
     with pytest.raises(RuntimeError):
@@ -86,7 +100,7 @@ def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyP
 
 
 def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake_st = _FakeStreamlit(text_values={}, connect_clicked=False)
+    fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     fake_st.session_state.update(
         {
             auth._KEY_API_KEY: "api-key",
@@ -106,11 +120,10 @@ def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPa
 def test_render_auth_sidebar_build_failure_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    fake_st = _FakeStreamlit(
-        text_values={"API Key": "api-key", "Security Key": "security-key", "Study Key": "STUDY"},
-        connect_clicked=True,
-    )
+    fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
+    monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
+    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec"))
 
     def _raise_build_error(**_: object) -> None:
         raise RuntimeError("boom")
@@ -118,32 +131,28 @@ def test_render_auth_sidebar_build_failure_clears_secret_keys(
     monkeypatch.setattr(auth, "_build_sdk", _raise_build_error)
 
     assert auth.render_auth_sidebar() is False
-    assert auth._KEY_API_KEY not in fake_st.session_state
-    assert auth._KEY_SECURITY_KEY not in fake_st.session_state
     assert auth._KEY_SDK not in fake_st.session_state
 
 
 def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secrets(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    fake_st = _FakeStreamlit(
-        text_values={"API Key": "api-key", "Security Key": "security-key"},
-        connect_clicked=True,
-    )
+    fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
+    monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
+    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: (None, None))
 
     result = auth.render_auth_sidebar()
 
     assert result is False
-    assert fake_st.session_state.get(auth._KEY_CONNECTED) is False
-    assert auth._KEY_API_KEY not in fake_st.session_state
-    assert auth._KEY_SECURITY_KEY not in fake_st.session_state
+    assert fake_st.session_state.get(auth._KEY_CONNECTED) is not True
     assert auth._KEY_SDK not in fake_st.session_state
-    assert fake_st.error_messages == ["All fields are required."]
+    assert len(fake_st.error_messages) > 0
+    assert "Managed credentials" in fake_st.error_messages[0]
 
 
 def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake_st = _FakeStreamlit(text_values={}, connect_clicked=False)
+    fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
     sdk_args = {}
@@ -161,7 +170,7 @@ def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_get_study_key_raises_when_missing(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake_st = _FakeStreamlit(text_values={}, connect_clicked=False)
+    fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
     with pytest.raises(RuntimeError, match="Study key is not set"):

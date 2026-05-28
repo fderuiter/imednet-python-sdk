@@ -27,6 +27,32 @@ def _mark_disconnected() -> None:
     st.session_state.pop(_KEY_SDK, None)
 
 
+import os
+import sqlite3
+
+def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
+    db_path = os.environ.get("IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"))
+    if not os.path.exists(db_path):
+        return None, None
+    try:
+        with sqlite3.connect(db_path) as conn:
+            row = conn.execute("SELECT api_key, security_key FROM tenants WHERE study_key=?", (study_key,)).fetchone()
+            if row:
+                return row[0], row[1]
+    except Exception:
+        pass
+    return None, None
+
+def get_provisioned_studies() -> list[str]:
+    db_path = os.environ.get("IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"))
+    if not os.path.exists(db_path):
+        return []
+    try:
+        with sqlite3.connect(db_path) as conn:
+            return [row[0] for row in conn.execute("SELECT study_key FROM tenants")]
+    except sqlite3.OperationalError:
+        return []
+
 def render_auth_sidebar() -> bool:
     """Render sidebar authentication controls and update session auth state.
 
@@ -35,29 +61,51 @@ def render_auth_sidebar() -> bool:
         otherwise ``False``.
     """
     with st.sidebar:
-        st.header("🔐 Authentication")
-        api_key = st.text_input("API Key", type="password", key=_KEY_API_KEY)
-        security_key = st.text_input("Security Key", type="password", key=_KEY_SECURITY_KEY)
-        study_key = st.text_input("Study Key", key=_KEY_STUDY_KEY)
+        st.header("🔐 Enterprise SSO")
+        
+        # OIDC integration for corporate credentials
+        is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(st, "user", {})
+        
+        if not is_logged_in:
+            st.info("Please authenticate using your corporate IdP.")
+            if hasattr(st, "login"):
+                if st.button("Login via SSO"):
+                    st.login()
+            else:
+                st.warning("SSO module not found in this Streamlit version.")
+            return False
+            
+        user_email = getattr(st.user, "email", "Corporate User")
+        if not user_email and hasattr(st.user, "get"):
+            user_email = st.user.get("email", "Corporate User")
+            
+        st.success(f"SSO Active: {user_email}")
+        
+        studies = get_provisioned_studies()
+        if not studies:
+            st.warning("No studies available. Contact Global Admin to provision environments.")
+            return False
+
+        study_key = st.selectbox("Select Authorized Study", options=studies, key=_KEY_STUDY_KEY)
 
         if st.button("Connect"):
-            if api_key and security_key and study_key:
+            api_key, security_key = get_tenant_credentials(study_key)
+            if not api_key:
+                st.error("Managed credentials for this tenant are missing.")
+            else:
                 try:
                     _build_sdk(api_key=api_key, security_key=security_key)
-                except Exception as exc:
-                    _mark_disconnected()
-                    st.error(f"Connection failed ({type(exc).__name__}).")
-                else:
                     st.session_state[_KEY_CONNECTED] = True
                     st.success("Connected ✓")
-                finally:
-                    st.session_state.pop(_KEY_API_KEY, None)
-                    st.session_state.pop(_KEY_SECURITY_KEY, None)
-            else:
-                _mark_disconnected()
-                st.session_state.pop(_KEY_API_KEY, None)
-                st.session_state.pop(_KEY_SECURITY_KEY, None)
-                st.error("All fields are required.")
+                except Exception as exc:
+                    _mark_disconnected()
+                    err_str = str(exc)
+                    if "Unauthorized" in err_str or "AuthError" in type(exc).__name__:
+                        st.warning("Session expired or Unauthorized. Redirecting to SSO flow...")
+                        if hasattr(st, "login"):
+                            st.login()
+                    else:
+                        st.error(f"Connection failed ({type(exc).__name__}).")
 
     return bool(st.session_state.get(_KEY_CONNECTED))
 

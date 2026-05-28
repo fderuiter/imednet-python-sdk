@@ -11,9 +11,9 @@ from imednet.validation.cache import AsyncSchemaValidator, SchemaValidator
 def _build_sdk(variable: Variable, async_mode: bool) -> MagicMock:
     sdk = MagicMock()
     if async_mode:
-        sdk.variables.async_list = AsyncMock(return_value=[variable])
+        sdk.async_get_variables = AsyncMock(return_value=[variable])
     else:
-        sdk.variables.list.return_value = [variable]
+        sdk.get_variables.return_value = [variable]
     return sdk
 
 
@@ -33,9 +33,9 @@ def test_validate_record_unknown_variable(async_mode: bool) -> None:
             validator.validate_record("STUDY", {"formKey": "F1", "data": {"bad": 1}})
 
     if async_mode:
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
+        sdk.async_get_variables.assert_awaited_once_with(study_key="STUDY")
     else:
-        sdk.variables.list.assert_called_once_with(study_key="STUDY")
+        sdk.get_variables.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -54,9 +54,9 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
             validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": "x"}})
 
     if async_mode:
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
+        sdk.async_get_variables.assert_awaited_once_with(study_key="STUDY")
     else:
-        sdk.variables.list.assert_called_once_with(study_key="STUDY")
+        sdk.get_variables.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -75,9 +75,9 @@ def test_validate_record_unknown_form(async_mode: bool) -> None:
             validator.validate_record("STUDY", {"formKey": "BAD", "data": {}})
 
     if async_mode:
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
+        sdk.async_get_variables.assert_awaited_once_with(study_key="STUDY")
     else:
-        sdk.variables.list.assert_called_once_with(study_key="STUDY")
+        sdk.get_variables.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -89,13 +89,13 @@ def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
         validator.refresh = AsyncMock(wraps=validator.refresh)  # type: ignore[assignment]
         asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}}))
         validator.refresh.assert_awaited_once_with("STUDY")
-        sdk.variables.async_list.assert_awaited_once_with(study_key="STUDY")
+        sdk.async_get_variables.assert_awaited_once_with(study_key="STUDY")
     else:
         validator = SchemaValidator(sdk)  # type: ignore[assignment]
         validator.refresh = MagicMock(wraps=validator.refresh)  # type: ignore[assignment]
         validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
         validator.refresh.assert_called_once_with("STUDY")
-        sdk.variables.list.assert_called_once_with(study_key="STUDY")
+        sdk.get_variables.assert_called_once_with(study_key="STUDY")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -111,10 +111,10 @@ def test_validate_record_cached(async_mode: bool) -> None:
 
     if async_mode:
         asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}}))
-        sdk.variables.async_list.assert_not_awaited()
+        sdk.async_get_variables.assert_not_awaited()
     else:
         validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
-        sdk.variables.list.assert_not_called()
+        sdk.get_variables.assert_not_called()
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -131,10 +131,10 @@ def test_validate_record_with_form_id_fallback(async_mode: bool) -> None:
 
     if async_mode:
         asyncio.run(validator.validate_record("STUDY", {"formId": 123, "data": {"age": 1}}))
-        sdk.variables.async_list.assert_not_awaited()
+        sdk.async_get_variables.assert_not_awaited()
     else:
         validator.validate_record("STUDY", {"formId": 123, "data": {"age": 1}})
-        sdk.variables.list.assert_not_called()
+        sdk.get_variables.assert_not_called()
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -151,10 +151,10 @@ def test_validate_record_missing_form_identifier(async_mode: bool) -> None:
     # Missing formKey and formId entirely should just skip validation without error
     if async_mode:
         asyncio.run(validator.validate_record("STUDY", {"data": {"age": "bad"}}))
-        sdk.variables.async_list.assert_not_awaited()
+        sdk.async_get_variables.assert_not_awaited()
     else:
         validator.validate_record("STUDY", {"data": {"age": "bad"}})
-        sdk.variables.list.assert_not_called()
+        sdk.get_variables.assert_not_called()
 
 
 def test_schema_validator_is_async_deprecation_warning() -> None:

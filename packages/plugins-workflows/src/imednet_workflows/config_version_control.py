@@ -18,7 +18,9 @@ from typing import Any
 
 from imednet.spi.models import StudyConfiguration
 
-_DEFAULT_DB_PATH = Path.home() / ".imednet" / "config_versions.sqlite3"
+import os
+
+_DEFAULT_DB_PATH = Path(os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3"))
 
 
 def _sha256_of(content: str) -> str:

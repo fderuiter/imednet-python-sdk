@@ -8,8 +8,8 @@ include = [{ path = "src/imednet_streamlit/py.typed", format = ["sdist", "wheel"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-imednet = ">=0.8.0, <1.0.0"
-imednet-workflows = ">=0.6.0, <1.0.0"
+imednet = { path = "../core", develop = true }
+imednet-workflows = { path = "../plugins-workflows", develop = true }
 streamlit = ">=1.30.0"
 altair = ">=5.0.0"
 pandas = ">=2.0.0"

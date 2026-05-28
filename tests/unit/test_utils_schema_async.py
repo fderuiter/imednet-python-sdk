@@ -36,12 +36,12 @@ async def test_async_schema_cache_refresh() -> None:
 async def test_validate_record_and_batch_async() -> None:
     var = _make_var("age")
     sdk = MagicMock()
-    sdk.variables.async_list = AsyncMock(return_value=[var])
+    sdk.async_get_variables = AsyncMock(return_value=[var])
     validator = AsyncSchemaValidator(sdk)
 
     record = {"formKey": "F1", "data": {"age": 1}}
     await validator.validate_record("ST", record)
-    sdk.variables.async_list.assert_awaited_once_with(study_key="ST")
+    sdk.async_get_variables.assert_awaited_once_with(study_key="ST")
 
     validator.validate_record = AsyncMock()  # type: ignore[assignment]
     await validator.validate_batch("ST", [record, record])
@@ -52,9 +52,9 @@ async def test_validate_record_and_batch_async() -> None:
 async def test_unknown_form_refreshes_and_raises() -> None:
     var = _make_var("age")
     sdk = MagicMock()
-    sdk.variables.async_list = AsyncMock(return_value=[var])
+    sdk.async_get_variables = AsyncMock(return_value=[var])
     validator = AsyncSchemaValidator(sdk)
 
     with pytest.raises(ValidationError, match="Unknown form BAD"):
         await validator.validate_record("ST", {"formKey": "BAD", "data": {}})
-    sdk.variables.async_list.assert_awaited_once_with(study_key="ST")
+    sdk.async_get_variables.assert_awaited_once_with(study_key="ST")

@@ -1,3 +1,5 @@
+import sys
+from imednet import AsyncImednetSDK, ImednetSDK
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -92,7 +94,7 @@ def test_create_or_update_records_validation() -> None:
         formId=1,
         formKey="F1",
     )
-    sdk.variables.list.return_value = [var]
+    sdk.get_variables.return_value = [var]
     wf = RecordUpdateWorkflow(sdk)
 
     with pytest.raises(ValidationError):
@@ -101,7 +103,7 @@ def test_create_or_update_records_validation() -> None:
 
     sdk.create_record.return_value = Job(jobId="1", batchId="1", state="PROCESSING")
     wf.create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
-    sdk.variables.list.assert_called_once_with(study_key="STUDY")
+    sdk.get_variables.assert_called_once_with(study_key="STUDY")
     sdk.create_record.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
     )
@@ -284,7 +286,7 @@ def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
         formId=1,
         formKey="F1",
     )
-    sdk.variables.list.return_value = [var]
+    sdk.get_variables.return_value = [var]
 
     wf = RecordUpdateWorkflow(sdk)
 
@@ -301,7 +303,7 @@ def test_create_or_update_records_form_key_not_found() -> None:
     sdk._async_client = None
 
     # Return empty list for variables so the form key is not found even after refresh
-    sdk.variables.list.return_value = []
+    sdk.get_variables.return_value = []
 
     wf = RecordUpdateWorkflow(sdk)
 
@@ -372,7 +374,7 @@ async def test_async_create_or_update_records_validation() -> None:
         formId=1,
         formKey="F1",
     )
-    sdk.variables.async_list = AsyncMock(return_value=[var])
+    sdk.async_get_variables = AsyncMock(return_value=[var])
     sdk.async_create_record = AsyncMock()
 
     wf = RecordUpdateWorkflow(sdk)
@@ -383,7 +385,7 @@ async def test_async_create_or_update_records_validation() -> None:
 
     sdk.async_create_record = AsyncMock(return_value=Job(jobId="1", batchId="1", state="PROCESSING"))
     await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
-    sdk.variables.async_list.assert_called_once_with(study_key="STUDY")
+    sdk.async_get_variables.assert_called_once_with(study_key="STUDY")
     sdk.async_create_record.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
     )
@@ -411,7 +413,7 @@ async def test_async_create_or_update_records_wait_for_completion_no_batch_id() 
         formId=1,
         formKey="F1",
     )
-    sdk.variables.async_list = AsyncMock(return_value=[var])
+    sdk.async_get_variables = AsyncMock(return_value=[var])
 
     wf = RecordUpdateWorkflow(sdk)
 
@@ -427,7 +429,7 @@ async def test_async_create_or_update_records_wait_for_completion_no_batch_id() 
 async def test_async_create_or_update_records_form_key_not_found() -> None:
     sdk = MagicMock()
     sdk._async_client = True
-    sdk.variables.async_list = AsyncMock(return_value=[])
+    sdk.async_get_variables = AsyncMock(return_value=[])
 
     wf = RecordUpdateWorkflow(sdk)
 

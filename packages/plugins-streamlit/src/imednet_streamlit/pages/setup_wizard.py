@@ -148,11 +148,25 @@ def _initialise_state(study_key: str) -> None:
 
     config = st.session_state.get(_KEY_MAPPING_CONFIG)
     if not isinstance(config, StudyConfiguration):
-        st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration(
-            version="1.0.0",
-            studyKey=study_key,
-            reportingProfile="general",
-        )
+        try:
+            from imednet_workflows.config_version_control import ConfigVersionStore
+            store = ConfigVersionStore()
+            history = store.get_history(study_key)
+            if history:
+                latest_commit = history[-1]["commit_id"]
+                st.session_state[_KEY_MAPPING_CONFIG] = store.rollback_config(study_key, latest_commit)
+            else:
+                st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration(
+                    version="1.0.0",
+                    studyKey=study_key,
+                    reportingProfile="general",
+                )
+        except Exception:
+            st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration(
+                version="1.0.0",
+                studyKey=study_key,
+                reportingProfile="general",
+            )
     else:
         config.study_key = study_key
 
@@ -568,17 +582,28 @@ def _step_export(study_key: str) -> None:
         mime="application/json",
     )
 
-    if st.button("Save configuration locally", key="wizard_save_local"):
+    if st.button("Save configuration to managed database", key="wizard_save_managed"):
         try:
-            output_dir = Path.cwd() / ".imednet" / "configs"
-            output_dir.mkdir(parents=True, exist_ok=True)
-            safe_study_key = _sanitise_study_key(study_key)
-            output_file = output_dir / f"{safe_study_key}_study_configuration.json"
-            output_file.write_text(payload, encoding="utf-8")
-        except OSError:  # pragma: no cover - defensive runtime UI handling
-            st.error("Unable to save configuration locally.")
+            from imednet_workflows.config_version_control import ConfigVersionStore
+            store = ConfigVersionStore()
+            
+            # Using corporate user email if SSO is active
+            user_email = "system"
+            if hasattr(st, "user"):
+                user_email = getattr(st.user, "email", "system")
+                if not user_email and hasattr(st.user, "get"):
+                    user_email = st.user.get("email", "system")
+                    
+            store.commit_config(
+                study_key=study_key,
+                config=config,
+                user=user_email,
+                desc="Configuration persisted to managed central database via setup wizard"
+            )
+        except Exception as e:
+            st.error(f"Unable to save configuration: {e}")
             return
-        st.success(f"Saved to {output_file}")
+        st.success("Successfully saved to managed database, serving as the single source of truth.")
 
 
 def render_page() -> None:

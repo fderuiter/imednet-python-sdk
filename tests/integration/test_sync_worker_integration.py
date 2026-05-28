@@ -37,6 +37,7 @@ def _make_sdk(records: list[Record], study_key: str = "PROT-01") -> Any:
     sdk = MagicMock()
     # Each call to records.list returns the full list so delta + reconcile work.
     sdk.records.list.return_value = records
+    sdk.get_records.return_value = records
     return sdk
 
 
