@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .charts import PALETTE, bar_chart, line_chart, pie_chart
+from .charts import PALETTE, bar_chart, line_chart, pie_chart, render_accessible_chart
 from .data_lineage import redact_sensitive_payload, render_lineage_panes
 from .export import csv_download_button, excel_download_button
 from .metrics import kpi_card, kpi_row
@@ -14,6 +14,7 @@ __all__ = [
     "bar_chart",
     "line_chart",
     "pie_chart",
+    "render_accessible_chart",
     "PALETTE",
     "filterable_dataframe",
     "paginated_slice",

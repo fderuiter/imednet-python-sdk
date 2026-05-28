@@ -26,6 +26,7 @@ Command Hierarchy
 -----------------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the cli process.
 
    graph TD
        A[imednet] --> B(studies)

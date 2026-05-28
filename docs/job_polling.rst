@@ -6,6 +6,7 @@ finish. It repeatedly checks the job status until a terminal state is reached or
 a timeout occurs.
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the job polling process.
 
    graph TD
        A["start run()"] --> B[get job status]

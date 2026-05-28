@@ -17,6 +17,7 @@ client type.
 The diagram below outlines the main steps.
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the schema validation process.
 
    graph TD
        A[Record payload] --> B[SchemaValidator.validate_record]

@@ -159,4 +159,4 @@ exclude_patterns: list[str] = []  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"

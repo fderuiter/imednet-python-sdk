@@ -8,6 +8,7 @@ Data Extraction
 ---------------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the workflow interactions process.
 
    graph TD
        A[extract_records_by_criteria] --> B[subjects.list]
@@ -24,6 +25,7 @@ Record Update
 -------------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the workflow interactions process.
 
    graph TD
        A[create_or_update_records] --> B[validate_batch]
@@ -37,6 +39,7 @@ Subject Data
 ------------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the workflow interactions process.
 
    graph TD
        A[get_all_subject_data] --> B[subjects.list]
@@ -53,6 +56,7 @@ Query Management
 ----------------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the workflow interactions process.
 
    graph TD
        A[get_open_queries] --> B[queries.list]
@@ -70,6 +74,7 @@ synchronisation in a background thread so that the main application thread
 (e.g. a Streamlit rendering loop) never blocks on API calls.
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the workflow interactions process.
 
    graph TD
        A[run_forever] --> B{stop_event set?}

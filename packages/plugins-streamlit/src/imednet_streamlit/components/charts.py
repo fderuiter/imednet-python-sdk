@@ -116,5 +116,18 @@ def pie_chart(
             color=_color_encoding(color),
             tooltip=[alt.Tooltip(f"{color}:N"), alt.Tooltip(f"{theta}:Q")],
         )
-        .properties(width="container", title=title)
+        .properties(width="container", title=title, description=f"Pie chart for {title}")
     )
+
+import streamlit as st
+
+def render_accessible_chart(chart: alt.Chart, df: pd.DataFrame, title: str, use_container_width: bool = True) -> None:
+    """Render an Altair chart with an accessible tabular data view."""
+    # Ensure chart has a description for screen readers (ARIA label)
+    if not hasattr(chart, "description") or not chart.description:
+        chart = chart.properties(description=f"Data visualization for {title}")
+        
+    st.altair_chart(chart, use_container_width=use_container_width)
+    
+    with st.expander(f"Tabular Data View: {title}", expanded=False):
+        st.dataframe(df, use_container_width=use_container_width)

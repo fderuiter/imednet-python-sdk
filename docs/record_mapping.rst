@@ -6,6 +6,7 @@ into a :class:`pandas.DataFrame`. It loads variable metadata, builds a dynamic
 model, parses the records, and assembles the final table.
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the record mapping process.
 
    graph TD
        A["dataframe()"] --> B[_fetch_variable_metadata]

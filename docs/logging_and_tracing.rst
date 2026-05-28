@@ -49,6 +49,7 @@ The client logs each request and, when a tracer is supplied, surrounds the HTTP 
 with a span.
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the logging and tracing process.
 
    sequenceDiagram
        participant App
