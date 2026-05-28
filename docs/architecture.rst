@@ -9,6 +9,7 @@ Components
 ----------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the architecture process.
 
    graph TD
        CLI[CLI] --> |invokes| Workflows
@@ -144,6 +145,7 @@ Data Flow
 ---------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the architecture process.
 
    graph LR
        User --> |runs| CLI
@@ -159,6 +161,7 @@ Extension Points
 ----------------
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the architecture process.
 
    graph TD
        BaseEndpoint --> NewEndpoint[Custom Endpoint]
@@ -230,6 +233,7 @@ Data flow diagram
 ~~~~~~~~~~~~~~~~~
 
 .. mermaid::
+   :alt: Flowchart diagram detailing the architecture process.
 
    graph TD
        SDK["ImednetSDK"] --> RM["RecordMapper (tabular)"]

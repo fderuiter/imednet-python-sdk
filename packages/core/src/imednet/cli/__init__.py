@@ -69,9 +69,16 @@ app = typer.Typer(help="iMednet SDK Command Line Interface")
 
 
 @app.callback()
-def main(ctx: typer.Context) -> None:  # pragma: no cover - simple passthrough
+def main(
+    ctx: typer.Context,
+    high_contrast: bool = typer.Option(
+        False, "--high-contrast", help="Enable high-contrast mode for accessibility."
+    ),
+) -> None:  # pragma: no cover - simple passthrough
     """iMednet SDK CLI entry point."""
-    pass
+    import os
+    if high_contrast:
+        os.environ["IMEDNET_HIGH_CONTRAST"] = "1"
 
 
 # Subcommands
