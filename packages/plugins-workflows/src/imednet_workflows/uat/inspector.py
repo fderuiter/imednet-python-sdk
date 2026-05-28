@@ -16,6 +16,7 @@ from imednet.spi.models import Variable
 
 if TYPE_CHECKING:
     from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
+    from imednet import ImednetSDK, AsyncImednetSDK
 
 
 class FormVariableMap(TypedDict):
