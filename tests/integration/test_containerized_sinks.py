@@ -1,4 +1,5 @@
 import os
+import logging
 import pytest
 from typing import List
 
@@ -15,6 +16,21 @@ pytestmark = pytest.mark.skipif(
     reason="Requires IMEDNET_TEST_CONTAINERS=1"
 )
 
+class DriftError(Exception):
+    pass
+
+class DriftFailingHandler(logging.Handler):
+    def emit(self, record):
+        if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
+            raise DriftError(record.getMessage())
+
+@pytest.fixture(autouse=True)
+def fail_on_drift():
+    logger = logging.getLogger("imednet.drift")
+    handler = DriftFailingHandler()
+    logger.addHandler(handler)
+    yield
+    logger.removeHandler(handler)
 
 from dataclasses import dataclass
 

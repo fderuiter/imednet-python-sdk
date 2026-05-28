@@ -11,9 +11,11 @@ test-containers:
 	@echo "Waiting for databases to initialize..."
 	sleep 15
 	@echo "Running integration tests..."
-	IMEDNET_TEST_CONTAINERS=1 poetry run pytest tests/integration/test_containerized_sinks.py -v || true
-	@echo "Cleaning up containers..."
-	docker compose down -v
+	IMEDNET_TEST_CONTAINERS=1 poetry run pytest tests/integration/test_containerized_sinks.py -v; \
+	status=$$?; \
+	echo "Cleaning up containers..."; \
+	docker compose down -v; \
+	exit $$status
 
 docs:
 	@echo "Cleaning old API docs..."
