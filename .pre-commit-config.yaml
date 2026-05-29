@@ -23,3 +23,16 @@ repos:
       - id: mypy
         additional_dependencies: ["pandas-stubs", "types-requests", "pydantic"]
         args: ["--ignore-missing-imports", "--no-strict-optional"]
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package.lock.json
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        args: ["-ll", "-ii", "-r", "packages"]

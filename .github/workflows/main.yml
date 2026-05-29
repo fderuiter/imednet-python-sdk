@@ -153,7 +153,7 @@ jobs:
             poetry run mypy packages/plugins-sinks/src/imednet_sinks
           fi
 
-      - name: Security Audit
+      - name: Security Audit (pip-audit)
         run: |
           poetry run pip install pip-audit
           for i in 1 2 3; do
@@ -163,6 +163,15 @@ jobs:
           done
           echo "Audit failed after 3 attempts."
           exit 1
+
+      - name: Static Analysis (Bandit)
+        run: |
+          poetry run bandit -ll -ii -r packages/${{ matrix.package }}
+
+      - name: Semantic Static Analysis (Semgrep)
+        run: |
+          poetry run pip install semgrep
+          poetry run semgrep scan --config auto --error packages/${{ matrix.package }}
 
   # ------------------------------------------------------------------
   # JOB 2: BUILD ARTIFACT (Builds the library)
@@ -314,6 +323,26 @@ jobs:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
         run: make test-containers
+
+  # ------------------------------------------------------------------
+  # JOB 3.6: SECURITY ROBUSTNESS (Fuzzing)
+  # ------------------------------------------------------------------
+  fuzzing:
+    name: Robustness Fuzzing
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: abatilo/actions-poetry@v2
+
+      - name: Install Dependencies
+        run: poetry install --with dev
+        
+      - name: Run Coverage-Guided Fuzzing (1,000,000 iterations)
+        run: ./scripts/fuzz_test.sh
 
   # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
