@@ -1,0 +1,621 @@
+from datetime import datetime, timezone
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+from typing import Any, Dict
+from unittest.mock import MagicMock
+
+import pytest
+from imednet_sinks import (
+    MongoDbExportSink,
+    Neo4jExportSink,
+    Neo4jSinkConfig,
+    SnowflakeExportSink,
+    SnowflakeSinkConfig,
+    export_to_mongodb,
+    export_to_neo4j,
+    export_to_snowflake,
+)
+
+from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.integrations import SinkConfig
+
+
+def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:
+    neo4j = ModuleType("neo4j")
+    driver = MagicMock()
+    if fail_connect:
+        driver.verify_connectivity.side_effect = Exception("failed to connect")
+    neo4j.GraphDatabase = MagicMock()
+    neo4j.GraphDatabase.driver.return_value = driver
+    return neo4j, driver
+
+
+def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
+    pymongo = ModuleType("pymongo")
+    client = MagicMock()
+    if fail_connect:
+        client.admin.command.side_effect = Exception("connection refused")
+    collection = MagicMock()
+    result = MagicMock()
+    result.upserted_count = 2
+    result.modified_count = 1
+    collection.bulk_write.return_value = result
+    result_insert = MagicMock()
+    result_insert.inserted_ids = [1, 2, 3]
+    collection.insert_many.return_value = result_insert
+    inner = MagicMock(__getitem__=MagicMock(return_value=collection))
+    client.__getitem__ = MagicMock(return_value=inner)
+    pymongo.MongoClient = MagicMock(return_value=client)
+    return pymongo, client, collection
+
+
+def _fake_snowflake_module() -> tuple:
+    sf = ModuleType("snowflake.connector")
+    conn = MagicMock()
+    cursor = MagicMock()
+    conn.cursor.return_value = cursor
+    sf.connect = MagicMock(return_value=conn)
+    return sf, conn, cursor
+
+
+def _fake_pyarrow_modules() -> tuple:
+    pa = ModuleType("pyarrow")
+    pq = ModuleType("pyarrow.parquet")
+    table = MagicMock()
+    pa.Table = MagicMock()
+    pa.Table.from_pylist = MagicMock(return_value=table)
+    pq.write_table = MagicMock()
+    return pa, pq, table
+
+
+class TestNeo4jExportSink:
+    def test_connect_calls_verify_connectivity(self, monkeypatch):
+        import imednet_sinks.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module()
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+        from imednet_sinks.graph import Neo4jExportSink
+
+        sink = Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1")
+        driver.verify_connectivity.assert_called_once()
+        sink.close()
+
+    def test_connect_raises_configuration_error_on_failure(self, monkeypatch):
+        import imednet_sinks.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module(fail_connect=True)
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+        from imednet_sinks.graph import Neo4jExportSink
+
+        with pytest.raises(ExportConfigurationError, match="Cannot connect to Neo4j"):
+            Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1")
+
+    def test_write_batch_returns_count(self, monkeypatch):
+        import imednet_sinks.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module()
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+        from imednet_sinks.graph import Neo4jExportSink
+
+        records = [
+            MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={})
+            for i in range(5)
+        ]
+        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
+            count = sink.write_batch(records, batch_id="STUDY1/F1/0")
+        assert count == 5
+
+    def test_write_batch_uses_structure_preserving_payload_shape(self, monkeypatch):
+        import imednet_sinks.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module()
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+        from imednet_sinks.graph import Neo4jExportSink
+
+        record = SimpleNamespace(
+            record_id=1234,
+            form_id=7,
+            visit_id=42,
+            subject_key="SUBJ-001",
+            record_data={"labs": {"hemoglobin": 13.2}, "status": "Complete"},
+        )
+        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
+            count = sink.write_batch([record], batch_id="STUDY1/F7/0")
+
+        assert count == 1
+        run_args = driver.session.return_value.__enter__.return_value.run.call_args
+        assert run_args.args[0] == graph_mod._MERGE_RECORD_CYPHER
+        assert run_args.kwargs["rows"] == [
+            {
+                "record_id": 1234,
+                "form_id": 7,
+                "visit_id": 42,
+                "subject_key": "SUBJ-001",
+                "study_key": "STUDY1",
+                "record_data": {"labs": {"hemoglobin": 13.2}, "status": "Complete"},
+            }
+        ]
+
+    def test_write_batch_empty_returns_zero(self, monkeypatch):
+        import imednet_sinks.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module()
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+        from imednet_sinks.graph import Neo4jExportSink
+
+        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
+            count = sink.write_batch([], batch_id="STUDY1/F1/0")
+        assert count == 0
+
+    def test_write_batch_raises_after_retries_exhausted(self, monkeypatch):
+        import imednet_sinks.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module()
+        # Make session.run always fail
+        driver.session.return_value.__enter__.return_value.run.side_effect = RuntimeError("db down")
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+        monkeypatch.setattr(graph_mod.time, "sleep", lambda _: None)
+
+        from imednet_sinks.graph import Neo4jExportSink, Neo4jSinkConfig
+
+        cfg = Neo4jSinkConfig(max_retries=1, retry_backoff=0.0)
+        sink = Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "S1", config=cfg)
+        with pytest.raises(ExportBatchError, match="STUDY1/F1/0"):
+            records = [
+                MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
+            ]
+            sink.write_batch(records, batch_id="STUDY1/F1/0")
+        sink.close()
+
+    def test_close_is_idempotent(self, monkeypatch):
+        import imednet_sinks.graph as graph_mod
+
+        neo4j, driver = _fake_neo4j_module()
+        monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+        from imednet_sinks.graph import Neo4jExportSink
+
+        sink = Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "S1")
+        sink.close()
+        sink.close()  # must not raise
+
+
+# ---------------------------------------------------------------------------
+# MongoDbExportSink
+# ---------------------------------------------------------------------------
+
+
+def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
+    pymongo = ModuleType("pymongo")
+    client = MagicMock()
+    if fail_connect:
+        client.admin.command.side_effect = Exception("connection refused")
+    collection = MagicMock()
+    result = MagicMock()
+    result.upserted_count = 2
+    result.modified_count = 1
+    collection.bulk_write.return_value = result
+    result_insert = MagicMock()
+    result_insert.inserted_ids = [1, 2, 3]
+    collection.insert_many.return_value = result_insert
+    inner = MagicMock(__getitem__=MagicMock(return_value=collection))
+    client.__getitem__ = MagicMock(return_value=inner)
+    pymongo.MongoClient = MagicMock(return_value=client)
+    pymongo.UpdateOne = MagicMock(side_effect=lambda *a, **kw: MagicMock())
+    return pymongo, client, collection
+
+
+class TestMongoDbExportSink:
+    def test_connect_raises_configuration_error_on_failure(self, monkeypatch):
+        import imednet_sinks.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet_sinks.document import MongoDbExportSink
+
+        with pytest.raises(ExportConfigurationError, match="Cannot connect to MongoDB"):
+            MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1")
+
+    def test_connect_error_message_redacts_credentials(self, monkeypatch):
+        import imednet_sinks.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet_sinks.document import MongoDbExportSink
+
+        uri = "******localhost:27017"
+        with pytest.raises(ExportConfigurationError) as exc_info:
+            MongoDbExportSink(uri, "db", "col", "STUDY1")
+
+        message = str(exc_info.value)
+        assert "secret" not in message
+        assert "localhost:27017" in message
+
+    def test_write_batch_upsert_returns_count(self, monkeypatch):
+        import imednet_sinks.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module()
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet_sinks.document import MongoDbExportSink
+
+        records = [
+            MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={})
+            for i in range(3)
+        ]
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
+            count = sink.write_batch(records, batch_id="STUDY1/F1/0")
+        # return value reflects number of exported records in the batch
+        assert count == 3
+
+    def test_write_batch_upsert_document_envelope_shape(self, monkeypatch):
+        import imednet_sinks.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module()
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet_sinks.document import MongoDbExportSink
+
+        record = SimpleNamespace(
+            record_id=1234,
+            subject_id=100,
+            subject_key="SUBJ-001",
+            visit_id=42,
+            form_id=7,
+            form_key="BASELINE",
+            record_status="Complete",
+            deleted=False,
+            date_created=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            date_modified=datetime(2024, 1, 15, tzinfo=timezone.utc),
+            record_data={"labs": {"hemoglobin": 13.2}, "symptoms": ["fatigue"]},
+        )
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
+            count = sink.write_batch([record], batch_id="STUDY1/F1/0")
+
+        assert count == 1
+        assert pymongo.UpdateOne.call_count == 1
+        filter_doc, update_doc = pymongo.UpdateOne.call_args.args[:2]
+        assert filter_doc == {"_id": "STUDY1/1234"}
+        assert update_doc["$set"]["study_key"] == "STUDY1"
+        assert update_doc["$set"]["record_id"] == 1234
+        assert update_doc["$set"]["subject_id"] == 100
+        assert update_doc["$set"]["subject_key"] == "SUBJ-001"
+        assert update_doc["$set"]["visit_id"] == 42
+        assert update_doc["$set"]["form_id"] == 7
+        assert update_doc["$set"]["form_key"] == "BASELINE"
+        assert update_doc["$set"]["record_status"] == "Complete"
+        assert update_doc["$set"]["deleted"] is False
+        assert update_doc["$set"]["date_created"] == datetime(2024, 1, 1, tzinfo=timezone.utc)
+        assert update_doc["$set"]["date_modified"] == datetime(2024, 1, 15, tzinfo=timezone.utc)
+        assert update_doc["$set"]["record_data"] == {
+            "labs": {"hemoglobin": 13.2},
+            "symptoms": ["fatigue"],
+        }
+        assert "exported_at" in update_doc["$set"]
+
+    def test_write_batch_empty_returns_zero(self, monkeypatch):
+        import imednet_sinks.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module()
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet_sinks.document import MongoDbExportSink
+
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
+            count = sink.write_batch([], batch_id="b0")
+        assert count == 0
+
+    def test_write_batch_raises_after_retries(self, monkeypatch):
+        import imednet_sinks.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module()
+        collection.bulk_write.side_effect = RuntimeError("mongo down")
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+        monkeypatch.setattr(doc_mod.time, "sleep", lambda _: None)
+
+        from imednet_sinks.document import MongoDbExportSink
+
+        cfg = SinkConfig(max_retries=1, retry_backoff=0.0)
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "S1", config=cfg) as sink:
+            with pytest.raises(ExportBatchError, match="S1/F1/0"):
+                records = [
+                    MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
+                ]
+                sink.write_batch(records, batch_id="S1/F1/0")
+
+    def test_document_id_format(self):
+        from imednet_sinks.document import _make_document_id
+
+        assert _make_document_id("MYSTUDY", 42) == "MYSTUDY/42"
+
+    def test_close_is_idempotent(self, monkeypatch):
+        import imednet_sinks.document as doc_mod
+
+        pymongo, client, collection = _fake_pymongo_module()
+        monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+        from imednet_sinks.document import MongoDbExportSink
+
+        sink = MongoDbExportSink("mongodb://localhost:27017", "db", "col", "S1")
+        sink.close()
+        sink.close()  # must not raise
+
+
+# ---------------------------------------------------------------------------
+# SnowflakeExportSink
+# ---------------------------------------------------------------------------
+
+
+def _fake_snowflake_module() -> ModuleType:
+    sf = ModuleType("snowflake.connector")
+    conn = MagicMock()
+    cursor = MagicMock()
+    conn.cursor.return_value = cursor
+    sf.connect = MagicMock(return_value=conn)
+    return sf, conn, cursor
+
+
+def _fake_pyarrow_modules() -> tuple:
+    pa = ModuleType("pyarrow")
+    pq = ModuleType("pyarrow.parquet")
+    table = MagicMock()
+    pa.Table = MagicMock()
+    pa.Table.from_pylist = MagicMock(return_value=table)
+    pq.write_table = MagicMock()
+    return pa, pq, table
+
+
+class TestSnowflakeExportSink:
+    def _make_sink(self, monkeypatch, *, tmp_path, fail_connect=False):
+        import imednet_sinks.warehouse as wh_mod
+        from imednet_sinks.warehouse import SnowflakeSinkConfig
+
+        sf, conn, cursor = _fake_snowflake_module()
+        if fail_connect:
+            sf.connect.side_effect = Exception("auth error")
+        pa, pq, table = _fake_pyarrow_modules()
+
+        def fake_require(pkg, extras):
+            if pkg == "snowflake.connector":
+                return sf
+            if pkg == "pyarrow":
+                return pa
+            if pkg == "pyarrow.parquet":
+                return pq
+            return MagicMock()
+
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+
+        cfg = SnowflakeSinkConfig(
+            account="acct",
+            user="user",
+            **{"password": "secret"},
+            database="DB",
+            schema="PUBLIC",
+            warehouse="WH",
+            stage="STG",
+            table="TBL",
+            local_staging_dir=str(tmp_path),
+        )
+        return cfg, sf, conn, cursor, pq
+
+    def test_connect_raises_configuration_error_on_failure(self, monkeypatch, tmp_path):
+        import imednet_sinks.warehouse as wh_mod
+        from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
+
+        sf, conn, cursor = _fake_snowflake_module()
+        sf.connect.side_effect = Exception("auth failed")
+        pa, pq, table = _fake_pyarrow_modules()
+
+        def fake_require(pkg, extras):
+            if pkg == "snowflake.connector":
+                return sf
+            return pa if "pyarrow" in pkg else MagicMock()
+
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+
+        cfg = SnowflakeSinkConfig(
+            account="acct",
+            user="user",
+            **{"password": "secret"},
+            database="DB",
+            schema="PUBLIC",
+            warehouse="WH",
+            stage="STG",
+            table="TBL",
+            local_staging_dir=str(tmp_path),
+        )
+        with pytest.raises(ExportConfigurationError, match="Cannot connect to Snowflake"):
+            SnowflakeExportSink(config=cfg)
+
+    def test_raises_for_missing_required_config(self, monkeypatch, tmp_path):
+        import imednet_sinks.warehouse as wh_mod
+        from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
+
+        sf, conn, cursor = _fake_snowflake_module()
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", lambda *_: sf)
+
+        # account is empty → should raise
+        cfg = SnowflakeSinkConfig(local_staging_dir=str(tmp_path))
+        with pytest.raises(ExportConfigurationError, match="missing required fields"):
+            SnowflakeExportSink(config=cfg)
+
+    def test_records_to_arrow_table_uses_snowflake_extra(self, monkeypatch):
+        import imednet_sinks.warehouse as wh_mod
+
+        pa, _, table = _fake_pyarrow_modules()
+        seen: list[tuple[str, str]] = []
+
+        def fake_require(pkg, extras):
+            seen.append((pkg, extras))
+            return pa
+
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+
+        result = wh_mod._records_to_arrow_table(
+            [MagicMock(record_id=1, form_id=2, visit_id=3, subject_key="S", record_data={})]
+        )
+
+        assert result is table
+        assert seen == [("pyarrow", "snowflake")]
+
+    def test_write_batch_calls_put_and_copy(self, monkeypatch, tmp_path):
+        from imednet_sinks.warehouse import SnowflakeExportSink
+
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
+        sink = SnowflakeExportSink(config=cfg)
+        records = [
+            MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S", record_data={})
+            for i in range(3)
+        ]
+        count = sink.write_batch(records, batch_id="S1/F1/0")
+        assert count == 3
+        # PUT and COPY INTO must both be called
+        calls = [str(c) for c in cursor.execute.call_args_list]
+        assert any("PUT" in c for c in calls)
+        assert any("COPY INTO" in c for c in calls)
+        sink.close()
+
+    def test_write_batch_uses_snowflake_extra_for_parquet(self, monkeypatch, tmp_path):
+        import imednet_sinks.warehouse as wh_mod
+        from imednet_sinks.warehouse import SnowflakeExportSink
+
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
+        seen: list[tuple[str, str]] = []
+
+        def fake_require(pkg, extras):
+            seen.append((pkg, extras))
+            if pkg == "snowflake.connector":
+                return sf
+            if pkg == "pyarrow":
+                return MagicMock(Table=MagicMock(from_pylist=MagicMock(return_value=MagicMock())))
+            if pkg == "pyarrow.parquet":
+                return pq
+            return MagicMock()
+
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+
+        sink = SnowflakeExportSink(config=cfg)
+        sink.write_batch(
+            [MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})],
+            batch_id="S1/F1/0",
+        )
+        sink.close()
+
+        assert ("pyarrow", "snowflake") in seen
+        assert ("pyarrow.parquet", "snowflake") in seen
+
+    def test_write_batch_empty_returns_zero(self, monkeypatch, tmp_path):
+        from imednet_sinks.warehouse import SnowflakeExportSink
+
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
+        sink = SnowflakeExportSink(config=cfg)
+        assert sink.write_batch([], batch_id="b0") == 0
+        sink.close()
+
+    def test_write_batch_raises_after_retries(self, monkeypatch, tmp_path):
+        import imednet_sinks.warehouse as wh_mod
+        from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
+
+        sf, conn, cursor = _fake_snowflake_module()
+        cursor.execute.side_effect = RuntimeError("network error")
+        pa, pq, table = _fake_pyarrow_modules()
+
+        def fake_require(pkg, extras):
+            if pkg == "snowflake.connector":
+                return sf
+            if pkg == "pyarrow":
+                return pa
+            if pkg == "pyarrow.parquet":
+                return pq
+            return MagicMock()
+
+        monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+        monkeypatch.setattr(wh_mod.time, "sleep", lambda _: None)
+
+        cfg = SnowflakeSinkConfig(
+            account="acct",
+            user="user",
+            **{"password": "secret"},
+            database="DB",
+            schema="PUBLIC",
+            warehouse="WH",
+            stage="STG",
+            table="TBL",
+            local_staging_dir=str(tmp_path),
+            max_retries=1,
+            retry_backoff=0.0,
+        )
+        sink = SnowflakeExportSink(config=cfg)
+        records = [MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})]
+        with pytest.raises(ExportBatchError, match="S1/F1/0"):
+            sink.write_batch(records, batch_id="S1/F1/0")
+        sink.close()
+
+    def test_manifest_appended(self, monkeypatch, tmp_path):
+        import json
+
+        from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
+
+        cfg_dict, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
+        manifest = tmp_path / "manifest.jsonl"
+
+        cfg = SnowflakeSinkConfig(
+            account="acct",
+            user="user",
+            **{"password": "secret"},
+            database="DB",
+            schema="PUBLIC",
+            warehouse="WH",
+            stage="STG",
+            table="TBL",
+            local_staging_dir=str(tmp_path),
+            manifest_path=str(manifest),
+        )
+
+        # re-apply monkeypatch with correct cfg
+        import imednet_sinks.warehouse as wh_mod2
+
+        sf2, conn2, cursor2 = _fake_snowflake_module()
+        pa2, pq2, table2 = _fake_pyarrow_modules()
+
+        def fake_require2(pkg, extras):
+            if pkg == "snowflake.connector":
+                return sf2
+            if pkg == "pyarrow":
+                return pa2
+            if pkg == "pyarrow.parquet":
+                return pq2
+            return MagicMock()
+
+        monkeypatch.setattr(wh_mod2, "_require_optional_dep", fake_require2)
+
+        sink = SnowflakeExportSink(config=cfg)
+        records = [MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})]
+        sink.write_batch(records, batch_id="STUDY/FORM/0")
+        sink.close()
+
+        assert manifest.exists()
+        entry = json.loads(manifest.read_text().strip())
+        assert entry["batch_id"] == "STUDY/FORM/0"
+        assert entry["row_count"] == 1
+
+    def test_close_is_idempotent(self, monkeypatch, tmp_path):
+        from imednet_sinks.warehouse import SnowflakeExportSink
+
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
+        sink = SnowflakeExportSink(config=cfg)
+        sink.close()
+        sink.close()  # must not raise
+
+
+# ---------------------------------------------------------------------------
+# integrations/__init__.py re-exports
+# ---------------------------------------------------------------------------

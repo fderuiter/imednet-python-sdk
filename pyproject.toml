@@ -10,6 +10,7 @@ python = ">=3.10,<4.0"
 imednet = { path = "packages/core", develop = true }
 imednet-workflows = { path = "packages/plugins-workflows", develop = true }
 imednet-streamlit = { path = "packages/plugins-streamlit", develop = true }
+imednet-plugins-sinks = { path = "packages/plugins-sinks", develop = true }
 
 [tool.poetry.group.dev.dependencies]
 pandas = ">=2.2.3,<3.0.0"

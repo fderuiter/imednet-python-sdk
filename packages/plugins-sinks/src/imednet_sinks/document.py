@@ -72,9 +72,14 @@ from datetime import datetime, timezone
 from typing import Any, Optional, Sequence
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.integrations.sink_base import (
+    ExportSink,
+    SinkConfig,
+    _redact_uri,
+    _require_optional_dep,
+    iter_batches,
+)
 from imednet.sdk import ImednetSDK
-
-from .sink_base import ExportSink, SinkConfig, _redact_uri, _require_optional_dep, iter_batches
 
 logger = logging.getLogger(__name__)
 
@@ -256,7 +261,7 @@ def export_to_mongodb(
     config: Optional[SinkConfig] = None,
 ) -> int:
     """Export study records to MongoDB using :class:`MongoDbExportSink`."""
-    from .sink_base import apply_quality_gate
+    from imednet.integrations.sink_base import apply_quality_gate
 
     cfg = config if config is not None else SinkConfig()
     records = sdk.records.list(study_key=study_key, record_data_filter=None)

@@ -6,7 +6,9 @@ from typer.testing import CliRunner
 
 import imednet.cli as cli
 import imednet.integrations as integrations_mod
-from imednet.integrations import Neo4jSinkConfig, SinkConfig, SnowflakeSinkConfig
+from imednet.integrations import SinkConfig
+from unittest.mock import ANY
+from imednet_sinks import Neo4jSinkConfig, SnowflakeSinkConfig
 from imednet.integrations import export as export_mod
 
 
@@ -112,8 +114,6 @@ def test_cli_export_duckdb_vars_forms_passthrough(
 def test_cli_export_mongodb_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    func = MagicMock()
-    monkeypatch.setattr(integrations_mod, "export_to_mongodb", func)
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(
@@ -132,7 +132,7 @@ def test_cli_export_mongodb_happy_path(
     )
 
     assert result.exit_code == 0
-    func.assert_called_once_with(
+    sdk.sinks.export_to_mongodb.assert_called_once_with(
         sdk,
         "STUDY",
         "mongodb://localhost:27017",
@@ -165,8 +165,7 @@ def test_cli_export_mongodb_missing_dependency(
 def test_cli_export_neo4j_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    func = MagicMock()
-    monkeypatch.setattr(integrations_mod, "export_to_neo4j", func)
+    sdk.sinks.Neo4jSinkConfig = Neo4jSinkConfig
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(
@@ -187,7 +186,7 @@ def test_cli_export_neo4j_happy_path(
     )
 
     assert result.exit_code == 0
-    func.assert_called_once_with(
+    sdk.sinks.export_to_neo4j.assert_called_once_with(
         sdk,
         "STUDY",
         "bolt://localhost:7687",
@@ -219,8 +218,7 @@ def test_cli_export_neo4j_missing_dependency(
 def test_cli_export_snowflake_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    func = MagicMock()
-    monkeypatch.setattr(integrations_mod, "export_to_snowflake", func)
+    sdk.sinks.SnowflakeSinkConfig = SnowflakeSinkConfig
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(
@@ -246,7 +244,7 @@ def test_cli_export_snowflake_happy_path(
     )
 
     assert result.exit_code == 0
-    func.assert_called_once_with(
+    sdk.sinks.export_to_snowflake.assert_called_once_with(
         sdk,
         "STUDY",
         config=SnowflakeSinkConfig(
