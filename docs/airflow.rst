@@ -12,12 +12,6 @@ Install the provider package:
 
    pip install "apache-airflow>=3.2.0,<4.0.0" apache-airflow-providers-imednet
 
-For ``ImednetToS3Operator`` support, install the provider's ``amazon`` extra:
-
-.. code-block:: bash
-
-   pip install "apache-airflow>=3.2.0,<4.0.0" "apache-airflow-providers-imednet[amazon]"
-
 Production Reference DAG
 ------------------------
 
@@ -47,9 +41,7 @@ Create an Airflow connection ``imednet_default`` or override ``imednet_conn_id``
 Provide ``api_key`` and ``security_key`` via the login/password fields or in the
 ``extra`` JSON. ``base_url`` may be added in ``extra`` for a non-standard
 environment. The hook merges these settings with values from
-``imednet.config.load_config`` so environment variables still apply. The
-``ImednetToS3Operator`` also uses an AWS connection (``aws_default`` by default)
-when writing to S3.
+``imednet.config.load_config`` so environment variables still apply.
 
 For task-mapping discovery steps, ``ImednetHook`` provides explicit helper methods:
 
@@ -68,12 +60,14 @@ Operators and Sensors
 The Airflow integration organizes hooks, operators, and sensors in dedicated
 subpackages for clarity.
 
-``ImednetExportOperator`` saves records to a local file using helpers from
-``imednet.integrations.export``. ``ImednetToS3Operator`` sends JSON data to S3
-and ``ImednetJobSensor`` waits for an export job to complete. All operators use
-``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance from an
-Airflow connection. The production reference DAG above shows the recommended
-dynamic-mapping pattern: keep static settings (for example ``export_func`` and
+``ImednetExportOperator`` is a unified execution engine that seamlessly writes 
+records to any supported destination (CSV, Parquet, Snowflake, Neo4j, etc.) 
+using the core SDK's universal sink interface. Common operational parameters 
+(such as ``batch_size`` and ``max_retries``) work identically across all 
+destinations. ``ImednetJobSensor`` waits for an export job to complete. 
+All operators use ``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance 
+from an Airflow connection. The production reference DAG above shows the recommended
+dynamic-mapping pattern: keep static settings (for example ``destination`` and
 ``imednet_conn_id``) in ``.partial(...)`` and map only runtime fields
 (``study_key``, ``output_path``, ``export_kwargs``).
 
@@ -97,7 +91,9 @@ dynamic-mapping pattern: keep static settings (for example ``export_func`` and
 
    ImednetExportOperator.partial(
        task_id="export_records",
-       export_func="export_to_csv",
+       destination="csv",
+       batch_size=1000,
+       max_retries=5,
        imednet_conn_id="imednet_default",
    ).expand_kwargs(export_targets())
 
@@ -106,6 +102,5 @@ Testing with Airflow
 
 The unit tests stub out the Airflow dependencies. When the ``airflow`` package
 is installed, ``tests/integration/test_airflow_dag.py`` runs a small DAG with
-``ImednetToS3Operator`` and ``ImednetJobSensor``. The test creates a temporary
-S3 bucket with ``moto`` and executes the tasks via ``TaskInstance.run``. It is
+``ImednetExportOperator`` and ``ImednetJobSensor``. It is
 skipped automatically if Airflow is missing.

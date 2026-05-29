@@ -46,4 +46,3 @@ def test_airflow_provider_exports_public_api(monkeypatch):
 
     assert provider.ImednetHook is not None
     assert provider.ImednetExportOperator is not None
-    assert provider.ImednetToS3Operator is not None
