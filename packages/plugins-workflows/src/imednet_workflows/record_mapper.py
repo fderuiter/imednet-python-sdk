@@ -331,6 +331,128 @@ class RecordMapper:
                 study_key,
             )
 
+    def build_hierarchy(
+        self,
+        study_key: str,
+        visit_key: Optional[str] = None,
+        use_labels_as_keys: bool = False,
+        variable_whitelist: Optional[List[str]] = None,
+        form_whitelist: Optional[List[int]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Generate a nested JSON tree structure up to three levels deep.
+
+        Outputs a Subject -> Visit -> Form tree of records. Maps variables
+        using form-scoped models to prevent namespace collisions. Relational
+        identifiers such as parent_record_id are populated dynamically based
+        on hierarchy context.
+        """
+        from imednet_workflows.study_structure import get_study_structure
+
+        study_struct = get_study_structure(self.sdk, study_key)
+
+        # 1. Build form-scoped models
+        form_models: Dict[int, Type[BaseModel]] = {}
+        form_label_maps: Dict[int, Dict[str, str]] = {}
+
+        for interval in study_struct.intervals:
+            for form in interval.forms:
+                if form_whitelist and form.form_id not in form_whitelist:
+                    continue
+                var_keys = [
+                    v.variable_name
+                    for v in form.variables
+                    if not variable_whitelist or v.variable_name in variable_whitelist
+                ]
+                label_map = {v.variable_name: v.label for v in form.variables}
+                form_models[form.form_id] = self._build_record_model(var_keys, label_map)
+                form_label_maps[form.form_id] = label_map
+
+        extra_filters: Dict[str, Any] = {}
+        if form_whitelist is not None:
+            extra_filters["formIds"] = form_whitelist
+        if variable_whitelist is not None:
+            extra_filters["variableNames"] = variable_whitelist
+
+        # 2. Fetch and iterate records
+        records = self._iter_records(
+            study_key,
+            visit_key,
+            extra_filters=extra_filters or None,
+        )
+
+        tree: Dict[str, Dict[str, Any]] = {}
+
+        for rec in records:
+            if rec.form_id not in form_models:
+                continue
+
+            model = form_models[rec.form_id]
+            label_map = form_label_maps[rec.form_id]
+
+            try:
+                parsed_data = self._parse_record(rec, model)
+            except (ValidationError, TypeError) as exc:
+                logger.warning(
+                    "Failed to parse record data for recordId %s: %s",
+                    rec.record_id,
+                    exc,
+                )
+                continue
+            except Exception as exc:  # pragma: no cover - unexpected
+                logger.error("Unexpected error processing recordId %s: %s", rec.record_id, exc)
+                continue
+
+            if use_labels_as_keys:
+                remapped = {}
+                for k, v in parsed_data.items():
+                    remapped[label_map.get(k, k)] = v
+                parsed_data = remapped
+
+            # Automatically perform lookups for parent record identifiers using available metadata
+            resolved_parent_id = getattr(rec, "parent_record_id", None)
+            if not resolved_parent_id:
+                resolved_parent_id = f"{rec.visit_id}_{rec.form_id}"
+                
+            if "parent_record_id" not in parsed_data or parsed_data.get("parent_record_id") is None:
+                parsed_data["parent_record_id"] = resolved_parent_id
+                # If we mapped to a label or alias, also try to set it there
+                if use_labels_as_keys and "parentRecordId" in parsed_data:
+                    parsed_data["parentRecordId"] = resolved_parent_id
+
+            subj_key = rec.subject_key
+            if subj_key not in tree:
+                tree[subj_key] = {"subject_key": subj_key, "visits": {}}
+
+            subj_node = tree[subj_key]
+
+            visit_id = rec.visit_id
+            if visit_id not in subj_node["visits"]:
+                subj_node["visits"][visit_id] = {"visit_id": visit_id, "forms": {}}
+
+            visit_node = subj_node["visits"][visit_id]
+
+            form_id = rec.form_id
+            if form_id not in visit_node["forms"]:
+                visit_node["forms"][form_id] = {"form_id": form_id, "records": []}
+
+            form_node = visit_node["forms"][form_id]
+            form_node["records"].append(parsed_data)
+
+        # 3. Convert dicts to lists
+        result = []
+        for subj_key, subj in tree.items():
+            subj_visits = []
+            for visit_id, visit in subj["visits"].items():
+                visit_forms = []
+                for form_id, form in visit["forms"].items():
+                    visit_forms.append(form)
+                visit["forms"] = visit_forms
+                subj_visits.append(visit)
+            subj["visits"] = subj_visits
+            result.append(subj)
+
+        return result
+
     def dataframe(
         self,
         study_key: str,

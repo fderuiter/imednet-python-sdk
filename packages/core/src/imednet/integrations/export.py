@@ -39,7 +39,9 @@ def _record_mapper() -> Any:
 
 def _mask_df(df: pd.DataFrame) -> pd.DataFrame:
     """Mask sensitive fields in the DataFrame based on the global registry."""
-    sensitive_cols = [col for col in df.columns if global_sensitivity_registry.is_sensitive(str(col))]
+    sensitive_cols = [
+        col for col in df.columns if global_sensitivity_registry.is_sensitive(str(col))
+    ]
     for col in sensitive_cols:
         df[col] = "***MASKED***"
 
@@ -228,6 +230,7 @@ def export_to_json(
     path: str,
     *,
     use_labels_as_columns: bool = False,
+    hierarchical: bool = False,
     **kwargs: Any,
 ) -> None:
     """Export study records to a JSON file.
@@ -237,7 +240,19 @@ def export_to_json(
     use_labels_as_columns:
         When ``True``, variable labels are used for column names instead of
         variable names.
+    hierarchical:
+        When ``True``, generates a nested tree (Subject > Visit > Form) suitable
+        for Veeva Vault integrations instead of a flat tabular layout.
     """
+    if hierarchical:
+        mapper = _record_mapper()(sdk)
+        data = mapper.build_hierarchy(study_key, use_labels_as_keys=use_labels_as_columns)
+        import json
+
+        with open(path, "w") as f:
+            json.dump(data, f, **kwargs)
+        return
+
     df = _prepare_export_df(
         sdk,
         study_key,
