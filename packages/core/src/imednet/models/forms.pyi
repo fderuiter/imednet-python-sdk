@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
 from imednet.models.json_base import JsonModel
 
 class Form(JsonModel):
@@ -14,4 +15,3 @@ class Form(JsonModel):
     disabled: Optional[bool]
     epro_form: Optional[bool]
     allow_copy: Optional[bool]
-

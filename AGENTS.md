@@ -17,7 +17,7 @@ Before executing any task, audit the active dependency stack. Do not assume the 
 | HTTP mocking in tests | `pyproject.toml` (dev) | `respx` |
 | Type checking | `pyproject.toml` (dev) | `mypy` |
 | Linting | `pyproject.toml` (dev) | `ruff` |
-| Formatting | `pyproject.toml` (dev) | `black`, `isort` |
+| Formatting | `pyproject.toml` (dev) | `ruff` |
 
 ## 2. Verification Loop
 
@@ -26,8 +26,7 @@ Before proposing any solution, execute and pass all CI quality gates locally.
 1. Read `.github/workflows/main.yml` (the `quality` job) to identify the authoritative lint, format, and type-check commands.
 2. Run the full gate in order:
    ```bash
-   poetry run black --check .
-   poetry run isort --check --profile black .
+   poetry run ruff format --check .
    poetry run ruff check .
    poetry run mypy packages/core/src/imednet
    poetry run mypy packages/plugins-workflows/src/imednet_workflows

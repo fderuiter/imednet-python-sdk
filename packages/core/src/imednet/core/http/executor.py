@@ -21,10 +21,10 @@ from tenacity import (
     wait_random_exponential,
 )
 
+from imednet.core.http.circuit_breaker import CircuitBreakerError, get_global_circuit_breaker
 from imednet.core.http.handlers import handle_response
 from imednet.core.http.monitor import RequestMonitor
 from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
-from imednet.core.http.circuit_breaker import get_global_circuit_breaker, CircuitBreakerError
 
 _SUPPRESSED_LOG_LEVEL = logging.CRITICAL + 1
 
@@ -103,7 +103,7 @@ class BaseRequestExecutor(ABC):
             # we should record failure? No, let's just record success if we got a response
             # that is not an exception, OR wait, an API outage usually manifests as connection errors
             # or 5xx. If handle_response raises, it will throw an exception below.
-            
+
             # Record success before handle_response so if it raises, we know we got a response at least.
             # But 5xx server errors indicate failures. Let's record success only if status is < 500.
             if response.status_code < 500:
@@ -119,7 +119,7 @@ class BaseRequestExecutor(ABC):
         """Handle RetryError, extracting successful result if present, else escalate."""
         # A RetryError means we exhausted retries (which indicates consecutive failures)
         get_global_circuit_breaker().record_failure()
-        
+
         if e.last_attempt and not e.last_attempt.failed:
             response: httpx.Response = e.last_attempt.result()
             monitor.on_success(response)

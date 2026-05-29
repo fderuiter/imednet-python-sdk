@@ -89,14 +89,20 @@ def parse_bool(v: Any) -> bool:
                 return bool(float(val))
             except (ValueError, TypeError):
                 pass
-        
+
         import logging
-        logging.getLogger("imednet.drift").warning(f"Drift detected (destructive): type-changed field. Expected bool, got str (value: {v!r})")
+
+        logging.getLogger("imednet.drift").warning(
+            f"Drift detected (destructive): type-changed field. Expected bool, got str (value: {v!r})"
+        )
     elif isinstance(v, (int, float)):
         return bool(v)
     elif v is not None:
         import logging
-        logging.getLogger("imednet.drift").warning(f"Drift detected (destructive): type-changed field. Expected bool, got {type(v).__name__} (value: {v!r})")
+
+        logging.getLogger("imednet.drift").warning(
+            f"Drift detected (destructive): type-changed field. Expected bool, got {type(v).__name__} (value: {v!r})"
+        )
     return False
 
 
@@ -117,7 +123,10 @@ def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
             if strict:
                 raise
             import logging
-            logging.getLogger("imednet.drift").warning(f"Drift detected (destructive): type-changed field. Expected int, got {type(v).__name__} (value: {v!r})")
+
+            logging.getLogger("imednet.drift").warning(
+                f"Drift detected (destructive): type-changed field. Expected int, got {type(v).__name__} (value: {v!r})"
+            )
             return default
 
 
@@ -137,7 +146,10 @@ def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list)
     if isinstance(v, list):
         return v
     import logging
-    logging.getLogger(__name__).warning("Structural shift detected: API returned an object where a list was expected. Coercing by wrapping in a list.")
+
+    logging.getLogger(__name__).warning(
+        "Structural shift detected: API returned an object where a list was expected. Coercing by wrapping in a list."
+    )
     return [v]
 
 
@@ -154,7 +166,10 @@ def parse_dict_or_default(
     if isinstance(v, list):
         if len(v) > 0 and isinstance(v[0], dict):
             import logging
-            logging.getLogger(__name__).warning("Structural shift detected: API returned a list where an object was expected. Coercing by extracting the first item.")
+
+            logging.getLogger(__name__).warning(
+                "Structural shift detected: API returned a list where an object was expected. Coercing by extracting the first item."
+            )
             return v[0]
         return default_factory()
     return default_factory()  # fallback if not a dict

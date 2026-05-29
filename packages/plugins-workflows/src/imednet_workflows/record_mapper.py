@@ -412,7 +412,7 @@ class RecordMapper:
             resolved_parent_id = getattr(rec, "parent_record_id", None)
             if not resolved_parent_id:
                 resolved_parent_id = f"{rec.visit_id}_{rec.form_id}"
-                
+
             if "parent_record_id" not in parsed_data or parsed_data.get("parent_record_id") is None:
                 parsed_data["parent_record_id"] = resolved_parent_id
                 # If we mapped to a label or alias, also try to set it there

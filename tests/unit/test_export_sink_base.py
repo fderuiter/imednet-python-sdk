@@ -187,5 +187,3 @@ def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:
     neo4j.GraphDatabase = MagicMock()
     neo4j.GraphDatabase.driver.return_value = driver
     return neo4j, driver
-
-

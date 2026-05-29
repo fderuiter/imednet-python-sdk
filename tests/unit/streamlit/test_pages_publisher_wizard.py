@@ -171,6 +171,7 @@ def _run_publisher_wizard(
         def get_user_roles(self):
             # Read from session state simulator instead of UI
             return [fake_st.selectbox_values.get("_publisher_role", "viewer")]
+
         def get_user_id(self):
             return fake_st.text_input_values.get("_publisher_user", "")
 
@@ -259,7 +260,7 @@ def test_publisher_wizard_authorized_publish_succeeds(tmp_path: Path) -> None:
     store = _make_committed_store(tmp_path)
     history = store.get_history("STUDY-01")
     commit_id_display = (
-        f"1.0.0 — {history[0]['commit_id'][:12]} by alice " f"({history[0]['timestamp'][:19]})"
+        f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
     )
 
     fake_st = _FakeStreamlit()
@@ -294,7 +295,7 @@ def test_publisher_wizard_admin_can_publish(tmp_path: Path) -> None:
     store = _make_committed_store(tmp_path)
     history = store.get_history("STUDY-01")
     commit_id_display = (
-        f"1.0.0 — {history[0]['commit_id'][:12]} by alice " f"({history[0]['timestamp'][:19]})"
+        f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
     )
 
     fake_st = _FakeStreamlit()

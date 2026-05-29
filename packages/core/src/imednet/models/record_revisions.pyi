@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
 from imednet.models.json_base import JsonModel
 
 class RecordRevision(JsonModel):
@@ -16,4 +17,3 @@ class RecordRevision(JsonModel):
     interval_id: Optional[int]
     deleted: Optional[bool]
     date_created: Optional[str]
-

@@ -40,7 +40,7 @@ def _render_auth_section() -> tuple[str, list[str]]:
     sdk = get_sdk()
     roles = sdk.auth.get_user_roles()
     user_id = sdk.auth.get_user_id() or ""
-    
+
     st.markdown(
         "Identity and roles are now automatically resolved from your secure session.  \n"
         f"**User ID:** {user_id or 'Unknown'}  \n"

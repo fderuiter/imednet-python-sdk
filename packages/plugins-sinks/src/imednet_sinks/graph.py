@@ -230,8 +230,7 @@ class Neo4jExportSink(ExportSink):
                     time.sleep(delay)
 
         raise ExportBatchError(
-            f"Batch {batch_id!r} failed after {self.config.max_retries + 1} "
-            f"attempts: {last_exc}",
+            f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {last_exc}",
             batch_id=batch_id,
         )
 

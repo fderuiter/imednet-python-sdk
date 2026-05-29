@@ -1,9 +1,9 @@
 import sys
-from imednet import AsyncImednetSDK, ImednetSDK
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from imednet import AsyncImednetSDK, ImednetSDK
 from imednet.errors import ValidationError
 from imednet.models.jobs import Job
 from imednet.models.variables import Variable
@@ -383,7 +383,9 @@ async def test_async_create_or_update_records_validation() -> None:
         await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
     sdk.async_create_record.assert_not_called()
 
-    sdk.async_create_record = AsyncMock(return_value=Job(jobId="1", batchId="1", state="PROCESSING"))
+    sdk.async_create_record = AsyncMock(
+        return_value=Job(jobId="1", batchId="1", state="PROCESSING")
+    )
     await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
     sdk.async_get_variables.assert_called_once_with(study_key="STUDY")
     sdk.async_create_record.assert_called_once_with(

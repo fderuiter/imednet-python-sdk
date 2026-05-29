@@ -1,21 +1,22 @@
 from __future__ import annotations
 
-from typing import Any
 import collections
 import logging
+from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
-from imednet.spi.models import Record
 from imednet.spi.models import (
     AdverseEvent,
-    DeviceDeficiency,
-    ProtocolDeviation,
-    SubjectLevelAnalysis,
     AnalysisAdverseEvent,
     AnalysisLabResult,
+    DeviceDeficiency,
+    MappingRule,
+    ProtocolDeviation,
+    Record,
+    StudyConfiguration,
+    SubjectLevelAnalysis,
 )
-from imednet.spi.models import MappingRule, StudyConfiguration
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +128,7 @@ def _evaluate_business_logic(
         logger.warning(f"Derivation logic failed for {context.subject_key}: {e}")
         return None
 
+
 def extract_canonical_records(
     records: list[Record], study_configuration: StudyConfiguration
 ) -> ExtractionResult:
@@ -142,9 +144,9 @@ def extract_canonical_records(
     for subject_key, s_records in subject_records.items():
         # sort by date_created to simulate longitudinal timeline
         s_records.sort(key=lambda r: r.date_created if r.date_created else r.date_updated)
-        
+
         context = SubjectContext(subject_key)
-        
+
         # We will collect ADSL components iteratively, emitting one ADSL record per subject at the end
         adsl_payload: dict[str, Any] = {"subjectKey": subject_key}
         has_adsl_rules = False
@@ -154,7 +156,7 @@ def extract_canonical_records(
                 **record.model_dump(by_alias=False),
                 **record.model_dump(by_alias=True),
             }
-            
+
             for domain, by_form in grouped_mappings.items():
                 rules = by_form.get(record.form_key)
                 if not rules:
@@ -167,13 +169,15 @@ def extract_canonical_records(
                         value = _extract_rule_value_from_payload(record, rule, top_level_payload)
                     else:
                         value = None
-                        
+
                     if _is_missing_value(value) and rule.fallback_value is not None:
                         value = rule.fallback_value
-                        
+
                     # 2. Business Logic Execution
                     if rule.business_logic:
-                        derived = _evaluate_business_logic(rule.business_logic, record, payload, context, value)
+                        derived = _evaluate_business_logic(
+                            rule.business_logic, record, payload, context, value
+                        )
                         if derived is not None:
                             value = derived
 
@@ -184,10 +188,10 @@ def extract_canonical_records(
                         has_adsl_rules = True
                         if value is not None:
                             adsl_payload[rule.target_field] = value
-                            
+
                     # Update state context for cross-dataset dependency
                     context.state[f"{domain}.{rule.target_field}"] = value
-                    
+
                     # Update baseline if marked
                     if getattr(rule, "is_baseline", False) and value is not None:
                         baseline_key = f"{domain}.{rule.target_field}"
@@ -197,7 +201,7 @@ def extract_canonical_records(
                 # ADSL is subject-level, we accumulate and create it at the end
                 if domain == "ADSL":
                     continue
-                    
+
                 model_type = _DOMAIN_MODEL_MAP[domain]
                 try:
                     model_instance = model_type(**payload)
@@ -240,5 +244,6 @@ def extract_canonical_records(
                 )
 
     return result
+
 
 __all__ = ["ExtractionResult", "extract_canonical_records"]

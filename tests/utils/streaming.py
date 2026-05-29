@@ -3,15 +3,17 @@ from typing import Any, AsyncIterator, Generic, Iterable, Iterator, List, TypeVa
 
 T = TypeVar('T')
 
+
 class StreamingMockWrapper(Generic[T]):
     """
     A robust test wrapper that mimics both a list and an async/sync iterator.
     """
+
     def __init__(self, data: Iterable[T], max_buffer_size: int = 10000):
         self._max_buffer_size = max_buffer_size
         self._buffer: List[T] = []
         self._fully_buffered = False
-        
+
         if isinstance(data, list):
             self._buffer = list(data)
             self._fully_buffered = True
@@ -22,7 +24,7 @@ class StreamingMockWrapper(Generic[T]):
     def _fill_buffer(self, target_index: Union[int, slice, None] = None) -> None:
         if self._fully_buffered:
             return
-            
+
         try:
             while True:
                 if target_index is not None and isinstance(target_index, int):
@@ -92,6 +94,7 @@ class StreamingMockWrapper(Generic[T]):
         # Handle incorrect awaiting by gracefully returning self so test assertions can pass.
         async def _mock_coroutine():
             return self
+
         return _mock_coroutine().__await__()
 
 
@@ -108,8 +111,8 @@ def unified_paginator_factory(monkeypatch, module, items, is_async=False):
             captured["count"] += 1
 
     # Apply to both Sync and Async if available
-    from imednet.core.endpoint.base import SyncListGetEndpoint, AsyncListGetEndpoint
-    
+    from imednet.core.endpoint.base import AsyncListGetEndpoint, SyncListGetEndpoint
+
     for obj in module.__dict__.values():
         if isinstance(obj, type):
             if issubclass(obj, SyncListGetEndpoint):

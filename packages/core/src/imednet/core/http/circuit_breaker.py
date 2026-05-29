@@ -4,19 +4,22 @@ import logging
 import threading
 import time
 from enum import Enum
-from typing import Callable, TypeVar, Any, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
+
 
 class CircuitState(Enum):
     CLOSED = "CLOSED"
     OPEN = "OPEN"
     HALF_OPEN = "HALF_OPEN"
 
+
 class CircuitBreakerError(Exception):
     """Raised when the circuit breaker is open and a request is blocked."""
+
 
 class CircuitBreaker:
     """
@@ -67,7 +70,9 @@ class CircuitBreaker:
         """Record a successful request."""
         with self._lock:
             if self._state == CircuitState.HALF_OPEN:
-                logger.warning("Circuit breaker transitioned to CLOSED state after successful probe.")
+                logger.warning(
+                    "Circuit breaker transitioned to CLOSED state after successful probe."
+                )
             self._state = CircuitState.CLOSED
             self._consecutive_failures = 0
             self._half_open_probes = 0
@@ -83,7 +88,9 @@ class CircuitBreaker:
                 self._consecutive_failures += 1
                 if self._consecutive_failures >= self.failure_threshold:
                     self._state = CircuitState.OPEN
-                    logger.warning("Circuit breaker transitioned to OPEN state after consecutive failures.")
+                    logger.warning(
+                        "Circuit breaker transitioned to OPEN state after consecutive failures."
+                    )
 
     def reset(self) -> None:
         """Reset the circuit breaker to its initial CLOSED state."""
@@ -93,8 +100,10 @@ class CircuitBreaker:
             self._last_failure_time = 0.0
             self._half_open_probes = 0
 
+
 # Global instance
 _global_circuit_breaker = CircuitBreaker()
+
 
 def get_global_circuit_breaker() -> CircuitBreaker:
     return _global_circuit_breaker

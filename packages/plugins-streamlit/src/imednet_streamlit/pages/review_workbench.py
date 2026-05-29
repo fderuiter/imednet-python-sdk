@@ -31,10 +31,11 @@ def _get_store() -> TriageStore:
 
 def _resolve_db_path(raw_path: object) -> str:
     import os
+
     # Connect to managed database to support concurrent multi-user access
     if "IMEDNET_TRIAGE_DB_PATH" in os.environ:
         return os.environ["IMEDNET_TRIAGE_DB_PATH"]
-        
+
     base_dir = _DEFAULT_TRIAGE_DIR.expanduser().resolve()
     candidate = Path(str(raw_path)).expanduser()
     if not candidate.is_absolute():

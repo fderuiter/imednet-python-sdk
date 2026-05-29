@@ -26,29 +26,37 @@ from imednet.utils.typing import FilterValue, JsonDict
 
 try:
     from opentelemetry import trace as _trace
+
     tracer = _trace.get_tracer(__name__)
 except Exception:
     tracer = None
 
+
 def _trace_method(func: Any) -> Any:
     from functools import wraps
+
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         if tracer:
             with tracer.start_as_current_span(func.__name__):
                 return func(*args, **kwargs)
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def _async_trace_method(func: Any) -> Any:
     from functools import wraps
+
     @wraps(func)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
         if tracer:
             with tracer.start_as_current_span(func.__name__):
                 return await func(*args, **kwargs)
         return await func(*args, **kwargs)
+
     return wrapper
+
 
 if TYPE_CHECKING:
     from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint

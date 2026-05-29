@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-from imednet.models.engine import ModelEngine
-
 from datetime import datetime
 from typing import Any
 
 from pydantic import Field, field_validator
 
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class Job(JsonModel):
     """Represents an asynchronous background job."""
-
 
     @property
     def is_terminal(self) -> bool:
@@ -32,9 +30,9 @@ class Job(JsonModel):
 
 Job = ModelEngine.get_model('Job', Job)
 
+
 class JobStatus(Job):
     """Extended job information returned when polling."""
-
 
     @field_validator("progress", mode="before", check_fields=False)
     def _parse_progress(cls, v: Any) -> int:
@@ -42,5 +40,6 @@ class JobStatus(Job):
             return int(v)
         except (TypeError, ValueError):
             return 0
-JobStatus = ModelEngine.get_model('JobStatus', JobStatus)
 
+
+JobStatus = ModelEngine.get_model('JobStatus', JobStatus)

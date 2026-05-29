@@ -14,8 +14,15 @@ class SensitivityRegistry:
     def __init__(self) -> None:
         # Default clinical PHI fields
         self._sensitive_keys = {
-            "patient_name", "patient_initials", "dob", "date_of_birth", "ssn",
-            "phone", "email", "address", "birth_date"
+            "patient_name",
+            "patient_initials",
+            "dob",
+            "date_of_birth",
+            "ssn",
+            "phone",
+            "email",
+            "address",
+            "birth_date",
         }
         # Keys explicitly exempted from masking
         self._exempt_keys = {"subject_key", "study_key", "record_id"}
@@ -38,6 +45,7 @@ class SensitivityRegistry:
             return False
         return key in self._sensitive_keys
 
+
 global_sensitivity_registry = SensitivityRegistry()
 
 
@@ -45,7 +53,11 @@ def mask_clinical_phi(value: Any) -> Any:
     """Recursively mask sensitive keys in unstructured data."""
     if isinstance(value, dict):
         return {
-            k: ("***MASKED***" if global_sensitivity_registry.is_sensitive(k) else mask_clinical_phi(v))
+            k: (
+                "***MASKED***"
+                if global_sensitivity_registry.is_sensitive(k)
+                else mask_clinical_phi(v)
+            )
             for k, v in value.items()
         }
     elif isinstance(value, list):
@@ -53,6 +65,7 @@ def mask_clinical_phi(value: Any) -> Any:
     elif isinstance(value, tuple):
         return tuple(mask_clinical_phi(v) for v in value)
     return value
+
 
 def sanitize_csv_formula(value: Any) -> Any:
     """

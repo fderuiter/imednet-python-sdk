@@ -5,7 +5,7 @@ Base endpoint mix-in for all API resource endpoints.
 from __future__ import annotations
 
 import warnings
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Iterator, AsyncIterator
+from typing import Any, AsyncIterator, Callable, Dict, Iterator, List, Optional, TypeVar
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -269,7 +269,9 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_async(client, paginator_cls)
 
-    def async_list(self, study_key: Optional[str] = None, **filters: FilterValue) -> AsyncIterator[T]:
+    def async_list(
+        self, study_key: Optional[str] = None, **filters: FilterValue
+    ) -> AsyncIterator[T]:
         # Cast FilterValue → Any at the public/internal boundary.
         _filters: Dict[str, Any] = dict(filters)
         return self._list_async(

@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
 from imednet.models.json_base import JsonModel
 
 class Coding(JsonModel):
@@ -20,4 +21,3 @@ class Coding(JsonModel):
     dictionary_name: Optional[str]
     dictionary_version: Optional[str]
     date_coded: Optional[str]
-

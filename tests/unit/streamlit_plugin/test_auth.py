@@ -16,7 +16,13 @@ class _SidebarContext:
 
 
 class _FakeStreamlit:
-    def __init__(self, *, logged_in: bool = False, connect_clicked: bool = False, selected_study: str = "STUDY") -> None:
+    def __init__(
+        self,
+        *,
+        logged_in: bool = False,
+        connect_clicked: bool = False,
+        selected_study: str = "STUDY",
+    ) -> None:
         self.session_state: dict[str, object] = {}
         self.sidebar = _SidebarContext()
         self._connect_clicked = connect_clicked
@@ -24,7 +30,7 @@ class _FakeStreamlit:
         self.error_messages: list[str] = []
         self.warning_messages: list[str] = []
         self.info_messages: list[str] = []
-        
+
         self.user = {"email": "test@enterprise.com", "is_logged_in": logged_in} if logged_in else {}
         self.login_called = False
         self._selected_study = selected_study
@@ -36,7 +42,7 @@ class _FakeStreamlit:
         key = kwargs["key"]
         self.session_state[key] = ""
         return ""
-        
+
     def selectbox(self, label: str, options: list[str], key: str) -> str:
         self.session_state[key] = self._selected_study
         return self._selected_study
@@ -49,13 +55,13 @@ class _FakeStreamlit:
 
     def error(self, message: str) -> None:
         self.error_messages.append(message)
-        
+
     def warning(self, message: str) -> None:
         self.warning_messages.append(message)
-        
+
     def info(self, message: str) -> None:
         self.info_messages.append(message)
-        
+
     def login(self) -> None:
         self.login_called = True
 

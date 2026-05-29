@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -18,9 +19,9 @@ from typing import Any
 
 from imednet.spi.models import StudyConfiguration
 
-import os
-
-_DEFAULT_DB_PATH = Path(os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3"))
+_DEFAULT_DB_PATH = Path(
+    os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3")
+)
 
 
 def _sha256_of(content: str) -> str:
@@ -127,7 +128,7 @@ class ConfigVersionStore:
         """
         if sdk is not None:
             roles = sdk.auth.get_user_roles()
-            
+
             # Legacy fallback: if using static keys, validate server-side by making an API call
             if not roles and hasattr(sdk.auth, "api_key") and getattr(sdk.auth, "api_key"):
                 try:
@@ -135,17 +136,21 @@ class ConfigVersionStore:
                     sdk.get_sites(study_key, limit=1)
                     roles = ["admin"]  # Legacy keys with access map to admin
                 except Exception as exc:
-                    raise PermissionError(f"Server-side authorization failure for legacy key: {exc}")
+                    raise PermissionError(
+                        f"Server-side authorization failure for legacy key: {exc}"
+                    )
 
             if not roles or ("admin" not in roles and "manager" not in roles):
-                raise PermissionError("Server-side authorization failure: user lacks manager or admin role required to publish.")
-            
+                raise PermissionError(
+                    "Server-side authorization failure: user lacks manager or admin role required to publish."
+                )
+
             user_id = sdk.auth.get_user_id()
             if user_id and user_id != "api-key-user":
                 user = user_id
             elif not user and user_id == "api-key-user":
                 user = "legacy-api-key"
-        
+
         if not user:
             raise ValueError("A user identifier is required to commit.")
 

@@ -10,13 +10,10 @@ from moto import mock_aws
 @mock_aws
 def test_dag_runs(monkeypatch):
     pytest.importorskip("airflow")
-    # isort: off
-    from airflow.models import DAG, TaskInstance
-    from airflow.utils.state import State
+    from airflow.models import DAG, TaskInstance  # noqa: E402, I001
+    from airflow.utils.state import State  # noqa: E402, I001
 
-    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetToS3Operator
-
-    # isort: on
+    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetToS3Operator  # noqa: E402, I001
 
     s3 = boto3.client("s3", region_name="us-east-1")
     s3.create_bucket(Bucket="bucket")

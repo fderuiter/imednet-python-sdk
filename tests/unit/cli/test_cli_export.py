@@ -1,14 +1,13 @@
 import importlib.util
-from unittest.mock import MagicMock
+from unittest.mock import ANY, MagicMock
 
 import pytest
+from imednet_sinks import Neo4jSinkConfig, SnowflakeSinkConfig
 from typer.testing import CliRunner
 
 import imednet.cli as cli
 import imednet.integrations as integrations_mod
 from imednet.integrations import SinkConfig
-from unittest.mock import ANY
-from imednet_sinks import Neo4jSinkConfig, SnowflakeSinkConfig
 from imednet.integrations import export as export_mod
 
 

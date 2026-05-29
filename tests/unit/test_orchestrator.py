@@ -25,7 +25,7 @@ def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> Non
         while True:
             last_v += 0.01
             yield last_v
-    
+
     clock_values = infinite_clock()
     monkeypatch.setattr(
         "imednet.orchestration.orchestrator.time.monotonic",

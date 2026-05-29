@@ -8,8 +8,7 @@ from typing import Any, Dict, List, Mapping, MutableMapping, TypeAlias, Union, c
 
 from airflow.hooks.base import BaseHook
 
-from imednet import Config, load_config
-from imednet import ImednetSDK
+from imednet import Config, ImednetSDK, load_config
 
 Primitive = Union[str, int, float, bool, None]
 # Primitive-only payload contract for discovery helpers that feed Airflow mapping/XCom.

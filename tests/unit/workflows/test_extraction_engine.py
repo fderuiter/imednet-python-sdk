@@ -192,6 +192,7 @@ def test_extract_canonical_records_uses_fallback_values() -> None:
     assert result.adverse_events[0].ae_severity == "MILD"
     assert result.validation_errors == []
 
+
 def test_extract_subject_centric_analysis_datasets() -> None:
     config = StudyConfiguration(
         study_key="STUDY-2",
@@ -214,9 +215,8 @@ def test_extract_subject_centric_analysis_datasets() -> None:
                 target_field="firstDoseDate",
                 source_form_key="EX_FORM",
                 source_variable_name="recordData.ex.startDate",
-                businessLogic="value"
+                businessLogic="value",
             ),
-            
             # ADAE Mapping
             MappingRule(
                 domain="ADAE",
@@ -235,9 +235,8 @@ def test_extract_subject_centric_analysis_datasets() -> None:
                 target_field="treatmentEmergent",
                 source_form_key="AE_FORM",
                 source_variable_name="",
-                businessLogic="record.record_data.get('ae', {}).get('startDate', '') >= state.get('ADSL.firstDoseDate', '9999-99-99')"
+                businessLogic="record.record_data.get('ae', {}).get('startDate', '') >= state.get('ADSL.firstDoseDate', '9999-99-99')",
             ),
-            
             # ADLB Mapping - Baseline and Change
             MappingRule(
                 domain="ADLB",
@@ -257,18 +256,18 @@ def test_extract_subject_centric_analysis_datasets() -> None:
                 source_form_key="LB_FORM",
                 source_variable_name="recordData.lb.result",
                 isBaseline=True,
-                businessLogic="value if record.record_data.get('lb', {}).get('visit') == 'Baseline' else value"
+                businessLogic="value if record.record_data.get('lb', {}).get('visit') == 'Baseline' else value",
             ),
             MappingRule(
                 domain="ADLB",
                 target_field="changeFromBaseline",
                 source_form_key="LB_FORM",
                 source_variable_name="",
-                businessLogic="float(payload.get('result', 0)) - float(baseline.get('ADLB.result', 0)) if 'ADLB.result' in baseline and record.record_data.get('lb', {}).get('visit') != 'Baseline' else None"
-            )
-        ]
+                businessLogic="float(payload.get('result', 0)) - float(baseline.get('ADLB.result', 0)) if 'ADLB.result' in baseline and record.record_data.get('lb', {}).get('visit') != 'Baseline' else None",
+            ),
+        ],
     )
-    
+
     records = [
         Record(
             record_id=1,
@@ -296,7 +295,9 @@ def test_extract_subject_centric_analysis_datasets() -> None:
             form_key="AE_FORM",
             subject_key="SUBJ-001",
             date_created=datetime(2024, 1, 4),
-            record_data={"ae": {"term": "Headache", "startDate": "2024-01-15"}}, # before first dose
+            record_data={
+                "ae": {"term": "Headache", "startDate": "2024-01-15"}
+            },  # before first dose
         ),
         Record(
             record_id=5,
@@ -311,34 +312,33 @@ def test_extract_subject_centric_analysis_datasets() -> None:
             subject_key="SUBJ-001",
             date_created=datetime(2024, 1, 6),
             record_data={"lb": {"test": "ALT", "result": 55.0, "visit": "Visit 2"}},
-        )
+        ),
     ]
-    
+
     result = extract_canonical_records(records=records, study_configuration=config)
-    
+
     assert len(result.adsl_records) == 1
     adsl = result.adsl_records[0].model_dump(by_alias=True)
     assert adsl["subjectKey"] == "SUBJ-001"
     assert adsl["age"] == 45
     assert adsl["firstDoseDate"] == "2024-02-01"
-    
+
     assert len(result.adae_records) == 2
     adae1 = result.adae_records[0].model_dump(by_alias=True)
     assert adae1["aeTerm"] == "Nausea"
     assert adae1["treatmentEmergent"] is True
-    
+
     adae2 = result.adae_records[1].model_dump(by_alias=True)
     assert adae2["aeTerm"] == "Headache"
     assert adae2["treatmentEmergent"] is False
-    
+
     assert len(result.adlb_records) == 2
     adlb1 = result.adlb_records[0].model_dump(by_alias=True)
     assert adlb1["labTest"] == "ALT"
     assert adlb1["result"] == 40.0
     assert adlb1["changeFromBaseline"] is None
-    
+
     adlb2 = result.adlb_records[1].model_dump(by_alias=True)
     assert adlb2["labTest"] == "ALT"
     assert adlb2["result"] == 55.0
     assert adlb2["changeFromBaseline"] == 15.0
-

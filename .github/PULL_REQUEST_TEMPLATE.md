@@ -28,8 +28,7 @@ Describe the tests added or updated. If tests were intentionally skipped, explai
 ## Quality Gate Checklist
 
 ### Formatting & linting
-- [ ] `poetry run black --check .`
-- [ ] `poetry run isort --check --profile black .`
+- [ ] `poetry run ruff format --check .`
 - [ ] `poetry run ruff check .`
 
 ### Type checking (run for each affected package)

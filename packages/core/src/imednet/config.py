@@ -43,4 +43,6 @@ def load_config(
         if not security_key:
             raise ValueError("Security key is required when not using OIDC")
 
-    return Config(api_key=api_key, security_key=security_key, base_url=base_url, oidc_token=oidc_token)
+    return Config(
+        api_key=api_key, security_key=security_key, base_url=base_url, oidc_token=oidc_token
+    )

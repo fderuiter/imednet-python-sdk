@@ -483,7 +483,9 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
             self.user = user
 
     mock_store = MockStore()
-    monkeypatch.setattr("imednet_workflows.config_version_control.ConfigVersionStore", lambda: mock_store)
+    monkeypatch.setattr(
+        "imednet_workflows.config_version_control.ConfigVersionStore", lambda: mock_store
+    )
 
     _run_setup_wizard(fake_st)
 
@@ -501,7 +503,9 @@ def test_setup_wizard_save_managed_reports_error(monkeypatch: Any) -> None:
         def commit_config(self, study_key, config, user, desc):
             raise OSError("boom")
 
-    monkeypatch.setattr("imednet_workflows.config_version_control.ConfigVersionStore", lambda: MockStore())
+    monkeypatch.setattr(
+        "imednet_workflows.config_version_control.ConfigVersionStore", lambda: MockStore()
+    )
 
     _run_setup_wizard(fake_st)
 

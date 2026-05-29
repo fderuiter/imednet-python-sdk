@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from imednet.models.engine import ModelEngine
-
 from datetime import datetime
 from typing import List
 
 from pydantic import Field
 
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
@@ -23,7 +22,7 @@ class FormSummary(JsonModel):
 class Interval(JsonModel):
     """Represents a visit interval or event within the study timeline."""
 
-
     pass
-Interval = ModelEngine.get_model('Interval', Interval)
 
+
+Interval = ModelEngine.get_model('Interval', Interval)

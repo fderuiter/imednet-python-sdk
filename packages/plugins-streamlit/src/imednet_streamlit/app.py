@@ -13,7 +13,10 @@ st.set_page_config(
 
 # High contrast mode logic
 if "high_contrast" not in st.session_state:
-    st.session_state["high_contrast"] = st.query_params.get("high_contrast", "false").lower() == "true"
+    st.session_state["high_contrast"] = (
+        st.query_params.get("high_contrast", "false").lower() == "true"
+    )
+
 
 def toggle_high_contrast():
     st.session_state["high_contrast"] = not st.session_state["high_contrast"]
@@ -23,10 +26,14 @@ def toggle_high_contrast():
         if "high_contrast" in st.query_params:
             del st.query_params["high_contrast"]
 
-st.sidebar.toggle("High Contrast Mode", value=st.session_state["high_contrast"], on_change=toggle_high_contrast)
+
+st.sidebar.toggle(
+    "High Contrast Mode", value=st.session_state["high_contrast"], on_change=toggle_high_contrast
+)
 
 if st.session_state["high_contrast"]:
-    st.markdown("""
+    st.markdown(
+        """
         <style>
         /* High contrast mode CSS ensuring minimum contrast ratio 7:1 */
         html, body, [class*="st-"] {
@@ -58,10 +65,14 @@ if st.session_state["high_contrast"]:
             fill: #FFFFFF !important;
         }
         </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 import pandas as pd
+
 original_altair_chart = st.altair_chart
+
 
 def accessible_altair_chart(altair_chart, use_container_width=False, theme="streamlit", **kwargs):
     title = getattr(altair_chart, "title", "Chart")
@@ -71,15 +82,18 @@ def accessible_altair_chart(altair_chart, use_container_width=False, theme="stre
         title = "Chart"
 
     df = getattr(altair_chart, "data", pd.DataFrame())
-        
+
     if not hasattr(altair_chart, "description") or not getattr(altair_chart, "description", None):
         altair_chart = altair_chart.properties(description=f"Data visualization for {title}")
-        
-    original_altair_chart(altair_chart, use_container_width=use_container_width, theme=theme, **kwargs)
-    
+
+    original_altair_chart(
+        altair_chart, use_container_width=use_container_width, theme=theme, **kwargs
+    )
+
     if isinstance(df, pd.DataFrame) and not df.empty:
         with st.expander(f"Tabular Data View: {title}", expanded=False):
             st.dataframe(df, use_container_width=use_container_width)
+
 
 st.altair_chart = accessible_altair_chart
 
@@ -121,4 +135,3 @@ else:
     nav = st.navigation([home_page, admin_page, conformance_portal])
 
 nav.run()
-

@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
 from imednet.models.json_base import JsonModel
 
 class User(JsonModel):
@@ -9,4 +10,3 @@ class User(JsonModel):
     last_name: Optional[str]
     email: Optional[str]
     user_active_in_study: Optional[bool]
-
