@@ -21,6 +21,9 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
         
     schemas = {}
     
+    if not isinstance(data, dict):
+        return schemas
+    
     name_mapping = {
         "Study information": "Study",
         "List of forms": "Form",
@@ -39,16 +42,26 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
     }
     
     def extract_schemas(items: List[Dict[str, Any]]):
+        if not isinstance(items, list):
+            return
         for item in items:
+            if not isinstance(item, dict):
+                continue
             if 'item' in item:
                 extract_schemas(item['item'])
             elif 'response' in item:
+                if not isinstance(item['response'], list):
+                    continue
                 for resp in item['response']:
-                    if resp['name'] in name_mapping and 'body' in resp:
+                    if not isinstance(resp, dict):
+                        continue
+                    if resp.get('name') in name_mapping and 'body' in resp:
                         body = resp['body']
                         if body and isinstance(body, str):
                             try:
                                 parsed = json.loads(body)
+                                if not isinstance(parsed, dict):
+                                    continue
                                 model_name = name_mapping[resp['name']]
                                 if 'data' in parsed and isinstance(parsed['data'], list) and len(parsed['data']) > 0:
                                     schemas[model_name] = parsed['data'][0]
