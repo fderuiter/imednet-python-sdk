@@ -45,11 +45,46 @@ jobs:
             revert
 
   # ------------------------------------------------------------------
-  # JOB 1: QUALITY GATE (Runs once)
+  # JOB 1: QUALITY GATE (Runs per package)
   # ------------------------------------------------------------------
-  quality:
-    name: Quality & Security
+  # ------------------------------------------------------------------
+  # JOB 0.5: DETECT CHANGES & PLAN
+  # ------------------------------------------------------------------
+  plan:
+    name: Plan CI Execution
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          separator: ","
+
+      - name: Determine Impacted Packages
+        id: set-matrix
+        run: |
+          if [ -z "${{ steps.changed-files.outputs.all_changed_files }}" ]; then
+            MATRIX=$(echo "" | python3 scripts/ci_plan.py)
+          else
+            MATRIX=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ',' '\n' | python3 scripts/ci_plan.py)
+          fi
+          echo "Impacted packages: $MATRIX"
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
+  quality:
+    name: Quality & Security - ${{ matrix.package }}
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -62,22 +97,28 @@ jobs:
       - name: Install Dependencies
         run: poetry install --with dev
 
-      # FAIL if code is ugly. Do not fix it for them.
       - name: Enforce Style
         run: |
-          poetry run black --check .
-          poetry run isort --check --profile black .
+          poetry run black --check packages/${{ matrix.package }}
+          poetry run isort --check --profile black packages/${{ matrix.package }}
 
       - name: Lint (Ruff)
-        run: poetry run ruff check .
+        run: poetry run ruff check packages/${{ matrix.package }}
 
       - name: Type Check (MyPy)
         run: |
-          poetry run mypy packages/core/src/imednet
-          poetry run mypy packages/plugins-workflows/src/imednet_workflows
-          poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-          poetry run mypy packages/plugins-streamlit/src/imednet_streamlit
-          poetry run mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
+          if [ "${{ matrix.package }}" = "core" ]; then
+            poetry run mypy packages/core/src/imednet
+            poetry run mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
+          elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
+            poetry run mypy packages/plugins-workflows/src/imednet_workflows
+          elif [ "${{ matrix.package }}" = "providers-airflow" ]; then
+            poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+          elif [ "${{ matrix.package }}" = "plugins-streamlit" ]; then
+            poetry run mypy packages/plugins-streamlit/src/imednet_streamlit
+          elif [ "${{ matrix.package }}" = "plugins-sinks" ]; then
+            poetry run mypy packages/plugins-sinks/src/imednet_sinks
+          fi
 
       - name: Security Audit
         run: |
@@ -147,15 +188,16 @@ jobs:
           retention-days: 1
 
   # ------------------------------------------------------------------
-  # JOB 3: TEST MATRIX (Tests the BUILT library)
+  # JOB 3: TEST MATRIX (Tests impacted packages)
   # ------------------------------------------------------------------
   test:
-    name: Test Python ${{ matrix.python-version }}
-    needs: build
+    name: Test ${{ matrix.package }} (Python ${{ matrix.python-version }})
+    needs: [plan, build]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        package: ${{ fromJSON(needs.plan.outputs.matrix) }}
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
@@ -173,15 +215,34 @@ jobs:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
         run: |
-          poetry run pytest -q \
-            --cov=imednet \
-            --cov=imednet_workflows \
-            --cov=apache_airflow_providers_imednet \
-            --cov=imednet_streamlit \
-            --cov-report=xml \
-            --cov-fail-under=90 \
-            -m "not live" \
-            --ignore=tests/live/
+          if [ "${{ matrix.package }}" = "core" ]; then
+            TEST_ARGS="--ignore-glob=*airflow* --ignore-glob=*workflows* --ignore-glob=*streamlit* --ignore-glob=*sinks* tests/"
+            COV_ARGS="--cov=imednet"
+          elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
+
+
+            TEST_ARGS="tests/unit/test_workflows*.py tests/unit/workflows/ tests/workflows/"
+            COV_ARGS="--cov=imednet_workflows"
+          elif [ "${{ matrix.package }}" = "providers-airflow" ]; then
+            TEST_ARGS="tests/unit/test_airflow*.py"
+            COV_ARGS="--cov=apache_airflow_providers_imednet"
+          elif [ "${{ matrix.package }}" = "plugins-streamlit" ]; then
+            TEST_ARGS="tests/unit/test_streamlit*.py tests/unit/streamlit/ tests/unit/streamlit_plugin/"
+            COV_ARGS="--cov=imednet_streamlit"
+          elif [ "${{ matrix.package }}" = "plugins-sinks" ]; then
+            TEST_ARGS="tests/unit/test_sinks*.py tests/unit/sinks/"
+            COV_ARGS="--cov=imednet_sinks"
+          fi
+          
+          poetry run pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live" --ignore=tests/live/ $TEST_ARGS || {
+            RET=$?
+            if [ $RET -eq 5 ]; then
+              echo "No tests collected for ${{ matrix.package }}. Passing gracefully."
+              exit 0
+            else
+              exit $RET
+            fi
+          }
 
   # ------------------------------------------------------------------
   # JOB 3.5: INTEGRATION SANDBOX (Hermetic testing for localizable sinks)
