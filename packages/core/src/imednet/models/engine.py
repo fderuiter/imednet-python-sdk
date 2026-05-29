@@ -71,9 +71,23 @@ def to_snake(name: str) -> str:
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
+try:
+    from opentelemetry import trace as _trace
+    tracer = _trace.get_tracer(__name__)
+except Exception:
+    tracer = None
+
 class ModelEngine:
     @classmethod
     def get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
+        if tracer:
+            with tracer.start_as_current_span("ModelEngine.get_model") as span:
+                span.set_attribute("model_name", model_name)
+                return cls._get_model(model_name, base_cls)
+        return cls._get_model(model_name, base_cls)
+
+    @classmethod
+    def _get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
         schemas = load_schemas()
         if model_name not in schemas:
             return create_model(model_name, __base__=base_cls)
@@ -100,4 +114,8 @@ class ModelEngine:
 
     @classmethod
     def generate_stubs(cls, output_dir: str):
-        pass
+        if tracer:
+            with tracer.start_as_current_span("ModelEngine.generate_stubs"):
+                pass
+        else:
+            pass

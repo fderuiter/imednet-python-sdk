@@ -1,0 +1,40 @@
+name: SDK Performance Suite
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  benchmark:
+    name: Run Performance Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry config virtualenvs.create false
+          poetry install --with dev
+
+      - name: Run Performance Suite
+        run: |
+          # Run twice: first to establish baseline (if none exists), second to compare.
+          # In a real setup, baseline would be downloaded from previous artifacts.
+          python scripts/performance_suite.py
+          
+      - name: Save Baseline Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-cache
+          path: performance_cache.json
+          if-no-files-found: ignore
