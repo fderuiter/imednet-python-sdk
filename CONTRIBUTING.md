@@ -261,3 +261,9 @@ Before opening a pull request that adds or modifies public APIs:
 2. Include validation output in the PR description.
 3. Keep PRs scoped; one change per PR.
 4. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Dependency-Aware CI Pipeline
+Our CI pipeline is optimized to run quality gates and test suites only for packages affected by your changes. 
+- A change to a "leaf" package (e.g., the Airflow provider) will trigger tests exclusively for that package.
+- A change to the core `imednet` package will trigger the full validation matrix for all dependent packages in the monorepo.
+- Ensure your tests and linters pass locally using `poetry run pytest` and `poetry run ruff check .` before submitting a PR.
