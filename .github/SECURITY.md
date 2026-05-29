@@ -1,16 +1,19 @@
-# Security Policy
+# Organization Security Policy
 
 ## Supported Versions
 
-We support the latest version of the project with security updates.
+Only the latest releases are supported based on the current single-branch development model.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| > 0.0.0 | :white_check_mark: |
+| Latest  | :white_check_mark: |
+| Older   | :x:                |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability within this project, please report it via email to security@imednet.com.
+If you discover a security vulnerability within this project (including our SDKs, OpenAPI specs, and other ecosystem tools), please report it responsibly.
+
+Please report all security vulnerabilities via email to security@imednet.com.
 
 Please do not open a public issue or pull request for security vulnerabilities.
 
