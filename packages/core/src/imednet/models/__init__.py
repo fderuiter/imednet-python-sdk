@@ -27,7 +27,7 @@ from imednet.models.records import (
     RegisterSubjectRequest,
     UpdateScheduledRecordRequest,
 )
-from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDeviation
+from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDeviation, SubjectLevelAnalysis, AnalysisAdverseEvent, AnalysisLabResult
 from imednet.models.sites import Site
 from imednet.models.standards import (
     PROFILE_REGISTRY,
@@ -70,6 +70,9 @@ __all__: list[str] = [
     "AdverseEvent",
     "ProtocolDeviation",
     "DeviceDeficiency",
+    "SubjectLevelAnalysis",
+    "AnalysisAdverseEvent",
+    "AnalysisLabResult",
     "Pagination",
     "Query",
     "QueryComment",

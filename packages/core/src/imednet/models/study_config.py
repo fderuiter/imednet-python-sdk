@@ -16,6 +16,8 @@ class MappingRule(JsonModel):
     source_form_key: str = Field(..., alias="sourceFormKey")
     source_variable_name: str = Field(..., alias="sourceVariableName")
     fallback_value: Optional[str] = Field(None, alias="fallbackValue")
+    business_logic: Optional[str] = Field(None, alias="businessLogic")
+    is_baseline: bool = Field(False, alias="isBaseline")
 
 
 class WidgetConfig(JsonModel):

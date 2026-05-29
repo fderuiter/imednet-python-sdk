@@ -82,3 +82,22 @@ class DeviceDeficiency(JsonModel):
     dd_date: datetime = Field(
         ..., alias="ddDate", description="Date/time of deficiency occurrence (DDSTDTC)"
     )
+
+
+class SubjectLevelAnalysis(JsonModel):
+    """Subject-Level Analysis Dataset (ADSL)"""
+    model_config = {"extra": "allow"}
+    subject_key: str = Field(..., alias="subjectKey")
+
+
+class AnalysisAdverseEvent(JsonModel):
+    """Analysis Adverse Event Dataset (ADAE)"""
+    model_config = {"extra": "allow"}
+    subject_key: str = Field(..., alias="subjectKey")
+
+
+class AnalysisLabResult(JsonModel):
+    """Analysis Lab Result Dataset (ADLB)"""
+    model_config = {"extra": "allow"}
+    subject_key: str = Field(..., alias="subjectKey")
+
