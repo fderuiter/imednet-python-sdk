@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Run Release Please
         id: release
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           # Use GITHUB_TOKEN for release-please operations.
           # PyPI deployment is handled in main.yml on release commits to main,
