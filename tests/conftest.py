@@ -92,6 +92,9 @@ def response_factory():
 
 @pytest.fixture
 def paginator_factory(monkeypatch):
+    from tests.utils.streaming import StreamingMockWrapper
+    from imednet.core.endpoint.operations.list import ListOperation
+
     def factory(module, items):
         captured = {"count": 0}
 
@@ -112,6 +115,13 @@ def paginator_factory(monkeypatch):
         for obj in module.__dict__.values():
             if isinstance(obj, type) and issubclass(obj, SyncListGetEndpoint):
                 monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
+
+        def fake_execute_sync(self, client, paginator_cls):
+            paginator = paginator_cls(client, self.path, params=self.params, page_size=self.page_size)
+            parsed_items = [self.parse_func(item) for item in paginator._items]
+            return StreamingMockWrapper(parsed_items)
+
+        monkeypatch.setattr(ListOperation, "execute_sync", fake_execute_sync)
         return captured
 
     return factory
@@ -119,6 +129,9 @@ def paginator_factory(monkeypatch):
 
 @pytest.fixture
 def async_paginator_factory(monkeypatch):
+    from tests.utils.streaming import StreamingMockWrapper
+    from imednet.core.endpoint.operations.list import ListOperation
+
     def factory(module, items):
         captured = {"count": 0}
 
@@ -140,6 +153,14 @@ def async_paginator_factory(monkeypatch):
         for obj in module.__dict__.values():
             if isinstance(obj, type) and issubclass(obj, AsyncListGetEndpoint):
                 monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
+
+        def fake_execute_async(self, client, paginator_cls):
+            paginator = paginator_cls(client, self.path, params=self.params, page_size=self.page_size)
+            parsed_items = [self.parse_func(item) for item in paginator._items]
+            return StreamingMockWrapper(parsed_items)
+
+        monkeypatch.setattr(ListOperation, "execute_async", fake_execute_async)
+        
         return captured
 
     return factory

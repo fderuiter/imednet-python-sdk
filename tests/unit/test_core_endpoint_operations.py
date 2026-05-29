@@ -103,7 +103,7 @@ def test_list_operation_sync():
     )
     result = operation.execute_sync(client, paginator_cls)
 
-    assert result == [{"id": 1}, {"id": 2}]
+    assert list(result) == [{"id": 1}, {"id": 2}]
     paginator_cls.assert_called_once_with(client, "/test", params={"q": "1"}, page_size=10)
 
 
@@ -125,7 +125,7 @@ async def test_list_operation_async():
     operation = ListOperation(
         path="/test", params={"q": "1"}, page_size=10, parse_func=dummy_parse_func
     )
-    result = await operation.execute_async(client, paginator_cls)
+    result = [item async for item in operation.execute_async(client, paginator_cls)]
 
     assert result == [{"id": 1}, {"id": 2}]
     paginator_cls.assert_called_once_with(client, "/test", params={"q": "1"}, page_size=10)
