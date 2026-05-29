@@ -129,7 +129,7 @@ def _register_missing_workflow_commands() -> None:
 
 def _exit_missing_dashboard_plugin() -> NoReturn:
     typer.secho(
-        "Dashboard plugin not found. Install it with:\n" "  pip install imednet-streamlit",
+        "Dashboard plugin not found. Install it with:\n  pip install imednet-streamlit",
         fg=typer.colors.RED,
     )
     raise typer.Exit(code=1)
@@ -179,9 +179,7 @@ try:  # pragma: no cover - optional workflows plugin
     DataExtractionWorkflow = import_module(  # noqa: F401
         "imednet_workflows.data_extraction"
     ).DataExtractionWorkflow
-    SubjectDataWorkflow = import_module(
-        "imednet_workflows.subject_data"
-    ).SubjectDataWorkflow  # noqa: F401
+    SubjectDataWorkflow = import_module("imednet_workflows.subject_data").SubjectDataWorkflow  # noqa: F401
     app.add_typer(workflows_cli.app)
     app.command("subject-data")(workflows_cli.subject_data)
     app.command("sync-worker")(workflows_cli.sync_worker)

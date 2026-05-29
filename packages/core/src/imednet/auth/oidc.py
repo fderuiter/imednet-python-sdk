@@ -38,7 +38,7 @@ class OIDCAuth:
         roles = self._decoded_claims.get("roles") or self._decoded_claims.get("groups") or []
         if isinstance(roles, str):
             roles = [roles]
-        
+
         # Enterprise role mapping to system roles
         mapped_roles = []
         for r in roles:
@@ -51,8 +51,8 @@ class OIDCAuth:
                 mapped_roles.append("reviewer")
             else:
                 mapped_roles.append("viewer")
-        
-        # If no explicit match, default mapping logic if any... 
+
+        # If no explicit match, default mapping logic if any...
         return mapped_roles if mapped_roles else list(roles)
 
     def __repr__(self) -> str:

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from imednet.models.engine import ModelEngine
-
 from datetime import datetime
 from typing import List
 
 from pydantic import Field, computed_field
 
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
@@ -14,12 +13,11 @@ class Role(JsonModel):
     """A role assigned to a user within a study or community."""
 
 
-
 Role = ModelEngine.get_model('Role', Role)
+
 
 class User(JsonModel):
     """A user account in the system."""
-
 
     @computed_field
     def name(self) -> str:
@@ -29,5 +27,6 @@ class User(JsonModel):
         """
         # will strip extra spaces if either is empty
         return " ".join(filter(None, (self.first_name, self.last_name)))
-User = ModelEngine.get_model('User', User)
 
+
+User = ModelEngine.get_model('User', User)

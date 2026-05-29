@@ -22,4 +22,3 @@ class AuthStrategy(Protocol):
     def get_user_id(self) -> Optional[str]:
         """Return user identity, if available."""
         ...
-

@@ -129,8 +129,7 @@ body:
     attributes:
       label: Verification requirements
       value: |
-        - black --check
-        - isort --check --profile black
+        - ruff format --check
         - ruff check
         - mypy (affected packages)
         - pytest with coverage >= 90%

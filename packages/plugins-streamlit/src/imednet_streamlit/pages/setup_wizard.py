@@ -150,11 +150,14 @@ def _initialise_state(study_key: str) -> None:
     if not isinstance(config, StudyConfiguration):
         try:
             from imednet_workflows.config_version_control import ConfigVersionStore
+
             store = ConfigVersionStore()
             history = store.get_history(study_key)
             if history:
                 latest_commit = history[-1]["commit_id"]
-                st.session_state[_KEY_MAPPING_CONFIG] = store.rollback_config(study_key, latest_commit)
+                st.session_state[_KEY_MAPPING_CONFIG] = store.rollback_config(
+                    study_key, latest_commit
+                )
             else:
                 st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration(
                     version="1.0.0",
@@ -347,7 +350,9 @@ def _step_field_mapping() -> None:
         default_form = (
             existing.source_form_key
             if existing and existing.source_form_key in form_options
-            else auto_form if auto_form in form_options else ""
+            else auto_form
+            if auto_form in form_options
+            else ""
         )
         selected_form = col_form.selectbox(
             "Source form",
@@ -585,20 +590,21 @@ def _step_export(study_key: str) -> None:
     if st.button("Save configuration to managed database", key="wizard_save_managed"):
         try:
             from imednet_workflows.config_version_control import ConfigVersionStore
+
             store = ConfigVersionStore()
-            
+
             # Using corporate user email if SSO is active
             user_email = "system"
             if hasattr(st, "user"):
                 user_email = getattr(st.user, "email", "system")
                 if not user_email and hasattr(st.user, "get"):
                     user_email = st.user.get("email", "system")
-                    
+
             store.commit_config(
                 study_key=study_key,
                 config=config,
                 user=user_email,
-                desc="Configuration persisted to managed central database via setup wizard"
+                desc="Configuration persisted to managed central database via setup wizard",
             )
         except Exception as e:
             st.error(f"Unable to save configuration: {e}")

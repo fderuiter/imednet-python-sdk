@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
 from imednet.models.json_base import JsonModel
 
 class Visit(JsonModel):
@@ -16,4 +17,3 @@ class Visit(JsonModel):
     deleted: Optional[bool]
     date_created: Optional[str]
     date_modified: Optional[str]
-

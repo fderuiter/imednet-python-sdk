@@ -8,15 +8,11 @@ from typing import TYPE_CHECKING, TypedDict, cast
 
 from pydantic import Field
 
-from imednet.spi.models import ImednetBaseModel
-from imednet.spi.models import Form
-from imednet.spi.models import Interval
-from imednet.spi.models import Site
-from imednet.spi.models import Variable
+from imednet.spi.models import Form, ImednetBaseModel, Interval, Site, Variable
 
 if TYPE_CHECKING:
+    from imednet import AsyncImednetSDK, ImednetSDK
     from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
-    from imednet import ImednetSDK, AsyncImednetSDK
 
 
 class FormVariableMap(TypedDict):

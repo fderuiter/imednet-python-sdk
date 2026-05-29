@@ -1,32 +1,31 @@
 from __future__ import annotations
 
-from imednet.models.engine import ModelEngine
-
 from datetime import datetime
 from typing import Any, Dict, List
 
 from pydantic import Field, RootModel
 
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class Keyword(JsonModel):
     """A keyword or tag associated with a record."""
 
-
     pass
 
 
 Keyword = ModelEngine.get_model('Keyword', Keyword)
 
+
 class Record(JsonModel):
     """A data record for a subject, form, and visit."""
-
 
     pass
 
 
 Record = ModelEngine.get_model('Record', Record)
+
 
 class RecordJobResponse(JsonModel):
     """Response for a record-related job (batch operations, etc)."""

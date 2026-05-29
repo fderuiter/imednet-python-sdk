@@ -13,7 +13,7 @@ def test_api_error_str_representation():
     # Test with dictionary response
     err3 = ApiError({"error": "Bad Request"}, status_code=400)
     assert str(err3) == (
-        "{'error': 'Bad Request'} " "(Status Code: 400, Response: {'error': 'Bad Request'})"
+        "{'error': 'Bad Request'} (Status Code: 400, Response: {'error': 'Bad Request'})"
     )
 
 

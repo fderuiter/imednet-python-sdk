@@ -9,8 +9,8 @@ from imednet.spi.validation import AsyncSchemaValidator, SchemaCache, SchemaVali
 from .job_poller import AsyncJobPoller, JobPoller
 
 if TYPE_CHECKING:
+    from imednet import AsyncImednetSDK, ImednetSDK
     from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
-    from imednet import ImednetSDK, AsyncImednetSDK
 
 SDKLike = Union["ImednetSDK", "AsyncImednetSDK"]
 
@@ -26,6 +26,7 @@ class RecordUpdateWorkflow:
 
     def __init__(self, sdk: "SDKLike"):
         from imednet import AsyncImednetSDK
+
         self._sdk = sdk
         self._is_async = getattr(sdk, "_async_client", False) or isinstance(sdk, AsyncImednetSDK)
         self._validator: SchemaValidator | AsyncSchemaValidator

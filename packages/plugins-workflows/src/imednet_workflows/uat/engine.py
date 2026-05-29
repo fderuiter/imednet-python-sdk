@@ -5,17 +5,19 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+from imednet.spi.errors import ApiError, ClientError
 from imednet.spi.facade import ImednetFacade
 from imednet.spi.validation import DataDictionary
-from imednet.spi.errors import ApiError, ClientError
 
 logger = logging.getLogger(__name__)
+
 
 class EditCheckResultStatus(str, Enum):
     PASS = "Pass"
     FAIL = "Fail"
     ERROR = "Error"
     SKIPPED = "Skipped"
+
 
 @dataclass
 class EditCheckVerificationReport:
@@ -41,7 +43,7 @@ class UATExecutionEngine:
             status = row.get("Status", "Active")
             if status.lower() != "active":
                 continue
-                
+
             rule = {
                 "rule_name": row.get("Name", row.get("rule_name", "Unknown Rule")),
                 "form": row.get("Form", row.get("form", "UnknownForm")),
@@ -49,9 +51,11 @@ class UATExecutionEngine:
                 "check_type": row.get("CheckType", row.get("check_type", "Range")),
                 "operator": row.get("Operator", row.get("operator", "==")),
                 "value": row.get("Value", row.get("value", "")),
-                "dependency_variable": row.get("DependencyVariable", row.get("dependency_variable")),
+                "dependency_variable": row.get(
+                    "DependencyVariable", row.get("dependency_variable")
+                ),
                 "dependency_value": row.get("DependencyValue", row.get("dependency_value")),
-                "raw": row
+                "raw": row,
             }
             rules.append(rule)
         return rules
@@ -62,10 +66,10 @@ class UATExecutionEngine:
         variable = rule.get("variable")
         if not variable:
             return data
-            
+
         operator = rule.get("operator")
         value = rule.get("value")
-        
+
         dep_var = rule.get("dependency_variable")
         dep_val = rule.get("dependency_value")
 
@@ -104,45 +108,43 @@ class UATExecutionEngine:
     ) -> EditCheckVerificationReport:
         """Run the end-to-end UAT verification against the EDC API."""
         report = EditCheckVerificationReport(study_key=study_key)
-        
+
         for idx, rule in enumerate(self._rules):
             if form_scope and rule.get("form") != form_scope:
                 continue
-                
+
             report.total_rules += 1
             form_key = rule.get("form")
-            
+
             test_data = self.generate_negative_test_case(rule)
             if not test_data:
                 # If we cannot generate test data (e.g. variable is missing), mark as skipped
                 report.skipped_rules += 1
-                report.results.append({
-                    "rule_name": rule.get("rule_name"),
-                    "status": EditCheckResultStatus.SKIPPED,
-                    "reason": "Missing variable for data generation"
-                })
+                report.results.append(
+                    {
+                        "rule_name": rule.get("rule_name"),
+                        "status": EditCheckResultStatus.SKIPPED,
+                        "reason": "Missing variable for data generation",
+                    }
+                )
                 continue
-            
+
             # Use CreateNewRecordRequest format
             subject_key = f"UAT-SUBJ-{idx}"
-            payload = {
-                "formKey": form_key,
-                "subjectKey": subject_key,
-                "data": test_data
-            }
-            
+            payload = {"formKey": form_key, "subjectKey": subject_key, "data": test_data}
+
             result = {
                 "rule_name": rule.get("rule_name"),
                 "form": form_key,
                 "test_data": test_data,
                 "expected_response": "Rejected",
             }
-            
+
             try:
                 # Submit the record. If the EDC is enforcing the business logic correctly,
                 # this request should fail with a 400 ClientError (ValidationError).
                 job = self._sdk.create_record(study_key, [payload])
-                
+
                 # If we reach here, the record was ACCEPTED by the EDC.
                 # This means the edit check FAILED to catch the invalid data.
                 result["actual_response"] = "Accepted"
@@ -165,11 +167,11 @@ class UATExecutionEngine:
                 result["actual_response"] = f"Error: {e}"
                 result["status"] = EditCheckResultStatus.ERROR
                 report.failed_rules += 1
-                
+
             report.results.append(result)
-            
+
             if report.total_rules >= 100:
                 logger.warning("Reached maximum subject limit of 100 per UAT run.")
                 break
-                
+
         return report

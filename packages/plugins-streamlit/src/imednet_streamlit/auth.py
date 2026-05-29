@@ -30,21 +30,29 @@ def _mark_disconnected() -> None:
 import os
 import sqlite3
 
+
 def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
-    db_path = os.environ.get("IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"))
+    db_path = os.environ.get(
+        "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
+    )
     if not os.path.exists(db_path):
         return None, None
     try:
         with sqlite3.connect(db_path) as conn:
-            row = conn.execute("SELECT api_key, security_key FROM tenants WHERE study_key=?", (study_key,)).fetchone()
+            row = conn.execute(
+                "SELECT api_key, security_key FROM tenants WHERE study_key=?", (study_key,)
+            ).fetchone()
             if row:
                 return row[0], row[1]
     except Exception:
         pass
     return None, None
 
+
 def get_provisioned_studies() -> list[str]:
-    db_path = os.environ.get("IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"))
+    db_path = os.environ.get(
+        "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
+    )
     if not os.path.exists(db_path):
         return []
     try:
@@ -52,6 +60,7 @@ def get_provisioned_studies() -> list[str]:
             return [row[0] for row in conn.execute("SELECT study_key FROM tenants")]
     except sqlite3.OperationalError:
         return []
+
 
 def render_auth_sidebar() -> bool:
     """Render sidebar authentication controls and update session auth state.
@@ -62,10 +71,10 @@ def render_auth_sidebar() -> bool:
     """
     with st.sidebar:
         st.header("🔐 Enterprise SSO")
-        
+
         # OIDC integration for corporate credentials
         is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(st, "user", {})
-        
+
         if not is_logged_in:
             st.info("Please authenticate using your corporate IdP.")
             if hasattr(st, "login"):
@@ -74,13 +83,13 @@ def render_auth_sidebar() -> bool:
             else:
                 st.warning("SSO module not found in this Streamlit version.")
             return False
-            
+
         user_email = getattr(st.user, "email", "Corporate User")
         if not user_email and hasattr(st.user, "get"):
             user_email = st.user.get("email", "Corporate User")
-            
+
         st.success(f"SSO Active: {user_email}")
-        
+
         studies = get_provisioned_studies()
         if not studies:
             st.warning("No studies available. Contact Global Admin to provision environments.")

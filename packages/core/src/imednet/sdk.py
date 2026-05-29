@@ -92,8 +92,7 @@ class _BaseSDK:
             workflows_plugin = workflows_entry_point.load()
         except (AttributeError, ImportError, ModuleNotFoundError) as error:
             raise PluginLoadError(
-                "Failed to load workflows plugin from entry point "
-                f"'{workflows_entry_point.value}'."
+                f"Failed to load workflows plugin from entry point '{workflows_entry_point.value}'."
             ) from error
 
         if not callable(workflows_plugin):
@@ -132,7 +131,7 @@ class _BaseSDK:
             sinks_plugin = sinks_entry_point.load()
         except (AttributeError, ImportError, ModuleNotFoundError) as error:
             raise PluginLoadError(
-                "Failed to load sinks plugin from entry point " f"'{sinks_entry_point.value}'."
+                f"Failed to load sinks plugin from entry point '{sinks_entry_point.value}'."
             ) from error
 
         if not callable(sinks_plugin):

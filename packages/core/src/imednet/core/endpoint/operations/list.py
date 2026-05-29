@@ -7,7 +7,7 @@ from the API, handling pagination seamlessly.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Generic, List, TypeVar, Iterator, AsyncIterator
+from typing import Any, AsyncIterator, Callable, Dict, Generic, Iterator, List, TypeVar
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
@@ -88,7 +88,9 @@ class ListOperation(Generic[T]):
             params=self.params,
             page_size=self.page_size,
         )
+
         async def _generator():
             async for item in paginator:
                 yield self.parse_func(item)
+
         return _generator()

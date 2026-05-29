@@ -37,8 +37,8 @@ and never propagate as exceptions, ensuring fault isolation.
 from __future__ import annotations
 
 import logging
-import time
 import threading
+import time
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from typing import Any, Optional
 
@@ -87,7 +87,9 @@ class AdaptiveConcurrencyLimiter:
                             logger.warning(
                                 "Adaptive backpressure: downstream latency increased "
                                 "(%.2fs vs baseline %.2fs). Reducing max concurrency to %d.",
-                                latency, self._latency_baseline, new_max
+                                latency,
+                                self._latency_baseline,
+                                new_max,
                             )
                             self._max_concurrency = new_max
                 # If latency is good, slowly recover concurrency
@@ -97,11 +99,12 @@ class AdaptiveConcurrencyLimiter:
                         if new_max > self._max_concurrency:
                             logger.info(
                                 "Adaptive backpressure: downstream latency recovered. "
-                                "Increasing max concurrency to %d.", new_max
+                                "Increasing max concurrency to %d.",
+                                new_max,
                             )
                             self._max_concurrency = new_max
                             self._cond.notify_all()
-                
+
                 # Update baseline with exponential moving average
                 self._latency_baseline = 0.8 * self._latency_baseline + 0.2 * latency
 
@@ -241,7 +244,7 @@ class MultiStudyOrchestrator:
         results: dict[str, OrchestratorResult] = {}
         start_times: dict[Future[Any], float] = {}
         limiter = AdaptiveConcurrencyLimiter(self._max_workers)
-        
+
         timeout_seconds = 300.0  # Mandatory maximum timeout for concurrent groups
         executor = ThreadPoolExecutor(max_workers=self._max_workers)
 
@@ -267,7 +270,7 @@ class MultiStudyOrchestrator:
                 for future in as_completed(future_to_study, timeout=timeout_seconds):
                     study_key = future_to_study[future]
                     duration = time.monotonic() - start_times[future]
-                    
+
                     # Record latency for backpressure
                     limiter.record_latency(duration)
 
@@ -299,7 +302,10 @@ class MultiStudyOrchestrator:
                             exc_info=True,
                         )
             except TimeoutError:
-                logger.error("Global orchestration timeout (%.2fs) reached. Aborting pending studies.", timeout_seconds)
+                logger.error(
+                    "Global orchestration timeout (%.2fs) reached. Aborting pending studies.",
+                    timeout_seconds,
+                )
                 for future, study_key in future_to_study.items():
                     if not future.done():
                         duration = time.monotonic() - start_times[future]

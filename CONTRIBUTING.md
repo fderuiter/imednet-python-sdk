@@ -43,8 +43,7 @@ Issue titles should use the format `<type>(<area>): <concise outcome>`, for exam
 Run before committing:
 
 ```bash
-poetry run black --check .
-poetry run isort --check --profile black .
+poetry run ruff format --check .
 poetry run ruff check .
 poetry run mypy packages/core/src/imednet
 poetry run mypy packages/plugins-workflows/src/imednet_workflows
@@ -123,8 +122,7 @@ Releases are fully automated and driven by merged PR titles:
    `Semantic PR Title` check enforces this.
 2. Ensure your branch is up to date and all validation checks pass:
    ```bash
-   poetry run black --check .
-   poetry run isort --check --profile black .
+   poetry run ruff format --check .
    poetry run ruff check .
    poetry run mypy packages/core/src/imednet
    poetry run mypy packages/plugins-workflows/src/imednet_workflows

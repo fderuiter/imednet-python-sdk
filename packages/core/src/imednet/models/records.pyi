@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
 from imednet.models.json_base import JsonModel
 
 class Record(JsonModel):
@@ -21,4 +22,3 @@ class Record(JsonModel):
     visit_id: Optional[int]
     parent_record_id: Optional[int]
     record_data: Optional[Any]
-

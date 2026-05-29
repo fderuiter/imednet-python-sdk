@@ -56,20 +56,39 @@ def _format_cell_value(value: Any, key: str | None = None) -> str:
     str_val = str(value)
 
     import os
+
     # Colorize status columns
     if key and any(k in key.lower() for k in ("status", "state")):
         lower_val = str_val.lower()
         is_hc = os.environ.get("IMEDNET_HIGH_CONTRAST") == "1"
         if is_hc:
             hc_map = {
-                "active": "blue", "success": "blue", "ok": "blue", "completed": "blue", "open": "blue", "approved": "blue", "verified": "blue",
-                "pending": "yellow", "processing": "yellow", "suspended": "yellow", "hold": "yellow", "incomplete": "yellow", "initiated": "yellow",
-                "inactive": "magenta", "closed": "magenta", "error": "magenta", "fail": "magenta", "failed": "magenta", "rejected": "magenta", "terminated": "magenta", "withdrawn": "magenta",
+                "active": "blue",
+                "success": "blue",
+                "ok": "blue",
+                "completed": "blue",
+                "open": "blue",
+                "approved": "blue",
+                "verified": "blue",
+                "pending": "yellow",
+                "processing": "yellow",
+                "suspended": "yellow",
+                "hold": "yellow",
+                "incomplete": "yellow",
+                "initiated": "yellow",
+                "inactive": "magenta",
+                "closed": "magenta",
+                "error": "magenta",
+                "fail": "magenta",
+                "failed": "magenta",
+                "rejected": "magenta",
+                "terminated": "magenta",
+                "withdrawn": "magenta",
             }
             color = hc_map.get(lower_val)
         else:
             color = _STATUS_COLOR_MAP.get(lower_val)
-            
+
         if color:
             return f"[{color}]{escape(str_val)}[/{color}]"
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+
 import streamlit as st
 
 st.title("🏢 Enterprise Admin Portal")
@@ -16,7 +17,9 @@ if st.button("Provision Tenant Environment"):
         st.error("All fields are required to provision a new study.")
     else:
         try:
-            db_path = os.environ.get("IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"))
+            db_path = os.environ.get(
+                "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
+            )
             os.makedirs(os.path.dirname(db_path), exist_ok=True)
             with sqlite3.connect(db_path) as conn:
                 conn.execute(
@@ -26,6 +29,8 @@ if st.button("Provision Tenant Environment"):
                     "INSERT OR REPLACE INTO tenants VALUES (?, ?, ?)",
                     (study_key.strip(), api_key.strip(), security_key.strip()),
                 )
-            st.success(f"Tenant environment for `{study_key}` automatically provisioned in managed database!")
+            st.success(
+                f"Tenant environment for `{study_key}` automatically provisioned in managed database!"
+            )
         except Exception as e:
             st.error(f"Failed to provision study: {e}")

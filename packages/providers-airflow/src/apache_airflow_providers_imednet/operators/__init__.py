@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from .._airflow_compat import AirflowException
 from ..hooks import ImednetHook
 from .export import ImednetExportOperator
-from .._airflow_compat import AirflowException
 
 __all__ = [
     "ImednetExportOperator",

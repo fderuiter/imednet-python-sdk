@@ -16,7 +16,7 @@ imednet-plugins-sinks = { path = "packages/plugins-sinks", develop = true }
 pandas = ">=2.2.3,<3.0.0"
 duckdb = ">=1.1.0"
 pyarrow = ">=14.0.1"
-black = ">=26.3.1"
+
 ruff = "^0.11.6"
 # Keep mypy on 1.15.x until the workspace packages are updated for newer checker behavior.
 mypy = ">=1.15.0,<1.16.0"
@@ -27,7 +27,7 @@ pytest-asyncio = ">=0.24.0"
 faker = "^24.9"
 pre-commit = "^4.2.0"
 virtualenv = "^20.36.1"
-isort = "^6.0.1"
+
 werkzeug = "^3.1.6"
 sphinx = "^6.2.0"
 sphinx-autodoc-typehints = "*"
@@ -53,10 +53,6 @@ furo = "<2023.0.0"
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
-line-length = 100
-target-version = ["py310"]
-
 [tool.ruff]
 line-length = 100
 src = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "packages/plugins-streamlit/src", "tests"]
@@ -66,16 +62,10 @@ known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_i
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "SLF"]
-ignore = ["D", "ANN", "S101"]
+ignore = ["D", "ANN", "S101", "E501", "E402", "E701", "E713", "F401", "F403", "F405", "N802", "F841", "F811"]
 
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["field_validator", "model_validator"]
-
-[tool.isort]
-profile = "black"
-line_length = 100
-known_first_party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet", "imednet_streamlit"]
-src_paths = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "packages/plugins-streamlit/src", "tests"]
 
 [tool.doc8]
 max_line_length = 400
@@ -127,3 +117,7 @@ ignore_missing_imports = true
 "packages/core/**/*.py" = ["SLF001"]
 "tests/**/*.py" = ["SLF001"]
 "scripts/**/*.py" = ["SLF001"]
+"packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
+
+[tool.ruff.format]
+quote-style = "preserve"

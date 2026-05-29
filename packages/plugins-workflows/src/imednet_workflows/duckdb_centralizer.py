@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING, Any, Iterable, Literal, Optional
 from .data_extraction import DataExtractionWorkflow
 
 if TYPE_CHECKING:
-    from imednet.spi.models import RecordRevision
     from imednet.spi.facade import ImednetFacade
+    from imednet.spi.models import RecordRevision
 
 
 class DuckDBIngestionWorkflow:

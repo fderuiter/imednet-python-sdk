@@ -1,5 +1,6 @@
 """UAT specification models."""
 
+from .engine import EditCheckResultStatus, EditCheckVerificationReport, UATExecutionEngine
 from .inspector import StudySchemaInspector, StudySnapshot
 from .models import (
     RecordTestType,
@@ -9,7 +10,6 @@ from .models import (
     UATVariableSpec,
     VariableTestStrategy,
 )
-from .engine import UATExecutionEngine, EditCheckResultStatus, EditCheckVerificationReport
 
 __all__ = [
     "RecordTestType",

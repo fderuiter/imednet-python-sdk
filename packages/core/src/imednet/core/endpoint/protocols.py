@@ -1,7 +1,9 @@
 from typing import (
     Any,
+    AsyncIterator,
     Dict,
     Generic,
+    Iterator,
     List,
     Optional,
     Protocol,
@@ -9,8 +11,6 @@ from typing import (
     Type,
     TypeVar,
     runtime_checkable,
-    Iterator,
-    AsyncIterator,
 )
 
 from imednet.core.paginator import AsyncPaginator, Paginator

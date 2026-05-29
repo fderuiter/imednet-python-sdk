@@ -56,9 +56,11 @@ def reset_study_context_between_tests():
     yield
     clear_study_context()
 
+
 @pytest.fixture(autouse=True)
 def reset_circuit_breaker_between_tests():
     from imednet.core.http.circuit_breaker import get_global_circuit_breaker
+
     get_global_circuit_breaker().reset()
     yield
     get_global_circuit_breaker().reset()
@@ -92,8 +94,8 @@ def response_factory():
 
 @pytest.fixture
 def paginator_factory(monkeypatch):
-    from tests.utils.streaming import StreamingMockWrapper
     from imednet.core.endpoint.operations.list import ListOperation
+    from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
         captured = {"count": 0}
@@ -117,7 +119,9 @@ def paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_sync(self, client, paginator_cls):
-            paginator = paginator_cls(client, self.path, params=self.params, page_size=self.page_size)
+            paginator = paginator_cls(
+                client, self.path, params=self.params, page_size=self.page_size
+            )
             parsed_items = [self.parse_func(item) for item in paginator._items]
             return StreamingMockWrapper(parsed_items)
 
@@ -129,8 +133,8 @@ def paginator_factory(monkeypatch):
 
 @pytest.fixture
 def async_paginator_factory(monkeypatch):
-    from tests.utils.streaming import StreamingMockWrapper
     from imednet.core.endpoint.operations.list import ListOperation
+    from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
         captured = {"count": 0}
@@ -155,12 +159,14 @@ def async_paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_async(self, client, paginator_cls):
-            paginator = paginator_cls(client, self.path, params=self.params, page_size=self.page_size)
+            paginator = paginator_cls(
+                client, self.path, params=self.params, page_size=self.page_size
+            )
             parsed_items = [self.parse_func(item) for item in paginator._items]
             return StreamingMockWrapper(parsed_items)
 
         monkeypatch.setattr(ListOperation, "execute_async", fake_execute_async)
-        
+
         return captured
 
     return factory

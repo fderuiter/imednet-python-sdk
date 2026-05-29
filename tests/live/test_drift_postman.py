@@ -1,20 +1,22 @@
 import json
 import logging
 import os
+
 import pytest
-from imednet.sdk import ImednetSDK
-from imednet.models.studies import Study
+
+from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval
 from imednet.models.queries import Query
-from imednet.models.records import Record
 from imednet.models.record_revisions import RecordRevision
+from imednet.models.records import Record
 from imednet.models.sites import Site
+from imednet.models.studies import Study
 from imednet.models.subjects import Subject
 from imednet.models.users import User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
-from imednet.models.codings import Coding
+from imednet.sdk import ImednetSDK
 
 logger = logging.getLogger(__name__)
 
@@ -33,13 +35,14 @@ MODEL_MAP = {
     "codings": Coding,
 }
 
+
 def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     """
     Reads the Postman collection, identifies API endpoints,
     and compares the live API responses against the SDK's internal models.
     """
     os.environ["IMEDNET_STRICT_MODE"] = "1"
-    
+
     collection_path = "/app/imednet.postman_collection.json"
     if not os.path.exists(collection_path):
         pytest.skip("Postman collection not found")
@@ -49,6 +52,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
 
     # Walk the collection to find endpoints
     endpoints_to_test = set()
+
     def walk(items):
         for item in items:
             if "item" in item:
@@ -61,18 +65,19 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
                     for p in path:
                         if p in MODEL_MAP:
                             endpoints_to_test.add(p)
+
     walk(data.get("item", []))
 
     assert len(endpoints_to_test) > 0, "No endpoints found in Postman collection"
 
     for endpoint in endpoints_to_test:
         model_cls = MODEL_MAP[endpoint]
-        
+
         # Build URL. The SDK handles base_url and auth.
         url = f"/{endpoint}"
         if endpoint != "studies":
             url += f"?studyKey={study_key}"
-            
+
         try:
             response = sdk._client.get(url)
             data = response.json()

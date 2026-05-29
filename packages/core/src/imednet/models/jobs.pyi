@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
 from imednet.models.json_base import JsonModel
 
 class Job(JsonModel):
@@ -16,4 +17,3 @@ class JobStatus(JsonModel):
     date_finished: Optional[str]
     progress: Optional[int]
     result_url: Optional[str]
-

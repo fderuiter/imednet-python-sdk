@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import time
 import logging
+import time
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -67,7 +67,7 @@ class ImednetExportOperator(BaseOperator):
         self.export_func = export_func
         self.export_kwargs = dict(export_kwargs or {})
         self.imednet_conn_id = imednet_conn_id
-        
+
         # Common operational parameters
         self.batch_size = batch_size
         self.max_retries = max_retries
@@ -86,15 +86,18 @@ class ImednetExportOperator(BaseOperator):
         dest = self.destination
         if not dest and self.export_func:
             dest = self.export_func.replace("export_to_", "")
-        
+
         if dest == "snowflake":
             from imednet.integrations import SnowflakeExportSink
+
             return SnowflakeExportSink(config=config)
         elif dest == "neo4j":
             from imednet.integrations import Neo4jExportSink
+
             return Neo4jExportSink(config=config)
         elif dest == "mongodb":
             from imednet.integrations import MongoDbExportSink
+
             return MongoDbExportSink(config=config)
         return None
 
@@ -105,13 +108,13 @@ class ImednetExportOperator(BaseOperator):
             dest = self.export_func.replace("export_to_", "")
         elif not dest:
             dest = "csv"
-            
+
         export_callable = None
         if dest in _TABULAR_EXPORTS:
             export_callable = getattr(export, f"export_to_{dest}", _TABULAR_EXPORTS[dest])
         elif self.export_func and hasattr(export, self.export_func):
             export_callable = getattr(export, self.export_func)
-            
+
         sink = None
         if not export_callable:
             config_for_check = SinkConfig()
@@ -122,16 +125,16 @@ class ImednetExportOperator(BaseOperator):
                 )
 
         sdk = self._get_sdk()
-        
+
         config = SinkConfig(
             batch_size=self.batch_size,
             max_retries=self.max_retries,
             idempotent=self.idempotent,
-            extra=self._get_runtime_export_kwargs()
+            extra=self._get_runtime_export_kwargs(),
         )
-        
+
         sink = self._resolve_sink(config)
-        
+
         attempts = 0
         while attempts <= config.max_retries:
             try:
@@ -147,12 +150,9 @@ class ImednetExportOperator(BaseOperator):
                     # We dispatch to getattr so mocks in tests are preserved
                     if not export_callable:
                         raise AirflowException(f"Unsupported destination or export_func '{dest}'")
-                        
+
                     export_callable(
-                        sdk,
-                        self.study_key,
-                        self.output_path,
-                        **self._get_runtime_export_kwargs()
+                        sdk, self.study_key, self.output_path, **self._get_runtime_export_kwargs()
                     )
                 return self.output_path
             except Exception as e:
@@ -161,7 +161,8 @@ class ImednetExportOperator(BaseOperator):
                     raise
                 logger.warning("Export attempt %d failed: %s. Retrying...", attempts, e)
                 time.sleep(config.retry_backoff * (2 ** (attempts - 1)))
-        
+
         return self.output_path
+
 
 __all__ = ["ImednetExportOperator"]

@@ -121,5 +121,3 @@ def test_imednet_hook_returns_sdk(monkeypatch):
     assert sdk._client._client.headers["x-imn-security-key"] == "SEC"
     assert sdk._client.base_url == "https://x"
     sys.modules.pop("apache_airflow_providers_imednet", None)
-
-

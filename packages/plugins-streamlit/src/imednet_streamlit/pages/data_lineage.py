@@ -12,8 +12,7 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
-from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation
-from imednet.spi.models import StudyConfiguration
+from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation, StudyConfiguration
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_streamlit.components import redact_sensitive_payload, render_lineage_panes
 from imednet_workflows import CachedRecordsLoader

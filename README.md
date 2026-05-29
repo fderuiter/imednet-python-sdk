@@ -305,8 +305,7 @@ the specified table name. See ``docs/cli.rst`` for full examples.
 
 ```bash
 ./scripts/setup.sh  # once
-poetry run black --check .
-poetry run isort --check --profile black .
+poetry run ruff format --check .
 poetry run ruff check .
 poetry run mypy packages/core/src/imednet
 poetry run mypy packages/plugins-workflows/src/imednet_workflows
