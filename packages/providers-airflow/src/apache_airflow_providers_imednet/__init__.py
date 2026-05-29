@@ -4,7 +4,7 @@ from importlib import import_module
 
 from . import export
 from .hooks import ImednetHook
-from .operators import ImednetExportOperator, ImednetToS3Operator
+from .operators import ImednetExportOperator
 
 try:  # pragma: no cover - optional Airflow dependencies may be missing
     sensors = import_module("apache_airflow_providers_imednet.sensors")
@@ -15,7 +15,6 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - sensor requires
 
 __all__ = [
     "ImednetHook",
-    "ImednetToS3Operator",
     "ImednetJobSensor",
     "ImednetExportOperator",
     "export",
