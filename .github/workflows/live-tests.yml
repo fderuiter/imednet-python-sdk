@@ -1,7 +1,7 @@
 name: Live Integration Tests
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
@@ -20,8 +20,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -69,7 +67,7 @@ jobs:
           fi
 
       - name: Post Drift Report
-        if: steps.live_tests.outputs.drift_detected == 'true' && github.event_name == 'pull_request_target'
+        if: steps.live_tests.outputs.drift_detected == 'true' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
