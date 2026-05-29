@@ -15,6 +15,7 @@ Full documentation: <https://fderuiter.github.io/imednet-python-sdk/>
 [![License](https://img.shields.io/pypi/l/imednet.svg)](LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/fderuiter/imednet-python-sdk/ci.yml?branch=main)](https://github.com/fderuiter/imednet-python-sdk/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](https://github.com/fderuiter/imednet-python-sdk)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/fderuiter/imednet-python-sdk/badge)](https://securityscorecards.dev/viewer/?uri=github.com/fderuiter/imednet-python-sdk)
 
 </div>
 
