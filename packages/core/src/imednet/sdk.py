@@ -19,7 +19,12 @@ from .core.factory import ClientFactory
 from .core.retry import RetryPolicy
 from .endpoints.registry import ASYNC_ENDPOINT_REGISTRY, ENDPOINT_REGISTRY
 from .errors import PluginLoadError
-from .plugins import PluginProtocol, WorkflowsNamespaceProtocol
+from .plugins import (
+    PluginProtocol,
+    SinksNamespaceProtocol,
+    SinksPluginProtocol,
+    WorkflowsNamespaceProtocol,
+)
 from .sdk_convenience import SDKConvenienceMixin
 
 if TYPE_CHECKING:
@@ -47,29 +52,24 @@ class WorkflowPluginProtocol(PluginProtocol):
 class _BaseSDK:
     config: Config
 
-    def _get_workflow_entry_point(self) -> EntryPoint | None:
-        """Return the configured workflows plugin entry point, if exactly one exists.
+    def _get_plugin_entry_point(self, name: str) -> EntryPoint | None:
+        """Return the configured plugin entry point."""
+        plugin_entry_points = list(entry_points(group="imednet.plugins", name=name))
 
-        Returns:
-            The single discovered ``imednet.plugins:workflows`` entry point, or ``None``
-            when the optional workflows plugin is not installed.
-
-        Raises:
-            PluginLoadError: If multiple workflows plugins are installed at once.
-        """
-        workflows_entry_points = list(entry_points(group="imednet.plugins", name="workflows"))
-
-        if not workflows_entry_points:
+        if not plugin_entry_points:
             return None
-        if len(workflows_entry_points) > 1:
+        if len(plugin_entry_points) > 1:
             discovered_plugins = ", ".join(
-                sorted(entry_point.value for entry_point in workflows_entry_points)
+                sorted(entry_point.value for entry_point in plugin_entry_points)
             )
             raise PluginLoadError(
-                "Multiple 'workflows' plugins were found in the 'imednet.plugins' entry-point "
-                f"group ({discovered_plugins}). Please keep only one workflows plugin installed."
+                f"Multiple '{name}' plugins were found in the 'imednet.plugins' entry-point "
+                f"group ({discovered_plugins}). Please keep only one {name} plugin installed."
             )
-        return workflows_entry_points[0]
+        return plugin_entry_points[0]
+
+    def _get_workflow_entry_point(self) -> EntryPoint | None:
+        return self._get_plugin_entry_point("workflows")
 
     def _init_workflows(self) -> WorkflowsNamespaceProtocol:
         """Instantiate workflow namespace when optional workflows plugin is available."""
@@ -111,6 +111,45 @@ class _BaseSDK:
                 "Failed to instantiate workflows from the discovered plugin entry point."
             ) from error
 
+    def _init_sinks(self) -> SinksNamespaceProtocol:
+        """Instantiate sinks namespace when optional sinks plugin is available."""
+
+        class _MissingSinks:
+            def __getattr__(self, name: str) -> Any:
+                raise ImportError(
+                    (
+                        f"Sink '{name}' requires the optional "
+                        "'imednet-plugins-sinks' package. "
+                        "Install with `pip install imednet-plugins-sinks`."
+                    )
+                )
+
+        sinks_entry_point = self._get_plugin_entry_point("sinks")
+        if sinks_entry_point is None:
+            return cast(SinksNamespaceProtocol, _MissingSinks())
+
+        try:
+            sinks_plugin = sinks_entry_point.load()
+        except (AttributeError, ImportError, ModuleNotFoundError) as error:
+            raise PluginLoadError(
+                "Failed to load sinks plugin from entry point " f"'{sinks_entry_point.value}'."
+            ) from error
+
+        if not callable(sinks_plugin):
+            raise PluginLoadError(
+                "The sinks plugin entry point "
+                f"'{sinks_entry_point.value}' must be a callable that accepts an SDK "
+                f"instance; got {type(sinks_plugin).__name__}."
+            )
+
+        try:
+            sinks_factory = cast(SinksPluginProtocol, sinks_plugin)
+            return sinks_factory(self)
+        except TypeError as error:
+            raise PluginLoadError(
+                "Failed to instantiate sinks from the discovered plugin entry point."
+            ) from error
+
     @contextmanager
     def study_context(self, study_key: str) -> Iterator[Any]:
         """Set a temporary default study key for the current thread/task context."""
@@ -139,6 +178,7 @@ class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
     variables: VariablesEndpoint
     visits: VisitsEndpoint
     workflows: WorkflowsNamespaceProtocol
+    sinks: SinksNamespaceProtocol
     config: Config
 
     def __init__(
@@ -174,6 +214,7 @@ class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
 
         self._init_endpoints()
         self.workflows = self._init_workflows()
+        self.sinks = self._init_sinks()
 
     @property
     def auth(self) -> Any:
@@ -250,6 +291,7 @@ class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
     variables: AsyncVariablesEndpoint
     visits: AsyncVisitsEndpoint
     workflows: WorkflowsNamespaceProtocol
+    sinks: SinksNamespaceProtocol
 
     def __init__(
         self,
@@ -278,6 +320,7 @@ class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
 
         self._init_endpoints()
         self.workflows = self._init_workflows()
+        self.sinks = self._init_sinks()
 
     @property
     def auth(self) -> Any:

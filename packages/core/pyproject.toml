@@ -46,9 +46,6 @@ sqlalchemy = { version = ">=2.0,<3.0", optional = true }
 openpyxl = { version = ">=3.1,<4.0", optional = true }
 pyarrow = { version = ">=14.0.1", optional = true }
 duckdb = { version = ">=1.1.0", optional = true }
-neo4j = { version = ">=5.0,<6.0", optional = true }
-pymongo = { version = ">=4.0,<5.0", optional = true }
-snowflake-connector-python = { version = ">=3.0,<4.0", optional = true }
 
 [tool.poetry.extras]
 # Install via: pip install 'imednet[cli]'
@@ -59,12 +56,6 @@ duckdb = ["duckdb"]
 # Install via: pip install 'imednet[export]'
 # Includes all export dependencies (CSV, Excel, Parquet, SQL, DuckDB)
 export = ["pandas", "sqlalchemy", "pyarrow", "openpyxl", "duckdb"]
-# Install via: pip install 'imednet[neo4j]'
-neo4j = ["neo4j"]
-# Install via: pip install 'imednet[mongodb]'
-mongodb = ["pymongo"]
-# Install via: pip install 'imednet[snowflake]'
-snowflake = ["snowflake-connector-python", "pyarrow"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

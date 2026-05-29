@@ -244,11 +244,11 @@ def export_mongodb(
         )
         raise typer.Exit(code=1)
 
-    from imednet.integrations import SinkConfig, export_to_mongodb
+    from imednet.integrations import SinkConfig
 
     cfg = SinkConfig(batch_size=batch_size, idempotent=upsert)
     with fetching_status("records for MongoDB export", study_key):
-        export_to_mongodb(
+        sdk.sinks.export_to_mongodb(
             sdk,
             study_key,
             uri,
@@ -285,11 +285,9 @@ def export_neo4j(
         )
         raise typer.Exit(code=1)
 
-    from imednet.integrations import Neo4jSinkConfig, export_to_neo4j
-
-    cfg = Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
+    cfg = sdk.sinks.Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
     with fetching_status("records for Neo4j export", study_key):
-        export_to_neo4j(
+        sdk.sinks.export_to_neo4j(
             sdk,
             study_key,
             uri,
@@ -345,9 +343,7 @@ def export_snowflake(
         )
         raise typer.Exit(code=1)
 
-    from imednet.integrations import SnowflakeSinkConfig, export_to_snowflake
-
-    cfg = SnowflakeSinkConfig(
+    cfg = sdk.sinks.SnowflakeSinkConfig(
         account=account,
         user=user,
         password=password,
@@ -363,7 +359,7 @@ def export_snowflake(
         idempotent=idempotent,
     )
     with fetching_status("records for Snowflake export", study_key):
-        export_to_snowflake(
+        sdk.sinks.export_to_snowflake(
             sdk,
             study_key,
             config=cfg,

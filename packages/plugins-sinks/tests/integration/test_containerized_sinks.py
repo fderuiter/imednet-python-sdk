@@ -1,9 +1,9 @@
-import os
 import logging
-import pytest
+import os
 from typing import List
 
-from imednet.integrations import (
+import pytest
+from imednet_sinks import (
     MongoDbExportSink,
     Neo4jExportSink,
     Neo4jSinkConfig,
@@ -12,17 +12,19 @@ from imednet.integrations import (
 )
 
 pytestmark = pytest.mark.skipif(
-    os.getenv("IMEDNET_TEST_CONTAINERS") != "1",
-    reason="Requires IMEDNET_TEST_CONTAINERS=1"
+    os.getenv("IMEDNET_TEST_CONTAINERS") != "1", reason="Requires IMEDNET_TEST_CONTAINERS=1"
 )
+
 
 class DriftError(Exception):
     pass
+
 
 class DriftFailingHandler(logging.Handler):
     def emit(self, record):
         if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
             raise DriftError(record.getMessage())
+
 
 @pytest.fixture(autouse=True)
 def fail_on_drift():
@@ -32,7 +34,9 @@ def fail_on_drift():
     yield
     logger.removeHandler(handler)
 
+
 from dataclasses import dataclass
+
 
 @dataclass
 class FakeRecord:
@@ -44,6 +48,7 @@ class FakeRecord:
     visit_name: str
     visit_id: int
     record_data: dict
+
 
 @pytest.fixture
 def fake_records() -> List[FakeRecord]:
@@ -74,14 +79,16 @@ def fake_records() -> List[FakeRecord]:
 @pytest.fixture
 def mock_record_mapper(monkeypatch, fake_records):
     from unittest.mock import MagicMock
+
     from imednet.integrations import export as export_mod
 
     class FakeMapper:
         def __init__(self, *args, **kwargs):
             pass
+
         def __iter__(self):
             return iter(fake_records)
-            
+
     monkeypatch.setattr(export_mod, "_record_mapper", lambda *a, **kw: FakeMapper)
 
 
@@ -91,7 +98,7 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
     uri = "mongodb://root:password@localhost:27017"
     database = "imednet_test"
     collection = "clinical_records"
-    
+
     # Export records
     with MongoDbExportSink(uri, database, collection, "STUDY1") as sink:
         sink.write(fake_records)
@@ -100,10 +107,10 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
     client = pymongo.MongoClient(uri)
     db = client[database]
     coll = db[collection]
-    
+
     count = coll.count_documents({})
     assert count == 2
-    
+
     doc1 = coll.find_one({"subject_id": "SUBJ-001"})
     assert doc1 is not None
     assert doc1["_id"] == "STUDY1/1"
@@ -117,9 +124,9 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
 
     uri = "bolt://localhost:7687"
     auth = ("neo4j", "password")
-    
+
     config = Neo4jSinkConfig(batch_size=10, idempotent=True)
-    
+
     with Neo4jExportSink(uri, auth, "STUDY1", config=config) as sink:
         sink.write(fake_records)
 
@@ -129,11 +136,11 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
         result = session.run("MATCH (n:Record) RETURN count(n) AS count")
         count = result.single()["count"]
         assert count == 2
-        
+
         result2 = session.run("MATCH (n:Record {record_id: 2}) RETURN n.heart_rate AS heart_rate")
         heart_rate = result2.single()["heart_rate"]
         assert heart_rate == 75
-        
+
         # Verify topology mapping
         topology_query = (
             "MATCH path=(s:Study {study_key: 'STUDY1'})"
@@ -145,5 +152,5 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
         result3 = session.run(topology_query)
         paths = result3.single()["paths"]
         assert paths == 1
-        
+
     driver.close()

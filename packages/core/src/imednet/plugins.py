@@ -61,6 +61,20 @@ class WorkflowsNamespaceProtocol(Protocol):
 
 
 @runtime_checkable
+class SinksNamespaceProtocol(Protocol):
+    """Minimal interface that a sinks namespace object must expose."""
+
+    export_to_mongodb: Any
+    MongoDbExportSink: Any
+    export_to_neo4j: Any
+    Neo4jSinkConfig: Any
+    Neo4jExportSink: Any
+    export_to_snowflake: Any
+    SnowflakeSinkConfig: Any
+    SnowflakeExportSink: Any
+
+
+@runtime_checkable
 class PluginProtocol(Protocol):
     """Protocol that every iMednet plugin factory must satisfy.
 
@@ -87,10 +101,23 @@ class PluginProtocol(Protocol):
         assert isinstance(create_workflows, PluginProtocol)
     """
 
-    def __call__(self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]) -> WorkflowsNamespaceProtocol: ...
+    def __call__(
+        self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]
+    ) -> WorkflowsNamespaceProtocol: ...
+
+
+@runtime_checkable
+class SinksPluginProtocol(Protocol):
+    """Protocol for the sinks plugin factory."""
+
+    def __call__(
+        self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]
+    ) -> SinksNamespaceProtocol: ...
 
 
 __all__ = [
     "PluginProtocol",
+    "SinksPluginProtocol",
     "WorkflowsNamespaceProtocol",
+    "SinksNamespaceProtocol",
 ]

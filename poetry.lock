@@ -1254,13 +1254,33 @@ urllib3 = "^2.7.0"
 cli = ["typer[all] (>=0.15.2,<0.16.0)"]
 duckdb = ["duckdb (>=1.1.0)"]
 export = ["duckdb (>=1.1.0)", "openpyxl (>=3.1,<4.0)", "pandas (>=2.2.3,<3.0.0)", "pyarrow (>=14.0.1)", "sqlalchemy (>=2.0,<3.0)"]
+
+[package.source]
+type = "directory"
+url = "packages/core"
+
+[[package]]
+name = "imednet-plugins-sinks"
+version = "0.1.0"
+description = "Unified database sinks plugin for the iMednet Python SDK."
+optional = false
+python-versions = "^3.10"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+imednet = {path = "../core", develop = true}
+
+[package.extras]
+all = ["neo4j (>=5.0,<6.0)", "pyarrow (>=14.0.1)", "pymongo (>=4.0,<5.0)", "snowflake-connector-python (>=3.0,<4.0)"]
 mongodb = ["pymongo (>=4.0,<5.0)"]
 neo4j = ["neo4j (>=5.0,<6.0)"]
 snowflake = ["pyarrow (>=14.0.1)", "snowflake-connector-python (>=3.0,<4.0)"]
 
 [package.source]
 type = "directory"
-url = "packages/core"
+url = "packages/plugins-sinks"
 
 [[package]]
 name = "imednet-streamlit"
@@ -1274,8 +1294,8 @@ develop = true
 
 [package.dependencies]
 altair = ">=5.0.0"
-imednet = "^0.8.0"
-imednet-workflows = "^0.6.0"
+imednet = {path = "../core", develop = true}
+imednet-workflows = {path = "../plugins-workflows", develop = true}
 pandas = ">=2.0.0"
 streamlit = ">=1.30.0"
 
@@ -1294,7 +1314,7 @@ files = []
 develop = true
 
 [package.dependencies]
-imednet = "^0.8.0"
+imednet = ">=0.8.0, <1.0.0"
 pandas = ">=2.2.3,<3.0.0"
 typer = {version = "^0.15.2", extras = ["all"]}
 
@@ -3906,4 +3926,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "3ab9bd4f7219ac8cdee57f49518b14a248be355c256eadd08a9e122a7b506f48"
+content-hash = "b173743d78cae7125dc64468bac826a9193ff093b6ba0e308a4011d249423070"

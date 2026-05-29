@@ -61,9 +61,14 @@ from dataclasses import dataclass
 from typing import Any, Optional, Sequence, Tuple
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.integrations.sink_base import (
+    ExportSink,
+    SinkConfig,
+    _redact_uri,
+    _require_optional_dep,
+    iter_batches,
+)
 from imednet.sdk import ImednetSDK
-
-from .sink_base import ExportSink, SinkConfig, _redact_uri, _require_optional_dep, iter_batches
 
 logger = logging.getLogger(__name__)
 
