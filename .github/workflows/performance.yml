@@ -33,7 +33,7 @@ jobs:
           python scripts/performance_suite.py
           
       - name: Save Baseline Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: performance-cache
           path: performance_cache.json

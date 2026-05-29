@@ -99,7 +99,7 @@ jobs:
           publish_results: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - name: "Upload artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: SARIF file
           path: results.sarif
@@ -193,28 +193,28 @@ jobs:
           done
 
       - name: Upload Core Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-core
           path: packages/core/dist/
           retention-days: 1
 
       - name: Upload Workflows Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-workflows
           path: packages/plugins-workflows/dist/
           retention-days: 1
 
       - name: Upload Providers Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-providers
           path: packages/providers-airflow/dist/
           retention-days: 1
 
       - name: Upload Streamlit Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-streamlit
           path: packages/plugins-streamlit/dist/
