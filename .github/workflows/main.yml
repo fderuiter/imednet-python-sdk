@@ -114,6 +114,8 @@ jobs:
     name: Quality & Security - ${{ matrix.package }}
     needs: plan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -331,6 +333,8 @@ jobs:
     name: Robustness Fuzzing
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
