@@ -89,5 +89,6 @@ class EdcAsyncListGetEndpoint(_EdcEndpointBase, AsyncListGetEndpoint[T]):
     BASE_PATH = _EDC_BASE_PATH
 
 
-# Backward-compatible alias. New code should use EdcSyncListGetEndpoint / EdcAsyncListGetEndpoint.
+# Backward-compatible aliases. New code should use EdcSyncListGetEndpoint / EdcAsyncListGetEndpoint.
 EdcGenericListGetEndpoint = EdcSyncListGetEndpoint
+EdcAsyncGenericListGetEndpoint = EdcAsyncListGetEndpoint

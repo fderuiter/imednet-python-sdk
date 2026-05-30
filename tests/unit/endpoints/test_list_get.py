@@ -92,7 +92,7 @@ async def test_async_list_and_get(
     capture = async_paginator_factory(module, [{cls._id_param: item_id}])
 
     list_kwargs = {"study_key": "S1"} if getattr(ep, "requires_study_key", True) else {}
-    result = [item async for item in ep.async_list(**list_kwargs)]
+    result = await ep.async_list(**list_kwargs)
 
     expected_path = "/api/v1/edc/studies"
     if getattr(ep, "requires_study_key", True):

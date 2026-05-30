@@ -54,7 +54,7 @@ class EndpointProtocol(Protocol):
 
 
 @runtime_checkable
-class ListEndpointProtocol(Protocol[T]):
+class ListEndpointProtocol(Protocol[T_co]):
     """Protocol defining the interface for listing endpoint classes."""
 
     def _list_sync(
@@ -65,7 +65,7 @@ class ListEndpointProtocol(Protocol[T]):
         study_key: Optional[str] = None,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> Iterator[T]:
+    ) -> Iterator[T_co]:
         """List items synchronously."""
         ...
 
@@ -77,7 +77,7 @@ class ListEndpointProtocol(Protocol[T]):
         study_key: Optional[str] = None,
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
-    ) -> AsyncIterator[T]:
+    ) -> AsyncIterator[T_co]:
         """List items asynchronously."""
         ...
 
@@ -94,16 +94,16 @@ class SupportsGet(Protocol[T_co]):
         ...
 
 
-class SupportsList(Protocol[T_co]):
+class SupportsList(Protocol[T]):
     """Protocol for resources that support ``list`` operations."""
 
-    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T_co]:
+    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> List[T]:
         """List items synchronously."""
         ...
 
-    def async_list(
+    async def async_list(
         self, study_key: Optional[str] = None, **filters: FilterValue
-    ) -> AsyncIterator[T_co]:
+    ) -> List[T]:
         """List items asynchronously."""
         ...
 
