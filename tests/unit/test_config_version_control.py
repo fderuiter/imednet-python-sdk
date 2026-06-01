@@ -9,7 +9,8 @@ from pathlib import Path
 import pytest
 
 from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
-from imednet_workflows.config_version_control import ConfigVersionStore, _flatten, _sha256_of
+from imednet.utils.serialization import flatten as _flatten
+from imednet_workflows.config_version_control import ConfigVersionStore, _sha256_of
 
 # ---------------------------------------------------------------------------
 # Fixtures

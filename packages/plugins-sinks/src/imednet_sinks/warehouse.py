@@ -134,13 +134,15 @@ class SnowflakeSinkConfig(SinkConfig):
 def _records_to_arrow_table(records: Sequence[Any]) -> Any:
     """Convert *records* to a ``pyarrow.Table``."""
     pa = _require_optional_dep("pyarrow", "snowflake")
+    from imednet.utils.serialization import flatten
+
     rows = [
         {
             "record_id": getattr(r, "record_id", None),
             "form_id": getattr(r, "form_id", None),
             "visit_id": getattr(r, "visit_id", None),
             "subject_key": getattr(r, "subject_key", None),
-            **dict(getattr(r, "record_data", {}) or {}),
+            **flatten(getattr(r, "record_data", {}) or {}),
         }
         for r in records
     ]

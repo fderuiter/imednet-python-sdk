@@ -18,6 +18,7 @@ from threading import RLock
 from typing import Any
 
 from imednet.spi.models import StudyConfiguration
+from imednet.utils.serialization import flatten
 
 _DEFAULT_DB_PATH = Path(
     os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3")
@@ -242,8 +243,8 @@ class ConfigVersionStore:
         data_a = self._fetch_config_data(commit_a)
         data_b = self._fetch_config_data(commit_b)
 
-        flat_a = _flatten(data_a)
-        flat_b = _flatten(data_b)
+        flat_a = flatten(data_a)
+        flat_b = flatten(data_b)
 
         keys_a = set(flat_a)
         keys_b = set(flat_b)
@@ -310,22 +311,6 @@ class ConfigVersionStore:
                 "Configuration data integrity check failed: "
                 f"SHA-256 hash mismatch for commit {commit_id!r}"
             )
-
-
-def _flatten(data: Any, prefix: str = "") -> dict[str, Any]:
-    """Recursively flatten a nested dict/list into dot-notation keys."""
-    result: dict[str, Any] = {}
-    if isinstance(data, dict):
-        for key, value in data.items():
-            full_key = f"{prefix}.{key}" if prefix else key
-            result.update(_flatten(value, full_key))
-    elif isinstance(data, list):
-        for index, item in enumerate(data):
-            full_key = f"{prefix}[{index}]"
-            result.update(_flatten(item, full_key))
-    else:
-        result[prefix] = data
-    return result
 
 
 __all__ = ["ConfigVersionStore"]

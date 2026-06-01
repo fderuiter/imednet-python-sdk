@@ -10,6 +10,7 @@ from .json_logging import configure_json_logging
 from .typing import DataFrame, FilterValue, ItemId, JsonDict
 
 _LAZY_ATTRS: dict[str, tuple[str, str]] = {
+    "flatten": ("imednet.utils.serialization", "flatten"),
     "to_arrow_table": ("imednet.utils.arrow", "to_arrow_table"),
     "records_to_dataframe": ("imednet.utils.pandas", "records_to_dataframe"),
     "export_records_csv": ("imednet.utils.pandas", "export_records_csv"),
@@ -38,6 +39,7 @@ def __getattr__(name: str):  # noqa: D401
 
 
 __all__ = [
+    "flatten",
     "parse_iso_datetime",
     "format_iso_datetime",
     "build_filter_string",
