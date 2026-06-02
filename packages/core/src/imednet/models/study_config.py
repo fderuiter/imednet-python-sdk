@@ -43,6 +43,7 @@ class StudyConfiguration(JsonModel):
         default_factory=dict, alias="terminologyLookups"
     )
     widgets: list[WidgetConfig] = Field(default_factory=list, alias="widgets")
+    phi_fields: list[str] = Field(default_factory=list, alias="phiFields")
 
     @field_validator("reporting_profile", check_fields=False, mode="before")
     @classmethod
