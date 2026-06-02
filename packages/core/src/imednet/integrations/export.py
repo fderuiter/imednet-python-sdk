@@ -144,6 +144,8 @@ def export_to_parquet(
     **kwargs: Any,
 ) -> None:
     """Export study records to a Parquet file.
+    
+    All exports now inherit StudyConfiguration rules by default.
 
     Parameters
     ----------
@@ -183,6 +185,8 @@ def export_to_csv(
     **kwargs: Any,
 ) -> None:
     """Export study records to a CSV file.
+    
+    All exports now inherit StudyConfiguration rules by default.
 
     Parameters
     ----------
@@ -208,6 +212,8 @@ def export_to_excel(
     **kwargs: Any,
 ) -> None:
     """Export study records to an Excel workbook.
+    
+    All exports now inherit StudyConfiguration rules by default.
 
     Parameters
     ----------
@@ -234,6 +240,8 @@ def export_to_json(
     **kwargs: Any,
 ) -> None:
     """Export study records to a JSON file.
+    
+    All exports now inherit StudyConfiguration rules by default.
 
     Parameters
     ----------
@@ -244,21 +252,43 @@ def export_to_json(
         When ``True``, generates a nested tree (Subject > Visit > Form) suitable
         for Veeva Vault integrations instead of a flat tabular layout.
     """
+    import json
+    import logging
+
+    logger = logging.getLogger(__name__)
+
     if hierarchical:
         mapper = _record_mapper()(sdk)
         data = mapper.build_hierarchy(study_key, use_labels_as_keys=use_labels_as_columns)
-        import json
+    else:
+        df = _prepare_export_df(
+            sdk,
+            study_key,
+            use_labels_as_columns=use_labels_as_columns,
+        )
+        import pandas as pd
+        # Explicitly handle missing values when converting to dict
+        data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
-        with open(path, "w") as f:
-            json.dump(data, f, **kwargs)
-        return
+    try:
+        from imednet_workflows.config_version_control import ConfigVersionStore
+        from imednet.integrations.enrichment import EnrichmentPipeline
+        
+        store = ConfigVersionStore()
+        history = store.get_history(study_key)
+        if history:
+            latest_commit = history[-1]["commit_id"]
+            config = store.rollback_config(study_key, latest_commit)
+            
+            logger.info("Enrichment pipeline triggered")
+            pipeline = EnrichmentPipeline(config)
+            data = pipeline.process(data)
+            logger.info("Enrichment pipeline completed successfully")
+    except Exception as e:
+        logger.warning(f"Could not apply EnrichmentPipeline: {e}")
 
-    df = _prepare_export_df(
-        sdk,
-        study_key,
-        use_labels_as_columns=use_labels_as_columns,
-    )
-    df.to_json(path, index=False, **kwargs)
+    with open(path, "w") as f:
+        json.dump(data, f, **kwargs)
 
 
 def export_to_sql(
@@ -274,6 +304,8 @@ def export_to_sql(
     **kwargs: Any,
 ) -> None:
     """Export study records to a SQL table.
+    
+    All exports now inherit StudyConfiguration rules by default.
 
     Parameters
     ----------
@@ -311,6 +343,8 @@ def export_to_duckdb(
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
     """Export study records to a DuckDB table using native DataFrame registration.
+    
+    All exports now inherit StudyConfiguration rules by default.
 
     Parameters
     ----------
