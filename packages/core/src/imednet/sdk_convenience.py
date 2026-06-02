@@ -359,7 +359,8 @@ class SDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
-        return JobPoller(self.jobs.get).run(study_key, batch_id, interval, timeout)
+        fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)
+        return JobPoller(self.jobs.get, fetch_result=fetch_result).run(study_key, batch_id, interval, timeout)
 
     @_async_trace_method
     async def async_poll_job(
@@ -371,4 +372,5 @@ class SDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Asynchronously poll a job until it reaches a terminal state."""
-        return await AsyncJobPoller(self.jobs.async_get).run(study_key, batch_id, interval, timeout)
+        fetch_result = getattr(self, "_async_client", None) and getattr(self._async_client, "get", None)
+        return await AsyncJobPoller(self.jobs.async_get, fetch_result=fetch_result).run(study_key, batch_id, interval, timeout)

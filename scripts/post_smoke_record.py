@@ -143,16 +143,10 @@ def build_record(
 
 def _extract_error(sdk: ImednetSDK, status: Any) -> str:
     """Return job failure details if available."""
+    if hasattr(status, "results") and status.results:
+        return f"{status.state}: {status.results}".strip()
     if getattr(status, "result_url", ""):
-        try:
-            response = sdk._client.get(status.result_url)  # type: ignore[attr-defined]
-            try:
-                data = response.json()
-            except Exception:  # pragma: no cover - best effort
-                data = response.text
-            return f"{status.state}: {data}".strip()
-        except Exception:  # pragma: no cover - network failures
-            return f"{status.state} (see {status.result_url})"
+        return f"{status.state} (see {status.result_url})"
     return status.state
 
 

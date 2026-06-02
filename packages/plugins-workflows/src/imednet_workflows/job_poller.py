@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Awaitable, Callable
+from typing import Any, Awaitable, Callable
 
 from imednet.spi.constants import TERMINAL_JOB_STATES
 from imednet.spi.models import JobStatus
@@ -18,10 +18,6 @@ class BaseJobPoller:
     """Base class for polling a job until it reaches a terminal state."""
 
     def _check_complete(self, status: JobStatus, batch_id: str) -> JobStatus:
-        if status.state.upper() in TERMINAL_JOB_STATES:
-            if status.state.upper() == "FAILED":
-                raise RuntimeError(f"Job {batch_id} failed")
-            return status
         return status
 
     def _check_timeout(self, start_time: float, timeout: int, batch_id: str) -> None:
@@ -32,8 +28,13 @@ class BaseJobPoller:
 class JobPoller(BaseJobPoller):
     """Synchronously poll a job until completion."""
 
-    def __init__(self, get_job: Callable[[str, str], JobStatus]) -> None:
+    def __init__(
+        self, 
+        get_job: Callable[[str, str], JobStatus],
+        fetch_result: Callable[[str], Any] | None = None
+    ) -> None:
         self._get_job = get_job
+        self._fetch_result = fetch_result
 
     def run(
         self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
@@ -46,6 +47,18 @@ class JobPoller(BaseJobPoller):
             status = self._check_complete(result, batch_id)
 
             if status.state.upper() in TERMINAL_JOB_STATES:
+                if self._fetch_result and getattr(status, "result_url", None):
+                    try:
+                        res = self._fetch_result(status.result_url)
+                        if hasattr(res, "json"):
+                            try:
+                                status.results = res.json()
+                            except Exception:
+                                status.results = getattr(res, "text", str(res))
+                        else:
+                            status.results = res
+                    except Exception:
+                        pass
                 return status
 
             self._check_timeout(start, timeout, batch_id)
@@ -55,8 +68,13 @@ class JobPoller(BaseJobPoller):
 class AsyncJobPoller(BaseJobPoller):
     """Asynchronously poll a job until completion."""
 
-    def __init__(self, get_job: Callable[[str, str], Awaitable[JobStatus]]) -> None:
+    def __init__(
+        self, 
+        get_job: Callable[[str, str], Awaitable[JobStatus]],
+        fetch_result: Callable[[str], Awaitable[Any]] | None = None
+    ) -> None:
         self._get_job = get_job
+        self._fetch_result = fetch_result
 
     async def run(
         self, study_key: str, batch_id: str, interval: int = 5, timeout: int = 300
@@ -69,6 +87,18 @@ class AsyncJobPoller(BaseJobPoller):
             status = self._check_complete(result, batch_id)
 
             if status.state.upper() in TERMINAL_JOB_STATES:
+                if self._fetch_result and getattr(status, "result_url", None):
+                    try:
+                        res = await self._fetch_result(status.result_url)
+                        if hasattr(res, "json"):
+                            try:
+                                status.results = res.json()
+                            except Exception:
+                                status.results = getattr(res, "text", str(res))
+                        else:
+                            status.results = res
+                    except Exception:
+                        pass
                 return status
 
             self._check_timeout(start, timeout, batch_id)

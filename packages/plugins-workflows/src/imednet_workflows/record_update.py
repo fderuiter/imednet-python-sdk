@@ -83,7 +83,8 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        poller = JobPoller(sdk.get_job)
+        fetch_result = getattr(sdk, "_client", None) and getattr(sdk._client, "get", None)
+        poller = JobPoller(sdk.get_job, fetch_result=fetch_result)
         return poller.run(study_key, job.batch_id, poll_interval, timeout)
 
     async def async_create_or_update_records(
@@ -106,7 +107,8 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        poller = AsyncJobPoller(sdk.async_get_job)
+        fetch_result = getattr(sdk, "_async_client", None) and getattr(sdk._async_client, "get", None)
+        poller = AsyncJobPoller(sdk.async_get_job, fetch_result=fetch_result)
         return await poller.run(study_key, job.batch_id, poll_interval, timeout)
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
