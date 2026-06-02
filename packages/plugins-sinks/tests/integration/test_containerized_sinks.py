@@ -137,9 +137,10 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
         count = result.single()["count"]
         assert count == 2
 
-        result2 = session.run("MATCH (n:Record {record_id: 2}) RETURN n.heart_rate AS heart_rate")
-        heart_rate = result2.single()["heart_rate"]
-        assert heart_rate == 75
+        result2 = session.run("MATCH (n:Record {record_id: 2}) RETURN n.record_data AS record_data")
+        import json
+        record_data = json.loads(result2.single()["record_data"])
+        assert record_data["heart_rate"] == 75
 
         # Verify topology mapping
         topology_query = (
