@@ -76,8 +76,8 @@ def test_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("time.sleep", lambda *_: None)
     poller = JobPoller(get_job)
 
-    with pytest.raises(RuntimeError):
-        poller.run("S", "1", interval=0, timeout=5)
+    result = poller.run("S", "1", interval=0, timeout=5)
+    assert result.state == "FAILED"
 
 
 @pytest.mark.asyncio
@@ -90,8 +90,8 @@ async def test_async_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(asyncio, "sleep", AsyncMock())
     poller = AsyncJobPoller(get_job)
 
-    with pytest.raises(RuntimeError):
-        await poller.run("S", "1", interval=0, timeout=5)
+    result = await poller.run("S", "1", interval=0, timeout=5)
+    assert result.state == "FAILED"
 
 
 def test_job_poller_cancelled(monkeypatch: pytest.MonkeyPatch) -> None:

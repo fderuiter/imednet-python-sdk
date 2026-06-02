@@ -79,8 +79,8 @@ def test_poll_job_failed(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> N
     else:
         monkeypatch.setattr(sdk.jobs, "get", lambda s, b: states.pop(0))
         monkeypatch.setattr("time.sleep", lambda *a: None)
-    with pytest.raises(RuntimeError):
-        if async_mode:
-            asyncio.run(sdk.async_poll_job("S", "1", interval=0, timeout=5))
-        else:
-            sdk.poll_job("S", "1", interval=0, timeout=5)
+    if async_mode:
+        result = asyncio.run(sdk.async_poll_job("S", "1", interval=0, timeout=5))
+    else:
+        result = sdk.poll_job("S", "1", interval=0, timeout=5)
+    assert result.state == "FAILED"
