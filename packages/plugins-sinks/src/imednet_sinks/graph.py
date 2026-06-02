@@ -96,7 +96,7 @@ MERGE (s:Study   {study_key:   row.study_key})
 MERGE (su:Subject {subject_key: row.subject_key, study_key: row.study_key})
 MERGE (v:Visit    {visit_id:   row.visit_id,    study_key: row.study_key})
 MERGE (r:Record   {record_id:  row.record_id,   study_key: row.study_key})
-SET   r += row.record_data
+SET r += row
 MERGE (s)-[:HAS_SUBJECT]->(su)
 MERGE (su)-[:HAS_VISIT]->(v)
 MERGE (v)-[:HAS_RECORD]->(r)
@@ -104,31 +104,30 @@ MERGE (v)-[:HAS_RECORD]->(r)
 
 _CREATE_RECORD_CYPHER = """\
 UNWIND $rows AS row
-CREATE (r:Record {
-    record_id:   row.record_id,
-    form_id:     row.form_id,
-    visit_id:    row.visit_id,
-    subject_key: row.subject_key,
-    study_key:   row.study_key
-})
-SET r += row.record_data
+CREATE (r:Record)
+SET r = row
 WITH r, row
 MATCH (v:Visit {visit_id: row.visit_id, study_key: row.study_key})
 MERGE (v)-[:HAS_RECORD]->(r)
 """
 
-
 def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
-    from imednet.utils.serialization import flatten
+    import json
 
     return {
         "record_id": getattr(record, "record_id", None),
         "form_id": getattr(record, "form_id", None),
+        "form_key": getattr(record, "form_key", None),
         "visit_id": getattr(record, "visit_id", None),
+        "subject_id": getattr(record, "subject_id", None),
         "subject_key": getattr(record, "subject_key", None),
         "study_key": study_key,
-        "record_data": flatten(getattr(record, "record_data", {}) or {}),
+        "record_status": getattr(record, "record_status", None),
+        "deleted": getattr(record, "deleted", None),
+        "date_created": getattr(record, "date_created", None),
+        "date_modified": getattr(record, "date_modified", None),
+        "record_data": json.dumps(dict(getattr(record, "record_data", {}) or {})),
     }
 
 
