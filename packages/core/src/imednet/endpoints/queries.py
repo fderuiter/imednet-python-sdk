@@ -3,20 +3,13 @@
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.queries import Query
 
-
-class QueriesEndpoint(EdcSyncListGetEndpoint[Query]):
-    """
-    API endpoint for interacting with queries (dialogue/questions) in an iMedNet study.
-
-    Provides methods to list and retrieve queries.
-    """
-
+class QueriesOperationDef:
     PATH = "queries"
     MODEL = Query
     _id_param = "annotationId"
 
+class QueriesEndpoint(QueriesOperationDef, EdcSyncListGetEndpoint[Query]): # type: ignore[misc]
+    pass
 
-class AsyncQueriesEndpoint(EdcAsyncListGetEndpoint[Query]):
-    PATH = "queries"
-    MODEL = Query
-    _id_param = "annotationId"
+class AsyncQueriesEndpoint(QueriesOperationDef, EdcAsyncListGetEndpoint[Query]): # type: ignore[misc]
+    pass
