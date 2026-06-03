@@ -3,20 +3,13 @@
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.visits import Visit
 
-
-class VisitsEndpoint(EdcSyncListGetEndpoint[Visit]):
-    """
-    API endpoint for interacting with visits (interval instances) in an iMedNet study.
-
-    Provides methods to list and retrieve individual visits.
-    """
-
+class VisitsOperationDef:
     PATH = "visits"
     MODEL = Visit
     _id_param = "visitId"
 
+class VisitsEndpoint(VisitsOperationDef, EdcSyncListGetEndpoint[Visit]): # type: ignore[misc]
+    pass
 
-class AsyncVisitsEndpoint(EdcAsyncListGetEndpoint[Visit]):
-    PATH = "visits"
-    MODEL = Visit
-    _id_param = "visitId"
+class AsyncVisitsEndpoint(VisitsOperationDef, EdcAsyncListGetEndpoint[Visit]): # type: ignore[misc]
+    pass

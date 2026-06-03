@@ -4,24 +4,15 @@ from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncList
 from imednet.core.endpoint.strategies import PopStudyKeyStrategy
 from imednet.models.intervals import Interval
 
-
-class IntervalsEndpoint(EdcSyncListGetEndpoint[Interval]):
-    """
-    API endpoint for interacting with intervals (visit definitions) in an iMedNet study.
-
-    Provides methods to list and retrieve individual intervals.
-    """
-
+class IntervalsOperationDef:
     PATH = "intervals"
     MODEL = Interval
     _id_param = "intervalId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
     PAGE_SIZE = 500
 
+class IntervalsEndpoint(IntervalsOperationDef, EdcSyncListGetEndpoint[Interval]): # type: ignore[misc]
+    pass
 
-class AsyncIntervalsEndpoint(EdcAsyncListGetEndpoint[Interval]):
-    PATH = "intervals"
-    MODEL = Interval
-    _id_param = "intervalId"
-    STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
-    PAGE_SIZE = 500
+class AsyncIntervalsEndpoint(IntervalsOperationDef, EdcAsyncListGetEndpoint[Interval]): # type: ignore[misc]
+    pass

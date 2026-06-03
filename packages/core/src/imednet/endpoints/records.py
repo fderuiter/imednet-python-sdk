@@ -10,19 +10,23 @@ from imednet.models.records import Record
 from imednet.utils.typing import JsonDict
 from imednet.validation.cache import SchemaCache
 
-
-class RecordsEndpoint(EdcSyncListGetEndpoint[Record]):
-    """
-    API endpoint for interacting with records (eCRF instances) in an iMedNet study.
-
-    Provides methods to list, retrieve, and create records.
-    """
-
+class RecordsOperationDef:
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"
     PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
 
+    def _create_operation(self, study_key: str, records_data: List[JsonDict], email_notify: Union[bool, str, None] = None, *, schema: Optional[SchemaCache] = None) -> RecordCreateOperation[Job]:
+        path = self._get_endpoint_path(study_key) # type: ignore
+        return RecordCreateOperation[Job](
+            path=path,
+            records_data=records_data,
+            email_notify=email_notify,
+            schema=schema,
+        )
+
+class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]): # type: ignore[misc]
+    """API endpoint for interacting with records (eCRF instances)."""
     def create(
         self,
         study_key: str,
@@ -31,42 +35,12 @@ class RecordsEndpoint(EdcSyncListGetEndpoint[Record]):
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        """
-        Create new records in a study.
-
-        Args:
-            study_key: Study identifier
-            records_data: List of record data objects to create
-            email_notify: Whether to send email notifications (True/False), or an
-                email address as a string.
-            schema: Optional :class:`SchemaCache` instance used for local
-                validation.
-
-        Returns:
-            Job object with information about the created job
-
-        Raises:
-            ClientError: If email_notify contains invalid characters
-        """
-        path = self._get_endpoint_path(study_key)
-        operation = RecordCreateOperation[Job](
-            path=path,
-            records_data=records_data,
-            email_notify=email_notify,
-            schema=schema,
-        )
-        return operation.execute_sync(
-            self._require_sync_client(),
-            parse_func=Job.from_json,
+        return self._create_operation(study_key, records_data, email_notify, schema=schema).execute_sync(
+            self._require_sync_client(), parse_func=Job.from_json
         )
 
-
-class AsyncRecordsEndpoint(EdcAsyncListGetEndpoint[Record]):
-    PATH = "records"
-    MODEL = Record
-    _id_param = "recordId"
-    PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
-
+class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record]): # type: ignore[misc]
+    """Async API endpoint for interacting with records (eCRF instances)."""
     async def async_create(
         self,
         study_key: str,
@@ -75,33 +49,6 @@ class AsyncRecordsEndpoint(EdcAsyncListGetEndpoint[Record]):
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        """
-        Asynchronously create new records in a study.
-
-        This is the async variant of :meth:`create`.
-
-        Args:
-            study_key: Study identifier
-            records_data: List of record data objects to create
-            email_notify: Whether to send email notifications (True/False), or an
-                email address as a string.
-            schema: Optional :class:`SchemaCache` instance used for local
-                validation.
-
-        Returns:
-            Job object with information about the created job
-
-        Raises:
-            ClientError: If email_notify contains invalid characters
-        """
-        path = self._get_endpoint_path(study_key)
-        operation = RecordCreateOperation[Job](
-            path=path,
-            records_data=records_data,
-            email_notify=email_notify,
-            schema=schema,
-        )
-        return await operation.execute_async(
-            self._require_async_client(),
-            parse_func=Job.from_json,
+        return await self._create_operation(study_key, records_data, email_notify, schema=schema).execute_async(
+            self._require_async_client(), parse_func=Job.from_json
         )

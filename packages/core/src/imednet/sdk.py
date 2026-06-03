@@ -25,7 +25,7 @@ from .plugins import (
     SinksPluginProtocol,
     WorkflowsNamespaceProtocol,
 )
-from .sdk_convenience import SDKConvenienceMixin
+from .sdk_convenience import AsyncSDKConvenienceMixin, SyncSDKConvenienceMixin
 
 if TYPE_CHECKING:
     from .core.async_client import AsyncClient
@@ -71,22 +71,12 @@ class _BaseSDK:
     def _get_workflow_entry_point(self) -> EntryPoint | None:
         return self._get_plugin_entry_point("workflows")
 
-    def _init_workflows(self) -> WorkflowsNamespaceProtocol:
+    def _init_workflows(self) -> Optional[WorkflowsNamespaceProtocol]:
         """Instantiate workflow namespace when optional workflows plugin is available."""
-
-        class _MissingWorkflows:
-            def __getattr__(self, name: str) -> Any:
-                raise ImportError(
-                    (
-                        f"Workflow '{name}' requires the optional "
-                        "'imednet-workflows' package. "
-                        "Install with `pip install imednet-workflows`."
-                    )
-                )
 
         workflows_entry_point = self._get_workflow_entry_point()
         if workflows_entry_point is None:
-            return cast(WorkflowsNamespaceProtocol, _MissingWorkflows())
+            return None
 
         try:
             workflows_plugin = workflows_entry_point.load()
@@ -104,28 +94,18 @@ class _BaseSDK:
 
         try:
             workflows_factory = cast(PluginProtocol, workflows_plugin)
-            return workflows_factory(self)
+            return workflows_factory(cast(Any, self))
         except TypeError as error:
             raise PluginLoadError(
                 "Failed to instantiate workflows from the discovered plugin entry point."
             ) from error
 
-    def _init_sinks(self) -> SinksNamespaceProtocol:
+    def _init_sinks(self) -> Optional[SinksNamespaceProtocol]:
         """Instantiate sinks namespace when optional sinks plugin is available."""
-
-        class _MissingSinks:
-            def __getattr__(self, name: str) -> Any:
-                raise ImportError(
-                    (
-                        f"Sink '{name}' requires the optional "
-                        "'imednet-plugins-sinks' package. "
-                        "Install with `pip install imednet-plugins-sinks`."
-                    )
-                )
 
         sinks_entry_point = self._get_plugin_entry_point("sinks")
         if sinks_entry_point is None:
-            return cast(SinksNamespaceProtocol, _MissingSinks())
+            return None
 
         try:
             sinks_plugin = sinks_entry_point.load()
@@ -143,7 +123,7 @@ class _BaseSDK:
 
         try:
             sinks_factory = cast(SinksPluginProtocol, sinks_plugin)
-            return sinks_factory(self)
+            return sinks_factory(cast(Any, self))
         except TypeError as error:
             raise PluginLoadError(
                 "Failed to instantiate sinks from the discovered plugin entry point."
@@ -156,7 +136,7 @@ class _BaseSDK:
             yield self
 
 
-class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
+class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
     """
     Public entry-point for library users.
 
@@ -176,8 +156,8 @@ class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
     users: UsersEndpoint
     variables: VariablesEndpoint
     visits: VisitsEndpoint
-    workflows: WorkflowsNamespaceProtocol
-    sinks: SinksNamespaceProtocol
+    workflows: Optional[WorkflowsNamespaceProtocol]
+    sinks: Optional[SinksNamespaceProtocol]
     config: Config
 
     def __init__(
@@ -268,7 +248,7 @@ class ImednetSDK(_BaseSDK, SDKConvenienceMixin):
         )
 
 
-class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
+class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     """Async variant of :class:`ImednetSDK` using the async HTTP client.
 
     Always use this class with ``async with`` or call ``await sdk.aclose()``
@@ -289,8 +269,8 @@ class AsyncImednetSDK(_BaseSDK, SDKConvenienceMixin):
     users: AsyncUsersEndpoint
     variables: AsyncVariablesEndpoint
     visits: AsyncVisitsEndpoint
-    workflows: WorkflowsNamespaceProtocol
-    sinks: SinksNamespaceProtocol
+    workflows: Optional[WorkflowsNamespaceProtocol]
+    sinks: Optional[SinksNamespaceProtocol]
 
     def __init__(
         self,
