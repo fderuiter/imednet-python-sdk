@@ -122,7 +122,7 @@ jobs:
         package: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
@@ -181,7 +181,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - uses: abatilo/actions-poetry@v2
@@ -242,7 +242,7 @@ jobs:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -304,7 +304,7 @@ jobs:
               - 'docker-compose.yml'
               - 'tests/integration/test_containerized_sinks.py'
               
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         if: steps.filter.outputs.export_logic == 'true'
         with:
           python-version: "3.10"
@@ -334,7 +334,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - uses: abatilo/actions-poetry@v2
@@ -354,7 +354,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - uses: abatilo/actions-poetry@v2
