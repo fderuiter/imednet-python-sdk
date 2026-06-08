@@ -410,7 +410,7 @@ jobs:
       id-token: write # Mandatory for trusted publishing
     steps:
       - name: Download Core Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dist-core
           path: dist
@@ -434,7 +434,7 @@ jobs:
       id-token: write # Mandatory for trusted publishing
     steps:
       - name: Download Workflows Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dist-workflows
           path: dist
@@ -458,7 +458,7 @@ jobs:
       id-token: write # Mandatory for trusted publishing
     steps:
       - name: Download Providers Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dist-providers
           path: dist
@@ -482,7 +482,7 @@ jobs:
       id-token: write # Mandatory for trusted publishing
     steps:
       - name: Download Streamlit Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dist-streamlit
           path: dist
