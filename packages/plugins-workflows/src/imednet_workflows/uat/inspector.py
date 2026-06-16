@@ -49,7 +49,8 @@ class StudySnapshot(ImednetBaseModel):
         return [
             form
             for form in self.forms
-            if not getattr(form, 'unscheduled_visit', False) and form.form_type not in ("Enrollment", "Registration")
+            if not getattr(form, 'unscheduled_visit', False)
+            and form.form_type not in ("Enrollment", "Registration")
         ]
 
     def unscheduled_forms(self) -> list[Form]:

@@ -25,11 +25,26 @@ class QueryManagementWorkflow:
         Determines if a query is open based on its comments.
         Returns None if the state cannot be determined (no comments).
         """
-        if not getattr(query, 'query_comments', getattr(query, 'model_extra', {}).get('query_comments', []) if getattr(query, 'model_extra', None) is not None else []):  # type: ignore
+        if not getattr(
+            query,
+            'query_comments',
+            getattr(query, 'model_extra', {}).get('query_comments', [])
+            if getattr(query, 'model_extra', None) is not None
+            else [],
+        ):  # type: ignore
             return None
 
         # Find the comment with the highest sequence number
-        latest_comment = max(getattr(query, 'query_comments', getattr(query, 'model_extra', {}).get('query_comments', []) if getattr(query, 'model_extra', None) is not None else []), key=lambda c: c.sequence)  # type: ignore
+        latest_comment = max(
+            getattr(
+                query,
+                'query_comments',
+                getattr(query, 'model_extra', {}).get('query_comments', [])
+                if getattr(query, 'model_extra', None) is not None
+                else [],
+            ),
+            key=lambda c: c.sequence,
+        )  # type: ignore
 
         # Check if the latest comment indicates the query is open (closed=False)
         return not latest_comment.closed

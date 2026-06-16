@@ -198,7 +198,13 @@ class RecordMapper:
             "visitId": rec.visit_id,
             "formId": rec.form_id,
             "recordStatus": rec.record_status,
-            "dateCreated": rec.date_created.isoformat() if hasattr(rec.date_created, 'isoformat') else str(rec.date_created) if rec.date_created else None,  # type: ignore
+            "dateCreated": (
+                rec.date_created.isoformat()  # type: ignore[union-attr]
+                if hasattr(rec.date_created, 'isoformat')
+                else str(rec.date_created)
+                if rec.date_created
+                else None
+            ),
         }
         data = rec.record_data if isinstance(rec.record_data, dict) else {}
         parsed = record_model(**data).model_dump(by_alias=False)

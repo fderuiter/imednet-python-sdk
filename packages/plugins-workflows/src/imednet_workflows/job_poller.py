@@ -29,9 +29,9 @@ class JobPoller(BaseJobPoller):
     """Synchronously poll a job until completion."""
 
     def __init__(
-        self, 
+        self,
         get_job: Callable[[str, str], JobStatus],
-        fetch_result: Callable[[str], Any] | None = None
+        fetch_result: Callable[[str], Any] | None = None,
     ) -> None:
         self._get_job = get_job
         self._fetch_result = fetch_result
@@ -69,9 +69,9 @@ class AsyncJobPoller(BaseJobPoller):
     """Asynchronously poll a job until completion."""
 
     def __init__(
-        self, 
+        self,
         get_job: Callable[[str, str], Awaitable[JobStatus]],
-        fetch_result: Callable[[str], Awaitable[Any]] | None = None
+        fetch_result: Callable[[str], Awaitable[Any]] | None = None,
     ) -> None:
         self._get_job = get_job
         self._fetch_result = fetch_result
