@@ -97,7 +97,7 @@ class JsonModel(BaseModel):
     model_config = ConfigDict(
         extra="forbid"
         if os.environ.get("IMEDNET_STRICT_MODE", "").lower() in ("1", "true")
-        else "ignore",
+        else "allow",
         populate_by_name=True,
         str_strip_whitespace=True,
     )

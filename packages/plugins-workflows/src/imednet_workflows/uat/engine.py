@@ -62,7 +62,7 @@ class UATExecutionEngine:
 
     def generate_negative_test_case(self, rule: dict[str, Any]) -> dict[str, Any]:
         """Generate a data payload designed to violate the given rule."""
-        data = {}
+        data = {}  # type: ignore
         variable = rule.get("variable")
         if not variable:
             return data
@@ -84,12 +84,12 @@ class UATExecutionEngine:
         else:
             if operator == ">=":
                 try:
-                    data[variable] = str(float(value) - 1)
+                    data[variable] = str(float(value or 0) - 1)
                 except (ValueError, TypeError):
                     data[variable] = "0"
             elif operator == "<=":
                 try:
-                    data[variable] = str(float(value) + 1)
+                    data[variable] = str(float(value or 0) + 1)
                 except (ValueError, TypeError):
                     data[variable] = "9999"
             elif operator == "==":

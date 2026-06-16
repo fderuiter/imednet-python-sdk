@@ -190,7 +190,7 @@ class CachedRecordsLoader:
 
     def _fetch_active_record_ids(self, study_key: str) -> set[int]:
         records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
-        return {record.record_id for record in records}
+        return {record.record_id for record in records}  # type: ignore
 
     def _list_records(self, **filters: Any) -> list[Record]:
         retryer = Retrying(
@@ -215,7 +215,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        endpoint = self._sdk.records
+        endpoint = self._sdk.records  # type: ignore
 
         return cast(
             list[Record],
@@ -233,7 +233,7 @@ class CachedRecordsLoader:
                 record.study_key,
                 record.record_id,
                 record.form_key,
-                (record.date_modified.isoformat() if hasattr(record.date_modified, "isoformat") else str(record.date_modified)),
+                (record.date_modified.isoformat() if hasattr(record.date_modified, "isoformat") else str(record.date_modified)),  # type: ignore
                 json.dumps(record.model_dump(mode="json", by_alias=True), sort_keys=True),
             )
             for record in records

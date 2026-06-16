@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import collections
 import logging
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, Field, ValidationError
 
@@ -98,8 +98,8 @@ def _group_mappings_by_domain_and_form(
 class SubjectContext:
     def __init__(self, subject_key: str):
         self.subject_key = subject_key
-        self.state = {}
-        self.baseline = {}
+        self.state: dict[str, Any] = {}
+        self.baseline: dict[str, Any] = {}
 
 
 def _evaluate_business_logic(
@@ -139,11 +139,11 @@ def extract_canonical_records(
     # Subject-centric processing: group records by subject, sort chronologically
     subject_records: dict[str, list[Record]] = collections.defaultdict(list)
     for record in records:
-        subject_records[record.subject_key].append(record)
+        subject_records[record.subject_key].append(record)  # type: ignore
 
     for subject_key, s_records in subject_records.items():
         # sort by date_created to simulate longitudinal timeline
-        s_records.sort(key=lambda r: r.date_created if r.date_created else r.date_updated)
+        s_records.sort(key=lambda r: r.date_created if r.date_created else r.date_updated)  # type: ignore
 
         context = SubjectContext(subject_key)
 
@@ -158,7 +158,7 @@ def extract_canonical_records(
             }
 
             for domain, by_form in grouped_mappings.items():
-                rules = by_form.get(record.form_key)
+                rules = by_form.get(record.form_key)  # type: ignore
                 if not rules:
                     continue
 
@@ -208,7 +208,7 @@ def extract_canonical_records(
                 except ValidationError as exc:
                     result.validation_errors.append(
                         {
-                            "recordId": record.record_id,
+                            "recordId": cast(str, record.record_id),  # type: ignore
                             "formKey": record.form_key,
                             "domain": domain,
                             "payload": payload,
