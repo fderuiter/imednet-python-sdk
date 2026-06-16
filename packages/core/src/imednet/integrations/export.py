@@ -144,7 +144,7 @@ def export_to_parquet(
     **kwargs: Any,
 ) -> None:
     """Export study records to a Parquet file.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -185,7 +185,7 @@ def export_to_csv(
     **kwargs: Any,
 ) -> None:
     """Export study records to a CSV file.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -212,7 +212,7 @@ def export_to_excel(
     **kwargs: Any,
 ) -> None:
     """Export study records to an Excel workbook.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -240,7 +240,7 @@ def export_to_json(
     **kwargs: Any,
 ) -> None:
     """Export study records to a JSON file.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -267,22 +267,28 @@ def export_to_json(
             use_labels_as_columns=use_labels_as_columns,
         )
         import pandas as pd
+
         # Explicitly handle missing values when converting to dict
         data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
     try:
         from importlib import import_module
-        ConfigVersionStore = import_module("imednet_workflows.config_version_control").ConfigVersionStore
-        EnrichmentPipeline = import_module("imednet.integrations.enrichment").EnrichmentPipeline
-        
-        store = ConfigVersionStore()
+
+        config_version_store_cls = import_module(
+            "imednet_workflows.config_version_control"
+        ).ConfigVersionStore
+        enrichment_pipeline_cls = import_module(
+            "imednet.integrations.enrichment"
+        ).EnrichmentPipeline
+
+        store = config_version_store_cls()
         history = store.get_history(study_key)
         if history:
             latest_commit = history[-1]["commit_id"]
             config = store.rollback_config(study_key, latest_commit)
-            
+
             logger.info("Enrichment pipeline triggered")
-            pipeline = EnrichmentPipeline(config)
+            pipeline = enrichment_pipeline_cls(config)
             data = pipeline.process(data)
             logger.info("Enrichment pipeline completed successfully")
     except Exception as e:
@@ -305,7 +311,7 @@ def export_to_sql(
     **kwargs: Any,
 ) -> None:
     """Export study records to a SQL table.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -344,7 +350,7 @@ def export_to_duckdb(
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
     """Export study records to a DuckDB table using native DataFrame registration.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters

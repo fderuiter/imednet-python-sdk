@@ -4,18 +4,21 @@ from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncList
 from imednet.core.endpoint.strategies import MappingParamProcessor, PopStudyKeyStrategy
 from imednet.models.users import User
 
+
 class UsersOperationDef:
     PATH = "users"
     MODEL = User
     _id_param = "userId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
     PARAM_PROCESSOR = MappingParamProcessor(
-    mapping={"include_inactive": "includeInactive"},
-    defaults={"include_inactive": False},
+        mapping={"include_inactive": "includeInactive"},
+        defaults={"include_inactive": False},
     )
 
-class UsersEndpoint(UsersOperationDef, EdcSyncListGetEndpoint[User]): # type: ignore[misc]
+
+class UsersEndpoint(UsersOperationDef, EdcSyncListGetEndpoint[User]):  # type: ignore[misc]
     pass
 
-class AsyncUsersEndpoint(UsersOperationDef, EdcAsyncListGetEndpoint[User]): # type: ignore[misc]
+
+class AsyncUsersEndpoint(UsersOperationDef, EdcAsyncListGetEndpoint[User]):  # type: ignore[misc]
     pass

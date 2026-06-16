@@ -76,9 +76,13 @@ class _BaseSDK:
 
         workflows_entry_point = self._get_workflow_entry_point()
         if workflows_entry_point is None:
+
             class _MissingWorkflows:
                 def __getattr__(self, name: str) -> Any:
-                    raise ImportError("This feature requires the optional 'imednet-workflows' package.")
+                    raise ImportError(
+                        "This feature requires the optional 'imednet-workflows' package."
+                    )
+
             return _MissingWorkflows()  # type: ignore
 
         try:

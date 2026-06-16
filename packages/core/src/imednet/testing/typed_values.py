@@ -43,10 +43,10 @@ _CANONICAL_TYPES: Dict[str, str] = {
 def canonical_type(var_type: str) -> Optional[str]:
     """Return the canonical type for ``var_type`` or ``None`` if unsupported."""
 
-    return _CANONICAL_TYPES.get(var_type.lower())
+    return _CANONICAL_TYPES.get((var_type or "").lower())
 
 
 def value_for(var_type: str) -> Optional[Any]:
     """Return a deterministic example value for ``var_type`` if supported."""
 
-    return _TYPED_VALUES.get(var_type.lower())
+    return _TYPED_VALUES.get((var_type or "").lower())

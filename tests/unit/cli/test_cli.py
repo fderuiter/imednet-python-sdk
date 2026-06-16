@@ -1,3 +1,4 @@
+import importlib
 import importlib.util
 import os
 import sys
@@ -13,14 +14,13 @@ from imednet.errors import ApiError
 from imednet.integrations import export as export_mod
 
 
-import importlib
-
 @pytest.fixture(autouse=True)
 def reload_cli():
     """Ensure cli module is fresh and has all original commands bound to app."""
     importlib.reload(cli)
     yield
     importlib.reload(cli)
+
 
 @pytest.fixture(autouse=True)
 def env(monkeypatch: pytest.MonkeyPatch) -> None:

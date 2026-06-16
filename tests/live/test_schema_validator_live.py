@@ -13,7 +13,7 @@ def _get_first_variable(sdk: ImednetSDK, study_key: str):
 
 
 def _wrong_value(var_type: str):
-    t = var_type.lower()
+    t = (var_type or "").lower()
     if t in {"text", "string"}:
         return 1
     return "bad"
