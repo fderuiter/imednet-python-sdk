@@ -10,3 +10,4 @@ class User(JsonModel):
     last_name: Optional[str]
     email: Optional[str]
     user_active_in_study: Optional[bool]
+    name: Optional[str]

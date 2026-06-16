@@ -15,3 +15,4 @@ class Form(JsonModel):
     disabled: Optional[bool]
     epro_form: Optional[bool]
     allow_copy: Optional[bool]
+    unscheduled_visit: Optional[bool]

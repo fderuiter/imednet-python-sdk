@@ -132,7 +132,7 @@ def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> 
 
     require_mutation()
 
-    variables = sdk.variables.list(study_key=study_key, formKey=first_form_key)
+    variables = list(sdk.variables.list(study_key=study_key, formKey=first_form_key))
     if not variables:
         pytest.skip(f"No variables available for form {first_form_key}")
 
@@ -158,7 +158,7 @@ def typed_record(
     study_key: str,
     first_form_key: str,
 ) -> Callable[..., dict[str, Any]]:
-    variables = sdk.variables.list(study_key=study_key, formKey=first_form_key)
+    variables = list(sdk.variables.list(study_key=study_key, formKey=first_form_key))
     if not variables:
         pytest.skip(f"No variables available for form {first_form_key}")
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import Field
 
@@ -21,7 +21,7 @@ SubjectKeyword = ModelEngine.get_model('SubjectKeyword', SubjectKeyword)
 class Subject(JsonModel):
     """A subject (participant) in a study, with status and site info."""
 
-    pass
-
+    subject_oid: Optional[str] = Field(None, alias="subjectOid")
+    enrollment_start_date: Optional[str] = Field(None, alias="enrollmentStartDate")
 
 Subject = ModelEngine.get_model('Subject', Subject)

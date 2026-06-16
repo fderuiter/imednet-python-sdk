@@ -3,6 +3,9 @@ from typing import Any, Dict, List, Optional
 
 from imednet.models.json_base import JsonModel
 
+class Keyword(JsonModel):
+    pass
+
 class Record(JsonModel):
     study_key: Optional[str]
     interval_id: Optional[int]
@@ -22,3 +25,5 @@ class Record(JsonModel):
     visit_id: Optional[int]
     parent_record_id: Optional[int]
     record_data: Optional[Any]
+    keywords: Optional[List[Keyword]]
+    embedded_log: Optional[Any]

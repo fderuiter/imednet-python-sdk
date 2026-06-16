@@ -12,8 +12,8 @@ from imednet.models.json_base import JsonModel
 class QueryComment(JsonModel):
     """A comment or response within a data query thread."""
 
-    pass
-
+    sequence: Optional[int] = None
+    closed: Optional[bool] = None
 
 QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
 
@@ -21,7 +21,6 @@ QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
 class Query(JsonModel):
     """Represents a data query (discrepancy) raised on a record."""
 
-    pass
-
+    query_comments: Optional[List[QueryComment]] = Field(None, alias="queryComments")
 
 Query = ModelEngine.get_model('Query', Query)

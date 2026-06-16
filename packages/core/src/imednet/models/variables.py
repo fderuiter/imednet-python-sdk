@@ -12,7 +12,6 @@ from imednet.models.json_base import JsonModel
 class Variable(JsonModel):
     """Definition of a data field (question) on a form."""
 
-    pass
-
+    label: Optional[str] = None
 
 Variable = ModelEngine.get_model('Variable', Variable)

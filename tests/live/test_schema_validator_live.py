@@ -6,7 +6,7 @@ from imednet.validation.cache import SchemaValidator
 
 
 def _get_first_variable(sdk: ImednetSDK, study_key: str):
-    variables = sdk.variables.list(study_key=study_key)
+    variables = list(sdk.variables.list(study_key=study_key))
     if not variables:
         pytest.skip("No variables available for live tests")
     return variables[0]
