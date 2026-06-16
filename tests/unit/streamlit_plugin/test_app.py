@@ -77,6 +77,11 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 
     fake_streamlit_module.altair_chart = fake_altair_chart
 
+    fake_streamlit_module.error = lambda *args, **kwargs: None
+    fake_streamlit_module.exception = lambda *args, **kwargs: None
+    fake_streamlit_module.warning = lambda *args, **kwargs: None
+    fake_streamlit_module.info = lambda *args, **kwargs: None
+
     fake_auth_module: Any = ModuleType("imednet_streamlit.auth")
 
     def _render_auth_sidebar() -> bool:
