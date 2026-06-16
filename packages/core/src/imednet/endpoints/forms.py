@@ -12,8 +12,10 @@ class FormsOperationDef:
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
     PAGE_SIZE = 500
 
-class FormsEndpoint(FormsOperationDef, EdcSyncListGetEndpoint[Form]): # type: ignore[misc]
+
+class FormsEndpoint(FormsOperationDef, EdcSyncListGetEndpoint[Form]):  # type: ignore[misc]
     pass
 
-class AsyncFormsEndpoint(FormsOperationDef, EdcAsyncListGetEndpoint[Form]): # type: ignore[misc]
+
+class AsyncFormsEndpoint(FormsOperationDef, EdcAsyncListGetEndpoint[Form]):  # type: ignore[misc]
     pass

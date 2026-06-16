@@ -9,8 +9,10 @@ class QueriesOperationDef:
     MODEL = Query
     _id_param = "annotationId"
 
-class QueriesEndpoint(QueriesOperationDef, EdcSyncListGetEndpoint[Query]): # type: ignore[misc]
+
+class QueriesEndpoint(QueriesOperationDef, EdcSyncListGetEndpoint[Query]):  # type: ignore[misc]
     pass
 
-class AsyncQueriesEndpoint(QueriesOperationDef, EdcAsyncListGetEndpoint[Query]): # type: ignore[misc]
+
+class AsyncQueriesEndpoint(QueriesOperationDef, EdcAsyncListGetEndpoint[Query]):  # type: ignore[misc]
     pass

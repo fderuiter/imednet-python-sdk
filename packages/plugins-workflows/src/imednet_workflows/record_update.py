@@ -83,7 +83,8 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        fetch_result = getattr(sdk, "_client", None) and getattr(sdk._client, "get", None)
+        client = getattr(sdk, "_client", None)
+        fetch_result = getattr(client, "get", None) if client else None
         poller = JobPoller(sdk.get_job, fetch_result=fetch_result)
         return poller.run(study_key, job.batch_id, poll_interval, timeout)
 
@@ -107,7 +108,8 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        fetch_result = getattr(sdk, "_async_client", None) and getattr(sdk._async_client, "get", None)
+        async_client = getattr(sdk, "_async_client", None)
+        fetch_result = getattr(async_client, "get", None) if async_client else None
         poller = AsyncJobPoller(sdk.async_get_job, fetch_result=fetch_result)
         return await poller.run(study_key, job.batch_id, poll_interval, timeout)
 

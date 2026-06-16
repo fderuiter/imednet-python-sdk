@@ -18,6 +18,7 @@ _SENSITIVE_PATTERN = re.compile(
     rf"(?i)\b({'|'.join(global_sensitivity_registry._sensitive_patterns)})\b(\s*[:=]\s*)([\"']?)([^,;\r\n]*?)\3(?=,|;|$)"
 )
 
+
 def _replace_sensitive_match(match: re.Match[str]) -> str:
     return f"{match.group(1)}{match.group(2)}{match.group(3)}***MASKED***{match.group(3)}"
 
@@ -25,7 +26,11 @@ def _replace_sensitive_match(match: re.Match[str]) -> str:
 def _redact_sensitive_value(value: Any) -> Any:
     if isinstance(value, dict):
         return {
-            key: ("***MASKED***" if global_sensitivity_registry.is_sensitive(str(key)) else _redact_sensitive_value(val))
+            key: (
+                "***MASKED***"
+                if global_sensitivity_registry.is_sensitive(str(key))
+                else _redact_sensitive_value(val)
+            )
             for key, val in value.items()
         }
     if isinstance(value, list):

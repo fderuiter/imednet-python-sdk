@@ -11,8 +11,10 @@ class CodingsOperationDef:
     _id_param = "codingId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
 
-class CodingsEndpoint(CodingsOperationDef, EdcSyncListGetEndpoint[Coding]): # type: ignore[misc]
+
+class CodingsEndpoint(CodingsOperationDef, EdcSyncListGetEndpoint[Coding]):  # type: ignore[misc]
     pass
 
-class AsyncCodingsEndpoint(CodingsOperationDef, EdcAsyncListGetEndpoint[Coding]): # type: ignore[misc]
+
+class AsyncCodingsEndpoint(CodingsOperationDef, EdcAsyncListGetEndpoint[Coding]):  # type: ignore[misc]
     pass

@@ -12,8 +12,10 @@ class VariablesOperationDef:
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
     PAGE_SIZE = 500
 
-class VariablesEndpoint(VariablesOperationDef, EdcSyncListGetEndpoint[Variable]): # type: ignore[misc]
+
+class VariablesEndpoint(VariablesOperationDef, EdcSyncListGetEndpoint[Variable]):  # type: ignore[misc]
     pass
 
-class AsyncVariablesEndpoint(VariablesOperationDef, EdcAsyncListGetEndpoint[Variable]): # type: ignore[misc]
+
+class AsyncVariablesEndpoint(VariablesOperationDef, EdcAsyncListGetEndpoint[Variable]):  # type: ignore[misc]
     pass

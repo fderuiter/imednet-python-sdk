@@ -17,8 +17,15 @@ class RecordsOperationDef:
     _id_param = "recordId"
     PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
 
-    def _create_operation(self, study_key: str, records_data: List[JsonDict], email_notify: Union[bool, str, None] = None, *, schema: Optional[SchemaCache] = None) -> RecordCreateOperation[Job]:
-        path = self._get_endpoint_path(study_key) # type: ignore
+    def _create_operation(
+        self,
+        study_key: str,
+        records_data: List[JsonDict],
+        email_notify: Union[bool, str, None] = None,
+        *,
+        schema: Optional[SchemaCache] = None,
+    ) -> RecordCreateOperation[Job]:
+        path = self._get_endpoint_path(study_key)  # type: ignore
         return RecordCreateOperation[Job](
             path=path,
             records_data=records_data,
@@ -26,8 +33,10 @@ class RecordsOperationDef:
             schema=schema,
         )
 
-class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]): # type: ignore[misc]
+
+class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # type: ignore[misc]
     """API endpoint for interacting with records (eCRF instances)."""
+
     def create(
         self,
         study_key: str,
@@ -36,12 +45,14 @@ class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]): # ty
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        return self._create_operation(study_key, records_data, email_notify, schema=schema).execute_sync(
-            self._require_sync_client(), parse_func=Job.from_json
-        )
+        return self._create_operation(
+            study_key, records_data, email_notify, schema=schema
+        ).execute_sync(self._require_sync_client(), parse_func=Job.from_json)
 
-class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record]): # type: ignore[misc]
+
+class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record]):  # type: ignore[misc]
     """Async API endpoint for interacting with records (eCRF instances)."""
+
     async def async_create(
         self,
         study_key: str,
@@ -50,6 +61,6 @@ class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record])
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        return await self._create_operation(study_key, records_data, email_notify, schema=schema).execute_async(
-            self._require_async_client(), parse_func=Job.from_json
-        )
+        return await self._create_operation(
+            study_key, records_data, email_notify, schema=schema
+        ).execute_async(self._require_async_client(), parse_func=Job.from_json)

@@ -12,8 +12,10 @@ class IntervalsOperationDef:
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
     PAGE_SIZE = 500
 
-class IntervalsEndpoint(IntervalsOperationDef, EdcSyncListGetEndpoint[Interval]): # type: ignore[misc]
+
+class IntervalsEndpoint(IntervalsOperationDef, EdcSyncListGetEndpoint[Interval]):  # type: ignore[misc]
     pass
 
-class AsyncIntervalsEndpoint(IntervalsOperationDef, EdcAsyncListGetEndpoint[Interval]): # type: ignore[misc]
+
+class AsyncIntervalsEndpoint(IntervalsOperationDef, EdcAsyncListGetEndpoint[Interval]):  # type: ignore[misc]
     pass

@@ -111,6 +111,7 @@ MATCH (v:Visit {visit_id: row.visit_id, study_key: row.study_key})
 MERGE (v)-[:HAS_RECORD]->(r)
 """
 
+
 def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
     import json

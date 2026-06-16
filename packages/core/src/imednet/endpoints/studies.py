@@ -10,8 +10,10 @@ class StudiesOperationDef:
     _id_param = "studyKey"
     requires_study_key: bool = False
 
-class StudiesEndpoint(StudiesOperationDef, EdcSyncListGetEndpoint[Study]): # type: ignore[misc]
+
+class StudiesEndpoint(StudiesOperationDef, EdcSyncListGetEndpoint[Study]):  # type: ignore[misc]
     pass
 
-class AsyncStudiesEndpoint(StudiesOperationDef, EdcAsyncListGetEndpoint[Study]): # type: ignore[misc]
+
+class AsyncStudiesEndpoint(StudiesOperationDef, EdcAsyncListGetEndpoint[Study]):  # type: ignore[misc]
     pass

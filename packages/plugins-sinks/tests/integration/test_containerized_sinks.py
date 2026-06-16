@@ -139,6 +139,7 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
 
         result2 = session.run("MATCH (n:Record {record_id: 2}) RETURN n.record_data AS record_data")
         import json
+
         record_data = json.loads(result2.single()["record_data"])
         assert record_data["heart_rate"] == 75
 

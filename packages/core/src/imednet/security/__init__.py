@@ -9,6 +9,7 @@ from typing import Any
 
 _WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[/\\]")
 
+
 class SensitivityRegistry:
     def __init__(self) -> None:
         self._sensitive_keys = {
@@ -46,7 +47,7 @@ class SensitivityRegistry:
 
     def remove_sensitive_key(self, key: str) -> None:
         self._sensitive_keys.discard(key)
-        
+
     def add_sensitive_pattern(self, pattern: str) -> None:
         self._sensitive_patterns.add(pattern)
 
@@ -66,9 +67,11 @@ class SensitivityRegistry:
             return True
         return False
 
+
 global_sensitivity_registry = SensitivityRegistry()
 
 _REDACTION_MARKER = "***MASKED***"
+
 
 def mask_clinical_phi(value: Any) -> Any:
     """Recursively mask sensitive keys in unstructured data."""
@@ -86,6 +89,7 @@ def mask_clinical_phi(value: Any) -> Any:
         return tuple(mask_clinical_phi(v) for v in value)
     return value
 
+
 def sanitize_csv_formula(value: Any) -> Any:
     if isinstance(value, str) and value.lstrip().startswith(("=", "+", "-", "@")):
         return f"'{value}"
@@ -95,13 +99,17 @@ def sanitize_csv_formula(value: Any) -> Any:
         return tuple(sanitize_csv_formula(v) for v in value)
     return value
 
+
 def validate_header_value(value: str) -> None:
     from imednet.errors import ClientError
+
     if "\n" in value or "\r" in value:
         raise ClientError(f"Header value must not contain newlines: {value!r}")
 
+
 def validate_partition_key(key: str) -> None:
     from imednet.errors import PathTraversalValidationError
+
     if "\x00" in key:
         raise PathTraversalValidationError(f"Partition key must not contain null bytes: {key!r}")
     if key.startswith(("/", "\\")) or _WINDOWS_ABSOLUTE_PATH_RE.match(key):
@@ -117,8 +125,10 @@ def validate_partition_key(key: str) -> None:
             f"Partition key must not contain path separators: {key!r}"
         )
 
+
 def redact_urls_in_string(text: str) -> str:
     """Masks credentials within URIs in a string."""
+
     def _mask_uri(match: re.Match) -> str:
         uri = match.group(0)
         try:
@@ -133,13 +143,9 @@ def redact_urls_in_string(text: str) -> str:
                 netloc += f"@{parsed.hostname}"
                 if parsed.port:
                     netloc += f":{parsed.port}"
-                masked_uri = urllib.parse.urlunsplit((
-                    parsed.scheme,
-                    netloc,
-                    parsed.path,
-                    parsed.query,
-                    parsed.fragment
-                ))
+                masked_uri = urllib.parse.urlunsplit(
+                    (parsed.scheme, netloc, parsed.path, parsed.query, parsed.fragment)
+                )
                 return masked_uri
         except ValueError:
             pass
@@ -148,18 +154,20 @@ def redact_urls_in_string(text: str) -> str:
     # Find URIs containing credentials
     return re.sub(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^ ]+", _mask_uri, text)
 
+
 class RedactionLogFilter(logging.Filter):
     """
     Filters all log messages and redacts connection strings, URIs with credentials,
     and unstructured data matching the SensitivityRegistry.
     """
+
     def filter(self, record: logging.LogRecord) -> bool:
         if isinstance(record.msg, str):
             record.msg = redact_urls_in_string(record.msg)
-            
+
         if isinstance(record.args, dict):
             record.args = mask_clinical_phi(record.args)
         elif isinstance(record.args, tuple):
             record.args = mask_clinical_phi(record.args)
-            
+
         return True

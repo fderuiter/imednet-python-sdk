@@ -11,8 +11,10 @@ class SitesOperationDef:
     _id_param = "siteId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
 
-class SitesEndpoint(SitesOperationDef, EdcSyncListGetEndpoint[Site]): # type: ignore[misc]
+
+class SitesEndpoint(SitesOperationDef, EdcSyncListGetEndpoint[Site]):  # type: ignore[misc]
     pass
 
-class AsyncSitesEndpoint(SitesOperationDef, EdcAsyncListGetEndpoint[Site]): # type: ignore[misc]
+
+class AsyncSitesEndpoint(SitesOperationDef, EdcAsyncListGetEndpoint[Site]):  # type: ignore[misc]
     pass

@@ -9,8 +9,12 @@ class RecordRevisionsOperationDef:
     MODEL = RecordRevision
     _id_param = "recordRevisionId"
 
-class RecordRevisionsEndpoint(RecordRevisionsOperationDef, EdcSyncListGetEndpoint[RecordRevision]): # type: ignore[misc]
+
+class RecordRevisionsEndpoint(RecordRevisionsOperationDef, EdcSyncListGetEndpoint[RecordRevision]):  # type: ignore[misc]
     pass
 
-class AsyncRecordRevisionsEndpoint(RecordRevisionsOperationDef, EdcAsyncListGetEndpoint[RecordRevision]): # type: ignore[misc]
+
+class AsyncRecordRevisionsEndpoint(
+    RecordRevisionsOperationDef, EdcAsyncListGetEndpoint[RecordRevision]
+):  # type: ignore[misc]
     pass
