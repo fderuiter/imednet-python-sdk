@@ -136,8 +136,14 @@ class SchemaProfiler:
             population_rate = round((accumulator.populated_count / record_count) * 100, 2)
 
         label = field_name
-        if variable is not None and getattr(variable, 'label', getattr(variable, 'model_extra', {}).get('label', '') if getattr(variable, 'model_extra', None) is not None else ''):  # type: ignore
-            label = getattr(variable, 'label', getattr(variable, 'model_extra', {}).get('label', '') if getattr(variable, 'model_extra', None) is not None else '')  # type: ignore
+        if variable is not None:
+            var_label = getattr(variable, 'label', None)
+            if not var_label:
+                extra = getattr(variable, 'model_extra', None)
+                if extra:
+                    var_label = extra.get('label', '')
+            if var_label:
+                label = str(var_label)
 
         return FieldProfile(
             variable_name=field_name,

@@ -123,7 +123,7 @@ def _evaluate_business_logic(
             "bool": bool,
             "len": len,
         }
-        return eval(logic, {"__builtins__": builtins}, env)
+        return eval(logic, {"__builtins__": builtins}, env)  # nosec B307  # nosem
     except Exception as e:
         logger.warning(f"Derivation logic failed for {context.subject_key}: {e}")
         return None

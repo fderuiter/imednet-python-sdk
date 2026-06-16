@@ -108,7 +108,9 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        fetch_result = getattr(sdk, "_async_client", None) and getattr(sdk._async_client, "get", None)  # noqa: SLF001
+        fetch_result = getattr(sdk, "_async_client", None) and getattr(
+            sdk._async_client, "get", None
+        )  # noqa: SLF001
         poller = AsyncJobPoller(sdk.async_get_job, fetch_result=fetch_result)
         result = await poller.run(study_key, job.batch_id, poll_interval, timeout)
         return cast('Job', result)

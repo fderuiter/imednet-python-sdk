@@ -29,7 +29,8 @@ def _build_study_structure(
     forms_by_id: Dict[int, Form] = {f.form_id: f for f in forms if f.form_id is not None}
     variables_by_form_id: Dict[int, List[Variable]] = {}
     for var in variables:
-        if var.form_id is not None: variables_by_form_id.setdefault(var.form_id, []).append(var)
+        if var.form_id is not None:
+            variables_by_form_id.setdefault(var.form_id, []).append(var)
 
     interval_structures: List[IntervalStructure] = []
     for interval in intervals:
