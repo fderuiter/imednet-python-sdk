@@ -154,14 +154,14 @@ def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, ti
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
     if not job.batch_id:
-        if job.state == "COMPLETED":
+        if job.state in ("COMPLETED", "SUCCESS") or (job.state and job.state.upper() in ("COMPLETED", "SUCCESS")):
             return "sync-created"
         raise RuntimeError(f"Record creation returned no batch ID: {job}")
 
     logger.info("Polling batch %s", job.batch_id)
     status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=timeout)
     logger.info("Batch %s %s", status.batch_id, status.state)
-    if status.state != "COMPLETED":
+    if not (status.state and status.state.upper() in ("COMPLETED", "SUCCESS")):
         detail = _extract_error(sdk, status)
         raise RuntimeError(f"Record creation failed: {detail}")
     return status.batch_id
