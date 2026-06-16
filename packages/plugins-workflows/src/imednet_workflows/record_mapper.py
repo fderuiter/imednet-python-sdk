@@ -90,8 +90,9 @@ class RecordMapper:
 
         variable_keys = [v.variable_name for v in variables if v.variable_name is not None]
         label_map: dict[str, str] = {
-            v.variable_name: str(getattr(v, "label", v.variable_name) or v.variable_name) 
-            for v in variables if v.variable_name is not None
+            v.variable_name: str(getattr(v, "label", v.variable_name) or v.variable_name)
+            for v in variables
+            if v.variable_name is not None
         }
         return variable_keys, label_map
 
@@ -195,13 +196,19 @@ class RecordMapper:
         rec: RecordModel,
         record_model: Type[BaseModel],
     ) -> Dict[str, Any]:
+        date_created = rec.date_created
+        if hasattr(date_created, "isoformat"):
+            date_created_val = date_created.isoformat()  # type: ignore[union-attr]
+        else:
+            date_created_val = date_created if date_created else None
+
         meta = {
             "recordId": rec.record_id,
             "subjectKey": rec.subject_key,
             "visitId": rec.visit_id,
             "formId": rec.form_id,
             "recordStatus": rec.record_status,
-            "dateCreated": rec.date_created.isoformat() if hasattr(rec.date_created, "isoformat") else rec.date_created if rec.date_created else None,  # type: ignore[union-attr]
+            "dateCreated": date_created_val,
         }
         data = rec.record_data if isinstance(rec.record_data, dict) else {}
         parsed = record_model(**data).model_dump(by_alias=False)
@@ -364,7 +371,8 @@ class RecordMapper:
                 var_keys = [
                     v.variable_name
                     for v in getattr(form, "variables", [])
-                    if v.variable_name is not None and (not variable_whitelist or v.variable_name in variable_whitelist)
+                    if v.variable_name is not None
+                    and (not variable_whitelist or v.variable_name in variable_whitelist)
                 ]
                 label_map: dict[str, str] = {
                     v.variable_name: str(getattr(v, "label", v.variable_name) or v.variable_name)

@@ -144,7 +144,9 @@ def extract_canonical_records(
 
     for subject_key, s_records in subject_records.items():
         # sort by date_created to simulate longitudinal timeline
-        s_records.sort(key=lambda r: r.date_created if r.date_created else getattr(r, "date_updated", ""))
+        s_records.sort(
+            key=lambda r: r.date_created if r.date_created else getattr(r, "date_updated", "")
+        )
 
         context = SubjectContext(subject_key)
 

@@ -74,7 +74,9 @@ class SchemaProfiler:
         form_accumulators: dict[str, _FormAccumulator] = {}
         for record in records_iterable:
             form_key = (
-                record.form_key or (schema.form_key_from_id(record.form_id) if record.form_id is not None else None) or str(record.form_id)
+                record.form_key
+                or (schema.form_key_from_id(record.form_id) if record.form_id is not None else None)
+                or str(record.form_id)
             )
             accumulator = form_accumulators.setdefault(form_key, _FormAccumulator())
             accumulator.record_count += 1
@@ -194,7 +196,9 @@ class _FieldAccumulator:
 
         if variable is None:
             return "string"
-        return _SCHEMA_TYPE_MAP.get(variable.variable_type.lower() if variable.variable_type else "string", "string")
+        return _SCHEMA_TYPE_MAP.get(
+            variable.variable_type.lower() if variable.variable_type else "string", "string"
+        )
 
 
 def _is_populated(value: Any) -> bool:
