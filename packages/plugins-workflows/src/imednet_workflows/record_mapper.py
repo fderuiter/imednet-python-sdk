@@ -89,7 +89,9 @@ class RecordMapper:
             return [], {}
 
         variable_keys = [v.variable_name for v in variables if v.variable_name is not None]
-        label_map = {v.variable_name: v.label or "" for v in variables if v.variable_name is not None}
+        label_map = {
+            v.variable_name: v.label or "" for v in variables if v.variable_name is not None
+        }
         return variable_keys, label_map
 
     def _build_record_model(
@@ -361,9 +363,14 @@ class RecordMapper:
                 var_keys = [
                     v.variable_name
                     for v in form.variables
-                    if v.variable_name is not None and (not variable_whitelist or v.variable_name in variable_whitelist)
+                    if v.variable_name is not None
+                    and (not variable_whitelist or v.variable_name in variable_whitelist)
                 ]
-                label_map = {v.variable_name: v.label or "" for v in form.variables if v.variable_name is not None}
+                label_map = {
+                    v.variable_name: v.label or ""
+                    for v in form.variables
+                    if v.variable_name is not None
+                }
                 form_models[form.form_id] = self._build_record_model(var_keys, label_map)
                 form_label_maps[form.form_id] = label_map
 

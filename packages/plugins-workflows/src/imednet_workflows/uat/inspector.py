@@ -34,12 +34,18 @@ class StudySnapshot(ImednetBaseModel):
     intervals_by_name: dict[str, Interval] = Field(default_factory=dict)
 
     def model_post_init(self, __context: object) -> None:
-        self.forms_by_key = {form.form_key: form for form in self.forms if form.form_key is not None}
+        self.forms_by_key = {
+            form.form_key: form for form in self.forms if form.form_key is not None
+        }
         self.variables_by_form = {}
         for variable in self.variables:
             if variable.form_key is not None:
                 self.variables_by_form.setdefault(variable.form_key, []).append(variable)
-        self.intervals_by_name = {interval.interval_name: interval for interval in self.intervals if interval.interval_name is not None}
+        self.intervals_by_name = {
+            interval.interval_name: interval
+            for interval in self.intervals
+            if interval.interval_name is not None
+        }
 
     def enrollment_forms(self) -> list[Form]:
         """Return forms with form_type indicating subject registration."""

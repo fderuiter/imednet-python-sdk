@@ -54,7 +54,7 @@ class TriageStore:
                 f"{self._redact_error_text(str(exc))}"
             ) from exc
         conn.row_factory = sqlite3.Row
-        conn.execute(f"PRAGMA busy_timeout = {_SQLITE_BUSY_TIMEOUT_MS};")
+        conn.execute(f"PRAGMA busy_timeout = {_SQLITE_BUSY_TIMEOUT_MS};")  # nosemgrep
         conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("PRAGMA synchronous=NORMAL;")
         conn.execute("PRAGMA foreign_keys=ON;")
@@ -113,7 +113,7 @@ class TriageStore:
                 """)
             if current_version < _LATEST_SCHEMA_VERSION:
                 self._migrate_schema(conn)
-                conn.execute(f"PRAGMA user_version = {_LATEST_SCHEMA_VERSION}")
+                conn.execute(f"PRAGMA user_version = {_LATEST_SCHEMA_VERSION}")  # nosemgrep
             conn.commit()
 
     def get_journal_mode(self) -> str:

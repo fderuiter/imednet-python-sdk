@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List, Optional, cast
 
 import typer
 from rich import print
 
+from imednet import ImednetSDK
 from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args, with_sdk
 from imednet.spi.facade import ImednetFacade
-from imednet import ImednetSDK
-from typing import cast
 
 from .data_extraction import DataExtractionWorkflow
 from .state_ledger import ExtractionStateLedger

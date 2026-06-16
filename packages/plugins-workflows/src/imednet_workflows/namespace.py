@@ -20,6 +20,7 @@ class Workflows:
 
     def __init__(self, sdk_instance: ImednetFacade):
         from typing import cast
+
         from imednet import ImednetSDK
 
         self.data_extraction = DataExtractionWorkflow(sdk_instance)

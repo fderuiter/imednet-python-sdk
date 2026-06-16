@@ -113,7 +113,9 @@ class RecordUpdateWorkflow:
         poller = AsyncJobPoller(sdk.async_get_job, fetch_result=fetch_result)
         return await poller.run(study_key, job.batch_id, poll_interval, timeout)
 
-    def submit_record_batch(self, *args: Any, **kwargs: Any) -> Union[Job, JobStatus]:  # pragma: no cover
+    def submit_record_batch(
+        self, *args: Any, **kwargs: Any
+    ) -> Union[Job, JobStatus]:  # pragma: no cover
         warnings.warn(
             "submit_record_batch is deprecated; use create_or_update_records",
             DeprecationWarning,

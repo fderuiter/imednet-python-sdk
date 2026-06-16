@@ -18,7 +18,8 @@ Role = ModelEngine.get_model('Role', Role)
 
 class User(JsonModel):
     """A user account in the system."""
-    
+
     name: Optional[str] = Field(default=None)
+
 
 User = ModelEngine.get_model('User', User)

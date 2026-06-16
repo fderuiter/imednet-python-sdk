@@ -17,6 +17,7 @@ class Keyword(JsonModel):
     keyword_name: Optional[str] = Field(None, alias="keywordName")
     date_added: Optional[str] = Field(None, alias="dateAdded")
 
+
 Keyword = ModelEngine.get_model('Keyword', Keyword)
 
 
@@ -25,6 +26,7 @@ class Record(JsonModel):
 
     keywords: Optional[List[Keyword]] = None
     embedded_log: Optional[Any] = Field(None, alias="embeddedLog")
+
 
 Record = ModelEngine.get_model('Record', Record)
 

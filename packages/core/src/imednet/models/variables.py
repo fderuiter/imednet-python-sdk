@@ -14,4 +14,5 @@ class Variable(JsonModel):
 
     label: Optional[str] = None
 
+
 Variable = ModelEngine.get_model('Variable', Variable)
