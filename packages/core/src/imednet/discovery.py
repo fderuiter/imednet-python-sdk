@@ -37,7 +37,7 @@ class NoLiveDataError(RuntimeError):
 
 def discover_study_key(sdk: ImednetSDK) -> str:
     """Return the first study key available for the provided SDK."""
-    studies = sdk.studies.list()
+    studies = list(sdk.studies.list())
     if not studies:
         raise NoLiveDataError("No studies available for live tests")
     return studies[0].study_key
