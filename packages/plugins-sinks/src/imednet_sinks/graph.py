@@ -66,6 +66,7 @@ from imednet.integrations.sink_base import (
     SinkConfig,
     _redact_uri,
     _require_optional_dep,
+    apply_quality_gate,
     iter_batches,
 )
 from imednet.sdk import ImednetSDK
@@ -129,11 +130,11 @@ def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
         "date_created": getattr(record, "date_created", None),
         "date_modified": getattr(record, "date_modified", None),
     }
-    
+
     row = {k: v for k, v in row.items() if v is not None}
     record_data = dict(getattr(record, "record_data", {}) or {})
     row["record_data"] = flatten(record_data)
-    
+
     return row
 
 
@@ -264,9 +265,10 @@ def export_to_neo4j(
     """Export study records to Neo4j using :class:`Neo4jExportSink`."""
     cfg = config if config is not None else Neo4jSinkConfig()
     records = sdk.records.list(study_key=study_key, record_data_filter=None)
+    filtered_records = list(apply_quality_gate(sdk, study_key, records, cfg))
     total_written = 0
     with Neo4jExportSink(uri, auth, study_key, config=cfg) as sink:
-        for index, batch in enumerate(iter_batches(records, cfg.batch_size)):
+        for index, batch in enumerate(iter_batches(filtered_records, cfg.batch_size)):
             total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
     return total_written
 

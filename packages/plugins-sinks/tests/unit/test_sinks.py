@@ -620,30 +620,33 @@ class TestSnowflakeExportSink:
 # export_to_* convenience functions
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def fake_sdk():
     sdk = MagicMock()
     sdk.records.list.return_value = [
         MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S1", record_data={}),
-        MagicMock(record_id=2, form_id=1, visit_id=1, subject_key="S2", record_data={})
+        MagicMock(record_id=2, form_id=1, visit_id=1, subject_key="S2", record_data={}),
     ]
     return sdk
 
+
 def test_export_to_neo4j_convenience(fake_sdk, monkeypatch):
     import imednet_sinks.graph as graph_mod
-    
+
     neo4j, driver = _fake_neo4j_module()
     monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
 
     total = export_to_neo4j(
-        fake_sdk, 
-        study_key="STUDY1", 
-        uri="bolt://localhost", 
+        fake_sdk,
+        study_key="STUDY1",
+        uri="bolt://localhost",
         auth=("neo4j", "pass"),
-        config=Neo4jSinkConfig(batch_size=10)
+        config=Neo4jSinkConfig(batch_size=10),
     )
     assert total == 2
     fake_sdk.records.list.assert_called_once_with(study_key="STUDY1", record_data_filter=None)
+
 
 def test_export_to_mongodb_convenience(fake_sdk, monkeypatch):
     import imednet_sinks.document as doc_mod
@@ -661,9 +664,10 @@ def test_export_to_mongodb_convenience(fake_sdk, monkeypatch):
     assert total == 2
     fake_sdk.records.list.assert_called_once_with(study_key="STUDY1", record_data_filter=None)
 
+
 def test_export_to_snowflake_convenience(fake_sdk, monkeypatch, tmp_path):
     import imednet_sinks.warehouse as wh_mod
-    
+
     sf, conn, cursor = _fake_snowflake_module()
     pa, pq, table = _fake_pyarrow_modules()
 
@@ -694,4 +698,3 @@ def test_export_to_snowflake_convenience(fake_sdk, monkeypatch, tmp_path):
     total = export_to_snowflake(fake_sdk, study_key="STUDY1", config=cfg)
     assert total == 2
     fake_sdk.records.list.assert_called_once_with(study_key="STUDY1", record_data_filter=None)
-
