@@ -30,10 +30,18 @@ class _FakeNavigation:
         self.ran = True
 
 
+class _FakeSidebar:
+    def toggle(self, label: str, value: bool = False, on_change: Any = None, **kwargs: Any) -> bool:
+        return value
+
+
 class _FakeStreamlit:
     def __init__(self) -> None:
         self.page_config: dict[str, Any] | None = None
         self.navigation_calls: list[_FakeNavigation] = []
+        self.session_state: dict[str, Any] = {}
+        self.query_params: dict[str, str] = {}
+        self.sidebar = _FakeSidebar()
 
     def set_page_config(self, **kwargs: Any) -> None:
         self.page_config = kwargs
@@ -57,6 +65,30 @@ class _FakeStreamlit:
         nav = _FakeNavigation(pages)
         self.navigation_calls.append(nav)
         return nav
+
+    def markdown(self, body: str, **kwargs: Any) -> None:
+        pass
+
+    def altair_chart(self, chart: Any, **kwargs: Any) -> None:
+        pass
+
+    def error(self, body: Any, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    def exception(self, exception: Any, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    def warning(self, body: Any, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    def info(self, body: Any, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
+        return _FakeContextManager()
+
+    def dataframe(self, data: Any, **kwargs: Any) -> None:
+        pass
 
 
 class _FakePageStreamlit:
@@ -480,6 +512,17 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
     fake_streamlit_module.set_page_config = fake_st.set_page_config
     fake_streamlit_module.Page = fake_st.page
     fake_streamlit_module.navigation = fake_st.navigation
+    fake_streamlit_module.session_state = fake_st.session_state
+    fake_streamlit_module.query_params = fake_st.query_params
+    fake_streamlit_module.sidebar = fake_st.sidebar
+    fake_streamlit_module.markdown = fake_st.markdown
+    fake_streamlit_module.altair_chart = fake_st.altair_chart
+    fake_streamlit_module.error = fake_st.error
+    fake_streamlit_module.exception = fake_st.exception
+    fake_streamlit_module.warning = fake_st.warning
+    fake_streamlit_module.info = fake_st.info
+    fake_streamlit_module.expander = fake_st.expander
+    fake_streamlit_module.dataframe = fake_st.dataframe
 
     fake_auth_module = ModuleType("imednet_streamlit.auth")
 
@@ -573,7 +616,11 @@ def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
     assert len(fake_st.navigation_calls) == 1
     nav = fake_st.navigation_calls[0]
     assert nav.ran is True
-    assert [page["path"] for page in nav.pages] == ["pages/home.py", "pages/admin.py"]
+    assert [page["path"] for page in nav.pages] == [
+        "pages/home.py",
+        "pages/admin.py",
+        "pages/conformance.py",
+    ]
 
 
 def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
@@ -594,6 +641,7 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
         "pages/publisher_wizard.py",
         "pages/data_lineage.py",
         "pages/admin.py",
+        "pages/conformance.py",
     ]
 
 
