@@ -30,7 +30,7 @@ def test_studies_list_pagination():
 
     respx.get("https://api.test/api/v1/edc/studies").mock(side_effect=responder)
 
-    studies = sdk.studies.list()
+    studies = list(sdk.studies.list())
 
     assert [s.study_key for s in studies] == ["S1", "S2"]
     assert calls[0] == {"page": "0", "size": "100"}
@@ -45,7 +45,7 @@ def test_records_list_filter_param():
         json={"data": [{"recordId": 1}]}
     )
 
-    records = sdk.records.list("ST", status="Open")
+    records = list(sdk.records.list(\"ST\", status=\"Open\"))
 
     sent = route.calls.last.request
     assert sent.url.params["filter"] == "status==Open;studyKey==ST"
@@ -65,8 +65,8 @@ async def test_async_endpoint_mirror():
         ]
     )
 
-    sync_res = sync_sdk.sites.list("S1")
-    async_res = await async_sdk.sites.async_list("S1")
+    sync_res = list(sync_sdk.sites.list(\"S1\"))
+    async_res = [item async for item in async_sdk.sites.async_list(\"S1\")]
 
     await async_sdk.aclose()
 

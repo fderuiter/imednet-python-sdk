@@ -95,7 +95,7 @@ def accessible_altair_chart(altair_chart, use_container_width=False, theme="stre
             st.dataframe(df, use_container_width=use_container_width)
 
 
-from imednet.utils.url import redact_sensitive_text
+from imednet.spi.utils import redact_sensitive_text
 
 original_st_error = st.error
 original_st_exception = st.exception

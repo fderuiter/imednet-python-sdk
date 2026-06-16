@@ -34,10 +34,10 @@ def test_get_cache_connection_enables_wal_mode(tmp_path: Path) -> None:
 def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> None:
     sdk = MagicMock()
     first_batch = [
-        _record(1, "2024-01-01T00:00:00+00:00"),
-        _record(2, "2024-01-02T00:00:00+00:00"),
+        _record(1, "2024-01-01 00:00:00+00:00"),
+        _record(2, "2024-01-02 00:00:00+00:00"),
     ]
-    second_batch = [_record(3, "2024-01-03T00:00:00+00:00")]
+    second_batch = [_record(3, "2024-01-03 00:00:00+00:00")]
 
     sdk.get_records.side_effect = [
         first_batch,
@@ -60,7 +60,7 @@ def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> 
     assert first_delta_call.kwargs == {"study_key": "STUDY", "record_data_filter": None}
     assert second_delta_call.kwargs == {
         "study_key": "STUDY",
-        "filter": 'dateModified>="2024-01-02T00:00:00+00:00"',
+        "filter": 'dateModified>="2024-01-02 00:00:00+00:00"',
         "record_data_filter": None,
     }
     assert sdk.get_records.call_args_list[2].kwargs == {
@@ -72,7 +72,7 @@ def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> 
 
 def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
     sdk = MagicMock()
-    record = _record(1, "2024-01-01T00:00:00+00:00")
+    record = _record(1, "2024-01-01 00:00:00+00:00")
     sdk.get_records.side_effect = [RuntimeError("temporary"), [record], [record]]
 
     loader = CachedRecordsLoader(sdk, cache_dir=tmp_path, retry_attempts=2)
@@ -86,8 +86,8 @@ def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
 def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
     sdk = MagicMock()
     sdk.get_records.side_effect = [
-        [_record(1, "2024-01-01T00:00:00+00:00"), _record(2, "2024-01-02T00:00:00+00:00")],
-        [_record(1, "2024-01-01T00:00:00+00:00"), _record(2, "2024-01-02T00:00:00+00:00")],
+        [_record(1, "2024-01-01 00:00:00+00:00"), _record(2, "2024-01-02 00:00:00+00:00")],
+        [_record(1, "2024-01-01 00:00:00+00:00"), _record(2, "2024-01-02 00:00:00+00:00")],
     ]
     loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
 
@@ -107,8 +107,8 @@ def test_iter_cached_records_rejects_non_positive_chunk_size(tmp_path: Path) -> 
 def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None:
     sdk = MagicMock()
     sdk.get_records.side_effect = [
-        [_record(1, "2024-01-01T00:00:00+00:00")],
-        [_record(1, "2024-01-01T00:00:00+00:00")],
+        [_record(1, "2024-01-01 00:00:00+00:00")],
+        [_record(1, "2024-01-01 00:00:00+00:00")],
     ]
     loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
 
@@ -127,7 +127,7 @@ def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None
 def test_sync_records_handles_empty_delta_without_reconciliation(tmp_path: Path) -> None:
     sdk = MagicMock()
     sdk.get_records.side_effect = [
-        [_record(1, "2024-01-01T00:00:00+00:00")],
+        [_record(1, "2024-01-01 00:00:00+00:00")],
     ]
     sdk.records.list.side_effect = [[]]
     loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
@@ -139,6 +139,6 @@ def test_sync_records_handles_empty_delta_without_reconciliation(tmp_path: Path)
     assert sdk.records.list.call_count == 1
     assert sdk.records.list.call_args_list[0].kwargs == {
         "study_key": "STUDY",
-        "filter": 'dateModified>="2024-01-01T00:00:00+00:00"',
+        "filter": 'dateModified>="2024-01-01 00:00:00+00:00"',
         "record_data_filter": None,
     }
