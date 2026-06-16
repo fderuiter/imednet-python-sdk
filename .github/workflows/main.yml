@@ -155,6 +155,7 @@ jobs:
 
       - name: Security Audit (pip-audit)
         run: |
+          poetry run pip install --upgrade pip
           poetry run pip install pip-audit
           for i in 1 2 3; do
             poetry run pip-audit -s osv --timeout 60 && exit 0

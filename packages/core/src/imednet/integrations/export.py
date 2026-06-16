@@ -271,8 +271,9 @@ def export_to_json(
         data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
     try:
-        from imednet_workflows.config_version_control import ConfigVersionStore
-        from imednet.integrations.enrichment import EnrichmentPipeline
+        from importlib import import_module
+        ConfigVersionStore = import_module("imednet_workflows.config_version_control").ConfigVersionStore
+        EnrichmentPipeline = import_module("imednet.integrations.enrichment").EnrichmentPipeline
         
         store = ConfigVersionStore()
         history = store.get_history(study_key)
