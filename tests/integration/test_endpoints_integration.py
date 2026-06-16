@@ -45,7 +45,7 @@ def test_records_list_filter_param():
         json={"data": [{"recordId": 1}]}
     )
 
-    records = sdk.records.list("ST", status="Open")
+    records = list(sdk.records.list("ST", status="Open"))
 
     sent = route.calls.last.request
     assert sent.url.params["filter"] == "status==Open;studyKey==ST"
@@ -65,8 +65,8 @@ async def test_async_endpoint_mirror():
         ]
     )
 
-    sync_res = sync_sdk.sites.list("S1")
-    async_res = await async_sdk.sites.async_list("S1")
+    sync_res = list(sync_sdk.sites.list("S1"))
+    async_res = [s async for s in async_sdk.sites.async_list("S1")]
 
     await async_sdk.aclose()
 
