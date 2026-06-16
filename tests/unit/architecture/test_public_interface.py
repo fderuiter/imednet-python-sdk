@@ -176,9 +176,17 @@ def test_sdk_convenience_mixin_uses_filter_value() -> None:
     """SDKConvenienceMixin helper methods must annotate **filters as FilterValue."""
     from imednet.sdk_convenience import SDKConvenienceMixin
 
+    class DummySDK(SDKConvenienceMixin):
+        def __init__(self):
+            from unittest.mock import MagicMock
+            self.records = MagicMock()
+            self.subjects = MagicMock()
+
+    dummy = DummySDK()
+
     # spot-check a few methods
     for method_name in ("get_records", "get_subjects"):
-        method = getattr(SDKConvenienceMixin, method_name)
+        method = getattr(dummy, method_name)
         tp = _get_kwargs_type(method, "filters")
         if tp is not None:
             assert not _is_any(tp), (
