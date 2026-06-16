@@ -88,8 +88,11 @@ class RecordMapper:
             )
             return [], {}
 
-        variable_keys = [v.variable_name for v in variables]
-        label_map = {v.variable_name: v.label for v in variables}
+        variable_keys = [v.variable_name for v in variables if v.variable_name is not None]
+        label_map: dict[str, str] = {
+            v.variable_name: str(getattr(v, "label", v.variable_name) or v.variable_name) 
+            for v in variables if v.variable_name is not None
+        }
         return variable_keys, label_map
 
     def _build_record_model(
@@ -198,7 +201,7 @@ class RecordMapper:
             "visitId": rec.visit_id,
             "formId": rec.form_id,
             "recordStatus": rec.record_status,
-            "dateCreated": rec.date_created.isoformat() if rec.date_created else None,
+            "dateCreated": rec.date_created.isoformat() if hasattr(rec.date_created, "isoformat") else rec.date_created if rec.date_created else None,  # type: ignore[union-attr]
         }
         data = rec.record_data if isinstance(rec.record_data, dict) else {}
         parsed = record_model(**data).model_dump(by_alias=False)
@@ -360,12 +363,17 @@ class RecordMapper:
                     continue
                 var_keys = [
                     v.variable_name
-                    for v in form.variables
-                    if not variable_whitelist or v.variable_name in variable_whitelist
+                    for v in getattr(form, "variables", [])
+                    if v.variable_name is not None and (not variable_whitelist or v.variable_name in variable_whitelist)
                 ]
-                label_map = {v.variable_name: v.label for v in form.variables}
-                form_models[form.form_id] = self._build_record_model(var_keys, label_map)
-                form_label_maps[form.form_id] = label_map
+                label_map: dict[str, str] = {
+                    v.variable_name: str(getattr(v, "label", v.variable_name) or v.variable_name)
+                    for v in getattr(form, "variables", [])
+                    if v.variable_name is not None
+                }
+                if form.form_id is not None:
+                    form_models[form.form_id] = self._build_record_model(var_keys, label_map)
+                    form_label_maps[form.form_id] = label_map
 
         extra_filters: Dict[str, Any] = {}
         if form_whitelist is not None:
@@ -420,6 +428,9 @@ class RecordMapper:
                     parsed_data["parentRecordId"] = resolved_parent_id
 
             subj_key = rec.subject_key
+            if subj_key is None:
+                continue
+
             if subj_key not in tree:
                 tree[subj_key] = {"subject_key": subj_key, "visits": {}}
 

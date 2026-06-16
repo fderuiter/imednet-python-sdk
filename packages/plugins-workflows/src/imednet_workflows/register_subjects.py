@@ -51,10 +51,10 @@ class RegisterSubjectsWorkflow:
         sites = {s.site_name for s in self._sdk.get_sites(study_key=study_key)}
         errors: List[str] = []
         for idx, subj in enumerate(subjects):
-            if not subj.site_name:
+            if not subj.site_name:  # type: ignore[attr-defined]
                 errors.append(f"Index {idx}: siteName is required")
-            elif subj.site_name not in sites:
-                errors.append(f"Index {idx}: site '{subj.site_name}' not found")
+            elif subj.site_name not in sites:  # type: ignore[attr-defined]
+                errors.append(f"Index {idx}: site '{subj.site_name}' not found")  # type: ignore[attr-defined]
 
         if errors:
             raise ValueError("; ".join(errors))

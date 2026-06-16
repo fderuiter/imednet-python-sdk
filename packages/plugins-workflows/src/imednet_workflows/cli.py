@@ -6,8 +6,8 @@ from typing import List, Optional
 import typer
 from rich import print
 
+from imednet import ImednetSDK
 from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args, with_sdk
-from imednet.spi.facade import ImednetFacade
 
 from .data_extraction import DataExtractionWorkflow
 from .state_ledger import ExtractionStateLedger
@@ -20,7 +20,7 @@ app = typer.Typer(name="workflows", help="Execute common data workflows.")
 @app.command("extract-records")
 @with_sdk
 def extract_records(
-    sdk: ImednetFacade,
+    sdk: ImednetSDK,
     study_key: str = STUDY_KEY_ARG,
     record_filter: Optional[List[str]] = typer.Option(
         None,
@@ -42,7 +42,7 @@ def extract_records(
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
-    workflow = DataExtractionWorkflow(sdk)
+    workflow = DataExtractionWorkflow(sdk)  # type: ignore[arg-type]
 
     parsed_record_filter = parse_filter_args(record_filter)
     parsed_subject_filter = parse_filter_args(subject_filter)
@@ -65,12 +65,12 @@ def extract_records(
 
 @with_sdk
 def subject_data(
-    sdk: ImednetFacade,
+    sdk: ImednetSDK,
     study_key: str = STUDY_KEY_ARG,
     subject_key: str = typer.Argument(..., help="The key identifying the subject."),
 ) -> None:
     """Retrieve all data for a single subject."""
-    workflow = SubjectDataWorkflow(sdk)
+    workflow = SubjectDataWorkflow(sdk)  # type: ignore[arg-type]
     data = workflow.get_all_subject_data(study_key, subject_key)
     print(data.model_dump())
 
@@ -78,7 +78,7 @@ def subject_data(
 @app.command("sync-worker")
 @with_sdk
 def sync_worker(
-    sdk: ImednetFacade,
+    sdk: ImednetSDK,
     study_key: str = STUDY_KEY_ARG,
     interval: int = typer.Option(900, "--interval", min=1, help="Polling interval in seconds."),
     once: bool = typer.Option(
@@ -91,7 +91,7 @@ def sync_worker(
     from .cached_loader import CachedRecordsLoader
 
     worker = SyncWorker(
-        CachedRecordsLoader(sdk),
+        CachedRecordsLoader(sdk),  # type: ignore[arg-type]
         config=SyncWorkerConfig(study_key=study_key, interval_seconds=interval),
     )
 

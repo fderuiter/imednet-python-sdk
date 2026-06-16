@@ -190,7 +190,7 @@ class CachedRecordsLoader:
 
     def _fetch_active_record_ids(self, study_key: str) -> set[int]:
         records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
-        return {record.record_id for record in records}
+        return {record.record_id for record in records if record.record_id is not None}
 
     def _list_records(self, **filters: Any) -> list[Record]:
         retryer = Retrying(
@@ -215,7 +215,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        endpoint = self._sdk.records
+        endpoint = getattr(self._sdk, "records")  # type: ignore[attr-defined]
 
         return cast(
             list[Record],

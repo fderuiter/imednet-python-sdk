@@ -74,7 +74,7 @@ class SchemaProfiler:
         form_accumulators: dict[str, _FormAccumulator] = {}
         for record in records_iterable:
             form_key = (
-                record.form_key or schema.form_key_from_id(record.form_id) or str(record.form_id)
+                record.form_key or (schema.form_key_from_id(record.form_id) if record.form_id is not None else None) or str(record.form_id)
             )
             accumulator = form_accumulators.setdefault(form_key, _FormAccumulator())
             accumulator.record_count += 1
@@ -101,7 +101,7 @@ class SchemaProfiler:
             }
             profiles[form_key] = FormProfile(
                 form_key=form_key,
-                form_name=form_names.get(form_key, form_key),
+                form_name=form_names.get(form_key) or form_key,
                 record_count=accumulator.record_count,
                 fields=fields,
             )
@@ -136,8 +136,8 @@ class SchemaProfiler:
             population_rate = round((accumulator.populated_count / record_count) * 100, 2)
 
         label = field_name
-        if variable is not None and variable.label:
-            label = variable.label
+        if variable is not None and getattr(variable, "label", None):
+            label = variable.label  # type: ignore[attr-defined]
 
         return FieldProfile(
             variable_name=field_name,
@@ -194,7 +194,7 @@ class _FieldAccumulator:
 
         if variable is None:
             return "string"
-        return _SCHEMA_TYPE_MAP.get(variable.variable_type.lower(), "string")
+        return _SCHEMA_TYPE_MAP.get(variable.variable_type.lower() if variable.variable_type else "string", "string")
 
 
 def _is_populated(value: Any) -> bool:

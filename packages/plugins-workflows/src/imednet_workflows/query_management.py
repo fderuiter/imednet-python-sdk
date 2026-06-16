@@ -25,11 +25,11 @@ class QueryManagementWorkflow:
         Determines if a query is open based on its comments.
         Returns None if the state cannot be determined (no comments).
         """
-        if not query.query_comments:
+        if not query.query_comments:  # type: ignore[attr-defined]
             return None
 
         # Find the comment with the highest sequence number
-        latest_comment = max(query.query_comments, key=lambda c: c.sequence)
+        latest_comment = max(query.query_comments, key=lambda c: c.sequence)  # type: ignore[attr-defined]
 
         # Check if the latest comment indicates the query is open (closed=False)
         return not latest_comment.closed

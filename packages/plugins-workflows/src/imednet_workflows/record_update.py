@@ -178,7 +178,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Union[Job, JobStatus]:
         """
         Registers a new subject by submitting a single record.
 
@@ -224,7 +224,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Union[Job, JobStatus]:
         """
         Updates an existing scheduled record for a subject.
 
@@ -272,7 +272,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Union[Job, JobStatus]:
         """
         Creates a new (unscheduled) record for an existing subject.
 
