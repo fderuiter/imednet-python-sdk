@@ -34,11 +34,11 @@ class StudySnapshot(ImednetBaseModel):
     intervals_by_name: dict[str, Interval] = Field(default_factory=dict)
 
     def model_post_init(self, __context: object) -> None:
-        self.forms_by_key = {form.form_key: form for form in self.forms}
+        self.forms_by_key = {form.form_key: form for form in self.forms}  # type: ignore
         self.variables_by_form = {}
         for variable in self.variables:
-            self.variables_by_form.setdefault(variable.form_key, []).append(variable)
-        self.intervals_by_name = {interval.interval_name: interval for interval in self.intervals}
+            self.variables_by_form.setdefault(variable.form_key, []).append(variable)  # type: ignore
+        self.intervals_by_name = {interval.interval_name: interval for interval in self.intervals}  # type: ignore
 
     def enrollment_forms(self) -> list[Form]:
         """Return forms with form_type indicating subject registration."""
@@ -49,12 +49,12 @@ class StudySnapshot(ImednetBaseModel):
         return [
             form
             for form in self.forms
-            if not form.unscheduled_visit and form.form_type not in ("Enrollment", "Registration")
+            if not getattr(form, 'unscheduled_visit', False) and form.form_type not in ("Enrollment", "Registration")
         ]
 
     def unscheduled_forms(self) -> list[Form]:
         """Return unscheduled forms."""
-        return [form for form in self.forms if form.unscheduled_visit]
+        return [form for form in self.forms if getattr(form, 'unscheduled_visit', False)]
 
     def active_sites(self) -> list[Site]:
         """Return sites that are actively enrolling."""

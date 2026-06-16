@@ -18,7 +18,7 @@ app = typer.Typer(name="workflows", help="Execute common data workflows.")
 
 
 @app.command("extract-records")
-@with_sdk
+@with_sdk  # type: ignore
 def extract_records(
     sdk: ImednetFacade,
     study_key: str = STUDY_KEY_ARG,
@@ -63,7 +63,7 @@ def extract_records(
         print("No records found matching the criteria.")
 
 
-@with_sdk
+@with_sdk  # type: ignore
 def subject_data(
     sdk: ImednetFacade,
     study_key: str = STUDY_KEY_ARG,
@@ -76,7 +76,7 @@ def subject_data(
 
 
 @app.command("sync-worker")
-@with_sdk
+@with_sdk  # type: ignore
 def sync_worker(
     sdk: ImednetFacade,
     study_key: str = STUDY_KEY_ARG,

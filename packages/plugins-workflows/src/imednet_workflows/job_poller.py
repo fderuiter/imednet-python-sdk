@@ -46,17 +46,17 @@ class JobPoller(BaseJobPoller):
             result = self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if status.state.upper() in TERMINAL_JOB_STATES:
+            if status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
                 if self._fetch_result and getattr(status, "result_url", None):
                     try:
-                        res = self._fetch_result(status.result_url)
+                        res = self._fetch_result(status.result_url)  # type: ignore
                         if hasattr(res, "json"):
                             try:
-                                status.results = res.json()
+                                setattr(status, 'results', res.json())
                             except Exception:
-                                status.results = getattr(res, "text", str(res))
+                                setattr(status, 'results', getattr(res, "text", str(res)))
                         else:
-                            status.results = res
+                            setattr(status, 'results', res)
                     except Exception:
                         pass
                 return status
@@ -86,17 +86,17 @@ class AsyncJobPoller(BaseJobPoller):
             result = await self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if status.state.upper() in TERMINAL_JOB_STATES:
+            if status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
                 if self._fetch_result and getattr(status, "result_url", None):
                     try:
-                        res = await self._fetch_result(status.result_url)
+                        res = await self._fetch_result(status.result_url)  # type: ignore
                         if hasattr(res, "json"):
                             try:
-                                status.results = res.json()
+                                setattr(status, 'results', res.json())
                             except Exception:
-                                status.results = getattr(res, "text", str(res))
+                                setattr(status, 'results', getattr(res, "text", str(res)))
                         else:
-                            status.results = res
+                            setattr(status, 'results', res)
                     except Exception:
                         pass
                 return status

@@ -18,9 +18,11 @@ def test_get_study_structure_aggregates_related_data(async_mode: bool) -> None:
         interval_sequence=1,
         interval_description="desc",
         interval_group_name="grp",
+        date_created="2024-01-01T00:00:00Z",
+        date_modified="2024-01-01T00:00:00Z",
         forms=[FormSummary(form_id=1, form_key="F1", form_name="Form1")],
     )
-    form = Form(form_id=1, form_key="F1", form_name="Form1")
+    form = Form(form_id=1, form_key="F1", form_name="Form1", date_created="2024-01-01T00:00:00Z", date_modified="2024-01-01T00:00:00Z")
     variable = Variable(variable_id=1, variable_name="V1", label="Var 1", form_id=1)
 
     if async_mode:
