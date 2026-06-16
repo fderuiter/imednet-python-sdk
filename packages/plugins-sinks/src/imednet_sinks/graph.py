@@ -114,9 +114,9 @@ MERGE (v)-[:HAS_RECORD]->(r)
 
 def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
-    import json
+    from imednet.utils.serialization import flatten
 
-    return {
+    row = {
         "record_id": getattr(record, "record_id", None),
         "form_id": getattr(record, "form_id", None),
         "form_key": getattr(record, "form_key", None),
@@ -128,8 +128,13 @@ def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
         "deleted": getattr(record, "deleted", None),
         "date_created": getattr(record, "date_created", None),
         "date_modified": getattr(record, "date_modified", None),
-        "record_data": json.dumps(dict(getattr(record, "record_data", {}) or {})),
     }
+    
+    row = {k: v for k, v in row.items() if v is not None}
+    record_data = dict(getattr(record, "record_data", {}) or {})
+    row["record_data"] = flatten(record_data)
+    
+    return row
 
 
 class Neo4jExportSink(ExportSink):
