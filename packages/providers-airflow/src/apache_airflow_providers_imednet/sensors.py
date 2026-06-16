@@ -20,7 +20,7 @@ from imednet import ImednetSDK
 from ._airflow_compat import AirflowException, Context
 from .hooks import ImednetHook
 
-TERMINAL_STATES = {"COMPLETED", "FAILED", "CANCELLED"}
+TERMINAL_STATES = {"COMPLETED", "SUCCESS", "FAILED", "CANCELLED"}
 
 
 class ImednetJobSensor(BaseSensorOperator):
@@ -52,7 +52,7 @@ class ImednetJobSensor(BaseSensorOperator):
             return False
         state = job.state.upper()
         if state in TERMINAL_STATES:
-            if state != "COMPLETED":
+            if state not in ("COMPLETED", "SUCCESS"):
                 raise AirflowException(f"Job {self.batch_id} ended in state {state}")
             return True
         return False
