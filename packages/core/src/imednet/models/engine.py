@@ -22,7 +22,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
     with open(postman_path, 'r') as f:
         data = json.load(f)
 
-    schemas = {}
+    schemas: Dict[str, Dict[str, Any]] = {}
 
     if not isinstance(data, dict):
         return schemas
@@ -44,7 +44,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
         "User list": "User",
     }
 
-    def extract_schemas(items: List[Dict[str, Any]]):
+    def extract_schemas(items: List[Dict[str, Any]]) -> None:
         if not isinstance(items, list):
             return
         for item in items:
@@ -121,7 +121,7 @@ class ModelEngine:
             return create_model(model_name, __base__=base_cls)
 
         schema = schemas[model_name]
-        fields = {}
+        fields: Dict[str, Any] = {}
 
         for key, val in schema.items():
             snake_key = to_snake(key)
@@ -141,7 +141,7 @@ class ModelEngine:
         return model
 
     @classmethod
-    def generate_stubs(cls, output_dir: str):
+    def generate_stubs(cls, output_dir: str) -> None:
         if tracer:
             with tracer.start_as_current_span("ModelEngine.generate_stubs"):
                 pass

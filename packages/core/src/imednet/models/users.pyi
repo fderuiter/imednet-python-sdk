@@ -11,3 +11,10 @@ class User(JsonModel):
     email: Optional[str]
     user_active_in_study: Optional[bool]
     name: Optional[str]
+
+class Role(JsonModel):
+    role_id: Optional[int]
+    role_name: Optional[str]
+    system_role: Optional[bool]
+    date_created: Optional[str]
+    date_modified: Optional[str]

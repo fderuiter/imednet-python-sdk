@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Iterable, List
 
 try:
     import pandas as pd
@@ -15,7 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checking
     from ..sdk import ImednetSDK
 
 
-def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.DataFrame:
+def records_to_dataframe(records: Iterable[Record], *, flatten: bool = False) -> pd.DataFrame:
     """Convert a list of :class:`~imednet.models.records.Record` to a DataFrame.
 
     Each record is converted using :meth:`pydantic.BaseModel.model_dump` with

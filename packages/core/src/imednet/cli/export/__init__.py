@@ -246,6 +246,10 @@ def export_mongodb(
 
     from imednet.integrations import SinkConfig
 
+    if sdk.sinks is None:
+        print("[bold red]Error:[/bold red] imednet-plugins-sinks is required.")
+        raise typer.Exit(code=1)
+
     cfg = SinkConfig(batch_size=batch_size, idempotent=upsert)
     with fetching_status("records for MongoDB export", study_key):
         sdk.sinks.export_to_mongodb(
@@ -282,6 +286,10 @@ def export_neo4j(
                 "neo4j is required for Neo4j export. Install with \"pip install 'imednet[neo4j]'\"."
             )
         )
+        raise typer.Exit(code=1)
+
+    if sdk.sinks is None:
+        print("[bold red]Error:[/bold red] imednet-plugins-sinks is required.")
         raise typer.Exit(code=1)
 
     cfg = sdk.sinks.Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
@@ -340,6 +348,10 @@ def export_snowflake(
                 "Install with \"pip install 'imednet[snowflake]'\"."
             )
         )
+        raise typer.Exit(code=1)
+
+    if sdk.sinks is None:
+        print("[bold red]Error:[/bold red] imednet-plugins-sinks is required.")
         raise typer.Exit(code=1)
 
     cfg = sdk.sinks.SnowflakeSinkConfig(

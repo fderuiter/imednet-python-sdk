@@ -38,17 +38,17 @@ class NoLiveDataError(RuntimeError):
 def discover_study_key(sdk: ImednetSDK) -> str:
     """Return the first study key available for the provided SDK."""
     studies = list(sdk.studies.list())
-    if not studies:
+    if not studies or not studies[0].study_key:
         raise NoLiveDataError("No studies available for live tests")
-    return studies[0].study_key
+    return str(studies[0].study_key)
 
 
 def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
     """Return the first subject record form key for ``study_key``."""
     forms = sdk.forms.list(study_key=study_key)
     for form in forms:
-        if form.subject_record_report and not form.disabled:
-            return form.form_key
+        if form.subject_record_report and not form.disabled and form.form_key:
+            return str(form.form_key)
     raise NoLiveDataError("No forms available for record creation")
 
 
@@ -64,8 +64,8 @@ def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
     encountered: list[str] = []
     for site in sites:
         status = getattr(site, "site_enrollment_status", "")
-        if is_site_eligible(status):
-            return site.site_name
+        if is_site_eligible(status) and site.site_name:
+            return str(site.site_name)
         encountered.append(status)
     counts = dict(Counter(encountered))
     logger.warning(
@@ -88,8 +88,8 @@ def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
     encountered: list[str] = []
     for subject in subjects:
         status = getattr(subject, "subject_status", "")
-        if is_subject_eligible(status):
-            return subject.subject_key
+        if is_subject_eligible(status) and subject.subject_key:
+            return str(subject.subject_key)
         encountered.append(status)
     counts = dict(Counter(encountered))
     logger.warning(
@@ -104,6 +104,6 @@ def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
     """Return the first non-disabled interval name for ``study_key``."""
     intervals = sdk.intervals.list(study_key=study_key)
     for interval in intervals:
-        if not getattr(interval, "disabled", False):
-            return interval.interval_name
+        if not getattr(interval, "disabled", False) and getattr(interval, "interval_name", None):
+            return str(interval.interval_name)
     raise NoLiveDataError(f"No active intervals available for study {study_key}")

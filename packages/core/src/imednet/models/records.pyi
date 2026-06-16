@@ -30,3 +30,27 @@ class Record(JsonModel):
     record_data: Optional[Any]
     keywords: Optional[List[Keyword]]
     embedded_log: Optional[Any]
+
+from pydantic import RootModel
+
+class RecordJobResponse(JsonModel):
+    job_id: str
+    batch_id: str
+    state: str
+
+class RecordData(RootModel[Dict[str, Any]]):
+    pass
+
+class BaseRecordRequest(JsonModel):
+    form_key: str
+    data: RecordData
+
+class RegisterSubjectRequest(BaseRecordRequest):
+    site_name: str
+
+class UpdateScheduledRecordRequest(BaseRecordRequest):
+    subject_key: str
+    interval_name: str
+
+class CreateNewRecordRequest(BaseRecordRequest):
+    subject_key: str

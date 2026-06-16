@@ -16,3 +16,4 @@ class Form(JsonModel):
     epro_form: Optional[bool]
     allow_copy: Optional[bool]
     unscheduled_visit: Optional[bool]
+    subject_record_report: Optional[bool]

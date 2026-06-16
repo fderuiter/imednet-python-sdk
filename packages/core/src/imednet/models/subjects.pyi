@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 from imednet.models.json_base import JsonModel
 
 class Subject(JsonModel):
+    keywords: Optional[List[SubjectKeyword]]
     study_key: Optional[str]
     subject_id: Optional[int]
     subject_key: Optional[str]
@@ -15,3 +16,9 @@ class Subject(JsonModel):
     date_modified: Optional[str]
     subject_oid: Optional[str]
     enrollment_start_date: Optional[str]
+
+class SubjectKeyword(JsonModel):
+    keyword_id: Optional[int]
+    keyword_key: Optional[str]
+    keyword_name: Optional[str]
+    date_added: Optional[str]

@@ -54,7 +54,7 @@ class EndpointProtocol(Protocol):
 
 
 @runtime_checkable
-class ListEndpointProtocol(Protocol[T]):
+class ListEndpointProtocol(Protocol[T_co]):
     """Protocol defining the interface for listing endpoint classes."""
 
     def _list_sync(

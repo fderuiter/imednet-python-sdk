@@ -38,7 +38,7 @@ def list_records(
         records = sdk.records.list(study_key)
 
     if output:
-        export_list_to_file(records, "records", output.lower())
+        export_list_to_file(list(records), "records", output.lower())
     else:
         # Display simplified view
         view_models = []
