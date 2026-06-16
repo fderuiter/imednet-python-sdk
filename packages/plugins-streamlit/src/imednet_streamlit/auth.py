@@ -14,7 +14,7 @@ _KEY_CONNECTED = "_imednet_connected"
 __all__ = ["render_auth_sidebar", "get_sdk", "get_study_key", "clear_credentials"]
 
 
-def _build_sdk(api_key: str, security_key: str) -> None:
+def _build_sdk(api_key: str | None, security_key: str | None) -> None:
     """Construct and cache an authenticated SDK instance."""
     st.session_state[_KEY_SDK] = ImednetSDK(
         api_key=api_key,

@@ -481,6 +481,25 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
     fake_streamlit_module.Page = fake_st.page
     fake_streamlit_module.navigation = fake_st.navigation
 
+    fake_streamlit_module.session_state = {}
+    fake_streamlit_module.query_params = {}
+
+    class FakeSidebar:
+        def toggle(self, label, value=False, on_change=None):
+            return value
+
+    fake_streamlit_module.sidebar = FakeSidebar()
+
+    def fake_markdown(*args, **kwargs):
+        pass
+
+    fake_streamlit_module.markdown = fake_markdown
+
+    def fake_altair_chart(*args, **kwargs):
+        pass
+
+    fake_streamlit_module.altair_chart = fake_altair_chart
+
     fake_auth_module = ModuleType("imednet_streamlit.auth")
 
     def _render_auth_sidebar() -> bool:
@@ -573,7 +592,11 @@ def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
     assert len(fake_st.navigation_calls) == 1
     nav = fake_st.navigation_calls[0]
     assert nav.ran is True
-    assert [page["path"] for page in nav.pages] == ["pages/home.py", "pages/admin.py"]
+    assert [page["path"] for page in nav.pages] == [
+        "pages/home.py",
+        "pages/admin.py",
+        "pages/conformance.py",
+    ]
 
 
 def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
@@ -594,6 +617,7 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
         "pages/publisher_wizard.py",
         "pages/data_lineage.py",
         "pages/admin.py",
+        "pages/conformance.py",
     ]
 
 
