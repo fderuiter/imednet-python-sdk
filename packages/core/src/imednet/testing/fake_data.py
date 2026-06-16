@@ -165,14 +165,6 @@ def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
             "subjectKey": f"{faker.random_int(100, 999)}-{faker.random_int(100, 999)}",
             "visitId": faker.random_int(min=1, max=10000),
             "parentRecordId": faker.random_int(min=1, max=10000),
-            "keywords": [
-                {
-                    "keywordName": faker.word().title(),
-                    "keywordKey": faker.lexify(text="???").upper(),
-                    "keywordId": faker.random_int(),
-                    "dateAdded": _timestamp(),
-                }
-            ],
             "recordData": record_data,
         }
 
@@ -194,14 +186,6 @@ def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
         "subjectKey": f"{faker.random_int(100, 999)}-{faker.random_int(100, 999)}",
         "visitId": faker.random_int(min=1, max=10000),
         "parentRecordId": faker.random_int(min=1, max=10000),
-        "keywords": [
-            {
-                "keywordName": faker.word().title(),
-                "keywordKey": faker.lexify(text="???").upper(),
-                "keywordId": faker.random_int(),
-                "dateAdded": _timestamp(),
-            }
-        ],
         "recordData": {
             "dateCreated": _timestamp(),
             "unvnum": str(faker.random_int(min=1, max=5)),
