@@ -99,7 +99,7 @@ def render_auth_sidebar() -> bool:
 
         if st.button("Connect"):
             api_key, security_key = get_tenant_credentials(study_key)
-            if not api_key:
+            if not api_key or not security_key:
                 st.error("Managed credentials for this tenant are missing.")
             else:
                 try:
