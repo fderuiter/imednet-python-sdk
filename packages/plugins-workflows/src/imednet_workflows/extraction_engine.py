@@ -98,8 +98,8 @@ def _group_mappings_by_domain_and_form(
 class SubjectContext:
     def __init__(self, subject_key: str):
         self.subject_key = subject_key
-        self.state = {}
-        self.baseline = {}
+        self.state: dict[str, Any] = {}
+        self.baseline: dict[str, Any] = {}
 
 
 def _evaluate_business_logic(
@@ -139,11 +139,12 @@ def extract_canonical_records(
     # Subject-centric processing: group records by subject, sort chronologically
     subject_records: dict[str, list[Record]] = collections.defaultdict(list)
     for record in records:
-        subject_records[record.subject_key].append(record)
+        if record.subject_key is not None:
+            subject_records[record.subject_key].append(record)
 
     for subject_key, s_records in subject_records.items():
         # sort by date_created to simulate longitudinal timeline
-        s_records.sort(key=lambda r: r.date_created if r.date_created else r.date_updated)
+        s_records.sort(key=lambda r: (r.date_created or r.date_modified) or "")
 
         context = SubjectContext(subject_key)
 
@@ -158,6 +159,8 @@ def extract_canonical_records(
             }
 
             for domain, by_form in grouped_mappings.items():
+                if record.form_key is None:
+                    continue
                 rules = by_form.get(record.form_key)
                 if not rules:
                     continue

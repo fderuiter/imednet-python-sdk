@@ -88,8 +88,8 @@ class RecordMapper:
             )
             return [], {}
 
-        variable_keys = [v.variable_name for v in variables]
-        label_map = {v.variable_name: v.label for v in variables}
+        variable_keys = [v.variable_name for v in variables if v.variable_name is not None]
+        label_map = {v.variable_name: v.label or "" for v in variables if v.variable_name is not None}
         return variable_keys, label_map
 
     def _build_record_model(
@@ -198,7 +198,7 @@ class RecordMapper:
             "visitId": rec.visit_id,
             "formId": rec.form_id,
             "recordStatus": rec.record_status,
-            "dateCreated": rec.date_created.isoformat() if rec.date_created else None,
+            "dateCreated": rec.date_created,
         }
         data = rec.record_data if isinstance(rec.record_data, dict) else {}
         parsed = record_model(**data).model_dump(by_alias=False)
@@ -361,9 +361,9 @@ class RecordMapper:
                 var_keys = [
                     v.variable_name
                     for v in form.variables
-                    if not variable_whitelist or v.variable_name in variable_whitelist
+                    if v.variable_name is not None and (not variable_whitelist or v.variable_name in variable_whitelist)
                 ]
-                label_map = {v.variable_name: v.label for v in form.variables}
+                label_map = {v.variable_name: v.label or "" for v in form.variables if v.variable_name is not None}
                 form_models[form.form_id] = self._build_record_model(var_keys, label_map)
                 form_label_maps[form.form_id] = label_map
 
@@ -383,7 +383,7 @@ class RecordMapper:
         tree: Dict[str, Dict[str, Any]] = {}
 
         for rec in records:
-            if rec.form_id not in form_models:
+            if rec.form_id not in form_models or not rec.subject_key:
                 continue
 
             model = form_models[rec.form_id]

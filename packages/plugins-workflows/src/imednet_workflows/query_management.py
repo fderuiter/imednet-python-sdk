@@ -29,7 +29,7 @@ class QueryManagementWorkflow:
             return None
 
         # Find the comment with the highest sequence number
-        latest_comment = max(query.query_comments, key=lambda c: c.sequence)
+        latest_comment = max(query.query_comments, key=lambda c: getattr(c, "sequence", 0) or 0)
 
         # Check if the latest comment indicates the query is open (closed=False)
         return not latest_comment.closed

@@ -46,17 +46,18 @@ class JobPoller(BaseJobPoller):
             result = self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if status.state.upper() in TERMINAL_JOB_STATES:
-                if self._fetch_result and getattr(status, "result_url", None):
+            if status.state and status.state.upper() in TERMINAL_JOB_STATES:
+                res_url = getattr(status, "result_url", None)
+                if self._fetch_result and res_url:
                     try:
-                        res = self._fetch_result(status.result_url)
+                        res = self._fetch_result(res_url)
                         if hasattr(res, "json"):
                             try:
-                                status.results = res.json()
+                                status.results = res.json()  # type: ignore[attr-defined]
                             except Exception:
-                                status.results = getattr(res, "text", str(res))
+                                status.results = getattr(res, "text", str(res))  # type: ignore[attr-defined]
                         else:
-                            status.results = res
+                            status.results = res  # type: ignore[attr-defined]
                     except Exception:
                         pass
                 return status
@@ -86,17 +87,18 @@ class AsyncJobPoller(BaseJobPoller):
             result = await self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if status.state.upper() in TERMINAL_JOB_STATES:
-                if self._fetch_result and getattr(status, "result_url", None):
+            if status.state and status.state.upper() in TERMINAL_JOB_STATES:
+                res_url = getattr(status, "result_url", None)
+                if self._fetch_result and res_url:
                     try:
-                        res = await self._fetch_result(status.result_url)
+                        res = await self._fetch_result(res_url)
                         if hasattr(res, "json"):
                             try:
-                                status.results = res.json()
+                                status.results = res.json()  # type: ignore[attr-defined]
                             except Exception:
-                                status.results = getattr(res, "text", str(res))
+                                status.results = getattr(res, "text", str(res))  # type: ignore[attr-defined]
                         else:
-                            status.results = res
+                            status.results = res  # type: ignore[attr-defined]
                     except Exception:
                         pass
                 return status

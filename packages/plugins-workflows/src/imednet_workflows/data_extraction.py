@@ -44,7 +44,7 @@ class DataExtractionWorkflow:
         matching_subject_keys: Optional[List[str]] = None
         if subject_filter:
             subjects = self._sdk.get_subjects(study_key, **subject_filter)
-            matching_subject_keys = [s.subject_key for s in subjects]
+            matching_subject_keys = [s.subject_key for s in subjects if s.subject_key is not None]
             if not matching_subject_keys:
                 return []
 
@@ -60,7 +60,7 @@ class DataExtractionWorkflow:
                 visits = [v for v in visits if v.subject_key in matching_subject_keys]
 
             # Corrected attribute from oid to visit_id
-            matching_visit_ids = [v.visit_id for v in visits]
+            matching_visit_ids = [v.visit_id for v in visits if v.visit_id is not None]
             if not matching_visit_ids:
                 return []
 
