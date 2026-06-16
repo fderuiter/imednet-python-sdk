@@ -129,7 +129,7 @@ def build_record(
     subject registration or scheduled updates.
     """
 
-    variables = sdk.variables.list(study_key=study_key, formKey=form_key)
+    variables = list(sdk.variables.list(study_key=study_key, formKey=form_key))
     data = _build_data(_select_variables(variables))
     record: Dict[str, Any] = {"formKey": form_key, "data": data}
     if site_name is not None:
@@ -153,6 +153,11 @@ def _extract_error(sdk: ImednetSDK, status: Any) -> str:
 def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, timeout: int) -> str:
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
+    if not job.batch_id:
+        if job.state == "COMPLETED":
+            return "sync-created"
+        raise RuntimeError(f"Record creation returned no batch ID: {job}")
+
     logger.info("Polling batch %s", job.batch_id)
     status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=timeout)
     logger.info("Batch %s %s", status.batch_id, status.state)

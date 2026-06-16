@@ -45,7 +45,7 @@ def discover_study_key(sdk: ImednetSDK) -> str:
 
 def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
     """Return the first subject record form key for ``study_key``."""
-    forms = sdk.forms.list(study_key=study_key)
+    forms = list(sdk.forms.list(study_key=study_key))
     for form in forms:
         if form.subject_record_report and not form.disabled:
             return form.form_key
@@ -60,7 +60,7 @@ def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
     encountered statuses are logged so callers can distinguish *missing data*
     from *unsupported status vocabulary*.
     """
-    sites = sdk.sites.list(study_key=study_key)
+    sites = list(sdk.sites.list(study_key=study_key))
     encountered: list[str] = []
     for site in sites:
         status = getattr(site, "site_enrollment_status", "")
@@ -84,7 +84,7 @@ def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
     encountered statuses are logged so callers can distinguish *missing data*
     from *unsupported status vocabulary*.
     """
-    subjects = sdk.subjects.list(study_key=study_key)
+    subjects = list(sdk.subjects.list(study_key=study_key))
     encountered: list[str] = []
     for subject in subjects:
         status = getattr(subject, "subject_status", "")
@@ -102,7 +102,7 @@ def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
 
 def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
     """Return the first non-disabled interval name for ``study_key``."""
-    intervals = sdk.intervals.list(study_key=study_key)
+    intervals = list(sdk.intervals.list(study_key=study_key))
     for interval in intervals:
         if not getattr(interval, "disabled", False):
             return interval.interval_name
