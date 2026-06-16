@@ -266,7 +266,9 @@ class SnowflakeExportSink(ExportSink):
             try:
                 cur = self._conn.cursor()
                 # 2. PUT to stage
-                cur.execute(f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/")  # nosemgrep
+                cur.execute(  # nosemgrep
+                    f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/"
+                )
                 # 3. COPY INTO table
                 force_clause = "FORCE = FALSE" if self.config.idempotent else "FORCE = TRUE"
                 cur.execute(  # nosemgrep
