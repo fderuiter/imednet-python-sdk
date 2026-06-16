@@ -13,3 +13,5 @@ class Query(JsonModel):
     subject_key: Optional[str]
     date_created: Optional[str]
     date_modified: Optional[str]
+
+class QueryComment(JsonModel): ...

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import Field, RootModel
 
@@ -20,6 +20,8 @@ Keyword = ModelEngine.get_model('Keyword', Keyword)
 
 class Record(JsonModel):
     """A data record for a subject, form, and visit."""
+
+    keywords: Optional[List[Dict[str, Any]]] = Field(default=None)
 
     pass
 

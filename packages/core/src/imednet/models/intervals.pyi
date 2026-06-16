@@ -14,3 +14,5 @@ class Interval(JsonModel):
     disabled: Optional[bool]
     date_created: Optional[str]
     date_modified: Optional[str]
+
+class FormSummary(JsonModel): ...
