@@ -102,6 +102,7 @@ original_st_exception = st.exception
 original_st_warning = st.warning
 original_st_info = st.info
 
+
 def _sanitize_body(body):
     if isinstance(body, Exception):
         try:
@@ -121,17 +122,22 @@ def _sanitize_body(body):
         return redact_sensitive_text(body)
     return body
 
+
 def secure_st_error(body, *args, **kwargs):
     return original_st_error(_sanitize_body(body), *args, **kwargs)
+
 
 def secure_st_exception(exception, *args, **kwargs):
     return original_st_exception(_sanitize_body(exception), *args, **kwargs)
 
+
 def secure_st_warning(body, *args, **kwargs):
     return original_st_warning(_sanitize_body(body), *args, **kwargs)
 
+
 def secure_st_info(body, *args, **kwargs):
     return original_st_info(_sanitize_body(body), *args, **kwargs)
+
 
 st.error = secure_st_error
 st.exception = secure_st_exception
