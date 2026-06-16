@@ -3,38 +3,29 @@
 import re
 from typing import Any, Dict, Optional, Union
 
+from imednet.security import global_sensitivity_registry, redact_urls_in_string
+
 from .base import ImednetError
 
-_SENSITIVE_KEYS = {
-    "api_key",
-    "security_key",
-    "token",
-    "authorization",
-    "x-api-key",
-    "x-imn-security-key",
-}
-_SENSITIVE_PATTERN_KEYS = (
-    "x-imn-security-key",
-    "x-api-key",
-    "api[_-]?key",
-    "security[_-]?key",
-    "authorization",
-    "token",
-)
-# Groups: (1) sensitive key, (2) key/value separator, (3) optional quote, (4) raw value.
-_SENSITIVE_PATTERN = re.compile(
-    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"']?)([^,;\r\n]*?)\3(?=,|;|$)"
-)
+# We keep this regex logic here to redact key=value pairs in error strings
+# but base the patterns on the global registry patterns if needed, or we just
+# use the same regex but without the redundant list if possible.
+# Actually, the task says "A single Sensitivity Registry replaces the multiple divergent lists"
+# Let's import the patterns from the registry, but the registry patterns are substrings.
+# We can just build the regex using the registry patterns.
 
+_SENSITIVE_PATTERN = re.compile(
+    rf"(?i)\b({'|'.join(global_sensitivity_registry._sensitive_patterns)})\b(\s*[:=]\s*)([\"']?)([^,;\r\n]*?)\3(?=,|;|$)"
+)
 
 def _replace_sensitive_match(match: re.Match[str]) -> str:
-    return f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}"
+    return f"{match.group(1)}{match.group(2)}{match.group(3)}***MASKED***{match.group(3)}"
 
 
 def _redact_sensitive_value(value: Any) -> Any:
     if isinstance(value, dict):
         return {
-            key: ("***" if str(key).lower() in _SENSITIVE_KEYS else _redact_sensitive_value(val))
+            key: ("***MASKED***" if global_sensitivity_registry.is_sensitive(str(key)) else _redact_sensitive_value(val))
             for key, val in value.items()
         }
     if isinstance(value, list):
@@ -42,7 +33,9 @@ def _redact_sensitive_value(value: Any) -> Any:
     if isinstance(value, tuple):
         return tuple(_redact_sensitive_value(item) for item in value)
     if isinstance(value, str):
-        return _SENSITIVE_PATTERN.sub(_replace_sensitive_match, value)
+        # We also redact URLs containing credentials as part of string redaction
+        val = redact_urls_in_string(value)
+        return _SENSITIVE_PATTERN.sub(_replace_sensitive_match, val)
     return value
 
 

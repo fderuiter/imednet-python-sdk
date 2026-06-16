@@ -3,6 +3,7 @@
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.queries import Query
 
+
 class QueriesOperationDef:
     PATH = "queries"
     MODEL = Query

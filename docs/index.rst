@@ -9,6 +9,7 @@ Welcome to imednet's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   security
    logging_and_tracing
    quick_start
    configuration

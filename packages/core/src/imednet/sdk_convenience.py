@@ -8,7 +8,18 @@ They are architecturally linked to the core execution engine.
 from __future__ import annotations
 
 from importlib import import_module
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, List, Protocol, TypeVar, Union, Awaitable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Protocol,
+    TypeVar,
+    Union,
+)
 
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
@@ -57,7 +68,10 @@ if TYPE_CHECKING:
     from imednet.endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
     from imednet.endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
     from imednet.endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
-    from imednet.endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
+    from imednet.endpoints.record_revisions import (
+        AsyncRecordRevisionsEndpoint,
+        RecordRevisionsEndpoint,
+    )
     from imednet.endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
     from imednet.endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
     from imednet.endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint

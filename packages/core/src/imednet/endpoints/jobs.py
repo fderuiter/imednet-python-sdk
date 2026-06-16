@@ -8,6 +8,7 @@ from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 from imednet.models.jobs import JobStatus
 from imednet.utils.typing import ItemId
 
+
 class JobsOperationDef:
     PATH = "jobs"
     MODEL = JobStatus

@@ -1,5 +1,5 @@
-import logging
 import ast
+import logging
 from typing import Any, Dict
 
 from imednet.models.study_config import StudyConfiguration

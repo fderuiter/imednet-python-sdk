@@ -3,6 +3,7 @@
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.studies import Study
 
+
 class StudiesOperationDef:
     PATH = ""
     MODEL = Study

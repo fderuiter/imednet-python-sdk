@@ -3,6 +3,7 @@
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.record_revisions import RecordRevision
 
+
 class RecordRevisionsOperationDef:
     PATH = "recordRevisions"
     MODEL = RecordRevision

@@ -5,6 +5,7 @@ from typing import List
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.subjects import Subject
 
+
 class SubjectsOperationDef:
     PATH = "subjects"
     MODEL = Subject

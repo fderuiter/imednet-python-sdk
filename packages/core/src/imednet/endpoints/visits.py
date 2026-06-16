@@ -3,6 +3,7 @@
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.visits import Visit
 
+
 class VisitsOperationDef:
     PATH = "visits"
     MODEL = Visit

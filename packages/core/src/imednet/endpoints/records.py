@@ -10,6 +10,7 @@ from imednet.models.records import Record
 from imednet.utils.typing import JsonDict
 from imednet.validation.cache import SchemaCache
 
+
 class RecordsOperationDef:
     PATH = "records"
     MODEL = Record
