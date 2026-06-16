@@ -8,7 +8,11 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from imednet import ImednetSDK
-from imednet.integrations.sink_base import SinkConfig, apply_quality_gate, iter_batches
+from imednet.spi import sink_base
+
+SinkConfig = sink_base.SinkConfig
+apply_quality_gate = sink_base.apply_quality_gate
+iter_batches = sink_base.iter_batches
 
 from .. import export
 from .._airflow_compat import AirflowException, Context
@@ -94,11 +98,22 @@ class ImednetExportOperator(BaseOperator):
         elif dest == "neo4j":
             from imednet_sinks import Neo4jExportSink  # type: ignore
 
-            return Neo4jExportSink(config=config)
+            return Neo4jExportSink(
+                uri=self.export_kwargs.get("uri", ""),
+                auth=self.export_kwargs.get("auth", ("", "")),
+                study_key=self.study_key,
+                config=config,  # type: ignore
+            )
         elif dest == "mongodb":
             from imednet_sinks import MongoDbExportSink  # type: ignore
 
-            return MongoDbExportSink(config=config)
+            return MongoDbExportSink(
+                uri=self.export_kwargs.get("uri", ""),
+                database=self.export_kwargs.get("database", ""),
+                collection=self.export_kwargs.get("collection", ""),
+                study_key=self.study_key,
+                config=config,  # type: ignore
+            )
         return None
 
     def execute(self, context: Context) -> str | None:
