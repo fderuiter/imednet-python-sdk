@@ -409,9 +409,10 @@ class RecordMapper:
                 continue
 
             if use_labels_as_keys:
-                remapped = {}
+                remapped: Dict[str, Any] = {}
                 for k, v in parsed_data.items():
-                    remapped[label_map.get(k, k)] = v
+                    lbl = label_map.get(k)
+                    remapped[lbl if lbl is not None else k] = v
                 parsed_data = remapped
 
             # Automatically perform lookups for parent record identifiers using available metadata
