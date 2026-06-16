@@ -26,10 +26,19 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read
+      pull-requests: write
     steps:
+      - name: Auto-fix PR Title
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          if [[ "$TITLE" != *":"* ]]; then
+            gh pr edit ${{ github.event.pull_request.number }} --title "feat: $TITLE" --repo ${{ github.repository }}
+          fi
+
       - name: Validate PR title
-        uses: amannn/action-semantic-pull-request@v5
+        uses: amannn/action-semantic-pull-request@v5.5.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
