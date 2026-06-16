@@ -18,18 +18,18 @@ def test_dashboard_missing_plugin() -> None:
             return None
         return original_find_spec(name, package)
 
-    # Clean up sys.modules to ensure imednet.cli is imported fresh under this patch
-    for key in list(sys.modules.keys()):
-        if key.startswith("imednet.cli"):
-            sys.modules.pop(key, None)
+    with patch.dict(sys.modules, clear=False):
+        for key in list(sys.modules.keys()):
+            if key.startswith("imednet.cli"):
+                sys.modules.pop(key, None)
 
-    with patch("importlib.util.find_spec", side_effect=mock_find_spec):
-        from typer.testing import CliRunner
+        with patch("importlib.util.find_spec", side_effect=mock_find_spec):
+            from typer.testing import CliRunner
 
-        from imednet.cli import app
+            from imednet.cli import app
 
-        runner = CliRunner()
-        result = runner.invoke(app, ["dashboard"])
+            runner = CliRunner()
+            result = runner.invoke(app, ["dashboard"])
 
     assert result.exit_code == 1
     assert "pip install imednet-streamlit" in result.output
@@ -49,12 +49,12 @@ def test_dashboard_launches_subprocess() -> None:
             return dashboard_spec
         return original_find_spec(name, package)
 
-    # Clean up sys.modules to ensure imednet.cli is imported fresh under this patch
-    for key in list(sys.modules.keys()):
-        if key.startswith("imednet.cli"):
-            sys.modules.pop(key, None)
+    with patch.dict(sys.modules, clear=False):
+        for key in list(sys.modules.keys()):
+            if key.startswith("imednet.cli"):
+                sys.modules.pop(key, None)
+        sys.modules["streamlit"] = streamlit_mock
 
-    with patch.dict("sys.modules", {"streamlit": streamlit_mock}):
         with patch("importlib.util.find_spec", side_effect=mock_find_spec):
             from typer.testing import CliRunner
 

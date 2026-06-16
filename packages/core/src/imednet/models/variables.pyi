@@ -15,3 +15,5 @@ class Variable(JsonModel):
     form_id: Optional[int]
     form_key: Optional[str]
     form_name: Optional[str]
+    label: Optional[str]
+    variable_oid: Optional[str]

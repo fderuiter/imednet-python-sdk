@@ -23,7 +23,7 @@ class FormStructure(BaseModel):
     # Additional relevant fields from Form
     form_type: str = Field(..., alias="formType")
     revision: int = Field(..., alias="revision")
-    disabled: bool = Field(..., alias="disabled")
+    disabled: bool | None = Field(default=None, alias="disabled")
     epro_form: bool = Field(..., alias="eproForm")
     allow_copy: bool = Field(..., alias="allowCopy")
     date_created: datetime = Field(..., alias="dateCreated")
@@ -54,7 +54,7 @@ class IntervalStructure(BaseModel):
     interval_sequence: int = Field(..., alias="intervalSequence")
     interval_description: str = Field(..., alias="intervalDescription")
     interval_group_name: str = Field(..., alias="intervalGroupName")
-    disabled: bool = Field(..., alias="disabled")
+    disabled: bool | None = Field(default=None, alias="disabled")
     date_created: datetime = Field(..., alias="dateCreated")
     date_modified: datetime = Field(..., alias="dateModified")
 

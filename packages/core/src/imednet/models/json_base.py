@@ -95,9 +95,7 @@ class JsonModel(BaseModel):
     """Base model with shared JSON parsing helpers."""
 
     model_config = ConfigDict(
-        extra="forbid"
-        if os.environ.get("IMEDNET_STRICT_MODE", "").lower() in ("1", "true")
-        else "allow",
+        extra="ignore",
         populate_by_name=True,
         str_strip_whitespace=True,
     )

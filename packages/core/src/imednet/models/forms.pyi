@@ -13,5 +13,7 @@ class Form(JsonModel):
     date_created: Optional[str]
     date_modified: Optional[str]
     disabled: Optional[bool]
+    subject_record_report: Optional[bool]
+    unscheduled_visit: Optional[bool]
     epro_form: Optional[bool]
     allow_copy: Optional[bool]

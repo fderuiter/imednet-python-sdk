@@ -72,7 +72,8 @@ class DuckDBIngestionWorkflow:
         """Create or replace the silver_current_state view."""
         self._ensure_bronze_table()
         escaped_study_key = study_key.replace("'", "''")
-        self._connection.execute(f"""  # nosem
+        self._connection.execute(  # nosem
+            f"""
             CREATE OR REPLACE VIEW silver_current_state AS
             SELECT
                 study_key,

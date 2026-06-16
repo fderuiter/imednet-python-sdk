@@ -22,7 +22,7 @@ class FormSummary(JsonModel):
 class Interval(JsonModel):
     """Represents a visit interval or event within the study timeline."""
 
-    pass
+    forms: list[FormSummary] | None = Field(default=None, alias="forms")
 
 
 Interval = ModelEngine.get_model('Interval', Interval)
