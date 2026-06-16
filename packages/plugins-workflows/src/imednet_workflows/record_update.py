@@ -3,7 +3,7 @@
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 
-from imednet.spi.models import Job
+from imednet.spi.models import Job, JobStatus
 from imednet.spi.validation import AsyncSchemaValidator, SchemaCache, SchemaValidator
 
 from .job_poller import AsyncJobPoller, JobPoller
@@ -70,7 +70,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Union[Job, JobStatus]:
         """Submit records for creation or update and optionally wait for completion."""
         self._validate_form_key(study_key, records_data)
 
@@ -83,7 +83,8 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        fetch_result = getattr(sdk, "_client", None) and getattr(sdk._client, "get", None)
+        client = getattr(sdk, "_client", None)
+        fetch_result = getattr(client, "get", None) if client else None
         poller = JobPoller(sdk.get_job, fetch_result=fetch_result)
         return poller.run(study_key, job.batch_id, poll_interval, timeout)
 
@@ -94,7 +95,7 @@ class RecordUpdateWorkflow:
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
-    ) -> Job:
+    ) -> Union[Job, JobStatus]:
         """Asynchronous variant of :meth:`create_or_update_records`."""
         await self._async_validate_form_key(study_key, records_data)
 
@@ -107,11 +108,14 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        fetch_result = getattr(sdk, "_async_client", None) and getattr(sdk._async_client, "get", None)
+        async_client = getattr(sdk, "_async_client", None)
+        fetch_result = getattr(async_client, "get", None) if async_client else None
         poller = AsyncJobPoller(sdk.async_get_job, fetch_result=fetch_result)
         return await poller.run(study_key, job.batch_id, poll_interval, timeout)
 
-    def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
+    def submit_record_batch(
+        self, *args: Any, **kwargs: Any
+    ) -> Union[Job, JobStatus]:  # pragma: no cover
         warnings.warn(
             "submit_record_batch is deprecated; use create_or_update_records",
             DeprecationWarning,
