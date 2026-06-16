@@ -271,7 +271,7 @@ jobs:
             TEST_ARGS="tests/unit/test_streamlit*.py tests/unit/streamlit/ tests/unit/streamlit_plugin/"
             COV_ARGS="--cov=imednet_streamlit"
           elif [ "${{ matrix.package }}" = "plugins-sinks" ]; then
-            TEST_ARGS="tests/unit/test_sinks*.py tests/unit/sinks/"
+            TEST_ARGS="packages/plugins-sinks/tests/unit/"
             COV_ARGS="--cov=imednet_sinks"
           fi
           
@@ -302,7 +302,7 @@ jobs:
             export_logic:
               - 'packages/core/src/imednet/integrations/**'
               - 'docker-compose.yml'
-              - 'tests/integration/test_containerized_sinks.py'
+              - 'packages/plugins-sinks/tests/integration/test_containerized_sinks.py'
               
       - uses: actions/setup-python@v5
         if: steps.filter.outputs.export_logic == 'true'
