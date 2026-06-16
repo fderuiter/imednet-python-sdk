@@ -31,14 +31,14 @@ jobs:
       - name: Auto-fix PR Title
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          TITLE="${{ github.event.pull_request.title }}"
-          if [[ "$TITLE" != *":"* ]]; then
-            gh pr edit ${{ github.event.pull_request.number }} --title "feat: $TITLE" --repo ${{ github.repository }}
+          if [[ "$PR_TITLE" != *":"* ]]; then
+            gh pr edit ${{ github.event.pull_request.number }} --title "feat: $PR_TITLE" --repo ${{ github.repository }}
           fi
 
       - name: Validate PR title
-        uses: amannn/action-semantic-pull-request@v5.5.3
+        uses: amannn/action-semantic-pull-request@0723387faaf9b38adef4775cd42cfd5155ed6017 # v5.5.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
