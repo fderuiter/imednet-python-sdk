@@ -149,6 +149,8 @@ def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> 
 
     record = {"formKey": first_form_key, "data": data}
     job = sdk.records.create(study_key, [record])
+    if not job.batch_id:
+        pytest.skip("Job completed synchronously without a batch ID")
     return job.batch_id
 
 

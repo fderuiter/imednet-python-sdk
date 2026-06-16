@@ -118,5 +118,7 @@ async def test_async_create_and_poll(
 ) -> None:
     require_mutation()
     job = await async_sdk.records.async_create(study_key, [record_payload])
+    if not job.batch_id:
+        pytest.skip("Job completed synchronously without a batch ID")
     polled = await async_sdk.jobs.async_get(study_key, job.batch_id)
     assert polled.batch_id == job.batch_id
