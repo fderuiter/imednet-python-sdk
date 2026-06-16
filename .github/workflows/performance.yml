@@ -22,15 +22,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install poetry
-          poetry config virtualenvs.create false
+          pipx install poetry
           poetry install --with dev
 
       - name: Run Performance Suite
         run: |
           # Run twice: first to establish baseline (if none exists), second to compare.
           # In a real setup, baseline would be downloaded from previous artifacts.
-          python scripts/performance_suite.py
+          poetry run python scripts/performance_suite.py
           
       - name: Save Baseline Artifact
         uses: actions/upload-artifact@v4
