@@ -133,10 +133,16 @@ class TestNeo4jExportSink:
             {
                 "record_id": 1234,
                 "form_id": 7,
+                "form_key": None,
                 "visit_id": 42,
+                "subject_id": None,
                 "subject_key": "SUBJ-001",
                 "study_key": "STUDY1",
-                "record_data": {"labs.hemoglobin": 13.2, "status": "Complete"},
+                "record_status": None,
+                "deleted": None,
+                "date_created": None,
+                "date_modified": None,
+                "record_data": '{"labs": {"hemoglobin": 13.2}, "status": "Complete"}',
             }
         ]
 
@@ -619,3 +625,4 @@ class TestSnowflakeExportSink:
 # ---------------------------------------------------------------------------
 # integrations/__init__.py re-exports
 # ---------------------------------------------------------------------------
+
