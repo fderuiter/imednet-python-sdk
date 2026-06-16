@@ -395,6 +395,8 @@ def _step_field_mapping() -> None:
                     sourceFormKey=selected_form,
                     sourceVariableName=selected_field,
                     fallbackValue=fallback_value or None,
+                    businessLogic=None,
+                    isBaseline=False,
                 )
             )
 
@@ -596,9 +598,11 @@ def _step_export(study_key: str) -> None:
             # Using corporate user email if SSO is active
             user_email = "system"
             if hasattr(st, "user"):
-                user_email = getattr(st.user, "email", "system")
-                if not user_email and hasattr(st.user, "get"):
-                    user_email = st.user.get("email", "system")
+                _email = getattr(st.user, "email", "system")
+                if not _email and hasattr(st.user, "get"):
+                    _email = st.user.get("email", "system")
+                if _email:
+                    user_email = str(_email)
 
             store.commit_config(
                 study_key=study_key,
