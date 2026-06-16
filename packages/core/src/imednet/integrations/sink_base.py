@@ -330,6 +330,50 @@ def apply_quality_gate(
         logger.info("Quality gate dropped %d records in total.", dropped_count)
 
 
+def apply_enrichment_pipeline(study_key: str, records: Iterable[Any]) -> Iterator[Any]:
+    """Apply the EnrichmentPipeline to a stream of records.
+
+    This recursively applies study-specific terminology mappings, business logic,
+    and PHI masking to the `record_data` of each record.
+    """
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    try:
+        from imednet.integrations.enrichment import EnrichmentPipeline
+        from imednet_workflows.config_version_control import ConfigVersionStore
+
+        store = ConfigVersionStore()
+        history = store.get_history(study_key)
+        if history:
+            latest_commit = history[-1]["commit_id"]
+            config = store.rollback_config(study_key, latest_commit)
+            pipeline = EnrichmentPipeline(config)
+        else:
+            pipeline = None
+    except Exception as e:
+        logger.warning(f"Could not initialize EnrichmentPipeline: {e}")
+        pipeline = None
+
+    for record in records:
+        if pipeline is not None:
+            if hasattr(record, "record_data"):
+                data = getattr(record, "record_data", {}) or {}
+                if isinstance(data, dict):
+                    processed_data = pipeline.process(data)
+                    try:
+                        setattr(record, "record_data", processed_data)
+                    except Exception:
+                        if hasattr(record, "__dict__"):
+                            record.__dict__["record_data"] = processed_data
+            elif isinstance(record, dict) and "record_data" in record:
+                data = record["record_data"]
+                if isinstance(data, dict):
+                    record["record_data"] = pipeline.process(data)
+        yield record
+
+
 def iter_batches(records: Sequence[Any], batch_size: int) -> Iterator[Sequence[Any]]:
     """Yield ``records`` in chunks of ``batch_size``."""
     if batch_size <= 0:
@@ -344,4 +388,6 @@ __all__ = [
     "iter_batches",
     "_redact_uri",
     "_require_optional_dep",
+    "apply_quality_gate",
+    "apply_enrichment_pipeline",
 ]

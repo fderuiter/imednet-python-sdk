@@ -259,11 +259,13 @@ def export_to_mongodb(
     config: Optional[SinkConfig] = None,
 ) -> int:
     """Export study records to MongoDB using :class:`MongoDbExportSink`."""
-    from imednet.integrations.sink_base import apply_quality_gate
+    from imednet.integrations.sink_base import apply_enrichment_pipeline, apply_quality_gate
 
     cfg = config if config is not None else SinkConfig()
     records = sdk.records.list(study_key=study_key, record_data_filter=None)
-    filtered_records = list(apply_quality_gate(sdk, study_key, records, cfg))
+    filtered_records = list(
+        apply_enrichment_pipeline(study_key, apply_quality_gate(sdk, study_key, records, cfg))
+    )
 
     total_written = 0
     with MongoDbExportSink(uri, database, collection, study_key, config=cfg) as sink:

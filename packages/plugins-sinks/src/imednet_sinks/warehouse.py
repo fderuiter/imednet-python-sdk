@@ -346,10 +346,12 @@ def export_to_snowflake(
     config: SnowflakeSinkConfig,
 ) -> int:
     """Export study records to Snowflake using :class:`SnowflakeExportSink`."""
-    from imednet.integrations.sink_base import apply_quality_gate
+    from imednet.integrations.sink_base import apply_enrichment_pipeline, apply_quality_gate
 
     records = sdk.records.list(study_key=study_key, record_data_filter=None)
-    filtered_records = list(apply_quality_gate(sdk, study_key, records, config))
+    filtered_records = list(
+        apply_enrichment_pipeline(study_key, apply_quality_gate(sdk, study_key, records, config))
+    )
 
     total_written = 0
     with SnowflakeExportSink(config=config) as sink:

@@ -5,6 +5,8 @@ import io
 import pandas as pd
 import streamlit as st
 
+from .tables import apply_enrichment_to_df
+
 
 def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Download CSV") -> None:
     """Render a CSV download button for a DataFrame.
@@ -14,6 +16,7 @@ def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Downl
         filename: Output filename displayed in the browser download prompt.
         label: Button label text.
     """
+    df = apply_enrichment_to_df(df)
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(label=label, data=csv, file_name=filename, mime="text/csv")
 
@@ -26,6 +29,7 @@ def excel_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Dow
         filename: Output filename displayed in the browser download prompt.
         label: Button label text.
     """
+    df = apply_enrichment_to_df(df)
     buffer = io.BytesIO()
     with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
         df.to_excel(writer, index=False)

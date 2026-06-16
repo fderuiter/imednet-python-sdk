@@ -111,6 +111,7 @@ MATCH (v:Visit {visit_id: row.visit_id, study_key: row.study_key})
 MERGE (v)-[:HAS_RECORD]->(r)
 """
 
+
 def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
     import json
@@ -256,11 +257,14 @@ def export_to_neo4j(
     config: Optional[Neo4jSinkConfig] = None,
 ) -> int:
     """Export study records to Neo4j using :class:`Neo4jExportSink`."""
+    from imednet.integrations.sink_base import apply_enrichment_pipeline
+
     cfg = config if config is not None else Neo4jSinkConfig()
     records = sdk.records.list(study_key=study_key, record_data_filter=None)
+    filtered_records = list(apply_enrichment_pipeline(study_key, records))
     total_written = 0
     with Neo4jExportSink(uri, auth, study_key, config=cfg) as sink:
-        for index, batch in enumerate(iter_batches(records, cfg.batch_size)):
+        for index, batch in enumerate(iter_batches(filtered_records, cfg.batch_size)):
             total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
     return total_written
 
