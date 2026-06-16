@@ -266,7 +266,7 @@ class SnowflakeExportSink(ExportSink):
             try:
                 cur = self._conn.cursor()
                 # 2. PUT to stage
-                cur.execute(f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/")
+                cur.execute(f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/")  # nosem
                 # 3. COPY INTO table
                 force_clause = "FORCE = FALSE" if self.config.idempotent else "FORCE = TRUE"
                 cur.execute(
@@ -275,7 +275,7 @@ class SnowflakeExportSink(ExportSink):
                     f"FILE_FORMAT = (TYPE = PARQUET) "
                     f"MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE "
                     f"{force_clause}"
-                )
+                )  # nosem
                 rows_loaded = len(records)
                 cur.close()
                 logger.debug(

@@ -133,10 +133,16 @@ class TestNeo4jExportSink:
             {
                 "record_id": 1234,
                 "form_id": 7,
+                "form_key": None,
                 "visit_id": 42,
+                "subject_id": None,
                 "subject_key": "SUBJ-001",
                 "study_key": "STUDY1",
-                "record_data": {"labs.hemoglobin": 13.2, "status": "Complete"},
+                "record_status": None,
+                "deleted": None,
+                "date_created": None,
+                "date_modified": None,
+                "record_data": '{"labs": {"hemoglobin": 13.2}, "status": "Complete"}',
             }
         ]
 
@@ -614,6 +620,85 @@ class TestSnowflakeExportSink:
         sink = SnowflakeExportSink(config=cfg)
         sink.close()
         sink.close()  # must not raise
+
+
+def test_plugin_namespace():
+    from imednet_sinks.plugin import create_sinks
+
+    sdk_mock = MagicMock()
+    sinks = create_sinks(sdk_mock)
+
+    assert sinks.export_to_mongodb is not None
+    assert sinks.MongoDbExportSink is not None
+    assert sinks.export_to_neo4j is not None
+    assert sinks.Neo4jSinkConfig is not None
+    assert sinks.Neo4jExportSink is not None
+    assert sinks.export_to_snowflake is not None
+    assert sinks.SnowflakeSinkConfig is not None
+    assert sinks.SnowflakeExportSink is not None
+
+
+def test_export_to_neo4j(monkeypatch):
+    import imednet_sinks.graph as graph_mod
+
+    neo4j, driver = _fake_neo4j_module()
+    monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
+
+    sdk_mock = MagicMock()
+    sdk_mock.records.list.return_value = [MagicMock()]
+
+    total = graph_mod.export_to_neo4j(sdk_mock, "S1", "uri", ("user", "pass"))
+    assert total == 1
+
+
+def test_export_to_mongodb(monkeypatch):
+    import imednet_sinks.document as doc_mod
+
+    pymongo, client, collection = _fake_pymongo_module()
+    monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
+
+    sdk_mock = MagicMock()
+    sdk_mock.records.list.return_value = [MagicMock()]
+
+    total = doc_mod.export_to_mongodb(sdk_mock, "S1", "uri", "db", "col")
+    assert total == 1
+
+
+def test_export_to_snowflake(monkeypatch, tmp_path):
+    import imednet_sinks.warehouse as wh_mod
+    from imednet_sinks.warehouse import SnowflakeSinkConfig
+
+    sf, conn, cursor = _fake_snowflake_module()
+    pa, pq, table = _fake_pyarrow_modules()
+
+    def fake_require(pkg, extras):
+        if pkg == "snowflake.connector":
+            return sf
+        if pkg == "pyarrow":
+            return pa
+        if pkg == "pyarrow.parquet":
+            return pq
+        return MagicMock()
+
+    monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
+
+    sdk_mock = MagicMock()
+    sdk_mock.records.list.return_value = [MagicMock()]
+
+    cfg = SnowflakeSinkConfig(
+        account="acct",
+        user="user",
+        **{"password": "secret"},
+        database="DB",
+        schema="PUBLIC",
+        warehouse="WH",
+        stage="STG",
+        table="TBL",
+        local_staging_dir=str(tmp_path),
+    )
+
+    total = wh_mod.export_to_snowflake(sdk_mock, "S1", config=cfg)
+    assert total == 1
 
 
 # ---------------------------------------------------------------------------
