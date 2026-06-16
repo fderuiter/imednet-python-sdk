@@ -23,12 +23,12 @@ ELIGIBLE_SUBJECT_STATUSES: frozenset[str] = frozenset(
 
 def is_site_eligible(site_enrollment_status: str) -> bool:
     """Return ``True`` when *site_enrollment_status* is usable for live tests."""
-    return site_enrollment_status.lower() in ELIGIBLE_SITE_STATUSES
+    return (site_enrollment_status or "").lower() in ELIGIBLE_SITE_STATUSES
 
 
 def is_subject_eligible(subject_status: str) -> bool:
     """Return ``True`` when *subject_status* is usable for live tests."""
-    return subject_status.lower() in ELIGIBLE_SUBJECT_STATUSES
+    return (subject_status or "").lower() in ELIGIBLE_SUBJECT_STATUSES
 
 
 class NoLiveDataError(RuntimeError):
@@ -89,7 +89,7 @@ def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
     for subject in subjects:
         status = getattr(subject, "subject_status", "")
         if is_subject_eligible(status):
-            return subject.subject_key
+            return subject.subject_key or ""
         encountered.append(status)
     counts = dict(Counter(encountered))
     logger.warning(

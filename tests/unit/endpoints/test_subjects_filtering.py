@@ -25,7 +25,7 @@ async def test_async_list_by_site_filtering():
     mock_ctx = Mock()
 
     endpoint = AsyncSubjectsEndpoint(mock_client, mock_ctx)
-    
+
     async def fake_async_list(*args, **kwargs):
         if False:
             yield

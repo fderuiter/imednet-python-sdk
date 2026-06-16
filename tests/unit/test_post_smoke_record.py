@@ -25,7 +25,12 @@ def test_submit_record_uses_configured_timeout() -> None:
 def test_submit_record_reports_failure_details() -> None:
     sdk = Mock()
     sdk.records.create.return_value = Mock(batch_id="B1")
-    sdk.poll_job.return_value = Mock(state="FAILED", batch_id="B1", result_url="https://x", results="Form with formKey of SS not found.")
+    sdk.poll_job.return_value = Mock(
+        state="FAILED",
+        batch_id="B1",
+        result_url="https://x",
+        results="Form with formKey of SS not found.",
+    )
 
     with pytest.raises(RuntimeError, match="FAILED: Form with formKey"):
         smoke.submit_record(sdk, "ST", {"data": {}}, timeout=1)

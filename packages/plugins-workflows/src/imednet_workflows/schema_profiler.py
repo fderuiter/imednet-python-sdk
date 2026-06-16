@@ -200,7 +200,7 @@ class _FieldAccumulator:
 
         if variable is None:
             return "string"
-        return _SCHEMA_TYPE_MAP.get(variable.variable_type.lower(), "string")  # type: ignore
+        return _SCHEMA_TYPE_MAP.get((variable.variable_type or "").lower(), "string")  # type: ignore
 
 
 def _is_populated(value: Any) -> bool:

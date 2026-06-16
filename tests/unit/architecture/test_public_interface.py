@@ -179,6 +179,7 @@ def test_sdk_convenience_mixin_uses_filter_value() -> None:
     class DummySDK(SDKConvenienceMixin):
         def __init__(self):
             from unittest.mock import MagicMock
+
             self.records = MagicMock()
             self.subjects = MagicMock()
 
