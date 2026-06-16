@@ -88,15 +88,15 @@ class ImednetExportOperator(BaseOperator):
             dest = self.export_func.replace("export_to_", "")
 
         if dest == "snowflake":
-            from imednet.integrations import SnowflakeExportSink
+            from imednet_sinks import SnowflakeExportSink  # type: ignore
 
             return SnowflakeExportSink(config=config)
         elif dest == "neo4j":
-            from imednet.integrations import Neo4jExportSink
+            from imednet_sinks import Neo4jExportSink  # type: ignore
 
             return Neo4jExportSink(config=config)
         elif dest == "mongodb":
-            from imednet.integrations import MongoDbExportSink
+            from imednet_sinks import MongoDbExportSink  # type: ignore
 
             return MongoDbExportSink(config=config)
         return None
@@ -140,10 +140,14 @@ class ImednetExportOperator(BaseOperator):
             try:
                 if sink:
                     # Single execution path for Sink-based destinations
-                    records = sdk.records.list(study_key=self.study_key, record_data_filter=None)
-                    records = list(apply_quality_gate(sdk, self.study_key, records, config))
+                    raw_records = sdk.records.list(
+                        study_key=self.study_key, record_data_filter=None
+                    )
+                    records_list = list(
+                        apply_quality_gate(sdk, self.study_key, raw_records, config)
+                    )
                     with sink:
-                        for i, batch in enumerate(iter_batches(records, config.batch_size)):
+                        for i, batch in enumerate(iter_batches(records_list, config.batch_size)):
                             sink.write_batch(batch, batch_id=f"{self.study_key}/batch/{i}")
                 else:
                     # Execution path for legacy tabular functions

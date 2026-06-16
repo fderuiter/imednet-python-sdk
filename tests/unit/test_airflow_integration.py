@@ -660,6 +660,46 @@ def test_list_study_keys_skips_entries_without_recognized_key(monkeypatch):
     assert hook.list_study_keys() == ["S-001", "S-003"]
 
 
+def test_export_operator_resolves_snowflake_sink(monkeypatch):
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
+
+    _setup_airflow(monkeypatch)
+    conn = MagicMock()
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(hooks_base.BaseHook, "get_connection", classmethod(lambda cls, cid: conn))
+
+    # Mock imednet_sinks
+    sinks_mock = MagicMock()
+    sys.modules["imednet_sinks"] = sinks_mock
+    mock_snowflake_sink_cls = MagicMock()
+    mock_snowflake_sink_cls.return_value = MagicMock()
+    sinks_mock.SnowflakeExportSink = mock_snowflake_sink_cls
+
+    import apache_airflow_providers_imednet as airflow_mod
+    import apache_airflow_providers_imednet.operators.export as export_ops
+
+    sdk = MagicMock()
+    # Mock records.list to return a single dummy record
+    sdk.records.list.return_value = [{"record_id": "test"}]
+    hook_inst = MagicMock(get_sdk_client=MagicMock(return_value=sdk))
+    monkeypatch.setattr(export_ops, "ImednetHook", MagicMock(return_value=hook_inst))
+
+    op = airflow_mod.ImednetExportOperator(
+        task_id="t",
+        study_key="S",
+        destination="snowflake",
+    )
+
+    result = op.execute({})
+
+    mock_snowflake_sink_cls.assert_called()
+    sink_instance = mock_snowflake_sink_cls.return_value
+    sink_instance.__enter__.assert_called_once()
+    sink_instance.write_batch.assert_called()
+
+
 def test_reference_dag_safe_study_path_fragment(monkeypatch):
     """``_safe_study_path_fragment`` in multi_study_pipeline generates filesystem-safe tokens.
 
