@@ -683,3 +683,64 @@ def test_reference_dag_safe_study_path_fragment(monkeypatch):
     assert fn("---") == "study"
     assert fn("") == "study"
     assert fn("__leading__trailing__") == "leading__trailing"
+
+
+def test_export_operator_resolves_sinks(monkeypatch):
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
+
+    _setup_airflow(monkeypatch)
+
+    conn = MagicMock()
+    import airflow.hooks.base as hooks_base
+
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
+
+    sdk = MagicMock()
+    hook_inst = MagicMock(get_sdk_client=MagicMock(return_value=sdk))
+
+    import apache_airflow_providers_imednet as airflow_mod
+    import apache_airflow_providers_imednet.operators.export as export_ops
+
+    monkeypatch.setattr(export_ops, "ImednetHook", MagicMock(return_value=hook_inst))
+    monkeypatch.setattr(export_ops, "apply_quality_gate", MagicMock(return_value=["rec1"]))
+    monkeypatch.setattr(export_ops, "iter_batches", MagicMock(return_value=[["rec1"]]))
+
+    # Test Snowflake
+    mock_snowflake = MagicMock()
+    monkeypatch.setitem(
+        sys.modules, "imednet_sinks.warehouse", MagicMock(SnowflakeExportSink=mock_snowflake)
+    )
+    op = airflow_mod.ImednetExportOperator(task_id="t", study_key="S", destination="snowflake")
+    op.execute({})
+    mock_snowflake.assert_called()
+
+    # Test Neo4j
+    mock_neo4j = MagicMock()
+    monkeypatch.setitem(sys.modules, "imednet_sinks.graph", MagicMock(Neo4jExportSink=mock_neo4j))
+    op = airflow_mod.ImednetExportOperator(
+        task_id="t",
+        study_key="S",
+        destination="neo4j",
+        export_kwargs={"uri": "bolt://", "auth": ("u", "p")},
+    )
+    op.execute({})
+    mock_neo4j.assert_called()
+
+    # Test MongoDB
+    mock_mongo = MagicMock()
+    monkeypatch.setitem(
+        sys.modules, "imednet_sinks.document", MagicMock(MongoDbExportSink=mock_mongo)
+    )
+    op = airflow_mod.ImednetExportOperator(
+        task_id="t",
+        study_key="S",
+        destination="mongodb",
+        export_kwargs={"uri": "mongodb://", "database": "d", "collection": "c"},
+    )
+    op.execute({})
+    mock_mongo.assert_called()

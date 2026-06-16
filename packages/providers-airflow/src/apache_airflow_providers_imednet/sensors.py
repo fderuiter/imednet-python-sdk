@@ -48,7 +48,7 @@ class ImednetJobSensor(BaseSensorOperator):
     def poke(self, context: Context) -> bool:
         sdk = self._get_sdk()
         job = sdk.jobs.get(self.study_key, self.batch_id)
-        state = job.state.upper()
+        state = (job.state or "").upper()
         if state in TERMINAL_STATES:
             if state != "COMPLETED":
                 raise AirflowException(f"Job {self.batch_id} ended in state {state}")

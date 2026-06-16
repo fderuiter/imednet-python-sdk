@@ -88,17 +88,36 @@ class ImednetExportOperator(BaseOperator):
             dest = self.export_func.replace("export_to_", "")
 
         if dest == "snowflake":
-            from imednet.integrations import SnowflakeExportSink
+            from imednet_sinks.warehouse import (
+                SnowflakeExportSink,  # type: ignore[import-untyped, import-not-found]
+            )
 
             return SnowflakeExportSink(config=config)
         elif dest == "neo4j":
-            from imednet.integrations import Neo4jExportSink
+            from imednet_sinks.graph import (
+                Neo4jExportSink,  # type: ignore[import-untyped, import-not-found]
+            )
 
-            return Neo4jExportSink(config=config)
+            kwargs = self._get_runtime_export_kwargs()
+            uri = kwargs.pop("uri", "")
+            auth = kwargs.pop("auth", ("", ""))
+            return Neo4jExportSink(uri=uri, auth=auth, study_key=self.study_key, config=config)
         elif dest == "mongodb":
-            from imednet.integrations import MongoDbExportSink
+            from imednet_sinks.document import (
+                MongoDbExportSink,  # type: ignore[import-untyped, import-not-found]
+            )
 
-            return MongoDbExportSink(config=config)
+            kwargs = self._get_runtime_export_kwargs()
+            uri = kwargs.pop("uri", "")
+            database = kwargs.pop("database", "")
+            collection = kwargs.pop("collection", "")
+            return MongoDbExportSink(
+                uri=uri,
+                database=database,
+                collection=collection,
+                study_key=self.study_key,
+                config=config,
+            )
         return None
 
     def execute(self, context: Context) -> str | None:
@@ -141,9 +160,13 @@ class ImednetExportOperator(BaseOperator):
                 if sink:
                     # Single execution path for Sink-based destinations
                     records = sdk.records.list(study_key=self.study_key, record_data_filter=None)
-                    records = list(apply_quality_gate(sdk, self.study_key, records, config))
+                    validated_records = list(
+                        apply_quality_gate(sdk, self.study_key, records, config)
+                    )
                     with sink:
-                        for i, batch in enumerate(iter_batches(records, config.batch_size)):
+                        for i, batch in enumerate(
+                            iter_batches(validated_records, config.batch_size)
+                        ):
                             sink.write_batch(batch, batch_id=f"{self.study_key}/batch/{i}")
                 else:
                     # Execution path for legacy tabular functions
