@@ -34,7 +34,7 @@ def list_subjects(
     # Create a summary view for the table
     view_models = []
     for s in subjects_list:
-        keywords_str = ", ".join(k.keyword_name for k in s.keywords)
+        keywords_str = ", ".join(k.keyword_name or "" for k in s.keywords)
         view_models.append(
             {
                 "subject_key": s.subject_key,

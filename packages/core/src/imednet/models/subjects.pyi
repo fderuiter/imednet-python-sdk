@@ -13,5 +13,12 @@ class Subject(JsonModel):
     deleted: Optional[bool]
     date_created: Optional[str]
     date_modified: Optional[str]
+    subject_oid: Optional[str]
+    enrollment_start_date: Optional[str]
+    keywords: List[SubjectKeyword]
 
-class SubjectKeyword(JsonModel): ...
+class SubjectKeyword(JsonModel):
+    keyword_id: Optional[int]
+    keyword_key: Optional[str]
+    keyword_name: Optional[str]
+    date_added: Optional[str]
