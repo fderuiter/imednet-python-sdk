@@ -6,8 +6,27 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import httpx
 
-__all__ = ["sanitize_base_url", "redact_url_query", "build_safe_path"]
+__all__ = ["sanitize_base_url", "redact_url_query", "build_safe_path", "redact_sensitive_text"]
 _DUMMY_BASE_URL = "http://dummy/"
+
+def redact_sensitive_text(text: Any) -> str:
+    """Scan and redact sensitive URIs, connection strings, and query parameters in text."""
+    if not isinstance(text, str):
+        try:
+            text = str(text)
+        except Exception:
+            return "<unprintable object>"
+
+    # Redact passwords in connection strings: e.g., mongodb://user:password@host
+    text = re.sub(r"(://[^:]+:)[^@]+(@)", r"\g<1>***\g<2>", text)
+
+    # Redact query parameters in any URLs
+    def replace_url(match: re.Match) -> str:
+        return redact_url_query(match.group(0))
+
+    text = re.sub(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\"'>]*[^\s\"'>.,;:!?\)\]]", replace_url, text)
+    
+    return text
 
 
 def sanitize_base_url(url: str) -> str:

@@ -95,6 +95,49 @@ def accessible_altair_chart(altair_chart, use_container_width=False, theme="stre
             st.dataframe(df, use_container_width=use_container_width)
 
 
+from imednet.utils.url import redact_sensitive_text
+
+original_st_error = st.error
+original_st_exception = st.exception
+original_st_warning = st.warning
+original_st_info = st.info
+
+def _sanitize_body(body):
+    if isinstance(body, Exception):
+        try:
+            body_str = str(body)
+        except Exception:
+            body_str = "<unprintable exception>"
+        redacted_msg = redact_sensitive_text(body_str)
+        try:
+            safe_ex = type(body)(redacted_msg)
+            safe_ex.__traceback__ = body.__traceback__
+            return safe_ex
+        except Exception:
+            safe_ex = Exception(f"{type(body).__name__}: {redacted_msg}")
+            safe_ex.__traceback__ = body.__traceback__
+            return safe_ex
+    elif isinstance(body, str):
+        return redact_sensitive_text(body)
+    return body
+
+def secure_st_error(body, *args, **kwargs):
+    return original_st_error(_sanitize_body(body), *args, **kwargs)
+
+def secure_st_exception(exception, *args, **kwargs):
+    return original_st_exception(_sanitize_body(exception), *args, **kwargs)
+
+def secure_st_warning(body, *args, **kwargs):
+    return original_st_warning(_sanitize_body(body), *args, **kwargs)
+
+def secure_st_info(body, *args, **kwargs):
+    return original_st_info(_sanitize_body(body), *args, **kwargs)
+
+st.error = secure_st_error
+st.exception = secure_st_exception
+st.warning = secure_st_warning
+st.info = secure_st_info
+
 st.altair_chart = accessible_altair_chart
 
 is_connected = render_auth_sidebar()
