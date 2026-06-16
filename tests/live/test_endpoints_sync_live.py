@@ -20,7 +20,7 @@ from tests.live.helpers import require_mutation
 
 
 def test_list_studies(sdk: ImednetSDK) -> None:
-    studies = sdk.studies.list()
+    studies = list(sdk.studies.list())
     assert isinstance(studies, list)
     assert studies, "No studies returned from server"
     assert isinstance(studies[0], Study)
@@ -29,7 +29,7 @@ def test_list_studies(sdk: ImednetSDK) -> None:
 
 
 def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
-    sites = sdk.sites.list(study_key=study_key)
+    sites = list(sdk.sites.list(study_key=study_key))
     assert isinstance(sites, list)
     if sites:
         assert isinstance(sites[0], Site)
@@ -47,7 +47,7 @@ def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_forms(sdk: ImednetSDK, study_key: str) -> None:
-    forms = sdk.forms.list(study_key=study_key)
+    forms = list(sdk.forms.list(study_key=study_key))
     assert isinstance(forms, list)
     if forms:
         assert isinstance(forms[0], Form)
@@ -56,7 +56,7 @@ def test_list_forms(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_subjects(sdk: ImednetSDK, study_key: str) -> None:
-    subjects = sdk.subjects.list(study_key=study_key)
+    subjects = list(sdk.subjects.list(study_key=study_key))
     assert isinstance(subjects, list)
     if subjects:
         assert isinstance(subjects[0], Subject)
@@ -65,7 +65,7 @@ def test_list_subjects(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
-    records = sdk.records.list(study_key=study_key)
+    records = list(sdk.records.list(study_key=study_key))
     assert isinstance(records, list)
     if records:
         assert isinstance(records[0], Record)
@@ -74,7 +74,7 @@ def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_intervals(sdk: ImednetSDK, study_key: str) -> None:
-    intervals = sdk.intervals.list(study_key=study_key)
+    intervals = list(sdk.intervals.list(study_key=study_key))
     assert isinstance(intervals, list)
     if intervals:
         assert isinstance(intervals[0], Interval)
@@ -83,7 +83,7 @@ def test_list_intervals(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_visits(sdk: ImednetSDK, study_key: str) -> None:
-    visits = sdk.visits.list(study_key=study_key)
+    visits = list(sdk.visits.list(study_key=study_key))
     assert isinstance(visits, list)
     if visits:
         assert isinstance(visits[0], Visit)
@@ -92,7 +92,7 @@ def test_list_visits(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_variables(sdk: ImednetSDK, study_key: str) -> None:
-    variables = sdk.variables.list(study_key=study_key)
+    variables = list(sdk.variables.list(study_key=study_key))
     assert isinstance(variables, list)
     if variables:
         assert isinstance(variables[0], Variable)
@@ -101,7 +101,7 @@ def test_list_variables(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_users(sdk: ImednetSDK, study_key: str) -> None:
-    users = sdk.users.list(study_key=study_key)
+    users = list(sdk.users.list(study_key=study_key))
     assert isinstance(users, list)
     if users:
         assert isinstance(users[0], User)
@@ -110,7 +110,7 @@ def test_list_users(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_queries(sdk: ImednetSDK, study_key: str) -> None:
-    queries = sdk.queries.list(study_key=study_key)
+    queries = list(sdk.queries.list(study_key=study_key))
     assert isinstance(queries, list)
     if queries:
         assert isinstance(queries[0], Query)
@@ -119,7 +119,7 @@ def test_list_queries(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
-    revisions = sdk.record_revisions.list(study_key=study_key)
+    revisions = list(sdk.record_revisions.list(study_key=study_key))
     assert isinstance(revisions, list)
     if revisions:
         assert isinstance(revisions[0], RecordRevision)
@@ -150,7 +150,7 @@ def test_create_record_and_poll_job(
 
 
 def test_list_codings(sdk: ImednetSDK, study_key: str) -> None:
-    codings = sdk.codings.list(study_key=study_key)
+    codings = list(sdk.codings.list(study_key=study_key))
     assert isinstance(codings, list)
     if codings:
         assert isinstance(codings[0], Coding)
