@@ -63,8 +63,17 @@ def test_export_to_excel(monkeypatch):
 def test_export_to_json(monkeypatch):
     df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
     sdk = MagicMock()
+    
+    mock_dict = [{"fake": "data"}]
+    df.where.return_value.to_dict.return_value = mock_dict
+    
+    mock_open = MagicMock()
+    monkeypatch.setattr("builtins.open", mock_open)
+    import json
+    mock_dump = MagicMock()
+    monkeypatch.setattr(json, "dump", mock_dump)
 
-    export_mod.export_to_json(sdk, "STUDY", "out.json", orient="records")
+    export_mod.export_to_json(sdk, "STUDY", "out.json", orient="records", indent=2)
 
     mapper_cls.assert_called_once_with(sdk)
     mapper_inst.dataframe.assert_called_once_with(
@@ -73,7 +82,8 @@ def test_export_to_json(monkeypatch):
         variable_whitelist=None,
         form_whitelist=None,
     )
-    df.to_json.assert_called_once_with("out.json", orient="records", index=False)
+    df.where.return_value.to_dict.assert_called_once_with(orient="records")
+    mock_dump.assert_called_once_with(mock_dict, mock_open.return_value.__enter__.return_value, indent=2)
 
 
 def test_export_to_parquet(monkeypatch):

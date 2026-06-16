@@ -13,5 +13,6 @@ class Form(JsonModel):
     """Configuration and metadata for a CRF (Case Report Form)."""
     
     unscheduled_visit: Optional[bool] = Field(None, alias="unscheduledVisit")
+    subject_record_report: Optional[bool] = Field(None, alias="subjectRecordReport")
 
 Form = ModelEngine.get_model('Form', Form)
