@@ -292,3 +292,175 @@ def test_iter_dataframes_streams_large_study_with_bounded_memory() -> None:
     loader.sync_records.assert_called_once_with("STUDY")
     assert chunk_sizes == [5_000] * 10
     assert peak_bytes < _STREAMING_PEAK_BYTES_LIMIT
+
+def test_build_hierarchy_builds_expected_structure() -> None:
+    sdk = MagicMock()
+    variables = [
+        Variable(variable_name="VAR1", label="Label1", form_id=10),
+    ]
+
+    class DummyForm:
+        def __init__(self, form_id, variables):
+            self.form_id = form_id
+            self.variables = variables
+
+    class DummyInterval:
+        def __init__(self, forms):
+            self.forms = forms
+
+    class DummyStudyStruct:
+        def __init__(self, intervals):
+            self.intervals = intervals
+
+    sdk.get_variables.return_value = variables
+    records = [
+        Record(
+            record_id=1,
+            subject_key="S1",
+            visit_id=1,
+            form_id=10,
+            record_status="Complete",
+            date_created=datetime(2021, 1, 1),
+            record_data={"VAR1": "a"},
+            parent_record_id=123
+        )
+    ]
+    sdk.get_records.return_value = records
+
+    import imednet_workflows.study_structure
+    original_get = imednet_workflows.study_structure.get_study_structure
+    
+    def fake_get(sdk, study_key):
+        return DummyStudyStruct([DummyInterval([DummyForm(10, variables)])])
+
+    imednet_workflows.study_structure.get_study_structure = fake_get
+
+    try:
+        mapper = RecordMapper(sdk)
+        tree = mapper.build_hierarchy("STUDY")
+        
+        assert len(tree) == 1
+        assert tree[0]["subject_key"] == "S1"
+        assert len(tree[0]["visits"]) == 1
+        assert tree[0]["visits"][0]["visit_id"] == 1
+        assert len(tree[0]["visits"][0]["forms"]) == 1
+        assert tree[0]["visits"][0]["forms"][0]["form_id"] == 10
+        records_list = tree[0]["visits"][0]["forms"][0]["records"]
+        assert len(records_list) == 1
+        assert records_list[0]["VAR1"] == "a"
+        assert records_list[0]["parent_record_id"] == 123
+    finally:
+        imednet_workflows.study_structure.get_study_structure = original_get
+
+def test_build_hierarchy_with_labels_and_whitelist() -> None:
+    sdk = MagicMock()
+    variables = [
+        Variable(variable_name="VAR1", label="Label1", form_id=10),
+        Variable(variable_name="VAR2", label="Label2", form_id=20),
+    ]
+
+    class DummyForm:
+        def __init__(self, form_id, variables):
+            self.form_id = form_id
+            self.variables = variables
+
+    class DummyInterval:
+        def __init__(self, forms):
+            self.forms = forms
+
+    class DummyStudyStruct:
+        def __init__(self, intervals):
+            self.intervals = intervals
+
+    sdk.get_variables.return_value = variables
+    records = [
+        Record(
+            record_id=1,
+            subject_key="S1",
+            visit_id=1,
+            form_id=10,
+            record_status="Complete",
+            date_created=datetime(2021, 1, 1),
+            record_data={"VAR1": "a"},
+            parent_record_id=None
+        )
+    ]
+    sdk.get_records.return_value = records
+
+    import imednet_workflows.study_structure
+    original_get = imednet_workflows.study_structure.get_study_structure
+    
+    def fake_get(sdk, study_key):
+        return DummyStudyStruct([DummyInterval([DummyForm(10, variables[:1]), DummyForm(20, variables[1:])])])
+
+    imednet_workflows.study_structure.get_study_structure = fake_get
+
+    try:
+        mapper = RecordMapper(sdk)
+        tree = mapper.build_hierarchy("STUDY", variable_whitelist=["VAR1"], form_whitelist=[10], use_labels_as_keys=True)
+        
+        assert len(tree) == 1
+        records_list = tree[0]["visits"][0]["forms"][0]["records"]
+        assert "Label1" in records_list[0]
+        assert records_list[0]["Label1"] == "a"
+        assert records_list[0]["parent_record_id"] == "1_10"
+    finally:
+        imednet_workflows.study_structure.get_study_structure = original_get
+
+def test_build_hierarchy_parsing_error(monkeypatch, caplog) -> None:
+    sdk = MagicMock()
+    variables = [
+        Variable(variable_name="VAR1", label="Label1", form_id=10),
+    ]
+
+    class DummyForm:
+        def __init__(self, form_id, variables):
+            self.form_id = form_id
+            self.variables = variables
+
+    class DummyInterval:
+        def __init__(self, forms):
+            self.forms = forms
+
+    class DummyStudyStruct:
+        def __init__(self, intervals):
+            self.intervals = intervals
+
+    sdk.get_variables.return_value = variables
+    records = [
+        Record(
+            record_id=1,
+            subject_key="S1",
+            visit_id=1,
+            form_id=10,
+            record_status="Complete",
+            date_created=datetime(2021, 1, 1),
+            record_data={"VAR1": "a"},
+        )
+    ]
+    sdk.get_records.return_value = records
+
+    import imednet_workflows.study_structure
+    original_get = imednet_workflows.study_structure.get_study_structure
+    
+    def fake_get(sdk, study_key):
+        return DummyStudyStruct([DummyInterval([DummyForm(10, variables)])])
+
+    imednet_workflows.study_structure.get_study_structure = fake_get
+
+    class DummyModel(BaseModel):
+        def __init__(self, **kwargs):
+            raise ValidationError([], DummyModel)
+
+    monkeypatch.setattr("imednet_workflows.record_mapper.create_model", lambda *a, **k: DummyModel)
+
+    try:
+        mapper = RecordMapper(sdk)
+        with caplog.at_level("WARNING"):
+            tree = mapper.build_hierarchy("STUDY")
+            
+        assert len(tree) == 0
+        assert "Failed to parse record data" in caplog.text
+    finally:
+        imednet_workflows.study_structure.get_study_structure = original_get
+

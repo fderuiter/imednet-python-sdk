@@ -262,7 +262,7 @@ jobs:
           elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
 
 
-            TEST_ARGS="tests/unit/test_workflows*.py tests/unit/workflows/ tests/workflows/"
+            TEST_ARGS="tests/unit/test_workflows*.py tests/unit/workflows/ tests/workflows/ tests/unit/test_cached_records_loader.py tests/unit/test_chunked_pipeline.py tests/unit/test_config_version_control.py tests/unit/test_duckdb_ingestion_workflow.py tests/unit/test_job_poller.py tests/unit/test_record_mapper.py tests/unit/test_state_ledger.py tests/unit/test_study_structure.py tests/unit/test_sync_worker.py tests/unit/cli/test_workflows_state_cli.py"
             COV_ARGS="--cov=imednet_workflows"
           elif [ "${{ matrix.package }}" = "providers-airflow" ]; then
             TEST_ARGS="tests/unit/test_airflow*.py"
