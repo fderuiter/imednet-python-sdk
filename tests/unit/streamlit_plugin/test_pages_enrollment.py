@@ -209,7 +209,11 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.enrollment", str(page_path))
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["imednet_streamlit.pages.enrollment"] = mod
+        spec.loader.exec_module(mod)
     finally:
         for key, original in saved.items():
             if original is None:
@@ -300,7 +304,11 @@ def test_enrollment_page_empty_and_filters_and_refresh() -> None:
         sys.modules["imednet_streamlit.components"] = fake_components_module
 
         # Execute page
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.enrollment", str(page_path))
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["imednet_streamlit.pages.enrollment"] = mod
+        spec.loader.exec_module(mod)
 
         # Now import and test _fetch_sites directly to cover lines 46-49
         from imednet_streamlit.pages.enrollment import _fetch_sites

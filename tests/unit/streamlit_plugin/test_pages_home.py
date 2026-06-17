@@ -52,7 +52,11 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
     try:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.home", str(page_path))
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["imednet_streamlit.pages.home"] = mod
+        spec.loader.exec_module(mod)
     finally:
         if previous_streamlit is None:
             sys.modules.pop("streamlit", None)
