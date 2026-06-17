@@ -147,7 +147,7 @@ def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> 
         var = variables[0]
         data[var.variable_name] = _typed_value(var.variable_type)
 
-    record = {"formKey": first_form_key, "data": data}
+    record = {"formKey": first_form_key, "recordData": data}
     job = sdk.records.create(study_key, [record])
     if not job.batch_id:
         pytest.skip("Job completed synchronously without a batch ID")
@@ -180,7 +180,7 @@ def typed_record(
         subject_key: str | None = None,
         interval_name: str | None = None,
     ) -> dict[str, Any]:
-        record: dict[str, Any] = {"formKey": first_form_key, "data": data}
+        record: dict[str, Any] = {"formKey": first_form_key, "recordData": data}
         if site_name is not None:
             record["siteName"] = site_name
         if subject_key is not None:

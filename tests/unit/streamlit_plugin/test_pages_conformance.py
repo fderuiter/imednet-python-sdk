@@ -1,8 +1,9 @@
-import pytest
-import sys
 import importlib.util
+import sys
 from pathlib import Path
 from unittest.mock import MagicMock
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"

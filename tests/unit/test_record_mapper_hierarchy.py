@@ -1,8 +1,10 @@
 from datetime import datetime
 from unittest.mock import MagicMock, patch
+
 from imednet.models.records import Record
 from imednet.models.variables import Variable
 from imednet_workflows.record_mapper import RecordMapper
+
 
 @patch("imednet_workflows.study_structure.get_study_structure")
 def test_build_hierarchy(mock_get_study_structure):

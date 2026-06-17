@@ -131,7 +131,7 @@ def build_record(
 
     variables = list(sdk.variables.list(study_key=study_key, formKey=form_key))
     data = _build_data(_select_variables(variables))
-    record: Dict[str, Any] = {"formKey": form_key, "data": data}
+    record: Dict[str, Any] = {"formKey": form_key, "recordData": data}
     if site_name is not None:
         record["siteName"] = site_name
     if subject_key is not None:

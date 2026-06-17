@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import pytest
 import streamlit as st
+
 
 def test_sanitize_body_string():
     from imednet_streamlit.app import _sanitize_body
@@ -16,7 +18,7 @@ def test_sanitize_body_exception():
 
 def test_sanitize_body_unprintable_exception():
     from imednet_streamlit.app import _sanitize_body
-    class BadException(Exception):
+    class BadError(Exception):
         def __str__(self):
             raise RuntimeError("Cannot print")
         def __init__(self, msg=None):
@@ -24,11 +26,11 @@ def test_sanitize_body_unprintable_exception():
                 raise RuntimeError("Failed init")
             super().__init__(msg)
     
-    ex = BadException()
+    ex = BadError()
     res = _sanitize_body(ex)
     # The instantiation of type(body) will fail, falling back to Exception
     assert type(res) is Exception
-    assert "BadException: <unprintable exception>" in str(res)
+    assert "BadError: <unprintable exception>" in str(res)
 
 def test_sanitize_body_non_string():
     from imednet_streamlit.app import _sanitize_body
@@ -36,7 +38,12 @@ def test_sanitize_body_non_string():
     assert res == 123
 
 def test_secure_st_methods(monkeypatch):
-    from imednet_streamlit.app import secure_st_error, secure_st_exception, secure_st_warning, secure_st_info
+    from imednet_streamlit.app import (
+        secure_st_error,
+        secure_st_exception,
+        secure_st_info,
+        secure_st_warning,
+    )
 
     calls = {}
     def mock_error(msg, *args, **kwargs):
@@ -118,8 +125,9 @@ def test_accessible_altair_chart_non_str_title(monkeypatch):
     accessible_altair_chart(chart)
 
 def test_accessible_altair_chart_with_dataframe(monkeypatch):
-    import imednet_streamlit.app as app
     import pandas as pd
+
+    import imednet_streamlit.app as app
     from imednet_streamlit.app import accessible_altair_chart
 
     calls = []

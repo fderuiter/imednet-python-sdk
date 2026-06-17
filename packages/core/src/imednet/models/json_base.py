@@ -128,6 +128,9 @@ class JsonModel(BaseModel):
             if field.alias:
                 defined_fields.add(field.alias)
 
+        if hasattr(cls, "model_computed_fields"):
+            defined_fields.update(cls.model_computed_fields.keys())
+
         incoming_keys = set(data.keys())
 
         unexpected_fields = incoming_keys - defined_fields
