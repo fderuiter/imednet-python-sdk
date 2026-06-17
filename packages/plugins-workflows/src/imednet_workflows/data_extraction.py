@@ -84,7 +84,7 @@ class DataExtractionWorkflow:
         if matching_visit_ids:
             records = [r for r in records if r.visit_id in matching_visit_ids]
 
-        return records
+        return list(records)
 
     def extract_audit_trail(
         self,
@@ -126,7 +126,7 @@ class DataExtractionWorkflow:
             **final_filter_dict,
             **date_kwargs,
         )
-        return revisions
+        return list(revisions)
 
 
 # Integration:

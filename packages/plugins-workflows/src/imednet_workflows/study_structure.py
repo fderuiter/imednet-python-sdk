@@ -62,9 +62,9 @@ def get_study_structure(sdk: "ImednetFacade", study_key: str) -> StudyStructure:
     """
     try:
         # Fetch all components concurrently (if async were used) or sequentially
-        intervals: List[Interval] = sdk.get_intervals(study_key)
-        forms: List[Form] = sdk.get_forms(study_key)
-        variables: List[Variable] = sdk.get_variables(study_key)
+        intervals: List[Interval] = list(sdk.get_intervals(study_key))
+        forms: List[Form] = list(sdk.get_forms(study_key))
+        variables: List[Variable] = list(sdk.get_variables(study_key))
 
         return _build_study_structure(study_key, intervals, forms, variables)
 
@@ -78,10 +78,19 @@ def get_study_structure(sdk: "ImednetFacade", study_key: str) -> StudyStructure:
 async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -> StudyStructure:
     """Asynchronous variant of :func:`get_study_structure`."""
     try:
+        async def fetch_intervals():
+            return [i async for i in sdk.async_get_intervals(study_key)]
+
+        async def fetch_forms():
+            return [f async for f in sdk.async_get_forms(study_key)]
+
+        async def fetch_variables():
+            return [v async for v in sdk.async_get_variables(study_key)]
+            
         intervals, forms, variables = await asyncio.gather(
-            sdk.async_get_intervals(study_key),
-            sdk.async_get_forms(study_key),
-            sdk.async_get_variables(study_key),
+            fetch_intervals(),
+            fetch_forms(),
+            fetch_variables(),
         )
 
         return _build_study_structure(study_key, intervals, forms, variables)

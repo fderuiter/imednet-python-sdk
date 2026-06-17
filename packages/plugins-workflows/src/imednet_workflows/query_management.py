@@ -109,7 +109,7 @@ class QueryManagementWorkflow:
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
-        return self._sdk.get_queries(study_key, **final_filter_dict, **kwargs)
+        return list(self._sdk.get_queries(study_key, **final_filter_dict, **kwargs))
 
     def get_queries_by_site(
         self,
@@ -139,7 +139,7 @@ class QueryManagementWorkflow:
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
-        return self._sdk.get_queries(study_key, **final_filter_dict, **kwargs)
+        return list(self._sdk.get_queries(study_key, **final_filter_dict, **kwargs))
 
     def get_query_state_counts(self, study_key: str, **kwargs: Any) -> Dict[str, int]:
         """
