@@ -46,7 +46,7 @@ class JobPoller(BaseJobPoller):
             result = self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if status.state and status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
+            if not status.state or status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
                 if self._fetch_result and getattr(status, "result_url", None):
                     try:
                         res = self._fetch_result(status.result_url)  # type: ignore
@@ -86,7 +86,7 @@ class AsyncJobPoller(BaseJobPoller):
             result = await self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if status.state and status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
+            if not status.state or status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
                 if self._fetch_result and getattr(status, "result_url", None):
                     try:
                         res = await self._fetch_result(status.result_url)  # type: ignore

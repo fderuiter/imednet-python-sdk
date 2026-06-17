@@ -55,7 +55,7 @@ into multiple tables.
 """
 
 # Job States
-TERMINAL_JOB_STATES = frozenset({"COMPLETED", "FAILED", "CANCELLED"})
+TERMINAL_JOB_STATES = frozenset({"COMPLETED", "SUCCESS", "FAILED", "CANCELLED", ""})
 """Job states that indicate the job has finished processing.
 
 These states are used by the job poller to determine when to stop polling.

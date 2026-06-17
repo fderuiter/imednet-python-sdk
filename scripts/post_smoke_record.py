@@ -161,7 +161,7 @@ def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, ti
     logger.info("Polling batch %s", job.batch_id)
     status = sdk.poll_job(study_key, job.batch_id, interval=1, timeout=timeout)
     logger.info("Batch %s %s", status.batch_id, status.state)
-    if not (status.state and status.state.upper() in ("COMPLETED", "SUCCESS")):
+    if status.state and status.state.upper() not in ("COMPLETED", "SUCCESS"):
         detail = _extract_error(sdk, status)
         raise RuntimeError(f"Record creation failed: {detail}")
     return status.batch_id
