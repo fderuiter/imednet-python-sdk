@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from typing import Any
+from unittest.mock import MagicMock
 
 from imednet.models.study_config import StudyConfiguration
 
@@ -206,6 +207,9 @@ def _run_setup_wizard(
         "download_button",
     ):
         setattr(fake_streamlit_module, attr, getattr(fake_st, attr))
+
+    if hasattr(fake_st, "user"):
+        fake_streamlit_module.user = fake_st.user
 
     records = [
         SimpleNamespace(
@@ -476,6 +480,11 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
     fake_st.session_state["_imednet_study_key"] = "STUDY-123"
     fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY-123")
     fake_st.button_presses = {"wizard_save_managed"}
+    
+    mock_user = MagicMock()
+    mock_user.email = ""
+    mock_user.get.return_value = "custom@email.com"
+    fake_st.user = mock_user
 
     class MockStore:
         def commit_config(self, study_key, config, user, desc):
@@ -490,6 +499,7 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
     _run_setup_wizard(fake_st)
 
     assert mock_store.study_key == "STUDY-123"
+    assert mock_store.user == "custom@email.com"
     assert "Successfully saved" in fake_st.success_calls[-1]
 
 
