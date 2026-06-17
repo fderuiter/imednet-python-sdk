@@ -121,9 +121,11 @@ def fake_query() -> Dict[str, Any]:
     }
 
 
-def _fake_value(var_type: str) -> Any:
+def _fake_value(var_type: str | None) -> Any:
     """Return a fake value matching ``var_type``."""
 
+    if not var_type:
+        return faker.word()
     var_type = var_type.lower()
     if var_type in {"int", "integer", "number"}:
         return faker.random_int(min=0, max=100)

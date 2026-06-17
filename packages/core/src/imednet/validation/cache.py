@@ -139,9 +139,12 @@ for key, validator in list(_TYPE_VALIDATORS.items()):
     _TYPE_VALIDATORS[key.upper()] = validator
 
 
-def _check_type(var_type: str, value: Any) -> None:
+def _check_type(var_type: str | None, value: Any) -> None:
     if value is None:
         return
+
+    if not var_type:
+        raise UnknownVariableTypeError(var_type)
 
     # Bolt Optimization: Try direct lookup first to avoid string manipulation
     try:
