@@ -108,6 +108,13 @@ class JsonModel(BaseModel):
     @classmethod
     def from_json(cls, data: Any) -> Self:
         """Validate data coming from JSON APIs."""
+        if isinstance(data, list) and len(data) > 0 and isinstance(data[0], dict):
+            import logging
+            logging.getLogger(__name__).warning(
+                f"Structural shift detected: API returned a list where an object ({cls.__name__}) was expected. Coercing by extracting the first item."
+            )
+            data = data[0]
+            
         try:
             return cls.model_validate(data)
         except Exception as e:
