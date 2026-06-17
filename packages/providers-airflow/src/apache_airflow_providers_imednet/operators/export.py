@@ -158,7 +158,9 @@ class ImednetExportOperator(BaseOperator):
                         sink_base.apply_quality_gate(sdk, self.study_key, records_iter, config)
                     )
                     with sink:
-                        for i, batch in enumerate(sink_base.iter_batches(records_list, config.batch_size)):
+                        for i, batch in enumerate(
+                            sink_base.iter_batches(records_list, config.batch_size)
+                        ):
                             sink.write_batch(batch, batch_id=f"{self.study_key}/batch/{i}")
                 else:
                     # Execution path for legacy tabular functions

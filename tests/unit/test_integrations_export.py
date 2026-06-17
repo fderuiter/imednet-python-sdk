@@ -63,6 +63,7 @@ def test_export_to_excel(monkeypatch):
 
 def test_export_to_json(monkeypatch):
     import builtins
+
     mock_open = MagicMock()
     monkeypatch.setattr(builtins, "open", mock_open)
     df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)

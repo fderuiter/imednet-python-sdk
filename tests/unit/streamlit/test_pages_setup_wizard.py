@@ -480,7 +480,7 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
     fake_st.session_state["_imednet_study_key"] = "STUDY-123"
     fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY-123")
     fake_st.button_presses = {"wizard_save_managed"}
-    
+
     mock_user = MagicMock()
     mock_user.email = ""
     mock_user.get.return_value = "custom@email.com"

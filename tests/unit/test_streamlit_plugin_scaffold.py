@@ -73,6 +73,7 @@ class _FakeStreamlit:
     def expander(self, label: str, expanded: bool = False) -> _FakeContextManager:
         return _FakeContextManager()
 
+
 class _FakePageStreamlit:
     def __init__(self, *, connected: bool) -> None:
         self.session_state: dict[str, Any] = {"_imednet_connected": connected}
@@ -290,6 +291,7 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         import importlib.util
+
         module_name = "imednet_streamlit.pages." + page_path.stem
         module_spec = importlib.util.spec_from_file_location(module_name, page_path)
         module = importlib.util.module_from_spec(module_spec)
@@ -385,6 +387,7 @@ def _run_sites_page(
             package_module.components = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         import importlib.util
+
         module_name = "imednet_streamlit.pages." + page_path.stem
         module_spec = importlib.util.spec_from_file_location(module_name, page_path)
         module = importlib.util.module_from_spec(module_spec)
@@ -475,6 +478,7 @@ def _run_records_page(
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         import importlib.util
+
         module_name = "imednet_streamlit.pages." + page_path.stem
         module_spec = importlib.util.spec_from_file_location(module_name, page_path)
         module = importlib.util.module_from_spec(module_spec)
@@ -577,6 +581,7 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         import importlib.util
+
         module_name = "imednet_streamlit.pages." + page_path.stem
         module_spec = importlib.util.spec_from_file_location(module_name, page_path)
         module = importlib.util.module_from_spec(module_spec)
@@ -619,7 +624,11 @@ def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
     assert len(fake_st.navigation_calls) == 1
     nav = fake_st.navigation_calls[0]
     assert nav.ran is True
-    assert [page["path"] for page in nav.pages] == ["pages/home.py", "pages/admin.py", "pages/conformance.py"]
+    assert [page["path"] for page in nav.pages] == [
+        "pages/home.py",
+        "pages/admin.py",
+        "pages/conformance.py",
+    ]
 
 
 def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
@@ -971,6 +980,7 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         import importlib.util
+
         module_name = "imednet_streamlit.pages." + page_path.stem
         module_spec = importlib.util.spec_from_file_location(module_name, page_path)
         module = importlib.util.module_from_spec(module_spec)

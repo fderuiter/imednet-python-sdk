@@ -18,6 +18,7 @@ async def test_async_schema_cache_refresh() -> None:
     forms.list.return_value = [Form(form_id=1, form_key="F1")]
     variables = MagicMock()
     var = _make_var("age")
+
     async def mock_async_list(*args, **kwargs):
         yield var
 

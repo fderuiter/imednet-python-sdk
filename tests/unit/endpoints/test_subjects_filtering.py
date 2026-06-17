@@ -25,11 +25,12 @@ async def test_async_list_by_site_filtering():
     mock_ctx = Mock()
 
     endpoint = AsyncSubjectsEndpoint(mock_client, mock_ctx)
+
     class MockAsyncGenerator:
         async def __aiter__(self):
             for item in []:
                 yield item
-                
+
     mock_async_list = Mock()
     mock_async_list.return_value = MockAsyncGenerator()
     endpoint.async_list = mock_async_list

@@ -53,6 +53,7 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         import importlib.util
+
         module_name = "imednet_streamlit.pages." + page_path.stem
         module_spec = importlib.util.spec_from_file_location(module_name, page_path)
         module = importlib.util.module_from_spec(module_spec)
