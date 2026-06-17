@@ -7,6 +7,7 @@ diff capability, and safe rollback.  History blocks are read-only once written.
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import os
 import sqlite3
@@ -18,7 +19,6 @@ from threading import RLock
 from typing import Any
 
 from imednet.spi.models import StudyConfiguration
-import importlib
 
 _DEFAULT_DB_PATH = Path(
     os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3")
