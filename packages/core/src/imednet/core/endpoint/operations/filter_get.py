@@ -50,6 +50,10 @@ class FilterGetOperation(Generic[T]):
         self.list_sync_func = list_sync_func
         self.list_async_func = list_async_func
 
+    def _process_response(self, result: List[T]) -> T:
+        """Process the list of results and validate the specific item."""
+        return self.validate_func(result, self.study_key, self.item_id)
+
     def execute_sync(
         self,
         client: RequestorProtocol,
@@ -74,7 +78,7 @@ class FilterGetOperation(Generic[T]):
             study_key=self.study_key,
             **self.filters,
         )
-        return self.validate_func(result, self.study_key, self.item_id)
+        return self._process_response(result)
 
     async def execute_async(
         self,
@@ -100,4 +104,4 @@ class FilterGetOperation(Generic[T]):
             study_key=self.study_key,
             **self.filters,
         )
-        return self.validate_func(result, self.study_key, self.item_id)
+        return self._process_response(result)

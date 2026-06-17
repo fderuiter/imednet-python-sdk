@@ -77,6 +77,10 @@ class RecordCreateOperation(Generic[T]):
                 headers[HEADER_EMAIL_NOTIFY] = str(self.email_notify).lower()
         return headers
 
+    def _process_response(self, response: Any, parse_func: Callable[[Any], T]) -> T:
+        """Process the raw HTTP response."""
+        return parse_func(response.json())
+
     def execute_sync(
         self,
         client: RequestorProtocol,
@@ -97,7 +101,7 @@ class RecordCreateOperation(Generic[T]):
             json=self.records_data,
             headers=self.headers,
         )
-        return parse_func(response.json())
+        return self._process_response(response, parse_func)
 
     async def execute_async(
         self,
@@ -119,4 +123,4 @@ class RecordCreateOperation(Generic[T]):
             json=self.records_data,
             headers=self.headers,
         )
-        return parse_func(response.json())
+        return self._process_response(response, parse_func)

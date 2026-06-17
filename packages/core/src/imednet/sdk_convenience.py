@@ -113,49 +113,37 @@ def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
 T = TypeVar("T")
 
 
-class _SyncListOperation(Generic[T]):
-    def __init__(self, endpoint_name: str, name: str):
+class _ListOperation(Generic[T]):
+    def __init__(self, endpoint_name: str, name: str, is_async: bool = False):
         self.endpoint_name = endpoint_name
         self.name = name
+        self.is_async = is_async
 
-    def __get__(self, instance: Any, owner: Any) -> Callable[..., List[T]]:
+    def __get__(self, instance: Any, owner: Any) -> Callable[..., Any]:
         if instance is None:
             return self  # type: ignore
         endpoint = getattr(instance, self.endpoint_name)
 
-        @_trace_method
-        def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
-            _filters: Dict[str, Any] = dict(filters)
-            if self.endpoint_name == "studies":
-                return list(endpoint.list(**_filters))
-            return list(endpoint.list(study_key, **_filters))
-
-        wrapper.__name__ = self.name
-        wrapper.__doc__ = f"List {self.endpoint_name}."
-        return wrapper
-
-
-class _AsyncListOperation(Generic[T]):
-    def __init__(self, endpoint_name: str, name: str):
-        self.endpoint_name = endpoint_name
-        self.name = name
-
-    def __get__(self, instance: Any, owner: Any) -> Callable[..., Awaitable[List[T]]]:
-        if instance is None:
-            return self  # type: ignore
-        endpoint = getattr(instance, self.endpoint_name)
-
-        @_async_trace_method
-        async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
-            _filters: Dict[str, Any] = dict(filters)
-            if self.endpoint_name == "studies":
-                res = endpoint.async_list(**_filters)
+        if self.is_async:
+            @_async_trace_method
+            async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+                _filters: Dict[str, Any] = dict(filters)
+                if self.endpoint_name == "studies":
+                    res = endpoint.async_list(**_filters)
+                else:
+                    res = endpoint.async_list(study_key, **_filters)
                 return [item async for item in res] if hasattr(res, "__aiter__") else await res
-            res = endpoint.async_list(study_key, **_filters)
-            return [item async for item in res] if hasattr(res, "__aiter__") else await res
+            wrapper.__doc__ = f"Asynchronously list {self.endpoint_name}."
+        else:
+            @_trace_method
+            def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+                _filters: Dict[str, Any] = dict(filters)
+                if self.endpoint_name == "studies":
+                    return list(endpoint.list(**_filters))
+                return list(endpoint.list(study_key, **_filters))
+            wrapper.__doc__ = f"List {self.endpoint_name}."
 
         wrapper.__name__ = self.name
-        wrapper.__doc__ = f"Asynchronously list {self.endpoint_name}."
         return wrapper
 
 
@@ -166,20 +154,20 @@ class SyncSDKConvenienceMixin:
         records: RecordsEndpoint
         jobs: JobsEndpoint
 
-    get_codings = _SyncListOperation[Coding]("codings", "get_codings")
-    get_forms = _SyncListOperation[Form]("forms", "get_forms")
-    get_intervals = _SyncListOperation[Interval]("intervals", "get_intervals")
-    get_queries = _SyncListOperation[Query]("queries", "get_queries")
-    get_record_revisions = _SyncListOperation[RecordRevision](
+    get_codings = _ListOperation[Coding]("codings", "get_codings")
+    get_forms = _ListOperation[Form]("forms", "get_forms")
+    get_intervals = _ListOperation[Interval]("intervals", "get_intervals")
+    get_queries = _ListOperation[Query]("queries", "get_queries")
+    get_record_revisions = _ListOperation[RecordRevision](
         "record_revisions", "get_record_revisions"
     )
-    get_records = _SyncListOperation[Record]("records", "get_records")
-    get_sites = _SyncListOperation[Site]("sites", "get_sites")
-    get_studies = _SyncListOperation[Study]("studies", "get_studies")
-    get_subjects = _SyncListOperation[Subject]("subjects", "get_subjects")
-    get_users = _SyncListOperation[User]("users", "get_users")
-    get_variables = _SyncListOperation[Variable]("variables", "get_variables")
-    get_visits = _SyncListOperation[Visit]("visits", "get_visits")
+    get_records = _ListOperation[Record]("records", "get_records")
+    get_sites = _ListOperation[Site]("sites", "get_sites")
+    get_studies = _ListOperation[Study]("studies", "get_studies")
+    get_subjects = _ListOperation[Subject]("subjects", "get_subjects")
+    get_users = _ListOperation[User]("users", "get_users")
+    get_variables = _ListOperation[Variable]("variables", "get_variables")
+    get_visits = _ListOperation[Visit]("visits", "get_visits")
 
     @_trace_method
     def get_job(self, study_key: str, batch_id: str) -> JobStatus:
@@ -222,20 +210,20 @@ class AsyncSDKConvenienceMixin:
         jobs: AsyncJobsEndpoint
         _async_client: Any
 
-    async_get_codings = _AsyncListOperation[Coding]("codings", "async_get_codings")
-    async_get_forms = _AsyncListOperation[Form]("forms", "async_get_forms")
-    async_get_intervals = _AsyncListOperation[Interval]("intervals", "async_get_intervals")
-    async_get_queries = _AsyncListOperation[Query]("queries", "async_get_queries")
-    async_get_record_revisions = _AsyncListOperation[RecordRevision](
-        "record_revisions", "async_get_record_revisions"
+    async_get_codings = _ListOperation[Coding]("codings", "async_get_codings", is_async=True)
+    async_get_forms = _ListOperation[Form]("forms", "async_get_forms", is_async=True)
+    async_get_intervals = _ListOperation[Interval]("intervals", "async_get_intervals", is_async=True)
+    async_get_queries = _ListOperation[Query]("queries", "async_get_queries", is_async=True)
+    async_get_record_revisions = _ListOperation[RecordRevision](
+        "record_revisions", "async_get_record_revisions", is_async=True
     )
-    async_get_records = _AsyncListOperation[Record]("records", "async_get_records")
-    async_get_sites = _AsyncListOperation[Site]("sites", "async_get_sites")
-    async_get_studies = _AsyncListOperation[Study]("studies", "async_get_studies")
-    async_get_subjects = _AsyncListOperation[Subject]("subjects", "async_get_subjects")
-    async_get_users = _AsyncListOperation[User]("users", "async_get_users")
-    async_get_variables = _AsyncListOperation[Variable]("variables", "async_get_variables")
-    async_get_visits = _AsyncListOperation[Visit]("visits", "async_get_visits")
+    async_get_records = _ListOperation[Record]("records", "async_get_records", is_async=True)
+    async_get_sites = _ListOperation[Site]("sites", "async_get_sites", is_async=True)
+    async_get_studies = _ListOperation[Study]("studies", "async_get_studies", is_async=True)
+    async_get_subjects = _ListOperation[Subject]("subjects", "async_get_subjects", is_async=True)
+    async_get_users = _ListOperation[User]("users", "async_get_users", is_async=True)
+    async_get_variables = _ListOperation[Variable]("variables", "async_get_variables", is_async=True)
+    async_get_visits = _ListOperation[Visit]("visits", "async_get_visits", is_async=True)
 
     @_async_trace_method
     async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
