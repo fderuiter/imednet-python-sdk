@@ -121,16 +121,16 @@ class _SyncListOperation(Generic[T]):
     def __get__(self, instance: Any, owner: Any) -> Callable[..., List[T]]:
         if instance is None:
 
-            @_trace_method
             def unbound_wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
                 raise NotImplementedError
 
             unbound_wrapper.__name__ = self.name
+            unbound_wrapper.__qualname__ = f"{owner.__name__}.{self.name}"
+            unbound_wrapper.__module__ = owner.__module__
             unbound_wrapper.__doc__ = f"List {self.endpoint_name}."
-            return unbound_wrapper
+            return _trace_method(unbound_wrapper)
         endpoint = getattr(instance, self.endpoint_name)
 
-        @_trace_method
         def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
             _filters: Dict[str, Any] = dict(filters)
             if self.endpoint_name == "studies":
@@ -138,8 +138,10 @@ class _SyncListOperation(Generic[T]):
             return list(endpoint.list(study_key, **_filters))
 
         wrapper.__name__ = self.name
+        wrapper.__qualname__ = f"{instance.__class__.__name__}.{self.name}"
+        wrapper.__module__ = instance.__class__.__module__
         wrapper.__doc__ = f"List {self.endpoint_name}."
-        return wrapper
+        return _trace_method(wrapper)
 
 
 class _AsyncListOperation(Generic[T]):
@@ -150,18 +152,18 @@ class _AsyncListOperation(Generic[T]):
     def __get__(self, instance: Any, owner: Any) -> Callable[..., Awaitable[List[T]]]:
         if instance is None:
 
-            @_async_trace_method
             async def unbound_wrapper(
                 study_key: str | None = None, **filters: FilterValue
             ) -> List[T]:
                 raise NotImplementedError
 
             unbound_wrapper.__name__ = self.name
+            unbound_wrapper.__qualname__ = f"{owner.__name__}.{self.name}"
+            unbound_wrapper.__module__ = owner.__module__
             unbound_wrapper.__doc__ = f"Asynchronously list {self.endpoint_name}."
-            return unbound_wrapper
+            return _async_trace_method(unbound_wrapper)
         endpoint = getattr(instance, self.endpoint_name)
 
-        @_async_trace_method
         async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
             _filters: Dict[str, Any] = dict(filters)
             if self.endpoint_name == "studies":
@@ -171,8 +173,10 @@ class _AsyncListOperation(Generic[T]):
             return [item async for item in res] if hasattr(res, "__aiter__") else await res
 
         wrapper.__name__ = self.name
+        wrapper.__qualname__ = f"{instance.__class__.__name__}.{self.name}"
+        wrapper.__module__ = instance.__class__.__module__
         wrapper.__doc__ = f"Asynchronously list {self.endpoint_name}."
-        return wrapper
+        return _async_trace_method(wrapper)
 
 
 class SyncSDKConvenienceMixin:
