@@ -85,7 +85,7 @@ def test_export_to_json(monkeypatch):
     )
     df.where.return_value.to_dict.assert_called_once_with(orient="records")
     mock_dump.assert_called_once_with(
-        mock_dict, mock_open.return_value.__enter__.return_value, indent=2
+        mock_dict, mock_open.return_value.__enter__.return_value, indent=2, default=str
     )
 
 

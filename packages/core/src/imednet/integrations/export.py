@@ -289,6 +289,7 @@ def export_to_json(
         logger.warning(f"Could not apply EnrichmentPipeline: {e}")
 
     kwargs.pop("orient", None)
+    kwargs.setdefault("default", str)
     with open(path, "w") as f:
         json.dump(data, f, **kwargs)
 
