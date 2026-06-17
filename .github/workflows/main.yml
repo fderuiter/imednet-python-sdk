@@ -257,6 +257,7 @@ jobs:
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
+          IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
           if [ "${{ matrix.package }}" = "core" ]; then
             TEST_ARGS="--ignore-glob=*airflow* --ignore-glob=*workflows* --ignore-glob=*streamlit* --ignore-glob=*sinks* tests/"
