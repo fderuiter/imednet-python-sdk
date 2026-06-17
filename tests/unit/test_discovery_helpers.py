@@ -38,6 +38,7 @@ def test_discover_form_key_returns_first_matching() -> None:
         MagicMock(form_key="F1", subject_record_report=True, disabled=False),
         MagicMock(form_key="F2", subject_record_report=True, disabled=False),
     ]
+    sdk.variables.list.return_value = [MagicMock()]
 
     assert discover_form_key(sdk, "S") == "F1"
     sdk.forms.list.assert_called_once_with(study_key="S")
@@ -46,6 +47,7 @@ def test_discover_form_key_returns_first_matching() -> None:
 def test_discover_form_key_raises_when_empty() -> None:
     sdk = MagicMock()
     sdk.forms.list.return_value = []
+    sdk.variables.list.return_value = [MagicMock()]
 
     with pytest.raises(NoLiveDataError):
         discover_form_key(sdk, "S")
