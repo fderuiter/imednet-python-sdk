@@ -11,7 +11,7 @@ test-containers:
 	@echo "Waiting for databases to initialize..."
 	sleep 15
 	@echo "Running integration tests..."
-	IMEDNET_TEST_CONTAINERS=1 poetry run pytest tests/integration/test_containerized_sinks.py -v; \
+	IMEDNET_TEST_CONTAINERS=1 poetry run pytest packages/plugins-sinks/tests/integration/test_containerized_sinks.py -v; \
 	status=$$?; \
 	echo "Cleaning up containers..."; \
 	docker compose down -v; \
