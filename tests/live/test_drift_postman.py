@@ -43,7 +43,18 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     """
     os.environ["IMEDNET_STRICT_MODE"] = "1"
 
-    collection_path = "/app/imednet.postman_collection.json"
+    if "IMEDNET_POSTMAN_PATH" in os.environ:
+        collection_path = os.environ["IMEDNET_POSTMAN_PATH"]
+    else:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        collection_path = "/app/imednet.postman_collection.json"
+        while current_dir != os.path.dirname(current_dir):
+            candidate = os.path.join(current_dir, "imednet.postman_collection.json")
+            if os.path.exists(candidate):
+                collection_path = candidate
+                break
+            current_dir = os.path.dirname(current_dir)
+
     if not os.path.exists(collection_path):
         pytest.skip("Postman collection not found")
 

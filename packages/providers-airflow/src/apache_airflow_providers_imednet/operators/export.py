@@ -8,7 +8,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from imednet import ImednetSDK
-from imednet.integrations.sink_base import SinkConfig, apply_quality_gate, iter_batches
+from imednet.spi.sink_base import SinkConfig, apply_quality_gate, iter_batches
 
 from .. import export
 from .._airflow_compat import AirflowException, Context

@@ -120,9 +120,12 @@ class _SyncListOperation(Generic[T]):
 
     def __get__(self, instance: Any, owner: Any) -> Callable[..., List[T]]:
         if instance is None:
-            from typing import cast
-
-            return cast(Callable[..., List[T]], self)
+            @_trace_method
+            def unbound_wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+                raise NotImplementedError
+            unbound_wrapper.__name__ = self.name
+            unbound_wrapper.__doc__ = f"List {self.endpoint_name}."
+            return unbound_wrapper
         endpoint = getattr(instance, self.endpoint_name)
 
         @_trace_method
@@ -144,9 +147,12 @@ class _AsyncListOperation(Generic[T]):
 
     def __get__(self, instance: Any, owner: Any) -> Callable[..., Awaitable[List[T]]]:
         if instance is None:
-            from typing import cast
-
-            return cast(Callable[..., Awaitable[List[T]]], self)
+            @_async_trace_method
+            async def unbound_wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+                raise NotImplementedError
+            unbound_wrapper.__name__ = self.name
+            unbound_wrapper.__doc__ = f"Asynchronously list {self.endpoint_name}."
+            return unbound_wrapper
         endpoint = getattr(instance, self.endpoint_name)
 
         @_async_trace_method
