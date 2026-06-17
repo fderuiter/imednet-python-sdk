@@ -179,62 +179,48 @@ class MongoDbExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
-        """Write *records* to MongoDB using upsert (idempotent) or insert.
-
-        Parameters
-        ----------
-        records:
-            Sequence of typed ``Record`` model instances.
-        batch_id:
-            Idempotency key (e.g. ``"MYSTUDY/FORM1/0"``).
-
-        Returns
-        -------
-        int
-            Number of records written (upserted or inserted).
-        """
+        """Write *records* to MongoDB using upsert (idempotent) or insert."""
         docs = [_record_to_document(r, self._study_key) for r in records]
         if not docs:
             return 0
 
-        last_exc: Optional[Exception] = None
-        for attempt in range(self.config.max_retries + 1):
-            try:
-                if self.config.idempotent:
-                    pymongo = _require_optional_dep("pymongo", "mongodb")
-                    ops = [
-                        pymongo.UpdateOne(
-                            {"_id": doc["_id"]},
-                            {"$set": doc},
-                            upsert=True,
-                        )
-                        for doc in docs
-                    ]
-                    result = self._collection.bulk_write(ops, ordered=False)
-                    written = len(docs)
-                else:
-                    result = self._collection.insert_many(docs, ordered=False)
-                    written = len(result.inserted_ids)
+        from imednet.core.operations.executor import UniversalExecutor
 
-                logger.debug("Wrote batch %s (%d records)", batch_id, written)
-                return written
-            except Exception as exc:  # noqa: BLE001
-                last_exc = exc
-                if attempt < self.config.max_retries:
-                    delay = self.config.retry_backoff * (2**attempt)
-                    logger.warning(
-                        "Batch %s attempt %d failed (%s); retrying in %.1fs",
-                        batch_id,
-                        attempt + 1,
-                        exc,
-                        delay,
+        def execute_export() -> int:
+            if self.config.idempotent:
+                pymongo = _require_optional_dep("pymongo", "mongodb")
+                ops = [
+                    pymongo.UpdateOne(
+                        {"_id": doc["_id"]},
+                        {"$set": doc},
+                        upsert=True,
                     )
-                    time.sleep(delay)
+                    for doc in docs
+                ]
+                self._collection.bulk_write(ops, ordered=False)
+                written = len(docs)
+            else:
+                result = self._collection.insert_many(docs, ordered=False)
+                written = len(result.inserted_ids)
 
-        raise ExportBatchError(
-            f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {last_exc}",
+            logger.debug("Wrote batch %s (%d records)", batch_id, written)
+            return written
+
+        executor = UniversalExecutor(
+            retries=self.config.max_retries,
+            backoff_factor=self.config.retry_backoff,
+            tracer=self.config.tracer,
+            operation_name="export_mongodb",
             batch_id=batch_id,
         )
+
+        try:
+            return executor.execute(execute_export)
+        except Exception as exc:
+            raise ExportBatchError(
+                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
+                batch_id=batch_id,
+            ) from exc
 
     def flush(self) -> None:
         """No-op: MongoDB writes are committed per bulk operation."""

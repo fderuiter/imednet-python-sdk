@@ -234,24 +234,10 @@ class SnowflakeExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
-        """Write *records* to Snowflake via Parquet staging + COPY INTO.
-
-        Parameters
-        ----------
-        records:
-            Sequence of typed ``Record`` model instances or plain dicts.
-        batch_id:
-            Idempotency key (e.g. ``"MYSTUDY/FORM1/0"``).
-
-        Returns
-        -------
-        int
-            Number of rows loaded.
-        """
+        """Write *records* to Snowflake via Parquet staging + COPY INTO."""
         if not records:
             return 0
 
-        # 1. Convert to Parquet
         arrow_table = _records_to_arrow_table(records)
         safe_batch = batch_id.replace("/", "_").replace(" ", "_")
         local_path = Path(self._staging_dir) / f"{safe_batch}.parquet"
@@ -261,13 +247,12 @@ class SnowflakeExportSink(ExportSink):
         cfg = self._cfg
         stage_path = f"@{cfg.stage}/{cfg.stage_prefix}/{safe_batch}.parquet"
 
-        last_exc: Optional[Exception] = None
-        for attempt in range(self.config.max_retries + 1):
+        from imednet.core.operations.executor import UniversalExecutor
+
+        def execute_export() -> int:
+            cur = self._conn.cursor()
             try:
-                cur = self._conn.cursor()
-                # 2. PUT to stage
                 cur.execute(f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/")  # nosem
-                # 3. COPY INTO table
                 force_clause = "FORCE = FALSE" if self.config.idempotent else "FORCE = TRUE"
                 cur.execute(
                     f"COPY INTO {cfg.database}.{cfg.schema}.{cfg.table} "
@@ -277,7 +262,6 @@ class SnowflakeExportSink(ExportSink):
                     f"{force_clause}"
                 )  # nosem
                 rows_loaded = len(records)
-                cur.close()
                 logger.debug(
                     "Loaded batch %s (%d rows) via stage %s",
                     batch_id,
@@ -286,23 +270,24 @@ class SnowflakeExportSink(ExportSink):
                 )
                 self._append_manifest(batch_id, stage_path, rows_loaded)
                 return rows_loaded
-            except Exception as exc:  # noqa: BLE001
-                last_exc = exc
-                if attempt < self.config.max_retries:
-                    delay = self.config.retry_backoff * (2**attempt)
-                    logger.warning(
-                        "Batch %s attempt %d failed (%s); retrying in %.1fs",
-                        batch_id,
-                        attempt + 1,
-                        exc,
-                        delay,
-                    )
-                    time.sleep(delay)
+            finally:
+                cur.close()
 
-        raise ExportBatchError(
-            f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {last_exc}",
+        executor = UniversalExecutor(
+            retries=self.config.max_retries,
+            backoff_factor=self.config.retry_backoff,
+            tracer=self.config.tracer,
+            operation_name="export_warehouse",
             batch_id=batch_id,
         )
+
+        try:
+            return executor.execute(execute_export)
+        except Exception as exc:
+            raise ExportBatchError(
+                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
+                batch_id=batch_id,
+            ) from exc
 
     def flush(self) -> None:
         """No-op: each batch is committed individually."""

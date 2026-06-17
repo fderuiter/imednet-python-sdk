@@ -114,6 +114,7 @@ class SinkConfig:
     extra: dict[str, Any] = field(default_factory=dict)
     quality_gate_enabled: bool = False
     min_schema_readiness_score: float = 100.0
+    tracer: Optional[Any] = field(default=None, repr=False)
 
 
 # ---------------------------------------------------------------------------
