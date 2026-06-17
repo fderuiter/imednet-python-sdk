@@ -37,6 +37,7 @@ jobs:
           IMEDNET_API_KEY: ${{ secrets.IMEDNET_API_KEY }}
           IMEDNET_SECURITY_KEY: ${{ secrets.IMEDNET_SECURITY_KEY }}
           IMEDNET_BASE_URL: ${{ vars.IMEDNET_BASE_URL }}
+          IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
           poetry run python scripts/post_smoke_record.py
 
@@ -50,6 +51,7 @@ jobs:
           IMEDNET_RUN_E2E: "1"
           IMEDNET_ALLOW_MUTATION: ${{ vars.IMEDNET_ALLOW_MUTATION }}
           IMEDNET_STRICT_MODE: "1"
+          IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
           set +e
           poetry run pytest tests/live/ -v --log-cli-level=WARNING > pytest_output.txt 2>&1
