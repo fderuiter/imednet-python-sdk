@@ -11,6 +11,7 @@ from imednet.models.json_base import JsonModel
 
 class Role(JsonModel):
     """A role assigned to a user within a study or community."""
+
     role_id: str | None = Field(default=None, alias="roleId")
     name: str | None = Field(default=None, alias="name")
     description: str | None = Field(default=None, alias="description")
