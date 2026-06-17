@@ -11,6 +11,15 @@ from imednet.models.json_base import JsonModel
 
 class Role(JsonModel):
     """A role assigned to a user within a study or community."""
+    role_id: str | None = Field(default=None, alias="roleId")
+    name: str | None = Field(default=None, alias="name")
+    description: str | None = Field(default=None, alias="description")
+    level: int | None = Field(default=None, alias="level")
+    type: str | None = Field(default=None, alias="type")
+    inactive: bool | None = Field(default=None, alias="inactive")
+    community_id: int | None = Field(default=None, alias="communityId")
+    date_created: str | None = Field(default=None, alias="dateCreated")
+    date_modified: str | None = Field(default=None, alias="dateModified")
 
 
 Role = ModelEngine.get_model('Role', Role)

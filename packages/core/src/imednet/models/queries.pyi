@@ -5,8 +5,9 @@ from imednet.models.json_base import JsonModel
 
 class QueryComment(JsonModel):
     user: Optional[str]
-    date_created: Optional[str]
-    text: Optional[str]
+    date: Optional[str]
+    comment: Optional[str]
+    annotation_status: Optional[str]
     closed: Optional[bool]
     sequence: Optional[int]
 

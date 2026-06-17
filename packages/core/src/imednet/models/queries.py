@@ -14,6 +14,10 @@ class QueryComment(JsonModel):
 
     closed: bool | None = Field(default=None, alias="closed")
     sequence: int | None = Field(default=None, alias="sequence")
+    annotation_status: str | None = Field(default=None, alias="annotationStatus")
+    user: str | None = Field(default=None, alias="user")
+    comment: str | None = Field(default=None, alias="comment")
+    date: str | None = Field(default=None, alias="date")
 
 
 QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
