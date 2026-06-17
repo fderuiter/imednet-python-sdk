@@ -113,7 +113,7 @@ async def test_async_poll_job_convenience(monkeypatch) -> None:
     calls = {}
 
     class FakePoller:
-        def __init__(self, get_func):
+        def __init__(self, get_func, **kwargs):
             calls["init"] = get_func
 
         async def run(self, study_key, batch_id, interval, timeout):
