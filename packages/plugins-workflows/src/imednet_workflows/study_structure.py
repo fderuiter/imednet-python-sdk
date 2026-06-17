@@ -80,13 +80,13 @@ async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -
     try:
 
         async def fetch_intervals():
-            return [i async for i in sdk.async_get_intervals(study_key)]
+            return await sdk.async_get_intervals(study_key)
 
         async def fetch_forms():
-            return [f async for f in sdk.async_get_forms(study_key)]
+            return await sdk.async_get_forms(study_key)
 
         async def fetch_variables():
-            return [v async for v in sdk.async_get_variables(study_key)]
+            return await sdk.async_get_variables(study_key)
 
         intervals, forms, variables = await asyncio.gather(
             fetch_intervals(),
