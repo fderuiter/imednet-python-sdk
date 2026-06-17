@@ -58,7 +58,12 @@ class JobStatus(Job):
     def successful_records(self) -> int:
         """Return the total number of successful records processed."""
         if isinstance(self.results, list):
-            return sum(1 for r in self.results if isinstance(r, dict) and r.get("status", "").upper() in {"PASS", "SUCCESS", "COMPLETED"})
+            return sum(
+                1
+                for r in self.results
+                if isinstance(r, dict)
+                and r.get("status", "").upper() in {"PASS", "SUCCESS", "COMPLETED"}
+            )
         if isinstance(self.results, dict):
             return self.results.get("success", 0)
         if self.is_successful and self.results:
@@ -69,7 +74,12 @@ class JobStatus(Job):
     def failed_records(self) -> int:
         """Return the total number of failed records processed."""
         if isinstance(self.results, list):
-            return sum(1 for r in self.results if isinstance(r, dict) and r.get("status", "").upper() in {"FAIL", "FAILED", "ERROR"})
+            return sum(
+                1
+                for r in self.results
+                if isinstance(r, dict)
+                and r.get("status", "").upper() in {"FAIL", "FAILED", "ERROR"}
+            )
         if isinstance(self.results, dict):
             return self.results.get("failed", 0)
         if self.is_failed and self.results:

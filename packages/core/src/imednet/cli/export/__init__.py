@@ -247,6 +247,8 @@ def export_mongodb(
     from imednet.integrations import SinkConfig
 
     cfg = SinkConfig(batch_size=batch_size, idempotent=upsert)
+    if sdk.sinks is None:
+        raise typer.BadParameter("Sinks plugin is not installed.")
     with fetching_status("records for MongoDB export", study_key):
         sdk.sinks.export_to_mongodb(
             sdk,
@@ -284,6 +286,8 @@ def export_neo4j(
         )
         raise typer.Exit(code=1)
 
+    if sdk.sinks is None:
+        raise typer.BadParameter("Sinks plugin is not installed.")
     cfg = sdk.sinks.Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
     with fetching_status("records for Neo4j export", study_key):
         sdk.sinks.export_to_neo4j(
@@ -342,6 +346,8 @@ def export_snowflake(
         )
         raise typer.Exit(code=1)
 
+    if sdk.sinks is None:
+        raise typer.BadParameter("Sinks plugin is not installed.")
     cfg = sdk.sinks.SnowflakeSinkConfig(
         account=account,
         user=user,

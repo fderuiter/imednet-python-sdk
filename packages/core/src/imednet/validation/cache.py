@@ -39,8 +39,9 @@ class BaseSchemaCache(Generic[_TClient]):
         self._form_variables.clear()
         self._form_id_to_key.clear()
         for var in variables:
-            self._form_id_to_key[var.form_id] = var.form_key
-            self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
+            if var.form_id is not None and var.form_key is not None and var.variable_name is not None:
+                self._form_id_to_key[var.form_id] = var.form_key
+                self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
 
     async def _refresh_async(
         self,
@@ -48,7 +49,7 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
-        vars_list = await variables.async_list(study_key=study_key)
+        vars_list = [v async for v in variables.async_list(study_key=study_key)]
         self.populate(vars_list)
 
     def _refresh_sync(

@@ -42,8 +42,10 @@ def _optional_datetime(v: Any) -> Any:
 def _optional_dict(v: Any) -> Any:
     return None if v is None else parse_dict_or_default(v)
 
+
 def _optional_list(v: Any) -> Any:
     return None if v is None else parse_list_or_default(v)
+
 
 def _extract_single_item(v: Any) -> Any:
     if isinstance(v, list) and len(v) > 0 and isinstance(v[0], dict):

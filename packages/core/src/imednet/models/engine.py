@@ -137,8 +137,10 @@ class ModelEngine:
         # But wait, we can't hardcode them here.
         # Actually, Pydantic's extra="ignore" lets us parse them but they disappear.
 
-        from pydantic import BaseModel
         from typing import cast
+
+        from pydantic import BaseModel
+
         model = create_model(model_name, __base__=cast(Type[BaseModel], base_cls), **fields)  # type: ignore[call-overload]
         return cast(Type[Any], model)
 

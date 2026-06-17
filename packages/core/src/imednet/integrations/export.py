@@ -144,7 +144,7 @@ def export_to_parquet(
     **kwargs: Any,
 ) -> None:
     """Export study records to a Parquet file.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -185,7 +185,7 @@ def export_to_csv(
     **kwargs: Any,
 ) -> None:
     """Export study records to a CSV file.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -212,7 +212,7 @@ def export_to_excel(
     **kwargs: Any,
 ) -> None:
     """Export study records to an Excel workbook.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -240,7 +240,7 @@ def export_to_json(
     **kwargs: Any,
 ) -> None:
     """Export study records to a JSON file.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -267,19 +267,20 @@ def export_to_json(
             use_labels_as_columns=use_labels_as_columns,
         )
         import pandas as pd
+
         # Explicitly handle missing values when converting to dict
         data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
     try:
-        from imednet_workflows.config_version_control import ConfigVersionStore
-        from imednet.integrations.enrichment import EnrichmentPipeline
-        
+        from imednet.integrations.enrichment import EnrichmentPipeline  # type: ignore
+        from imednet_workflows.config_version_control import ConfigVersionStore  # type: ignore
+
         store = ConfigVersionStore()
         history = store.get_history(study_key)
         if history:
             latest_commit = history[-1]["commit_id"]
             config = store.rollback_config(study_key, latest_commit)
-            
+
             logger.info("Enrichment pipeline triggered")
             pipeline = EnrichmentPipeline(config)
             data = pipeline.process(data)
@@ -304,7 +305,7 @@ def export_to_sql(
     **kwargs: Any,
 ) -> None:
     """Export study records to a SQL table.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -343,7 +344,7 @@ def export_to_duckdb(
     form_whitelist: Optional[List[int]] = None,
 ) -> None:
     """Export study records to a DuckDB table using native DataFrame registration.
-    
+
     All exports now inherit StudyConfiguration rules by default.
 
     Parameters
@@ -443,6 +444,9 @@ def export_to_duckdb_by_form(
             if form_whitelist is not None and form.form_id not in form_whitelist:
                 continue
 
+            if form.form_id is None or form.form_key is None:
+                continue
+
             df = _records_df(
                 sdk,
                 study_key,
@@ -485,9 +489,12 @@ def export_to_sql_by_form(
     all_variables = sdk.variables.list(study_key=study_key, **_form_filter)
     variables_by_form: dict[int, list[Any]] = {}
     for v in all_variables:
-        variables_by_form.setdefault(v.form_id, []).append(v)
+        if v.form_id is not None:
+            variables_by_form.setdefault(v.form_id, []).append(v)
 
     for form in forms:
+        if form.form_id is None or form.form_key is None:
+            continue
         if form_whitelist is not None and form.form_id not in form_whitelist:
             continue
         variables = variables_by_form.get(form.form_id, [])

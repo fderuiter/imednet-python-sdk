@@ -341,10 +341,12 @@ def apply_enrichment_pipeline(study_key: str, records: Iterable[Any]) -> Iterato
     logger = logging.getLogger(__name__)
 
     try:
-        from imednet.integrations.enrichment import EnrichmentPipeline
         import importlib
+
+        from imednet.integrations.enrichment import EnrichmentPipeline
+
         cvc = importlib.import_module("imednet_workflows.config_version_control")
-        ConfigVersionStore = cvc.ConfigVersionStore
+        ConfigVersionStore = cvc.ConfigVersionStore  # noqa: N806
 
         store = ConfigVersionStore()
         history = store.get_history(study_key)

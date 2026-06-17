@@ -37,12 +37,13 @@ def list_records(
     with fetching_status("records", study_key):
         records = sdk.records.list(study_key)
 
+    records_list = list(records)
     if output:
-        export_list_to_file(records, "records", output.lower())
+        export_list_to_file(records_list, "records", output.lower())
     else:
         # Display simplified view
         view_models = []
-        for r in records:
+        for r in records_list:
             view_models.append(
                 {
                     "ID": r.record_id,
