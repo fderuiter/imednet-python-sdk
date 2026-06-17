@@ -97,7 +97,13 @@ class UniversalExecutor:
                 get_global_circuit_breaker().record_failure()
                 cause = e.last_attempt.exception() if e.last_attempt else e
                 if isinstance(cause, Exception):
-                    monitor.on_retry_error(cause, self.retries)
+                    try:
+                        monitor.on_retry_error(cause, self.retries)
+                    except Exception as _exc:
+                        if _exc is not cause:
+                            raise
+                if cause is not None and cause is not e:
+                    raise cause
                 raise
             except Exception as e:
                 get_global_circuit_breaker().record_failure()
@@ -125,7 +131,13 @@ class UniversalExecutor:
                 get_global_circuit_breaker().record_failure()
                 cause = e.last_attempt.exception() if e.last_attempt else e
                 if isinstance(cause, Exception):
-                    monitor.on_retry_error(cause, self.retries)
+                    try:
+                        monitor.on_retry_error(cause, self.retries)
+                    except Exception as _exc:
+                        if _exc is not cause:
+                            raise
+                if cause is not None and cause is not e:
+                    raise cause
                 raise
             except Exception as e:
                 get_global_circuit_breaker().record_failure()
