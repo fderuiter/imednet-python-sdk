@@ -15,7 +15,7 @@ class Coding(JsonModel):
     record_id: Optional[int]
     variable: Optional[str]
     value: Optional[str]
-    coding_id: Optional[int]
+    coding_id: Optional[str]
     code: Optional[str]
     coded_by: Optional[str]
     dictionary_name: Optional[str]
