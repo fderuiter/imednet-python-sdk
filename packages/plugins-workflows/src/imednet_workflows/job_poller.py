@@ -20,9 +20,24 @@ class BaseJobPoller:
     def _check_complete(self, status: JobStatus, batch_id: str) -> JobStatus:
         return status
 
-    def _check_timeout(self, start_time: float, timeout: int, batch_id: str) -> None:
+    def _evaluate(self, start_time: float, timeout: int, batch_id: str, status: JobStatus) -> bool:
+        """Evaluate if the job is complete, returning True if terminal."""
+        if not status.state or status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
+            return True
         if time.monotonic() - start_time >= timeout:
             raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
+        return False
+
+    def _process_fetch_result(self, status: JobStatus, res: Any) -> JobStatus:
+        """Process the fetched result data and attach to the status object."""
+        if hasattr(res, "json"):
+            try:
+                setattr(status, 'results', res.json())
+            except Exception:
+                setattr(status, 'results', getattr(res, "text", str(res)))
+        else:
+            setattr(status, 'results', res)
+        return status
 
 
 class JobPoller(BaseJobPoller):
@@ -46,22 +61,15 @@ class JobPoller(BaseJobPoller):
             result = self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if not status.state or status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
+            if self._evaluate(start, timeout, batch_id, status):
                 if self._fetch_result and getattr(status, "result_url", None):
                     try:
                         res = self._fetch_result(status.result_url)  # type: ignore
-                        if hasattr(res, "json"):
-                            try:
-                                setattr(status, 'results', res.json())
-                            except Exception:
-                                setattr(status, 'results', getattr(res, "text", str(res)))
-                        else:
-                            setattr(status, 'results', res)
+                        self._process_fetch_result(status, res)
                     except Exception:
                         pass
                 return status
 
-            self._check_timeout(start, timeout, batch_id)
             time.sleep(interval)
 
 
@@ -86,20 +94,13 @@ class AsyncJobPoller(BaseJobPoller):
             result = await self._get_job(study_key, batch_id)
             status = self._check_complete(result, batch_id)
 
-            if not status.state or status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
+            if self._evaluate(start, timeout, batch_id, status):
                 if self._fetch_result and getattr(status, "result_url", None):
                     try:
                         res = await self._fetch_result(status.result_url)  # type: ignore
-                        if hasattr(res, "json"):
-                            try:
-                                setattr(status, 'results', res.json())
-                            except Exception:
-                                setattr(status, 'results', getattr(res, "text", str(res)))
-                        else:
-                            setattr(status, 'results', res)
+                        self._process_fetch_result(status, res)
                     except Exception:
                         pass
                 return status
 
-            self._check_timeout(start, timeout, batch_id)
             await asyncio.sleep(interval)

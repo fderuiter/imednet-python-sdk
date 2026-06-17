@@ -44,6 +44,10 @@ class ListOperation(Generic[T]):
         self.page_size = page_size
         self.parse_func = parse_func
 
+    def _process_item(self, item: Any) -> T:
+        """Process a single raw item from the paginator."""
+        return self.parse_func(item)
+
     def execute_sync(
         self,
         client: RequestorProtocol,
@@ -65,7 +69,7 @@ class ListOperation(Generic[T]):
             params=self.params,
             page_size=self.page_size,
         )
-        return (self.parse_func(item) for item in paginator)
+        return (self._process_item(item) for item in paginator)
 
     def execute_async(
         self,
@@ -91,6 +95,6 @@ class ListOperation(Generic[T]):
 
         async def _generator():
             async for item in paginator:
-                yield self.parse_func(item)
+                yield self._process_item(item)
 
         return _generator()
