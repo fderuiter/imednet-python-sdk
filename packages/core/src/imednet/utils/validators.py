@@ -48,6 +48,9 @@ def parse_datetime(v: str | int | float | datetime) -> datetime:
     return v
 
 
+_drift_reported: set[str] = set()
+
+
 def parse_bool(v: Any) -> bool:
     """
     Normalize boolean values from various representations.
@@ -96,17 +99,21 @@ def parse_bool(v: Any) -> bool:
 
         import logging
 
-        logging.getLogger("imednet.drift").warning(
-            f"Drift detected (destructive): type-changed field. Expected bool, got str (value: {v!r})"
-        )
+        msg = f"Drift detected (destructive): type-changed field. Expected bool, got str (value: {v!r})"
+        drift_key = "Expected bool, got str"
+        if drift_key not in _drift_reported:
+            _drift_reported.add(drift_key)
+            logging.getLogger("imednet.drift").warning(msg)
     elif isinstance(v, (int, float)):
         return bool(v)
     elif v is not None:
         import logging
 
-        logging.getLogger("imednet.drift").warning(
-            f"Drift detected (destructive): type-changed field. Expected bool, got {type(v).__name__} (value: {v!r})"
-        )
+        msg = f"Drift detected (destructive): type-changed field. Expected bool, got {type(v).__name__} (value: {v!r})"
+        drift_key = f"Expected bool, got {type(v).__name__}"
+        if drift_key not in _drift_reported:
+            _drift_reported.add(drift_key)
+            logging.getLogger("imednet.drift").warning(msg)
     return False
 
 
@@ -128,9 +135,11 @@ def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
                 raise
             import logging
 
-            logging.getLogger("imednet.drift").warning(
-                f"Drift detected (destructive): type-changed field. Expected int, got {type(v).__name__} (value: {v!r})"
-            )
+            msg = f"Drift detected (destructive): type-changed field. Expected int, got {type(v).__name__} (value: {v!r})"
+            drift_key = f"Expected int, got {type(v).__name__}"
+            if drift_key not in _drift_reported:
+                _drift_reported.add(drift_key)
+                logging.getLogger("imednet.drift").warning(msg)
             return default
 
 
