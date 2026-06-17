@@ -10,7 +10,8 @@ from .paginated_grid import paginated_slice
 
 def apply_enrichment_to_df(df: pd.DataFrame) -> pd.DataFrame:
     """Mask sensitive fields and apply study-specific enrichment rules."""
-    from imednet.utils.security import global_sensitivity_registry
+    from importlib import import_module
+    global_sensitivity_registry = import_module("imednet.utils.security").global_sensitivity_registry
 
     if df.empty:
         return df
@@ -33,8 +34,8 @@ def apply_enrichment_to_df(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     try:
-        from imednet.integrations.enrichment import EnrichmentPipeline
-        from imednet_workflows.config_version_control import ConfigVersionStore
+        EnrichmentPipeline = import_module("imednet.integrations.enrichment").EnrichmentPipeline
+        ConfigVersionStore = import_module("imednet_workflows.config_version_control").ConfigVersionStore
 
         store = ConfigVersionStore()
         history = store.get_history(study_key)
