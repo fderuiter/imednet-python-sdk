@@ -101,7 +101,7 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
 
     # Export records
     with MongoDbExportSink(uri, database, collection, "STUDY1") as sink:
-        sink.write(fake_records)
+        sink.write_batch(fake_records, batch_id="STUDY1/test")
 
     # Verify directly via PyMongo
     client = pymongo.MongoClient(uri)
@@ -128,7 +128,7 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
     config = Neo4jSinkConfig(batch_size=10, idempotent=True)
 
     with Neo4jExportSink(uri, auth, "STUDY1", config=config) as sink:
-        sink.write(fake_records)
+        sink.write_batch(fake_records, batch_id="STUDY1/test")
 
     # Verify directly via Neo4j Driver
     driver = neo4j.GraphDatabase.driver(uri, auth=auth)
