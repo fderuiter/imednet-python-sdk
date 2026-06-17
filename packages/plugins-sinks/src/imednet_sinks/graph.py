@@ -190,20 +190,7 @@ class Neo4jExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
-        """Write *records* to Neo4j using MERGE (idempotent) or CREATE.
-
-        Parameters
-        ----------
-        records:
-            Sequence of typed ``Record`` model instances.
-        batch_id:
-            Idempotency key (e.g. ``"MYSTUDY/FORM1/0"``).
-
-        Returns
-        -------
-        int
-            Number of records written.
-        """
+        """Write *records* to Neo4j using MERGE (idempotent) or CREATE."""
         rows = [_record_to_row(r, self._study_key) for r in records]
         if not rows:
             return 0
@@ -211,30 +198,29 @@ class Neo4jExportSink(ExportSink):
         cypher = _MERGE_RECORD_CYPHER if self.config.idempotent else _CREATE_RECORD_CYPHER
         cfg = self.config if isinstance(self.config, Neo4jSinkConfig) else Neo4jSinkConfig()
 
-        last_exc: Optional[Exception] = None
-        for attempt in range(self.config.max_retries + 1):
-            try:
-                with self._driver.session(database=cfg.database) as session:
-                    session.run(cypher, rows=rows)
-                logger.debug("Wrote batch %s (%d records)", batch_id, len(rows))
-                return len(rows)
-            except Exception as exc:  # noqa: BLE001
-                last_exc = exc
-                if attempt < self.config.max_retries:
-                    delay = self.config.retry_backoff * (2**attempt)
-                    logger.warning(
-                        "Batch %s attempt %d failed (%s); retrying in %.1fs",
-                        batch_id,
-                        attempt + 1,
-                        exc,
-                        delay,
-                    )
-                    time.sleep(delay)
+        from imednet.core.operations.executor import UniversalExecutor
 
-        raise ExportBatchError(
-            f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {last_exc}",
+        def execute_export() -> int:
+            with self._driver.session(database=cfg.database) as session:
+                session.run(cypher, rows=rows)
+            logger.debug("Wrote batch %s (%d records)", batch_id, len(rows))
+            return len(rows)
+
+        executor = UniversalExecutor(
+            retries=self.config.max_retries,
+            backoff_factor=self.config.retry_backoff,
+            tracer=self.config.tracer,
+            operation_name="export_graph",
             batch_id=batch_id,
         )
+
+        try:
+            return executor.execute(execute_export)
+        except Exception as exc:
+            raise ExportBatchError(
+                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
+                batch_id=batch_id,
+            ) from exc
 
     def flush(self) -> None:
         """No-op: Neo4j writes are committed per transaction."""

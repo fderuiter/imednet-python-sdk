@@ -21,7 +21,7 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from imednet.core.http.circuit_breaker import CircuitBreakerError, get_global_circuit_breaker
+from imednet.core.operations.circuit_breaker import CircuitBreakerError, get_global_circuit_breaker
 from imednet.core.http.handlers import handle_response
 from imednet.core.http.monitor import RequestMonitor
 from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
