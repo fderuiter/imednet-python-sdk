@@ -71,18 +71,21 @@ class DataExtractionWorkflow:
         # Client-side filtering is used below for subject/visit matching,
         # so no need to add complex 'in' clauses here even if build_filter_string supported it.
 
-        records = self._sdk.get_records(
+        records_iterator = self._sdk.get_records(
             study_key=study_key,
             record_data_filter=None,
             **final_record_filter_dict,
         )
+
+        records = list(records_iterator)
 
         # Client-side filtering fallback
         if matching_subject_keys:
             records = [r for r in records if r.subject_key in matching_subject_keys]
         # Corrected attribute from visit_oid to visit_id and variable name
         if matching_visit_ids:
-            records = [r for r in records if r.visit_id in matching_visit_ids]
+            stringified_visit_ids = {str(vid) for vid in matching_visit_ids}
+            records = [r for r in records if str(r.visit_id) in stringified_visit_ids]
 
         return records
 

@@ -35,7 +35,7 @@ def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
     sdk.get_records.assert_called_once_with(study_key="STUDY", record_data_filter=None)
     assert sdk.get_records.call_args.kwargs == {"study_key": "STUDY", "record_data_filter": None}
 
-    assert [r.record_id for r in result] == [1, 2]
+    assert [r.record_id for r in result] == ["1", "2"]
 
 
 def test_extract_audit_trail_builds_filters_and_dates() -> None:

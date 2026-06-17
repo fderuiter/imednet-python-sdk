@@ -144,7 +144,7 @@ def test_extract_canonical_records_maps_ae_pd_dd_and_collects_row_errors() -> No
 
     assert len(result.validation_errors) == 1
     error = result.validation_errors[0]
-    assert error["recordId"] == 2
+    assert error["recordId"] == "2"
     assert error["formKey"] == "PD_FORM"
     assert error["domain"] == "PD"
     assert error["payload"]["dvDate"] == "invalid-date-format"
