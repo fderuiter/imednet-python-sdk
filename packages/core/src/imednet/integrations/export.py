@@ -273,17 +273,20 @@ def export_to_json(
 
     try:
         from importlib import import_module
-        EnrichmentPipeline = import_module("imednet.integrations.enrichment").EnrichmentPipeline
-        ConfigVersionStore = import_module("imednet_workflows.config_version_control").ConfigVersionStore
 
-        store = ConfigVersionStore()
+        enrichment_pipeline = import_module("imednet.integrations.enrichment").EnrichmentPipeline
+        config_version_store = import_module(
+            "imednet_workflows.config_version_control"
+        ).ConfigVersionStore
+
+        store = config_version_store()
         history = store.get_history(study_key)
         if history:
             latest_commit = history[-1]["commit_id"]
             config = store.rollback_config(study_key, latest_commit)
 
             logger.info("Enrichment pipeline triggered")
-            pipeline = EnrichmentPipeline(config)
+            pipeline = enrichment_pipeline(config)
             data = pipeline.process(data)
             logger.info("Enrichment pipeline completed successfully")
     except Exception as e:
