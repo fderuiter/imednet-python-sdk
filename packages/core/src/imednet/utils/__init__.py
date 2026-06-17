@@ -35,7 +35,7 @@ def __getattr__(name: str) -> typing.Any:  # noqa: D401
         module_path, obj_name = _LAZY_ATTRS[name]
     except KeyError:
         raise AttributeError(name) from None
-    mod = import_module(module_path)
+    mod = import_module(module_path)  # nosemgrep
     obj = getattr(mod, obj_name)
     globals()[name] = obj
     return obj

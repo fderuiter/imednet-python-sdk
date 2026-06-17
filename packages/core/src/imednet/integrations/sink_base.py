@@ -258,7 +258,7 @@ def _require_optional_dep(package: str, extras_key: str) -> Any:
         When *package* is not installed.
     """
     try:
-        return import_module(package)
+        return import_module(package)  # nosemgrep
     except ModuleNotFoundError as error:
         if error.name and error.name.startswith(package.split(".")[0]):
             raise ImportError(

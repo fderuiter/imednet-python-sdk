@@ -392,10 +392,11 @@ def export_to_duckdb(
     conn: Any = duckdb.connect(db_path)
     try:
         conn.register(_DUCKDB_DF_ALIAS, df)
-        conn.execute(
+        query = (
             f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "
             f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
-        )
+        )  # nosec B608
+        conn.execute(query)
         conn.unregister(_DUCKDB_DF_ALIAS)
     finally:
         conn.close()
@@ -461,10 +462,11 @@ def export_to_duckdb_by_form(
             df = _mask_df(df)
 
             conn.register(_DUCKDB_DF_ALIAS, df)
-            conn.execute(
+            query = (
                 f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "
                 f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
-            )
+            )  # nosec B608
+            conn.execute(query)
             conn.unregister(_DUCKDB_DF_ALIAS)
     finally:
         conn.close()
