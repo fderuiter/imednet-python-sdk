@@ -289,7 +289,12 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        module_spec = importlib.util.spec_from_file_location(module_name, page_path)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
     finally:
         for key, original in saved.items():
             if original is None:
@@ -379,7 +384,13 @@ def _run_sites_page(
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
-        module_globals = runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        module_spec = importlib.util.spec_from_file_location(module_name, page_path)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
+        module_globals = module.__dict__
     finally:
         for key, original in saved.items():
             if original is None:
@@ -463,7 +474,13 @@ def _run_records_page(
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
-        module_globals = runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        module_spec = importlib.util.spec_from_file_location(module_name, page_path)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
+        module_globals = module.__dict__
     finally:
         for key, original in saved.items():
             if original is None:
@@ -559,7 +576,12 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
     try:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        module_spec = importlib.util.spec_from_file_location(module_name, page_path)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
     finally:
         if previous_streamlit is None:
             sys.modules.pop("streamlit", None)
@@ -948,7 +970,12 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        module_spec = importlib.util.spec_from_file_location(module_name, page_path)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
     finally:
         for key, original in saved.items():
             if original is None:
