@@ -138,7 +138,9 @@ def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
         variables = schema.variables_for_form(form_key)
         first_var = next(iter(variables.values()))
         form_id = first_var.form_id
-        record_data = {name: _fake_value(var.variable_type) for name, var in variables.items()}
+        record_data = {
+            name: _fake_value(var.variable_type or "") for name, var in variables.items()
+        }
         return {
             "studyKey": faker.bothify(text="??????"),
             "intervalId": faker.random_int(min=1, max=10000),

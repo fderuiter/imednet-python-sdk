@@ -50,7 +50,7 @@ def export_records_csv(
             ("pandas is required for export_records_csv. Install with 'pip install pandas'.")
         )
 
-    records = sdk.records.list(study_key=study_key)
+    records = list(sdk.records.list(study_key=study_key))
     df = records_to_dataframe(records, flatten=flatten)
 
     # Sanitize data to prevent CSV injection

@@ -22,7 +22,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
     with open(postman_path, 'r') as f:
         data = json.load(f)
 
-    schemas = {}
+    schemas: Dict[str, Dict[str, Any]] = {}
 
     if not isinstance(data, dict):
         return schemas
@@ -121,7 +121,7 @@ class ModelEngine:
             return create_model(model_name, __base__=base_cls)
 
         schema = schemas[model_name]
-        fields = {}
+        fields: Dict[str, Any] = {}
 
         for key, val in schema.items():
             snake_key = to_snake(key)

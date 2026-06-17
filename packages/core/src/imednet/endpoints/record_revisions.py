@@ -14,7 +14,7 @@ class RecordRevisionsEndpoint(RecordRevisionsOperationDef, EdcSyncListGetEndpoin
     pass
 
 
-class AsyncRecordRevisionsEndpoint(
+class AsyncRecordRevisionsEndpoint(  # type: ignore[misc]
     RecordRevisionsOperationDef, EdcAsyncListGetEndpoint[RecordRevision]
-):  # type: ignore[misc]
+):
     pass

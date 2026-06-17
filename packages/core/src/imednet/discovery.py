@@ -40,7 +40,7 @@ def discover_study_key(sdk: ImednetSDK) -> str:
     studies = list(sdk.studies.list())
     if not studies:
         raise NoLiveDataError("No studies available for live tests")
-    return studies[0].study_key
+    return studies[0].study_key or ""
 
 
 def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
@@ -48,7 +48,7 @@ def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
     forms = list(sdk.forms.list(study_key=study_key))
     for form in forms:
         if form.subject_record_report and not form.disabled:
-            return form.form_key
+            return form.form_key or ""
     raise NoLiveDataError("No forms available for record creation")
 
 
@@ -65,7 +65,7 @@ def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
     for site in sites:
         status = getattr(site, "site_enrollment_status", "")
         if is_site_eligible(status):
-            return site.site_name
+            return site.site_name or ""
         encountered.append(status)
     counts = dict(Counter(encountered))
     logger.warning(
@@ -105,5 +105,5 @@ def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:
     intervals = list(sdk.intervals.list(study_key=study_key))
     for interval in intervals:
         if not getattr(interval, "disabled", False):
-            return interval.interval_name
+            return interval.interval_name or ""
     raise NoLiveDataError(f"No active intervals available for study {study_key}")
