@@ -49,7 +49,7 @@ class ImednetJobSensor(BaseSensorOperator):
         sdk = self._get_sdk()
         job = sdk.jobs.get(self.study_key, self.batch_id)
         if not job.state:
-            return False
+            return True
         state = job.state.upper()
         if state in TERMINAL_STATES:
             if state not in ("COMPLETED", "SUCCESS"):
