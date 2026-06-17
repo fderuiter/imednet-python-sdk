@@ -1,5 +1,5 @@
 Security Controls & Policies
-===========================
+============================
 
 The iMednet SDK implements a Universal Security Framework to guarantee that
 Protected Health Information (PHI) and system credentials remain secure
