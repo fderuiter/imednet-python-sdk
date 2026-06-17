@@ -190,7 +190,9 @@ except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover -
 
 
 try:
-    if find_spec("imednet_streamlit.app") is not None:  # pragma: no cover - optional streamlit plugin
+    if (
+        find_spec("imednet_streamlit.app") is not None
+    ):  # pragma: no cover - optional streamlit plugin
         app.command("dashboard")(run_dashboard)
     else:  # pragma: no cover
         _register_missing_dashboard_commands()

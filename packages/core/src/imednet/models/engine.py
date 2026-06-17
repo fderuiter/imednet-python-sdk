@@ -111,7 +111,7 @@ def to_snake(name: str) -> str:
 try:
     from opentelemetry import trace as _trace
 
-    tracer = _trace.get_tracer(__name__)
+    tracer: Any = _trace.get_tracer(__name__)
 except Exception:
     tracer = None
 

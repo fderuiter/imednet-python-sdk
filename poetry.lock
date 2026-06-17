@@ -76,6 +76,7 @@ description = "A coverage-guided fuzzer for Python and Python extensions."
 optional = false
 python-versions = "*"
 groups = ["dev"]
+markers = "python_version == \"3.10\""
 files = [
     {file = "atheris-2.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b91cb296d60915c3efa4f6db48f09c4678b574cddb7ca98035f1cb9d9fb96f64"},
     {file = "atheris-2.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e4e43d1ee4760916a84ff73c9c6cf9ac6eee80fc030479bbed43fe0b8e994981"},
@@ -3824,4 +3825,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "d6aafd292905533b51b255fabec5c3cc68591654cc802328ce58d5561e272631"
+content-hash = "77e76b2f6064671252fb53b96e50f96bb66846c95d9613eb13cb81db736d9b95"

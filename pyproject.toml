@@ -43,7 +43,7 @@ pip = "^26.0"
 neo4j = "^6.2.0"
 pymongo = "^4.17.0"
 bandit = "^1.9.4"
-atheris = "^2.3.0"
+atheris = { version = "^2.3.0", python = ">=3.10,<3.11" }
 
 
 [tool.poetry.group.docs.dependencies]

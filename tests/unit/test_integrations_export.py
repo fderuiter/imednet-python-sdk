@@ -12,6 +12,7 @@ import imednet.integrations.export as export_mod
 
 def _setup_mapper(monkeypatch):
     df = MagicMock()
+    df.where.return_value.to_dict.return_value = [{"col": "val"}]
     mapper_inst = MagicMock()
     mapper_inst.dataframe.return_value = df
     mapper_cls = MagicMock(return_value=mapper_inst)
@@ -61,10 +62,13 @@ def test_export_to_excel(monkeypatch):
 
 
 def test_export_to_json(monkeypatch):
+    import builtins
+    mock_open = MagicMock()
+    monkeypatch.setattr(builtins, "open", mock_open)
     df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
     sdk = MagicMock()
 
-    export_mod.export_to_json(sdk, "STUDY", "out.json", orient="records")
+    export_mod.export_to_json(sdk, "STUDY", "out.json", indent=2)
 
     mapper_cls.assert_called_once_with(sdk)
     mapper_inst.dataframe.assert_called_once_with(
@@ -73,7 +77,8 @@ def test_export_to_json(monkeypatch):
         variable_whitelist=None,
         form_whitelist=None,
     )
-    df.to_json.assert_called_once_with("out.json", orient="records", index=False)
+    df.where.assert_called()
+    mock_open.assert_called_once_with("out.json", "w")
 
 
 def test_export_to_parquet(monkeypatch):
