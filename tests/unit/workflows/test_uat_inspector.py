@@ -101,14 +101,15 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
     started = 0
     release = asyncio.Event()
 
-    async def delayed_result(name: str, payload: list[Any]) -> list[Any]:
+    async def delayed_result(name: str, payload: list[Any]) -> AsyncIterator[Any]:
         nonlocal started
         calls[name] += 1
         started += 1
         if started == 4:
             release.set()
         await release.wait()
-        return payload
+        for item in payload:
+            yield item
 
     sdk.async_get_forms = lambda study_key: delayed_result(
         "forms", [Form(form_key="F1", form_name="Form 1")]
@@ -132,19 +133,24 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
 @pytest.mark.asyncio
 async def test_async_inspect_force_refresh_bypasses_cache() -> None:
     sdk = MagicMock()
-    sdk.async_get_forms = AsyncMock(return_value=[])
-    sdk.async_get_variables = AsyncMock(return_value=[])
-    sdk.async_get_intervals = AsyncMock(return_value=[])
-    sdk.async_get_sites = AsyncMock(return_value=[])
+
+    async def empty_async_gen() -> AsyncIterator[Any]:
+        if False:
+            yield None
+
+    sdk.async_get_forms = MagicMock(return_value=empty_async_gen())
+    sdk.async_get_variables = MagicMock(return_value=empty_async_gen())
+    sdk.async_get_intervals = MagicMock(return_value=empty_async_gen())
+    sdk.async_get_sites = MagicMock(return_value=empty_async_gen())
 
     inspector = StudySchemaInspector(sdk)
     await inspector.async_inspect("ST")
     await inspector.async_inspect("ST", force_refresh=True)
 
-    assert sdk.async_get_forms.await_count == 2
-    assert sdk.async_get_variables.await_count == 2
-    assert sdk.async_get_intervals.await_count == 2
-    assert sdk.async_get_sites.await_count == 2
+    assert sdk.async_get_forms.call_count == 2
+    assert sdk.async_get_variables.call_count == 2
+    assert sdk.async_get_intervals.call_count == 2
+    assert sdk.async_get_sites.call_count == 2
 
 
 def test_inspect_with_async_sdk_raises_type_error() -> None:
