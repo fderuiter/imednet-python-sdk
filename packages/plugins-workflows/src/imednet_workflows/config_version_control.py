@@ -18,7 +18,7 @@ from threading import RLock
 from typing import Any
 
 from imednet.spi.models import StudyConfiguration
-from imednet.utils.serialization import flatten
+import importlib
 
 _DEFAULT_DB_PATH = Path(
     os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3")
@@ -243,6 +243,8 @@ class ConfigVersionStore:
         data_a = self._fetch_config_data(commit_a)
         data_b = self._fetch_config_data(commit_b)
 
+        serialization = importlib.import_module("imednet.utils.serialization")
+        flatten = serialization.flatten
         flat_a = flatten(data_a)
         flat_b = flatten(data_b)
 

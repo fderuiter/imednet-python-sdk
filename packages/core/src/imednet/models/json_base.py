@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import types
 from datetime import datetime
 from typing import Any, Callable, Dict, Union, get_args, get_origin
 
@@ -38,6 +39,12 @@ def _optional_datetime(v: Any) -> Any:
     return None if not v else parse_datetime(v)
 
 
+def _optional_dict(v: Any) -> Any:
+    return None if v is None else parse_dict_or_default(v)
+
+def _optional_list(v: Any) -> Any:
+    return None if v is None else parse_list_or_default(v)
+
 def _extract_single_item(v: Any) -> Any:
     if isinstance(v, list) and len(v) > 0 and isinstance(v[0], dict):
         import logging
@@ -58,7 +65,7 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
     origin = get_origin(annotation)
     optional = False
 
-    if origin is Union:
+    if origin is Union or (hasattr(types, "UnionType") and origin is types.UnionType):
         args = [a for a in get_args(annotation) if a is not type(None)]
         if len(args) == 1:
             annotation = args[0]
@@ -68,9 +75,9 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
     normalizer = _identity
 
     if origin is list:
-        normalizer = parse_list_or_default
+        normalizer = _optional_list if optional else parse_list_or_default
     elif origin is dict:
-        normalizer = parse_dict_or_default
+        normalizer = _optional_dict if optional else parse_dict_or_default
     elif annotation is str:
         normalizer = _optional_str if optional else parse_str_or_default
     elif annotation is int:

@@ -235,7 +235,7 @@ class CachedRecordsLoader:
                 record.form_key,
                 record.date_modified.isoformat()  # type: ignore[union-attr]
                 if hasattr(record.date_modified, "isoformat")
-                else str(record.date_modified),
+                else str(record.date_modified).replace(" ", "T"),
                 json.dumps(record.model_dump(mode="json", by_alias=True), sort_keys=True),
             )
             for record in records

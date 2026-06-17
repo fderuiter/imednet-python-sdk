@@ -342,7 +342,9 @@ def apply_enrichment_pipeline(study_key: str, records: Iterable[Any]) -> Iterato
 
     try:
         from imednet.integrations.enrichment import EnrichmentPipeline
-        from imednet_workflows.config_version_control import ConfigVersionStore
+        import importlib
+        cvc = importlib.import_module("imednet_workflows.config_version_control")
+        ConfigVersionStore = cvc.ConfigVersionStore
 
         store = ConfigVersionStore()
         history = store.get_history(study_key)
