@@ -246,7 +246,7 @@ def validate_record_entry(
         fid = record.get("formId") or record.get("form_id") or 0
         fk = schema.form_key_from_id(fid)
     if fk:
-        validate_record_data(schema, fk, record.get("data", {}))
+        validate_record_data(schema, fk, record.get("recordData", record.get("data", {})))
 
 
 class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
@@ -304,7 +304,7 @@ class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
         form_key, needs_refresh = self._needs_refresh(record)
         if needs_refresh:
             self.refresh(study_key)
-        self._validate_cached(form_key, record.get("data", {}))
+        self._validate_cached(form_key, record.get("recordData", record.get("data", {})))
 
     def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
         """Validate a batch of record payloads."""
@@ -334,7 +334,7 @@ class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetSDK"]):
         form_key, needs_refresh = self._needs_refresh(record)
         if needs_refresh:
             await self.refresh(study_key)
-        self._validate_cached(form_key, record.get("data", {}))
+        self._validate_cached(form_key, record.get("recordData", record.get("data", {})))
 
     async def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
         """Validate a batch of record payloads asynchronously."""
