@@ -64,24 +64,7 @@ def fake_interval() -> Dict[str, Any]:
         "disabled": faker.boolean(),
         "dateCreated": _timestamp(),
         "dateModified": _timestamp(),
-        "timeline": "Start Date End Date",
-        "definedUsingInterval": faker.word().title(),
-        "windowCalculationForm": faker.word().title(),
-        "windowCalculationDate": faker.lexify(text="????"),
-        "actualDateForm": faker.word().title(),
-        "actualDate": faker.lexify(text="????"),
-        "dueDateWillBeIn": faker.random_int(min=1, max=60),
-        "negativeSlack": faker.random_int(min=1, max=14),
-        "positiveSlack": faker.random_int(min=1, max=14),
-        "eproGracePeriod": faker.random_int(min=1, max=7),
-        "forms": [
-            {
-                "formId": faker.random_int(min=1, max=10000),
-                "formKey": faker.lexify(text="????"),
-                "formName": faker.word().title(),
-            }
-        ],
-    }
+        }
 
 
 def fake_query() -> Dict[str, Any]:
@@ -90,10 +73,7 @@ def fake_query() -> Dict[str, Any]:
     return {
         "studyKey": faker.bothify(text="??????"),
         "subjectId": faker.random_int(min=1, max=10000),
-        "subjectOid": faker.uuid4(),
-        "annotationType": faker.random_element(["subject", "record", "question"]),
         "annotationId": faker.random_int(min=1, max=10000),
-        "type": faker.random_element(["subject", "record", "question"]),
         "description": faker.sentence(nb_words=3),
         "recordId": faker.random_int(min=1, max=10000),
         "variable": faker.lexify(text="????"),
@@ -103,12 +83,8 @@ def fake_query() -> Dict[str, Any]:
         "queryComments": [
             {
                 "sequence": 1,
-                "annotationStatus": "Monitor Query Open",
-                "user": faker.user_name(),
-                "comment": faker.sentence(),
                 "closed": False,
-                "date": _timestamp(),
-            }
+                }
         ],
     }
 
@@ -198,12 +174,8 @@ def fake_form() -> Dict[str, Any]:
         "formName": faker.word().title(),
         "formType": faker.random_element(["CRF", "Diary"]),
         "revision": faker.random_int(min=1, max=10),
-        "embeddedLog": faker.boolean(),
-        "enforceOwnership": faker.boolean(),
-        "userAgreement": faker.boolean(),
         "subjectRecordReport": faker.boolean(),
         "unscheduledVisit": faker.boolean(),
-        "otherForms": faker.boolean(),
         "eproForm": faker.boolean(),
         "allowCopy": faker.boolean(),
         "disabled": faker.boolean(),
@@ -222,17 +194,13 @@ def fake_variable() -> Dict[str, Any]:
         "variableName": faker.lexify(text="????"),
         "sequence": faker.random_int(min=1, max=100),
         "revision": faker.random_int(min=1, max=10),
-        "disabled": faker.boolean(),
         "dateCreated": _timestamp(),
         "dateModified": _timestamp(),
         "formId": faker.random_int(min=1, max=10000),
-        "variableOid": faker.uuid4(),
-        "deleted": faker.boolean(),
         "formKey": faker.lexify(text="????"),
         "formName": faker.word().title(),
         "label": faker.word().title(),
-        "blinded": faker.boolean(),
-    }
+        }
 
 
 def fake_forms_for_cache(num_forms: int = 1, study_key: Optional[str] = None) -> List[Form]:
@@ -281,8 +249,6 @@ def fake_visit() -> Dict[str, Any]:
         "endDate": _timestamp(),
         "dueDate": _timestamp(),
         "visitDate": _timestamp(),
-        "visitDateForm": faker.word().title(),
-        "visitDateQuestion": faker.word(),
         "deleted": False,
         "dateCreated": _timestamp(),
         "dateModified": _timestamp(),
@@ -301,14 +267,12 @@ def fake_coding() -> Dict[str, Any]:
         "formId": faker.random_int(min=1, max=10000),
         "formName": faker.word().title(),
         "formKey": faker.lexify(text="????"),
-        "revision": faker.random_int(min=1, max=5),
         "recordId": faker.random_int(min=1, max=10000),
         "variable": faker.lexify(text="????"),
         "value": faker.word(),
         "codingId": faker.random_int(min=1, max=10000),
         "code": faker.lexify(text="???"),
         "codedBy": faker.user_name(),
-        "reason": faker.sentence(nb_words=3),
         "dictionaryName": faker.word().title(),
         "dictionaryVersion": str(faker.random_int(min=1, max=5)),
         "dateCoded": _timestamp(),
@@ -322,19 +286,14 @@ def fake_record_revision() -> Dict[str, Any]:
         "studyKey": faker.bothify(text="??????"),
         "recordRevisionId": faker.random_int(min=1, max=10000),
         "recordId": faker.random_int(min=1, max=10000),
-        "recordOid": faker.uuid4(),
         "recordRevision": faker.random_int(min=1, max=10),
         "dataRevision": faker.random_int(min=1, max=10),
         "recordStatus": faker.random_element(["Record Incomplete", "Record Complete"]),
         "subjectId": faker.random_int(min=1, max=10000),
-        "subjectOid": faker.uuid4(),
         "subjectKey": f"{faker.random_int(100, 999)}-{faker.random_int(100, 999)}",
         "siteId": faker.random_int(min=1, max=10000),
         "formKey": faker.lexify(text="????"),
         "intervalId": faker.random_int(min=1, max=10000),
-        "role": faker.word(),
-        "user": faker.user_name(),
-        "reasonForChange": faker.sentence(nb_words=3),
         "deleted": False,
         "dateCreated": _timestamp(),
     }
@@ -362,10 +321,7 @@ def fake_job() -> Dict[str, Any]:
         "jobId": faker.uuid4(),
         "batchId": faker.lexify(text="????????"),
         "state": faker.random_element(["OPEN", "RUNNING", "COMPLETE"]),
-        "dateCreated": _timestamp(),
-        "dateStarted": _timestamp(),
-        "dateFinished": _timestamp(),
-    }
+        }
 
 
 def fake_user() -> Dict[str, Any]:
@@ -378,20 +334,7 @@ def fake_user() -> Dict[str, Any]:
         "lastName": faker.last_name(),
         "email": faker.email(),
         "userActiveInStudy": faker.boolean(),
-        "roles": [
-            {
-                "dateCreated": _timestamp(),
-                "dateModified": _timestamp(),
-                "roleId": faker.lexify(text="????"),
-                "communityId": faker.random_int(min=1, max=10000),
-                "name": faker.word().title(),
-                "description": faker.sentence(nb_words=3),
-                "level": faker.random_int(min=1, max=5),
-                "type": faker.word(),
-                "inactive": faker.boolean(),
-            }
-        ],
-    }
+        }
 
 
 __all__ = [
