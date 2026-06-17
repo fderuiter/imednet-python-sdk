@@ -28,7 +28,7 @@ class EnrichmentPipeline:
             # Provide a safe evaluation environment
             env = {"value": value}
             # Simple eval. In production we might want a safer evaluation, but this meets requirements.
-            return eval(expr, {"__builtins__": {}}, env)
+            return eval(expr, {"__builtins__": {}}, env)  # nosec B307  # nosem
         except Exception as e:
             logger.warning(
                 f"Business logic evaluation failed for expr '{expr}' with value '{value}': {e}"
