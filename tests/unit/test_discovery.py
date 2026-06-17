@@ -90,6 +90,7 @@ def test_discover_form_key_chooses_subject_form() -> None:
         Form(study_key="S", form_key="F1", subject_record_report=True, disabled=True),
         Form(study_key="S", form_key="F2", subject_record_report=True, disabled=False),
     ]
+    sdk.variables.list.return_value = [Mock()]
 
     assert discover_form_key(sdk, "S") == "F2"
 
@@ -97,6 +98,7 @@ def test_discover_form_key_chooses_subject_form() -> None:
 def test_discover_form_key_raises_when_no_valid_forms() -> None:
     sdk = Mock()
     sdk.forms.list.return_value = [Form(study_key="S", form_key="SS", subject_record_report=False)]
+    sdk.variables.list.return_value = [Mock()]
 
     with pytest.raises(NoLiveDataError):
         discover_form_key(sdk, "S")
