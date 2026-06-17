@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 from typing_extensions import Self
 
 from imednet.utils.validators import (
+    is_missing_value,
     parse_bool,
     parse_datetime,
     parse_dict_or_default,
@@ -23,19 +24,19 @@ def _identity(v: Any) -> Any:
 
 
 def _optional_str(v: Any) -> Any:
-    return None if v is None else parse_str_or_default(v)
+    return None if is_missing_value(v) else parse_str_or_default(v)
 
 
 def _optional_int(v: Any) -> Any:
-    return None if v is None else parse_int_or_default(v)
+    return None if is_missing_value(v) else parse_int_or_default(v)
 
 
 def _optional_bool(v: Any) -> Any:
-    return None if v is None else parse_bool(v)
+    return None if is_missing_value(v) else parse_bool(v)
 
 
 def _optional_datetime(v: Any) -> Any:
-    return None if not v else parse_datetime(v)
+    return None if is_missing_value(v) else parse_datetime(v)
 
 
 def _extract_single_item(v: Any) -> Any:
@@ -108,12 +109,19 @@ class JsonModel(BaseModel):
     @classmethod
     def from_json(cls, data: Any) -> Self:
         """Validate data coming from JSON APIs."""
-        if isinstance(data, list) and len(data) > 0 and isinstance(data[0], dict):
-            import logging
-            logging.getLogger(__name__).warning(
-                f"Structural shift detected: API returned a list where an object ({cls.__name__}) was expected. Coercing by extracting the first item."
-            )
-            data = data[0]
+        if isinstance(data, list):
+            if len(data) > 0 and isinstance(data[0], dict):
+                import logging
+                logging.getLogger(__name__).warning(
+                    f"Structural shift detected: API returned a list where an object ({cls.__name__}) was expected. Coercing by extracting the first item."
+                )
+                data = data[0]
+            elif len(data) == 0:
+                import logging
+                logging.getLogger(__name__).warning(
+                    f"Structural shift detected: API returned an empty list where an object ({cls.__name__}) was expected. Coercing to empty dict."
+                )
+                data = {}
             
         try:
             return cls.model_validate(data)
@@ -147,7 +155,7 @@ class JsonModel(BaseModel):
         incoming_keys = set(data.keys())
 
         unexpected_fields = incoming_keys - defined_fields
-        if unexpected_fields:
+        if unexpected_fields and cls.model_config.get("extra") != "ignore":
             msg = f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}"
             if msg not in _drift_reported:
                 _drift_reported.add(msg)

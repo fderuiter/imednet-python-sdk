@@ -154,7 +154,7 @@ def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list)
     """
     Normalize list values, defaulting if None. Ensures result is a list.
     """
-    if v is None:
+    if is_missing_value(v):
         return default_factory()
     if isinstance(v, list):
         return v
@@ -172,7 +172,7 @@ def parse_dict_or_default(
     """
     Normalize dictionary values, defaulting if None. Ensures result is a dict.
     """
-    if v is None:
+    if is_missing_value(v):
         return default_factory()
     if isinstance(v, dict):
         return v
