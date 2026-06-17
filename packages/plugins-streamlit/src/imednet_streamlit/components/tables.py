@@ -11,7 +11,10 @@ from .paginated_grid import paginated_slice
 def apply_enrichment_to_df(df: pd.DataFrame) -> pd.DataFrame:
     """Mask sensitive fields and apply study-specific enrichment rules."""
     from importlib import import_module
-    global_sensitivity_registry = import_module("imednet.utils.security").global_sensitivity_registry
+
+    global_sensitivity_registry = import_module(
+        "imednet.utils.security"
+    ).global_sensitivity_registry
 
     if df.empty:
         return df
@@ -34,15 +37,19 @@ def apply_enrichment_to_df(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     try:
-        EnrichmentPipeline = import_module("imednet.integrations.enrichment").EnrichmentPipeline
-        ConfigVersionStore = import_module("imednet_workflows.config_version_control").ConfigVersionStore
+        enrichment_pipeline_cls = import_module(
+            "imednet.integrations.enrichment"
+        ).EnrichmentPipeline
+        config_version_store_cls = import_module(
+            "imednet_workflows.config_version_control"
+        ).ConfigVersionStore
 
-        store = ConfigVersionStore()
+        store = config_version_store_cls()
         history = store.get_history(study_key)
         if history:
             latest_commit = history[-1]["commit_id"]
             config = store.rollback_config(study_key, latest_commit)
-            pipeline = EnrichmentPipeline(config)
+            pipeline = enrichment_pipeline_cls(config)
 
             records = df.where(pd.notnull(df), None).to_dict(orient="records")
             records = pipeline.process(records)
