@@ -51,6 +51,7 @@ def _extract_single_item(v: Any) -> Any:
 
 import types
 
+
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
     if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
         return _NORMALIZERS[cls][field_name]
