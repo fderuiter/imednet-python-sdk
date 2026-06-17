@@ -44,7 +44,7 @@ class ClientFactory:
             retry_policy=retry_policy,
             auth=auth,
         )
-        client.auth = auth  # type: ignore[attr-defined]
+        client.auth = auth
         return client
 
     @staticmethod
@@ -71,5 +71,5 @@ class ClientFactory:
             retry_policy=retry_policy,
             auth=auth,
         )
-        async_client.auth = auth  # type: ignore[attr-defined]
+        async_client.auth = auth
         return async_client

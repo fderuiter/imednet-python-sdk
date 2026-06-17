@@ -27,7 +27,10 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
 }
 
 
-def __getattr__(name: str):  # noqa: D401
+import typing
+
+
+def __getattr__(name: str) -> typing.Any:  # noqa: D401
     try:
         module_path, obj_name = _LAZY_ATTRS[name]
     except KeyError:

@@ -83,7 +83,7 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
 
     @property
     def retry_policy(self) -> RetryPolicy:
-        return cast(RetryPolicy, self._executor.retry_policy)
+        return self._executor.retry_policy
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:

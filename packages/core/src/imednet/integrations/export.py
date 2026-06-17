@@ -8,7 +8,7 @@ from typing import Any, List, Optional
 try:
     import pandas as pd
 except ImportError:
-    pd = None  # type: ignore
+    pd = None
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
@@ -76,12 +76,12 @@ def _to_sql_with_chunking(
             chunk.to_sql(
                 f"{table}_part{i}",
                 engine,
-                if_exists=if_exists,  # type: ignore[arg-type]
+                if_exists=if_exists,
                 index=False,
                 **kwargs,
             )
     else:
-        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)
 
 
 def _records_df(
@@ -172,7 +172,7 @@ def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
         cols = df.select_dtypes(include=[object])
 
     for col in cols:
-        df[col] = df[col].apply(sanitize_csv_formula)  # type: ignore[call-overload]
+        df[col] = df[col].apply(sanitize_csv_formula)
     return df
 
 
@@ -272,8 +272,10 @@ def export_to_json(
         data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
     try:
-        from imednet.integrations.enrichment import EnrichmentPipeline  # type: ignore
-        from imednet_workflows.config_version_control import ConfigVersionStore  # type: ignore
+        from imednet.integrations.enrichment import EnrichmentPipeline
+        from imednet_workflows.config_version_control import (  # type: ignore[import-not-found]
+            ConfigVersionStore,
+        )
 
         store = ConfigVersionStore()
         history = store.get_history(study_key)
@@ -330,7 +332,7 @@ def export_to_sql(
         engine,
         if_exists=if_exists,
         **kwargs,
-    )  # type: ignore[arg-type]
+    )
 
 
 def export_to_duckdb(
@@ -531,7 +533,7 @@ def export_to_sql_by_form(
             engine,
             if_exists=if_exists,
             **kwargs,
-        )  # type: ignore[arg-type]
+        )
 
 
 def export_to_long_sql(

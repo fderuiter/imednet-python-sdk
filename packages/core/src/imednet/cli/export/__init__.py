@@ -17,7 +17,7 @@ app = typer.Typer(name="export", help="Export study data to various formats.")
 __all__ = ["app"]
 
 
-@app.command("parquet")
+@app.command("parquet")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_parquet(
     sdk: ImednetSDK,
@@ -38,7 +38,7 @@ def export_parquet(
         export_to_parquet(sdk, study_key, str(path))
 
 
-@app.command("csv")
+@app.command("csv")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_csv(
     sdk: ImednetSDK,
@@ -59,7 +59,7 @@ def export_csv(
         export_to_csv(sdk, study_key, str(path))
 
 
-@app.command("excel")
+@app.command("excel")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_excel(
     sdk: ImednetSDK,
@@ -80,7 +80,7 @@ def export_excel(
         export_to_excel(sdk, study_key, str(path))
 
 
-@app.command("json")
+@app.command("json")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_json_cmd(
     sdk: ImednetSDK,
@@ -94,7 +94,7 @@ def export_json_cmd(
         export_to_json(sdk, study_key, str(path))
 
 
-@app.command("duckdb")
+@app.command("duckdb")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_duckdb(
     sdk: ImednetSDK,
@@ -145,7 +145,7 @@ def export_duckdb(
         )
 
 
-@app.command("sql")
+@app.command("sql")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_sql(
     sdk: ImednetSDK,
@@ -218,7 +218,7 @@ def export_sql(
             )
 
 
-@app.command("mongodb")
+@app.command("mongodb")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_mongodb(
     sdk: ImednetSDK,
@@ -260,7 +260,7 @@ def export_mongodb(
         )
 
 
-@app.command("neo4j")
+@app.command("neo4j")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_neo4j(
     sdk: ImednetSDK,
@@ -299,7 +299,7 @@ def export_neo4j(
         )
 
 
-@app.command("snowflake")
+@app.command("snowflake")  # type: ignore[misc]  # type: ignore[misc]
 @with_sdk
 def export_snowflake(
     sdk: ImednetSDK,

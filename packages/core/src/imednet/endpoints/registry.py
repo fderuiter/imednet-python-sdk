@@ -8,7 +8,7 @@ allowing for easier extension and maintenance.
 from __future__ import annotations
 
 from types import MappingProxyType
-from typing import Mapping, Type
+from typing import Any, Mapping, Type
 
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
@@ -25,7 +25,7 @@ from imednet.endpoints.users import AsyncUsersEndpoint, UsersEndpoint
 from imednet.endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
 from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
-ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType(
+ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint[Any]]] = MappingProxyType(
     {
         "codings": CodingsEndpoint,
         "forms": FormsEndpoint,
@@ -43,7 +43,7 @@ ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType(
     }
 )
 
-ASYNC_ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint]] = MappingProxyType(
+ASYNC_ENDPOINT_REGISTRY: Mapping[str, Type[GenericEndpoint[Any]]] = MappingProxyType(
     {
         "codings": AsyncCodingsEndpoint,
         "forms": AsyncFormsEndpoint,

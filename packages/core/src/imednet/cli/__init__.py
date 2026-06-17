@@ -58,7 +58,7 @@ load_dotenv()
 app = typer.Typer(help="iMednet SDK Command Line Interface")
 
 
-@app.callback()
+@app.callback()  # type: ignore[misc]
 def main(
     ctx: typer.Context,
     high_contrast: bool = typer.Option(
@@ -109,17 +109,17 @@ def _register_missing_workflow_commands() -> None:
         )
         raise typer.Exit(code=1)
 
-    @workflows_app.command("extract-records")
+    @workflows_app.command("extract-records")  # type: ignore[misc]
     def missing_extract_records() -> None:
         """Execute opinionated business logic (missing plugin)."""
         _missing_plugin()
 
-    @app.command("subject-data")
+    @app.command("subject-data")  # type: ignore[misc]
     def missing_subject_data() -> None:
         """Retrieve all data for a single subject (missing plugin)."""
         _missing_plugin()
 
-    @app.command("sync-worker")
+    @app.command("sync-worker")  # type: ignore[misc]
     def missing_sync_worker() -> None:
         """Run a background cache synchronization worker (missing plugin)."""
         _missing_plugin()
@@ -136,7 +136,7 @@ def _exit_missing_dashboard_plugin() -> NoReturn:
 
 
 def _register_missing_dashboard_commands() -> None:
-    @app.command("dashboard")
+    @app.command("dashboard")  # type: ignore[misc]
     def missing_dashboard() -> None:
         """Launch the iMednet Streamlit reporting dashboard (requires imednet-streamlit plugin)."""
         _exit_missing_dashboard_plugin()
@@ -184,8 +184,8 @@ try:  # pragma: no cover - optional workflows plugin
     app.command("subject-data")(workflows_cli.subject_data)
     app.command("sync-worker")(workflows_cli.sync_worker)
 except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover - optional plugin
-    DataExtractionWorkflow = None  # type: ignore[assignment]
-    SubjectDataWorkflow = None  # type: ignore[assignment]
+    DataExtractionWorkflow = None
+    SubjectDataWorkflow = None
     _register_missing_workflow_commands()
 
 
@@ -195,7 +195,7 @@ else:  # pragma: no cover
     _register_missing_dashboard_commands()
 
 
-@app.command(hidden=True)
+@app.command(hidden=True)  # type: ignore[misc]
 def tui(ctx: typer.Context) -> None:
     """Launch the interactive terminal user interface (Dashboard)."""
     typer.echo("TUI mode has been removed. Please use the CLI commands.")

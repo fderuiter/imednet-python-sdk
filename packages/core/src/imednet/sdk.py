@@ -216,7 +216,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         """Support for context manager protocol."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Cleanup resources when exiting context."""
         self.close()
 
@@ -228,7 +228,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
             "If you require async execution, use AsyncImednetSDK."
         )
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Prevent direct or indirect invocation of the async exit on the sync client."""
         raise TypeError(
             "ImednetSDK is a synchronous client. "
@@ -330,7 +330,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             "Use `async with AsyncImednetSDK(...)` instead."
         )
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous context manager protocol. "
             "Use `async with AsyncImednetSDK(...)` instead."
@@ -339,7 +339,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     async def __aenter__(self) -> "AsyncImednetSDK":
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         await self.aclose()
 
     async def aclose(self) -> None:

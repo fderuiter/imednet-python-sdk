@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterator, Optional
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterator, Optional, cast
 
 import httpx
 from tenacity import (
@@ -181,7 +181,7 @@ class SyncRequestExecutor(BaseRequestExecutor):
 
         def send_fn() -> httpx.Response:
             with self._suppress_httpx_request_logging():
-                return self.send(method, url, **kwargs)
+                return cast(httpx.Response, self.send(method, url, **kwargs))
 
         retryer = Retrying(
             stop=stop_after_attempt(self.retries),
@@ -192,7 +192,9 @@ class SyncRequestExecutor(BaseRequestExecutor):
 
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = retryer(send_fn)
+                response: Optional[httpx.Response] = cast(
+                    Optional[httpx.Response], retryer(send_fn)
+                )
                 return self._process_result(response, monitor)
             except Exception as e:
                 # If we get connection errors inside send_fn, they are wrapped by Tenacity RetryError?
@@ -223,7 +225,7 @@ class AsyncRequestExecutor(BaseRequestExecutor):
 
         async def send_fn() -> httpx.Response:
             with self._suppress_httpx_request_logging():
-                return await self.send(method, url, **kwargs)
+                return cast(httpx.Response, await self.send(method, url, **kwargs))
 
         retryer = AsyncRetrying(
             stop=stop_after_attempt(self.retries),
@@ -234,7 +236,9 @@ class AsyncRequestExecutor(BaseRequestExecutor):
 
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = await retryer(send_fn)
+                response: Optional[httpx.Response] = cast(
+                    Optional[httpx.Response], await retryer(send_fn)
+                )
                 return self._process_result(response, monitor)
             except Exception as e:
                 if isinstance(e, RetryError):

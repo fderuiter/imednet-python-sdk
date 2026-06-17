@@ -2,7 +2,7 @@
 
 import base64
 import json
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from .strategy import AuthStrategy
 
@@ -14,14 +14,16 @@ class OIDCAuth:
         self.token = token
         self._decoded_claims = self._decode_token_claims(token)
 
-    def _decode_token_claims(self, token: str) -> dict:
+    def _decode_token_claims(self, token: str) -> Dict[str, Any]:
         parts = token.split(".")
         if len(parts) != 3:
             return {}  # Not a valid JWT, return empty claims
         payload = parts[1]
         payload += "=" * ((4 - len(payload) % 4) % 4)
         try:
-            return json.loads(base64.urlsafe_b64decode(payload).decode("utf-8"))
+            return cast(
+                Dict[str, Any], json.loads(base64.urlsafe_b64decode(payload).decode("utf-8"))
+            )
         except Exception:
             return {}
 

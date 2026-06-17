@@ -25,7 +25,7 @@ def register_list_command(
 
     if requires_study_key:
 
-        @app.command("list")
+        @app.command("list")  # type: ignore[misc]
         @with_sdk
         def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
             with fetching_status(name, study_key):
@@ -36,7 +36,7 @@ def register_list_command(
 
     else:
 
-        @app.command("list")
+        @app.command("list")  # type: ignore[misc]
         @with_sdk
         def list_cmd_no_study(sdk: ImednetSDK) -> None:
             with fetching_status(name):

@@ -73,3 +73,6 @@ class BaseClient:
 
     def _create_client(self, auth: AuthStrategy) -> Any:
         raise NotImplementedError
+
+
+__all__ = ["BaseClient", "Tracer"]

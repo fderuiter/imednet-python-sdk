@@ -12,7 +12,7 @@ app = typer.Typer(name="jobs", help="Manage background jobs.")
 __all__ = ["app"]
 
 
-@app.command("status")
+@app.command("status")  # type: ignore[misc]
 @with_sdk
 def job_status(
     sdk: ImednetSDK,
@@ -25,7 +25,7 @@ def job_status(
     print(job.model_dump())
 
 
-@app.command("wait")
+@app.command("wait")  # type: ignore[misc]
 @with_sdk
 def job_wait(
     sdk: ImednetSDK,

@@ -15,7 +15,7 @@ app = typer.Typer(name="records", help="Manage records within a study.")
 __all__ = ["app"]
 
 
-@app.command("list")
+@app.command("list")  # type: ignore[misc]
 @with_sdk
 def list_records(
     sdk: ImednetSDK,

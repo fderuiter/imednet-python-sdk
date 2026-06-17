@@ -13,7 +13,7 @@ app = typer.Typer(name="subjects", help="Manage subjects within a study.")
 __all__ = ["app"]
 
 
-@app.command("list")
+@app.command("list")  # type: ignore[misc]
 @with_sdk
 def list_subjects(
     sdk: ImednetSDK,

@@ -96,11 +96,11 @@ def _format_cell_value(value: Any, key: str | None = None) -> str:
         if not value:
             return "[dim]-[/dim]"
         s = ", ".join(str(x) for x in value)
-        return escape(_truncate(s))
+        return str(escape(_truncate(s)))
     if isinstance(value, (list, dict)):
         # Truncate very long list/dict representations
-        return escape(_truncate(str(value)))
-    return escape(str_val)
+        return str(escape(_truncate(str(value))))
+    return str(escape(str_val))
 
 
 def _create_table(items: Sequence[Any], fields: List[str]) -> Table:
@@ -152,7 +152,7 @@ def display_list(
     elif hasattr(first, "dict"):
         data_list = [item.dict() for item in items]
     elif isinstance(first, dict):
-        data_list = list(items)  # type: ignore
+        data_list = list(items)
 
     if not data_list:
         print(items)

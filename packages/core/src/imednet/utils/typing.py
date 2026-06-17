@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple, Union
 try:
     from pandas import DataFrame
 except ImportError:
-    DataFrame = Any  # type: ignore
+    DataFrame = Any
 
 #: Generic JSON object type (mapping of string keys to arbitrary values).
 JsonDict = Dict[str, Any]

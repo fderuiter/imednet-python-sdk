@@ -1,2 +1,1 @@
-from imednet.endpoints.records import Record
-from imednet.endpoints.variables import Variable
+from imednet.models import Record, Variable

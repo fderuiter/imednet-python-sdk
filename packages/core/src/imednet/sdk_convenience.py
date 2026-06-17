@@ -44,7 +44,7 @@ except Exception:
     tracer = None
 
 
-def _trace_method(func: Any) -> Any:
+def _trace_method(func: Callable[..., Any]) -> Callable[..., Any]:
     from functools import wraps
 
     @wraps(func)
@@ -57,7 +57,7 @@ def _trace_method(func: Any) -> Any:
     return wrapper
 
 
-def _async_trace_method(func: Any) -> Any:
+def _async_trace_method(func: Callable[..., Any]) -> Callable[..., Any]:
     from functools import wraps
 
     @wraps(func)
@@ -120,7 +120,9 @@ class _SyncListOperation(Generic[T]):
 
     def __get__(self, instance: Any, owner: Any) -> Callable[..., List[T]]:
         if instance is None:
-            return self  # type: ignore
+            from typing import cast
+
+            return cast(Callable[..., List[T]], self)
         endpoint = getattr(instance, self.endpoint_name)
 
         @_trace_method
@@ -142,7 +144,9 @@ class _AsyncListOperation(Generic[T]):
 
     def __get__(self, instance: Any, owner: Any) -> Callable[..., Awaitable[List[T]]]:
         if instance is None:
-            return self  # type: ignore
+            from typing import cast
+
+            return cast(Callable[..., Awaitable[List[T]]], self)
         endpoint = getattr(instance, self.endpoint_name)
 
         @_async_trace_method
@@ -184,7 +188,7 @@ class SyncSDKConvenienceMixin:
     @_trace_method
     def get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Get job status."""
-        return self.jobs.get(study_key, batch_id)  # type: ignore
+        return self.jobs.get(study_key, batch_id)
 
     @_trace_method
     def create_record(
@@ -198,7 +202,7 @@ class SyncSDKConvenienceMixin:
         """Create records in the specified study."""
         return self.records.create(
             study_key, records_data, email_notify=email_notify, schema=schema
-        )  # type: ignore
+        )
 
     @_trace_method
     def poll_job(
@@ -210,8 +214,12 @@ class SyncSDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
-        fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)  # type: ignore[attr-defined]
-        return JobPoller(self.jobs.get).run(study_key, batch_id, interval, timeout)  # type: ignore
+        fetch_result = getattr(self, "_client", None) and getattr(
+            getattr(self, "_client", None), "get", None
+        )
+        from typing import cast
+
+        return cast(JobStatus, JobPoller(self.jobs.get).run(study_key, batch_id, interval, timeout))
 
 
 class AsyncSDKConvenienceMixin:
@@ -219,9 +227,11 @@ class AsyncSDKConvenienceMixin:
 
     if TYPE_CHECKING:
         import httpx
+
         jobs: AsyncJobsEndpoint
         records: AsyncRecordsEndpoint
         from imednet.core.async_client import AsyncClient
+
         _async_client: AsyncClient
 
     async_get_codings = _AsyncListOperation[Coding]("codings", "async_get_codings")
@@ -242,7 +252,7 @@ class AsyncSDKConvenienceMixin:
     @_async_trace_method
     async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Asynchronously get job status."""
-        return await self.jobs.async_get(study_key, batch_id)  # type: ignore
+        return await self.jobs.async_get(study_key, batch_id)
 
     @_async_trace_method
     async def async_create_record(
@@ -256,7 +266,7 @@ class AsyncSDKConvenienceMixin:
         """Asynchronously create records in the specified study."""
         return await self.records.async_create(
             study_key, records_data, email_notify=email_notify, schema=schema
-        )  # type: ignore
+        )
 
     @_async_trace_method
     async def async_poll_job(
@@ -270,8 +280,13 @@ class AsyncSDKConvenienceMixin:
         """Asynchronously poll a job until it reaches a terminal state."""
         fetch_result = getattr(self, "_async_client", None) and getattr(
             self._async_client, "get", None
-        )  # type: ignore[attr-defined]
-        return await AsyncJobPoller(self.jobs.async_get).run(study_key, batch_id, interval, timeout)  # type: ignore
+        )
+        from typing import cast
+
+        return cast(
+            JobStatus,
+            await AsyncJobPoller(self.jobs.async_get).run(study_key, batch_id, interval, timeout),
+        )
 
 
 SDKConvenienceMixin = SyncSDKConvenienceMixin

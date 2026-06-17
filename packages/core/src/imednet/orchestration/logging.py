@@ -36,7 +36,7 @@ import logging
 from typing import Any, MutableMapping
 
 
-class StudyContextLogAdapter(logging.LoggerAdapter):
+class StudyContextLogAdapter(logging.LoggerAdapter[logging.Logger]):
     """A logger adapter that enriches records with a bound study key."""
 
     def __init__(self, logger: logging.Logger, study_key: str) -> None:
