@@ -123,7 +123,11 @@ class UniversalExecutor:
 
         async with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
             try:
-                result: Any = await retryer(func)
+
+                async def _async_wrapper() -> T:
+                    return await func()
+
+                result: Any = await retryer(_async_wrapper)
                 get_global_circuit_breaker().record_success()
                 monitor.on_success()
                 return result
