@@ -30,17 +30,20 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
+
 class OperationRetryPolicy(ABC):
     @abstractmethod
     def should_retry(self, exception: Exception) -> bool:
         """Return True if the exception should trigger a retry."""
         pass
 
+
 class DefaultOperationRetryPolicy(OperationRetryPolicy):
     def should_retry(self, exception: Exception) -> bool:
         # Default fallback: retry on any exception?
         # Usually we only retry on specific ones, but for universal wrapper, we can allow everything or leave it configurable
         return True
+
 
 class UniversalExecutor:
     """Execute arbitrary operations with retry, circuit breaking, and telemetry."""
@@ -86,7 +89,7 @@ class UniversalExecutor:
 
         with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
             try:
-                result = retryer(func)
+                result: Any = retryer(func)
                 get_global_circuit_breaker().record_success()
                 monitor.on_success()
                 return result
@@ -114,7 +117,7 @@ class UniversalExecutor:
 
         async with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
             try:
-                result = await retryer(func)
+                result: Any = await retryer(func)
                 get_global_circuit_breaker().record_success()
                 monitor.on_success()
                 return result
