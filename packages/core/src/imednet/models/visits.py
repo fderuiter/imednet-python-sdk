@@ -13,6 +13,8 @@ class Visit(JsonModel):
     """A specific instance of a subject visiting a site (or equivalent event)."""
 
     visit_id: Optional[str] = Field(None, alias="visitId")
+    visit_date_form: Optional[str] = Field(None, alias="visitDateForm")
+    visit_date_question: Optional[str] = Field(None, alias="visitDateQuestion")
 
     @model_validator(mode="before")
     @classmethod

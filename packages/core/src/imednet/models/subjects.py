@@ -12,7 +12,10 @@ from imednet.models.json_base import JsonModel
 class SubjectKeyword(JsonModel):
     """A keyword or tag associated with a subject."""
 
-    pass
+    keyword_name: Optional[str] = Field(None, alias="keywordName")
+    keyword_key: Optional[str] = Field(None, alias="keywordKey")
+    keyword_id: Optional[int] = Field(None, alias="keywordId")
+    date_added: Optional[str] = Field(None, alias="dateAdded")
 
 
 SubjectKeyword = ModelEngine.get_model('SubjectKeyword', SubjectKeyword)

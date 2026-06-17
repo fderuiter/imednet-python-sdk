@@ -17,6 +17,10 @@ class Form(JsonModel):
     subject_record_report: Optional[bool] = Field(None, alias="subjectRecordReport")
     disabled: Optional[bool] = Field(None, alias="disabled")
     form_key: Optional[str] = Field(None, alias="formKey")
+    embedded_log: Optional[bool] = Field(None, alias="embeddedLog")
+    enforce_ownership: Optional[bool] = Field(None, alias="enforceOwnership")
+    user_agreement: Optional[bool] = Field(None, alias="userAgreement")
+    other_forms: Optional[bool] = Field(None, alias="otherForms")
 
 
 Form = ModelEngine.get_model('Form', Form)

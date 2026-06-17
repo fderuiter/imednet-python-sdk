@@ -16,6 +16,10 @@ class Variable(JsonModel):
     variable_id: Optional[str] = Field(None, alias="variableId")
     variable_name: Optional[str] = Field(None, alias="variableName")
     variable_type: Optional[str] = Field(None, alias="variableType")
+    disabled: Optional[bool] = None
+    variable_oid: Optional[str] = Field(None, alias="variableOid")
+    deleted: Optional[bool] = None
+    blinded: Optional[bool] = None
 
 
 Variable = ModelEngine.get_model('Variable', Variable)

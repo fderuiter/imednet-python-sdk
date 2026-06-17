@@ -13,6 +13,8 @@ class Coding(JsonModel):
     """Represents a medical coding entry associated with a record."""
 
     coding_id: Optional[str] = Field(None, alias="codingId")
+    revision: Optional[int] = None
+    reason: Optional[str] = None
 
 
 Coding = ModelEngine.get_model('Coding', Coding)

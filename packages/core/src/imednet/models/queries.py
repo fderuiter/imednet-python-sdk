@@ -14,6 +14,10 @@ class QueryComment(JsonModel):
 
     sequence: Optional[int] = None
     closed: Optional[bool] = None
+    annotation_status: Optional[str] = Field(None, alias="annotationStatus")
+    user: Optional[str] = None
+    comment: Optional[str] = None
+    date: Optional[str] = None
 
 
 QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
@@ -24,6 +28,9 @@ class Query(JsonModel):
 
     annotation_id: Optional[str] = Field(None, alias="annotationId")
     query_comments: Optional[List[QueryComment]] = Field(None, alias="queryComments")
+    annotation_type: Optional[str] = Field(None, alias="annotationType")
+    type: Optional[str] = None
+    subject_oid: Optional[str] = Field(None, alias="subjectOid")
 
 
 Query = ModelEngine.get_model('Query', Query)

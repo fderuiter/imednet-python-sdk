@@ -26,6 +26,16 @@ class Interval(JsonModel):
     interval_name: Optional[str] = Field(None, alias="intervalName")
     disabled: Optional[bool] = Field(None, alias="disabled")
     forms: Optional[List[FormSummary]] = None
+    timeline: Optional[str] = None
+    defined_using_interval: Optional[str] = Field(None, alias="definedUsingInterval")
+    window_calculation_form: Optional[str] = Field(None, alias="windowCalculationForm")
+    window_calculation_date: Optional[str] = Field(None, alias="windowCalculationDate")
+    actual_date_form: Optional[str] = Field(None, alias="actualDateForm")
+    actual_date: Optional[str] = Field(None, alias="actualDate")
+    due_date_will_be_in: Optional[int] = Field(None, alias="dueDateWillBeIn")
+    negative_slack: Optional[int] = Field(None, alias="negativeSlack")
+    positive_slack: Optional[int] = Field(None, alias="positiveSlack")
+    epro_grace_period: Optional[int] = Field(None, alias="eproGracePeriod")
 
 
 Interval = ModelEngine.get_model('Interval', Interval)

@@ -14,6 +14,9 @@ class Job(JsonModel):
 
     batch_id: str = Field("", alias="batchId")
     state: str = Field("", alias="state")
+    date_created: Optional[str] = Field(None, alias="dateCreated")
+    date_started: Optional[str] = Field(None, alias="dateStarted")
+    date_finished: Optional[str] = Field(None, alias="dateFinished")
 
     @property
     def is_terminal(self) -> bool:
