@@ -17,6 +17,10 @@ def test_admin_page_renders():
     mock_sdk = MagicMock()
     fake_auth.get_sdk.return_value = mock_sdk
     
+    prev_st = sys.modules.get("streamlit")
+    prev_auth = sys.modules.get("imednet_streamlit.auth")
+    prev_admin = sys.modules.get("imednet_streamlit.pages.admin")
+    
     sys.modules["streamlit"] = fake_st
     sys.modules["imednet_streamlit.auth"] = fake_auth
     
@@ -29,6 +33,11 @@ def test_admin_page_renders():
     except Exception:
         pass
     finally:
-        sys.modules.pop("streamlit", None)
-        sys.modules.pop("imednet_streamlit.auth", None)
-        sys.modules.pop("imednet_streamlit.pages.admin", None)
+        if prev_st is not None: sys.modules["streamlit"] = prev_st
+        else: sys.modules.pop("streamlit", None)
+        
+        if prev_auth is not None: sys.modules["imednet_streamlit.auth"] = prev_auth
+        else: sys.modules.pop("imednet_streamlit.auth", None)
+        
+        if prev_admin is not None: sys.modules["imednet_streamlit.pages.admin"] = prev_admin
+        else: sys.modules.pop("imednet_streamlit.pages.admin", None)

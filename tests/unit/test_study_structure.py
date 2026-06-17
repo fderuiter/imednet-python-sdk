@@ -32,13 +32,17 @@ def test_get_study_structure_aggregates_related_data(async_mode: bool) -> None:
     variable = Variable(variable_id=1, variable_name="V1", label="Var 1", form_id=1)
 
     if async_mode:
-        sdk.async_get_intervals = AsyncMock(return_value=[interval])
-        sdk.async_get_forms = AsyncMock(return_value=[form])
-        sdk.async_get_variables = AsyncMock(return_value=[variable])
+        async def async_gen(items):
+            for i in items:
+                yield i
+                
+        sdk.async_get_intervals = MagicMock(return_value=async_gen([interval]))
+        sdk.async_get_forms = MagicMock(return_value=async_gen([form]))
+        sdk.async_get_variables = MagicMock(return_value=async_gen([variable]))
         structure = asyncio.run(async_get_study_structure(sdk, "STUDY"))
-        sdk.async_get_intervals.assert_awaited_once_with("STUDY")
-        sdk.async_get_forms.assert_awaited_once_with("STUDY")
-        sdk.async_get_variables.assert_awaited_once_with("STUDY")
+        sdk.async_get_intervals.assert_called_once_with("STUDY")
+        sdk.async_get_forms.assert_called_once_with("STUDY")
+        sdk.async_get_variables.assert_called_once_with("STUDY")
     else:
         sdk.get_intervals.return_value = [interval]
         sdk.get_forms.return_value = [form]
