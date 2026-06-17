@@ -162,6 +162,10 @@ class _AsyncListOperation(Generic[T]):
 class SyncSDKConvenienceMixin:
     """Synchronous SDK convenience methods."""
 
+    if TYPE_CHECKING:
+        records: RecordsEndpoint
+        jobs: JobsEndpoint
+
     get_codings = _SyncListOperation[Coding]("codings", "get_codings")
     get_forms = _SyncListOperation[Form]("forms", "get_forms")
     get_intervals = _SyncListOperation[Interval]("intervals", "get_intervals")
@@ -212,6 +216,11 @@ class SyncSDKConvenienceMixin:
 
 class AsyncSDKConvenienceMixin:
     """Asynchronous SDK convenience methods."""
+
+    if TYPE_CHECKING:
+        records: AsyncRecordsEndpoint
+        jobs: AsyncJobsEndpoint
+        _async_client: Any
 
     async_get_codings = _AsyncListOperation[Coding]("codings", "async_get_codings")
     async_get_forms = _AsyncListOperation[Form]("forms", "async_get_forms")

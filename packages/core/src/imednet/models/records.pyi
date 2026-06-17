@@ -22,3 +22,28 @@ class Record(JsonModel):
     visit_id: Optional[int]
     parent_record_id: Optional[int]
     record_data: Optional[Any]
+
+class Keyword(JsonModel):
+    pass
+
+class RecordJobResponse(JsonModel):
+    job_id: str
+    batch_id: str
+    state: str
+
+class RecordData(JsonModel):
+    pass
+
+class BaseRecordRequest(JsonModel):
+    form_key: str
+    data: RecordData
+
+class RegisterSubjectRequest(BaseRecordRequest):
+    site_name: str
+
+class UpdateScheduledRecordRequest(BaseRecordRequest):
+    subject_key: str
+    interval_name: str
+
+class CreateNewRecordRequest(BaseRecordRequest):
+    subject_key: str

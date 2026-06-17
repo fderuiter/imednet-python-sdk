@@ -69,9 +69,12 @@ def export_to_hive_parquet(
     all_variables = sdk.variables.list(study_key=study_key, **form_filter)
     variables_by_form: dict[int, list[Any]] = {}
     for variable in all_variables:
-        variables_by_form.setdefault(variable.form_id, []).append(variable)
+        if variable.form_id is not None:
+            variables_by_form.setdefault(variable.form_id, []).append(variable)
 
     for form in forms:
+        if form.form_id is None or form.form_key is None:
+            continue
         if form_whitelist is not None and form.form_id not in form_whitelist:
             continue
         validate_partition_key(form.form_key)
@@ -113,7 +116,7 @@ def export_to_hive_parquet(
                     table,
                     base_dir=base_dir,
                     study_key=study_key,
-                    form_key=form.form_key,
+                    form_key=form.form_key or "",
                 )
             continue
 
@@ -136,7 +139,7 @@ def export_to_hive_parquet(
             table,
             base_dir=base_dir,
             study_key=study_key,
-            form_key=form.form_key,
+            form_key=form.form_key or "",
         )
 
 

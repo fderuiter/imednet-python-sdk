@@ -35,7 +35,7 @@ def list_records(
         raise typer.Exit(code=1)
 
     with fetching_status("records", study_key):
-        records = sdk.records.list(study_key)
+        records = list(sdk.records.list(study_key))
 
     if output:
         export_list_to_file(records, "records", output.lower())
