@@ -19,8 +19,11 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
     if not os.path.exists(postman_path):
         return {}
 
-    with open(postman_path, 'r') as f:
-        data = json.load(f)
+    try:
+        with open(postman_path, 'r') as f:
+            data = json.load(f)
+    except RecursionError:
+        return {}
 
     schemas: Dict[str, Dict[str, Any]] = {}
 
@@ -44,28 +47,31 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
         "User list": "User",
     }
 
-    def extract_schemas(items: List[Dict[str, Any]]) -> None:
-        if not isinstance(items, list):
+    def extract_schemas(items: List[Dict[str, Any]], depth: int = 0) -> None:
+        if depth > 100 or not isinstance(items, list):
             return
         for item in items:
             if not isinstance(item, dict):
                 continue
             if 'item' in item:
-                extract_schemas(item['item'])
+                extract_schemas(item['item'], depth + 1)
             elif 'response' in item:
                 if not isinstance(item['response'], list):
                     continue
                 for resp in item['response']:
                     if not isinstance(resp, dict):
                         continue
-                    if resp.get('name') in name_mapping and 'body' in resp:
+                    name = resp.get('name')
+                    if not isinstance(name, str):
+                        continue
+                    if name in name_mapping and 'body' in resp:
                         body = resp['body']
                         if body and isinstance(body, str):
                             try:
                                 parsed = json.loads(body)
                                 if not isinstance(parsed, dict):
                                     continue
-                                model_name = name_mapping[resp['name']]
+                                model_name = name_mapping[name]
                                 if (
                                     'data' in parsed
                                     and isinstance(parsed['data'], list)
@@ -77,7 +83,10 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
                             except Exception:
                                 pass
 
-    extract_schemas(data.get('item', []))
+    try:
+        extract_schemas(data.get('item', []))
+    except RecursionError:
+        pass
     _CACHE.update(schemas)
     return schemas
 
