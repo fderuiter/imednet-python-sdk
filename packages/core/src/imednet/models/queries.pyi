@@ -17,5 +17,4 @@ class Query(JsonModel):
     subject_oid: Optional[str]
     type: Optional[str]
 
-
 class QueryComment(JsonModel): ...

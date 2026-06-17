@@ -23,4 +23,3 @@ class Coding(JsonModel):
     date_coded: Optional[str]
     reason: Optional[str]
     revision: Optional[int]
-

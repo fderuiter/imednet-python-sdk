@@ -19,4 +19,3 @@ class Variable(JsonModel):
     deleted: Optional[bool]
     disabled: Optional[bool]
     variable_oid: Optional[str]
-

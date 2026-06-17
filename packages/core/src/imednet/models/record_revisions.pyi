@@ -22,4 +22,3 @@ class RecordRevision(JsonModel):
     role: Optional[str]
     subject_oid: Optional[str]
     user: Optional[str]
-

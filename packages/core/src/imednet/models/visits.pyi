@@ -19,4 +19,3 @@ class Visit(JsonModel):
     date_modified: Optional[str]
     visit_date_form: Optional[str]
     visit_date_question: Optional[str]
-

@@ -25,5 +25,4 @@ class Interval(JsonModel):
     window_calculation_date: Optional[str]
     window_calculation_form: Optional[str]
 
-
 class FormSummary(JsonModel): ...

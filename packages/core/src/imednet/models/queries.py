@@ -11,6 +11,7 @@ from imednet.models.json_base import JsonModel
 
 class QueryComment(JsonModel):
     """A comment or response within a data query thread."""
+
     annotation_status: Optional[str] = Field(None, alias="annotationStatus")
     comment: Optional[str] = Field(None)
     date: Optional[str] = Field(None)

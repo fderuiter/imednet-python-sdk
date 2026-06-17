@@ -11,7 +11,6 @@ class Job(JsonModel):
     date_finished: Optional[str]
     date_started: Optional[str]
 
-
 class JobStatus(JsonModel):
     job_id: Optional[str]
     batch_id: Optional[str]
