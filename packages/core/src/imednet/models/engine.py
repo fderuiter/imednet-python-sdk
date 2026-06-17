@@ -44,7 +44,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
         "User list": "User",
     }
 
-    def extract_schemas(items: List[Dict[str, Any]]):
+    def extract_schemas(items: List[Dict[str, Any]]) -> None:
         if not isinstance(items, list):
             return
         for item in items:
@@ -100,7 +100,7 @@ def to_snake(name: str) -> str:
 try:
     from opentelemetry import trace as _trace
 
-    tracer = _trace.get_tracer(__name__)
+    tracer: Any = _trace.get_tracer(__name__)
 except Exception:
     tracer = None
 
@@ -141,7 +141,7 @@ class ModelEngine:
         return model
 
     @classmethod
-    def generate_stubs(cls, output_dir: str):
+    def generate_stubs(cls, output_dir: str) -> None:
         if tracer:
             with tracer.start_as_current_span("ModelEngine.generate_stubs"):
                 pass
