@@ -304,7 +304,7 @@ jobs:
             export_logic:
               - 'packages/core/src/imednet/integrations/**'
               - 'docker-compose.yml'
-              - 'tests/integration/test_containerized_sinks.py'
+              - 'packages/plugins-sinks/tests/integration/test_containerized_sinks.py'
               
       - uses: actions/setup-python@v5
         if: steps.filter.outputs.export_logic == 'true'
