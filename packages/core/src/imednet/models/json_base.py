@@ -93,6 +93,8 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
 
 import os
 
+_drift_reported: set[str] = set()
+
 
 class JsonModel(BaseModel):
     """Base model with shared JSON parsing helpers."""
@@ -111,9 +113,10 @@ class JsonModel(BaseModel):
         except Exception as e:
             import logging
 
-            logging.getLogger("imednet.drift").warning(
-                f"Drift detected (destructive): {cls.__name__} validation failed: {e}"
-            )
+            msg = f"Drift detected (destructive): {cls.__name__} validation failed: {e}"
+            if msg not in _drift_reported:
+                _drift_reported.add(msg)
+                logging.getLogger("imednet.drift").warning(msg)
             raise
 
     @model_validator(mode="before")
@@ -138,9 +141,10 @@ class JsonModel(BaseModel):
 
         unexpected_fields = incoming_keys - defined_fields
         if unexpected_fields:
-            logger.warning(
-                f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}"
-            )
+            msg = f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}"
+            if msg not in _drift_reported:
+                _drift_reported.add(msg)
+                logger.warning(msg)
 
         missing_fields = []
         for name, field in cls.model_fields.items():
@@ -150,9 +154,10 @@ class JsonModel(BaseModel):
                 ):
                     missing_fields.append(name)
         if missing_fields:
-            logger.warning(
-                f"Drift detected (destructive): {cls.__name__} missing required fields: {', '.join(sorted(missing_fields))}"
-            )
+            msg = f"Drift detected (destructive): {cls.__name__} missing required fields: {', '.join(sorted(missing_fields))}"
+            if msg not in _drift_reported:
+                _drift_reported.add(msg)
+                logger.warning(msg)
 
         return data
 
