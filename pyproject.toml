@@ -43,8 +43,9 @@ pip = "^26.0"
 neo4j = "^6.2.0"
 pymongo = "^4.17.0"
 bandit = "^1.9.4"
-atheris = "^3.0.0"
 
+[tool.poetry.group.fuzz.dependencies]
+atheris = "^3.0.0"
 
 [tool.poetry.group.docs.dependencies]
 furo = "<2023.0.0"
