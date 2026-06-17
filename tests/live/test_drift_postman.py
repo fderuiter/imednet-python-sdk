@@ -81,7 +81,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
         try:
             response = sdk._client.get(url)
             data = response.json()
-            items = data.get("data", [])
+            items = data.get("recordData") if "recordData" in data else data.get("data", [])
             for item in items:
                 # Validates using the internal model
                 model_cls.from_json(item)
