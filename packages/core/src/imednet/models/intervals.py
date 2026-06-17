@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import Field
 
@@ -22,7 +22,8 @@ class FormSummary(JsonModel):
 class Interval(JsonModel):
     """Represents a visit interval or event within the study timeline."""
 
-    pass
+    interval_name: Optional[str] = Field(None, alias="intervalName")
+    disabled: Optional[bool] = Field(None, alias="disabled")
 
 
 Interval = ModelEngine.get_model('Interval', Interval)

@@ -14,6 +14,8 @@ class Form(JsonModel):
 
     unscheduled_visit: Optional[bool] = Field(None, alias="unscheduledVisit")
     subject_record_report: Optional[bool] = Field(None, alias="subjectRecordReport")
+    disabled: Optional[bool] = Field(None, alias="disabled")
+    form_key: Optional[str] = Field(None, alias="formKey")
 
 
 Form = ModelEngine.get_model('Form', Form)

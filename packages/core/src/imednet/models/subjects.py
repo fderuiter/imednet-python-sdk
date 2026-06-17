@@ -24,6 +24,8 @@ class Subject(JsonModel):
     subject_oid: Optional[str] = Field(None, alias="subjectOid")
     enrollment_start_date: Optional[str] = Field(None, alias="enrollmentStartDate")
     keywords: Optional[List[SubjectKeyword]] = None
+    subject_key: Optional[str] = Field(None, alias="subjectKey")
+    subject_status: Optional[str] = Field(None, alias="subjectStatus")
 
 
 Subject = ModelEngine.get_model('Subject', Subject)
