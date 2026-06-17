@@ -36,7 +36,7 @@ class RecordData(JsonModel):
 
 class BaseRecordRequest(JsonModel):
     form_key: str
-    record_data: RecordData
+    data: RecordData
 
 class RegisterSubjectRequest(BaseRecordRequest):
     site_name: str

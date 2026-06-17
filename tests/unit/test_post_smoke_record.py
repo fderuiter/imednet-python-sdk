@@ -66,7 +66,7 @@ def test_build_record_returns_typed_values() -> None:
     }
     assert record == {
         "formKey": "F1",
-        "recordData": expected,
+        "data": expected,
     }
     sdk.variables.list.assert_called_once_with(study_key="ST", formKey="F1")
 
@@ -97,7 +97,7 @@ def test_build_record_optional_identifiers(kwargs: dict[str, str], extra: dict[s
 
     record = smoke.build_record(sdk, "ST", "F1", **kwargs)
 
-    assert record == {"formKey": "F1", "recordData": {}} | extra
+    assert record == {"formKey": "F1", "data": {}} | extra
     sdk.variables.list.assert_called_once_with(study_key="ST", formKey="F1")
 
 
@@ -151,7 +151,7 @@ def test_main_verbose_logs(monkeypatch, caplog) -> None:
     monkeypatch.setattr(
         smoke,
         "build_record",
-        Mock(return_value={"formKey": "F1", "recordData": {"x": 1}, "subjectKey": "SUB"}),
+        Mock(return_value={"formKey": "F1", "data": {"x": 1}, "subjectKey": "SUB"}),
     )
 
     with caplog.at_level(logging.DEBUG):
@@ -160,7 +160,7 @@ def test_main_verbose_logs(monkeypatch, caplog) -> None:
     logs = "\n".join(caplog.messages)
     assert "study_key=ST" in logs
     assert "Scenarios: [{'subject_key': 'SUB'}]" in logs
-    assert "'recordData': '***'" in logs
+    assert "'data': '***'" in logs
     assert "Batch B1 COMPLETED" in logs
 
 

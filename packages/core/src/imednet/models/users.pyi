@@ -12,4 +12,12 @@ class User(JsonModel):
     user_active_in_study: Optional[bool]
 
 class Role(JsonModel):
-    pass
+    role_id: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    level: Optional[int]
+    type: Optional[str]
+    inactive: Optional[bool]
+    community_id: Optional[int]
+    date_created: Optional[str]
+    date_modified: Optional[str]
