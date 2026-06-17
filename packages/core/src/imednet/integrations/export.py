@@ -273,10 +273,13 @@ def export_to_json(
 
     try:
         from imednet.integrations.enrichment import EnrichmentPipeline
-        config_version_control = __import__("imednet_workflows.config_version_control", fromlist=["ConfigVersionStore"])
-        ConfigVersionStore = config_version_control.ConfigVersionStore
 
-        store = ConfigVersionStore()
+        config_version_control = __import__(
+            "imednet_workflows.config_version_control", fromlist=["ConfigVersionStore"]
+        )
+        config_version_store_class = config_version_control.ConfigVersionStore
+
+        store = config_version_store_class()
         history = store.get_history(study_key)
         if history:
             latest_commit = history[-1]["commit_id"]
