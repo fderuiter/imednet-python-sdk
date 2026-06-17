@@ -47,7 +47,7 @@ class BaseRecordRequest(JsonModel):
     """Base class for record creation/update requests."""
 
     form_key: str = Field("", alias="formKey")
-    data: RecordData = Field(default_factory=lambda: RecordData({}), alias="data")
+    data: RecordData = Field(default_factory=lambda: RecordData({}), alias="recordData")
 
     pass
 
