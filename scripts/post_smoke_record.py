@@ -109,8 +109,8 @@ def _redact(record: Dict[str, Any]) -> Dict[str, Any]:
     """Return ``record`` with sensitive fields redacted."""
 
     redacted = record.copy()
-    if "data" in redacted:
-        redacted["data"] = "***"
+    if "recordData" in redacted:
+        redacted["recordData"] = "***"
     return redacted
 
 
