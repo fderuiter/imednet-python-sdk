@@ -18,10 +18,25 @@ def test_get_study_structure_aggregates_related_data(async_mode: bool) -> None:
         interval_sequence=1,
         interval_description="desc",
         interval_group_name="grp",
+        date_created="2021-01-01T00:00:00Z",
+        date_modified="2021-01-01T00:00:00Z",
         forms=[FormSummary(form_id=1, form_key="F1", form_name="Form1")],
     )
-    form = Form(form_id=1, form_key="F1", form_name="Form1")
-    variable = Variable(variable_id=1, variable_name="V1", label="Var 1", form_id=1)
+    form = Form(
+        form_id=1,
+        form_key="F1",
+        form_name="Form1",
+        date_created="2021-01-01T00:00:00Z",
+        date_modified="2021-01-01T00:00:00Z",
+    )
+    variable = Variable(
+        variable_id=1,
+        variable_name="V1",
+        label="Var 1",
+        form_id=1,
+        date_created="2021-01-01T00:00:00Z",
+        date_modified="2021-01-01T00:00:00Z",
+    )
 
     if async_mode:
         sdk.async_get_intervals = AsyncMock(return_value=[interval])
