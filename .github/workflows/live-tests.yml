@@ -77,12 +77,16 @@ jobs:
             const fs = require('fs');
             const report = fs.readFileSync('drift_report.txt', 'utf8');
             const body = `### ⚠️ API Drift Detected\n\nThe live integration tests detected schema drift or structural poly-type shifts:\n\n\`\`\`\n${report.substring(0, 60000)}\n\`\`\``;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            } catch (error) {
+              console.log('Failed to post drift report comment:', error.message);
+            }
 
       - name: Fail if tests failed
         if: steps.live_tests.outputs.pytest_exit_code != '0'
