@@ -68,6 +68,10 @@ def parse_bool(v: Any) -> bool:
     if isinstance(v, bool):
         return v
     if isinstance(v, str):
+        # Gracefully handle empty string without logging drift (common API artifact)
+        if not v or v.strip() == "":
+            return False
+
         # Optimized path for common API responses to avoid string manipulation
         if v in _TRUE_VARIANTS:
             return True
