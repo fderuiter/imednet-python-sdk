@@ -39,7 +39,11 @@ class BaseSchemaCache(Generic[_TClient]):
         self._form_variables.clear()
         self._form_id_to_key.clear()
         for var in variables:
-            if var.form_id is not None and var.form_key is not None and var.variable_name is not None:
+            if (
+                var.form_id is not None
+                and var.form_key is not None
+                and var.variable_name is not None
+            ):
                 self._form_id_to_key[var.form_id] = var.form_key
                 self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
 

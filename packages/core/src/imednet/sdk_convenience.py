@@ -163,12 +163,12 @@ class SyncSDKConvenienceMixin:
     """Synchronous SDK convenience methods."""
 
     if TYPE_CHECKING:
-        from imednet.endpoints.records import RecordsEndpoint
         from imednet.endpoints.jobs import JobsEndpoint
+        from imednet.endpoints.records import RecordsEndpoint
+
         records: RecordsEndpoint
         jobs: JobsEndpoint
         _client: Any
-
 
     get_codings = _SyncListOperation[Coding]("codings", "get_codings")
     get_forms = _SyncListOperation[Form]("forms", "get_forms")
@@ -222,12 +222,12 @@ class AsyncSDKConvenienceMixin:
     """Asynchronous SDK convenience methods."""
 
     if TYPE_CHECKING:
-        from imednet.endpoints.records import AsyncRecordsEndpoint
         from imednet.endpoints.jobs import AsyncJobsEndpoint
+        from imednet.endpoints.records import AsyncRecordsEndpoint
+
         records: AsyncRecordsEndpoint
         jobs: AsyncJobsEndpoint
         _async_client: Any
-
 
     async_get_codings = _AsyncListOperation[Coding]("codings", "async_get_codings")
     async_get_forms = _AsyncListOperation[Form]("forms", "async_get_forms")
