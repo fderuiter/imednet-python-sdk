@@ -12,6 +12,7 @@ else:
 
 logger = logging.getLogger(__name__)
 
+
 class OperationMonitor:
     """Helper to handle generic operation monitoring (tracing, timing, logging)."""
 
