@@ -101,15 +101,15 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
     started = 0
     release = asyncio.Event()
 
-    async def delayed_result(name: str, payload: list[Any]) -> AsyncIterator[Any]:
+    async def delayed_result(name: str, payload: list[Any]) -> list[Any]:
         nonlocal started
         calls[name] += 1
         started += 1
         if started == 4:
             release.set()
         await release.wait()
-        for item in payload:
-            yield item
+        return payload
+             
 
     sdk.async_get_forms = lambda study_key: delayed_result(
         "forms", [Form(form_key="F1", form_name="Form 1")]
@@ -134,14 +134,14 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
 async def test_async_inspect_force_refresh_bypasses_cache() -> None:
     sdk = MagicMock()
 
-    async def empty_async_gen() -> AsyncIterator[Any]:
-        if False:
-            yield None
+    async def empty_async_gen(*args, **kwargs) -> list[Any]:
+        return []
 
-    sdk.async_get_forms = MagicMock(return_value=empty_async_gen())
-    sdk.async_get_variables = MagicMock(return_value=empty_async_gen())
-    sdk.async_get_intervals = MagicMock(return_value=empty_async_gen())
-    sdk.async_get_sites = MagicMock(return_value=empty_async_gen())
+
+    sdk.async_get_forms = MagicMock(side_effect=empty_async_gen)
+    sdk.async_get_variables = MagicMock(side_effect=empty_async_gen)
+    sdk.async_get_intervals = MagicMock(side_effect=empty_async_gen)
+    sdk.async_get_sites = MagicMock(side_effect=empty_async_gen)
 
     inspector = StudySchemaInspector(sdk)
     await inspector.async_inspect("ST")
