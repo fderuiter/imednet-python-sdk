@@ -181,3 +181,36 @@ def test_get_study_key_raises_when_missing(monkeypatch: pytest.MonkeyPatch) -> N
 
     with pytest.raises(RuntimeError, match="Study key is not set"):
         auth.get_study_key()
+
+
+def test_tenant_credentials_and_studies(tmp_path, monkeypatch):
+    import os
+    import sqlite3
+
+    from imednet_streamlit.auth import get_provisioned_studies, get_tenant_credentials
+
+    db_path = tmp_path / "enterprise.sqlite3"
+    monkeypatch.setattr(
+        os.environ, "get", lambda k, d: str(db_path) if k == "IMEDNET_TENANT_DB_PATH" else d
+    )
+
+    # Should return None/empty when db doesn't exist
+    assert get_tenant_credentials("some_study") == (None, None)
+    assert get_provisioned_studies() == []
+
+    # Create DB
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("CREATE TABLE tenants (study_key TEXT, api_key TEXT, security_key TEXT)")
+        conn.execute("INSERT INTO tenants VALUES ('study_1', 'api_1', 'sec_1')")
+
+    assert get_tenant_credentials("study_1") == ("api_1", "sec_1")
+    assert get_tenant_credentials("missing") == (None, None)
+    assert get_provisioned_studies() == ["study_1"]
+
+    # Simulate DB error
+    def mock_connect(*args, **kwargs):
+        raise sqlite3.OperationalError("mock error")
+
+    monkeypatch.setattr(sqlite3, "connect", mock_connect)
+    assert get_tenant_credentials("study_1") == (None, None)
+    assert get_provisioned_studies() == []

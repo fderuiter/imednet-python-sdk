@@ -153,3 +153,37 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
         "pages/admin.py",
         "pages/conformance.py",
     ]
+
+
+from unittest.mock import MagicMock
+
+import pandas as pd
+import streamlit as st
+
+
+def test_toggle_high_contrast():
+    from imednet_streamlit.app import toggle_high_contrast
+
+    st.session_state["high_contrast"] = False
+    toggle_high_contrast()
+    assert st.session_state["high_contrast"] is True
+    assert st.query_params["high_contrast"] == "true"
+
+    toggle_high_contrast()
+    assert st.session_state["high_contrast"] is False
+    assert "high_contrast" not in st.query_params
+
+
+def test_accessible_altair_chart(monkeypatch):
+    import imednet_streamlit.app as app
+    from imednet_streamlit.app import accessible_altair_chart
+
+    mock_chart = MagicMock()
+    mock_chart.title = "Test Chart"
+    mock_chart.data = pd.DataFrame({"A": [1, 2]})
+
+    st.expander = MagicMock()
+    st.dataframe = MagicMock()
+    monkeypatch.setattr(app, "original_altair_chart", MagicMock())
+
+    accessible_altair_chart(mock_chart)
