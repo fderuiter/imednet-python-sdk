@@ -87,11 +87,11 @@ def test_imednet_base_model_exists():
 # ---------------------------------------------------------------------------
 
 _EXTRA_FIELDS = {
-    "undocumented_telemetry_tracker": "12345XYZ",
-    "new_feature_flag": True,
-    "vendor_internal_id": 9999,
-    "future_field": None,
-    "nested_unknown": {"key": "value"},
+    "completely_undocumented_telemetry_tracker": "12345XYZ",
+    "completely_new_feature_flag": True,
+    "completely_vendor_internal_id": 9999,
+    "completely_future_field": None,
+    "completely_nested_unknown": {"key": "value"},
 }
 
 
