@@ -136,7 +136,7 @@ class TestNeo4jExportSink:
                 "visit_id": 42,
                 "subject_key": "SUBJ-001",
                 "study_key": "STUDY1",
-                "record_data": {"labs.hemoglobin": 13.2, "status": "Complete"},
+                "record_data": '{"labs": {"hemoglobin": 13.2}, "status": "Complete"}',
             }
         ]
 

@@ -115,7 +115,6 @@ MERGE (v)-[:HAS_RECORD]->(r)
 
 def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
-    from imednet.utils.serialization import flatten
 
     row = {
         "record_id": getattr(record, "record_id", None),
@@ -131,9 +130,11 @@ def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
         "date_modified": getattr(record, "date_modified", None),
     }
 
+    import json
+
     row = {k: v for k, v in row.items() if v is not None}
     record_data = dict(getattr(record, "record_data", {}) or {})
-    row["record_data"] = flatten(record_data)
+    row["record_data"] = json.dumps(record_data)
 
     return row
 
