@@ -21,13 +21,17 @@ ELIGIBLE_SUBJECT_STATUSES: frozenset[str] = frozenset(
 )
 
 
-def is_site_eligible(site_enrollment_status: str) -> bool:
+def is_site_eligible(site_enrollment_status: str | None) -> bool:
     """Return ``True`` when *site_enrollment_status* is usable for live tests."""
+    if not site_enrollment_status:
+        return False
     return site_enrollment_status.lower() in ELIGIBLE_SITE_STATUSES
 
 
-def is_subject_eligible(subject_status: str) -> bool:
+def is_subject_eligible(subject_status: str | None) -> bool:
     """Return ``True`` when *subject_status* is usable for live tests."""
+    if not subject_status:
+        return False
     return subject_status.lower() in ELIGIBLE_SUBJECT_STATUSES
 
 
