@@ -112,17 +112,19 @@ class JsonModel(BaseModel):
         if isinstance(data, list):
             if len(data) > 0 and isinstance(data[0], dict):
                 import logging
+
                 logging.getLogger(__name__).warning(
                     f"Structural shift detected: API returned a list where an object ({cls.__name__}) was expected. Coercing by extracting the first item."
                 )
                 data = data[0]
             elif len(data) == 0:
                 import logging
+
                 logging.getLogger(__name__).warning(
                     f"Structural shift detected: API returned an empty list where an object ({cls.__name__}) was expected. Coercing to empty dict."
                 )
                 data = {}
-            
+
         try:
             return cls.model_validate(data)
         except Exception as e:
