@@ -49,6 +49,8 @@ def _extract_single_item(v: Any) -> Any:
     return v
 
 
+import types
+
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
     if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
         return _NORMALIZERS[cls][field_name]
@@ -58,7 +60,7 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
     origin = get_origin(annotation)
     optional = False
 
-    if origin is Union:
+    if origin is Union or origin is getattr(types, "UnionType", type(None)):
         args = [a for a in get_args(annotation) if a is not type(None)]
         if len(args) == 1:
             annotation = args[0]

@@ -39,10 +39,10 @@ def parse_datetime(v: str | int | float | datetime) -> datetime:
         v: Date string, numeric timestamp (seconds since epoch), or datetime object.
            Numeric values are assumed to be UTC timestamps.
     """
-    if v is None or v == "":
+    if is_missing_value(v):
         return _SENTINEL_DATETIME
     if isinstance(v, str):
-        return parse_iso_datetime(v)
+        return parse_iso_datetime(v.strip())
     if isinstance(v, (int, float)):
         return datetime.fromtimestamp(v, tz=timezone.utc)
     return v
@@ -115,7 +115,7 @@ def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
     Normalize integer values, defaulting if None or empty string.
     If strict=True, raise ValueError on parse failure.
     """
-    if v is None or v == "":
+    if is_missing_value(v):
         return default
     try:
         return int(v)
