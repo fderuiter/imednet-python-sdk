@@ -154,7 +154,7 @@ def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, ti
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
     if not job.batch_id:
-        if job.state in ("COMPLETED", "SUCCESS") or (job.state and job.state.upper() in ("COMPLETED", "SUCCESS")):
+        if not job.state or job.state in ("COMPLETED", "SUCCESS") or (job.state and job.state.upper() in ("COMPLETED", "SUCCESS")):
             return "sync-created"
         raise RuntimeError(f"Record creation returned no batch ID: {job}")
 
