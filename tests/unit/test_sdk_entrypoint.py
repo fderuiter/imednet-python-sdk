@@ -326,7 +326,7 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
     calls = {}
 
     class FakePoller:
-        def __init__(self, get_func):
+        def __init__(self, get_func, **kwargs):
             calls["init"] = get_func
 
         def run(self, study_key, batch_id, interval, timeout):

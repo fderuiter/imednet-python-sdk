@@ -203,7 +203,9 @@ class SyncSDKConvenienceMixin:
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
         fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)  # type: ignore[attr-defined]
-        return JobPoller(self.jobs.get).run(study_key, batch_id, interval, timeout)  # type: ignore
+        return JobPoller(self.jobs.get, fetch_result=fetch_result).run(
+            study_key, batch_id, interval, timeout
+        )  # type: ignore
 
 
 class AsyncSDKConvenienceMixin:
@@ -265,7 +267,9 @@ class AsyncSDKConvenienceMixin:
         fetch_result = getattr(self, "_async_client", None) and getattr(
             self._async_client, "get", None
         )  # type: ignore[attr-defined]
-        return await AsyncJobPoller(self.jobs.async_get).run(study_key, batch_id, interval, timeout)  # type: ignore
+        return await AsyncJobPoller(self.jobs.async_get, fetch_result=fetch_result).run(
+            study_key, batch_id, interval, timeout
+        )  # type: ignore
 
 
 SDKConvenienceMixin = SyncSDKConvenienceMixin
