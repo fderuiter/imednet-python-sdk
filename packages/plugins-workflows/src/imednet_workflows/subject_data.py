@@ -49,18 +49,18 @@ class SubjectDataWorkflow:
         subject_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
 
         # Fetch Subject Details
-        subject_list = self._sdk.get_subjects(study_key, **subject_filter_dict)
+        subject_list = list(self._sdk.get_subjects(study_key, **subject_filter_dict))
         if subject_list:
             results.subject_details = subject_list[0]
 
         # Fetch Visits
-        results.visits = self._sdk.get_visits(study_key, **subject_filter_dict)
+        results.visits = list(self._sdk.get_visits(study_key, **subject_filter_dict))
 
         # Fetch Records
-        results.records = self._sdk.get_records(study_key, **subject_filter_dict)
+        results.records = list(self._sdk.get_records(study_key, **subject_filter_dict))
 
         # Fetch Queries
-        results.queries = self._sdk.get_queries(study_key, **subject_filter_dict)
+        results.queries = list(self._sdk.get_queries(study_key, **subject_filter_dict))
 
         return results
 

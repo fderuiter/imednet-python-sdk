@@ -77,9 +77,11 @@ class RecordMapper:
         if form_whitelist is not None:
             filters["formIds"] = form_whitelist
 
-        variables: List[VariableModel] = self.sdk.get_variables(
-            study_key=study_key,
-            **filters,
+        variables: List[VariableModel] = list(
+            self.sdk.get_variables(
+                study_key=study_key,
+                **filters,
+            )
         )
         if not variables:
             logger.warning(
@@ -123,10 +125,12 @@ class RecordMapper:
                     visit_key,
                 )
         try:
-            return self.sdk.get_records(
-                study_key=study_key,
-                record_data_filter=None,
-                **filters,
+            return list(
+                self.sdk.get_records(
+                    study_key=study_key,
+                    record_data_filter=None,
+                    **filters,
+                )
             )
         except Exception as exc:  # pragma: no cover - unexpected
             logger.error("Failed to fetch records for study '%s': %s", study_key, exc)

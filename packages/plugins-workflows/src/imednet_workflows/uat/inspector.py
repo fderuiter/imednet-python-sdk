@@ -124,11 +124,24 @@ class StudySchemaInspector:
             return self._cache[study_key]
 
         sdk = cast("AsyncImednetSDK", self._sdk)
+
+        async def fetch_forms():
+            return [f async for f in sdk.async_get_forms(study_key)]
+
+        async def fetch_variables():
+            return [v async for v in sdk.async_get_variables(study_key)]
+
+        async def fetch_intervals():
+            return [i async for i in sdk.async_get_intervals(study_key)]
+
+        async def fetch_sites():
+            return [s async for s in sdk.async_get_sites(study_key)]
+
         forms, variables, intervals, sites = await asyncio.gather(
-            sdk.async_get_forms(study_key),
-            sdk.async_get_variables(study_key),
-            sdk.async_get_intervals(study_key),
-            sdk.async_get_sites(study_key),
+            fetch_forms(),
+            fetch_variables(),
+            fetch_intervals(),
+            fetch_sites(),
         )
 
         snapshot = StudySnapshot(

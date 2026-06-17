@@ -29,7 +29,7 @@ def register_list_command(
         @with_sdk
         def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
             with fetching_status(name, study_key):
-                items = getattr(sdk, attr).list(study_key)
+                items = list(getattr(sdk, attr).list(study_key))
             display_list(items, name, empty_msg, fields=summary_fields)
 
         return
@@ -40,7 +40,7 @@ def register_list_command(
         @with_sdk
         def list_cmd_no_study(sdk: ImednetSDK) -> None:
             with fetching_status(name):
-                items = getattr(sdk, attr).list()
+                items = list(getattr(sdk, attr).list())
             display_list(items, name, empty_msg, fields=summary_fields)
 
         return
