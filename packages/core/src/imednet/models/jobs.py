@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import Field, field_validator
 
@@ -11,6 +11,9 @@ from imednet.models.json_base import JsonModel
 
 class Job(JsonModel):
     """Represents an asynchronous background job."""
+
+    batch_id: str = Field("", alias="batchId")
+    state: str = Field("", alias="state")
 
     @property
     def is_terminal(self) -> bool:
@@ -35,6 +38,8 @@ class JobStatus(Job):
     """Extended job information returned when polling."""
 
     results: Any = Field(default=None)
+    result_url: Optional[str] = Field(None, alias="resultUrl")
+    progress: int = Field(0, alias="progress")
 
     @field_validator("progress", mode="before", check_fields=False)
     def _parse_progress(cls, v: Any) -> int:

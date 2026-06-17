@@ -12,6 +12,7 @@ from imednet.models.json_base import JsonModel
 class Form(JsonModel):
     """Configuration and metadata for a CRF (Case Report Form)."""
 
+    form_id: Optional[int] = Field(None, alias="formId")
     unscheduled_visit: Optional[bool] = Field(None, alias="unscheduledVisit")
     subject_record_report: Optional[bool] = Field(None, alias="subjectRecordReport")
     disabled: Optional[bool] = Field(None, alias="disabled")

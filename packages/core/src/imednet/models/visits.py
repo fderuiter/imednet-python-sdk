@@ -12,6 +12,8 @@ from imednet.models.json_base import JsonModel
 class Visit(JsonModel):
     """A specific instance of a subject visiting a site (or equivalent event)."""
 
+    visit_id: Optional[str] = Field(None, alias="visitId")
+
     @model_validator(mode="before")
     @classmethod
     def _clean_empty_dates(cls, data: Any) -> Any:

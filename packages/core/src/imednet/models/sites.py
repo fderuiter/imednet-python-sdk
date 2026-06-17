@@ -12,6 +12,7 @@ from imednet.models.json_base import JsonModel
 class Site(JsonModel):
     """A site participating in a study."""
 
+    site_id: Optional[str] = Field(None, alias="siteId")
     site_name: Optional[str] = Field(None, alias="siteName")
     site_enrollment_status: Optional[str] = Field(None, alias="siteEnrollmentStatus")
 

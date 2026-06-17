@@ -24,6 +24,7 @@ Keyword = ModelEngine.get_model('Keyword', Keyword)
 class Record(JsonModel):
     """A data record for a subject, form, and visit."""
 
+    record_id: Optional[str] = Field(None, alias="recordId")
     keywords: Optional[List[Keyword]] = None
     embedded_log: Optional[Any] = Field(None, alias="embeddedLog")
 

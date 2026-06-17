@@ -22,6 +22,7 @@ class FormSummary(JsonModel):
 class Interval(JsonModel):
     """Represents a visit interval or event within the study timeline."""
 
+    interval_id: Optional[str] = Field(None, alias="intervalId")
     interval_name: Optional[str] = Field(None, alias="intervalName")
     disabled: Optional[bool] = Field(None, alias="disabled")
 

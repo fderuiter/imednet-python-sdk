@@ -22,6 +22,7 @@ QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
 class Query(JsonModel):
     """Represents a data query (discrepancy) raised on a record."""
 
+    annotation_id: Optional[str] = Field(None, alias="annotationId")
     query_comments: Optional[List[QueryComment]] = Field(None, alias="queryComments")
 
 

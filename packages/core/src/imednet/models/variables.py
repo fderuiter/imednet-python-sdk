@@ -13,6 +13,9 @@ class Variable(JsonModel):
     """Definition of a data field (question) on a form."""
 
     label: Optional[str] = None
+    variable_id: Optional[str] = Field(None, alias="variableId")
+    variable_name: Optional[str] = Field(None, alias="variableName")
+    variable_type: Optional[str] = Field(None, alias="variableType")
 
 
 Variable = ModelEngine.get_model('Variable', Variable)
