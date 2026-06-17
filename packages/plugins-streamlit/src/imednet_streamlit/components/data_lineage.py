@@ -4,7 +4,7 @@ from typing import Any
 
 import pandas as pd
 
-from imednet.security import mask_clinical_phi as redact_sensitive_payload
+from imednet.spi.security import mask_clinical_phi as redact_sensitive_payload
 
 
 def render_lineage_panes(

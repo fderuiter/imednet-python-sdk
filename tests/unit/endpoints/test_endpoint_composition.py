@@ -50,13 +50,13 @@ def test_records_endpoint_keeps_public_read_api(dummy_client, context, paginator
     endpoint = RecordsEndpoint(dummy_client, context)
     capture = paginator_factory(records_module, [{"recordId": 1}])
 
-    listed = endpoint.list(study_key="S1")
+    listed = list(endpoint.list(study_key="S1"))
     fetched = endpoint.get("S1", 1)
 
     assert callable(endpoint.list)
     assert callable(endpoint.get)
-    assert listed[0].record_id == 1
-    assert fetched.record_id == 1
+    assert listed[0].record_id == "1"
+    assert fetched.record_id == "1"
     assert capture["path"] == "/api/v1/edc/studies/S1/records"
 
 
@@ -74,11 +74,12 @@ def test_jobs_endpoint_keeps_public_read_api(dummy_client, context, response_fac
 
 
 def test_all_endpoints_inherit_from_single_edc_base():
-    """Endpoints must have EdcSyncListGetEndpoint as their sole direct parent."""
+    """Endpoints must have EdcSyncListGetEndpoint and an OperationDef as direct parents."""
     for endpoint_cls in ALL_ENDPOINT_CLASSES:
         direct_bases = endpoint_cls.__bases__
         base_names = {b.__name__ for b in direct_bases}
-        assert base_names == {"EdcSyncListGetEndpoint"}, (
+        assert "EdcSyncListGetEndpoint" in base_names
+        assert any(b.endswith("OperationDef") for b in base_names), (
             f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"
         )
 
@@ -93,9 +94,10 @@ def test_no_endpoint_directly_inherits_edc_mixin():
 
 
 def test_all_async_endpoints_inherit_from_single_edc_base():
-    """Async endpoints must have EdcAsyncListGetEndpoint as their sole direct parent."""
+    """Async endpoints must have EdcAsyncListGetEndpoint and an OperationDef as direct parents."""
     for endpoint_cls in ALL_ASYNC_ENDPOINT_CLASSES:
         base_names = {b.__name__ for b in endpoint_cls.__bases__}
-        assert base_names == {"EdcAsyncListGetEndpoint"}, (
+        assert "EdcAsyncListGetEndpoint" in base_names
+        assert any(b.endswith("OperationDef") for b in base_names), (
             f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"
         )

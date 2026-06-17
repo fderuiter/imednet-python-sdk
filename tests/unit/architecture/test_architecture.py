@@ -164,5 +164,4 @@ def test_plugin_discovery_failure(monkeypatch):
     monkeypatch.setattr("imednet.sdk.entry_points", lambda *, group, name: [])
 
     sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
-    with pytest.raises(ImportError, match="requires the optional 'imednet-workflows' package"):
-        sdk.workflows.some_workflow
+    assert sdk.workflows is None

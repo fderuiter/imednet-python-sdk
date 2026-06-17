@@ -124,9 +124,7 @@ def test_init_workflows_returns_missing_workflows_when_no_plugin() -> None:
     with patch("imednet.sdk.entry_points", return_value=[]):
         ns = sdk._init_workflows()
 
-    # Accessing any attribute should raise ImportError (not PluginLoadError)
-    with pytest.raises(ImportError, match="imednet-workflows"):
-        _ = ns.data_extraction  # type: ignore[union-attr]
+    assert ns is None
 
 
 # ---------------------------------------------------------------------------

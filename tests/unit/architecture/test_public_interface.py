@@ -174,11 +174,12 @@ def test_supports_get_protocol_uses_item_id() -> None:
 
 def test_sdk_convenience_mixin_uses_filter_value() -> None:
     """SDKConvenienceMixin helper methods must annotate **filters as FilterValue."""
-    from imednet.sdk_convenience import SDKConvenienceMixin
+    from imednet.sdk import ImednetSDK
 
+    sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://test")
     # spot-check a few methods
     for method_name in ("get_records", "get_subjects"):
-        method = getattr(SDKConvenienceMixin, method_name)
+        method = getattr(sdk, method_name)
         tp = _get_kwargs_type(method, "filters")
         if tp is not None:
             assert not _is_any(tp), (

@@ -190,7 +190,7 @@ class CachedRecordsLoader:
 
     def _fetch_active_record_ids(self, study_key: str) -> set[int]:
         records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
-        return {record.record_id for record in records if record.record_id is not None}
+        return {int(record.record_id) for record in records if record.record_id is not None}
 
     def _list_records(self, **filters: Any) -> list[Record]:
         retryer = Retrying(

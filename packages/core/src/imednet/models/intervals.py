@@ -25,6 +25,7 @@ class Interval(JsonModel):
     interval_id: Optional[str] = Field(None, alias="intervalId")
     interval_name: Optional[str] = Field(None, alias="intervalName")
     disabled: Optional[bool] = Field(None, alias="disabled")
+    forms: Optional[List[FormSummary]] = None
 
 
 Interval = ModelEngine.get_model('Interval', Interval)

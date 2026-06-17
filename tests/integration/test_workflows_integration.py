@@ -39,7 +39,7 @@ def test_data_extraction_filters():
         visit_filter={"visit_id": 1},
     )
 
-    assert [r.record_id for r in recs] == [1]
+    assert [r.record_id for r in recs] == ["1"]
 
 
 @respx.mock

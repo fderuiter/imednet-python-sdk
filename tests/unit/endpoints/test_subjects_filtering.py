@@ -25,7 +25,10 @@ async def test_async_list_by_site_filtering():
     mock_ctx = Mock()
 
     endpoint = AsyncSubjectsEndpoint(mock_client, mock_ctx)
-    endpoint.async_list = AsyncMock(return_value=[])
+    async def _mock_async_list(*args, **kwargs):
+        for _ in []:
+            yield _
+    endpoint.async_list = Mock(side_effect=_mock_async_list)
 
     await endpoint.async_list_by_site("sk", 101)
     endpoint.async_list.assert_called_with(study_key="sk", site_id=101)

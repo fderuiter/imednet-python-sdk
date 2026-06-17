@@ -273,7 +273,8 @@ def export_to_json(
 
     try:
         from imednet.integrations.enrichment import EnrichmentPipeline
-        from imednet_workflows.config_version_control import ConfigVersionStore
+        config_version_control = __import__("imednet_workflows.config_version_control", fromlist=["ConfigVersionStore"])
+        ConfigVersionStore = config_version_control.ConfigVersionStore
 
         store = ConfigVersionStore()
         history = store.get_history(study_key)

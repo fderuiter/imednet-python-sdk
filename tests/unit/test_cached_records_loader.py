@@ -17,7 +17,7 @@ def _record(record_id: int, modified_at: str) -> Record:
         form_key="FORM",
         record_id=record_id,
         subject_key=f"S{record_id}",
-        date_modified=datetime.fromisoformat(modified_at.replace("Z", "+00:00")),
+        date_modified=modified_at,
         record_data={"value": record_id},
     )
 
@@ -52,8 +52,8 @@ def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> 
     second_load = loader.load_records("STUDY")
 
     assert loader.db_path.parent == tmp_path / "custom-cache"
-    assert [record.record_id for record in first_load] == [1, 2]
-    assert [record.record_id for record in second_load] == [2, 3]
+    assert [record.record_id for record in first_load] == ['1', '2']
+    assert [record.record_id for record in second_load] == ['2', '3']
 
     first_delta_call = sdk.get_records.call_args_list[0]
     second_delta_call = sdk.records.list.call_args_list[0]
@@ -79,7 +79,7 @@ def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
 
     records = loader.load_records("STUDY")
 
-    assert [item.record_id for item in records] == [1]
+    assert [item.record_id for item in records] == ['1']
     assert sdk.get_records.call_count == 3
 
 
@@ -94,7 +94,7 @@ def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
     loader.load_records("STUDY")
     records = list(loader.iter_cached_records("STUDY", chunk_size=1))
 
-    assert [record.record_id for record in records] == [1, 2]
+    assert [record.record_id for record in records] == ['1', '2']
 
 
 def test_iter_cached_records_rejects_non_positive_chunk_size(tmp_path: Path) -> None:

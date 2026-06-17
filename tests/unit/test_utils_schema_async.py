@@ -18,7 +18,11 @@ async def test_async_schema_cache_refresh() -> None:
     forms.list.return_value = [Form(form_id=1, form_key="F1")]
     variables = MagicMock()
     var = _make_var("age")
-    variables.async_list = AsyncMock(return_value=[var])
+    
+    async def _async_gen():
+        for x in [var]:
+            yield x
+    variables.async_list = MagicMock(return_value=_async_gen())
 
     sdk = MagicMock()
     sdk.forms = forms
@@ -29,7 +33,7 @@ async def test_async_schema_cache_refresh() -> None:
 
     assert validator.schema.form_key_from_id(1) == "F1"
     assert validator.schema.variables_for_form("F1")["age"] is var
-    variables.async_list.assert_awaited_once_with(study_key="ST")
+    variables.async_list.assert_called_once_with(study_key="ST")
 
 
 @pytest.mark.asyncio

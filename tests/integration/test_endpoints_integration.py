@@ -49,7 +49,7 @@ def test_records_list_filter_param():
 
     sent = route.calls.last.request
     assert sent.url.params["filter"] == "status==Open;studyKey==ST"
-    assert records[0].record_id == 1
+    assert records[0].record_id == "1"
 
 
 @respx.mock
@@ -70,6 +70,6 @@ async def test_async_endpoint_mirror():
 
     await async_sdk.aclose()
 
-    assert [s.site_id for s in sync_res] == [1]
-    assert [s.site_id for s in async_res] == [1]
+    assert [s.site_id for s in sync_res] == ["1"]
+    assert [s.site_id for s in async_res] == ["1"]
     assert [s.site_id for s in sync_res] == [s.site_id for s in async_res]

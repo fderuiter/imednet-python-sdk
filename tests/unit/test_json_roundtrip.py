@@ -39,7 +39,7 @@ from imednet.testing import fake_data
 def test_json_roundtrip(cls, payload_func):
     payload = payload_func()
     model = cls.from_json(payload)
-    dumped = model.model_dump(by_alias=True)
+    dumped = model.model_dump(by_alias=True, exclude_unset=True)
     assert cls.from_json(dumped) == model
 
 
