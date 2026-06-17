@@ -138,6 +138,8 @@ class JsonModel(BaseModel):
         for name, field in cls.model_fields.items():
             if field.alias:
                 defined_fields.add(field.alias)
+        for name in getattr(cls, "model_computed_fields", {}).keys():
+            defined_fields.add(name)
 
         incoming_keys = set(data.keys())
 

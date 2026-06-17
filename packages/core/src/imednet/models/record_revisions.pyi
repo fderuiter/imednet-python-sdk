@@ -17,3 +17,9 @@ class RecordRevision(JsonModel):
     interval_id: Optional[int]
     deleted: Optional[bool]
     date_created: Optional[str]
+    reason_for_change: Optional[str]
+    record_oid: Optional[str]
+    role: Optional[str]
+    subject_oid: Optional[str]
+    user: Optional[str]
+

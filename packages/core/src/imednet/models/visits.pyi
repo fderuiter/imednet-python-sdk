@@ -17,3 +17,6 @@ class Visit(JsonModel):
     deleted: Optional[bool]
     date_created: Optional[str]
     date_modified: Optional[str]
+    visit_date_form: Optional[str]
+    visit_date_question: Optional[str]
+

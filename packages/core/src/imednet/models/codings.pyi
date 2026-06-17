@@ -21,3 +21,6 @@ class Coding(JsonModel):
     dictionary_name: Optional[str]
     dictionary_version: Optional[str]
     date_coded: Optional[str]
+    reason: Optional[str]
+    revision: Optional[int]
+
