@@ -192,7 +192,12 @@ def test_sites_page_renders_with_mock_sdk() -> None:
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(page_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
     finally:
         for key, original in saved.items():
             if original is None:
@@ -301,7 +306,12 @@ def test_sites_page_populated_and_refresh() -> None:
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(page_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
     finally:
         for key, original in saved.items():
             if original is None:

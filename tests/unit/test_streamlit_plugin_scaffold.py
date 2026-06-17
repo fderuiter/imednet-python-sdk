@@ -18,7 +18,12 @@ _MISSING = object()
 
 
 def _component_palette() -> list[str]:
-    return runpy.run_path(str(PACKAGE_ROOT / "components" / "charts.py"))["PALETTE"]
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("imednet_streamlit.components.charts", str(PACKAGE_ROOT / "components" / "charts.py"))
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["imednet_streamlit.components.charts"] = module
+    spec.loader.exec_module(module)
+    return module.PALETTE
 
 
 class _FakeNavigation:
@@ -272,7 +277,12 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(page_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
     finally:
         for key, original in saved.items():
             if original is None:
@@ -362,7 +372,13 @@ def _run_sites_page(
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
-        module_globals = runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(page_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+        module_globals = vars(module)
     finally:
         for key, original in saved.items():
             if original is None:
@@ -446,7 +462,13 @@ def _run_records_page(
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
-        module_globals = runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(page_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+        module_globals = vars(module)
     finally:
         for key, original in saved.items():
             if original is None:
@@ -538,13 +560,14 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
     page_path = PACKAGE_ROOT / "pages" / page_name
     fake_st = _FakePageStreamlit(connected=connected)
-    fake_streamlit_module = ModuleType("streamlit")
+    from unittest.mock import MagicMock
+    fake_streamlit_module = MagicMock()
     fake_streamlit_module.session_state = fake_st.session_state
     fake_streamlit_module.title = fake_st.title
     fake_streamlit_module.info = fake_st.info
     fake_streamlit_module.success = fake_st.success
     fake_streamlit_module.markdown = fake_st.markdown
-
+    
     fake_auth_module = ModuleType("imednet_streamlit.auth")
     fake_auth_module.get_sdk = lambda: object()
     fake_auth_module.get_study_key = lambda: "STUDY"
@@ -554,7 +577,12 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
     try:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(page_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
     finally:
         if previous_streamlit is None:
             sys.modules.pop("streamlit", None)
@@ -643,6 +671,12 @@ def test_streamlit_pages_execute_without_exceptions() -> None:
 
     home_connected = _run_page("home.py", connected=True)
     assert home_connected.successes
+
+    admin_disconnected = _run_page("admin.py", connected=False)
+    admin_connected = _run_page("admin.py", connected=True)
+
+    conformance_disconnected = _run_page("conformance.py", connected=False)
+    conformance_connected = _run_page("conformance.py", connected=True)
 
 
 def test_queries_page_renders() -> None:
@@ -947,7 +981,12 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
-        runpy.run_path(str(page_path), run_name="__main__")
+        import importlib.util
+        module_name = "imednet_streamlit.pages." + page_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(page_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
     finally:
         for key, original in saved.items():
             if original is None:
