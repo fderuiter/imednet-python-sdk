@@ -73,13 +73,12 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     for endpoint in endpoints_to_test:
         model_cls = MODEL_MAP[endpoint]
 
-        # Build URL. The SDK handles base_url and auth.
-        url = f"/{endpoint}"
-        if endpoint != "studies":
-            url += f"?studyKey={study_key}"
+        # Build URL using the SDK's internal path builder
+        endpoint_obj = getattr(sdk, endpoint)
+        path = endpoint_obj._get_endpoint_path(study_key if endpoint != "studies" else None)
 
         try:
-            response = sdk._client.get(url)
+            response = sdk._client.get(path)
             data = response.json()
             items = data.get("recordData") if "recordData" in data else data.get("data", [])
             for item in items:
