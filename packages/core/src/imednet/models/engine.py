@@ -15,7 +15,8 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
     if _CACHE:
         return _CACHE
 
-    postman_path = os.environ.get("IMEDNET_POSTMAN_PATH", "/app/imednet.postman_collection.json")
+    default_path = pathlib.Path(__file__).resolve().parents[5] / "imednet.postman_collection.json"
+    postman_path = os.environ.get("IMEDNET_POSTMAN_PATH", str(default_path))
     if not os.path.exists(postman_path):
         return {}
 
