@@ -78,6 +78,7 @@ def get_study_structure(sdk: "ImednetFacade", study_key: str) -> StudyStructure:
 async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -> StudyStructure:
     """Asynchronous variant of :func:`get_study_structure`."""
     try:
+
         async def fetch_intervals():
             return [i async for i in sdk.async_get_intervals(study_key)]
 
@@ -86,7 +87,7 @@ async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -
 
         async def fetch_variables():
             return [v async for v in sdk.async_get_variables(study_key)]
-            
+
         intervals, forms, variables = await asyncio.gather(
             fetch_intervals(),
             fetch_forms(),
