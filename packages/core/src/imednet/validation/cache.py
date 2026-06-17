@@ -132,6 +132,9 @@ _TYPE_VALIDATORS: Dict[str, Callable[[Any], None]] = {
     "boolean": _validate_bool,
     "text": _validate_text,
     "string": _validate_text,
+    "date": _validate_text,
+    "datetime": _validate_text,
+    "time": _validate_text,
 }
 
 # Bolt Optimization: Expand validators to include common casings
