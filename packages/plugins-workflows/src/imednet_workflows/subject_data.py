@@ -28,7 +28,7 @@ class SubjectDataWorkflow:
     Provides methods to retrieve comprehensive data related to a specific subject.
 
     Args:
-        sdk: An instance of the ImednetSDK.
+        sdk: An instance of the ImednetFacade.
     """
 
     def __init__(self, sdk: "ImednetFacade"):

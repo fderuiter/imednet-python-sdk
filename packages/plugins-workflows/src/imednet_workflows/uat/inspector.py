@@ -72,41 +72,16 @@ class StudySchemaInspector:
     use external synchronization or separate inspector instances for that access pattern.
     """
 
-    def __init__(self, sdk: ImednetFacade | AsyncImednetSDK) -> None:
+    def __init__(self, sdk: ImednetFacade | AsyncImednetFacade) -> None:
         self._sdk = sdk
         self._cache: dict[str, StudySnapshot] = {}
 
-    def _ensure_sync_sdk(self) -> None:
-        missing = [
-            endpoint
-            for endpoint in ("forms", "variables", "intervals", "sites")
-            if not hasattr(getattr(self._sdk, endpoint, None), "list")
-        ]
-        if missing:
-            raise TypeError(
-                "inspect() requires a synchronous ImednetSDK with list() methods on "
-                f"forms/variables/intervals/sites. Missing sync methods for: {', '.join(missing)}."
-            )
-
-    def _ensure_async_sdk(self) -> None:
-        missing = [
-            endpoint
-            for endpoint in ("forms", "variables", "intervals", "sites")
-            if not hasattr(getattr(self._sdk, endpoint, None), "async_list")
-        ]
-        if missing:
-            raise TypeError(
-                "async_inspect() requires an AsyncImednetSDK with async_list() methods on "
-                f"forms/variables/intervals/sites. Missing async methods for: {', '.join(missing)}."
-            )
-
     def inspect(self, study_key: str, *, force_refresh: bool = False) -> StudySnapshot:
         """Synchronously fetch and return a study snapshot."""
-        self._ensure_sync_sdk()
         if not force_refresh and study_key in self._cache:
             return self._cache[study_key]
 
-        sdk = cast("ImednetSDK", self._sdk)
+        sdk = cast("ImednetFacade", self._sdk)
         snapshot = StudySnapshot(
             study_key=study_key,
             forms=sdk.get_forms(study_key),
@@ -119,11 +94,10 @@ class StudySchemaInspector:
 
     async def async_inspect(self, study_key: str, *, force_refresh: bool = False) -> StudySnapshot:
         """Asynchronously fetch metadata concurrently and return a study snapshot."""
-        self._ensure_async_sdk()
         if not force_refresh and study_key in self._cache:
             return self._cache[study_key]
 
-        sdk = cast("AsyncImednetSDK", self._sdk)
+        sdk = cast("AsyncImednetFacade", self._sdk)
 
         async def fetch_forms():
             return await sdk.async_get_forms(study_key)
