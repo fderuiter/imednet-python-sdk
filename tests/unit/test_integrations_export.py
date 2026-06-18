@@ -392,10 +392,7 @@ def test_records_df_missing_pandas(monkeypatch):
     monkeypatch.setattr(export_mod, "pd", None)
     with pytest.raises(
         ImportError,
-        match=(
-            "pandas is required for _records_df. Install with "
-            "'pip install pandas imednet-workflows'"
-        ),
+        match=r"pandas is required for _records_df\. Install with \"pip install 'imednet\[export\]'\"\.",
     ):
         export_mod._records_df(MagicMock(), "STUDY")
 
@@ -404,9 +401,6 @@ def test_export_to_long_sql_missing_pandas(monkeypatch):
     monkeypatch.setattr(export_mod, "pd", None)
     with pytest.raises(
         ImportError,
-        match=(
-            "pandas is required for export_to_long_sql. Install with "
-            "'pip install pandas imednet-workflows'"
-        ),
+        match=r"pandas is required for export_to_long_sql\. Install with \"pip install 'imednet\[export\]'\"\.",
     ):
         export_mod.export_to_long_sql(MagicMock(), "STUDY", "table", "sqlite://")
