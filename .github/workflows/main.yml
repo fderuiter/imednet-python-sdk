@@ -224,7 +224,7 @@ jobs:
           retention-days: 1
 
       - name: Upload Sinks Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: dist-sinks
           path: packages/plugins-sinks/dist/
@@ -366,25 +366,25 @@ jobs:
       matrix:
         extra: ["export", "duckdb", "mongodb", "neo4j", "snowflake", "cli"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.10"
       
       - name: Build Packages
         run: |
-          pip install build
-          python -m build packages/plugins-workflows
-          python -m build packages/plugins-sinks
-          python -m build packages/core
+          python3 -m pip install build
+          python3 -m build packages/plugins-workflows
+          python3 -m build packages/plugins-sinks
+          python3 -m build packages/core
 
       - name: Install Core with Extra
         run: |
           WHEEL=$(ls packages/core/dist/imednet-*.whl)
           SINKS_WHEEL=$(ls packages/plugins-sinks/dist/imednet_plugins_sinks-*.whl)
           WORKFLOWS_WHEEL=$(ls packages/plugins-workflows/dist/imednet_workflows-*.whl)
-          pip install "$WHEEL" "$SINKS_WHEEL" "$WORKFLOWS_WHEEL"
-          pip install "${WHEEL}[${{ matrix.extra }}]"
+          python3 -m pip install "$WHEEL" "$SINKS_WHEEL" "$WORKFLOWS_WHEEL"
+          python3 -m pip install "${WHEEL}[${{ matrix.extra }}]"
 
       - name: Verify CLI Availability
         run: |
@@ -527,13 +527,13 @@ jobs:
       id-token: write # Mandatory for trusted publishing
     steps:
       - name: Download Sinks Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: dist-sinks
           path: dist
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
         with:
           skip-existing: true
 
