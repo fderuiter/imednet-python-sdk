@@ -38,8 +38,8 @@ async def test_async_list_records(
     filter_capture = patch_build_filter(records)
     result = await ep.async_list(study_key="S1", record_data_filter="x")
     assert captured["path"] == "/api/v1/edc/studies/S1/records"
-    assert captured["params"] == {"filter": "FILTERED", "recordDataFilter": "x"}
-    assert filter_capture["filters"] == {"studyKey": "S1"}
+    assert captured["params"] == {"recordDataFilter": "x"}
+    assert "filters" not in filter_capture
     assert isinstance(result[0], Record)
 
 

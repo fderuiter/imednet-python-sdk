@@ -14,6 +14,7 @@ from imednet.core.endpoint.strategies import (
     DefaultParamProcessor,
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
+    PopStudyKeyStrategy,
     StudyKeyStrategy,
 )
 from imednet.core.endpoint.structs import ListRequestState, ParamState
@@ -104,7 +105,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         if self.STUDY_KEY_STRATEGY:
             return self.STUDY_KEY_STRATEGY
         if self.requires_study_key:
-            return KeepStudyKeyStrategy()
+            return PopStudyKeyStrategy()
         return OptionalStudyKeyStrategy()
 
     @property
