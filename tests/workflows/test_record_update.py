@@ -65,6 +65,7 @@ def test_create_or_update_records_validation(async_mode: bool) -> None:
         sdk._async_client = object()
         sdk.async_create_record = AsyncMock(return_value=Job(batch_id="1", state="PROCESSING"))
     else:
+        del sdk.async_create_record
         sdk.create_record = MagicMock(return_value=Job(batch_id="1", state="PROCESSING"))
 
     wf = RecordUpdateWorkflow(sdk)
@@ -120,6 +121,7 @@ def test_create_or_update_records_unknown_form_key(async_mode: bool) -> None:
         sdk._async_client = object()
         sdk.async_create_record = AsyncMock()
     else:
+        del sdk.async_create_record
         sdk._async_client = None
         sdk.create_record = MagicMock()
 

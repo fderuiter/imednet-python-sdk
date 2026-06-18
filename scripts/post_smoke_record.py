@@ -215,10 +215,18 @@ def main(argv: list[str] | None = None) -> int:
                 print("::notice:: Smoke record skipped – no identifiers available")
                 return SKIP_EXIT_CODE
             logger.info("Scenarios: %s", scenarios)
+            success_count = 0
             for extra in scenarios:
-                record = build_record(sdk, study_key, form_key, **extra)
-                logger.debug("Record payload: %s", _redact(record))
-                submit_record(sdk, study_key, record, timeout=args.timeout)
+                try:
+                    record = build_record(sdk, study_key, form_key, **extra)
+                    logger.debug("Record payload: %s", _redact(record))
+                    submit_record(sdk, study_key, record, timeout=args.timeout)
+                    success_count += 1
+                except Exception as loop_exc:
+                    logger.error("Scenario failed: %s", loop_exc)
+            if success_count == 0:
+                print("Smoke record failed: All scenarios failed", file=sys.stderr)
+                return 1
     except Exception as exc:  # pragma: no cover - runtime safeguard
         print(f"Smoke record failed: {exc}", file=sys.stderr)
         return 1
