@@ -1,12 +1,13 @@
 name: Live Integration Tests
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
-  schedule:
-    - cron: "0 2 1 * *"
+    inputs:
+      approved:
+        description: "Approve running live integration tests"
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -15,6 +16,7 @@ permissions:
 jobs:
   live-validation:
     name: Live Integration Tests
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.approved }}
     runs-on: ubuntu-latest
     environment: live-testing
 
