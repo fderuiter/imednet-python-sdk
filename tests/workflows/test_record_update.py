@@ -35,10 +35,8 @@ def _build_schema() -> tuple[SchemaCache, Variable]:
 def test_create_or_update_records_no_wait(schema: SchemaCache, async_mode: bool) -> None:
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
-    if async_mode:
-        sdk._async_client = object()
-    else:
-        sdk._async_client = None
+    if not async_mode:
+        del sdk.async_create_record
 
     if async_mode:
         sdk.async_create_record = AsyncMock(return_value=job)
@@ -155,10 +153,8 @@ def test_create_or_update_records_unknown_form_key(async_mode: bool) -> None:
 def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None:
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
-    if async_mode:
-        sdk._async_client = object()
-    else:
-        sdk._async_client = None
+    if not async_mode:
+        del sdk.async_create_record
 
     if async_mode:
         sdk.async_create_record = AsyncMock(return_value=job)
@@ -223,14 +219,12 @@ def test_create_or_update_records_wait_for_completion(
     sdk = MagicMock()
     initial_job = Job(batch_id="1", state="PROCESSING")
     completed_job = Job(batch_id="1", state="COMPLETED")
-    if async_mode:
-        sdk._async_client = object()
-    else:
-        sdk._async_client = None
+    if not async_mode:
+        del sdk.async_create_record
 
     if async_mode:
         sdk.async_create_record = AsyncMock(return_value=initial_job)
-        sdk.async_get_job = AsyncMock(side_effect=[initial_job, completed_job])
+        sdk.async_poll_job = AsyncMock(return_value=completed_job)
         sdk.async_get_variables = AsyncMock(
             return_value=[
                 Variable(
@@ -258,10 +252,10 @@ def test_create_or_update_records_wait_for_completion(
             [{"formKey": "F1", "data": {}}],
             schema=wf._schema,
         )
-        sdk.async_get_job.assert_awaited_with("STUDY", "1")
+        sdk.async_poll_job.assert_awaited_with("STUDY", "1", timeout=5, interval=0)
     else:
         sdk.create_record = MagicMock(return_value=initial_job)
-        sdk.get_job = MagicMock(side_effect=[initial_job, completed_job])
+        sdk.poll_job = MagicMock(return_value=completed_job)
         sdk.get_variables = MagicMock(
             return_value=[
                 Variable(
@@ -287,5 +281,5 @@ def test_create_or_update_records_wait_for_completion(
             [{"formKey": "F1", "data": {}}],
             schema=wf._schema,
         )
-        sdk.get_job.assert_called_with("STUDY", "1")
+        sdk.poll_job.assert_called_with("STUDY", "1", timeout=5, interval=0)
     assert result.state == "COMPLETED"

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from importlib.metadata import EntryPoint, entry_points
-from typing import TYPE_CHECKING, Any, Iterator, Optional, cast
+from typing import TYPE_CHECKING, Any, Iterator, Optional, Union, cast
 
 from .config import Config, load_config
 from .core.context import study_context
@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from .endpoints.users import AsyncUsersEndpoint, UsersEndpoint
     from .endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
     from .endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
+    from .spi.facade import AsyncImednetFacade, ImednetFacade
 
 
 class WorkflowPluginProtocol(PluginProtocol):
@@ -101,7 +102,7 @@ class _BaseSDK:
 
         try:
             workflows_factory = cast(PluginProtocol, workflows_plugin)
-            return workflows_factory(cast(Any, self))
+            return workflows_factory(cast(Union["ImednetFacade", "AsyncImednetFacade"], self))
         except TypeError as error:
             raise PluginLoadError(
                 "Failed to instantiate workflows from the discovered plugin entry point."
