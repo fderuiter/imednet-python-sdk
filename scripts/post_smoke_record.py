@@ -72,18 +72,18 @@ def discover_identifiers(
 
     try:
         site_name = discover_site_name(sdk, study_key)
-    except NoLiveDataError as exc:
-        print(f"::notice:: {exc}")
+    except Exception as exc:
+        print(f"::notice:: Site discovery failed: {exc}")
 
     try:
         subject_key = discover_subject_key(sdk, study_key)
-    except NoLiveDataError as exc:
-        print(f"::notice:: {exc}")
+    except Exception as exc:
+        print(f"::notice:: Subject discovery failed: {exc}")
 
     try:
         interval_name = discover_interval_name(sdk, study_key)
-    except NoLiveDataError as exc:
-        print(f"::notice:: {exc}")
+    except Exception as exc:
+        print(f"::notice:: Interval discovery failed: {exc}")
 
     return site_name, subject_key, interval_name
 
@@ -194,11 +194,18 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         with authenticate() as sdk:
-            try:
-                study_key, form_key = discover_keys(sdk)
-            except NoLiveDataError as exc:
-                print(f"::error:: Smoke record failed – {exc}", file=sys.stderr)
-                return 1
+            study_key = ""
+            form_key = ""
+            for attempt in range(3):
+                try:
+                    study_key, form_key = discover_keys(sdk)
+                    break
+                except Exception as exc:
+                    if attempt == 2:
+                        print(f"::error:: Smoke record failed during discovery – {exc}", file=sys.stderr)
+                        return 1
+                    import time
+                    time.sleep(2)
 
             logger.info("Discovered study_key=%s form_key=%s", study_key, form_key)
             site_name, subject_key, interval_name = discover_identifiers(sdk, study_key)
