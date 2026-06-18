@@ -70,3 +70,32 @@ class TestBaseEndpoint:
 
         with pytest.raises(TypeError, match="Missing required argument: item_id"):
             ep.get("S1", None)
+
+    def test_parameter_processing_is_independent(self, client, context):
+        ep = MockListGetEndpoint(client, context)
+
+        # Mock the param processor
+        mock_processor = MagicMock()
+        mock_processor.process_filters.return_value = ({"processed": "yes"}, {"special": 1})
+        ep.PARAM_PROCESSOR = mock_processor
+
+        # Mock the study key strategy
+        mock_strategy = MagicMock()
+        mock_strategy.process.return_value = ("STUDY1", {"processed": "yes", "other": "val"})
+        ep.STUDY_KEY_STRATEGY = mock_strategy
+
+        # Call the internal resolution hook directly
+        filters = {"raw": "filter"}
+        extra_params = {"extra": 2}
+        param_state = ep._resolve_params("STUDY_KEY", extra_params, filters)
+
+        # Verify the hooks were invoked independently of any data execution
+        mock_processor.process_filters.assert_called_once()
+        mock_strategy.process.assert_called_once()
+
+        # Check the resulting param state
+        assert param_state.study == "STUDY1"
+        assert param_state.params["special"] == 1
+        assert param_state.params["extra"] == 2
+        assert "filter" in param_state.params
+        assert param_state.other_filters == {"processed": "yes", "other": "val"}
