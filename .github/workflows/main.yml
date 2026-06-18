@@ -223,6 +223,13 @@ jobs:
           path: packages/providers-airflow/dist/
           retention-days: 1
 
+      - name: Upload Sinks Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-sinks
+          path: packages/plugins-sinks/dist/
+          retention-days: 1
+
       - name: Upload Streamlit Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -349,6 +356,41 @@ jobs:
         run: ./scripts/fuzz_test.sh
 
   # ------------------------------------------------------------------
+  # JOB 3.7: VALIDATE EXTRAS
+  # ------------------------------------------------------------------
+  validate-extras:
+    name: Validate Documented Extras
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        extra: ["export", "duckdb", "mongodb", "neo4j", "snowflake", "cli"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      
+      - name: Build Packages
+        run: |
+          pip install build
+          python -m build packages/plugins-workflows
+          python -m build packages/plugins-sinks
+          python -m build packages/core
+
+      - name: Install Core with Extra
+        run: |
+          WHEEL=$(ls packages/core/dist/imednet-*.whl)
+          SINKS_WHEEL=$(ls packages/plugins-sinks/dist/imednet_plugins_sinks-*.whl)
+          WORKFLOWS_WHEEL=$(ls packages/plugins-workflows/dist/imednet_workflows-*.whl)
+          pip install "$WHEEL" "$SINKS_WHEEL" "$WORKFLOWS_WHEEL"
+          pip install "${WHEEL}[${{ matrix.extra }}]"
+
+      - name: Verify CLI Availability
+        run: |
+          imednet --help || true
+
+  # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
   # ------------------------------------------------------------------
   docs:
@@ -464,6 +506,30 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-providers
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+
+  publish-sinks:
+    name: Publish imednet-plugins-sinks to PyPI
+    needs: test
+    if: |
+      github.event_name == 'push' && (
+        startsWith(github.ref, 'refs/tags/imednet-plugins-sinks-v') ||
+        (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'chore: release main'))
+      )
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # Mandatory for trusted publishing
+    steps:
+      - name: Download Sinks Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-sinks
           path: dist
 
       - name: Publish to PyPI

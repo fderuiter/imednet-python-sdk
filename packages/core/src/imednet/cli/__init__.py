@@ -149,6 +149,10 @@ def run_dashboard(
     ),
 ) -> None:
     """Launch the interactive iMednet Streamlit reporting dashboard."""
+    streamlit_spec = find_spec("imednet_streamlit")
+    if streamlit_spec is None:
+        _exit_missing_dashboard_plugin()
+
     dashboard_spec = find_spec("imednet_streamlit.app")
     if dashboard_spec is None:
         _exit_missing_dashboard_plugin()
@@ -189,7 +193,7 @@ except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover -
     _register_missing_workflow_commands()
 
 
-if find_spec("imednet_streamlit.app") is not None:  # pragma: no cover - optional streamlit plugin
+if find_spec("imednet_streamlit") is not None:  # pragma: no cover - optional streamlit plugin
     app.command("dashboard")(run_dashboard)
 else:  # pragma: no cover
     _register_missing_dashboard_commands()
@@ -204,3 +208,5 @@ def tui(ctx: typer.Context) -> None:
 
 if __name__ == "__main__":  # pragma: no cover - manual invocation
     app()
+
+click_app = typer.main.get_command(app)

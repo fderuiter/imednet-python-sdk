@@ -70,6 +70,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",
     "sphinxcontrib.mermaid",
+    "sphinx_click",
 ]
 
 autosummary_generate = False
@@ -82,7 +83,6 @@ autodoc_mock_imports = [
     "pandas",
     "numpy",
     "matplotlib",
-    "pydantic",
     "airflow",
     "opentelemetry",
     "streamlit",

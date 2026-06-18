@@ -114,7 +114,7 @@ def to_arrow_table(
     """
     if pa is None:
         raise ImportError(
-            "pyarrow is required for to_arrow_table. Install with 'pip install pyarrow'."
+            "pyarrow is required for to_arrow_table. Install with \"pip install 'imednet[export]'\"."
         )
 
     records = [_normalize_record(record) for record in data_records]

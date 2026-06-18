@@ -28,7 +28,7 @@ def export_parquet(
     if importlib.util.find_spec("pyarrow") is None:
         print(
             "[bold red]Error:[/bold red] pyarrow is required for Parquet export. "
-            "Install with 'pip install pyarrow imednet-workflows'."
+            "Install with \"pip install 'imednet[export]'\"."
         )
         raise typer.Exit(code=1)
 
@@ -49,7 +49,7 @@ def export_csv(
     if importlib.util.find_spec("pandas") is None:
         print(
             "[bold red]Error:[/bold red] pandas is required for CSV export. "
-            "Install with 'pip install pandas imednet-workflows'."
+            "Install with \"pip install 'imednet[export]'\"."
         )
         raise typer.Exit(code=1)
 
@@ -70,7 +70,7 @@ def export_excel(
     if importlib.util.find_spec("pandas") is None or importlib.util.find_spec("openpyxl") is None:
         print(
             "[bold red]Error:[/bold red] pandas and openpyxl are required for Excel export. "
-            "Install with 'pip install pandas openpyxl imednet-workflows'."
+            "Install with \"pip install 'imednet[export]'\"."
         )
         raise typer.Exit(code=1)
 
@@ -183,7 +183,7 @@ def export_sql(
     if importlib.util.find_spec("sqlalchemy") is None:
         print(
             "[bold red]Error:[/bold red] SQLAlchemy is required for SQL export. "
-            "Install with 'pip install sqlalchemy imednet-workflows'."
+            "Install with \"pip install 'imednet[export]'\"."
         )
         raise typer.Exit(code=1)
 
