@@ -191,5 +191,5 @@ def test_main_returns_failure_on_no_live_data(monkeypatch, capsys) -> None:
     exit_code = smoke.main([])
 
     assert exit_code == 1
-    err = capsys.readouterr().err
-    assert "no active studies" in err
+    out = capsys.readouterr().out
+    assert "no active studies" in out
