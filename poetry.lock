@@ -1240,7 +1240,7 @@ duckdb = ["duckdb (>=1.1.0)"]
 export = ["duckdb (>=1.1.0)", "imednet-workflows", "openpyxl (>=3.1,<4.0)", "pandas (>=2.2.3,<3.0.0)", "pyarrow (>=14.0.1)", "sqlalchemy (>=2.0,<3.0)"]
 mongodb = ["imednet-plugins-sinks", "pymongo (>=4.0,<5.0)"]
 neo4j = ["imednet-plugins-sinks", "neo4j (>=5.0,<6.0)"]
-snowflake = ["imednet-plugins-sinks", "pyarrow (>=14.0.1)", "snowflake-connector-python (>=3.0,<4.0)"]
+snowflake = ["imednet-plugins-sinks", "pyarrow (>=14.0.1)", "snowflake-connector-python (>=3.0,<5.0)"]
 
 [package.source]
 type = "directory"
@@ -1260,10 +1260,10 @@ develop = true
 imednet = ">=0.8.0"
 
 [package.extras]
-all = ["neo4j (>=5.0,<6.0)", "pyarrow (>=14.0.1)", "pymongo (>=4.0,<5.0)", "snowflake-connector-python (>=3.0,<4.0)"]
+all = ["neo4j (>=5.0,<6.0)", "pyarrow (>=14.0.1)", "pymongo (>=4.0,<5.0)", "snowflake-connector-python (>=3.0,<5.0)"]
 mongodb = ["pymongo (>=4.0,<5.0)"]
 neo4j = ["neo4j (>=5.0,<6.0)"]
-snowflake = ["pyarrow (>=14.0.1)", "snowflake-connector-python (>=3.0,<4.0)"]
+snowflake = ["pyarrow (>=14.0.1)", "snowflake-connector-python (>=3.0,<5.0)"]
 
 [package.source]
 type = "directory"
