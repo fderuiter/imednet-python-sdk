@@ -95,10 +95,7 @@ def _records_df(
     """Return a DataFrame of study records with duplicate columns removed."""
     if pd is None:
         raise ImportError(
-            (
-                "pandas is required for _records_df. Install with "
-                "\"pip install 'imednet[export]'\"."
-            )
+            ("pandas is required for _records_df. Install with \"pip install 'imednet[export]'\".")
         )
     df: pd.DataFrame = _record_mapper()(sdk).dataframe(
         study_key,
