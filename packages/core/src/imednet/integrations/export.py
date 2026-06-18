@@ -32,7 +32,7 @@ def _record_mapper() -> Any:
         if error.name and error.name.startswith("imednet_workflows"):
             raise ImportError(
                 "Record export requires the optional 'imednet-workflows' package. "
-                "Install with `pip install imednet-workflows`."
+                "Install with \"pip install 'imednet[export]'\"."
             ) from error
         raise
 
@@ -97,7 +97,7 @@ def _records_df(
         raise ImportError(
             (
                 "pandas is required for _records_df. Install with "
-                "'pip install pandas imednet-workflows'."
+                "\"pip install 'imednet[export]'\"."
             )
         )
     df: pd.DataFrame = _record_mapper()(sdk).dataframe(
@@ -552,7 +552,7 @@ def export_to_long_sql(
         raise ImportError(
             (
                 "pandas is required for export_to_long_sql. Install with "
-                "'pip install pandas imednet-workflows'."
+                "\"pip install 'imednet[export]'\"."
             )
         )
     from sqlalchemy import create_engine

@@ -30,7 +30,7 @@ def _cached_records_loader() -> Any:
         if error.name and error.name.startswith("imednet_workflows"):
             raise ImportError(
                 "Record export requires the optional 'imednet-workflows' package. "
-                "Install with `pip install imednet-workflows`."
+                "Install with \"pip install 'imednet[export]'\"."
             ) from error
         raise
 
