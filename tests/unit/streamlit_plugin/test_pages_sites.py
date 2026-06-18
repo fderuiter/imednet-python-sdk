@@ -193,7 +193,10 @@ def test_sites_page_renders_with_mock_sdk() -> None:
         sys.modules["imednet_streamlit.components"] = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         import importlib.util
-        spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.sites", str(page_path))
+
+        spec = importlib.util.spec_from_file_location(
+            "imednet_streamlit.pages.sites", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules["imednet_streamlit.pages.sites"] = mod
         spec.loader.exec_module(mod)
@@ -306,7 +309,10 @@ def test_sites_page_populated_and_refresh() -> None:
         sys.modules["imednet_streamlit.components"] = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         import importlib.util
-        spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.sites", str(page_path))
+
+        spec = importlib.util.spec_from_file_location(
+            "imednet_streamlit.pages.sites", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules["imednet_streamlit.pages.sites"] = mod
         spec.loader.exec_module(mod)

@@ -109,7 +109,6 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
             release.set()
         await release.wait()
         return payload
-             
 
     sdk.async_get_forms = lambda study_key: delayed_result(
         "forms", [Form(form_key="F1", form_name="Form 1")]
@@ -136,7 +135,6 @@ async def test_async_inspect_force_refresh_bypasses_cache() -> None:
 
     async def empty_async_gen(*args, **kwargs) -> list[Any]:
         return []
-
 
     sdk.async_get_forms = MagicMock(side_effect=empty_async_gen)
     sdk.async_get_variables = MagicMock(side_effect=empty_async_gen)

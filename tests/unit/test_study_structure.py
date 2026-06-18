@@ -32,10 +32,10 @@ def test_get_study_structure_aggregates_related_data(async_mode: bool) -> None:
     variable = Variable(variable_id=1, variable_name="V1", label="Var 1", form_id=1)
 
     if async_mode:
+
         async def async_mock_return(items):
             return items
 
-                
         sdk.async_get_intervals = MagicMock(return_value=async_mock_return([interval]))
         sdk.async_get_forms = MagicMock(return_value=async_mock_return([form]))
         sdk.async_get_variables = MagicMock(return_value=async_mock_return([variable]))

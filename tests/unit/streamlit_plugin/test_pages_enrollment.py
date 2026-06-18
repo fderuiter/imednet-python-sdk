@@ -210,7 +210,10 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         import importlib.util
-        spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.enrollment", str(page_path))
+
+        spec = importlib.util.spec_from_file_location(
+            "imednet_streamlit.pages.enrollment", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules["imednet_streamlit.pages.enrollment"] = mod
         spec.loader.exec_module(mod)
@@ -305,7 +308,10 @@ def test_enrollment_page_empty_and_filters_and_refresh() -> None:
 
         # Execute page
         import importlib.util
-        spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.enrollment", str(page_path))
+
+        spec = importlib.util.spec_from_file_location(
+            "imednet_streamlit.pages.enrollment", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules["imednet_streamlit.pages.enrollment"] = mod
         spec.loader.exec_module(mod)
