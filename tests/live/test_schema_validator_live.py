@@ -46,5 +46,8 @@ def test_validator_wrong_type(sdk: ImednetSDK, study_key: str) -> None:
     with pytest.raises(ValidationError):
         validator.validate_record(
             study_key,
-            {"formKey": var.form_key, "recordData": {var.variable_name: _wrong_value(var.variable_type)}},
+            {
+                "formKey": var.form_key,
+                "recordData": {var.variable_name: _wrong_value(var.variable_type)},
+            },
         )

@@ -326,8 +326,10 @@ async def test_base_schema_cache_async_refresh() -> None:
     cache = AsyncSchemaCache()
     forms = MagicMock()
     variables = MagicMock()
+
     async def mock_async_list(*args, **kwargs):
         yield var
+
     variables.async_list = MagicMock(side_effect=mock_async_list)
 
     await cache.refresh(forms, variables, "STUDY")

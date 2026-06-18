@@ -305,8 +305,11 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         import importlib.util
+
         page_module_name = str(page_path).split("pages/")[-1].replace(".py", "")
-        spec = importlib.util.spec_from_file_location(f"imednet_streamlit.pages.{page_module_name}", str(page_path))
+        spec = importlib.util.spec_from_file_location(
+            f"imednet_streamlit.pages.{page_module_name}", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules[f"imednet_streamlit.pages.{page_module_name}"] = mod
         spec.loader.exec_module(mod)
@@ -400,8 +403,11 @@ def _run_sites_page(
             package_module.components = fake_components_module
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         import importlib.util
+
         page_module_name = str(page_path).split("pages/")[-1].replace(".py", "")
-        spec = importlib.util.spec_from_file_location(f"imednet_streamlit.pages.{page_module_name}", str(page_path))
+        spec = importlib.util.spec_from_file_location(
+            f"imednet_streamlit.pages.{page_module_name}", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules[f"imednet_streamlit.pages.{page_module_name}"] = mod
         spec.loader.exec_module(mod)
@@ -490,8 +496,11 @@ def _run_records_page(
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         import importlib.util
+
         page_module_name = str(page_path).split("pages/")[-1].replace(".py", "")
-        spec = importlib.util.spec_from_file_location(f"imednet_streamlit.pages.{page_module_name}", str(page_path))
+        spec = importlib.util.spec_from_file_location(
+            f"imednet_streamlit.pages.{page_module_name}", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules[f"imednet_streamlit.pages.{page_module_name}"] = mod
         spec.loader.exec_module(mod)
@@ -596,8 +605,11 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         import importlib.util
+
         page_module_name = str(page_path).split("pages/")[-1].replace(".py", "")
-        spec = importlib.util.spec_from_file_location(f"imednet_streamlit.pages.{page_module_name}", str(page_path))
+        spec = importlib.util.spec_from_file_location(
+            f"imednet_streamlit.pages.{page_module_name}", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules[f"imednet_streamlit.pages.{page_module_name}"] = mod
         spec.loader.exec_module(mod)
@@ -994,8 +1006,11 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
         import importlib.util
+
         page_module_name = str(page_path).split("pages/")[-1].replace(".py", "")
-        spec = importlib.util.spec_from_file_location(f"imednet_streamlit.pages.{page_module_name}", str(page_path))
+        spec = importlib.util.spec_from_file_location(
+            f"imednet_streamlit.pages.{page_module_name}", str(page_path)
+        )
         mod = importlib.util.module_from_spec(spec)
         sys.modules[f"imednet_streamlit.pages.{page_module_name}"] = mod
         spec.loader.exec_module(mod)

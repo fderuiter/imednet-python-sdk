@@ -104,6 +104,7 @@ def test_record_update_register_subject(sdk: ImednetSDK, study_key: str) -> None
     )
     assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
 
+
 def test_record_update_update_scheduled(
     sdk: ImednetSDK, study_key: str, first_subject_key: str
 ) -> None:
@@ -117,6 +118,7 @@ def test_record_update_update_scheduled(
         wait_for_completion=False,
     )
     assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+
 
 def test_record_update_create_new(sdk: ImednetSDK, study_key: str, first_subject_key: str) -> None:
     require_mutation()
