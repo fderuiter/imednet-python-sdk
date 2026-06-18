@@ -6,13 +6,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
 from imednet.spi.models import Job
 from imednet.spi.validation import AsyncSchemaValidator, SchemaCache, SchemaValidator
 
-from .job_poller import AsyncJobPoller, JobPoller
-
 if TYPE_CHECKING:
-    from imednet import AsyncImednetSDK, ImednetSDK
     from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
 
-SDKLike = Union["ImednetSDK", "AsyncImednetSDK"]
+FacadeLike = Union["ImednetFacade", "AsyncImednetFacade"]
 
 
 class RecordUpdateWorkflow:
@@ -21,19 +18,17 @@ class RecordUpdateWorkflow:
     and optional job status monitoring.
 
     Args:
-        sdk: An instance of the ImednetSDK.
+        sdk: An instance of the ImednetFacade.
     """
 
-    def __init__(self, sdk: "SDKLike"):
-        from imednet import AsyncImednetSDK
-
+    def __init__(self, sdk: "FacadeLike"):
         self._sdk = sdk
-        self._is_async = getattr(sdk, "_async_client", False) or isinstance(sdk, AsyncImednetSDK)
+        self._is_async = hasattr(sdk, "async_create_record")
         self._validator: SchemaValidator | AsyncSchemaValidator
         if self._is_async:
-            self._validator = AsyncSchemaValidator(cast("AsyncImednetSDK", sdk))
+            self._validator = AsyncSchemaValidator(cast("AsyncImednetFacade", sdk))
         else:
-            self._validator = SchemaValidator(cast("ImednetSDK", sdk))
+            self._validator = SchemaValidator(cast("ImednetFacade", sdk))
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
@@ -75,7 +70,7 @@ class RecordUpdateWorkflow:
         self._validate_form_key(study_key, records_data)
 
         cast(SchemaValidator, self._validator).validate_batch(study_key, records_data)
-        sdk = cast("ImednetSDK", self._sdk)
+        sdk = cast("ImednetFacade", self._sdk)
         job = sdk.create_record(study_key, records_data, schema=self._schema)
 
         if not wait_for_completion:
@@ -83,11 +78,9 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        client = getattr(sdk, "_client", None)
-        fetch_result = client and getattr(client, "get", None)
-        poller = JobPoller(sdk.get_job, fetch_result=fetch_result)
-        result = poller.run(study_key, job.batch_id, poll_interval, timeout)
-        return cast('Job', result)
+        return cast(
+            'Job', sdk.poll_job(study_key, job.batch_id, timeout=timeout, interval=poll_interval)
+        )
 
     async def async_create_or_update_records(
         self,
@@ -101,7 +94,7 @@ class RecordUpdateWorkflow:
         await self._async_validate_form_key(study_key, records_data)
 
         await cast(AsyncSchemaValidator, self._validator).validate_batch(study_key, records_data)
-        sdk = cast("AsyncImednetSDK", self._sdk)
+        sdk = cast("AsyncImednetFacade", self._sdk)
         job = await sdk.async_create_record(study_key, records_data, schema=self._schema)
 
         if not wait_for_completion:
@@ -109,11 +102,12 @@ class RecordUpdateWorkflow:
         if not job.batch_id:
             raise ValueError("Submission successful but no batch_id received.")
 
-        async_client = getattr(sdk, "_async_client", None)
-        fetch_result = async_client and getattr(async_client, "get", None)
-        poller = AsyncJobPoller(sdk.async_get_job, fetch_result=fetch_result)
-        result = await poller.run(study_key, job.batch_id, poll_interval, timeout)
-        return cast('Job', result)
+        return cast(
+            'Job',
+            await sdk.async_poll_job(
+                study_key, job.batch_id, timeout=timeout, interval=poll_interval
+            ),
+        )
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
         warnings.warn(

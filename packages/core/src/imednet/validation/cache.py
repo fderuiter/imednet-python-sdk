@@ -21,7 +21,7 @@ from ._base import _ValidatorMixin
 if TYPE_CHECKING:
     from ..endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
     from ..endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
-    from ..sdk import AsyncImednetSDK, ImednetSDK
+    from ..spi.facade import AsyncImednetFacade, ImednetFacade
 
 _TClient = TypeVar("_TClient")
 
@@ -92,12 +92,12 @@ class BaseSchemaCache(Generic[_TClient]):
         return self._form_variables
 
 
-class SchemaCache(BaseSchemaCache["ImednetSDK"]):
+class SchemaCache(BaseSchemaCache["ImednetFacade"]):
     def __init__(self) -> None:
         super().__init__(is_async=False)
 
 
-class AsyncSchemaCache(BaseSchemaCache["AsyncImednetSDK"]):
+class AsyncSchemaCache(BaseSchemaCache["AsyncImednetFacade"]):
     def __init__(self) -> None:
         super().__init__(is_async=True)
 
@@ -272,10 +272,10 @@ class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
         return form_key, needs_refresh
 
 
-class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
+class SchemaValidator(BaseSchemaValidator["ImednetFacade"]):
     """Validate record payloads using variable metadata from the API (Synchronous)."""
 
-    def __new__(cls, sdk: "ImednetSDK", *args: Any, **kwargs: Any) -> Any:
+    def __new__(cls, sdk: "ImednetFacade", *args: Any, **kwargs: Any) -> Any:
         if kwargs.get("is_async") or (args and args[0] is True):
             import warnings
 
@@ -288,7 +288,7 @@ class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
             return AsyncSchemaValidator(sdk)  # type: ignore[arg-type]
         return super().__new__(cls)
 
-    def __init__(self, sdk: ImednetSDK, *, is_async: bool = False) -> None:
+    def __init__(self, sdk: ImednetFacade, *, is_async: bool = False) -> None:
         """Initialize the synchronous schema validator."""
         self._sdk = sdk
         self.schema = SchemaCache()
@@ -315,10 +315,10 @@ class SchemaValidator(BaseSchemaValidator["ImednetSDK"]):
             self.validate_record(study_key, rec)
 
 
-class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetSDK"]):
+class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetFacade"]):
     """Validate record payloads using variable metadata from the API (Asynchronous)."""
 
-    def __init__(self, sdk: AsyncImednetSDK) -> None:
+    def __init__(self, sdk: AsyncImednetFacade) -> None:
         """Initialize the asynchronous schema validator."""
         self._sdk = sdk
         self.schema = AsyncSchemaCache()

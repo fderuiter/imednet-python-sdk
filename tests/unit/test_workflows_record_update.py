@@ -12,7 +12,7 @@ from imednet_workflows.record_update import RecordUpdateWorkflow
 
 def test_create_or_update_records_no_wait() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     job = Job(jobId="1", batchId="1", state="PROCESSING")
     sdk.create_record.return_value = job
 
@@ -25,11 +25,11 @@ def test_create_or_update_records_no_wait() -> None:
 
 def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     initial_job = Job(jobId="1", batchId="1", state="PROCESSING")
     completed_job = Job(jobId="1", batchId="1", state="COMPLETED")
     sdk.create_record.return_value = initial_job
-    sdk.get_job.side_effect = [initial_job, completed_job]
+    sdk.poll_job.return_value = completed_job
 
     wf = RecordUpdateWorkflow(sdk)
     # patch sleep to avoid delay
@@ -43,13 +43,13 @@ def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
     )
 
     sdk.create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
-    sdk.get_job.assert_called_with("STUDY", "1")
+    sdk.poll_job.assert_called_with("STUDY", "1", timeout=5, interval=0)
     assert result.state == "COMPLETED"
 
 
 def test_update_scheduled_record_builds_payload() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
     wf.create_or_update_records = MagicMock(return_value="job")  # type: ignore[method-assign]  # type: ignore[method-assign]
 
@@ -77,7 +77,7 @@ def test_update_scheduled_record_builds_payload() -> None:
 
 def test_create_or_update_records_validation() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     var = Variable(
         studyKey="STUDY",
         variableId=1,
@@ -112,7 +112,7 @@ def test_create_or_update_records_validation() -> None:
 def test_register_subject_builds_payload() -> None:
     sdk = MagicMock()
     # Mock _async_client to prevent SchemaValidator from being async if not intended
-    sdk._async_client = None
+    del sdk.async_create_record
 
     wf = RecordUpdateWorkflow(sdk)
     wf.create_or_update_records = MagicMock(return_value="job")  # type: ignore[method-assign]
@@ -139,7 +139,7 @@ def test_register_subject_builds_payload() -> None:
 
 def test_register_subject_with_site_id() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
     wf.create_or_update_records = MagicMock(return_value="job")  # type: ignore[method-assign]
 
@@ -165,7 +165,7 @@ def test_register_subject_with_site_id() -> None:
 
 def test_create_new_record_builds_payload() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
     wf.create_or_update_records = MagicMock(return_value="job")  # type: ignore[method-assign]
 
@@ -191,7 +191,7 @@ def test_create_new_record_builds_payload() -> None:
 
 def test_create_new_record_with_subject_oid() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
     wf.create_or_update_records = MagicMock(return_value="job")  # type: ignore[method-assign]
 
@@ -217,7 +217,7 @@ def test_create_new_record_with_subject_oid() -> None:
 
 def test_invalid_subject_identifier_type_raises_keyerror() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
 
     with pytest.raises(KeyError):
@@ -232,7 +232,7 @@ def test_invalid_subject_identifier_type_raises_keyerror() -> None:
 
 def test_invalid_site_identifier_type_raises_keyerror() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
 
     with pytest.raises(KeyError):
@@ -247,7 +247,7 @@ def test_invalid_site_identifier_type_raises_keyerror() -> None:
 
 def test_update_scheduled_record_invalid_interval_identifier_type() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
 
     with pytest.raises(KeyError):
@@ -263,7 +263,7 @@ def test_update_scheduled_record_invalid_interval_identifier_type() -> None:
 
 def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
 
     # Return a job with no batch_id
     job = Job(jobId="1", batchId="", state="PROCESSING")
@@ -300,7 +300,7 @@ def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
 
 def test_create_or_update_records_form_key_not_found() -> None:
     sdk = MagicMock()
-    sdk._async_client = None
+    del sdk.async_create_record
 
     # Return empty list for variables so the form key is not found even after refresh
     sdk.get_variables.return_value = []
@@ -335,7 +335,7 @@ async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -
     initial_job = Job(jobId="1", batchId="1", state="PROCESSING")
     completed_job = Job(jobId="1", batchId="1", state="COMPLETED")
     sdk.async_create_record = AsyncMock(return_value=initial_job)
-    sdk.async_get_job = AsyncMock(side_effect=[initial_job, completed_job])
+    sdk.async_poll_job = AsyncMock(return_value=completed_job)
 
     wf = RecordUpdateWorkflow(sdk)
     import anyio
@@ -350,7 +350,7 @@ async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -
     )
 
     sdk.async_create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
-    sdk.async_get_job.assert_called_with("STUDY", "1")
+    sdk.async_poll_job.assert_called_with("STUDY", "1", timeout=5, interval=0)
     assert result.state == "COMPLETED"
 
 

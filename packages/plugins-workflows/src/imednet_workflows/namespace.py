@@ -12,7 +12,7 @@ from .subject_data import SubjectDataWorkflow
 from .uat import StudySchemaInspector
 
 if TYPE_CHECKING:
-    from imednet.spi.facade import ImednetFacade, ImednetSDK  # type: ignore
+    from imednet.spi.facade import ImednetFacade
 
 
 class Workflows:
@@ -22,6 +22,6 @@ class Workflows:
         self.data_extraction = DataExtractionWorkflow(sdk_instance)
         self.query_management = QueryManagementWorkflow(sdk_instance)
         self.record_mapper = RecordMapper(sdk_instance)
-        self.record_update = RecordUpdateWorkflow(sdk_instance)  # type: ignore
+        self.record_update = RecordUpdateWorkflow(sdk_instance)
         self.subject_data = SubjectDataWorkflow(sdk_instance)
         self.uat_inspector = StudySchemaInspector(sdk_instance)
