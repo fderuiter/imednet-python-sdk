@@ -406,6 +406,9 @@ jobs:
 
       - run: poetry install --with dev
 
+      - name: Run Doctests
+        run: make doctest
+
       - name: Build HTML
         run: make docs
 

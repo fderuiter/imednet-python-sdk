@@ -68,6 +68,7 @@ def build_filter_string(
 
     Examples
     --------
+    >>> from imednet.utils.filters import build_filter_string
     >>> build_filter_string({'age': ('>', 30), 'status': 'active'})
     'age>30;status==active'
     >>> build_filter_string({'type': ['A', 'B']})

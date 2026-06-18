@@ -71,6 +71,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinxcontrib.mermaid",
     "sphinx_click",
+    "sphinx.ext.doctest",
 ]
 
 autosummary_generate = False

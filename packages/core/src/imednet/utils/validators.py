@@ -61,6 +61,7 @@ def parse_bool(v: Any) -> bool:
     via float fallback.
 
     Example:
+        >>> from imednet.utils.validators import parse_bool
         >>> parse_bool("yes")
         True
         >>> parse_bool("1.0")
