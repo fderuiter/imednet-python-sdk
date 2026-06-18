@@ -105,7 +105,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         if self.STUDY_KEY_STRATEGY:
             return self.STUDY_KEY_STRATEGY
         if self.requires_study_key:
-            return PopStudyKeyStrategy()
+            return KeepStudyKeyStrategy()
         return OptionalStudyKeyStrategy()
 
     @property

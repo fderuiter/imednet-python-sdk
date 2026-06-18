@@ -197,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 study_key, form_key = discover_keys(sdk)
             except NoLiveDataError as exc:
-                print(f"::error:: Smoke record failed – {exc}", file=sys.stderr)
+                print(f"::error:: Smoke record failed – {exc}", file=sys.stdout)
                 return 1
 
             logger.info("Discovered study_key=%s form_key=%s", study_key, form_key)

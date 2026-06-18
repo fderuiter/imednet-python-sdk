@@ -16,8 +16,8 @@ def test_list_builds_path_with_default(
     result = ep.list()
 
     assert capture["path"] == "/api/v1/edc/studies/S1/subjects"
-    assert capture["params"] == {}
-    assert "filters" not in patch
+    assert capture["params"] == {"filter": "FILTERED"}
+    assert patch["filters"] == {"studyKey": "S1"}
     assert isinstance(result[0], Subject)
 
 
