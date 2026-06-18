@@ -33,6 +33,7 @@ def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
 
     Example:
         >>> from imednet.models.studies import Study
+        >>> from imednet.core.parsing import get_model_parser
         >>> parser = get_model_parser(Study)
         >>> study = parser({"study_name": "Test", "study_key": "123"})
     """
@@ -53,8 +54,12 @@ class ModelParser:
 
     Example:
         >>> from imednet.models.studies import Study
+        >>> from imednet.core.parsing import ModelParser
         >>> parser = ModelParser(Study)
+        >>> api_response = [{"study_name": "Test1", "study_key": "1"}, {"study_name": "Test2", "study_key": "2"}]
         >>> studies = [parser.parse(data) for data in api_response]
+        >>> len(studies)
+        2
     """
 
     def __init__(self, model: Type[BaseModel]) -> None:
