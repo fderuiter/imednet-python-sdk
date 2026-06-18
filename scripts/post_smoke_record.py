@@ -201,9 +201,13 @@ def main(argv: list[str] | None = None) -> int:
                     break
                 except Exception as exc:
                     if attempt == 2:
-                        print(f"::warning:: Smoke record skipped during discovery (API failure) – {exc}", file=sys.stderr)
+                        print(
+                            f"::warning:: Smoke record skipped during discovery (API failure) – {exc}",
+                            file=sys.stderr,
+                        )
                         return SKIP_EXIT_CODE
                     import time
+
                     time.sleep(2)
 
             logger.info("Discovered study_key=%s form_key=%s", study_key, form_key)
@@ -231,7 +235,10 @@ def main(argv: list[str] | None = None) -> int:
                 except Exception as loop_exc:
                     logger.error("Scenario failed: %s", loop_exc)
             if success_count == 0:
-                print("::warning:: Smoke record skipped: All scenarios failed (likely DEV API instability)", file=sys.stderr)
+                print(
+                    "::warning:: Smoke record skipped: All scenarios failed (likely DEV API instability)",
+                    file=sys.stderr,
+                )
                 return SKIP_EXIT_CODE
     except Exception as exc:  # pragma: no cover - runtime safeguard
         print(f"Smoke record failed: {exc}", file=sys.stderr)
