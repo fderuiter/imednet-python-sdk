@@ -120,15 +120,9 @@ def test_discover_identifiers_returns_all() -> None:
 
 
 def test_discover_identifiers_reports_missing(monkeypatch, capsys) -> None:
-    monkeypatch.setattr(
-        smoke, "discover_site_name", Mock(side_effect=smoke.NoLiveDataError("no site"))
-    )
-    monkeypatch.setattr(
-        smoke, "discover_subject_key", Mock(side_effect=smoke.NoLiveDataError("no subject"))
-    )
-    monkeypatch.setattr(
-        smoke, "discover_interval_name", Mock(side_effect=smoke.NoLiveDataError("no int"))
-    )
+    monkeypatch.setattr(smoke, "discover_site_name", Mock(side_effect=Exception("no site")))
+    monkeypatch.setattr(smoke, "discover_subject_key", Mock(side_effect=Exception("no subject")))
+    monkeypatch.setattr(smoke, "discover_interval_name", Mock(side_effect=Exception("no int")))
 
     identifiers = smoke.discover_identifiers(Mock(), "S")
 
@@ -179,17 +173,15 @@ def test_main_returns_skip_when_identifiers_missing(monkeypatch, capsys) -> None
     assert "Smoke record skipped" in out
 
 
-def test_main_returns_failure_on_no_live_data(monkeypatch, capsys) -> None:
+def test_main_returns_skip_on_discovery_failure(monkeypatch, capsys) -> None:
     sdk = Mock()
     sdk.__enter__ = Mock(return_value=sdk)
     sdk.__exit__ = Mock(return_value=False)
     monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
-    monkeypatch.setattr(
-        smoke, "discover_keys", Mock(side_effect=smoke.NoLiveDataError("no active studies"))
-    )
+    monkeypatch.setattr(smoke, "discover_keys", Mock(side_effect=Exception("no active studies")))
 
     exit_code = smoke.main([])
 
-    assert exit_code == 1
+    assert exit_code == smoke.SKIP_EXIT_CODE
     err = capsys.readouterr().err
     assert "no active studies" in err
