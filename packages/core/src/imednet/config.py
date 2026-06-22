@@ -6,7 +6,7 @@ This module provides the core configuration object for the iMednet SDK.
 from __future__ import annotations
 
 import os
-from typing import Optional, Any
+from typing import Any, Optional
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
