@@ -7,6 +7,7 @@ from imednet.models.intervals import Interval
 
 class IntervalsOperationDef:
     """TODO: Add docstring."""
+
     PATH = "intervals"
     MODEL = Interval
     _id_param = "intervalId"
@@ -16,9 +17,11 @@ class IntervalsOperationDef:
 
 class IntervalsEndpoint(IntervalsOperationDef, EdcSyncListGetEndpoint[Interval]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass
 
 
 class AsyncIntervalsEndpoint(IntervalsOperationDef, EdcAsyncListGetEndpoint[Interval]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass

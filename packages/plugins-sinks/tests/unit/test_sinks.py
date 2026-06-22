@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from datetime import datetime, timezone
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -75,6 +76,7 @@ def _fake_pyarrow_modules() -> tuple:
 
 class TestNeo4jExportSink:
     """TODO: Add docstring."""
+
     def test_connect_calls_verify_connectivity(self, monkeypatch):
         """TODO: Add docstring."""
         import imednet_sinks.graph as graph_mod
@@ -232,6 +234,7 @@ def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
 
 class TestMongoDbExportSink:
     """TODO: Add docstring."""
+
     def test_connect_raises_configuration_error_on_failure(self, monkeypatch):
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
@@ -405,6 +408,7 @@ def _fake_pyarrow_modules() -> tuple:
 
 class TestSnowflakeExportSink:
     """TODO: Add docstring."""
+
     def _make_sink(self, monkeypatch, *, tmp_path, fail_connect=False):
         """TODO: Add docstring."""
         import imednet_sinks.warehouse as wh_mod

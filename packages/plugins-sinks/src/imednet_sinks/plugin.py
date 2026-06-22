@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from typing import TYPE_CHECKING, Any, Union
 
 if TYPE_CHECKING:
@@ -7,6 +8,7 @@ if TYPE_CHECKING:
 
 class SinksNamespace:
     """TODO: Add docstring."""
+
     def __init__(self, sdk: Union["ImednetFacade", "AsyncImednetFacade"]):
         """TODO: Add docstring."""
         self._sdk = sdk

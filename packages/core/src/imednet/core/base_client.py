@@ -1,6 +1,7 @@
 # Base HTTP client for iMednet SDK
 
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import logging

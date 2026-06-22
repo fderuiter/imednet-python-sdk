@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import secrets
 import string
 from typing import Any, List, Literal, Optional, cast

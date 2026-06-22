@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import collections
@@ -102,6 +103,7 @@ def _group_mappings_by_domain_and_form(
 
 class SubjectContext:
     """TODO: Add docstring."""
+
     def __init__(self, subject_key: str):
         """TODO: Add docstring."""
         self.subject_key = subject_key

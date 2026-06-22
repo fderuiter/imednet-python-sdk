@@ -121,6 +121,7 @@ T = TypeVar("T")
 
 class _ListOperation(Generic[T]):
     """TODO: Add docstring."""
+
     def __init__(self, endpoint_name: str, name: str, is_async: bool = False):
         """TODO: Add docstring."""
         self.endpoint_name = endpoint_name

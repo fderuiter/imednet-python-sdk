@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 class FormVariableMap(TypedDict):
     """TODO: Add docstring."""
+
     form: Form
     variables: list[Variable]
 

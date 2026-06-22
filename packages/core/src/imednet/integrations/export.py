@@ -367,7 +367,7 @@ def export_to_duckdb(
     form_whitelist:
         Optional list of form IDs to include.
 
-    Raises
+    Raises:
     ------
     ImportError
         If the optional ``duckdb`` dependency is not installed.
@@ -428,7 +428,7 @@ def export_to_duckdb_by_form(
     form_whitelist:
         Optional list of form IDs to include.
 
-    Raises
+    Raises:
     ------
     ImportError
         If the optional ``duckdb`` dependency is not installed.

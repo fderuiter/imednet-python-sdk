@@ -13,6 +13,7 @@ from imednet.validation.cache import SchemaCache
 
 class RecordsOperationDef:
     """TODO: Add docstring."""
+
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"

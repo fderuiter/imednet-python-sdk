@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -11,12 +12,14 @@ from imednet.spi.utils import is_boolean_token, is_missing_value, parse_bool
 
 class NormalizationResult(BaseModel):
     """TODO: Add docstring."""
+
     normalized_record: dict[str, Any]
     warnings: list[str] = Field(default_factory=list)
 
 
 class CategoricalNormalizer:
     """TODO: Add docstring."""
+
     def normalize_record(
         self,
         record: dict[str, Any],
@@ -80,6 +83,7 @@ class CategoricalNormalizer:
 
 class StandardsReadinessReport(BaseModel):
     """TODO: Add docstring."""
+
     score: float
     successfully_validated_fields: int
     total_expected_fields: int
@@ -89,6 +93,7 @@ class StandardsReadinessReport(BaseModel):
 
 class StandardsReadinessValidator:
     """TODO: Add docstring."""
+
     def __init__(
         self, profile: StandardsProfile, normalizer: CategoricalNormalizer | None = None
     ) -> None:

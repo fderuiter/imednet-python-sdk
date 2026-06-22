@@ -10,6 +10,7 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
 
     class BaseSensorOperator:  # type: ignore
         """TODO: Add docstring."""
+
         template_fields: Sequence[str] = ()
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover

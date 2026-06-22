@@ -7,6 +7,7 @@ from imednet.models.variables import Variable
 
 class VariablesOperationDef:
     """TODO: Add docstring."""
+
     PATH = "variables"
     MODEL = Variable
     _id_param = "variableId"
@@ -16,9 +17,11 @@ class VariablesOperationDef:
 
 class VariablesEndpoint(VariablesOperationDef, EdcSyncListGetEndpoint[Variable]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass
 
 
 class AsyncVariablesEndpoint(VariablesOperationDef, EdcAsyncListGetEndpoint[Variable]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass

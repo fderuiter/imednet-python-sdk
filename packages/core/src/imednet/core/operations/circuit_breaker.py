@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import logging
@@ -14,6 +15,7 @@ T = TypeVar("T")
 
 class CircuitState(Enum):
     """TODO: Add docstring."""
+
     CLOSED = "CLOSED"
     OPEN = "OPEN"
     HALF_OPEN = "HALF_OPEN"

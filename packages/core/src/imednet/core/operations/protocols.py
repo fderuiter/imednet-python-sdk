@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from typing import Any, Awaitable, Protocol, TypeVar, runtime_checkable
 
 T = TypeVar("T", covariant=True)

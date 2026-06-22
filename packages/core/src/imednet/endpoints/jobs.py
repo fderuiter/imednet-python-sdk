@@ -11,6 +11,7 @@ from imednet.utils.typing import ItemId
 
 class JobsOperationDef:
     """TODO: Add docstring."""
+
     PATH = "jobs"
     MODEL = JobStatus
     PAGINATOR_CLS = JsonListPaginator
@@ -32,6 +33,7 @@ class JobsOperationDef:
 
 class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     def get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
         """TODO: Add docstring."""
         self._require_item_id(item_id)
@@ -42,6 +44,7 @@ class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type
 
 class AsyncJobsEndpoint(JobsOperationDef, EdcAsyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     async def async_get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
         """TODO: Add docstring."""
         self._require_item_id(item_id)

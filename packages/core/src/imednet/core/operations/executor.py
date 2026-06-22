@@ -33,6 +33,7 @@ T = TypeVar("T")
 
 class OperationRetryPolicy(ABC):
     """TODO: Add docstring."""
+
     @abstractmethod
     def should_retry(self, exception: Exception) -> bool:
         """Return True if the exception should trigger a retry."""
@@ -41,6 +42,7 @@ class OperationRetryPolicy(ABC):
 
 class DefaultOperationRetryPolicy(OperationRetryPolicy):
     """TODO: Add docstring."""
+
     def should_retry(self, exception: Exception) -> bool:
         """TODO: Add docstring."""
         # Default fallback: retry on any exception?

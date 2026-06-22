@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import json
@@ -162,6 +163,7 @@ class SchemaProfiler:
 @dataclass
 class _FormAccumulator:
     """TODO: Add docstring."""
+
     record_count: int = 0
     fields: dict[str, "_FieldAccumulator"] = field(default_factory=dict)
 
@@ -169,6 +171,7 @@ class _FormAccumulator:
 @dataclass
 class _FieldAccumulator:
     """TODO: Add docstring."""
+
     populated_count: int = 0
     unique_values: set[str] = field(default_factory=set)
     sample_values: list[str] = field(default_factory=list)
