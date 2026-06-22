@@ -18,6 +18,6 @@ def handle_response(response: httpx.Response) -> httpx.Response:
         except json.JSONDecodeError:
             body = response.text
 
-        exc_cls = get_error_class(status)
+        exc_cls = get_error_class(status, body)
         raise exc_cls(body, status_code=status)
     return response
