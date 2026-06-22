@@ -39,9 +39,11 @@ def get_error_class(status_code: int, response_body: Any = None) -> Type[ApiErro
         # Identify specific subclasses based on metadata
         if status_code == 400 and status == "validation_error":
             from .validation import ValidationError
+
             return ValidationError
         if status_code == 401 and status == "authentication_failed":
             from .api import AuthenticationError
+
             return AuthenticationError
 
     error_cls = STATUS_TO_ERROR.get(status_code)

@@ -61,12 +61,12 @@ class ApiError(ImednetError):
     ) -> None:
         """TODO: Add docstring."""
         sanitized_response = _redact_sensitive_value(response)
-        
+
         message_arg = str(sanitized_response)
         parsed_message = None
         code = None
         status = None
-        
+
         if isinstance(sanitized_response, dict):
             if "message" in sanitized_response:
                 parsed_message = str(sanitized_response["message"])
