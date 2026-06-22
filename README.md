@@ -219,7 +219,7 @@ The package installs an `imednet` command with subcommands for studies, sites,
 subjects, records, jobs, queries and more. Use `imednet --help` to explore all
 options.
 
-*(Note: If you are running the project from source or a local clone, make sure to first install dependencies with `poetry install`. Then, prefix commands with `poetry run`, e.g., `poetry run imednet --help`)*
+*(Note: If you are running the project from source or a local clone, make sure to first install dependencies with `python -m pip install -e ".[dev,docs]"`. Then, ensure your virtual environment is activated, e.g., `imednet --help`)*
 
 ### Data Export
 
@@ -284,7 +284,6 @@ the specified table name. See ``docs/cli.rst`` for full examples.
 
 ### Prerequisites
 
-- [Poetry](https://python-poetry.org/docs/) (for dependency management)
 - [Make](https://www.gnu.org/software/make/) (optional, for building docs)
 
 ### Project Structure
@@ -305,12 +304,12 @@ the specified table name. See ``docs/cli.rst`` for full examples.
 
 ```bash
 ./scripts/setup.sh  # once
-poetry run ruff format --check .
-poetry run ruff check .
-poetry run mypy packages/core/src/imednet
-poetry run mypy packages/plugins-workflows/src/imednet_workflows
-poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-poetry run pytest -q \
+ruff format --check .
+ruff check .
+mypy packages/core/src/imednet
+mypy packages/plugins-workflows/src/imednet_workflows
+mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+pytest -q \
   --cov=imednet \
   --cov=imednet_workflows \
   --cov=apache_airflow_providers_imednet \
@@ -370,10 +369,10 @@ Contributions are welcome! See the
 If you see an error like `Error: IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.` (CLI) or `API key and security key are required` (SDK), or an "Unauthorized" or "Forbidden" (403) API error, ensure you have set valid keys in your shell or in a `.env` file in the directory where you run the script (avoid using "dummy" keys). See [Configuration](#configuration).
 
 **Command not found: sphinx-apidoc when running make docs**
-If building documentation with `make docs` fails with `Command not found: sphinx-apidoc`, run `poetry install --all-extras` first to install all necessary documentation plugins and dependencies.
+If building documentation with `make docs` fails with `Command not found: sphinx-apidoc`, run `python -m pip install -e ".[dev,docs]" --all-extras` first to install all necessary documentation plugins and dependencies.
 
 **ModuleNotFoundError when running the CLI locally**
-If you are running the `imednet` CLI from source (e.g., `poetry run imednet`) and see a `ModuleNotFoundError` (such as `No module named 'imednet'`), ensure you have installed the project dependencies by running `poetry install` in the project root.
+If you are running the `imednet` CLI from source (e.g., `imednet`) and see a `ModuleNotFoundError` (such as `No module named 'imednet'`), ensure you have installed the project dependencies by running `python -m pip install -e ".[dev,docs]"` in the project root.
 
 ---
 
