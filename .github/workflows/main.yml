@@ -126,39 +126,42 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2
-
       - name: Install Dependencies
-        run: poetry install --with dev
+        run: |
+          python -m pip install --upgrade pip
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              python -m pip install -e "$package"
+            fi
+          done
+          python -m pip install -e ".[dev,docs]" 
 
       - name: Code Quality (Ruff)
         run: |
-          poetry run ruff format --check packages/${{ matrix.package }}
-          poetry run ruff check packages/${{ matrix.package }}
+          ruff format --check packages/${{ matrix.package }}
+          ruff check packages/${{ matrix.package }}
 
       - name: Type Check (MyPy)
         run: |
           if [ "${{ matrix.package }}" = "core" ]; then
-            poetry run mypy packages/core/src/imednet
-            poetry run mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
+            mypy packages/core/src/imednet
+            mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
           elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
-            poetry run mypy packages/plugins-workflows/src/imednet_workflows
+            mypy packages/plugins-workflows/src/imednet_workflows
           elif [ "${{ matrix.package }}" = "providers-airflow" ]; then
-            poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+            mypy packages/providers-airflow/src/apache_airflow_providers_imednet
           elif [ "${{ matrix.package }}" = "plugins-streamlit" ]; then
-            poetry run mypy packages/plugins-streamlit/src/imednet_streamlit
+            mypy packages/plugins-streamlit/src/imednet_streamlit
           elif [ "${{ matrix.package }}" = "plugins-sinks" ]; then
-            poetry run mypy packages/plugins-sinks/src/imednet_sinks
+            mypy packages/plugins-sinks/src/imednet_sinks
           fi
 
       - name: Security Audit (pip-audit)
         run: |
-          poetry run pip install --upgrade pip
-          poetry run pip install pip-audit
+          pip install --upgrade pip
+          pip install pip-audit
           for i in 1 2 3; do
-            poetry run pip-audit -s osv --timeout 60 && exit 0
+            pip-audit -s osv --timeout 60 && exit 0
             echo "Attempt $i failed. Retrying in 10s..."
             sleep 10
           done
@@ -167,12 +170,12 @@ jobs:
 
       - name: Static Analysis (Bandit)
         run: |
-          poetry run bandit -ll -ii -r packages/${{ matrix.package }}
+          bandit -ll -ii -r packages/${{ matrix.package }}
 
       - name: Semantic Static Analysis (Semgrep)
         run: |
-          poetry run pip install semgrep
-          poetry run semgrep scan --config auto --error packages/${{ matrix.package }}
+          pip install semgrep
+          semgrep scan --config auto --error packages/${{ matrix.package }}
 
   # ------------------------------------------------------------------
   # JOB 2: BUILD ARTIFACT (Builds the library)
@@ -186,10 +189,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - uses: abatilo/actions-poetry@v2
-
       - name: Install Dependencies
-        run: poetry install --with dev
+        run: |
+          python -m pip install --upgrade pip
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              python -m pip install -e "$package"
+            fi
+          done
+          python -m pip install -e ".[dev,docs]" 
 
       - name: Build Workspace Packages
         run: |
@@ -197,7 +205,7 @@ jobs:
             if [ -f "$package/pyproject.toml" ]; then
               (
                 cd "$package"
-                poetry build
+                python3 -m pip install build && python3 -m build
               )
             fi
           done
@@ -254,11 +262,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - uses: abatilo/actions-poetry@v2
-
       - name: Install Dependencies
-        run: poetry install --with dev
+        run: |
+          python -m pip install --upgrade pip
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              python -m pip install -e "$package"
+            fi
+          done
+          python -m pip install -e ".[dev,docs]" 
           
       - name: Run Tests
         env:
@@ -285,7 +297,7 @@ jobs:
             COV_ARGS="--cov=imednet_sinks"
           fi
           
-          poetry run pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live" --ignore=tests/live/ $TEST_ARGS || {
+          pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live" --ignore=tests/live/ $TEST_ARGS || {
             RET=$?
             if [ $RET -eq 5 ]; then
               echo "No tests collected for ${{ matrix.package }}. Passing gracefully."
@@ -318,8 +330,6 @@ jobs:
         if: steps.filter.outputs.export_logic == 'true'
         with:
           python-version: "3.10"
-
-      - uses: abatilo/actions-poetry@v2
         if: steps.filter.outputs.export_logic == 'true'
 
       - name: Install Dependencies
@@ -347,10 +357,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - uses: abatilo/actions-poetry@v2
-
       - name: Install Dependencies
-        run: poetry install --with dev
+        run: |
+          python -m pip install --upgrade pip
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              python -m pip install -e "$package"
+            fi
+          done
+          python -m pip install -e ".[dev,docs]" 
         
       - name: Run Coverage-Guided Fuzzing (1,000,000 iterations)
         run: ./scripts/fuzz_test.sh
@@ -402,7 +417,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - uses: abatilo/actions-poetry@v2
 
       - run: poetry install --with dev
 

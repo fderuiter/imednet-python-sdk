@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Build & Tooling
+
+* Adopted PEP 621 project metadata as the single source of truth in all `pyproject.toml` files using the `[project]` schema.
+* Replaced Poetry with Hatchling (`hatchling.build`) and standard Python tools (`pip`, `uv`, `build`) for dependency management and building.
+* Removed `[tool.poetry]` configurations and `poetry.lock` files across the monorepo workspace.
+* Added automated semantic versioning and release PR generation via `release-please`.
+
 ### Features
 
 * Define and enforce stable public SDK surface: all public namespaces now declare `__all__`; introduce `FilterValue`, `FilterScalar`, and `ItemId` type aliases for typed endpoint parameters; export new types from top-level `imednet` namespace.
@@ -26,6 +33,13 @@ The following changes affect code that imports from internal implementation pack
 
 ## [0.6.0](https://github.com/fderuiter/imednet-python-sdk/compare/v0.5.6...v0.6.0) (2026-05-12)
 
+
+### Build & Tooling
+
+* Adopted PEP 621 project metadata as the single source of truth in all `pyproject.toml` files using the `[project]` schema.
+* Replaced Poetry with Hatchling (`hatchling.build`) and standard Python tools (`pip`, `uv`, `build`) for dependency management and building.
+* Removed `[tool.poetry]` configurations and `poetry.lock` files across the monorepo workspace.
+* Added automated semantic versioning and release PR generation via `release-please`.
 
 ### Features
 
@@ -109,14 +123,4 @@ The following changes affect code that imports from internal implementation pack
 * **ci:** finalize release-please and conventional commit guidance ([c8a8cf9](https://github.com/fderuiter/imednet-python-sdk/commit/c8a8cf92f4ac1c0afa09bb662ea5a940b7039450))
 * document IMEDNET_BASE_URL in Quick Start ([ca3c0bd](https://github.com/fderuiter/imednet-python-sdk/commit/ca3c0bdda05a415ac51159086dcbb1aa0034dfcb))
 
-## Changelog
 
-## Unreleased
-
-- Adopted PEP 621 project metadata as the single source of truth in `pyproject.toml`.
-- Removed redundant metadata fields from `[tool.poetry]`.
-- Added automated semantic versioning and release PR generation via `release-please`.
-- Removed the redundant `requests` dependency and standardized SDK HTTP transport on `httpx`.
-- Refactored endpoint read architecture from inheritance-heavy mixins to composition-based operations while preserving public `list`/`get` endpoint methods.
-- Removed test-only `send_wrapper` indirection from the core HTTP clients and standardized
-  client transport tests on `respx` route mocking.
