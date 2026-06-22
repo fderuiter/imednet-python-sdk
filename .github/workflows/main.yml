@@ -129,14 +129,14 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pkg_args=""
+          packages=()
           for package in packages/*; do
             if [ -f "$package/pyproject.toml" ]; then
-              pkg_args="$pkg_args -e $package"
+              packages+=("-e" "$package")
             fi
           done
-          if [ -n "$pkg_args" ]; then
-            python -m pip install $pkg_args
+          if [ ${#packages[@]} -gt 0 ]; then
+            python -m pip install "${packages[@]}"
           fi
           python -m pip install -e ".[dev,docs]" 
 
@@ -196,14 +196,14 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pkg_args=""
+          packages=()
           for package in packages/*; do
             if [ -f "$package/pyproject.toml" ]; then
-              pkg_args="$pkg_args -e $package"
+              packages+=("-e" "$package")
             fi
           done
-          if [ -n "$pkg_args" ]; then
-            python -m pip install $pkg_args
+          if [ ${#packages[@]} -gt 0 ]; then
+            python -m pip install "${packages[@]}"
           fi
           python -m pip install -e ".[dev,docs]" 
 
@@ -273,14 +273,14 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pkg_args=""
+          packages=()
           for package in packages/*; do
             if [ -f "$package/pyproject.toml" ]; then
-              pkg_args="$pkg_args -e $package"
+              packages+=("-e" "$package")
             fi
           done
-          if [ -n "$pkg_args" ]; then
-            python -m pip install $pkg_args
+          if [ ${#packages[@]} -gt 0 ]; then
+            python -m pip install "${packages[@]}"
           fi
           python -m pip install -e ".[dev,docs]" 
           
@@ -348,14 +348,14 @@ jobs:
         if: steps.filter.outputs.export_logic == 'true'
         run: |
           python -m pip install --upgrade pip
-          pkg_args=""
+          packages=()
           for package in packages/*; do
             if [ -f "$package/pyproject.toml" ]; then
-              pkg_args="$pkg_args -e $package"
+              packages+=("-e" "$package")
             fi
           done
-          if [ -n "$pkg_args" ]; then
-            python -m pip install $pkg_args
+          if [ ${#packages[@]} -gt 0 ]; then
+            python -m pip install "${packages[@]}"
           fi
           python -m pip install -e ".[dev,docs]" 
 
@@ -383,14 +383,14 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pkg_args=""
+          packages=()
           for package in packages/*; do
             if [ -f "$package/pyproject.toml" ]; then
-              pkg_args="$pkg_args -e $package"
+              packages+=("-e" "$package")
             fi
           done
-          if [ -n "$pkg_args" ]; then
-            python -m pip install $pkg_args
+          if [ ${#packages[@]} -gt 0 ]; then
+            python -m pip install "${packages[@]}"
           fi
           python -m pip install -e ".[dev,docs]" 
         
@@ -448,14 +448,14 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pkg_args=""
+          packages=()
           for package in packages/*; do
             if [ -f "$package/pyproject.toml" ]; then
-              pkg_args="$pkg_args -e $package"
+              packages+=("-e" "$package")
             fi
           done
-          if [ -n "$pkg_args" ]; then
-            python -m pip install $pkg_args
+          if [ ${#packages[@]} -gt 0 ]; then
+            python -m pip install "${packages[@]}"
           fi
           python -m pip install -e ".[dev,docs]" 
 
