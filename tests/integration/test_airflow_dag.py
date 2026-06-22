@@ -4,9 +4,7 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-
 import pytest
-
 
 
 def test_dag_runs(monkeypatch, tmp_path):
