@@ -165,12 +165,12 @@ class ExportSink(ABC):
             ``"<study_key>/<form_key>/<batch_number>"``.
 
         Returns:
-        -------
+        --------
         int
             Number of records successfully written.
 
         Raises:
-        ------
+        -------
         ~imednet.errors.ExportBatchError
             When the batch cannot be written after all retries.
         """
@@ -181,7 +181,7 @@ class ExportSink(ABC):
         """Flush any internal buffers to the destination.
 
         Raises:
-        ------
+        -------
         ~imednet.errors.ExportError
             On flush failure.
         """
@@ -252,12 +252,12 @@ def _require_optional_dep(package: str, extras_key: str) -> Any:
         (e.g. ``"neo4j"``).
 
     Returns:
-    -------
+    --------
     types.ModuleType
         The imported module.
 
     Raises:
-    ------
+    -------
     ImportError
         When *package* is not installed.
     """

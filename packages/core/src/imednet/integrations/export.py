@@ -368,7 +368,7 @@ def export_to_duckdb(
         Optional list of form IDs to include.
 
     Raises:
-    ------
+    -------
     ImportError
         If the optional ``duckdb`` dependency is not installed.
     """
@@ -429,7 +429,7 @@ def export_to_duckdb_by_form(
         Optional list of form IDs to include.
 
     Raises:
-    ------
+    -------
     ImportError
         If the optional ``duckdb`` dependency is not installed.
     """
