@@ -64,7 +64,6 @@ def discover_identifiers(
     sdk: ImednetSDK, study_key: str
 ) -> Tuple[str | None, str | None, str | None]:
     """Return first site, subject, and interval identifiers if available."""
-
     site_name: str | None = None
     subject_key: str | None = None
     interval_name: str | None = None
@@ -89,7 +88,6 @@ def discover_identifiers(
 
 def _select_variables(variables: list[Variable]) -> Dict[str, Variable]:
     """Return one variable per supported type."""
-
     selected: Dict[str, Variable] = {}
     for var in variables:
         var_type = canonical_type(var.variable_type)
@@ -100,13 +98,11 @@ def _select_variables(variables: list[Variable]) -> Dict[str, Variable]:
 
 def _build_data(variables: Dict[str, Variable]) -> Dict[str, Any]:
     """Map variables to deterministic example values."""
-
     return {var.variable_name: value_for(var.variable_type) for var in variables.values()}
 
 
 def _redact(record: Dict[str, Any]) -> Dict[str, Any]:
     """Return ``record`` with sensitive fields redacted."""
-
     redacted = record.copy()
     if "data" in redacted:
         redacted["data"] = "***"
@@ -127,7 +123,6 @@ def build_record(
     Populates one variable per supported type and includes optional identifiers for
     subject registration or scheduled updates.
     """
-
     variables = list(sdk.variables.list(study_key=study_key, formKey=form_key))
     data = _build_data(_select_variables(variables))
     record: Dict[str, Any] = {"formKey": form_key, "data": data}
@@ -171,6 +166,7 @@ def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, ti
 
 
 def main(argv: list[str] | None = None) -> int:
+    """TODO: Add docstring."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--timeout",

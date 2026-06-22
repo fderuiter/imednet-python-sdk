@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import pytest
 
 import imednet.endpoints.users as users
@@ -7,6 +8,7 @@ from imednet.models.users import User
 
 
 def test_list_requires_study_key_and_include_inactive(dummy_client, context, paginator_factory):
+    """TODO: Add docstring."""
     ep = users.UsersEndpoint(dummy_client, context)
     capture = paginator_factory(users, [{"userId": 1}])
 
@@ -21,9 +23,11 @@ def test_list_requires_study_key_and_include_inactive(dummy_client, context, pag
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
+    """TODO: Add docstring."""
     ep = users.UsersEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+        """TODO: Add docstring."""
         return []
 
     monkeypatch.setattr(users.UsersEndpoint, "_list_sync", fake_impl)

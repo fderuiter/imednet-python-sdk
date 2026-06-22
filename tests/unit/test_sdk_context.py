@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -13,11 +14,13 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 # Mock environment variables to avoid API key requirement issues
 @pytest.fixture(autouse=True)
 def mock_env(monkeypatch):
+    """TODO: Add docstring."""
     monkeypatch.setenv("IMEDNET_API_KEY", "test_api_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "test_sec_key")
 
 
 def test_sync_context_manager():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
 
     with ImednetSDK(client=client_mock) as sdk:
@@ -28,6 +31,7 @@ def test_sync_context_manager():
 
 @pytest.mark.asyncio
 async def test_async_context_manager():
+    """TODO: Add docstring."""
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
@@ -39,6 +43,7 @@ async def test_async_context_manager():
 
 
 def test_close_without_async_client():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
     sdk.close()
@@ -46,6 +51,7 @@ def test_close_without_async_client():
 
 
 def test_sync_sdk_does_not_create_async_client():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
     assert not hasattr(sdk, "_async_client")
@@ -65,6 +71,7 @@ def test_async_sdk_close_raises_type_error():
 
 
 def test_async_sdk_sync_context_manager_raises_type_error():
+    """TODO: Add docstring."""
     with patch("imednet.sdk.load_config"):
         with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
             with patch(
@@ -92,6 +99,7 @@ def test_async_sdk_exit_raises_type_error():
 
 @pytest.mark.asyncio
 async def test_aclose():
+    """TODO: Add docstring."""
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
@@ -104,6 +112,7 @@ async def test_aclose():
 
 @pytest.mark.asyncio
 async def test_aclose_without_async_client():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
 
     sdk = ImednetSDK(client=client_mock)
@@ -115,6 +124,7 @@ async def test_aclose_without_async_client():
 
 
 def test_study_context_manager_sets_and_resets_context():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
@@ -126,6 +136,7 @@ def test_study_context_manager_sets_and_resets_context():
 
 
 def test_study_context_manager_resets_on_exception():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
@@ -138,6 +149,7 @@ def test_study_context_manager_resets_on_exception():
 
 
 def test_default_study_mutation_methods_removed():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
     assert not hasattr(sdk, "set_default_study")
@@ -145,6 +157,7 @@ def test_default_study_mutation_methods_removed():
 
 
 def test_retry_policy_property():
+    """TODO: Add docstring."""
     async_client_mock = MagicMock(spec=AsyncClient)
 
     sdk = AsyncImednetSDK(async_client=async_client_mock)
@@ -161,6 +174,7 @@ def test_retry_policy_property():
 
 
 def test_retry_policy_property_without_async_client():
+    """TODO: Add docstring."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
@@ -173,9 +187,11 @@ def test_retry_policy_property_without_async_client():
 
 @pytest.mark.asyncio
 async def test_study_context_isolation_on_shared_sdk_instance():
+    """TODO: Add docstring."""
     shared_sdk = ImednetSDK(client=MagicMock(spec=Client))
 
     async def worker(study_key: str, delay: float) -> str:
+        """TODO: Add docstring."""
         with shared_sdk.study_context(study_key):
             await asyncio.sleep(delay)
             return get_current_study()
@@ -191,6 +207,7 @@ async def test_study_context_isolation_on_shared_sdk_instance():
 
 @pytest.mark.asyncio
 async def test_async_sdk_aenter_aexit():
+    """TODO: Add docstring."""
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
@@ -203,6 +220,7 @@ async def test_async_sdk_aenter_aexit():
 
 
 def test_async_sdk_sync_init():
+    """TODO: Add docstring."""
     async_client_mock = MagicMock(spec=AsyncClient)
 
     with patch("imednet.sdk.load_config"):

@@ -9,20 +9,20 @@ if TYPE_CHECKING:
 
 
 class QueryManagementWorkflow:
-    """
-    Provides methods for common query management tasks.
+    """Provides methods for common query management tasks.
 
     Args:
         sdk: An instance of the ImednetSDK.
     """
 
     def __init__(self, sdk: "ImednetFacade"):
+        """TODO: Add docstring."""
         self._sdk = sdk
 
     @staticmethod
     def _is_query_open(query: Query) -> Optional[bool]:
-        """
-        Determines if a query is open based on its comments.
+        """Determines if a query is open based on its comments.
+
         Returns None if the state cannot be determined (no comments).
         """
         if not getattr(
@@ -55,8 +55,7 @@ class QueryManagementWorkflow:
         additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **kwargs: Any,
     ) -> List[Query]:
-        """
-        Retrieves all open queries for a given study, potentially filtered further.
+        """Retrieves all open queries for a given study, potentially filtered further.
 
         An 'open' query is defined as one where the query comment with the highest
         sequence number has its 'closed' field set to False.
@@ -91,8 +90,7 @@ class QueryManagementWorkflow:
         additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **kwargs: Any,
     ) -> List[Query]:
-        """
-        Retrieves all queries for a specific subject within a study.
+        """Retrieves all queries for a specific subject within a study.
 
         Args:
             study_key: The key identifying the study.
@@ -118,8 +116,7 @@ class QueryManagementWorkflow:
         additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **kwargs: Any,
     ) -> List[Query]:
-        """
-        Retrieves all queries for a specific site within a study.
+        """Retrieves all queries for a specific site within a study.
 
         Args:
             study_key: The key identifying the study.
@@ -142,8 +139,7 @@ class QueryManagementWorkflow:
         return list(self._sdk.get_queries(study_key, **final_filter_dict, **kwargs))
 
     def get_query_state_counts(self, study_key: str, **kwargs: Any) -> Dict[str, int]:
-        """
-        Counts queries grouped by their current state (open/closed/unknown).
+        """Counts queries grouped by their current state (open/closed/unknown).
 
         The state is determined by the 'closed' field of the query comment
         with the highest sequence number. Queries without any comments are

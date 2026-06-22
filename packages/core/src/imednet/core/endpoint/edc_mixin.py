@@ -22,8 +22,7 @@ def _inject_study_key(filters: Dict[str, Any]) -> Dict[str, Any]:
 
 
 class EdcEndpointMixin:
-    """
-    Mixin providing EDC-specific logic for endpoints.
+    """Mixin providing EDC-specific logic for endpoints.
 
     This includes the base path for EDC resources and automatic injection
     of the default study key into filters.
@@ -32,8 +31,7 @@ class EdcEndpointMixin:
     BASE_PATH = _EDC_BASE_PATH
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Inject default studyKey if missing.
+        """Inject default studyKey if missing.
 
         Args:
             filters: The current dictionary of filters.
@@ -45,8 +43,7 @@ class EdcEndpointMixin:
 
 
 class _EdcEndpointBase:
-    """
-    Single base class for EDC API endpoints with list and get operations.
+    """Single base class for EDC API endpoints with list and get operations.
 
     Combines the EDC-specific path prefix and automatic study-key injection
     with the full list/get composition provided by
@@ -65,8 +62,7 @@ class _EdcEndpointBase:
     """
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Inject the default study key from context if not already present.
+        """Inject the default study key from context if not already present.
 
         Args:
             filters: The current dictionary of filters.

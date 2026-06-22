@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import Mock
 
 import pytest
@@ -6,28 +7,34 @@ from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 
 
 class MockClient:
+    """TODO: Add docstring."""
     def __init__(self, response_data):
+        """TODO: Add docstring."""
         self.response_data = response_data
 
     def get(self, path, params=None):
+        """TODO: Add docstring."""
         response = Mock()
         response.json.return_value = self.response_data
         return response
 
 
 class MockAsyncClient:
+    """TODO: Add docstring."""
     def __init__(self, response_data):
+        """TODO: Add docstring."""
         self.response_data = response_data
 
     async def get(self, path, params=None):
+        """TODO: Add docstring."""
         response = Mock()
         response.json.return_value = self.response_data
         return response
 
 
 def test_json_list_paginator_raises_on_dict():
-    """
-    Test that JsonListPaginator raises TypeError when the API returns a dictionary
+    """Test that JsonListPaginator raises TypeError when the API returns a dictionary.
+
     instead of the expected list.
     """
     # Simulate an error response or unexpected object structure
@@ -50,8 +57,8 @@ def test_json_list_paginator_raises_on_none():
 
 @pytest.mark.asyncio
 async def test_async_json_list_paginator_raises_on_dict():
-    """
-    Test that AsyncJsonListPaginator raises TypeError when the API returns a dictionary
+    """Test that AsyncJsonListPaginator raises TypeError when the API returns a dictionary.
+
     instead of the expected list.
     """
     client = MockAsyncClient({"error": "Async error"})

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import json
@@ -54,6 +55,7 @@ class SchemaProfiler:
     """Profile form and record-data population across cached records."""
 
     def __init__(self, sdk: "ImednetFacade", loader: CachedRecordsLoader | None = None) -> None:
+        """TODO: Add docstring."""
         self._sdk = sdk
         self._loader = loader
 
@@ -108,6 +110,7 @@ class SchemaProfiler:
         return profiles
 
     def _iter_records(self, study_key: str) -> Iterable[Record]:
+        """TODO: Add docstring."""
         if self._loader is None:
             self._loader = CachedRecordsLoader(self._sdk)
         sync_method = getattr(self._loader, "sync_records", None)
@@ -130,6 +133,7 @@ class SchemaProfiler:
         accumulator: "_FieldAccumulator",
         variable: Variable | None,
     ) -> FieldProfile:
+        """TODO: Add docstring."""
         inferred_type = accumulator.inferred_type(variable)
         population_rate = 0.0
         if record_count:
@@ -157,12 +161,14 @@ class SchemaProfiler:
 
 @dataclass
 class _FormAccumulator:
+    """TODO: Add docstring."""
     record_count: int = 0
     fields: dict[str, "_FieldAccumulator"] = field(default_factory=dict)
 
 
 @dataclass
 class _FieldAccumulator:
+    """TODO: Add docstring."""
     populated_count: int = 0
     unique_values: set[str] = field(default_factory=set)
     sample_values: list[str] = field(default_factory=list)
@@ -172,9 +178,11 @@ class _FieldAccumulator:
 
     @property
     def unique_count(self) -> int:
+        """TODO: Add docstring."""
         return len(self.unique_values)
 
     def observe(self, value: Any) -> None:
+        """TODO: Add docstring."""
         if not _is_populated(value):
             return
 
@@ -189,6 +197,7 @@ class _FieldAccumulator:
         self.all_date = self.all_date and _is_date_value(value)
 
     def inferred_type(self, variable: Variable | None) -> str:
+        """TODO: Add docstring."""
         if self.populated_count > 0:
             if self.all_boolean:
                 return "boolean"
@@ -204,6 +213,7 @@ class _FieldAccumulator:
 
 
 def _is_populated(value: Any) -> bool:
+    """TODO: Add docstring."""
     if value is None:
         return False
     if isinstance(value, str):
@@ -214,6 +224,7 @@ def _is_populated(value: Any) -> bool:
 
 
 def _render_value(value: Any) -> str:
+    """TODO: Add docstring."""
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (dict, list)):
@@ -222,6 +233,7 @@ def _render_value(value: Any) -> str:
 
 
 def _is_boolean_value(value: Any) -> bool:
+    """TODO: Add docstring."""
     if isinstance(value, bool):
         return True
     if isinstance(value, str):
@@ -230,6 +242,7 @@ def _is_boolean_value(value: Any) -> bool:
 
 
 def _is_numeric_value(value: Any) -> bool:
+    """TODO: Add docstring."""
     if isinstance(value, bool):
         return False
     if isinstance(value, (int, float)):
@@ -244,6 +257,7 @@ def _is_numeric_value(value: Any) -> bool:
 
 
 def _is_date_value(value: Any) -> bool:
+    """TODO: Add docstring."""
     if isinstance(value, (date, datetime)):
         return True
     if not isinstance(value, str):

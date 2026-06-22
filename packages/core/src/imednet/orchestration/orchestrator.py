@@ -55,6 +55,7 @@ class AdaptiveConcurrencyLimiter:
     """Manages adaptive backpressure by limiting concurrency based on task latency."""
 
     def __init__(self, initial_concurrency: int):
+        """TODO: Add docstring."""
         self._max_concurrency = initial_concurrency
         self._current_concurrency = 0
         self._cond = threading.Condition()
@@ -64,17 +65,20 @@ class AdaptiveConcurrencyLimiter:
         self._initial_concurrency = initial_concurrency
 
     def acquire(self) -> None:
+        """TODO: Add docstring."""
         with self._cond:
             while self._current_concurrency >= self._max_concurrency:
                 self._cond.wait()
             self._current_concurrency += 1
 
     def release(self) -> None:
+        """TODO: Add docstring."""
         with self._cond:
             self._current_concurrency -= 1
             self._cond.notify_all()
 
     def record_latency(self, latency: float) -> None:
+        """TODO: Add docstring."""
         with self._lock:
             if self._latency_baseline is None:
                 self._latency_baseline = latency
@@ -156,6 +160,7 @@ class MultiStudyOrchestrator:
     """
 
     def __init__(self, sdk: Any, max_workers: int = 4) -> None:
+        """TODO: Add docstring."""
         if max_workers < 1:
             raise ValueError(f"max_workers must be >= 1, got {max_workers}")
         self._sdk = sdk

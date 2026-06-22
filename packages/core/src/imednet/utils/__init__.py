@@ -1,6 +1,4 @@
-"""
-Re-exports utility functions for easier access.
-"""
+"""Re-exports utility functions for easier access."""
 
 from importlib import import_module
 
@@ -28,6 +26,7 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
 
 
 def __getattr__(name: str):  # noqa: D401
+    """TODO: Add docstring."""
     try:
         module_path, obj_name = _LAZY_ATTRS[name]
     except KeyError:

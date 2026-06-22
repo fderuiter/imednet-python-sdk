@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import streamlit as st
@@ -19,6 +20,7 @@ if "high_contrast" not in st.session_state:
 
 
 def toggle_high_contrast():
+    """TODO: Add docstring."""
     st.session_state["high_contrast"] = not st.session_state["high_contrast"]
     if st.session_state["high_contrast"]:
         st.query_params["high_contrast"] = "true"
@@ -75,6 +77,7 @@ original_altair_chart = st.altair_chart
 
 
 def accessible_altair_chart(altair_chart, use_container_width=False, theme="streamlit", **kwargs):
+    """TODO: Add docstring."""
     title = getattr(altair_chart, "title", "Chart")
     if isinstance(title, dict) and "text" in title:
         title = title["text"]
@@ -104,6 +107,7 @@ original_st_info = st.info
 
 
 def _sanitize_body(body):
+    """TODO: Add docstring."""
     if isinstance(body, Exception):
         try:
             body_str = str(body)
@@ -124,18 +128,22 @@ def _sanitize_body(body):
 
 
 def secure_st_error(body, *args, **kwargs):
+    """TODO: Add docstring."""
     return original_st_error(_sanitize_body(body), *args, **kwargs)
 
 
 def secure_st_exception(exception, *args, **kwargs):
+    """TODO: Add docstring."""
     return original_st_exception(_sanitize_body(exception), *args, **kwargs)
 
 
 def secure_st_warning(body, *args, **kwargs):
+    """TODO: Add docstring."""
     return original_st_warning(_sanitize_body(body), *args, **kwargs)
 
 
 def secure_st_info(body, *args, **kwargs):
+    """TODO: Add docstring."""
     return original_st_info(_sanitize_body(body), *args, **kwargs)
 
 

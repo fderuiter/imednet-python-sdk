@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import importlib
 import importlib.util
 import os
@@ -31,6 +32,7 @@ def env(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture()
 def runner() -> CliRunner:
+    """TODO: Add docstring."""
     return CliRunner()
 
 
@@ -44,6 +46,7 @@ def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
 
 
 def test_missing_env_vars(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
     monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
     result = runner.invoke(cli.app, ["studies", "list"])
@@ -52,6 +55,7 @@ def test_missing_env_vars(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) ->
 
 
 def test_studies_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     obj = MagicMock()
     obj.study_key = "study1"
     obj.study_name = "Study One"
@@ -65,6 +69,7 @@ def test_studies_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_studies_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.studies.list.side_effect = ApiError("boom")
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 1
@@ -72,6 +77,7 @@ def test_studies_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_sdk_closed_after_command(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.studies.list.return_value = []
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 0
@@ -79,6 +85,7 @@ def test_sdk_closed_after_command(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_multiple_invocations_close_sdk(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.studies.list.return_value = []
     first = runner.invoke(cli.app, ["studies", "list"])
     second = runner.invoke(cli.app, ["studies", "list"])
@@ -87,6 +94,7 @@ def test_multiple_invocations_close_sdk(runner: CliRunner, sdk: MagicMock) -> No
 
 
 def test_sites_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     obj = MagicMock()
     obj.site_id = "site1"
     obj.site_name = "Site One"
@@ -99,11 +107,13 @@ def test_sites_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_sites_list_missing_argument(runner: CliRunner) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["sites", "list"])
     assert result.exit_code != 0
 
 
 def test_sites_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.sites.list.side_effect = ApiError("fail")
     result = runner.invoke(cli.app, ["sites", "list", "STUDY"])
     assert result.exit_code == 1
@@ -111,6 +121,7 @@ def test_sites_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_subjects_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     mock_subject = MagicMock()
     mock_subject.subject_key = "S1"
     mock_subject.subject_status = "Screened"
@@ -130,6 +141,7 @@ def test_subjects_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_subjects_list_invalid_filter(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["subjects", "list", "STUDY", "--filter", "badfilter"])
     assert result.exit_code == 1
     assert "Invalid filter format" in result.stdout
@@ -137,6 +149,7 @@ def test_subjects_list_invalid_filter(runner: CliRunner, sdk: MagicMock) -> None
 
 
 def test_subjects_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.subjects.list.side_effect = ApiError("boom")
     result = runner.invoke(cli.app, ["subjects", "list", "STUDY"])
     assert result.exit_code == 1
@@ -146,6 +159,7 @@ def test_subjects_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
 def test_extract_records_calls_workflow(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     workflow = MagicMock()
     monkeypatch.setattr(
         "imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow)
@@ -179,6 +193,7 @@ def test_extract_records_api_error(
 
 
 def test_records_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     rec = MagicMock()
     rec.record_id = 1
     rec.subject_key = "S1"
@@ -193,6 +208,7 @@ def test_records_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_records_list_output_csv(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1}
     sdk.records.list.return_value = [rec]
@@ -204,6 +220,7 @@ def test_records_list_output_csv(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_records_list_output_json(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1}
     sdk.records.list.return_value = [rec]
@@ -215,6 +232,7 @@ def test_records_list_output_json(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_records_list_no_records(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.records.list.return_value = []
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 0
@@ -223,6 +241,7 @@ def test_records_list_no_records(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_records_list_invalid_output(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "txt"])
     assert result.exit_code == 1
     assert "Invalid output format" in result.stdout
@@ -230,6 +249,7 @@ def test_records_list_invalid_output(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_records_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.records.list.side_effect = ApiError("oops")
     result = runner.invoke(cli.app, ["records", "list", "STUDY"])
     assert result.exit_code == 1
@@ -239,6 +259,7 @@ def test_records_list_api_error(runner: CliRunner, sdk: MagicMock) -> None:
 def test_export_parquet_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_parquet", func)
     monkeypatch.setattr(cli, "export_to_parquet", export_mod.export_to_parquet)
@@ -251,6 +272,7 @@ def test_export_parquet_calls_helper(
 def test_export_csv_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_csv", func)
     monkeypatch.setattr(cli, "export_to_csv", export_mod.export_to_csv)
@@ -262,6 +284,7 @@ def test_export_csv_calls_helper(
 def test_export_excel_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_excel", func)
     monkeypatch.setattr(cli, "export_to_excel", export_mod.export_to_excel)
@@ -273,6 +296,7 @@ def test_export_excel_calls_helper(
 def test_export_json_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_json", func)
     monkeypatch.setattr(cli, "export_to_json", export_mod.export_to_json)
@@ -284,6 +308,7 @@ def test_export_json_calls_helper(
 def test_export_duckdb_calls_helper(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_duckdb", func)
     monkeypatch.setattr(cli, "export_to_duckdb", export_mod.export_to_duckdb)
@@ -316,6 +341,7 @@ def test_export_duckdb_calls_helper(
 
 
 def test_export_duckdb_help(runner: CliRunner) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["export", "duckdb", "--help"])
     assert result.exit_code == 0
     assert "STUDY_KEY" in result.stdout
@@ -329,6 +355,7 @@ def test_export_duckdb_help(runner: CliRunner) -> None:
 def test_export_sql_calls_helper_non_sqlite(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     func = MagicMock()
     form_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_sql", func)
@@ -369,6 +396,7 @@ def test_export_sql_calls_helper_non_sqlite(
 def test_export_sql_sqlite_uses_by_form(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     form_func = MagicMock()
     sql_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
@@ -408,6 +436,7 @@ def test_export_sql_sqlite_uses_by_form(
 def test_export_sql_sqlite_single_table(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     form_func = MagicMock()
     single = ["--single-table"]
     sql_func = MagicMock()
@@ -451,6 +480,7 @@ def test_export_sql_sqlite_single_table(
 def test_export_sql_long_format(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     long_func = MagicMock()
     form_func = MagicMock()
     sql_func = MagicMock()
@@ -479,6 +509,7 @@ def test_export_sql_long_format(
 def test_export_sql_long_format_overrides_single(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     long_func = MagicMock()
     form_func = MagicMock()
     sql_func = MagicMock()
@@ -513,9 +544,11 @@ def test_export_sql_long_format_overrides_single(
 
 
 def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     original_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str) -> object | None:
+        """TODO: Add docstring."""
         if name == "pyarrow":
             return None
         return original_find_spec(name)
@@ -527,9 +560,11 @@ def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.M
 
 
 def test_export_sql_missing_sqlalchemy(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     original_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str) -> object | None:
+        """TODO: Add docstring."""
         if name == "sqlalchemy":
             return None
         return original_find_spec(name)
@@ -546,9 +581,11 @@ def test_export_sql_missing_sqlalchemy(runner: CliRunner, monkeypatch: pytest.Mo
 def test_export_duckdb_missing_dependency(
     runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     original_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str) -> object | None:
+        """TODO: Add docstring."""
         if name == "duckdb":
             return None
         return original_find_spec(name)
@@ -565,6 +602,7 @@ def test_export_duckdb_missing_dependency(
 def test_subject_data_calls_workflow(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     workflow = MagicMock()
     monkeypatch.setattr(
         "imednet_workflows.cli.SubjectDataWorkflow", MagicMock(return_value=workflow)
@@ -578,6 +616,7 @@ def test_subject_data_calls_workflow(
 def test_sync_worker_once_command(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     worker = MagicMock()
     worker.run_once.return_value = 42
     loader_cls = MagicMock()
@@ -595,6 +634,7 @@ def test_sync_worker_once_command(
 def test_sync_worker_command_handles_keyboard_interrupt(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     worker = MagicMock()
     worker.run_forever.side_effect = KeyboardInterrupt()
     loader_cls = MagicMock()
@@ -610,6 +650,7 @@ def test_sync_worker_command_handles_keyboard_interrupt(
 
 
 def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     obj = MagicMock()
     obj.description = "Q1"
     obj.annotation_type = "Query"
@@ -625,6 +666,7 @@ def test_queries_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_queries_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.queries.list.return_value = []
     result = runner.invoke(cli.app, ["queries", "list", "STUDY"])
     assert result.exit_code == 0
@@ -632,6 +674,7 @@ def test_queries_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_variables_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     obj = MagicMock()
     obj.variable_name = "V1"
     obj.label = "Var 1"
@@ -647,6 +690,7 @@ def test_variables_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_variables_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.variables.list.return_value = []
     result = runner.invoke(cli.app, ["variables", "list", "STUDY"])
     assert result.exit_code == 0
@@ -654,6 +698,7 @@ def test_variables_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_record_revisions_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.record_revisions.list.return_value = ["R1"]
     result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
     assert result.exit_code == 0
@@ -663,6 +708,7 @@ def test_record_revisions_list_success(runner: CliRunner, sdk: MagicMock) -> Non
 
 
 def test_record_revisions_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.record_revisions.list.return_value = []
     result = runner.invoke(cli.app, ["record-revisions", "list", "STUDY"])
     assert result.exit_code == 0
@@ -670,18 +716,21 @@ def test_record_revisions_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_jobs_status_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["jobs", "status", "STUDY", "BATCH"])
     assert result.exit_code == 0
     sdk.get_job.assert_called_once_with("STUDY", "BATCH")
 
 
 def test_jobs_wait_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["jobs", "wait", "STUDY", "BATCH"])
     assert result.exit_code == 0
     sdk.poll_job.assert_called_once_with("STUDY", "BATCH", interval=5, timeout=300)
 
 
 def test_intervals_list_success(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     obj = MagicMock()
     obj.interval_id = 1
     obj.interval_name = "Baseline"
@@ -695,6 +744,7 @@ def test_intervals_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 
 def test_intervals_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     sdk.intervals.list.return_value = []
     result = runner.invoke(cli.app, ["intervals", "list", "STUDY"])
     assert result.exit_code == 0

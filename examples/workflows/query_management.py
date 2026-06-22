@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from imednet import ImednetSDK
 
 """Example showing how to work with queries using :class:`QueryManagementWorkflow`.

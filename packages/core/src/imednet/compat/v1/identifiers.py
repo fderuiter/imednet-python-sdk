@@ -1,6 +1,4 @@
-"""
-Legacy identifier primitives.
-"""
+"""Legacy identifier primitives."""
 
 from typing import Union
 

@@ -6,6 +6,7 @@ from imednet.models.forms import Form
 
 
 class FormsOperationDef:
+    """TODO: Add docstring."""
     PATH = "forms"
     MODEL = Form
     _id_param = "formId"
@@ -14,8 +15,10 @@ class FormsOperationDef:
 
 
 class FormsEndpoint(FormsOperationDef, EdcSyncListGetEndpoint[Form]):  # type: ignore[misc]
+    """TODO: Add docstring."""
     pass
 
 
 class AsyncFormsEndpoint(FormsOperationDef, EdcAsyncListGetEndpoint[Form]):  # type: ignore[misc]
+    """TODO: Add docstring."""
     pass

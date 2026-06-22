@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from importlib import metadata as _metadata
 
 from .config import Config, load_config

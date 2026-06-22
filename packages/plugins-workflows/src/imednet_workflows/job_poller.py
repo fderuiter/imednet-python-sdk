@@ -18,6 +18,7 @@ class BaseJobPoller:
     """Base class for polling a job until it reaches a terminal state."""
 
     def _check_complete(self, status: JobStatus, batch_id: str) -> JobStatus:
+        """TODO: Add docstring."""
         return status
 
     def _evaluate(self, start_time: float, timeout: int, batch_id: str, status: JobStatus) -> bool:
@@ -48,6 +49,7 @@ class JobPoller(BaseJobPoller):
         get_job: Callable[[str, str], JobStatus],
         fetch_result: Callable[[str], Any] | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         self._get_job = get_job
         self._fetch_result = fetch_result
 
@@ -81,6 +83,7 @@ class AsyncJobPoller(BaseJobPoller):
         get_job: Callable[[str, str], Awaitable[JobStatus]],
         fetch_result: Callable[[str], Awaitable[Any]] | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         self._get_job = get_job
         self._fetch_result = fetch_result
 

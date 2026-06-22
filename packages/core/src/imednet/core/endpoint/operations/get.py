@@ -1,5 +1,4 @@
-"""
-Operation for executing get requests via direct path.
+"""Operation for executing get requests via direct path.
 
 This module encapsulates the logic for fetching and parsing a single resource
 from the API using its ID.
@@ -15,8 +14,7 @@ T = TypeVar("T")
 
 
 class PathGetOperation(Generic[T]):
-    """
-    Operation for executing get requests via direct path.
+    """Operation for executing get requests via direct path.
 
     Encapsulates the logic for making the HTTP request, handling empty
     responses (not found), and parsing the result.
@@ -28,8 +26,7 @@ class PathGetOperation(Generic[T]):
         parse_func: Callable[[Any], T],
         not_found_func: Callable[[], None],
     ) -> None:
-        """
-        Initialize the path get operation.
+        """Initialize the path get operation.
 
         Args:
             path: The API endpoint path.
@@ -48,8 +45,7 @@ class PathGetOperation(Generic[T]):
         return self.parse_func(data)
 
     def execute_sync(self, client: RequestorProtocol) -> T:
-        """
-        Execute synchronous get request.
+        """Execute synchronous get request.
 
         Args:
             client: The synchronous HTTP client.
@@ -61,8 +57,7 @@ class PathGetOperation(Generic[T]):
         return self._process_response(response)
 
     async def execute_async(self, client: AsyncRequestorProtocol) -> T:
-        """
-        Execute asynchronous get request.
+        """Execute asynchronous get request.
 
         Args:
             client: The asynchronous HTTP client.

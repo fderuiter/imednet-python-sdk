@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import importlib
 from pathlib import Path
 
@@ -7,22 +8,28 @@ test_conftest = importlib.import_module("tests.conftest")
 
 
 class _DummyNode:
+    """TODO: Add docstring."""
     def __init__(self, *, path: Path, has_live_marker: bool = False):
+        """TODO: Add docstring."""
         self.path = path
         self._has_live_marker = has_live_marker
 
     def get_closest_marker(self, name: str) -> object | None:
+        """TODO: Add docstring."""
         if name == "live" and self._has_live_marker:
             return object()
         return None
 
 
 class _DummyRequest:
+    """TODO: Add docstring."""
     def __init__(self, node: _DummyNode):
+        """TODO: Add docstring."""
         self.node = node
         self.fixture_calls: list[str] = []
 
     def getfixturevalue(self, fixture_name: str) -> None:
+        """TODO: Add docstring."""
         self.fixture_calls.append(fixture_name)
 
 
@@ -36,6 +43,7 @@ def _run_guard(request: _DummyRequest) -> None:
 
 
 def test_live_path_bypasses_respx_guard() -> None:
+    """TODO: Add docstring."""
     request = _DummyRequest(
         node=_DummyNode(path=test_conftest.ROOT / "tests" / "live" / "test_a.py")
     )
@@ -46,6 +54,7 @@ def test_live_path_bypasses_respx_guard() -> None:
 
 
 def test_non_live_path_activates_respx_guard() -> None:
+    """TODO: Add docstring."""
     request = _DummyRequest(
         node=_DummyNode(path=test_conftest.ROOT / "tests" / "unit" / "test_a.py")
     )
@@ -56,6 +65,7 @@ def test_non_live_path_activates_respx_guard() -> None:
 
 
 def test_live_marker_bypasses_guard_outside_live_directory() -> None:
+    """TODO: Add docstring."""
     request = _DummyRequest(
         node=_DummyNode(
             path=test_conftest.ROOT / "tests" / "unit" / "test_a.py",

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -15,6 +16,7 @@ class Visit(JsonModel):
     @model_validator(mode="before")
     @classmethod
     def _clean_empty_dates(cls, data: Any) -> Any:
+        """TODO: Add docstring."""
         if isinstance(data, dict):
             for key in [
                 "start_date",

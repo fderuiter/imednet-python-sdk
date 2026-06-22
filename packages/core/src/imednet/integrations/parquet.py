@@ -14,6 +14,7 @@ from .parquet_engine import PyArrowDatasetPartitionedStorageEngine
 
 
 def _ensure_pyarrow() -> ModuleType:
+    """TODO: Add docstring."""
     try:
         return import_module("pyarrow")
     except ImportError as error:
@@ -24,6 +25,7 @@ def _ensure_pyarrow() -> ModuleType:
 
 
 def _cached_records_loader() -> Any:
+    """TODO: Add docstring."""
     try:
         return import_module("imednet_workflows.cached_loader").CachedRecordsLoader
     except ModuleNotFoundError as error:

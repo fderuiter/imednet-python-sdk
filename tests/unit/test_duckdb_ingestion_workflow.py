@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import sys
@@ -14,6 +15,7 @@ from imednet_workflows.duckdb_centralizer import DuckDBIngestionWorkflow
 
 
 def test_ingest_revisions_append_mode() -> None:
+    """TODO: Add docstring."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -49,6 +51,7 @@ def test_ingest_revisions_append_mode() -> None:
 
 
 def test_ingest_revisions_replace_mode() -> None:
+    """TODO: Add docstring."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -90,6 +93,7 @@ def test_ingest_revisions_replace_mode() -> None:
 
 
 def test_build_silver_view_deduplication() -> None:
+    """TODO: Add docstring."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -126,6 +130,7 @@ def test_build_silver_view_deduplication() -> None:
 
 
 def test_ingest_revisions_returns_row_count() -> None:
+    """TODO: Add docstring."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -164,6 +169,7 @@ def test_ingest_revisions_returns_row_count() -> None:
 
 
 def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     def fake_import(
         name: str,
         globals_arg: Any = None,
@@ -171,6 +177,7 @@ def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
         fromlist: tuple[str, ...] = (),
         level: int = 0,
     ) -> Any:
+        """TODO: Add docstring."""
         if name == "duckdb":
             raise ImportError("No module named duckdb")
         return builtin_import(name, globals_arg, locals_arg, fromlist, level)

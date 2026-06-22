@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import httpx
 import pytest
 import respx
@@ -9,10 +10,12 @@ from imednet.errors import NotFoundError, RequestError, ServerError
 
 @respx.mock
 def test_sync_executor_retries_success():
+    """TODO: Add docstring."""
     client = httpx.Client(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         if calls["count"] == 1:
             raise httpx.RequestError("boom", request=request)
@@ -30,6 +33,7 @@ def test_sync_executor_retries_success():
 @respx.mock
 @pytest.mark.asyncio
 async def test_async_executor_error_mapping():
+    """TODO: Add docstring."""
     async_client = httpx.AsyncClient(base_url="https://api.test")
     respx.get("https://api.test/bad").respond(status_code=404, json={"msg": "x"})
 
@@ -44,10 +48,12 @@ async def test_async_executor_error_mapping():
 
 @respx.mock
 def test_sync_executor_retries_exhausted():
+    """TODO: Add docstring."""
     client = httpx.Client(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         raise httpx.RequestError("boom", request=request)
 
@@ -64,10 +70,12 @@ def test_sync_executor_retries_exhausted():
 
 @respx.mock
 def test_sync_executor_retries_exhausted_with_error_response():
+    """TODO: Add docstring."""
     client = httpx.Client(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         return httpx.Response(500, json={"error": "server error"})
 
@@ -85,10 +93,12 @@ def test_sync_executor_retries_exhausted_with_error_response():
 @respx.mock
 @pytest.mark.asyncio
 async def test_async_executor_retries_exhausted():
+    """TODO: Add docstring."""
     async_client = httpx.AsyncClient(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         raise httpx.RequestError("boom", request=request)
 
@@ -107,9 +117,11 @@ async def test_async_executor_retries_exhausted():
 
 @respx.mock
 def test_sync_executor_null_response(monkeypatch):
+    """TODO: Add docstring."""
     client = httpx.Client(base_url="https://api.test")
 
     def mock_retryer(*args, **kwargs):
+        """TODO: Add docstring."""
         return None
 
     monkeypatch.setattr("tenacity.Retrying.__call__", mock_retryer)
@@ -125,9 +137,11 @@ def test_sync_executor_null_response(monkeypatch):
 @respx.mock
 @pytest.mark.asyncio
 async def test_async_executor_null_response(monkeypatch):
+    """TODO: Add docstring."""
     async_client = httpx.AsyncClient(base_url="https://api.test")
 
     async def mock_retryer(*args, **kwargs):
+        """TODO: Add docstring."""
         return None
 
     monkeypatch.setattr("tenacity.AsyncRetrying.__call__", mock_retryer)
@@ -144,10 +158,12 @@ async def test_async_executor_null_response(monkeypatch):
 @respx.mock
 @pytest.mark.asyncio
 async def test_async_executor_retries_exhausted_with_error_response():
+    """TODO: Add docstring."""
     async_client = httpx.AsyncClient(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         return httpx.Response(500, json={"error": "server error"})
 
@@ -165,26 +181,34 @@ async def test_async_executor_retries_exhausted_with_error_response():
 
 
 class FakeAttempt:
+    """TODO: Add docstring."""
     def __init__(self, failed):
+        """TODO: Add docstring."""
         self.failed = failed
 
     def exception(self):
+        """TODO: Add docstring."""
         return RuntimeError("Fake error")
 
     def result(self):
+        """TODO: Add docstring."""
         return httpx.Response(200, json={"ok": True})
 
 
 class FakeRetryError(RetryError):
+    """TODO: Add docstring."""
     def __init__(self, failed):
+        """TODO: Add docstring."""
         self.last_attempt = FakeAttempt(failed)
         super().__init__(self.last_attempt)
 
 
 def test_sync_executor_unreachable_branch(monkeypatch):
+    """TODO: Add docstring."""
     client = httpx.Client(base_url="https://api.test")
 
     def mock_retryer(*args, **kwargs):
+        """TODO: Add docstring."""
         raise FakeRetryError(False)
 
     monkeypatch.setattr("tenacity.Retrying.__call__", mock_retryer)
@@ -199,9 +223,11 @@ def test_sync_executor_unreachable_branch(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_async_executor_unreachable_branch(monkeypatch):
+    """TODO: Add docstring."""
     async_client = httpx.AsyncClient(base_url="https://api.test")
 
     async def mock_retryer(*args, **kwargs):
+        """TODO: Add docstring."""
         raise FakeRetryError(False)
 
     monkeypatch.setattr("tenacity.AsyncRetrying.__call__", mock_retryer)

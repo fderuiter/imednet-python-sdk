@@ -29,6 +29,7 @@ class ImednetHook(BaseHook):
     """Retrieve an :class:`ImednetSDK` instance from an Airflow connection."""
 
     def __init__(self, imednet_conn_id: str = "imednet_default") -> None:
+        """TODO: Add docstring."""
         super().__init__()
         self.imednet_conn_id = imednet_conn_id
 

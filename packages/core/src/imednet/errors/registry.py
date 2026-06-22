@@ -30,8 +30,7 @@ STATUS_TO_ERROR: Mapping[int, Type[ApiError]] = types.MappingProxyType(
 
 
 def get_error_class(status_code: int) -> Type[ApiError]:
-    """
-    Get error class for status code.
+    """Get error class for status code.
 
     Defaults to generic ApiError for unmapped client/server errors.
     """

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -20,26 +21,32 @@ _NORMALIZERS: Dict[type, Dict[str, Callable[[Any], Any]]] = {}
 
 
 def _identity(v: Any) -> Any:
+    """TODO: Add docstring."""
     return v
 
 
 def _optional_str(v: Any) -> Any:
+    """TODO: Add docstring."""
     return None if is_missing_value(v) else parse_str_or_default(v)
 
 
 def _optional_int(v: Any) -> Any:
+    """TODO: Add docstring."""
     return None if is_missing_value(v) else parse_int_or_default(v)
 
 
 def _optional_bool(v: Any) -> Any:
+    """TODO: Add docstring."""
     return None if is_missing_value(v) else parse_bool(v)
 
 
 def _optional_datetime(v: Any) -> Any:
+    """TODO: Add docstring."""
     return None if is_missing_value(v) else parse_datetime(v)
 
 
 def _extract_single_item(v: Any) -> Any:
+    """TODO: Add docstring."""
     if isinstance(v, list) and len(v) > 0 and isinstance(v[0], dict):
         import logging
 
@@ -54,6 +61,7 @@ import types
 
 
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
+    """TODO: Add docstring."""
     if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
         return _NORMALIZERS[cls][field_name]
 
@@ -139,6 +147,7 @@ class JsonModel(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def _detect_drift(cls, data: Any) -> Any:
+        """TODO: Add docstring."""
         if not isinstance(data, dict):
             return data
 

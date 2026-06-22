@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import subprocess
@@ -65,7 +66,7 @@ def main(
         False, "--high-contrast", help="Enable high-contrast mode for accessibility."
     ),
 ) -> None:  # pragma: no cover - simple passthrough
-    """iMednet SDK CLI entry point."""
+    """IMednet SDK CLI entry point."""
     import os
 
     if high_contrast:
@@ -97,12 +98,14 @@ app.add_typer(records_app)
 
 
 def _register_missing_workflow_commands() -> None:
+    """TODO: Add docstring."""
     workflows_app = typer.Typer(
         name="workflows",
         help="Execute opinionated business logic (requires imednet-workflows).",
     )
 
     def _missing_plugin() -> None:
+        """TODO: Add docstring."""
         typer.secho(
             "The workflows plugin is not installed. Run: pip install imednet-workflows",
             fg=typer.colors.RED,
@@ -128,6 +131,7 @@ def _register_missing_workflow_commands() -> None:
 
 
 def _exit_missing_dashboard_plugin() -> NoReturn:
+    """TODO: Add docstring."""
     typer.secho(
         "Dashboard plugin not found. Install it with:\n  pip install imednet-streamlit",
         fg=typer.colors.RED,
@@ -136,6 +140,7 @@ def _exit_missing_dashboard_plugin() -> NoReturn:
 
 
 def _register_missing_dashboard_commands() -> None:
+    """TODO: Add docstring."""
     @app.command("dashboard")
     def missing_dashboard() -> None:
         """Launch the iMednet Streamlit reporting dashboard (requires imednet-streamlit plugin)."""

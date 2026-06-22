@@ -23,9 +23,11 @@ try:  # pragma: no cover - optional Airflow dependency
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
 
     class BaseOperator:  # type: ignore
+        """TODO: Add docstring."""
         template_fields: Sequence[str] = ()
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
+            """TODO: Add docstring."""
             pass
 
 
@@ -64,6 +66,7 @@ class ImednetExportOperator(BaseOperator):
         idempotent: bool = True,
         **kwargs: Any,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(**kwargs)
         self.study_key = study_key
         self.destination = destination
@@ -117,6 +120,7 @@ class ImednetExportOperator(BaseOperator):
         return None
 
     def execute(self, context: Context) -> str | None:
+        """TODO: Add docstring."""
         # Resolve destination early to fail fast on invalid configs (like legacy _get_export_callable)
         dest = self.destination
         if not dest and self.export_func:

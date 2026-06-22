@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import contextlib
 
 import httpx
@@ -10,6 +11,7 @@ from imednet.core.client import Client
 
 @respx.mock
 def test_successful_get_sync_client():
+    """TODO: Add docstring."""
     client = Client("k", "s", base_url="https://api.test")
     respx.get("https://api.test/api/v1/edc/studies").respond(status_code=200, json={"data": [1]})
 
@@ -21,14 +23,18 @@ def test_successful_get_sync_client():
 
 @respx.mock(assert_all_mocked=False)
 def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     class Policy:
+        """TODO: Add docstring."""
         def should_retry(self, state) -> bool:
+            """TODO: Add docstring."""
             return isinstance(state.exception, errors.ServerError)
 
     client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=Policy())
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         if calls["count"] < 3:
             raise errors.ServerError({}, status_code=500)
@@ -44,6 +50,7 @@ def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @respx.mock
 def test_authentication_error():
+    """TODO: Add docstring."""
     client = Client("k", "s", base_url="https://api.test")
     respx.get("https://api.test/protected").respond(status_code=401, json={})
 
@@ -53,9 +60,11 @@ def test_authentication_error():
 
 @respx.mock
 def test_timeout_handling():
+    """TODO: Add docstring."""
     client = Client("k", "s", base_url="https://api.test", timeout=1, retries=1)
 
     def slow(request):
+        """TODO: Add docstring."""
         raise httpx.ReadTimeout("timeout", request=request)
 
     respx.get("https://api.test/slow").mock(side_effect=slow)
@@ -67,11 +76,15 @@ def test_timeout_handling():
 
 @respx.mock
 def test_tracer_records_span():
+    """TODO: Add docstring."""
     class DummyTracer:
+        """TODO: Add docstring."""
         def __init__(self):
+            """TODO: Add docstring."""
             self.called = False
 
         def start_as_current_span(self, name, attributes=None):
+            """TODO: Add docstring."""
             self.called = True
             return contextlib.nullcontext()
 

@@ -45,10 +45,12 @@ class ExtractionStateLedger:
     """Manages transactional state bookmarks per study to guarantee absolute ingestion tracking."""
 
     def __init__(self, ledger_path: str = "/var/lib/imednet/pipeline_ledger.json") -> None:
+        """TODO: Add docstring."""
         self.ledger_path = Path(ledger_path)
         self._lock_path = self.ledger_path.with_suffix(".lock")
 
     def _ensure_ledger_exists(self) -> None:
+        """TODO: Add docstring."""
         if not self.ledger_path.exists():
             self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.ledger_path, "w", encoding="utf-8") as f:
@@ -152,8 +154,8 @@ class ExtractionStateLedger:
         stream_name: str,
         fallback_timestamp: Optional[datetime] = None,
     ) -> Generator[Dict[str, Any], None, None]:
-        """
-        Context manager for transactional state tracking.
+        """Context manager for transactional state tracking.
+
         Yields a dict where user can record 'records_processed', 'new_timestamp', and 'metadata'.
         Saves automatically upon exiting the context with no exceptions.
         The ledger file lock is held for the entire duration of the context.

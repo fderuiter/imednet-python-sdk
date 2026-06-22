@@ -18,6 +18,7 @@ MODULE_NAME = "imednet_streamlit.pages.publisher_wizard"
 
 
 def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> ConfigVersionStore:
+    """TODO: Add docstring."""
     store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
     config = StudyConfiguration(
         version="1.0.0",
@@ -40,15 +41,20 @@ def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> Config
 
 
 class _FakeContextManager:
+    """TODO: Add docstring."""
     def __enter__(self) -> "_FakeContextManager":
+        """TODO: Add docstring."""
         return self
 
     def __exit__(self, *args: Any) -> None:
+        """TODO: Add docstring."""
         pass
 
 
 class _FakeStreamlit:
+    """TODO: Add docstring."""
     def __init__(self) -> None:
+        """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.success_calls: list[str] = []
         self.warning_calls: list[str] = []
@@ -59,42 +65,54 @@ class _FakeStreamlit:
         self.text_input_values: dict[str, str] = {}
 
     def title(self, value: str) -> None:
+        """TODO: Add docstring."""
         pass
 
     def subheader(self, value: str) -> None:
+        """TODO: Add docstring."""
         pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
+        """TODO: Add docstring."""
         pass
 
     def info(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.info_calls.append(value)
 
     def success(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.warning_calls.append(value)
 
     def error(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.error_calls.append(value)
 
     def divider(self) -> None:
+        """TODO: Add docstring."""
         pass
 
     def json(self, value: Any) -> None:
+        """TODO: Add docstring."""
         pass
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
+        """TODO: Add docstring."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
+        """TODO: Add docstring."""
         key = str(kwargs.get("key") or label)
         if kwargs.get("disabled", False):
             return False
         return key in self.button_presses
 
     def columns(self, spec: Any) -> list[_FakeContextManager]:
+        """TODO: Add docstring."""
         count = spec if isinstance(spec, int) else len(spec)
         cols = [_FakeContextManager() for _ in range(count)]
         # Attach button and other widget methods to each column
@@ -106,30 +124,37 @@ class _FakeStreamlit:
         return cols
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
+        """TODO: Add docstring."""
         key = str(kwargs.get("key") or label)
         if key in self.selectbox_values and self.selectbox_values[key] in options:
             return self.selectbox_values[key]
         return options[index]
 
     def text_input(self, label: str, **kwargs: Any) -> str:
+        """TODO: Add docstring."""
         key = str(kwargs.get("key") or label)
         if key in self.text_input_values:
             return self.text_input_values[key]
         return str(kwargs.get("value", ""))
 
     def text_area(self, label: str, **kwargs: Any) -> str:
+        """TODO: Add docstring."""
         return str(kwargs.get("value", ""))
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
+        """TODO: Add docstring."""
         return _FakeContextManager()
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
+        """TODO: Add docstring."""
         pass
 
     def caption(self, value: str) -> None:
+        """TODO: Add docstring."""
         pass
 
     def progress(self, value: float) -> None:
+        """TODO: Add docstring."""
         pass
 
 
@@ -139,6 +164,7 @@ def _run_publisher_wizard(
     *,
     study_key: str = "STUDY-01",
 ) -> None:
+    """TODO: Add docstring."""
     fake_streamlit_module = ModuleType("streamlit")
     fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
     for attr in (
@@ -168,14 +194,18 @@ def _run_publisher_wizard(
     fake_auth_module.get_study_key = lambda: study_key  # type: ignore[attr-defined]
 
     class FakeAuth:
+        """TODO: Add docstring."""
         def get_user_roles(self):
+            """TODO: Add docstring."""
             # Read from session state simulator instead of UI
             return [fake_st.selectbox_values.get("_publisher_role", "viewer")]
 
         def get_user_id(self):
+            """TODO: Add docstring."""
             return fake_st.text_input_values.get("_publisher_user", "")
 
     class FakeSDK:
+        """TODO: Add docstring."""
         auth = FakeAuth()
 
     fake_auth_module.get_sdk = lambda: FakeSDK()  # type: ignore[attr-defined]

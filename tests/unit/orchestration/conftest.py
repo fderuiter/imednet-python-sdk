@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from typing import Callable
@@ -13,6 +14,7 @@ def mock_study() -> Callable[[str], MagicMock]:
     """Factory fixture: create a mock Study-like object with a study_key."""
 
     def _make(study_key: str) -> MagicMock:
+        """TODO: Add docstring."""
         study = MagicMock()
         study.study_key = study_key
         return study
@@ -31,4 +33,5 @@ def mock_sdk(request: pytest.FixtureRequest) -> MagicMock:
 
 @pytest.fixture
 def orchestrator(mock_sdk: MagicMock) -> MultiStudyOrchestrator:
+    """TODO: Add docstring."""
     return MultiStudyOrchestrator(mock_sdk, max_workers=3)

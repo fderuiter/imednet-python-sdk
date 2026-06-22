@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import json
 import os
 import pathlib
@@ -12,6 +13,7 @@ _CACHE: Dict[str, Dict[str, Any]] = {}
 
 
 def load_schemas() -> Dict[str, Dict[str, Any]]:
+    """TODO: Add docstring."""
     if _CACHE:
         return _CACHE
 
@@ -61,6 +63,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
     }
 
     def extract_schemas(items: List[Dict[str, Any]]) -> None:
+        """TODO: Add docstring."""
         if not isinstance(items, list):
             return
         for item in items:
@@ -99,6 +102,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
 
 
 def get_type_for_value(val: str) -> Any:
+    """TODO: Add docstring."""
     if val == "<string>":
         return (Optional[str], Field(default=""))
     if val == "<integer>":
@@ -109,6 +113,7 @@ def get_type_for_value(val: str) -> Any:
 
 
 def to_snake(name: str) -> str:
+    """TODO: Add docstring."""
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
@@ -122,8 +127,10 @@ except Exception:
 
 
 class ModelEngine:
+    """TODO: Add docstring."""
     @classmethod
     def get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
+        """TODO: Add docstring."""
         if tracer:
             with tracer.start_as_current_span("ModelEngine.get_model") as span:
                 span.set_attribute("model_name", model_name)
@@ -132,6 +139,7 @@ class ModelEngine:
 
     @classmethod
     def _get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
+        """TODO: Add docstring."""
         schemas = load_schemas()
         if model_name not in schemas:
             return create_model(model_name, __base__=base_cls)
@@ -158,6 +166,7 @@ class ModelEngine:
 
     @classmethod
     def generate_stubs(cls, output_dir: str) -> None:
+        """TODO: Add docstring."""
         if tracer:
             with tracer.start_as_current_span("ModelEngine.generate_stubs"):
                 pass

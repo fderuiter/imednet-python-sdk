@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -44,6 +45,7 @@ _TEMPLATES: dict[str, list[str]] = {
 
 @dataclass(frozen=True)
 class _AppliedFilters:
+    """TODO: Add docstring."""
     site_filter: list[str]
     subject_filter: list[str]
     severity_filter: list[str]
@@ -51,6 +53,7 @@ class _AppliedFilters:
 
 
 def _get_date_range_defaults(frames: Sequence[pd.DataFrame]) -> tuple[date, date]:
+    """TODO: Add docstring."""
     candidates: list[pd.Series] = []
     for frame in frames:
         for col in ("ae_start_date", "dv_date", "dd_date", "date_created"):
@@ -67,6 +70,7 @@ def _get_date_range_defaults(frames: Sequence[pd.DataFrame]) -> tuple[date, date
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_subjects_df(_sdk: object, study_key: str) -> pd.DataFrame:
+    """TODO: Add docstring."""
     rows = [
         {
             "subject_key": str(subject.subject_key),
@@ -83,11 +87,13 @@ def _fetch_subjects_df(_sdk: object, study_key: str) -> pd.DataFrame:
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_records(_sdk: object, study_key: str) -> list[Record]:
+    """TODO: Add docstring."""
     return list(_sdk.get_records(study_key=study_key))  # type: ignore[attr-defined]
 
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_forms_df(_sdk: object, study_key: str) -> pd.DataFrame:
+    """TODO: Add docstring."""
     forms = _sdk.get_forms(study_key=study_key)  # type: ignore[attr-defined]
     return pd.DataFrame(
         [
@@ -104,6 +110,7 @@ def _fetch_forms_df(_sdk: object, study_key: str) -> pd.DataFrame:
 def _fallback_direct_models(
     records: list[Record],
 ) -> tuple[list[AdverseEvent], list[ProtocolDeviation], list[DeviceDeficiency]]:
+    """TODO: Add docstring."""
     aes: list[AdverseEvent] = []
     pds: list[ProtocolDeviation] = []
     dds: list[DeviceDeficiency] = []
@@ -126,6 +133,7 @@ def _fallback_direct_models(
 
 
 def _models_to_frame(models: Sequence[object], *, date_column: str | None = None) -> pd.DataFrame:
+    """TODO: Add docstring."""
     if not models:
         return pd.DataFrame()
     rows = [
@@ -141,6 +149,7 @@ def _models_to_frame(models: Sequence[object], *, date_column: str | None = None
 def _extract_domain_frames(
     records: list[Record], configuration: StudyConfiguration
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """TODO: Add docstring."""
     from imednet_workflows.extraction_engine import extract_canonical_records
 
     extracted = extract_canonical_records(records, configuration)
@@ -159,6 +168,7 @@ def _extract_domain_frames(
 def _records_frame(
     records: list[Record], forms_df: pd.DataFrame, subjects_df: pd.DataFrame
 ) -> pd.DataFrame:
+    """TODO: Add docstring."""
     rows = [
         {
             "record_id": record.record_id,
@@ -207,6 +217,7 @@ def _records_frame(
 
 
 def _attach_site_name(df: pd.DataFrame, subjects_df: pd.DataFrame) -> pd.DataFrame:
+    """TODO: Add docstring."""
     if df.empty:
         return df
     out = df.copy()
@@ -218,6 +229,7 @@ def _attach_site_name(df: pd.DataFrame, subjects_df: pd.DataFrame) -> pd.DataFra
 
 
 def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame) -> pd.DataFrame:
+    """TODO: Add docstring."""
     from imednet_workflows.query_management import QueryManagementWorkflow
 
     site_enrollment = (
@@ -266,6 +278,7 @@ def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame)
 
 
 def _highlight_high_rate(value: float) -> str:
+    """TODO: Add docstring."""
     return f"background-color: {_HIGH_RATE_COLOR}" if value > _HIGH_QUERY_RATE_THRESHOLD else ""
 
 
@@ -276,6 +289,7 @@ def _apply_filters(
     date_col: str | None = None,
     severity_col: str | None = None,
 ) -> pd.DataFrame:
+    """TODO: Add docstring."""
     if df.empty:
         return df
     filtered = df.copy()
@@ -293,6 +307,7 @@ def _apply_filters(
 
 
 def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
+    """TODO: Add docstring."""
     if df.empty:
         return pd.DataFrame(
             columns=["subject_key", "form_name", "completion_flag", "completion_status"]
@@ -318,6 +333,7 @@ def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _default_configuration(template_name: str) -> StudyConfiguration:
+    """TODO: Add docstring."""
     profile = "device" if template_name == "Device Deficiencies" else "general"
     return StudyConfiguration.model_validate(
         {"studyKey": get_study_key(), "reportingProfile": profile}
@@ -331,6 +347,7 @@ def _render_view_controls(
     severity_options: list[str],
     default_dates: tuple[date, date],
 ) -> tuple[str, _AppliedFilters]:
+    """TODO: Add docstring."""
     saved_views = st.session_state.setdefault(_VIEW_STORE_KEY, {})
     default_template = st.session_state.setdefault(_DEFAULT_VIEW_KEY, _DEFAULT_TEMPLATE)
     active_view = st.session_state.setdefault(_ACTIVE_VIEW_KEY, "Default Study View")
@@ -396,6 +413,7 @@ def _render_view_controls(
 
 
 def _render_adverse_events_tab(df: pd.DataFrame, enrolled_subjects: int) -> None:
+    """TODO: Add docstring."""
     total_aes = len(df)
     serious_aes = int(df["ae_serious"].astype(bool).sum()) if "ae_serious" in df else 0
     ae_rate = round(total_aes / max(enrolled_subjects, 1), 2)
@@ -451,6 +469,7 @@ def _render_adverse_events_tab(df: pd.DataFrame, enrolled_subjects: int) -> None
 
 
 def _render_protocol_deviations_tab(df: pd.DataFrame, enrolled_subjects: int) -> None:
+    """TODO: Add docstring."""
     total = len(df)
     major = (
         int(df["dv_severity"].astype(str).str.upper().eq("MAJOR").sum())
@@ -505,6 +524,7 @@ def _render_protocol_deviations_tab(df: pd.DataFrame, enrolled_subjects: int) ->
 
 
 def _render_device_deficiencies_tab(df: pd.DataFrame) -> None:
+    """TODO: Add docstring."""
     total = len(df)
     serious = int(df["dd_serious"].astype(bool).sum()) if "dd_serious" in df else 0
     components.kpi_row(
@@ -532,6 +552,7 @@ def _render_device_deficiencies_tab(df: pd.DataFrame) -> None:
 
 
 def _render_site_performance_tab(df_site_metrics: pd.DataFrame) -> None:
+    """TODO: Add docstring."""
     components.kpi_row(
         [
             {
@@ -562,6 +583,7 @@ def _render_site_performance_tab(df_site_metrics: pd.DataFrame) -> None:
 
 
 def _render_data_completeness_tab(df_records: pd.DataFrame) -> None:
+    """TODO: Add docstring."""
     heatmap_df = _build_heatmap_source(df_records)
     if heatmap_df.empty:
         st.info("No record completeness data for selected filters.")
@@ -593,6 +615,7 @@ def _render_data_completeness_tab(df_records: pd.DataFrame) -> None:
 
 
 def render_page() -> None:
+    """TODO: Add docstring."""
     st.title("📊 Safety Reporting Dashboard")
     if st.button("🔄 Refresh Data"):
         st.cache_data.clear()

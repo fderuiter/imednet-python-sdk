@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from typing import (
@@ -30,6 +31,7 @@ class BaseSchemaCache(Generic[_TClient]):
     """Cache of variables by form key with optional async refresh."""
 
     def __init__(self, is_async: bool) -> None:
+        """TODO: Add docstring."""
         self._is_async = is_async
         self._form_variables: Dict[str, Dict[str, Variable]] = {}
         self._form_id_to_key: Dict[int, str] = {}
@@ -50,6 +52,7 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
+        """TODO: Add docstring."""
         vars_list = [v async for v in variables.async_list(study_key=study_key)]
         self.populate(vars_list)
 
@@ -59,6 +62,7 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: VariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
+        """TODO: Add docstring."""
         vars_list = variables.list(study_key=study_key)
         self.populate(vars_list)
 
@@ -68,6 +72,7 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: VariablesEndpoint | AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> Any:
+        """TODO: Add docstring."""
         if self._is_async:
             return self._refresh_async(
                 cast("AsyncFormsEndpoint", forms),
@@ -81,9 +86,11 @@ class BaseSchemaCache(Generic[_TClient]):
         )
 
     def variables_for_form(self, form_key: str) -> Dict[str, Variable]:
+        """TODO: Add docstring."""
         return self._form_variables.get(form_key, {})
 
     def form_key_from_id(self, form_id: int) -> Optional[str]:
+        """TODO: Add docstring."""
         return self._form_id_to_key.get(form_id)
 
     @property
@@ -93,31 +100,39 @@ class BaseSchemaCache(Generic[_TClient]):
 
 
 class SchemaCache(BaseSchemaCache["ImednetFacade"]):
+    """TODO: Add docstring."""
     def __init__(self) -> None:
+        """TODO: Add docstring."""
         super().__init__(is_async=False)
 
 
 class AsyncSchemaCache(BaseSchemaCache["AsyncImednetFacade"]):
+    """TODO: Add docstring."""
     def __init__(self) -> None:
+        """TODO: Add docstring."""
         super().__init__(is_async=True)
 
 
 def _validate_int(value: Any) -> None:
+    """TODO: Add docstring."""
     if not isinstance(value, int):
         raise ValidationError("Value must be an integer")
 
 
 def _validate_float(value: Any) -> None:
+    """TODO: Add docstring."""
     if not isinstance(value, (int, float)):
         raise ValidationError("Value must be numeric")
 
 
 def _validate_bool(value: Any) -> None:
+    """TODO: Add docstring."""
     if not isinstance(value, bool):
         raise ValidationError("Value must be boolean")
 
 
 def _validate_text(value: Any) -> None:
+    """TODO: Add docstring."""
     if not isinstance(value, str):
         raise ValidationError("Value must be a string")
 
@@ -145,6 +160,7 @@ for key, validator in list(_TYPE_VALIDATORS.items()):
 
 
 def _check_type(var_type: str | None, value: Any) -> None:
+    """TODO: Add docstring."""
     if value is None or not var_type:
         return
 
@@ -171,7 +187,6 @@ def validate_record_data(
         ValidationError: If the form key is not present in the schema or the data
             fails validation checks.
     """
-
     variables = schema.variables_for_form(form_key)
     if not variables:
         # The cache has no variables for the given form key, so treat it as an
@@ -231,8 +246,7 @@ def validate_record_entry(
     schema: BaseSchemaCache[Any],
     record: Dict[str, Any],
 ) -> None:
-    """
-    Validate a single record entry against the schema.
+    """Validate a single record entry against the schema.
 
     Resolves the form key from "formKey", "form_key", "formId", or "form_id".
 
@@ -258,11 +272,11 @@ class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
     schema: BaseSchemaCache[_TClient]
 
     def _refresh_common(self, variables: Iterable[Variable]) -> None:
+        """TODO: Add docstring."""
         self.schema.populate(variables)
 
     def _needs_refresh(self, record: Dict[str, Any]) -> Tuple[Optional[str], bool]:
-        """
-        Determine if the schema cache needs refreshing for the given record.
+        """Determine if the schema cache needs refreshing for the given record.
 
         Returns:
             A tuple of (form_key, needs_refresh).
@@ -276,6 +290,7 @@ class SchemaValidator(BaseSchemaValidator["ImednetFacade"]):
     """Validate record payloads using variable metadata from the API (Synchronous)."""
 
     def __new__(cls, sdk: "ImednetFacade", *args: Any, **kwargs: Any) -> Any:
+        """TODO: Add docstring."""
         if kwargs.get("is_async") or (args and args[0] is True):
             import warnings
 

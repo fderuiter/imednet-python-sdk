@@ -1,5 +1,4 @@
-"""
-Core HTTP client for interacting with the iMednet REST API.
+"""Core HTTP client for interacting with the iMednet REST API.
 
 This module defines the `Client` class which handles:
 - Authentication headers (API key and security key).
@@ -26,8 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
-    """
-    Core HTTP client for the iMednet API.
+    """Core HTTP client for the iMednet API.
 
     Attributes:
         base_url: Base URL for API requests.
@@ -37,11 +35,13 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
     """
 
     def _get_client_class(self) -> type[httpx.Client]:
+        """TODO: Add docstring."""
         return httpx.Client
 
     def _create_executor(
         self, client: httpx.Client, retry_policy: Optional[RetryPolicy] = None
     ) -> SyncRequestExecutor:
+        """TODO: Add docstring."""
         return SyncRequestExecutor(
             send=client.request,
             retries=self.retries,
@@ -51,6 +51,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         )
 
     def __enter__(self) -> Client:
+        """TODO: Add docstring."""
         return self
 
     def __exit__(
@@ -59,6 +60,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         exc: Optional[BaseException],
         tb: Optional[TracebackType],
     ) -> None:
+        """TODO: Add docstring."""
         self.close()
 
     def close(self) -> None:
@@ -66,6 +68,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         self._client.close()
 
     def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+        """TODO: Add docstring."""
         return self._executor(method, path, **kwargs)
 
     def get(
@@ -74,12 +77,12 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        """
-        Make a GET request.
+        """Make a GET request.
 
         Args:
             path: URL path or full URL.
             params: Query parameters.
+            **kwargs: Additional arguments passed to the underlying executor.
         """
         return self._request("GET", path, params=params, **kwargs)
 
@@ -89,11 +92,11 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         json: Optional[Any] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        """
-        Make a POST request.
+        """Make a POST request.
 
         Args:
             path: URL path or full URL.
             json: JSON body for the request.
+            **kwargs: Additional arguments passed to the underlying executor.
         """
         return self._request("POST", path, json=json, **kwargs)

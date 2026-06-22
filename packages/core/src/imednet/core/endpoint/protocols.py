@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from typing import (
     Any,
     AsyncIterator,
@@ -121,15 +122,16 @@ class SupportsCreate(Protocol[T_co]):
 
 
 class SyncOperationProtocol(Protocol, Generic[T_co]):
-    """
-    Protocol for sync operation executors requiring explicit transport injection.
+    """Protocol for sync operation executors requiring explicit transport injection.
 
     Note:
         These operation protocols are intentionally generic extension points for
         future endpoint operation bindings.
     """
 
-    def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None: ...
+    def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
+        """TODO: Add docstring."""
+        ...
 
     def execute(self) -> T_co:
         """Execute synchronously."""
@@ -137,8 +139,7 @@ class SyncOperationProtocol(Protocol, Generic[T_co]):
 
 
 class AsyncOperationProtocol(Protocol, Generic[T_co]):
-    """
-    Protocol for async operation executors requiring explicit transport injection.
+    """Protocol for async operation executors requiring explicit transport injection.
 
     Note:
         These operation protocols are intentionally generic extension points for
@@ -147,7 +148,9 @@ class AsyncOperationProtocol(Protocol, Generic[T_co]):
 
     def __init__(
         self, client: AsyncRequestorProtocol, path: str, *args: Any, **kwargs: Any
-    ) -> None: ...
+    ) -> None:
+        """TODO: Add docstring."""
+        ...
 
     async def execute(self) -> T_co:
         """Execute asynchronously."""

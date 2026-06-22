@@ -1,5 +1,4 @@
-"""
-Pagination utilities.
+"""Pagination utilities.
 
 .. note::
 

@@ -73,7 +73,7 @@ batching, staging, and cleanup automatically:
 Advanced usage — ``SnowflakeExportSink`` directly
 --------------------------------------------------
 
-Use :class:`~imednet.integrations.warehouse.SnowflakeExportSink` directly when you need
+Use :class:`~imednet_sinks.warehouse.SnowflakeExportSink` directly when you need
 per-batch control, custom ``batch_id`` keys, or integration with a workflow engine:
 
 .. code-block:: python
@@ -81,7 +81,7 @@ per-batch control, custom ``batch_id`` keys, or integration with a workflow engi
    import os
    from imednet import ImednetSDK
    from imednet.integrations.sink_base import iter_batches
-   from imednet.integrations.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
+   from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
    sdk = ImednetSDK(api_key=os.environ["IMEDNET_API_KEY"])
    records = sdk.records.list(study_key="MY_STUDY")
@@ -190,13 +190,13 @@ With options:
 Configuration reference
 -----------------------
 
-.. autoclass:: imednet.integrations.warehouse.SnowflakeSinkConfig
+.. autoclass:: imednet_sinks.warehouse.SnowflakeSinkConfig
    :members:
    :undoc-members:
 
-.. autofunction:: imednet.integrations.warehouse.export_to_snowflake
+.. autofunction:: imednet_sinks.warehouse.export_to_snowflake
 
-.. autoclass:: imednet.integrations.warehouse.SnowflakeExportSink
+.. autoclass:: imednet_sinks.warehouse.SnowflakeExportSink
    :members:
 
 Out of scope

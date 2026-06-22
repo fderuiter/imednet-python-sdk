@@ -140,7 +140,7 @@ autodoc_typehints = "description"
 # Autodoc default options applied to all automodule/autoclass directives.
 autodoc_default_options = {
     "members": True,
-    "undoc-members": True,
+    
     "show-inheritance": True,
 }
 autodoc_class_signature = "separated"

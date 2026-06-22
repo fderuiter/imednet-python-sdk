@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -10,6 +11,7 @@ from imednet_workflows.schema_profiler import SchemaProfiler
 
 
 def test_schema_profiler_builds_form_and_field_profiles() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_forms.return_value = [Form(form_key="AE", form_name="Adverse Events", form_id=10)]
     sdk.get_variables.return_value = [
@@ -94,6 +96,7 @@ def test_schema_profiler_builds_form_and_field_profiles() -> None:
 
 
 def test_schema_profiler_uses_loader_when_records_are_not_supplied() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     loader = MagicMock()
     loader.load_records.return_value = [
@@ -126,15 +129,19 @@ def test_schema_profiler_uses_loader_when_records_are_not_supplied() -> None:
 
 
 def test_schema_profiler_streams_chunked_loader_records() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
 
     class _ChunkedLoader:
+        """TODO: Add docstring."""
         def __init__(self) -> None:
+            """TODO: Add docstring."""
             self.load_records = MagicMock()
             self.sync_records = MagicMock()
             self._iter_mock = MagicMock()
 
         def iter_cached_records(self, study_key: str):
+            """TODO: Add docstring."""
             self._iter_mock(study_key)
             return iter(
                 [

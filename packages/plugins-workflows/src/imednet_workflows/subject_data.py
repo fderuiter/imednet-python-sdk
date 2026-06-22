@@ -24,19 +24,18 @@ class SubjectComprehensiveData(BaseModel):
 
 
 class SubjectDataWorkflow:
-    """
-    Provides methods to retrieve comprehensive data related to a specific subject.
+    """Provides methods to retrieve comprehensive data related to a specific subject.
 
     Args:
         sdk: An instance of the ImednetFacade.
     """
 
     def __init__(self, sdk: "ImednetFacade"):
+        """TODO: Add docstring."""
         self._sdk = sdk
 
     def get_all_subject_data(self, study_key: str, subject_key: str) -> SubjectComprehensiveData:
-        """
-        Retrieves subject details, visits, records, and queries for a specific subject.
+        """Retrieves subject details, visits, records, and queries for a specific subject.
 
         Args:
             study_key: The key identifying the study.

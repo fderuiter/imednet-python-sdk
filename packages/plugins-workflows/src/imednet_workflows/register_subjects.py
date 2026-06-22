@@ -1,5 +1,5 @@
-"""
-Workflow for registering subjects (patients) in iMednet via the Records API.
+"""Workflow for registering subjects (patients) in iMednet via the Records API.
+
 This workflow is self-contained and does not borrow from record_update.py.
 It provides a simple, robust interface for registering one or more subjects.
 """
@@ -14,14 +14,14 @@ if TYPE_CHECKING:
 
 
 class RegisterSubjectsWorkflow:
-    """
-    Manages the registration of subjects using the iMedNet SDK.
+    """Manages the registration of subjects using the iMedNet SDK.
 
     Attributes:
         _sdk (ImednetSDK): An instance of the ImednetSDK.
     """
 
     def __init__(self, sdk: "ImednetFacade"):  # Use string literal for type hint
+        """TODO: Add docstring."""
         self._sdk = sdk
 
     def register_subjects(
@@ -30,8 +30,8 @@ class RegisterSubjectsWorkflow:
         subjects: List[RegisterSubjectRequest],
         email_notify: Optional[str] = None,
     ) -> Job:
-        """
-        Registers multiple subjects in the specified study.
+        """Registers multiple subjects in the specified study.
+
         Sites and subject identifiers are validated before submission.
 
         Args:

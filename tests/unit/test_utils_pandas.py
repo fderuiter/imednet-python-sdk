@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import ast
 from unittest.mock import MagicMock
 
@@ -9,6 +10,7 @@ from imednet.utils.pandas import export_records_csv, records_to_dataframe
 
 
 def _sample_record() -> Record:
+    """TODO: Add docstring."""
     return Record(
         record_id=1,
         subject_key="S1",
@@ -20,6 +22,7 @@ def _sample_record() -> Record:
 
 
 def test_records_to_dataframe_flatten() -> None:
+    """TODO: Add docstring."""
     rec = _sample_record()
     df = records_to_dataframe([rec], flatten=True)
     assert "record_data" not in df.columns
@@ -27,6 +30,7 @@ def test_records_to_dataframe_flatten() -> None:
 
 
 def test_records_to_dataframe_no_flatten() -> None:
+    """TODO: Add docstring."""
     rec = _sample_record()
     df = records_to_dataframe([rec], flatten=False)
     assert "record_data" in df.columns
@@ -34,11 +38,13 @@ def test_records_to_dataframe_no_flatten() -> None:
 
 
 def test_records_to_dataframe_empty() -> None:
+    """TODO: Add docstring."""
     df = records_to_dataframe([], flatten=False)
     assert df.empty
 
 
 def test_export_records_csv(tmp_path) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.records.list.return_value = [_sample_record()]
     out_path = tmp_path / "records.csv"
@@ -52,6 +58,7 @@ def test_export_records_csv(tmp_path) -> None:
 
 
 def test_export_records_csv_no_flatten(tmp_path) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.records.list.return_value = [_sample_record()]
     out_path = tmp_path / "records.csv"
@@ -66,12 +73,14 @@ def test_export_records_csv_no_flatten(tmp_path) -> None:
 
 
 def test_records_to_dataframe_raises_importerror_when_pandas_missing(monkeypatch):
+    """TODO: Add docstring."""
     monkeypatch.setattr("imednet.utils.pandas.pd", None)
     with pytest.raises(ImportError, match="pandas is required for records_to_dataframe"):
         records_to_dataframe([])
 
 
 def test_export_records_csv_raises_importerror_when_pandas_missing(monkeypatch):
+    """TODO: Add docstring."""
     monkeypatch.setattr("imednet.utils.pandas.pd", None)
     with pytest.raises(ImportError, match="pandas is required for export_records_csv"):
         export_records_csv(None, "STUDY", "path.csv")

@@ -1,5 +1,4 @@
-"""
-Common constants used throughout the iMednet SDK.
+"""Common constants used throughout the iMednet SDK.
 
 This module centralizes configuration constants to avoid magic numbers
 and improve maintainability.

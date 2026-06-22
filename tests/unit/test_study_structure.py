@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
@@ -11,6 +12,7 @@ from imednet_workflows.study_structure import async_get_study_structure, get_stu
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_get_study_structure_aggregates_related_data(async_mode: bool) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     interval = Interval(
         interval_id=1,
@@ -34,6 +36,7 @@ def test_get_study_structure_aggregates_related_data(async_mode: bool) -> None:
     if async_mode:
 
         async def async_mock_return(items):
+            """TODO: Add docstring."""
             return items
 
         sdk.async_get_intervals = MagicMock(return_value=async_mock_return([interval]))

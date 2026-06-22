@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import pytest
 
 import imednet.endpoints.codings as codings
@@ -58,6 +59,7 @@ ASYNC_CASES = [
 
 @pytest.mark.parametrize("cls,module,model,item_id", CASES)
 def test_list_and_get(dummy_client, context, paginator_factory, cls, module, model, item_id):
+    """TODO: Add docstring."""
     ep = cls(dummy_client, context)
     capture = paginator_factory(module, [{cls._id_param: item_id}])
 
@@ -88,6 +90,7 @@ async def test_async_list_and_get(
     model,
     item_id,
 ):
+    """TODO: Add docstring."""
     ep = cls(dummy_client, context)
     capture = async_paginator_factory(module, [{cls._id_param: item_id}])
 

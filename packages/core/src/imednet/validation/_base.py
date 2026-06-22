@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -9,9 +10,11 @@ class _ValidatorMixin:
     schema: Any
 
     def _resolve_form_key(self, record: Dict[str, Any]) -> Optional[str]:
+        """TODO: Add docstring."""
         return record.get("formKey") or self.schema.form_key_from_id(record.get("formId", 0))
 
     def _validate_cached(self, form_key: Optional[str], data: Dict[str, Any]) -> None:
+        """TODO: Add docstring."""
         if form_key:
             from .cache import validate_record_data
 

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -12,6 +13,7 @@ T = TypeVar("T")
 
 
 class CircuitState(Enum):
+    """TODO: Add docstring."""
     CLOSED = "CLOSED"
     OPEN = "OPEN"
     HALF_OPEN = "HALF_OPEN"
@@ -22,8 +24,8 @@ class CircuitBreakerError(Exception):
 
 
 class CircuitBreaker:
-    """
-    Global circuit breaker to track request failure rates across threads.
+    """Global circuit breaker to track request failure rates across threads.
+
     Transitions from CLOSED to OPEN after consecutive failures.
     Transitions from OPEN to HALF_OPEN after recovery_timeout.
     """
@@ -34,6 +36,7 @@ class CircuitBreaker:
         recovery_timeout: float = 10.0,
         half_open_max_probes: int = 1,
     ):
+        """TODO: Add docstring."""
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.half_open_max_probes = half_open_max_probes
@@ -46,6 +49,7 @@ class CircuitBreaker:
 
     @property
     def state(self) -> CircuitState:
+        """TODO: Add docstring."""
         with self._lock:
             # Check if we should transition from OPEN to HALF_OPEN
             if self._state == CircuitState.OPEN:
@@ -106,4 +110,5 @@ _global_circuit_breaker = CircuitBreaker()
 
 
 def get_global_circuit_breaker() -> CircuitBreaker:
+    """TODO: Add docstring."""
     return _global_circuit_breaker

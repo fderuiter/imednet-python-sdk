@@ -13,8 +13,8 @@ FacadeLike = Union["ImednetFacade", "AsyncImednetFacade"]
 
 
 class RecordUpdateWorkflow:
-    """
-    Provides workflows for creating or updating records, including batch submission
+    """Provides workflows for creating or updating records, including batch submission.
+
     and optional job status monitoring.
 
     Args:
@@ -22,6 +22,7 @@ class RecordUpdateWorkflow:
     """
 
     def __init__(self, sdk: "FacadeLike"):
+        """TODO: Add docstring."""
         self._sdk = sdk
         self._is_async = hasattr(sdk, "async_create_record")
         self._validator: SchemaValidator | AsyncSchemaValidator
@@ -110,6 +111,7 @@ class RecordUpdateWorkflow:
         )
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
+        """TODO: Add docstring."""
         warnings.warn(
             "submit_record_batch is deprecated; use create_or_update_records",
             DeprecationWarning,
@@ -131,7 +133,6 @@ class RecordUpdateWorkflow:
         interval_identifier_type: Literal["name", "id"] = "name",
     ) -> Dict[str, Any]:
         """Return a record payload for ``create_or_update_records``."""
-
         record: Dict[str, Any] = {
             "formKey" if form_identifier_type == "key" else "formId": form_identifier,
             "data": data,
@@ -173,8 +174,7 @@ class RecordUpdateWorkflow:
         timeout: int = 300,
         poll_interval: int = 5,
     ) -> Job:
-        """
-        Registers a new subject by submitting a single record.
+        """Registers a new subject by submitting a single record.
 
         Args:
             study_key: The study key.
@@ -219,8 +219,7 @@ class RecordUpdateWorkflow:
         timeout: int = 300,
         poll_interval: int = 5,
     ) -> Job:
-        """
-        Updates an existing scheduled record for a subject.
+        """Updates an existing scheduled record for a subject.
 
         Args:
             study_key: The study key.
@@ -267,8 +266,7 @@ class RecordUpdateWorkflow:
         timeout: int = 300,
         poll_interval: int = 5,
     ) -> Job:
-        """
-        Creates a new (unscheduled) record for an existing subject.
+        """Creates a new (unscheduled) record for an existing subject.
 
         Args:
             study_key: The study key.

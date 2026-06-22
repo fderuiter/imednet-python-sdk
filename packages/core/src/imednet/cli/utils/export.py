@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import csv
@@ -23,8 +24,7 @@ def export_list_to_file(
     filename_prefix: str,
     output_format: str,
 ) -> None:
-    """
-    Export a list of Pydantic models to a file.
+    """Export a list of Pydantic models to a file.
 
     Handles CSV and JSON formats. Sanitize CSV data to prevent injection.
     """

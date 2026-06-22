@@ -1,6 +1,4 @@
-"""
-Security utilities.
-"""
+"""Security utilities."""
 
 import re
 from typing import Any
@@ -11,7 +9,9 @@ _WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[/\\]")
 
 
 class SensitivityRegistry:
+    """TODO: Add docstring."""
     def __init__(self) -> None:
+        """TODO: Add docstring."""
         # Default clinical PHI fields
         self._sensitive_keys = {
             "patient_name",
@@ -28,19 +28,24 @@ class SensitivityRegistry:
         self._exempt_keys = {"subject_key", "study_key", "record_id"}
 
     def add_sensitive_key(self, key: str) -> None:
+        """TODO: Add docstring."""
         if key not in self._exempt_keys:
             self._sensitive_keys.add(key)
 
     def remove_sensitive_key(self, key: str) -> None:
+        """TODO: Add docstring."""
         self._sensitive_keys.discard(key)
 
     def add_exempt_key(self, key: str) -> None:
+        """TODO: Add docstring."""
         self._exempt_keys.add(key)
 
     def remove_exempt_key(self, key: str) -> None:
+        """TODO: Add docstring."""
         self._exempt_keys.discard(key)
 
     def is_sensitive(self, key: str) -> bool:
+        """TODO: Add docstring."""
         if key in self._exempt_keys:
             return False
         return key in self._sensitive_keys
@@ -68,8 +73,7 @@ def mask_clinical_phi(value: Any) -> Any:
 
 
 def sanitize_csv_formula(value: Any) -> Any:
-    """
-    Sanitize a value to prevent CSV/Excel Formula Injection.
+    """Sanitize a value to prevent CSV/Excel Formula Injection.
 
     Prefixes strings starting with =, +, -, or @ (even after whitespace) with a single quote.
     Lists and tuples are recursively sanitized.
@@ -84,8 +88,7 @@ def sanitize_csv_formula(value: Any) -> Any:
 
 
 def validate_header_value(value: str) -> None:
-    """
-    Validate that a header value does not contain newline characters.
+    """Validate that a header value does not contain newline characters.
 
     Args:
         value: The header value to validate.

@@ -1,6 +1,4 @@
-"""
-Base endpoint mix-in for all API resource endpoints.
-"""
+"""Base endpoint mix-in for all API resource endpoints."""
 
 from __future__ import annotations
 
@@ -29,8 +27,7 @@ T = TypeVar("T", bound=JsonModel)
 
 
 class GenericEndpoint(EndpointABC[T]):
-    """
-    Generic base for endpoint wrappers.
+    """Generic base for endpoint wrappers.
 
     Handles context injection and basic path building.
     Does NOT include EDC-specific logic.
@@ -46,6 +43,7 @@ class GenericEndpoint(EndpointABC[T]):
         ctx: object | None = None,
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
+        """TODO: Add docstring."""
         if ctx is not None:
             warnings.warn(
                 "The 'ctx' constructor argument is deprecated and ignored. "
@@ -61,8 +59,7 @@ class GenericEndpoint(EndpointABC[T]):
         return filters
 
     def _build_path(self, *segments: Any) -> str:
-        """
-        Return an API path joined with :data:`BASE_PATH`.
+        """Return an API path joined with :data:`BASE_PATH`.
 
         Args:
             *segments: URL path segments to append.
@@ -86,8 +83,7 @@ class GenericEndpoint(EndpointABC[T]):
 
 
 class _ListGetEndpointBase(GenericEndpoint[T]):
-    """
-    Generic base for endpoints that provide list and get-by-filter functionality.
+    """Generic base for endpoints that provide list and get-by-filter functionality.
 
     Uses composable operations to provide standard list/get read operations.
     """
@@ -101,6 +97,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
     @property
     def study_key_strategy(self) -> StudyKeyStrategy:
+        """TODO: Add docstring."""
         if self.STUDY_KEY_STRATEGY:
             return self.STUDY_KEY_STRATEGY
         if self.requires_study_key:
@@ -109,15 +106,18 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
     @property
     def param_processor(self) -> ParamProcessor:
+        """TODO: Add docstring."""
         if self.PARAM_PROCESSOR:
             return self.PARAM_PROCESSOR
         return self.PARAM_PROCESSOR_CLS()
 
     def _parse_item(self, item: Any) -> T:
+        """TODO: Add docstring."""
         parse_func = get_model_parser(self.MODEL)
         return parse_func(item)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
+        """TODO: Add docstring."""
         return self._parse_item
 
     def _resolve_params(
@@ -126,6 +126,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
     ) -> ParamState:
+        """TODO: Add docstring."""
         filters = self._auto_filter(filters.copy())
 
         processed_filters, special_params = self.param_processor.process_filters(filters)
@@ -158,6 +159,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
     ) -> ListRequestState[T]:
+        """TODO: Add docstring."""
         param_state = self._resolve_params(study_key, extra_params, filters)
         study = param_state.study
         params = param_state.params
@@ -170,22 +172,26 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         )
 
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: ItemId) -> T:
+        """TODO: Add docstring."""
         if not items:
             self._raise_not_found(study_key, item_id)
         return items[0]
 
     @staticmethod
     def _require_item_id(item_id: ItemId) -> None:
+        """TODO: Add docstring."""
         if item_id is None:
             raise TypeError("Missing required argument: item_id")
 
 
 class SyncListGetEndpoint(_ListGetEndpointBase[T]):
+    """TODO: Add docstring."""
     def __init__(
         self,
         client: RequestorProtocol,
         ctx: object | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(client=client, ctx=ctx)
 
     def _list_sync(
@@ -197,6 +203,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> Iterator[T]:
+        """TODO: Add docstring."""
         state = self._prepare_list_request(study_key, extra_params, filters)
         return ListOperation[T](
             path=state.path,
@@ -206,6 +213,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         ).execute_sync(client, paginator_cls)
 
     def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T]:
+        """TODO: Add docstring."""
         # Cast FilterValue → Any at the public/internal boundary to satisfy
         # mypy's invariant dict type-checking on `_list_sync`'s **filters: Any.
         _filters: Dict[str, Any] = dict(filters)
@@ -224,6 +232,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         study_key: Optional[str],
         item_id: ItemId,
     ) -> T:
+        """TODO: Add docstring."""
         filters: Dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
@@ -235,6 +244,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         return operation.execute_sync(client, paginator_cls)
 
     def get(self, study_key: Optional[str], item_id: ItemId) -> T:
+        """TODO: Add docstring."""
         self._require_item_id(item_id)
         return self._get_sync(
             self._require_sync_client(),
@@ -245,11 +255,13 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
 
 
 class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
+    """TODO: Add docstring."""
     def __init__(
         self,
         async_client: AsyncRequestorProtocol,
         ctx: object | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(ctx=ctx, async_client=async_client)
 
     def _list_async(
@@ -261,6 +273,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> AsyncIterator[T]:
+        """TODO: Add docstring."""
         state = self._prepare_list_request(study_key, extra_params, filters)
         return ListOperation[T](
             path=state.path,
@@ -272,6 +285,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
     def async_list(
         self, study_key: Optional[str] = None, **filters: FilterValue
     ) -> AsyncIterator[T]:
+        """TODO: Add docstring."""
         # Cast FilterValue → Any at the public/internal boundary.
         _filters: Dict[str, Any] = dict(filters)
         return self._list_async(
@@ -289,6 +303,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         study_key: Optional[str],
         item_id: ItemId,
     ) -> T:
+        """TODO: Add docstring."""
         filters: Dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
@@ -300,12 +315,14 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         return await operation.execute_async(client, paginator_cls)
 
     async def _list_async_for_get(self, *a: Any, **k: Any) -> List[T]:
+        """TODO: Add docstring."""
         res = []
         async for item in self._list_async(*a, **k):
             res.append(item)
         return res
 
     async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T:
+        """TODO: Add docstring."""
         self._require_item_id(item_id)
         return await self._get_async(
             self._require_async_client(),

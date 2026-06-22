@@ -1,5 +1,4 @@
-"""
-Convenience mixins for the iMedNet SDK.
+"""Convenience mixins for the iMedNet SDK.
 
 These mixins contain high-level helper methods that delegate to specific endpoints.
 They are architecturally linked to the core execution engine.
@@ -45,10 +44,12 @@ except Exception:
 
 
 def _trace_method(func: Any) -> Any:
+    """TODO: Add docstring."""
     from functools import wraps
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
+        """TODO: Add docstring."""
         if tracer:
             with tracer.start_as_current_span(func.__name__):
                 return func(*args, **kwargs)
@@ -58,10 +59,12 @@ def _trace_method(func: Any) -> Any:
 
 
 def _async_trace_method(func: Any) -> Any:
+    """TODO: Add docstring."""
     from functools import wraps
 
     @wraps(func)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
+        """TODO: Add docstring."""
         if tracer:
             with tracer.start_as_current_span(func.__name__):
                 return await func(*args, **kwargs)
@@ -90,6 +93,7 @@ if TYPE_CHECKING:
 
 
 def _workflow_poller(name: str) -> Any:
+    """TODO: Add docstring."""
     try:
         module = import_module("imednet_workflows.job_poller")
     except ModuleNotFoundError as error:
@@ -103,10 +107,12 @@ def _workflow_poller(name: str) -> Any:
 
 
 def JobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
+    """TODO: Add docstring."""
     return _workflow_poller("JobPoller")(*args, **kwargs)
 
 
 def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
+    """TODO: Add docstring."""
     return _workflow_poller("AsyncJobPoller")(*args, **kwargs)
 
 
@@ -114,12 +120,15 @@ T = TypeVar("T")
 
 
 class _ListOperation(Generic[T]):
+    """TODO: Add docstring."""
     def __init__(self, endpoint_name: str, name: str, is_async: bool = False):
+        """TODO: Add docstring."""
         self.endpoint_name = endpoint_name
         self.name = name
         self.is_async = is_async
 
     def __get__(self, instance: Any, owner: Any) -> Callable[..., Any]:
+        """TODO: Add docstring."""
         if instance is None:
             return self  # type: ignore
         endpoint = getattr(instance, self.endpoint_name)
@@ -128,6 +137,7 @@ class _ListOperation(Generic[T]):
 
             @_async_trace_method
             async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+                """TODO: Add docstring."""
                 _filters: Dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
                     res = endpoint.async_list(**_filters)
@@ -140,6 +150,7 @@ class _ListOperation(Generic[T]):
 
             @_trace_method
             def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+                """TODO: Add docstring."""
                 _filters: Dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
                     return list(endpoint.list(**_filters))

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import AsyncMock
 
 import pytest
@@ -33,6 +34,7 @@ from imednet.models.visits import Visit
 async def test_async_list_records(
     dummy_client, context, async_paginator_factory, patch_build_filter
 ):
+    """TODO: Add docstring."""
     ep = records.AsyncRecordsEndpoint(dummy_client, context)
     captured = async_paginator_factory(records, [{"recordId": 1}])
     filter_capture = patch_build_filter(records)
@@ -45,6 +47,7 @@ async def test_async_list_records(
 
 @pytest.mark.asyncio
 async def test_async_list_codings(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     ep = codings.AsyncCodingsEndpoint(dummy_client, context)
     captured = async_paginator_factory(codings, [{"codingId": 1}])
     result = await ep.async_list(study_key="S1")
@@ -54,6 +57,7 @@ async def test_async_list_codings(dummy_client, context, async_paginator_factory
 
 @pytest.mark.asyncio
 async def test_async_list_forms(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = forms.AsyncFormsEndpoint(dummy_client, context)
     captured = async_paginator_factory(forms, [{"formId": 1}])
@@ -64,6 +68,7 @@ async def test_async_list_forms(dummy_client, context, async_paginator_factory):
 
 @pytest.mark.asyncio
 async def test_async_list_intervals(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = intervals.AsyncIntervalsEndpoint(dummy_client, context)
     captured = async_paginator_factory(intervals, [{"intervalId": 1}])
@@ -74,6 +79,7 @@ async def test_async_list_intervals(dummy_client, context, async_paginator_facto
 
 @pytest.mark.asyncio
 async def test_async_list_queries(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = queries.AsyncQueriesEndpoint(dummy_client, context)
     captured = async_paginator_factory(queries, [{"annotationId": 1}])
@@ -84,6 +90,7 @@ async def test_async_list_queries(dummy_client, context, async_paginator_factory
 
 @pytest.mark.asyncio
 async def test_async_list_record_revisions(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = record_revisions.AsyncRecordRevisionsEndpoint(dummy_client, context)
     captured = async_paginator_factory(record_revisions, [{"recordRevisionId": 1}])
@@ -94,6 +101,7 @@ async def test_async_list_record_revisions(dummy_client, context, async_paginato
 
 @pytest.mark.asyncio
 async def test_async_list_sites(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     ep = sites.AsyncSitesEndpoint(dummy_client, context)
     captured = async_paginator_factory(sites, [{"siteId": 1}])
     result = await ep.async_list(study_key="S1")
@@ -103,6 +111,7 @@ async def test_async_list_sites(dummy_client, context, async_paginator_factory):
 
 @pytest.mark.asyncio
 async def test_async_list_subjects(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = subjects.AsyncSubjectsEndpoint(dummy_client, context)
     captured = async_paginator_factory(subjects, [{"subjectKey": "x"}])
@@ -113,6 +122,7 @@ async def test_async_list_subjects(dummy_client, context, async_paginator_factor
 
 @pytest.mark.asyncio
 async def test_async_list_users(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     ep = users.AsyncUsersEndpoint(dummy_client, context)
     captured = async_paginator_factory(users, [{"userId": 1}])
     result = await ep.async_list(study_key="S1", include_inactive=True)
@@ -123,6 +133,7 @@ async def test_async_list_users(dummy_client, context, async_paginator_factory):
 
 @pytest.mark.asyncio
 async def test_async_list_variables(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     ep = variables.AsyncVariablesEndpoint(dummy_client, context)
     captured = async_paginator_factory(variables, [{"variableId": 1}])
     result = await ep.async_list(study_key="S1")
@@ -132,6 +143,7 @@ async def test_async_list_variables(dummy_client, context, async_paginator_facto
 
 @pytest.mark.asyncio
 async def test_async_list_visits(dummy_client, context, async_paginator_factory):
+    """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = visits.AsyncVisitsEndpoint(dummy_client, context)
     captured = async_paginator_factory(visits, [{"visitId": 1}])
@@ -142,9 +154,11 @@ async def test_async_list_visits(dummy_client, context, async_paginator_factory)
 
 @pytest.mark.asyncio
 async def test_async_get_job(dummy_client, context, response_factory):
+    """TODO: Add docstring."""
     ep = jobs.AsyncJobsEndpoint(dummy_client, context)
 
     async def fake_get(path):
+        """TODO: Add docstring."""
         assert path == "/api/v1/edc/studies/S1/jobs/B1"
         return response_factory({"jobId": "1"})
 
@@ -155,10 +169,12 @@ async def test_async_get_job(dummy_client, context, response_factory):
 
 @pytest.mark.asyncio
 async def test_async_get_record(monkeypatch, dummy_client, context, response_factory):
+    """TODO: Add docstring."""
     ep = records.AsyncRecordsEndpoint(dummy_client, context)
     called = {}
 
     async def fake_impl(self, client, paginator, *, study_key=None, **filters):
+        """TODO: Add docstring."""
         called["study_key"] = study_key
         called["filters"] = filters
         yield Record(record_id=1)
@@ -173,9 +189,11 @@ async def test_async_get_record(monkeypatch, dummy_client, context, response_fac
 
 @pytest.mark.asyncio
 async def test_async_get_record_not_found(monkeypatch, dummy_client, context, response_factory):
+    """TODO: Add docstring."""
     ep = records.AsyncRecordsEndpoint(dummy_client, context)
 
     async def fake_impl(self, client, paginator, *, study_key=None, **filters):
+        """TODO: Add docstring."""
         if False:
             yield
 
@@ -187,6 +205,7 @@ async def test_async_get_record_not_found(monkeypatch, dummy_client, context, re
 
 @pytest.mark.asyncio
 async def test_async_create_record(dummy_client, context, response_factory, monkeypatch):
+    """TODO: Add docstring."""
     ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 

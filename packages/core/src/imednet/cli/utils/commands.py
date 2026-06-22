@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from typing import List
@@ -22,12 +23,12 @@ def register_list_command(
     summary_fields: List[str] | None = None,
 ) -> None:
     """Attach a standard ``list`` command to ``app``."""
-
     if requires_study_key:
 
         @app.command("list")
         @with_sdk
         def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
+            """TODO: Add docstring."""
             with fetching_status(name, study_key):
                 items = list(getattr(sdk, attr).list(study_key))
             display_list(items, name, empty_msg, fields=summary_fields)
@@ -39,6 +40,7 @@ def register_list_command(
         @app.command("list")
         @with_sdk
         def list_cmd_no_study(sdk: ImednetSDK) -> None:
+            """TODO: Add docstring."""
             with fetching_status(name):
                 items = list(getattr(sdk, attr).list())
             display_list(items, name, empty_msg, fields=summary_fields)

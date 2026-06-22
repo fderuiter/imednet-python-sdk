@@ -1,6 +1,4 @@
-"""
-HTTP response handling and error mapping.
-"""
+"""HTTP response handling and error mapping."""
 
 from __future__ import annotations
 

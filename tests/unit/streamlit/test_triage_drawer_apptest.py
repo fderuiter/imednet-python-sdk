@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,6 +11,7 @@ _APPROVE_BUTTON_INDEX = 4
 
 
 def _triage_drawer_app() -> None:
+    """TODO: Add docstring."""
     import tempfile
     import uuid
     from datetime import datetime, timezone
@@ -60,6 +62,7 @@ def _triage_drawer_app() -> None:
 
 
 def test_triage_drawer_submission_updates_session_state_and_persistence() -> None:
+    """TODO: Add docstring."""
     from imednet.models.triage import TriageStatus
     from imednet_workflows.triage_store import TriageStore
 

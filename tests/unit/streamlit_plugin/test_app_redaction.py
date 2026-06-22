@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import pytest
@@ -5,6 +6,7 @@ import streamlit as st
 
 
 def test_sanitize_body_string():
+    """TODO: Add docstring."""
     from imednet_streamlit.app import _sanitize_body
 
     res = _sanitize_body("mongodb://user:password123@host:27017")
@@ -12,6 +14,7 @@ def test_sanitize_body_string():
 
 
 def test_sanitize_body_exception():
+    """TODO: Add docstring."""
     from imednet_streamlit.app import _sanitize_body
 
     ex = ValueError("mongodb://user:password123@host:27017")
@@ -21,13 +24,17 @@ def test_sanitize_body_exception():
 
 
 def test_sanitize_body_unprintable_exception():
+    """TODO: Add docstring."""
     from imednet_streamlit.app import _sanitize_body
 
     class BadError(Exception):
+        """TODO: Add docstring."""
         def __str__(self):
+            """TODO: Add docstring."""
             raise RuntimeError("Cannot print")
 
         def __init__(self, msg=None):
+            """TODO: Add docstring."""
             if msg == "<unprintable exception>":
                 raise RuntimeError("Failed init")
             super().__init__(msg)
@@ -40,6 +47,7 @@ def test_sanitize_body_unprintable_exception():
 
 
 def test_sanitize_body_non_string():
+    """TODO: Add docstring."""
     from imednet_streamlit.app import _sanitize_body
 
     res = _sanitize_body(123)
@@ -47,6 +55,7 @@ def test_sanitize_body_non_string():
 
 
 def test_secure_st_methods(monkeypatch):
+    """TODO: Add docstring."""
     from imednet_streamlit.app import (
         secure_st_error,
         secure_st_exception,
@@ -57,15 +66,19 @@ def test_secure_st_methods(monkeypatch):
     calls = {}
 
     def mock_error(msg, *args, **kwargs):
+        """TODO: Add docstring."""
         calls["error"] = msg
 
     def mock_exception(msg, *args, **kwargs):
+        """TODO: Add docstring."""
         calls["exception"] = msg
 
     def mock_warning(msg, *args, **kwargs):
+        """TODO: Add docstring."""
         calls["warning"] = msg
 
     def mock_info(msg, *args, **kwargs):
+        """TODO: Add docstring."""
         calls["info"] = msg
 
     import imednet_streamlit.app as app
@@ -90,22 +103,27 @@ def test_secure_st_methods(monkeypatch):
 
 
 class _FakeChart:
+    """TODO: Add docstring."""
     def __init__(self, title="Test Chart"):
+        """TODO: Add docstring."""
         self.title = title
         self.data = "dummy_data"
 
     def properties(self, description=None):
+        """TODO: Add docstring."""
         self.description = description
         return self
 
 
 def test_accessible_altair_chart(monkeypatch):
+    """TODO: Add docstring."""
     import imednet_streamlit.app as app
     from imednet_streamlit.app import accessible_altair_chart
 
     calls = []
 
     def mock_original_altair_chart(chart, use_container_width, theme, **kwargs):
+        """TODO: Add docstring."""
         calls.append((chart, use_container_width, theme))
 
     monkeypatch.setattr(app, "original_altair_chart", mock_original_altair_chart)
@@ -120,12 +138,14 @@ def test_accessible_altair_chart(monkeypatch):
 
 
 def test_accessible_altair_chart_dict_title(monkeypatch):
+    """TODO: Add docstring."""
     import imednet_streamlit.app as app
     from imednet_streamlit.app import accessible_altair_chart
 
     calls = []
 
     def mock_original_altair_chart(chart, use_container_width, theme, **kwargs):
+        """TODO: Add docstring."""
         calls.append(chart)
 
     monkeypatch.setattr(app, "original_altair_chart", mock_original_altair_chart)
@@ -138,6 +158,7 @@ def test_accessible_altair_chart_dict_title(monkeypatch):
 
 
 def test_accessible_altair_chart_non_str_title(monkeypatch):
+    """TODO: Add docstring."""
     import imednet_streamlit.app as app
     from imednet_streamlit.app import accessible_altair_chart
 
@@ -147,6 +168,7 @@ def test_accessible_altair_chart_non_str_title(monkeypatch):
 
 
 def test_accessible_altair_chart_with_dataframe(monkeypatch):
+    """TODO: Add docstring."""
     import pandas as pd
 
     import imednet_streamlit.app as app
@@ -155,21 +177,27 @@ def test_accessible_altair_chart_with_dataframe(monkeypatch):
     calls = []
 
     def mock_original_altair_chart(*args, **kwargs):
+        """TODO: Add docstring."""
         pass
 
     monkeypatch.setattr(app, "original_altair_chart", mock_original_altair_chart)
 
     class FakeExpander:
+        """TODO: Add docstring."""
         def __init__(self, label, expanded):
+            """TODO: Add docstring."""
             calls.append(("expander", label, expanded))
 
         def __enter__(self):
+            """TODO: Add docstring."""
             return self
 
         def __exit__(self, *args):
+            """TODO: Add docstring."""
             pass
 
     def mock_dataframe(df, use_container_width):
+        """TODO: Add docstring."""
         calls.append(("dataframe", df, use_container_width))
 
     monkeypatch.setattr(st, "expander", FakeExpander)
@@ -184,6 +212,7 @@ def test_accessible_altair_chart_with_dataframe(monkeypatch):
 
 
 def test_toggle_high_contrast():
+    """TODO: Add docstring."""
     import imednet_streamlit.app as app
 
     # Set up session state and query params

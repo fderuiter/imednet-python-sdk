@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import httpx
 import pytest
 
@@ -7,6 +8,7 @@ from imednet.errors import ServerError
 
 
 def test_default_policy_request_error():
+    """TODO: Add docstring."""
     policy = DefaultRetryPolicy()
     state = RetryState(
         1,
@@ -18,6 +20,7 @@ def test_default_policy_request_error():
 
 
 def test_default_policy_retry_behavior():
+    """TODO: Add docstring."""
     policy = DefaultRetryPolicy()
 
     # Retryable responses for idempotent methods (Server Errors & Rate Limits)
@@ -41,10 +44,12 @@ def test_default_policy_retry_behavior():
 
 
 def test_default_policy_non_request_exception(monkeypatch):
+    """TODO: Add docstring."""
     client = Client("k", "s", base_url="https://api.test", retries=3)
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         raise RuntimeError("boom")
 
@@ -57,14 +62,18 @@ def test_default_policy_non_request_exception(monkeypatch):
 
 
 def test_custom_policy(monkeypatch):
+    """TODO: Add docstring."""
     class ServerPolicy:
+        """TODO: Add docstring."""
         def should_retry(self, state: RetryState) -> bool:
+            """TODO: Add docstring."""
             return isinstance(state.exception, ServerError)
 
     client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=ServerPolicy())
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         if calls["count"] < 3:
             raise ServerError({}, status_code=500)
@@ -79,8 +88,11 @@ def test_custom_policy(monkeypatch):
 
 
 def test_custom_policy_based_on_result(monkeypatch):
+    """TODO: Add docstring."""
     class ResponsePolicy:
+        """TODO: Add docstring."""
         def should_retry(self, state: RetryState) -> bool:
+            """TODO: Add docstring."""
             resp = state.result
             return isinstance(resp, httpx.Response) and resp.status_code >= 500
 
@@ -88,6 +100,7 @@ def test_custom_policy_based_on_result(monkeypatch):
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
+        """TODO: Add docstring."""
         calls["count"] += 1
         if calls["count"] < 3:
             return httpx.Response(500)

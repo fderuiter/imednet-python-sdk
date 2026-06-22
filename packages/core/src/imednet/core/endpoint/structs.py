@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,8 +11,7 @@ T = TypeVar("T", bound=JsonModel)
 
 @dataclass
 class ParamState:
-    """
-    Encapsulates the state of resolved parameters for an endpoint request.
+    """Encapsulates the state of resolved parameters for an endpoint request.
 
     Attributes:
         study: The study key, if applicable.
@@ -26,8 +26,7 @@ class ParamState:
 
 @dataclass
 class ListRequestState(Generic[T]):
-    """
-    Encapsulates the state required to execute a list request.
+    """Encapsulates the state required to execute a list request.
 
     Attributes:
         path: The API path for the request.

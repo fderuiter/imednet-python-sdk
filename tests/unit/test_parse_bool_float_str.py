@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import pytest
 
 from imednet.utils.validators import parse_bool
@@ -23,8 +24,8 @@ from imednet.utils.validators import parse_bool
     ],
 )
 def test_parse_bool_float_strings(input_val, expected):
-    """
-    Test that parse_bool correctly handles strings representing float values,
+    """Test that parse_bool correctly handles strings representing float values,.
+
     ensuring consistency with float() and bool() behavior in Python.
     """
     assert parse_bool(input_val) is expected

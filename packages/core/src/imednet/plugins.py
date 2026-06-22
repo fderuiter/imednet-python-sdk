@@ -103,7 +103,9 @@ class PluginProtocol(Protocol):
 
     def __call__(
         self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]
-    ) -> WorkflowsNamespaceProtocol: ...
+    ) -> WorkflowsNamespaceProtocol:
+        """TODO: Add docstring."""
+        ...
 
 
 @runtime_checkable
@@ -112,7 +114,9 @@ class SinksPluginProtocol(Protocol):
 
     def __call__(
         self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]
-    ) -> SinksNamespaceProtocol: ...
+    ) -> SinksNamespaceProtocol:
+        """TODO: Add docstring."""
+        ...
 
 
 __all__ = [

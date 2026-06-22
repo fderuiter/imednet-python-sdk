@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import os
@@ -20,7 +21,6 @@ The ``OUTPUT_DB`` path is used to build the SQLite connection string.
 
 def main() -> None:
     """Export a study's records in long format to SQLite."""
-
     if len(sys.argv) != 4:
         print(
             "Usage: poetry run python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB",

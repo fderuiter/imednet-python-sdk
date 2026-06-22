@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -20,10 +21,12 @@ _SENTINEL_DATETIME = datetime(1969, 4, 20, 16, 20)
 
 
 def is_missing_value(value: Any) -> bool:
+    """TODO: Add docstring."""
     return value is None or (isinstance(value, str) and value.strip() == "")
 
 
 def is_boolean_token(value: str) -> bool:
+    """TODO: Add docstring."""
     normalized = value.strip().lower()
     return normalized in _TRUE_LOWER or normalized in _FALSE_LOWER
 
@@ -52,8 +55,8 @@ _drift_reported: set[str] = set()
 
 
 def parse_bool(v: Any) -> bool:
-    """
-    Normalize boolean values from various representations.
+    """Normalize boolean values from various representations.
+
     Accepts bool, str, int, float and returns a bool.
 
     Defaults to False for unknown or unparseable types (e.g. None, [], object()).
@@ -119,8 +122,8 @@ def parse_bool(v: Any) -> bool:
 
 
 def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
-    """
-    Normalize integer values, defaulting if None or empty string.
+    """Normalize integer values, defaulting if None or empty string.
+
     If strict=True, raise ValueError on parse failure.
     """
     if is_missing_value(v):
@@ -145,16 +148,12 @@ def parse_int_or_default(v: Any, default: int = 0, strict: bool = False) -> int:
 
 
 def parse_str_or_default(v: Any, default: str = "") -> str:
-    """
-    Normalize string values, defaulting if None.
-    """
+    """Normalize string values, defaulting if None."""
     return default if v is None else str(v)
 
 
 def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list) -> List[T]:
-    """
-    Normalize list values, defaulting if None. Ensures result is a list.
-    """
+    """Normalize list values, defaulting if None. Ensures result is a list."""
     if is_missing_value(v):
         return default_factory()
     if isinstance(v, list):
@@ -170,9 +169,7 @@ def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list)
 def parse_dict_or_default(
     v: Any, default_factory: Callable[[], Dict[str, Any]] = dict
 ) -> Dict[str, Any]:
-    """
-    Normalize dictionary values, defaulting if None. Ensures result is a dict.
-    """
+    """Normalize dictionary values, defaulting if None. Ensures result is a dict."""
     if is_missing_value(v):
         return default_factory()
     if isinstance(v, dict):

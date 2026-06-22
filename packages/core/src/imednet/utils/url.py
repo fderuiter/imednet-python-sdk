@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import re
@@ -23,6 +24,7 @@ def redact_sensitive_text(text: Any) -> str:
 
     # Redact query parameters in any URLs
     def replace_url(match: re.Match) -> str:
+        """TODO: Add docstring."""
         return redact_url_query(match.group(0))
 
     text = re.sub(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\"'>]*[^\s\"'>.,;:!?\)\]]", replace_url, text)
@@ -56,8 +58,7 @@ def redact_url_query(url: str, sensitive_params: Optional[Set[str]] = None) -> s
 
 
 def build_safe_path(base_path: str, *segments: Any) -> str:
-    """
-    Build a normalized relative path using HTTPX URL joining.
+    """Build a normalized relative path using HTTPX URL joining.
 
     Args:
         base_path: Base path segment to start from.

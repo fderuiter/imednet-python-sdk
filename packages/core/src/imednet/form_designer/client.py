@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import json
 
 import httpx
@@ -19,16 +20,14 @@ from typing import Any
 
 
 class FormDesignerClient:
-    """
-    Client for the iMedNet Form Designer endpoint.
+    """Client for the iMedNet Form Designer endpoint.
 
     Handles the specific authentication and payload requirements of the legacy
     formdez_save.php endpoint.
     """
 
     def __init__(self, base_url: str, phpsessid: str, timeout: float = 30.0):
-        """
-        Initialize the client.
+        """Initialize the client.
 
         Args:
             base_url: The base URL of the iMedNet instance (e.g., https://xyz.imednet.com).
@@ -53,8 +52,7 @@ class FormDesignerClient:
         revision: int,
         layout: Layout,
     ) -> str:
-        """
-        Submit the form layout to the server.
+        """Submit the form layout to the server.
 
         Args:
             csrf_key: The CSRF token (scraped from page).
@@ -122,6 +120,7 @@ class FormDesignerClient:
         )
 
         def _execute_request() -> str:
+            """TODO: Add docstring."""
             response = self.session.post(url, data=payload, headers=headers)
             response.raise_for_status()
 

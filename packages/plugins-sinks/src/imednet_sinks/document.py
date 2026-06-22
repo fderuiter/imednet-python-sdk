@@ -129,7 +129,7 @@ class MongoDbExportSink(ExportSink):
     config:
         Optional :class:`~imednet.integrations.sink_base.SinkConfig`.
 
-    Raises
+    Raises:
     ------
     ~imednet.errors.ExportConfigurationError
         When the client cannot connect to the server.
@@ -146,6 +146,7 @@ class MongoDbExportSink(ExportSink):
         *,
         config: Optional[SinkConfig] = None,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(config)
         self._uri = uri
         self._database = database
@@ -160,6 +161,7 @@ class MongoDbExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def _connect(self) -> None:
+        """TODO: Add docstring."""
         pymongo = _require_optional_dep("pymongo", "mongodb")
         redacted = _redact_uri(self._uri)
         logger.debug("Connecting to MongoDB at %s", redacted)
@@ -187,6 +189,7 @@ class MongoDbExportSink(ExportSink):
         from imednet.core.operations.executor import UniversalExecutor
 
         def execute_export() -> int:
+            """TODO: Add docstring."""
             if self.config.idempotent:
                 pymongo = _require_optional_dep("pymongo", "mongodb")
                 ops = [

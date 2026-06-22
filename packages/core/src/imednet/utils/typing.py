@@ -1,6 +1,4 @@
-"""
-Type definitions for imednet SDK utilities.
-"""
+"""Type definitions for imednet SDK utilities."""
 
 from typing import Any, Dict, List, Tuple, Union
 

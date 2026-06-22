@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import json
 import logging
 import os
@@ -37,8 +38,8 @@ MODEL_MAP = {
 
 
 def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
-    """
-    Reads the Postman collection, identifies API endpoints,
+    """Reads the Postman collection, identifies API endpoints,.
+
     and compares the live API responses against the SDK's internal models.
     """
     os.environ["IMEDNET_STRICT_MODE"] = "1"
@@ -54,6 +55,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     endpoints_to_test = set()
 
     def walk(items):
+        """TODO: Add docstring."""
         for item in items:
             if "item" in item:
                 walk(item["item"])

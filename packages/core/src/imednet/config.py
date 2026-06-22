@@ -1,3 +1,8 @@
+"""Global SDK configuration state.
+
+This module provides the core configuration object for the iMednet SDK.
+"""
+
 from __future__ import annotations
 
 import os
@@ -9,12 +14,28 @@ __all__ = ["Config", "load_config"]
 
 @dataclass(frozen=True)
 class Config:
+    """Configuration object for the SDK client.
+
+    Attributes:
+        api_key: The API key for authentication.
+        security_key: The security key for authentication.
+        base_url: The base URL for the iMednet API.
+        oidc_token: Optional OIDC token for authentication.
+    """
+
     api_key: Optional[str] = None
     security_key: Optional[str] = None
     base_url: Optional[str] = None
     oidc_token: Optional[str] = None
 
     def __repr__(self) -> str:
+        """Return a string representation of the configuration.
+
+        Security-sensitive fields are masked.
+
+        Returns:
+            A string representation of the configuration.
+        """
         return f"Config(api_key='********', security_key='********', oidc_token='********', base_url={self.base_url!r})"
 
 
@@ -24,7 +45,20 @@ def load_config(
     base_url: Optional[str] = None,
     oidc_token: Optional[str] = None,
 ) -> Config:
-    """Return configuration using arguments or environment variables."""
+    """Return configuration using arguments or environment variables.
+
+    Args:
+        api_key: The API key for authentication. Defaults to IMEDNET_API_KEY environment variable.
+        security_key: The security key for authentication. Defaults to IMEDNET_SECURITY_KEY environment variable.
+        base_url: The base URL for the iMednet API. Defaults to IMEDNET_BASE_URL environment variable.
+        oidc_token: Optional OIDC token. Defaults to IMEDNET_OIDC_TOKEN environment variable.
+
+    Returns:
+        The loaded SDK configuration.
+
+    Raises:
+        ValueError: If required authentication parameters are missing.
+    """
     api_key = api_key if api_key is not None else os.getenv("IMEDNET_API_KEY")
     security_key = security_key if security_key is not None else os.getenv("IMEDNET_SECURITY_KEY")
     base_url = base_url if base_url is not None else os.getenv("IMEDNET_BASE_URL")

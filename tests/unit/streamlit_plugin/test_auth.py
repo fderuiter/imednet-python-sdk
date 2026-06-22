@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from types import SimpleNamespace
@@ -8,14 +9,18 @@ from imednet_streamlit import auth
 
 
 class _SidebarContext:
+    """TODO: Add docstring."""
     def __enter__(self) -> None:
+        """TODO: Add docstring."""
         return None
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """TODO: Add docstring."""
         return None
 
 
 class _FakeStreamlit:
+    """TODO: Add docstring."""
     def __init__(
         self,
         *,
@@ -23,6 +28,7 @@ class _FakeStreamlit:
         connect_clicked: bool = False,
         selected_study: str = "STUDY",
     ) -> None:
+        """TODO: Add docstring."""
         self.session_state: dict[str, object] = {}
         self.sidebar = _SidebarContext()
         self._connect_clicked = connect_clicked
@@ -36,37 +42,47 @@ class _FakeStreamlit:
         self._selected_study = selected_study
 
     def header(self, _: str) -> None:
+        """TODO: Add docstring."""
         pass
 
     def text_input(self, label: str, **kwargs: object) -> str:
+        """TODO: Add docstring."""
         key = kwargs["key"]
         self.session_state[key] = ""
         return ""
 
     def selectbox(self, label: str, options: list[str], key: str) -> str:
+        """TODO: Add docstring."""
         self.session_state[key] = self._selected_study
         return self._selected_study
 
     def button(self, _: str) -> bool:
+        """TODO: Add docstring."""
         return self._connect_clicked
 
     def success(self, message: str) -> None:
+        """TODO: Add docstring."""
         self.success_messages.append(message)
 
     def error(self, message: str) -> None:
+        """TODO: Add docstring."""
         self.error_messages.append(message)
 
     def warning(self, message: str) -> None:
+        """TODO: Add docstring."""
         self.warning_messages.append(message)
 
     def info(self, message: str) -> None:
+        """TODO: Add docstring."""
         self.info_messages.append(message)
 
     def login(self) -> None:
+        """TODO: Add docstring."""
         self.login_called = True
 
 
 def test_render_auth_sidebar_not_connected_returns_false(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
@@ -77,6 +93,7 @@ def test_render_auth_sidebar_not_connected_returns_false(monkeypatch: pytest.Mon
 def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True, selected_study="STUDY")
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
@@ -84,6 +101,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     sentinel_sdk = SimpleNamespace(name="sdk")
 
     def _fake_store_sdk(**_: object) -> None:
+        """TODO: Add docstring."""
         fake_st.session_state[auth._KEY_SDK] = sentinel_sdk
 
     monkeypatch.setattr(
@@ -98,6 +116,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
 
 
 def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
@@ -106,6 +125,7 @@ def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyP
 
 
 def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     fake_st.session_state.update(
         {
@@ -126,12 +146,14 @@ def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPa
 def test_render_auth_sidebar_build_failure_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
     monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec"))
 
     def _raise_build_error(**_: object) -> None:
+        """TODO: Add docstring."""
         raise RuntimeError("boom")
 
     monkeypatch.setattr(auth, "_build_sdk", _raise_build_error)
@@ -143,6 +165,7 @@ def test_render_auth_sidebar_build_failure_clears_secret_keys(
 def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secrets(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
@@ -158,13 +181,16 @@ def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secret
 
 
 def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
     sdk_args = {}
 
     class FakeSDK:
+        """TODO: Add docstring."""
         def __init__(self, api_key: str, security_key: str) -> None:
+            """TODO: Add docstring."""
             sdk_args["api_key"] = api_key
             sdk_args["security_key"] = security_key
 
@@ -176,6 +202,7 @@ def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_get_study_key_raises_when_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 

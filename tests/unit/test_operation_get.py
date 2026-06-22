@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -8,6 +9,7 @@ from imednet.errors import NotFoundError
 
 
 def test_filter_get_operation_returns_first_result():
+    """TODO: Add docstring."""
     validate = MagicMock(return_value={"id": 123})
     list_sync = MagicMock(return_value=[{"id": 123}])
 
@@ -28,6 +30,7 @@ def test_filter_get_operation_returns_first_result():
 
 @pytest.mark.asyncio
 async def test_filter_get_operation_async_missing_callable():
+    """TODO: Add docstring."""
     operation = FilterGetOperation(
         study_key="STUDY",
         item_id=123,
@@ -40,12 +43,14 @@ async def test_filter_get_operation_async_missing_callable():
 
 
 def test_path_get_operation_not_found_callback():
+    """TODO: Add docstring."""
     client = MagicMock()
     response = MagicMock()
     response.json.return_value = None
     client.get.return_value = response
 
     def raise_not_found() -> None:
+        """TODO: Add docstring."""
         raise NotFoundError("missing")
 
     operation = PathGetOperation(
@@ -59,6 +64,7 @@ def test_path_get_operation_not_found_callback():
 
 
 def test_path_get_operation_calls_parse_func():
+    """TODO: Add docstring."""
     client = MagicMock()
     response = MagicMock()
     response.json.return_value = {"jobId": "1"}

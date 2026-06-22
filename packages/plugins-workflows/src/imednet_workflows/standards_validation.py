@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -9,17 +10,20 @@ from imednet.spi.utils import is_boolean_token, is_missing_value, parse_bool
 
 
 class NormalizationResult(BaseModel):
+    """TODO: Add docstring."""
     normalized_record: dict[str, Any]
     warnings: list[str] = Field(default_factory=list)
 
 
 class CategoricalNormalizer:
+    """TODO: Add docstring."""
     def normalize_record(
         self,
         record: dict[str, Any],
         *,
         terminology_lookups: dict[str, dict[str, str]],
     ) -> NormalizationResult:
+        """TODO: Add docstring."""
         normalized_record: dict[str, Any] = {}
         warnings: list[str] = []
         normalized_lookups = self._normalize_lookups(terminology_lookups)
@@ -41,6 +45,7 @@ class CategoricalNormalizer:
     def _normalize_lookups(
         self, terminology_lookups: dict[str, dict[str, str]]
     ) -> dict[str, dict[str, str]]:
+        """TODO: Add docstring."""
         return {
             field_name: {str(key).strip().upper(): value for key, value in lookup.items()}
             for field_name, lookup in terminology_lookups.items()
@@ -54,6 +59,7 @@ class CategoricalNormalizer:
         normalized_lookups: dict[str, dict[str, str]],
         subject_key: Any,
     ) -> tuple[Any, str | None]:
+        """TODO: Add docstring."""
         lookup = normalized_lookups.get(field_name)
         if lookup and isinstance(raw_value, str):
             lookup_key = raw_value.strip().upper()
@@ -73,6 +79,7 @@ class CategoricalNormalizer:
 
 
 class StandardsReadinessReport(BaseModel):
+    """TODO: Add docstring."""
     score: float
     successfully_validated_fields: int
     total_expected_fields: int
@@ -81,9 +88,11 @@ class StandardsReadinessReport(BaseModel):
 
 
 class StandardsReadinessValidator:
+    """TODO: Add docstring."""
     def __init__(
         self, profile: StandardsProfile, normalizer: CategoricalNormalizer | None = None
     ) -> None:
+        """TODO: Add docstring."""
         self._profile = profile
         self._normalizer = normalizer or CategoricalNormalizer()
 
@@ -93,6 +102,7 @@ class StandardsReadinessValidator:
         records_by_domain: dict[str, list[dict[str, Any]]],
         terminology_lookups: dict[str, dict[str, str]] | None = None,
     ) -> StandardsReadinessReport:
+        """TODO: Add docstring."""
         lookups = terminology_lookups or {}
         warnings: list[str] = []
         violations: list[ValidationViolation] = []

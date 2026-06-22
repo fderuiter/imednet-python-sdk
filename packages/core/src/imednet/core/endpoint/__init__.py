@@ -1,6 +1,4 @@
-"""
-Core endpoint abstractions and protocols.
-"""
+"""Core endpoint abstractions and protocols."""
 
 from .base import AsyncListGetEndpoint, GenericEndpoint, GenericListGetEndpoint, SyncListGetEndpoint
 from .edc_mixin import EdcAsyncListGetEndpoint, EdcGenericListGetEndpoint, EdcSyncListGetEndpoint

@@ -19,11 +19,13 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
     def _get_client_class(self) -> type[httpx.AsyncClient]:
+        """TODO: Add docstring."""
         return httpx.AsyncClient
 
     def _create_executor(
         self, client: httpx.AsyncClient, retry_policy: Optional[RetryPolicy] = None
     ) -> AsyncRequestExecutor:
+        """TODO: Add docstring."""
         return AsyncRequestExecutor(
             send=client.request,
             retries=self.retries,
@@ -33,9 +35,11 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         )
 
     async def __aenter__(self) -> "AsyncClient":
+        """TODO: Add docstring."""
         return self
 
     async def __aexit__(self, exc_type, exc, tb) -> None:
+        """TODO: Add docstring."""
         await self.aclose()
 
     async def aclose(self) -> None:
@@ -43,6 +47,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         await self._client.aclose()
 
     async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+        """TODO: Add docstring."""
         return await self._executor(method, path, **kwargs)
 
     async def get(
@@ -51,6 +56,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:
+        """TODO: Add docstring."""
         return await self._request("GET", path, params=params, **kwargs)
 
     async def post(
@@ -59,4 +65,5 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         json: Optional[Any] = None,
         **kwargs: Any,
     ) -> httpx.Response:
+        """TODO: Add docstring."""
         return await self._request("POST", path, json=json, **kwargs)

@@ -227,7 +227,7 @@ Export Path Decision Matrix
        command for best throughput.
      - :class:`~imednet_workflows.record_mapper.RecordMapper` →
        Parquet staging →
-       :class:`~imednet.integrations.warehouse.SnowflakeExportSink`
+       :class:`~imednet_sinks.warehouse.SnowflakeExportSink`
 
 Data flow diagram
 ~~~~~~~~~~~~~~~~~
@@ -340,7 +340,7 @@ Public API exposure
 
   * :mod:`imednet.integrations.graph`
   * :mod:`imednet.integrations.document`
-  * :mod:`imednet.integrations.warehouse`
+  * :mod:`imednet_sinks.warehouse`
 
 * :mod:`apache_airflow_providers_imednet.export` wraps **only** the
   tabular helpers.  Airflow DAGs that need graph or warehouse sinks should

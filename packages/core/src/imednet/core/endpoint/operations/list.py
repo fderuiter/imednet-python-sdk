@@ -1,5 +1,4 @@
-"""
-Operation for executing list requests.
+"""Operation for executing list requests.
 
 This module encapsulates the logic for fetching and parsing a list of resources
 from the API, handling pagination seamlessly.
@@ -16,8 +15,7 @@ T = TypeVar("T")
 
 
 class ListOperation(Generic[T]):
-    """
-    Operation for executing list requests.
+    """Operation for executing list requests.
 
     Encapsulates the logic for setting up a paginator, iterating through pages,
     and parsing the results.
@@ -30,8 +28,7 @@ class ListOperation(Generic[T]):
         page_size: int,
         parse_func: Callable[[Any], T],
     ) -> None:
-        """
-        Initialize the list operation.
+        """Initialize the list operation.
 
         Args:
             path: The API endpoint path.
@@ -53,8 +50,7 @@ class ListOperation(Generic[T]):
         client: RequestorProtocol,
         paginator_cls: type[Paginator],
     ) -> Iterator[T]:
-        """
-        Execute synchronous list request.
+        """Execute synchronous list request.
 
         Args:
             client: The synchronous HTTP client.
@@ -76,8 +72,7 @@ class ListOperation(Generic[T]):
         client: AsyncRequestorProtocol,
         paginator_cls: type[AsyncPaginator],
     ) -> AsyncIterator[T]:
-        """
-        Execute asynchronous list request.
+        """Execute asynchronous list request.
 
         Args:
             client: The asynchronous HTTP client.
@@ -94,6 +89,7 @@ class ListOperation(Generic[T]):
         )
 
         async def _generator():
+            """TODO: Add docstring."""
             async for item in paginator:
                 yield self._process_item(item)
 

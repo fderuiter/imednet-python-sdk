@@ -9,14 +9,14 @@ if TYPE_CHECKING:
 
 
 class DataExtractionWorkflow:
-    """
-    Provides methods for complex data extraction tasks involving multiple iMednet endpoints.
+    """Provides methods for complex data extraction tasks involving multiple iMednet endpoints.
 
     Args:
         sdk: An instance of the ImednetSDK.
     """
 
     def __init__(self, sdk: "ImednetFacade"):
+        """TODO: Add docstring."""
         self._sdk = sdk
 
     def extract_records_by_criteria(
@@ -27,8 +27,7 @@ class DataExtractionWorkflow:
         visit_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **other_filters: Any,
     ) -> List[Record]:
-        """
-        Extracts records based on criteria spanning subjects, visits, and records.
+        """Extracts records based on criteria spanning subjects, visits, and records.
 
         Args:
             study_key: The key identifying the study.
@@ -94,8 +93,7 @@ class DataExtractionWorkflow:
         user_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **filters: Any,
     ) -> List[RecordRevision]:
-        """
-        Extracts the audit trail (record revisions) based on specified filters.
+        """Extracts the audit trail (record revisions) based on specified filters.
 
         Args:
             study_key: The key identifying the study.

@@ -1,22 +1,28 @@
+"""TODO: Add docstring."""
 import sys
 from types import ModuleType
 
 
 def _setup_airflow(monkeypatch):
+    """TODO: Add docstring."""
     airflow_mod = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_mod = ModuleType("airflow.hooks.base")
     models_mod = ModuleType("airflow.models")
 
     class DummyBaseHook:
+        """TODO: Add docstring."""
         @classmethod
         def get_connection(cls, conn_id):  # pragma: no cover
+            """TODO: Add docstring."""
             raise NotImplementedError
 
     class DummyBaseOperator:
+        """TODO: Add docstring."""
         template_fields = ()
 
         def __init__(self, **kwargs):  # pragma: no cover
+            """TODO: Add docstring."""
             pass
 
     hooks_mod.BaseHook = DummyBaseHook
@@ -33,6 +39,7 @@ def _setup_airflow(monkeypatch):
 
 
 def test_airflow_provider_exports_public_api(monkeypatch):
+    """TODO: Add docstring."""
     _setup_airflow(monkeypatch)
     for mod in [
         "apache_airflow_providers_imednet",

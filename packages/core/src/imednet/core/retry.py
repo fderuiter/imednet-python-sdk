@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -69,6 +70,7 @@ class DefaultRetryPolicy:
     """
 
     def should_retry(self, state: RetryState) -> bool:
+        """TODO: Add docstring."""
         method = (state.method or "").upper()
         is_idempotent = method in IDEMPOTENT_METHODS
 

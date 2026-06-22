@@ -1,5 +1,4 @@
-"""
-Utility functions for building API filter strings.
+"""Utility functions for building API filter strings.
 
 This module provides functionality to construct filter query parameters
 for iMednet API endpoints based on the reference documentation.
@@ -18,7 +17,6 @@ T = TypeVar("T")
 @functools.lru_cache(maxsize=128)
 def _snake_to_camel(text: str) -> str:
     """Convert a snake_case string to camelCase."""
-
     if "_" not in text:
         return text
     parts = text.split("_")
@@ -40,9 +38,7 @@ def _format_filter_value(val: Any) -> str:
 def _build_filter_part(
     key: str, value: Union[Any, Tuple[str, Any], List[Any]], or_connector: str = ","
 ) -> str:
-    """
-    Build a single filter string part from a key and value.
-    """
+    """Build a single filter string part from a key and value."""
     camel_key = _snake_to_camel(key)
     if isinstance(value, tuple) and len(value) == 2:
         op, val = value
@@ -66,14 +62,12 @@ def build_filter_string(
     equality filters joined by ``or_connector``. Conditions are then joined by
     ``and_connector``.
 
-    Examples
-    --------
+    Example:
     >>> from imednet.utils.filters import build_filter_string
     >>> build_filter_string({'age': ('>', 30), 'status': 'active'})
     'age>30;status==active'
     >>> build_filter_string({'type': ['A', 'B']})
     'type==A,type==B'
     """
-
     parts = [_build_filter_part(key, value, or_connector) for key, value in filters.items()]
     return and_connector.join(parts)
