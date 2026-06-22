@@ -8,7 +8,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from imednet import ImednetSDK
-from imednet.integrations.sink_base import SinkConfig, apply_quality_gate, iter_batches
+from imednet.spi import sink_base
 
 from .. import export
 from .._airflow_compat import AirflowException, Context
@@ -85,7 +85,7 @@ class ImednetExportOperator(BaseOperator):
         """Return a defensive copy of export kwargs for mapped task isolation."""
         return dict(self.export_kwargs)
 
-    def _resolve_sink(self, config: SinkConfig) -> Any:
+    def _resolve_sink(self, config: sink_base.SinkConfig) -> Any:
         """Dynamically load and configure the target sink, handling dependencies lazily."""
         dest = self.destination
         if not dest and self.export_func:
@@ -133,7 +133,7 @@ class ImednetExportOperator(BaseOperator):
 
         sink = None
         if not export_callable:
-            config_for_check = SinkConfig()
+            config_for_check = sink_base.SinkConfig()
             sink = self._resolve_sink(config_for_check)
             if not sink:
                 raise AirflowException(
@@ -142,7 +142,7 @@ class ImednetExportOperator(BaseOperator):
 
         sdk = self._get_sdk()
 
-        config = SinkConfig(
+        config = sink_base.SinkConfig(
             batch_size=self.batch_size,
             max_retries=self.max_retries,
             idempotent=self.idempotent,
@@ -160,10 +160,10 @@ class ImednetExportOperator(BaseOperator):
                         study_key=self.study_key, record_data_filter=None
                     )
                     records_list = list(
-                        apply_quality_gate(sdk, self.study_key, raw_records, config)
+                        sink_base.apply_quality_gate(sdk, self.study_key, raw_records, config)
                     )
                     with sink:
-                        for i, batch in enumerate(iter_batches(records_list, config.batch_size)):
+                        for i, batch in enumerate(sink_base.iter_batches(records_list, config.batch_size)):
                             sink.write_batch(batch, batch_id=f"{self.study_key}/batch/{i}")
                 else:
                     # Execution path for legacy tabular functions
