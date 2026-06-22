@@ -58,10 +58,10 @@ def test_imednet_hook_returns_sdk(monkeypatch):
     conn.password = "SEC"
     conn.extra_dejson = {"base_url": "https://example.com"}
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -85,10 +85,10 @@ def test_export_operator_calls_helper(monkeypatch):
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -142,10 +142,10 @@ def test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute(monke
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -187,10 +187,10 @@ def test_export_operator_rejects_unknown_export_callable(monkeypatch):
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -218,10 +218,10 @@ def test_imednet_hook_non_dict_extras(monkeypatch):
     conn.password = "SEC"
     conn.extra_dejson = "not-a-dict"
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -249,10 +249,10 @@ def test_imednet_hook_get_extra_json_fallback(monkeypatch):
         )
     )
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -281,10 +281,10 @@ def test_imednet_hook_extra_json_string_fallback(monkeypatch):
         '{"api_key":"EXTRA_FIELD_KEY","security_key":"EXTRA_FIELD_SEC","base_url":"https://extra"}'
     )
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -309,10 +309,10 @@ def test_imednet_hook_non_string_login(monkeypatch):
     conn.password = "SEC"
     conn.extra_dejson = {"base_url": "https://example.com", "api_key": "FALLBACK_KEY"}
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -337,10 +337,10 @@ def test_imednet_hook_non_string_password(monkeypatch):
         "security_key": "FALLBACK_SEC",
     }
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -365,10 +365,10 @@ def test_imednet_hook_environment_fallback(monkeypatch):
     # Intentionally invalid non-string extras to verify env fallback normalization.
     conn.extra_dejson = {"api_key": 123, "security_key": object(), "base_url": 456}
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -391,10 +391,10 @@ def test_imednet_hook_describe_connection_redacts_credentials(monkeypatch):
     conn.password = "SEC"
     conn.extra_dejson = {"base_url": "https://example.com", "api_key": "EXTRA_KEY"}
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -425,10 +425,10 @@ def test_imednet_hook_prefers_extras_over_environment(monkeypatch):
     conn.password = "LOGIN_SEC"
     conn.extra_dejson = {"api_key": "EXTRA_KEY", "security_key": "EXTRA_SEC"}
 
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
     monkeypatch.setattr(
-        hooks_base.BaseHook,
+        BaseHook,
         "get_connection",
         classmethod(lambda cls, cid: conn),
     )
@@ -715,9 +715,9 @@ def test_export_operator_resolves_snowflake_sink(monkeypatch):
 
     _setup_airflow(monkeypatch)
     conn = MagicMock()
-    import airflow.hooks.base as hooks_base
+    from apache_airflow_providers_imednet._airflow_compat import BaseHook
 
-    monkeypatch.setattr(hooks_base.BaseHook, "get_connection", classmethod(lambda cls, cid: conn))
+    monkeypatch.setattr(BaseHook, "get_connection", classmethod(lambda cls, cid: conn))
 
     # Mock imednet_sinks
     sinks_mock = MagicMock()
