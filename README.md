@@ -44,13 +44,7 @@ The SDK is organized around a core HTTP client layer, endpoint wrappers that mod
 the iMednet API, workflow helpers that combine multiple endpoint calls, and a CLI
 built on top of those pieces.
 
-```mermaid
-graph TD
-    CLI[CLI] --> |invokes| Workflows
-    Workflows --> |coordinate| Endpoints
-    Endpoints --> |use| Client["(HTTP Client)"]
-    Client --> |httpx| API
-```
+See the [Architecture Diagram](docs/diagrams/architecture.mmd) for a visual overview.
 
 For workspace package boundaries (`packages/core`, `packages/plugins-workflows`,
 `packages/providers-airflow`), see [docs/architecture.rst](docs/architecture.rst)

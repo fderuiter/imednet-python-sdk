@@ -1,0 +1,10 @@
+graph TD
+    A[extract_records_by_criteria] --> B[subjects.list]
+    A --> C[visits.list]
+    A --> D[records.list]
+    B --> E{subject keys}
+    C --> F{visit ids}
+    D --> G{apply filters}
+    E --> G
+    F --> G
+    G --> H[return records]

@@ -8,14 +8,7 @@ built on top of those pieces.
 Components
 ----------
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the architecture process.
-
-   graph TD
-       CLI[CLI] --> |invokes| Workflows
-       Workflows --> |coordinate| Endpoints
-       Endpoints --> |use| Client["(HTTP Client)"]
-       Client --> |httpx| API
+.. mermaid:: diagrams/architecture_3.mmd
 
 Core Client
 -----------
@@ -144,30 +137,12 @@ and closes the SDK when finished.
 Data Flow
 ---------
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the architecture process.
-
-   graph LR
-       User --> |runs| CLI
-       User --> |imports| SDK
-       CLI --> |uses| Workflows
-       SDK --> |exposes| Endpoints
-       Workflows --> |call| Endpoints
-       Endpoints --> |delegate| Client
-       Client --> |talks to| API
-       Client --> |uses| Cache["(Caches)"]
+.. mermaid:: diagrams/architecture_4.mmd
 
 Extension Points
 ----------------
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the architecture process.
-
-   graph TD
-       BaseEndpoint --> NewEndpoint[Custom Endpoint]
-       Workflows --> NewWorkflow[Custom Workflow]
-       NewEndpoint --> |register| SDK
-       NewWorkflow --> |expose via| CLI
+.. mermaid:: diagrams/architecture_5.mmd
 
 Adding New Endpoints
 --------------------
@@ -232,23 +207,7 @@ Export Path Decision Matrix
 Data flow diagram
 ~~~~~~~~~~~~~~~~~
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the architecture process.
-
-   graph TD
-       SDK["ImednetSDK"] --> RM["RecordMapper (tabular)"]
-       SDK --> DEW["DataExtractionWorkflow (structured)"]
-
-       RM --> DF["pandas.DataFrame"]
-       DF --> T1["CSV / Excel / JSON"]
-       DF --> T2["SQL / DuckDB"]
-       DF --> T3["Parquet (local)"]
-
-       DEW --> REC["Typed Record list"]
-       REC --> D["MongoDbExportSink"]
-       REC --> G["Neo4jExportSink"]
-
-       T3 --> W["SnowflakeExportSink (COPY INTO)"]
+.. mermaid:: diagrams/architecture_6.mmd
 
 Shared ``ExportSink`` contract
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

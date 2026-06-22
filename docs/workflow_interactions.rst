@@ -7,64 +7,22 @@ automate common tasks. The diagrams below outline the main steps in each workflo
 Data Extraction
 ---------------
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the workflow interactions process.
-
-   graph TD
-       A[extract_records_by_criteria] --> B[subjects.list]
-       A --> C[visits.list]
-       A --> D[records.list]
-       B --> E{subject keys}
-       C --> F{visit ids}
-       D --> G{apply filters}
-       E --> G
-       F --> G
-       G --> H[return records]
+.. mermaid:: diagrams/workflow_interactions_8.mmd
 
 Record Update
 -------------
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the workflow interactions process.
-
-   graph TD
-       A[create_or_update_records] --> B[validate_batch]
-       B --> C[records.create]
-       C --> D{wait?}
-       D -- Yes --> E[JobPoller.run]
-       D -- No --> F[return Job]
-       E --> F
+.. mermaid:: diagrams/workflow_interactions_9.mmd
 
 Subject Data
 ------------
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the workflow interactions process.
-
-   graph TD
-       A[get_all_subject_data] --> B[subjects.list]
-       A --> C[visits.list]
-       A --> D[records.list]
-       A --> E[queries.list]
-       B --> F[aggregate]
-       C --> F
-       D --> F
-       E --> F
-       F --> G[return SubjectComprehensiveData]
+.. mermaid:: diagrams/workflow_interactions_10.mmd
 
 Query Management
 ----------------
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the workflow interactions process.
-
-   graph TD
-       A[get_open_queries] --> B[queries.list]
-       B --> C{Iterate Queries}
-       C --> D{Check latest comment}
-       D -- closed=False --> E[Add to Open list]
-       D -- closed=True --> F[Skip]
-       E --> G[Return open queries]
+.. mermaid:: diagrams/workflow_interactions_11.mmd
 
 Background Sync Worker
 ----------------------
@@ -73,18 +31,7 @@ Background Sync Worker
 synchronisation in a background thread so that the main application thread
 (e.g. a Streamlit rendering loop) never blocks on API calls.
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the workflow interactions process.
-
-   graph TD
-       A[run_forever] --> B{stop_event set?}
-       B -- No --> C[acquire FileLock]
-       C --> D[load_records / delta sync]
-       D --> E[reconcile hard-deletes]
-       E --> F[release FileLock]
-       F --> G[wait interval_seconds]
-       G --> B
-       B -- Yes --> H[log stopped]
+.. mermaid:: diagrams/workflow_interactions_12.mmd
 
 **Concurrency model**
 

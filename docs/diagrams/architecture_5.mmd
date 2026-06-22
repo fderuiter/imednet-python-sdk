@@ -1,0 +1,5 @@
+graph TD
+    BaseEndpoint --> NewEndpoint[Custom Endpoint]
+    Workflows --> NewWorkflow[Custom Workflow]
+    NewEndpoint --> |register| SDK
+    NewWorkflow --> |expose via| CLI
