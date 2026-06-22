@@ -6,6 +6,7 @@ from imednet.models.studies import Study
 
 class StudiesOperationDef:
     """TODO: Add docstring."""
+
     PATH = ""
     MODEL = Study
     _id_param = "studyKey"
@@ -14,9 +15,11 @@ class StudiesOperationDef:
 
 class StudiesEndpoint(StudiesOperationDef, EdcSyncListGetEndpoint[Study]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass
 
 
 class AsyncStudiesEndpoint(StudiesOperationDef, EdcAsyncListGetEndpoint[Study]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass

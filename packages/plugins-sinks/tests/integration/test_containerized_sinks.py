@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import logging
 import os
 from typing import List
@@ -19,11 +20,13 @@ pytestmark = pytest.mark.skipif(
 
 class DriftError(Exception):
     """TODO: Add docstring."""
+
     pass
 
 
 class DriftFailingHandler(logging.Handler):
     """TODO: Add docstring."""
+
     def emit(self, record):
         """TODO: Add docstring."""
         if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
@@ -46,6 +49,7 @@ from dataclasses import dataclass
 @dataclass
 class FakeRecord:
     """TODO: Add docstring."""
+
     record_id: int
     subject_id: str
     subject_key: str
@@ -92,6 +96,7 @@ def mock_record_mapper(monkeypatch, fake_records):
 
     class FakeMapper:
         """TODO: Add docstring."""
+
         def __init__(self, *args, **kwargs):
             """TODO: Add docstring."""
             pass

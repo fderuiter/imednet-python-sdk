@@ -7,6 +7,7 @@ from imednet.models.sites import Site
 
 class SitesOperationDef:
     """TODO: Add docstring."""
+
     PATH = "sites"
     MODEL = Site
     _id_param = "siteId"
@@ -15,9 +16,11 @@ class SitesOperationDef:
 
 class SitesEndpoint(SitesOperationDef, EdcSyncListGetEndpoint[Site]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass
 
 
 class AsyncSitesEndpoint(SitesOperationDef, EdcAsyncListGetEndpoint[Site]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass

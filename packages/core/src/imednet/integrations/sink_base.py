@@ -136,6 +136,7 @@ class ExportSink(ABC):
     """
 
     def __init__(self, config: Optional[SinkConfig] = None) -> None:
+        """Initialize the export sink with a configuration."""
         self.config: SinkConfig = config if config is not None else SinkConfig()
 
     # ------------------------------------------------------------------
@@ -163,12 +164,12 @@ class ExportSink(ABC):
             Caller-supplied idempotency key.  Recommended format:
             ``"<study_key>/<form_key>/<batch_number>"``.
 
-        Returns
+        Returns:
         -------
         int
             Number of records successfully written.
 
-        Raises
+        Raises:
         ------
         ~imednet.errors.ExportBatchError
             When the batch cannot be written after all retries.
@@ -179,7 +180,7 @@ class ExportSink(ABC):
     def flush(self) -> None:
         """Flush any internal buffers to the destination.
 
-        Raises
+        Raises:
         ------
         ~imednet.errors.ExportError
             On flush failure.
@@ -200,6 +201,7 @@ class ExportSink(ABC):
     # ------------------------------------------------------------------
 
     def __enter__(self) -> "ExportSink":
+        """Enter the context manager, returning the sink instance."""
         return self
 
     def __exit__(
@@ -208,6 +210,7 @@ class ExportSink(ABC):
         exc_val: Optional[BaseException],
         exc_tb: Optional[TracebackType],
     ) -> None:
+        """Exit the context manager, flushing and closing the sink."""
         try:
             if exc_type is None:
                 self.flush()
@@ -227,7 +230,7 @@ _URI_USERINFO_RE = re.compile(r"(://)[^@/]+@")
 def _redact_uri(uri: str) -> str:
     """Replace user-info in *uri* with ``***`` to prevent credential leakage.
 
-    Examples
+    Examples:
     --------
     >>> _redact_uri("mongodb://user:pass@localhost:27017/db")
     'mongodb://***@localhost:27017/db'
@@ -248,12 +251,12 @@ def _require_optional_dep(package: str, extras_key: str) -> Any:
         The ``imednet`` extras key that installs the dependency
         (e.g. ``"neo4j"``).
 
-    Returns
+    Returns:
     -------
     types.ModuleType
         The imported module.
 
-    Raises
+    Raises:
     ------
     ImportError
         When *package* is not installed.

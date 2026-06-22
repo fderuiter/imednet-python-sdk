@@ -51,6 +51,7 @@ class WorkflowPluginProtocol(PluginProtocol):
 
 class _BaseSDK:
     """TODO: Add docstring."""
+
     config: Config
 
     def _get_plugin_entry_point(self, name: str) -> EntryPoint | None:
@@ -80,6 +81,7 @@ class _BaseSDK:
 
             class _MissingWorkflows:
                 """TODO: Add docstring."""
+
                 def __getattr__(self, name: str) -> Any:
                     """TODO: Add docstring."""
                     raise ImportError(

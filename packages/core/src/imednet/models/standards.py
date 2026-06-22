@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -10,6 +11,7 @@ from imednet.utils.validators import is_missing_value
 
 class ValidationViolation(BaseModel):
     """TODO: Add docstring."""
+
     field: str
     message: str
     severity: str  # ERROR, WARNING
@@ -17,6 +19,7 @@ class ValidationViolation(BaseModel):
 
 class StandardsProfile:
     """TODO: Add docstring."""
+
     def __init__(
         self,
         *,
@@ -95,6 +98,7 @@ class StandardsProfile:
 
 class GeneralClinicalProfile(StandardsProfile):
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         super().__init__(
@@ -115,6 +119,7 @@ class GeneralClinicalProfile(StandardsProfile):
 
 class DrugSafetyProfile(StandardsProfile):
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         super().__init__(
@@ -131,6 +136,7 @@ class DrugSafetyProfile(StandardsProfile):
 
 class DeviceSafetyProfile(StandardsProfile):
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         super().__init__(
@@ -180,6 +186,7 @@ class DeviceSafetyProfile(StandardsProfile):
 
 class StandardsProfileRegistry:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self._profiles: dict[str, StandardsProfile] = {}

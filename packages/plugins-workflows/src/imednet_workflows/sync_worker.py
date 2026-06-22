@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import logging
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass(slots=True)
 class SyncWorkerConfig:
     """TODO: Add docstring."""
+
     study_key: str
     interval_seconds: int = 900
     reconcile: bool = True

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from .charts import PALETTE, bar_chart, line_chart, pie_chart, render_accessible_chart

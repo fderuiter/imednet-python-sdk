@@ -186,6 +186,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
 class SyncListGetEndpoint(_ListGetEndpointBase[T]):
     """TODO: Add docstring."""
+
     def __init__(
         self,
         client: RequestorProtocol,
@@ -256,6 +257,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
 
 class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
     """TODO: Add docstring."""
+
     def __init__(
         self,
         async_client: AsyncRequestorProtocol,

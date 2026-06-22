@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import json
 import os
 import pathlib
@@ -128,6 +129,7 @@ except Exception:
 
 class ModelEngine:
     """TODO: Add docstring."""
+
     @classmethod
     def get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
         """TODO: Add docstring."""

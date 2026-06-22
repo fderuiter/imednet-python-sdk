@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import logging
 
 try:  # python-json-logger >= 3.0

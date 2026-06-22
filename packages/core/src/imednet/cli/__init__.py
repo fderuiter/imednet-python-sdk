@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import subprocess
@@ -141,6 +142,7 @@ def _exit_missing_dashboard_plugin() -> NoReturn:
 
 def _register_missing_dashboard_commands() -> None:
     """TODO: Add docstring."""
+
     @app.command("dashboard")
     def missing_dashboard() -> None:
         """Launch the iMednet Streamlit reporting dashboard (requires imednet-streamlit plugin)."""

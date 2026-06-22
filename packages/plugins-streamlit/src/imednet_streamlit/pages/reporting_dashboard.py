@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -46,6 +47,7 @@ _TEMPLATES: dict[str, list[str]] = {
 @dataclass(frozen=True)
 class _AppliedFilters:
     """TODO: Add docstring."""
+
     site_filter: list[str]
     subject_filter: list[str]
     severity_filter: list[str]

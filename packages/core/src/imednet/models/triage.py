@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -12,6 +13,7 @@ from imednet.models.json_base import JsonModel
 
 class TriageStatus(str, Enum):
     """TODO: Add docstring."""
+
     NEW = "NEW"
     UNDER_REVIEW = "UNDER_REVIEW"
     RESOLVED = "RESOLVED"

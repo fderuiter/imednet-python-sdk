@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from typing import Any, List, Literal, Optional, Union
@@ -53,12 +54,14 @@ class BaseFieldProps(BaseModel):
 
 class TableProps(BaseModel):
     """TODO: Add docstring."""
+
     type: Literal["table"]
     columns: int
 
 
 class LabelProps(BaseModel):
     """TODO: Add docstring."""
+
     type: Literal["label"]
     label: str
     label_id: Optional[str] = None
@@ -69,6 +72,7 @@ class LabelProps(BaseModel):
 
 class SeparatorProps(BaseModel):
     """TODO: Add docstring."""
+
     type: Literal["sep"]
     septype: int
     label: Optional[str] = None
@@ -76,6 +80,7 @@ class SeparatorProps(BaseModel):
 
 class ExtQuestionProps(BaseModel):
     """TODO: Add docstring."""
+
     type: Literal["ext_question"]
     ext_source: Literal["interval", "form"]
     label: str
@@ -87,6 +92,7 @@ class ExtQuestionProps(BaseModel):
 
 class TextFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["text"]
     length: Union[str, int]
     columns: Optional[Union[str, int]] = None
@@ -94,6 +100,7 @@ class TextFieldProps(BaseFieldProps):
 
 class NumberFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["number"]
     length: Union[str, int]
     columns: Optional[Union[str, int]] = None
@@ -103,6 +110,7 @@ class NumberFieldProps(BaseFieldProps):
 
 class MemoFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["memo"]
     length: Union[str, int]
     columns: Union[str, int]
@@ -111,6 +119,7 @@ class MemoFieldProps(BaseFieldProps):
 
 class RadioFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["radio"]
     choices: List[Choice]
     radio: Optional[int] = None  # Layout: 1=Vertical, 2=Horizontal
@@ -118,6 +127,7 @@ class RadioFieldProps(BaseFieldProps):
 
 class DropdownFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["dropdown"]
     choices: List[Choice]
     lab_condition: Optional[str] = None
@@ -129,12 +139,14 @@ class DropdownFieldProps(BaseFieldProps):
 
 class CheckboxFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["checkbox"]
     choices: Optional[List[Choice]] = None
 
 
 class FileUploadProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["upload"]
     mfs: int  # Multi-File Support
     max_files: Union[str, int]
@@ -142,6 +154,7 @@ class FileUploadProps(BaseFieldProps):
 
 class DateTimeFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["datetime"]
     time_ctrl: Optional[int] = None  # 1 = Show Time
     date_ctrl: Optional[int] = None  # 1 = Show Date
@@ -157,6 +170,7 @@ class DateTimeFieldProps(BaseFieldProps):
 
 class PrecisionDateFieldProps(BaseFieldProps):
     """TODO: Add docstring."""
+
     type: Literal["precisiondate"]
 
     # Components Enabled

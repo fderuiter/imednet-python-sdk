@@ -6,6 +6,7 @@ from imednet.models.record_revisions import RecordRevision
 
 class RecordRevisionsOperationDef:
     """TODO: Add docstring."""
+
     PATH = "recordRevisions"
     MODEL = RecordRevision
     _id_param = "recordRevisionId"
@@ -13,6 +14,7 @@ class RecordRevisionsOperationDef:
 
 class RecordRevisionsEndpoint(RecordRevisionsOperationDef, EdcSyncListGetEndpoint[RecordRevision]):  # type: ignore[misc]
     """TODO: Add docstring."""
+
     pass
 
 
@@ -20,4 +22,5 @@ class AsyncRecordRevisionsEndpoint(  # type: ignore[misc]
     RecordRevisionsOperationDef, EdcAsyncListGetEndpoint[RecordRevision]
 ):
     """TODO: Add docstring."""
+
     pass

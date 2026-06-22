@@ -13,6 +13,7 @@ except ImportError:  # pragma: no cover - exercised when optional dependency is 
 
 class _ModelDumpable(Protocol):
     """TODO: Add docstring."""
+
     def model_dump(self) -> Dict[str, Any]: ...
 
 

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict
@@ -26,6 +27,7 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
 
         class _FallbackAirflowError(Exception):
             """TODO: Add docstring."""
+
             pass
 
         AirflowException = _FallbackAirflowError

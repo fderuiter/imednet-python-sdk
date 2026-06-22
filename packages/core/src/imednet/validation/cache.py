@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from typing import (
@@ -101,6 +102,7 @@ class BaseSchemaCache(Generic[_TClient]):
 
 class SchemaCache(BaseSchemaCache["ImednetFacade"]):
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         super().__init__(is_async=False)
@@ -108,6 +110,7 @@ class SchemaCache(BaseSchemaCache["ImednetFacade"]):
 
 class AsyncSchemaCache(BaseSchemaCache["AsyncImednetFacade"]):
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         super().__init__(is_async=True)

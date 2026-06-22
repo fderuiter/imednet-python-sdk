@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import re
@@ -353,6 +354,7 @@ class TriageStore:
 
     def assign_item(self, item_id: str, assignee: str) -> None:
         """TODO: Add docstring."""
+
         def _write(conn: sqlite3.Connection) -> None:
             """TODO: Add docstring."""
             cursor = conn.execute(

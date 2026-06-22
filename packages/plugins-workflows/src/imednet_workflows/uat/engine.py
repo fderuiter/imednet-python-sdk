@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import logging
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class EditCheckResultStatus(str, Enum):
     """TODO: Add docstring."""
+
     PASS = "Pass"
     FAIL = "Fail"
     ERROR = "Error"
@@ -24,6 +26,7 @@ class EditCheckResultStatus(str, Enum):
 @dataclass
 class EditCheckVerificationReport:
     """TODO: Add docstring."""
+
     study_key: str
     total_rules: int = 0
     passed_rules: int = 0
