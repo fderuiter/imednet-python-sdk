@@ -157,8 +157,8 @@ jobs:
 
       - name: Security Audit (pip-audit)
         run: |
-          pip install --upgrade pip
-          pip install pip-audit
+          python -m pip install --upgrade pip
+          python -m pip install pip-audit
           for i in 1 2 3; do
             pip-audit -s osv --timeout 60 && exit 0
             echo "Attempt $i failed. Retrying in 10s..."
@@ -173,7 +173,7 @@ jobs:
 
       - name: Semantic Static Analysis (Semgrep)
         run: |
-          pip install semgrep
+          python -m pip install semgrep
           semgrep scan --config auto --error packages/${{ matrix.package }}
 
   # ------------------------------------------------------------------
