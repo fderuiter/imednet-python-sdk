@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import types
-from typing import Mapping, Type
+from typing import Any, Mapping, Type
 
 from .api import (
     ApiError,
@@ -29,11 +29,21 @@ STATUS_TO_ERROR: Mapping[int, Type[ApiError]] = types.MappingProxyType(
 )
 
 
-def get_error_class(status_code: int) -> Type[ApiError]:
+def get_error_class(status_code: int, response_body: Any = None) -> Type[ApiError]:
     """Get error class for status code.
 
     Defaults to generic ApiError for unmapped client/server errors.
     """
+    if isinstance(response_body, dict):
+        status = response_body.get("status")
+        # Identify specific subclasses based on metadata
+        if status_code == 400 and status == "validation_error":
+            from .validation import ValidationError
+            return ValidationError
+        if status_code == 401 and status == "authentication_failed":
+            from .api import AuthenticationError
+            return AuthenticationError
+
     error_cls = STATUS_TO_ERROR.get(status_code)
     if error_cls:
         return error_cls
