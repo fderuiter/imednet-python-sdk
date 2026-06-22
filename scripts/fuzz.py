@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import csv
 import json
 import logging
@@ -36,6 +37,7 @@ with atheris.instrument_imports():
 # Dummy config for Snowflake
 class DummyConfig:
     """TODO: Add docstring."""
+
     batch_size = 100
     idempotent = True
 
@@ -95,6 +97,7 @@ def fuzz_warehouse_transformation(data: bytes):
         # Mock class for records
         class DummyRecord:
             """TODO: Add docstring."""
+
             def __init__(self, d):
                 """TODO: Add docstring."""
                 self.record_id = str(d.get("id", "1"))
