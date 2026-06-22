@@ -1,0 +1,11 @@
+graph TD
+    SDK["ImednetSDK"] --> RM["RecordMapper (tabular)"]
+    SDK --> DEW["DataExtractionWorkflow (structured)"]
+    RM --> DF["pandas.DataFrame"]
+    DF --> T1["CSV / Excel / JSON"]
+    DF --> T2["SQL / DuckDB"]
+    DF --> T3["Parquet (local)"]
+    DEW --> REC["Typed Record list"]
+    REC --> D["MongoDbExportSink"]
+    REC --> G["Neo4jExportSink"]
+    T3 --> W["SnowflakeExportSink (COPY INTO)"]

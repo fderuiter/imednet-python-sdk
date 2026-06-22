@@ -1,0 +1,9 @@
+graph LR
+    User --> |runs| CLI
+    User --> |imports| SDK
+    CLI --> |uses| Workflows
+    SDK --> |exposes| Endpoints
+    Workflows --> |call| Endpoints
+    Endpoints --> |delegate| Client
+    Client --> |talks to| API
+    Client --> |uses| Cache["(Caches)"]

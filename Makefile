@@ -1,4 +1,4 @@
-.PHONY: docs doctest test-containers apidocs
+.PHONY: docs doctest test-containers apidocs validate-diagrams
 
 SPHINXOPTS    ?= -W --keep-going
 SPHINXBUILD   ?= sphinx-build
@@ -26,7 +26,11 @@ apidocs:
 	SPHINX_APIDOC_OPTIONS="members,show-inheritance" poetry run $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-workflows/src/imednet_workflows -f -M --tocfile imednet_workflows_api
 	SPHINX_APIDOC_OPTIONS="members,show-inheritance" poetry run $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-streamlit/src/imednet_streamlit -f -M --tocfile imednet_streamlit_api
 
-docs: apidocs
+validate-diagrams:
+	@echo "Validating mermaid diagrams..."
+	poetry run python scripts/validate_diagrams.py
+
+docs: apidocs validate-diagrams
 	@echo "Building HTML..."
 	poetry run $(SPHINXBUILD) -b html $(SPHINXOPTS) docs docs/_build/html
 
