@@ -277,6 +277,7 @@ def test_export_csv_calls_helper(
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_csv", func)
     monkeypatch.setattr(cli, "export_to_csv", export_mod.export_to_csv)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     result = runner.invoke(cli.app, ["export", "csv", "STUDY", "out.csv"])
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "out.csv")
@@ -289,6 +290,7 @@ def test_export_excel_calls_helper(
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_excel", func)
     monkeypatch.setattr(cli, "export_to_excel", export_mod.export_to_excel)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     result = runner.invoke(cli.app, ["export", "excel", "STUDY", "out.xlsx"])
     assert result.exit_code == 0
     func.assert_called_once_with(sdk, "STUDY", "out.xlsx")
@@ -361,6 +363,7 @@ def test_export_sql_calls_helper_non_sqlite(
     form_func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_sql", func)
     monkeypatch.setattr(export_mod, "export_to_sql_by_form", form_func)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
     monkeypatch.setattr(cli, "export_to_sql", export_mod.export_to_sql)
     monkeypatch.setattr(cli, "export_to_sql_by_form", export_mod.export_to_sql_by_form)
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
