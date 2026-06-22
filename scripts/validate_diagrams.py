@@ -1,11 +1,15 @@
+"""Script to validate mermaid diagram references."""
+
+import ast
 import os
 import re
-import ast
 import sys
+
 import yaml
 
 
 def get_code_symbols(search_dirs):
+    """Extract code symbols from given directories."""
     symbols = set()
     for directory in search_dirs:
         for root, _, files in os.walk(directory):
@@ -29,6 +33,7 @@ def get_code_symbols(search_dirs):
 
 
 def get_facade_signatures():
+    """Return explicit facade signatures."""
     return {
         "subjects.list",
         "subjects.get",
@@ -43,12 +48,14 @@ def get_facade_signatures():
 
 
 def clean_label(label):
+    """Clean the label by removing parentheses."""
     c = re.sub(r'\(.*?\)', '', label).strip()
     c = c.replace('?', '').strip()
     return c
 
 
 def main():
+    """Run the diagram validation."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     docs_dir = os.path.join(base_dir, "docs", "diagrams")
     registry_path = os.path.join(docs_dir, "registry.yaml")
