@@ -32,6 +32,7 @@ Note:
 
 # Add package source roots so API modules can be imported for docs builds.
 sys.path[:0] = [
+    os.path.abspath("."),
     os.path.abspath("../packages/core/src"),
     os.path.abspath("../packages/providers-airflow/src"),
     os.path.abspath("../packages/plugins-workflows/src"),
@@ -75,6 +76,7 @@ extensions = [
     "sphinxcontrib.mermaid",
     "sphinx_click",
     "sphinx.ext.doctest",
+    "ext_config",
 ]
 
 autosummary_generate = False

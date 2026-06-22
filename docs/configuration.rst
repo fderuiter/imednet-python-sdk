@@ -5,40 +5,23 @@ The SDK and CLI read settings from environment variables. They can be set in the
 shell or stored in a ``.env`` file that the CLI loads automatically via
 :func:`dotenv.load_dotenv`.
 
-Environment Variables
----------------------
+Core Variables
+--------------
 
-.. list-table::
-   :header-rows: 1
-   :widths: 25 50 15
+.. config-schema::
+   :category: Core
 
-   * - Variable
-     - Description
-     - Default
-   * - IMEDNET_API_KEY
-     - API key used for authentication.
-     - None
-   * - IMEDNET_SECURITY_KEY
-     - Security key used for authentication.
-     - None
-   * - IMEDNET_BASE_URL
-     - Optional base URL for private deployments.
-     - None
-   * - IMEDNET_STUDY_KEY
-     - Study identifier used by examples and some tests.
-     - None
-   * - IMEDNET_RUN_E2E
-     - Set to ``1`` to enable end-to-end tests that hit a live environment.
-     - None
-   * - IMEDNET_BATCH_ID
-     - Batch identifier used by job polling tests. Created automatically if unset.
-     - None
-   * - IMEDNET_FORM_KEY
-     - Form key for record-creation tests. If unset, the first form is used.
-     - None
-   * - IMEDNET_ALLOW_MUTATION
-     - Set to ``1`` to allow workflow tests that submit data.
-     - None
+Plugin Configuration
+--------------------
+
+.. config-schema::
+   :category: Plugins
+
+Developer and Advanced Configuration
+------------------------------------
+
+.. config-schema::
+   :category: Test
 
 Using a .env File
 -----------------
