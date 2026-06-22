@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import os
@@ -29,6 +30,7 @@ Example:
 
 class RateLimitServerRetry(RetryPolicy):
     """TODO: Add docstring."""
+
     def should_retry(self, state: RetryState) -> bool:
         """TODO: Add docstring."""
         if isinstance(state.exception, (RateLimitError, ServerError)):
@@ -55,6 +57,7 @@ def responder(_: httpx.Request) -> httpx.Response:
 
 class MockClient(Client):
     """TODO: Add docstring."""
+
     def _create_client(self, auth: AuthStrategy) -> httpx.Client:
         """TODO: Add docstring."""
         return httpx.Client(

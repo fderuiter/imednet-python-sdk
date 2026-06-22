@@ -16,14 +16,17 @@ def test_dag_runs(monkeypatch, tmp_path):
 
     from apache_airflow_providers_imednet import ImednetJobSensor, ImednetExportOperator  # noqa: E402, I001
 
-    
     sdk = MagicMock()
-    
+
     import pandas as pd
+
     df = pd.DataFrame({"id": [1, 2]})
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
     from imednet.integrations import export as export_mod
-    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
+
+    monkeypatch.setattr(
+        export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
+    )
 
     sdk.jobs.get.return_value = SimpleNamespace(state="COMPLETED")
     monkeypatch.setattr(ImednetExportOperator, "_get_sdk", lambda self: sdk)
