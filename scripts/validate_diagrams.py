@@ -35,18 +35,19 @@ def clean_label(label):
     return c
 
 def main():
-    docs_dir = "/app/docs/diagrams"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    docs_dir = os.path.join(base_dir, "docs", "diagrams")
     registry_path = os.path.join(docs_dir, "registry.yaml")
     
     with open(registry_path, "r") as f:
         registry = yaml.safe_load(f) or {}
 
     search_dirs = [
-        "/app/packages/core/src/imednet",
-        "/app/packages/plugins-workflows/src/imednet_workflows",
-        "/app/packages/providers-airflow/src/apache_airflow_providers_imednet",
-        "/app/packages/plugins-sinks/src",
-        "/app/packages/plugins-streamlit/src"
+        os.path.join(base_dir, "packages", "core", "src", "imednet"),
+        os.path.join(base_dir, "packages", "plugins-workflows", "src", "imednet_workflows"),
+        os.path.join(base_dir, "packages", "providers-airflow", "src", "apache_airflow_providers_imednet"),
+        os.path.join(base_dir, "packages", "plugins-sinks", "src"),
+        os.path.join(base_dir, "packages", "plugins-streamlit", "src")
     ]
     code_symbols = get_code_symbols(search_dirs)
     facade_sigs = get_facade_signatures()
