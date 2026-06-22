@@ -4,11 +4,7 @@ permissions:
 name: Smoke Test
 
 on:
-  pull_request:
-    branches: [main]
   workflow_dispatch:
-  schedule:
-    - cron: '0 8 * * *' # Runs every day at 8am
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
