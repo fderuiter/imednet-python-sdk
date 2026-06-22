@@ -28,7 +28,7 @@ apidocs:
 
 validate-diagrams:
 	@echo "Validating mermaid diagrams..."
-	poetry run python scripts/validate_diagrams.py
+	python scripts/validate_diagrams.py
 
 docs: apidocs validate-diagrams
 	@echo "Building HTML..."
