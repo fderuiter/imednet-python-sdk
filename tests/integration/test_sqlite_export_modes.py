@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
+from pathlib import Path
 from typer.testing import CliRunner
 
 import imednet.cli as cli
@@ -65,27 +66,27 @@ def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     return mock_to_sql
 
 
-def test_default_sqlite_mode_splits_by_form(sqlite_env, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_default_sqlite_mode_splits_by_form(sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """TODO: Add docstring."""
     _setup_per_form_mapper(monkeypatch)
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        result = runner.invoke(
-            cli.app,
-            ["export", "sql", "STUDY", "unused", "sqlite:///db.sqlite"],
-        )
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "unused", "sqlite:///db.sqlite"],
+    )
     assert result.exit_code == 0
 
 
-def test_single_table_mode_chunks(sqlite_env, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_single_table_mode_chunks(sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """TODO: Add docstring."""
     mock_to_sql = _setup_single_table_mapper(monkeypatch)
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        result = runner.invoke(
-            cli.app,
-            ["export", "sql", "STUDY", "table", "sqlite:///db.sqlite", "--single-table"],
-        )
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(
+        cli.app,
+        ["export", "sql", "STUDY", "table", "sqlite:///db.sqlite", "--single-table"],
+    )
     assert result.exit_code == 0
     assert mock_to_sql.call_count == 2
     calls = mock_to_sql.call_args_list

@@ -43,7 +43,7 @@ def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "study1" in result.stdout
 
 
-def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """TODO: Add docstring."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
@@ -55,10 +55,10 @@ def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch) -> None:
     sdk.records.list.return_value = [record]
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
 
-    with runner.isolated_filesystem():
-        result = runner.invoke(cli.app, ["records", "list", "ST", "--output", "csv"])
-        assert result.exit_code == 0
-        assert Path("records.csv").exists()
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(cli.app, ["records", "list", "ST", "--output", "csv"])
+    assert result.exit_code == 0
+    assert Path("records.csv").exists()
     sdk.records.list.assert_called_once_with("ST")
 
 
