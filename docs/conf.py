@@ -1,3 +1,4 @@
+"""Sphinx configuration."""
 # Configuration file for the Sphinx documentation builder.
 import logging
 import os
@@ -46,9 +47,11 @@ if "pandas" not in sys.modules:
     pandas_stub = types.ModuleType("pandas")
 
     class DataFrame:  # pragma: no cover - simple stub
+        """Dummy DataFrame class."""
         pass
 
     def json_normalize(*args: Any, **kwargs: Any) -> DataFrame:  # type: ignore
+        """Dummy json_normalize function."""
         return DataFrame()
 
     pandas_stub.DataFrame = DataFrame
