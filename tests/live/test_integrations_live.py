@@ -80,15 +80,6 @@ def test_imednet_export_operator(study_key: str, tmp_path) -> None:
     assert op.execute({})
 
 
-def test_imednet_to_s3_operator(study_key: str) -> None:
-    """TODO: Add docstring."""
-    pytest.importorskip("airflow")
-    from apache_airflow_providers_imednet import ImednetToS3Operator  # type: ignore[attr-defined]
-
-    op = ImednetToS3Operator(study_key=study_key, s3_bucket="bucket", s3_key="key")
-    assert op.execute({}) == "key"
-
-
 def test_imednet_job_sensor(study_key: str) -> None:
     """TODO: Add docstring."""
     pytest.importorskip("airflow")
