@@ -44,7 +44,5 @@ jobs:
               packages+=("-e" "$package")
             fi
           done
-          if [ ${#packages[@]} -gt 0 ]; then
-            python -m pip install "${packages[@]}"
-          fi
-          python -m pip install -e ".[dev,docs]" 
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
