@@ -79,7 +79,7 @@ def main():
                 if line.startswith("%%") or line.startswith("graph ") or line.startswith("subgraph ") or line == "end" or line.startswith("Note ") or line.startswith("activate ") or line.startswith("deactivate ") or line.startswith("sequenceDiagram"):
                     continue
                 
-                parts = re.split(r'-->|---|==>|<-->|<--|-.->|->>', line)
+                parts = re.split(r'--!?>|---|==>|<--!?>|<--|-.->|->>', line)
                 if len(parts) == 1 and not re.search(r'\[|\(', line): 
                     # Probably not a node definition
                     continue
