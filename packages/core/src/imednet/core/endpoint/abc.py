@@ -12,8 +12,7 @@ T = TypeVar("T", bound=JsonModel)
 
 
 class EndpointABC(ABC, ClientProvider, Generic[T]):
-    """
-    Abstract base class defining the contract for all API endpoints.
+    """Abstract base class defining the contract for all API endpoints.
 
     This ensures that all endpoint implementations provide necessary
     properties like PATH and MODEL, and implement core path building logic.
@@ -45,16 +44,16 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
 
     @abstractmethod
     def _build_path(self, *segments: Any) -> str:
-        """
-        Build the full API path given segments.
+        """Build the full API path given segments.
+
         Must be implemented by the base endpoint logic.
         """
         pass
 
     @abstractmethod
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Apply automatic filters (e.g., default study key).
+        """Apply automatic filters (e.g., default study key).
+
         Must be implemented by the base endpoint logic.
         """
         pass
@@ -70,9 +69,7 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
             )
 
     def _get_endpoint_path(self, study_key: Optional[str], *extra_segments: Any) -> str:
-        """
-        Build the endpoint path with optional study key and extra segments.
-        """
+        """Build the endpoint path with optional study key and extra segments."""
         self._validate_study_key(study_key)
         segments = []
         if self.requires_study_key:
@@ -83,9 +80,7 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
         return self._build_path(*segments)
 
     def _raise_not_found(self, study_key: Optional[str], item_id: Any = None) -> None:
-        """
-        Raise a standardized NotFoundError.
-        """
+        """Raise a standardized NotFoundError."""
         from imednet.errors import NotFoundError
 
         msg_parts = [f"{self.MODEL.__name__}"]

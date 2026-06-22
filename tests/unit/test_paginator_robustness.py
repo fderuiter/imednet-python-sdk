@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import Mock
 
 import pytest
@@ -7,18 +8,21 @@ from imednet.errors import PaginationError
 
 
 class MockClient:
+    """TODO: Add docstring."""
     def __init__(self, response_data):
+        """TODO: Add docstring."""
         self.response_data = response_data
 
     def get(self, path, params=None):
+        """TODO: Add docstring."""
         response = Mock()
         response.json.return_value = self.response_data
         return response
 
 
 def test_paginator_raises_type_error_on_list_response():
-    """
-    Test that the Paginator raises a helpful TypeError when the API returns a list
+    """Test that the Paginator raises a helpful TypeError when the API returns a list.
+
     instead of the expected dictionary structure.
     """
     client = MockClient(["item1", "item2"])
@@ -29,8 +33,8 @@ def test_paginator_raises_type_error_on_list_response():
 
 
 def test_paginator_raises_type_error_on_scalar_response():
-    """
-    Test that the Paginator raises a helpful TypeError when the API returns a scalar
+    """Test that the Paginator raises a helpful TypeError when the API returns a scalar.
+
     (e.g. string) instead of the expected dictionary structure.
     """
     client = MockClient("unexpected string")
@@ -41,8 +45,8 @@ def test_paginator_raises_type_error_on_scalar_response():
 
 
 def test_paginator_raises_type_error_on_invalid_data_key():
-    """
-    Test that the Paginator raises a helpful TypeError when the data key in the response
+    """Test that the Paginator raises a helpful TypeError when the data key in the response.
+
     is not a list.
     """
     # unexpected: 'data' is a dict, not a list
@@ -54,8 +58,8 @@ def test_paginator_raises_type_error_on_invalid_data_key():
 
 
 def test_paginator_raises_type_error_on_invalid_pagination_field():
-    """
-    Test that the Paginator raises a helpful TypeError when the pagination key in the response
+    """Test that the Paginator raises a helpful TypeError when the pagination key in the response.
+
     is not a dictionary.
     """
     # unexpected: 'pagination' is a string, not a dict
@@ -68,8 +72,8 @@ def test_paginator_raises_type_error_on_invalid_pagination_field():
 
 
 def test_paginator_infinite_loop_protection():
-    """
-    Test that the Paginator halts if totalPages is returned as a string,
+    """Test that the Paginator halts if totalPages is returned as a string,.
+
     preventing an exception when calculating `total_pages - 1` and ensuring we don't
     get stuck in an infinite loop due to a badly typed response.
     """
@@ -81,8 +85,8 @@ def test_paginator_infinite_loop_protection():
 
 
 def test_paginator_returns_empty_list_on_null_data():
-    """
-    Test that when the expected data key maps to None rather than a list,
+    """Test that when the expected data key maps to None rather than a list,.
+
     the Paginator handles it safely (interprets as an empty list).
     """
     client = MockClient({"data": None})

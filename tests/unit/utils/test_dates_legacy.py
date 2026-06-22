@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
@@ -15,8 +16,8 @@ def force_legacy_dates():
 
 @pytest.mark.unit
 class TestLegacyDateParsing:
-    """
-    Tests for `parse_iso_datetime` running in legacy mode (Python < 3.11 simulation).
+    """Tests for `parse_iso_datetime` running in legacy mode (Python < 3.11 simulation).
+
     This ensures the manual padding, truncation, and 'Z' handling logic is correct.
     """
 

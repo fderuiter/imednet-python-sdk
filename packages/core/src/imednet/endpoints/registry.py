@@ -1,5 +1,4 @@
-"""
-Registry for all available API endpoints.
+"""Registry for all available API endpoints.
 
 This module decouples the endpoint implementations from the main SDK class,
 allowing for easier extension and maintenance.

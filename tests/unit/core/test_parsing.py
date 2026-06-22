@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from typing import Any, Dict
 
 from pydantic import BaseModel
@@ -6,20 +7,24 @@ from imednet.core.parsing import ModelParser, get_model_parser
 
 
 class BasicModel(BaseModel):
+    """TODO: Add docstring."""
     id: int
     name: str
 
 
 class CustomModel(BaseModel):
+    """TODO: Add docstring."""
     id: int
     name: str
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> "CustomModel":
+        """TODO: Add docstring."""
         return cls(id=data["id"], name=data["name"] + " (parsed)")
 
 
 def test_get_model_parser_pydantic_fallback():
+    """TODO: Add docstring."""
     parser = get_model_parser(BasicModel)
     data = {"id": 1, "name": "Test"}
     model = parser(data)
@@ -29,6 +34,7 @@ def test_get_model_parser_pydantic_fallback():
 
 
 def test_get_model_parser_custom_method():
+    """TODO: Add docstring."""
     parser = get_model_parser(CustomModel)
     data = {"id": 1, "name": "Test"}
     model = parser(data)
@@ -38,6 +44,7 @@ def test_get_model_parser_custom_method():
 
 
 def test_model_parser_parse():
+    """TODO: Add docstring."""
     parser = ModelParser(BasicModel)
     data = {"id": 1, "name": "Test"}
     model = parser.parse(data)
@@ -47,6 +54,7 @@ def test_model_parser_parse():
 
 
 def test_model_parser_parse_many():
+    """TODO: Add docstring."""
     parser = ModelParser(CustomModel)
     data = [{"id": 1, "name": "Test1"}, {"id": 2, "name": "Test2"}]
     models = parser.parse_many(data)

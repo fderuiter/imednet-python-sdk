@@ -1,6 +1,4 @@
-"""
-Request monitoring and tracing.
-"""
+"""Request monitoring and tracing."""
 
 from __future__ import annotations
 
@@ -27,6 +25,7 @@ class RequestMonitor:
     """Helper to handle request monitoring (tracing, timing, logging)."""
 
     def __init__(self, tracer: Optional[Tracer], method: str, url: str) -> None:
+        """TODO: Add docstring."""
         self.tracer = tracer
         self.method = method
         self.safe_url = redact_url_query(url)
@@ -35,6 +34,7 @@ class RequestMonitor:
         self._cm: Any = None
 
     def _create_cm(self) -> Any:
+        """TODO: Add docstring."""
         if self.tracer:
             return self.tracer.start_as_current_span(
                 "http_request",
@@ -43,16 +43,19 @@ class RequestMonitor:
         return nullcontext()
 
     def __enter__(self) -> "RequestMonitor":
+        """TODO: Add docstring."""
         self._cm = self._create_cm()
         self.span = self._cm.__enter__()
         self.start_time = time.monotonic()
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """TODO: Add docstring."""
         if self._cm:
             self._cm.__exit__(exc_type, exc_val, exc_tb)
 
     async def __aenter__(self) -> "RequestMonitor":
+        """TODO: Add docstring."""
         self._cm = self._create_cm()
         # Handle async context managers if the tracer supports them
         if hasattr(self._cm, "__aenter__"):
@@ -63,6 +66,7 @@ class RequestMonitor:
         return self
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """TODO: Add docstring."""
         if self._cm:
             if hasattr(self._cm, "__aexit__"):
                 await self._cm.__aexit__(exc_type, exc_val, exc_tb)
@@ -70,6 +74,7 @@ class RequestMonitor:
                 self._cm.__exit__(exc_type, exc_val, exc_tb)
 
     def on_success(self, response: httpx.Response) -> None:
+        """TODO: Add docstring."""
         latency = time.monotonic() - self.start_time
         logger.info(
             "http_request",
@@ -84,6 +89,7 @@ class RequestMonitor:
             self.span.set_attribute("status_code", response.status_code)
 
     def on_retry_error(self, e: RetryError) -> NoReturn:
+        """TODO: Add docstring."""
         logger.error(
             "Request failed after retries",
             extra={"method": self.method, "url": self.safe_url},

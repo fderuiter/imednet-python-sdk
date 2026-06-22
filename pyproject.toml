@@ -62,11 +62,14 @@ src = ["packages/core/src", "packages/plugins-workflows/src", "packages/provider
 known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet", "imednet_streamlit"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "SLF"]
-ignore = ["D", "ANN", "S101", "E501", "E402", "E701", "E713", "F401", "F403", "F405", "N802", "F841", "F811"]
+select = ["E", "F", "I", "N", "SLF", "D"]
+ignore = ["ANN", "S101", "E501", "E402", "E701", "E713", "F401", "F403", "F405", "N802", "F841", "F811"]
 
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["field_validator", "model_validator"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.doc8]
 max_line_length = 400

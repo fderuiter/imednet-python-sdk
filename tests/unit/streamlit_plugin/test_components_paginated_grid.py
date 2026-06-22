@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -10,12 +11,15 @@ from imednet_streamlit.components.paginated_grid import top_n_with_other
 
 
 class _FakeColumn:
+    """TODO: Add docstring."""
     def __init__(self, *, next_click: bool = False, prev_click: bool = False) -> None:
+        """TODO: Add docstring."""
         self._next_click = next_click
         self._prev_click = prev_click
         self.captions: list[str] = []
 
     def button(self, label: str, **kwargs: Any) -> bool:
+        """TODO: Add docstring."""
         if label == "Next":
             return self._next_click
         if label == "Previous":
@@ -23,10 +27,12 @@ class _FakeColumn:
         return False
 
     def caption(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.captions.append(value)
 
 
 def test_top_n_with_other_adds_remainder_bucket() -> None:
+    """TODO: Add docstring."""
     df = pd.DataFrame(
         {
             "label": ["A", "B", "C", "D"],
@@ -41,6 +47,7 @@ def test_top_n_with_other_adds_remainder_bucket() -> None:
 
 
 def test_top_n_with_other_empty_dataframe_returns_empty() -> None:
+    """TODO: Add docstring."""
     df = pd.DataFrame({"label": [], "count": []})
 
     result = top_n_with_other(df, label_column="label", value_column="count")
@@ -49,6 +56,7 @@ def test_top_n_with_other_empty_dataframe_returns_empty() -> None:
 
 
 def test_top_n_with_other_all_rows_fit_in_top_n_returns_no_other() -> None:
+    """TODO: Add docstring."""
     df = pd.DataFrame({"label": ["A", "B"], "count": [5, 3]})
 
     result = top_n_with_other(df, label_column="label", value_column="count", top_n=10)
@@ -58,6 +66,7 @@ def test_top_n_with_other_all_rows_fit_in_top_n_returns_no_other() -> None:
 
 
 def test_top_n_with_other_zero_remainder_omits_other_row() -> None:
+    """TODO: Add docstring."""
     df = pd.DataFrame({"label": ["A", "B", "C"], "count": [5, 3, 0]})
 
     result = top_n_with_other(df, label_column="label", value_column="count", top_n=2)
@@ -67,6 +76,7 @@ def test_top_n_with_other_zero_remainder_omits_other_row() -> None:
 
 
 def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
@@ -86,6 +96,7 @@ def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPa
 
 
 def test_paginated_slice_prev_button_decrements_page(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     session_state: dict[str, Any] = {"grid_page": 3}
     prev_col = _FakeColumn(prev_click=True)
     info_col = _FakeColumn()
@@ -104,6 +115,7 @@ def test_paginated_slice_prev_button_decrements_page(monkeypatch: pytest.MonkeyP
 
 
 def test_paginated_slice_clamps_page_above_total_pages(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TODO: Add docstring."""
     session_state: dict[str, Any] = {"grid_page": 999}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
@@ -123,6 +135,7 @@ def test_paginated_slice_clamps_page_above_total_pages(monkeypatch: pytest.Monke
 def test_paginated_slice_custom_page_size_not_in_options(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """TODO: Add docstring."""
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()

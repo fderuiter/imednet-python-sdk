@@ -1,5 +1,6 @@
 # Base HTTP client for iMednet SDK
 
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -47,6 +48,7 @@ class BaseClient:
         tracer: Optional[Tracer] = None,
         auth: Optional[AuthStrategy] = None,
     ) -> None:
+        """TODO: Add docstring."""
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
         self.base_url = sanitize_base_url(config.base_url or DEFAULT_BASE_URL)
@@ -72,4 +74,5 @@ class BaseClient:
             self._tracer = None
 
     def _create_client(self, auth: AuthStrategy) -> Any:
+        """TODO: Add docstring."""
         raise NotImplementedError

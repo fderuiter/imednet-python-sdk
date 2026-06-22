@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -85,21 +86,21 @@ class DeviceDeficiency(JsonModel):
 
 
 class SubjectLevelAnalysis(JsonModel):
-    """Subject-Level Analysis Dataset (ADSL)"""
+    """Subject-Level Analysis Dataset (ADSL)."""
 
     model_config = {"extra": "allow"}
     subject_key: str = Field(..., alias="subjectKey")
 
 
 class AnalysisAdverseEvent(JsonModel):
-    """Analysis Adverse Event Dataset (ADAE)"""
+    """Analysis Adverse Event Dataset (ADAE)."""
 
     model_config = {"extra": "allow"}
     subject_key: str = Field(..., alias="subjectKey")
 
 
 class AnalysisLabResult(JsonModel):
-    """Analysis Lab Result Dataset (ADLB)"""
+    """Analysis Lab Result Dataset (ADLB)."""
 
     model_config = {"extra": "allow"}
     subject_key: str = Field(..., alias="subjectKey")

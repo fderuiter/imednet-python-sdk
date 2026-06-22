@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Hybrid Entry Point for iMedNet Form Builder.
+"""Hybrid Entry Point for iMedNet Form Builder.
 
 Usage:
   cp .env.example .env
@@ -64,6 +63,7 @@ def run_headless(
 
 
 def main() -> None:
+    """TODO: Add docstring."""
     parser = argparse.ArgumentParser(description="iMedNet Form Builder")
 
     # Optional arguments for headless mode

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import sys
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
@@ -10,6 +11,7 @@ from imednet.integrations import export as export_mod
 
 
 def test_export_to_csv(tmp_path, monkeypatch):
+    """TODO: Add docstring."""
     df = pd.DataFrame({"a": [1, 2]})
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
     monkeypatch.setattr(
@@ -24,6 +26,7 @@ def test_export_to_csv(tmp_path, monkeypatch):
 
 
 def test_export_to_sql(tmp_path, monkeypatch):
+    """TODO: Add docstring."""
     df = pd.DataFrame({"a": [1, 2]})
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
     monkeypatch.setattr(
@@ -41,20 +44,25 @@ def test_export_to_sql(tmp_path, monkeypatch):
 
 
 def test_imednet_export_operator(monkeypatch):
+    """TODO: Add docstring."""
     airflow = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_base = ModuleType("airflow.hooks.base")
     models_mod = ModuleType("airflow.models")
 
     class DummyBaseHook:
+        """TODO: Add docstring."""
         @classmethod
         def get_connection(cls, conn_id):
+            """TODO: Add docstring."""
             return SimpleNamespace(login="K", password="S", extra_dejson={})
 
     class DummyBaseOperator:
+        """TODO: Add docstring."""
         template_fields = ()
 
         def __init__(self, **kwargs):
+            """TODO: Add docstring."""
             pass
 
     hooks_base.BaseHook = DummyBaseHook
@@ -84,22 +92,27 @@ def test_imednet_export_operator(monkeypatch):
 
 
 def test_imednet_hook_returns_sdk(monkeypatch):
+    """TODO: Add docstring."""
     airflow = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_base = ModuleType("airflow.hooks.base")
     models_mod = ModuleType("airflow.models")
 
     class DummyBaseHook:
+        """TODO: Add docstring."""
         @classmethod
         def get_connection(cls, conn_id):
+            """TODO: Add docstring."""
             return SimpleNamespace(
                 login="KEY", password="SEC", extra_dejson={"base_url": "https://x"}
             )
 
     class DummyBaseOperator:
+        """TODO: Add docstring."""
         template_fields = ()
 
         def __init__(self, **kwargs):
+            """TODO: Add docstring."""
             pass
 
     hooks_base.BaseHook = DummyBaseHook

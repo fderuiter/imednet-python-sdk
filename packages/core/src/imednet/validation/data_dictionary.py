@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import csv
@@ -32,6 +33,7 @@ class DataDictionaryLoader:
     @staticmethod
     @contextmanager
     def _open_text(source: Path | TextIO) -> Iterator[TextIO]:
+        """TODO: Add docstring."""
         if isinstance(source, (str, Path)):
             with open(source, encoding="utf-8", newline="") as f:
                 yield f
@@ -40,6 +42,7 @@ class DataDictionaryLoader:
 
     @classmethod
     def _load_csv(cls, source: Path | TextIO) -> list[dict[str, str]]:
+        """TODO: Add docstring."""
         with cls._open_text(source) as f:
             reader = csv.DictReader(f)
             return list(reader)
@@ -54,7 +57,6 @@ class DataDictionaryLoader:
         questions: Path | TextIO,
     ) -> DataDictionary:
         """Load a data dictionary from individual CSV files."""
-
         return DataDictionary(
             business_logic=cls._load_csv(business_logic),
             choices=cls._load_csv(choices),
@@ -65,7 +67,6 @@ class DataDictionaryLoader:
     @classmethod
     def from_directory(cls, directory: Path | str) -> DataDictionary:
         """Load all required CSV files from ``directory``."""
-
         dir_path = Path(directory)
         paths = {attr: dir_path / name for name, attr in cls.REQUIRED_FILES.items()}
         return cls.from_files(**paths)
@@ -73,7 +74,6 @@ class DataDictionaryLoader:
     @classmethod
     def from_zip(cls, source: Path | BinaryIO) -> DataDictionary:
         """Load a data dictionary from a ZIP archive containing the required CSVs."""
-
         with zipfile.ZipFile(source) as zf:
             data: dict[str, list[dict[str, str]]] = {}
             for name, attr in cls.REQUIRED_FILES.items():

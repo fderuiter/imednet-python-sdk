@@ -1,5 +1,4 @@
-"""
-HTTP transport primitives.
+"""HTTP transport primitives.
 
 .. note::
 

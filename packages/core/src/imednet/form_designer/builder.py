@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import secrets
 import string
 from typing import Any, List, Literal, Optional, cast
@@ -25,24 +26,26 @@ from .models import (
 
 
 class FormBuilder:
-    """
-    Builder class to construct iMedNet Form Designer payloads programmatically.
+    """Builder class to construct iMedNet Form Designer payloads programmatically.
 
     Manages ID generation and hierarchical structure.
     """
 
     def __init__(self) -> None:
+        """TODO: Add docstring."""
         self.pages: List[Page] = []
         self._ensure_page()
         # Track generated IDs to avoid collisions (though random large int makes it rare)
         self._generated_ids: set[int] = set()
 
     def _ensure_page(self) -> None:
+        """TODO: Add docstring."""
         if not self.pages:
             self.pages.append(Page(entities=[]))
 
     @property
     def current_page(self) -> Page:
+        """TODO: Add docstring."""
         self._ensure_page()
         return self.pages[-1]
 
@@ -60,6 +63,7 @@ class FormBuilder:
         return f"lfdiv_{suffix}"
 
     def _create_entity(self, props: EntityProps, rows: Optional[List[Row]] = None) -> Entity:
+        """TODO: Add docstring."""
         return Entity(props=props, id=self._generate_dom_id(), rows=rows)
 
     def add_page(self) -> None:
@@ -116,8 +120,7 @@ class FormBuilder:
         max_length: Optional[int] = None,
         is_float: bool = False,
     ) -> None:
-        """
-        Add a standard field (Label + Control).
+        """Add a standard field (Label + Control).
 
         Args:
             type: Field type.

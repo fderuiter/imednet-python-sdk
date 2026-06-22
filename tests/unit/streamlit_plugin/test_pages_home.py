@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import runpy
@@ -13,7 +14,9 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 class _FakePageStreamlit:
+    """TODO: Add docstring."""
     def __init__(self, *, connected: bool) -> None:
+        """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {"_imednet_connected": connected}
         self.titles: list[str] = []
         self.infos: list[str] = []
@@ -21,19 +24,24 @@ class _FakePageStreamlit:
         self.markdowns: list[str] = []
 
     def title(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.titles.append(value)
 
     def info(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.successes.append(value)
 
     def markdown(self, value: str) -> None:
+        """TODO: Add docstring."""
         self.markdowns.append(value)
 
 
 def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
+    """TODO: Add docstring."""
     page_path = PACKAGE_ROOT / "pages" / page_name
     fake_st = _FakePageStreamlit(connected=connected)
     fake_streamlit_module = ModuleType("streamlit")
@@ -74,11 +82,13 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
 
 
 def test_home_page_renders_disconnected() -> None:
+    """TODO: Add docstring."""
     home_disconnected = _run_page("home.py", connected=False)
     assert "🏥 iMednet EDC Dashboard" in home_disconnected.titles
     assert any("authenticate" in info.lower() for info in home_disconnected.infos)
 
 
 def test_home_page_renders_connected() -> None:
+    """TODO: Add docstring."""
     home_connected = _run_page("home.py", connected=True)
     assert any("connected" in success.lower() for success in home_connected.successes)

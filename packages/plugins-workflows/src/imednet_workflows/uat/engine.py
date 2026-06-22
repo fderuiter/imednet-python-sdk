@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class EditCheckResultStatus(str, Enum):
+    """TODO: Add docstring."""
     PASS = "Pass"
     FAIL = "Fail"
     ERROR = "Error"
@@ -21,6 +23,7 @@ class EditCheckResultStatus(str, Enum):
 
 @dataclass
 class EditCheckVerificationReport:
+    """TODO: Add docstring."""
     study_key: str
     total_rules: int = 0
     passed_rules: int = 0
@@ -33,11 +36,13 @@ class UATExecutionEngine:
     """Automated Edit Check Verification execution engine."""
 
     def __init__(self, sdk: ImednetFacade, data_dictionary: DataDictionary):
+        """TODO: Add docstring."""
         self._sdk = sdk
         self._data_dictionary = data_dictionary
         self._rules = self._parse_business_logic(data_dictionary.business_logic)
 
     def _parse_business_logic(self, rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+        """TODO: Add docstring."""
         rules = []
         for row in rows:
             status = row.get("Status", "Active")

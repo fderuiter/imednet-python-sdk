@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from typing import Any
 
 from pydantic import BaseModel
@@ -6,20 +7,24 @@ from imednet.core.parsing import ModelParser, get_model_parser
 
 
 class SimpleModel(BaseModel):
+    """TODO: Add docstring."""
     id: int
     name: str
 
 
 class CustomParseModel(BaseModel):
+    """TODO: Add docstring."""
     id: int
     name: str
 
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> "CustomParseModel":
+        """TODO: Add docstring."""
         return cls(id=data["identifier"], name=data["full_name"])
 
 
 def test_get_model_parser_uses_model_validate_by_default() -> None:
+    """TODO: Add docstring."""
     parser = get_model_parser(SimpleModel)
     assert parser == SimpleModel.model_validate
 
@@ -31,6 +36,7 @@ def test_get_model_parser_uses_model_validate_by_default() -> None:
 
 
 def test_get_model_parser_uses_custom_from_json() -> None:
+    """TODO: Add docstring."""
     parser = get_model_parser(CustomParseModel)
     assert parser == CustomParseModel.from_json
 
@@ -42,6 +48,7 @@ def test_get_model_parser_uses_custom_from_json() -> None:
 
 
 def test_model_parser_class_parse() -> None:
+    """TODO: Add docstring."""
     parser = ModelParser(SimpleModel)
     data = {"id": 3, "name": "Class Test"}
 
@@ -52,6 +59,7 @@ def test_model_parser_class_parse() -> None:
 
 
 def test_model_parser_class_parse_many() -> None:
+    """TODO: Add docstring."""
     parser = ModelParser(CustomParseModel)
     data_list = [
         {"identifier": 10, "full_name": "Alice"},

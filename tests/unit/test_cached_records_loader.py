@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -11,6 +12,7 @@ from imednet_workflows.cached_loader import CachedRecordsLoader, get_cache_conne
 
 
 def _record(record_id: int, modified_at: str) -> Record:
+    """TODO: Add docstring."""
     return Record(
         study_key="STUDY",
         form_id=10,
@@ -23,6 +25,7 @@ def _record(record_id: int, modified_at: str) -> Record:
 
 
 def test_get_cache_connection_enables_wal_mode(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     conn = get_cache_connection(tmp_path / "cache" / "records.sqlite3")
     try:
         journal_mode = conn.execute("PRAGMA journal_mode").fetchone()[0]
@@ -32,6 +35,7 @@ def test_get_cache_connection_enables_wal_mode(tmp_path: Path) -> None:
 
 
 def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     first_batch = [
         _record(1, "2024-01-01 00:00:00+00:00"),
@@ -71,6 +75,7 @@ def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> 
 
 
 def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     record = _record(1, "2024-01-01 00:00:00+00:00")
     sdk.get_records.side_effect = [RuntimeError("temporary"), [record], [record]]
@@ -84,6 +89,7 @@ def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
 
 
 def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [
         [_record(1, "2024-01-01 00:00:00+00:00"), _record(2, "2024-01-02 00:00:00+00:00")],
@@ -98,6 +104,7 @@ def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
 
 
 def test_iter_cached_records_rejects_non_positive_chunk_size(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     loader = CachedRecordsLoader(MagicMock(), cache_dir=tmp_path)
 
     with pytest.raises(ValueError, match="chunk_size must be greater than zero"):
@@ -105,6 +112,7 @@ def test_iter_cached_records_rejects_non_positive_chunk_size(tmp_path: Path) -> 
 
 
 def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [
         [_record(1, "2024-01-01 00:00:00+00:00")],
@@ -125,6 +133,7 @@ def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None
 
 
 def test_sync_records_handles_empty_delta_without_reconciliation(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [
         [_record(1, "2024-01-01 00:00:00+00:00")],

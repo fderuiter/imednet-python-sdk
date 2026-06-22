@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import pytest
 
 from imednet.errors import ValidationError
@@ -6,6 +7,7 @@ from imednet.validation.cache import SchemaValidator
 
 
 def _get_first_variable(sdk: ImednetSDK, study_key: str):
+    """TODO: Add docstring."""
     variables = list(sdk.variables.list(study_key=study_key))
     if not variables:
         pytest.skip("No variables available for live tests")
@@ -13,6 +15,7 @@ def _get_first_variable(sdk: ImednetSDK, study_key: str):
 
 
 def _wrong_value(var_type: str):
+    """TODO: Add docstring."""
     t = (var_type or "").lower()
     if t in {"text", "string"}:
         return 1
@@ -20,6 +23,7 @@ def _wrong_value(var_type: str):
 
 
 def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
+    """TODO: Add docstring."""
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
     validator.refresh(study_key)
@@ -35,6 +39,7 @@ def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_validator_wrong_type(sdk: ImednetSDK, study_key: str) -> None:
+    """TODO: Add docstring."""
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
     validator.refresh(study_key)

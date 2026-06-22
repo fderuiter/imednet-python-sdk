@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -22,6 +23,7 @@ def _record_action(
     assignee: str | None = None,
     comment: str | None = None,
 ) -> None:
+    """TODO: Add docstring."""
     st.session_state[_LAST_ACTION_KEY] = {
         "item_id": item_id,
         "action": action,
@@ -40,7 +42,6 @@ def render_triage_drawer(
     current_user: str,
 ) -> None:
     """Render triage detail and actions for a selected item."""
-
     st.subheader(f"Review Item: {item.item_id}")
     st.caption(f"Study: {item.study_key} • Severity: {item.severity} • Status: {item.status.value}")
 

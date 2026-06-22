@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -51,6 +52,7 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         retry_policy: RetryPolicy | None = None,
         auth: Optional[AuthStrategy] = None,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(
             api_key=api_key,
             security_key=security_key,
@@ -65,6 +67,7 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         self._executor = self._create_executor(self._client, retry_policy)
 
     def _create_client(self, auth: AuthStrategy) -> ClientT:
+        """TODO: Add docstring."""
         headers = {
             HEADER_ACCEPT: CONTENT_TYPE_JSON,
             HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
@@ -83,10 +86,12 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
 
     @property
     def retry_policy(self) -> RetryPolicy:
+        """TODO: Add docstring."""
         return cast(RetryPolicy, self._executor.retry_policy)
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
+        """TODO: Add docstring."""
         self._executor.retry_policy = policy
 
     @abstractmethod

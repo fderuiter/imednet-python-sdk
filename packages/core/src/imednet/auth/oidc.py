@@ -11,10 +11,12 @@ class OIDCAuth:
     """Authentication strategy using OIDC token."""
 
     def __init__(self, token: str) -> None:
+        """TODO: Add docstring."""
         self.token = token
         self._decoded_claims = self._decode_token_claims(token)
 
     def _decode_token_claims(self, token: str) -> dict:
+        """TODO: Add docstring."""
         parts = token.split(".")
         if len(parts) != 3:
             return {}  # Not a valid JWT, return empty claims
@@ -30,9 +32,11 @@ class OIDCAuth:
         return {"Authorization": f"Bearer {self.token}"}
 
     def get_user_id(self) -> Optional[str]:
+        """TODO: Add docstring."""
         return self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
 
     def get_user_roles(self) -> List[str]:
+        """TODO: Add docstring."""
         # Assume groups or roles claim maps to our roles
         # In a real environment, role mapping config would be applied here
         roles = self._decoded_claims.get("roles") or self._decoded_claims.get("groups") or []
@@ -56,6 +60,7 @@ class OIDCAuth:
         return mapped_roles if mapped_roles else list(roles)
 
     def __repr__(self) -> str:
+        """TODO: Add docstring."""
         return "OIDCAuth(token='********')"
 
     __str__ = __repr__

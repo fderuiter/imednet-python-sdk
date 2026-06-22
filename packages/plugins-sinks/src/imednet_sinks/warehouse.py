@@ -163,16 +163,14 @@ class SnowflakeExportSink(ExportSink):
         :class:`SnowflakeSinkConfig` containing all connection details and
         staging paths.
 
-    Raises
-    ------
-    ~imednet.errors.ExportConfigurationError
-        When the Snowflake connector cannot be initialised or the required
-        configuration values are missing.
-    ImportError
-        When ``snowflake-connector-python`` or ``pyarrow`` are not installed.
+    Raises:
+        ~imednet.errors.ExportConfigurationError: When the Snowflake connector cannot be initialised or the required
+            configuration values are missing.
+        ImportError: When ``snowflake-connector-python`` or ``pyarrow`` are not installed.
     """
 
     def __init__(self, config: Optional[SinkConfig] = None) -> None:
+        """TODO: Add docstring."""
         cfg = config if isinstance(config, SnowflakeSinkConfig) else SnowflakeSinkConfig()
         super().__init__(cfg)
         self._cfg: SnowflakeSinkConfig = cfg
@@ -185,6 +183,7 @@ class SnowflakeExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def _connect(self) -> None:
+        """TODO: Add docstring."""
         cfg = self._cfg
         missing = [
             name
@@ -250,6 +249,7 @@ class SnowflakeExportSink(ExportSink):
         from imednet.core.operations.executor import UniversalExecutor
 
         def execute_export() -> int:
+            """TODO: Add docstring."""
             cur = self._conn.cursor()
             try:
                 cur.execute(f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/")  # nosem

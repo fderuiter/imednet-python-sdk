@@ -5,8 +5,7 @@ from typing import Dict, List, Optional, Protocol, runtime_checkable
 
 @runtime_checkable
 class AuthStrategy(Protocol):
-    """
-    Protocol for authentication strategies.
+    """Protocol for authentication strategies.
 
     Strategies must provide headers to be injected into requests.
     """

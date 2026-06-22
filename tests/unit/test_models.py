@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from datetime import datetime
 from enum import Enum
 from typing import Any, Union, get_args, get_origin
@@ -9,6 +10,7 @@ import imednet.models as models
 
 
 def _build_value(annotation: Any) -> Any:
+    """TODO: Add docstring."""
     origin = get_origin(annotation)
     if origin is list:
         sub = get_args(annotation)[0]
@@ -42,6 +44,7 @@ def _build_value(annotation: Any) -> Any:
 
 
 def _build_sample_data(cls: type[BaseModel]) -> Any:
+    """TODO: Add docstring."""
     if getattr(cls, "__pydantic_root_model__", False):
         return {"foo": "bar"}
     data = {}
@@ -61,6 +64,7 @@ MODEL_CLASSES = [
 
 @pytest.mark.parametrize("model_cls", MODEL_CLASSES)
 def test_model_instantiation_and_dump(model_cls: type[BaseModel]) -> None:
+    """TODO: Add docstring."""
     sample = _build_sample_data(model_cls)
     model = model_cls.model_validate(sample)
     dumped = model.model_dump(by_alias=True)
@@ -74,6 +78,7 @@ def test_model_instantiation_and_dump(model_cls: type[BaseModel]) -> None:
 
 @pytest.mark.parametrize("model_cls", MODEL_CLASSES)
 def test_missing_required_fields(model_cls: type[BaseModel]) -> None:
+    """TODO: Add docstring."""
     if getattr(model_cls, "__pydantic_root_model__", False):
         model_cls.model_validate({})
         return
@@ -88,6 +93,7 @@ def test_missing_required_fields(model_cls: type[BaseModel]) -> None:
 
 @pytest.mark.parametrize("model_cls", MODEL_CLASSES)
 def test_invalid_int_defaults(model_cls: type[BaseModel]) -> None:
+    """TODO: Add docstring."""
     if getattr(model_cls, "__pydantic_root_model__", False):
         pytest.skip("root model")
     int_field_item = next(
@@ -108,6 +114,7 @@ def test_invalid_int_defaults(model_cls: type[BaseModel]) -> None:
 
 
 def test_job_properties() -> None:
+    """TODO: Add docstring."""
     from imednet.models.jobs import Job
 
     job_completed = Job(batchId="1", state="COMPLETED")
@@ -137,6 +144,7 @@ def test_job_properties() -> None:
 
 
 def test_job_status_progress_parsing() -> None:
+    """TODO: Add docstring."""
     from imednet.models.jobs import JobStatus
 
     js_valid = JobStatus(batchId="1", state="PROCESSING", progress="50")
@@ -150,6 +158,7 @@ def test_job_status_progress_parsing() -> None:
 
 
 def test_study_structure_methods() -> None:
+    """TODO: Add docstring."""
     from datetime import datetime
 
     from imednet.models.forms import Form
@@ -194,6 +203,7 @@ def test_study_structure_methods() -> None:
 
 
 def test_visit_clean_empty_dates() -> None:
+    """TODO: Add docstring."""
     from imednet.models.visits import Visit
 
     # Valid date
@@ -210,6 +220,7 @@ def test_visit_clean_empty_dates() -> None:
 
 
 def test_study_structure_study() -> None:
+    """TODO: Add docstring."""
     from imednet.models.study_structure import StudyStructure
 
     study = StudyStructure(studyKey="ST1", intervals=[])

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import ast
 from pathlib import Path
 
@@ -14,10 +15,12 @@ except ImportError:
 
 
 def get_all_python_files(package_path: Path) -> list[Path]:
+    """TODO: Add docstring."""
     return list(package_path.rglob("*.py"))
 
 
 def get_imports_from_file(file_path: Path) -> set[str]:
+    """TODO: Add docstring."""
     with open(file_path, "r", encoding="utf-8") as f:
         # We want SyntaxError to be raised if a file cannot be parsed, rather than silently ignored.
         tree = ast.parse(f.read(), filename=str(file_path))
@@ -55,6 +58,7 @@ def test_core_does_not_import_cli():
 
 
 def test_core_does_not_import_workflows():
+    """TODO: Add docstring."""
     core_dir = Path(imednet.__file__).parent
     files = get_all_python_files(core_dir)
     assert len(files) > 0, f"No files found to test in {core_dir}"
@@ -69,6 +73,7 @@ def test_core_does_not_import_workflows():
 
 
 def test_workflows_does_not_import_providers():
+    """TODO: Add docstring."""
     if imednet_workflows is None:
         pytest.skip("imednet_workflows not installed")
 
@@ -116,6 +121,7 @@ def test_extensions_use_spi():
 
 
 def test_endpoint_no_shared_mutable_state():
+    """TODO: Add docstring."""
     sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
 
     assert sdk.records is not sdk.forms
@@ -130,10 +136,12 @@ def test_endpoint_no_shared_mutable_state():
 
 
 def test_sync_sdk_no_async_client(monkeypatch):
+    """TODO: Add docstring."""
     instantiated = False
     original_init = AsyncClient.__init__
 
     def mock_init(self, *args, **kwargs):
+        """TODO: Add docstring."""
         nonlocal instantiated
         instantiated = True
         original_init(self, *args, **kwargs)
@@ -146,10 +154,12 @@ def test_sync_sdk_no_async_client(monkeypatch):
 
 
 def test_async_sdk_no_sync_client(monkeypatch):
+    """TODO: Add docstring."""
     instantiated = False
     original_init = Client.__init__
 
     def mock_init(self, *args, **kwargs):
+        """TODO: Add docstring."""
         nonlocal instantiated
         instantiated = True
         original_init(self, *args, **kwargs)
@@ -161,6 +171,7 @@ def test_async_sdk_no_sync_client(monkeypatch):
 
 
 def test_plugin_discovery_failure(monkeypatch):
+    """TODO: Add docstring."""
     monkeypatch.setattr("imednet.sdk.entry_points", lambda *, group, name: [])
 
     sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")

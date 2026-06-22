@@ -30,6 +30,7 @@ _DEFAULT_STORE_PATH = "~/.imednet/config_versions.sqlite3"
 
 
 def _get_store() -> ConfigVersionStore:
+    """TODO: Add docstring."""
     path = st.session_state.get(_KEY_CONFIG_STORE_PATH, _DEFAULT_STORE_PATH)
     return ConfigVersionStore(db_path=str(path))
 
@@ -120,6 +121,7 @@ def _render_validation_checklist(
 
 
 def _render_check(label: str, passed: bool, detail: str) -> None:
+    """TODO: Add docstring."""
     icon = "✅" if passed else "❌"
     st.markdown(f"{icon} **{label}** — {detail}")
 
@@ -269,6 +271,7 @@ def _bump_patch(version: str) -> str:
 
 
 def render_page() -> None:
+    """TODO: Add docstring."""
     st.title("🏛️ Configuration Publisher Wizard")
 
     if not st.session_state.get(_KEY_CONNECTED):

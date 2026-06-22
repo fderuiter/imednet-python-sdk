@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,6 +9,7 @@ from imednet.utils.pandas import export_records_csv
 
 @pytest.fixture
 def mock_sdk():
+    """TODO: Add docstring."""
     sdk = MagicMock()
     # Create a record with malicious data
     record_data = {

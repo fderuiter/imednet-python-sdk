@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import pytest
 
 import imednet.endpoints.queries as queries
@@ -6,6 +7,7 @@ from imednet.models.queries import Query
 
 
 def test_list_builds_path_and_filters(dummy_client, context, paginator_factory, patch_build_filter):
+    """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = queries.QueriesEndpoint(dummy_client, context)
     capture = paginator_factory(queries, [{"annotationId": 1}])
@@ -20,9 +22,11 @@ def test_list_builds_path_and_filters(dummy_client, context, paginator_factory, 
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
+    """TODO: Add docstring."""
     ep = queries.QueriesEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
+        """TODO: Add docstring."""
         return []
 
     monkeypatch.setattr(queries.QueriesEndpoint, "_list_sync", fake_impl)

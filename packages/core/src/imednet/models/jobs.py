@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -42,6 +43,7 @@ class JobStatus(Job):
 
     @field_validator("progress", mode="before", check_fields=False)
     def _parse_progress(cls, v: Any) -> int:
+        """TODO: Add docstring."""
         try:
             return int(v)
         except (TypeError, ValueError):

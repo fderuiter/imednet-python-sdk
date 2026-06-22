@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import MagicMock
 
 import httpx
@@ -9,12 +10,15 @@ from imednet.core.base_client import BaseClient
 
 
 class DummyClient(BaseClient):
+    """TODO: Add docstring."""
     def _create_client(self, auth: AuthStrategy) -> httpx.Client:
+        """TODO: Add docstring."""
         headers = auth.get_headers()
         return httpx.Client(headers=headers)
 
 
 def test_initialization_from_env(monkeypatch) -> None:
+    """TODO: Add docstring."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
     monkeypatch.setenv("IMEDNET_BASE_URL", "https://env.example.com")

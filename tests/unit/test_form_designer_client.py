@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import json
 
 import pytest
@@ -10,18 +11,20 @@ from imednet.form_designer.models import Layout
 
 @pytest.fixture
 def form_designer_client():
+    """TODO: Add docstring."""
     return FormDesignerClient(base_url="https://test.imednet.com", phpsessid="test_session")
 
 
 @pytest.fixture
 def empty_layout():
+    """TODO: Add docstring."""
     return Layout(pages=[])
 
 
 @respx.mock
 def test_save_form_explicit_json_error(form_designer_client, empty_layout):
-    """
-    Test that the client correctly parses explicit JSON API errors
+    """Test that the client correctly parses explicit JSON API errors.
+
     (e.g., {"error": "..."}) returned with a 200 OK status code.
     """
     url = "https://test.imednet.com/app/formdez/formdez_save.php"
@@ -44,8 +47,8 @@ def test_save_form_explicit_json_error(form_designer_client, empty_layout):
 
 @respx.mock
 def test_save_form_invalid_json_fallback(form_designer_client, empty_layout):
-    """
-    Test that the client correctly handles fallback behavior when the
+    """Test that the client correctly handles fallback behavior when the.
+
     legacy endpoint returns non-JSON (e.g., HTML) instead of JSON on error.
     """
     url = "https://test.imednet.com/app/formdez/formdez_save.php"

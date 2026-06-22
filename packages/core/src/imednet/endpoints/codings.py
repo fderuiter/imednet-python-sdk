@@ -6,6 +6,7 @@ from imednet.models.codings import Coding
 
 
 class CodingsOperationDef:
+    """TODO: Add docstring."""
     PATH = "codings"
     MODEL = Coding
     _id_param = "codingId"
@@ -13,8 +14,10 @@ class CodingsOperationDef:
 
 
 class CodingsEndpoint(CodingsOperationDef, EdcSyncListGetEndpoint[Coding]):  # type: ignore[misc]
+    """TODO: Add docstring."""
     pass
 
 
 class AsyncCodingsEndpoint(CodingsOperationDef, EdcAsyncListGetEndpoint[Coding]):  # type: ignore[misc]
+    """TODO: Add docstring."""
     pass

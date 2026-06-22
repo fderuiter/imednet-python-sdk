@@ -99,8 +99,7 @@ class ParamProcessor(Protocol):
     """Protocol for parameter processing strategies."""
 
     def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """
-        Process filters to extract special parameters.
+        """Process filters to extract special parameters.
 
         Args:
             filters: The dictionary of filters provided to the endpoint.

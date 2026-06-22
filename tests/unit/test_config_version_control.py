@@ -23,6 +23,7 @@ def _make_config(
     *,
     extra_mapping: bool = False,
 ) -> StudyConfiguration:
+    """TODO: Add docstring."""
     mappings = [
         MappingRule(
             domain="AE",
@@ -59,6 +60,7 @@ def _make_config(
 
 @pytest.fixture()
 def store(tmp_path: Path) -> ConfigVersionStore:
+    """TODO: Add docstring."""
     return ConfigVersionStore(db_path=tmp_path / "test_versions.sqlite3")
 
 
@@ -68,11 +70,13 @@ def store(tmp_path: Path) -> ConfigVersionStore:
 
 
 def test_sha256_deterministic() -> None:
+    """TODO: Add docstring."""
     assert _sha256_of("hello") == _sha256_of("hello")
     assert _sha256_of("hello") != _sha256_of("world")
 
 
 def test_sha256_length() -> None:
+    """TODO: Add docstring."""
     digest = _sha256_of("any string")
     assert len(digest) == 64
 
@@ -83,24 +87,28 @@ def test_sha256_length() -> None:
 
 
 def test_flatten_flat_dict() -> None:
+    """TODO: Add docstring."""
     data = {"a": 1, "b": "two"}
     result = _flatten(data)
     assert result == {"a": 1, "b": "two"}
 
 
 def test_flatten_nested_dict() -> None:
+    """TODO: Add docstring."""
     data = {"outer": {"inner": 42}}
     result = _flatten(data)
     assert result == {"outer.inner": 42}
 
 
 def test_flatten_list() -> None:
+    """TODO: Add docstring."""
     data = {"items": [10, 20]}
     result = _flatten(data)
     assert result == {"items[0]": 10, "items[1]": 20}
 
 
 def test_flatten_mixed() -> None:
+    """TODO: Add docstring."""
     data = {"a": {"b": [1, {"c": 3}]}}
     result = _flatten(data)
     assert "a.b[0]" in result
@@ -113,6 +121,7 @@ def test_flatten_mixed() -> None:
 
 
 def test_commit_config_returns_sha256(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config = _make_config()
     commit_id = store.commit_config("STUDY-01", config, user="alice", desc="Initial commit")
     assert len(commit_id) == 64
@@ -120,6 +129,7 @@ def test_commit_config_returns_sha256(store: ConfigVersionStore) -> None:
 
 
 def test_commit_config_duplicate_raises(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config = _make_config()
     store.commit_config("STUDY-01", config, user="alice", desc="First")
     with pytest.raises(ValueError, match="already exists"):
@@ -127,6 +137,7 @@ def test_commit_config_duplicate_raises(store: ConfigVersionStore) -> None:
 
 
 def test_commit_config_different_content_succeeds(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config_a = _make_config(version="1.0.0")
     config_b = _make_config(version="1.1.0")
     id_a = store.commit_config("STUDY-01", config_a, user="alice", desc="v1.0.0")
@@ -135,6 +146,7 @@ def test_commit_config_different_content_succeeds(store: ConfigVersionStore) -> 
 
 
 def test_commit_config_persists_metadata(store: ConfigVersionStore, tmp_path: Path) -> None:
+    """TODO: Add docstring."""
     config = _make_config()
     commit_id = store.commit_config("STUDY-01", config, user="bob", desc="Test commit")
     history = store.get_history("STUDY-01")
@@ -154,10 +166,12 @@ def test_commit_config_persists_metadata(store: ConfigVersionStore, tmp_path: Pa
 
 
 def test_get_history_empty(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     assert store.get_history("UNKNOWN") == []
 
 
 def test_get_history_ordered(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     c1 = _make_config(version="1.0.0")
     c2 = _make_config(version="1.1.0")
     c3 = _make_config(version="1.2.0", extra_mapping=True)
@@ -174,6 +188,7 @@ def test_get_history_ordered(store: ConfigVersionStore) -> None:
 
 
 def test_get_history_isolated_by_study(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     c1 = _make_config(study_key="STUDY-01")
     c2 = _make_config(study_key="STUDY-02")
     store.commit_config("STUDY-01", c1, user="alice", desc="first")
@@ -185,6 +200,7 @@ def test_get_history_isolated_by_study(store: ConfigVersionStore) -> None:
 
 
 def test_get_history_excludes_config_data(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config = _make_config()
     store.commit_config("STUDY-01", config, user="alice", desc="first")
     history = store.get_history("STUDY-01")
@@ -197,6 +213,7 @@ def test_get_history_excludes_config_data(store: ConfigVersionStore) -> None:
 
 
 def test_diff_configs_no_changes(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     # Verify self-diff of a flattened config produces no differences.
     c1 = _make_config(version="1.0.0")
     config_json = json.dumps(c1.model_dump(mode="json", by_alias=True), sort_keys=True)
@@ -216,6 +233,7 @@ def test_diff_configs_no_changes(store: ConfigVersionStore) -> None:
 
 
 def test_diff_configs_detects_changes(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     c1 = _make_config(version="1.0.0")
     c2 = _make_config(version="1.1.0")
     id_a = store.commit_config("STUDY-01", c1, user="alice", desc="v1.0.0")
@@ -228,6 +246,7 @@ def test_diff_configs_detects_changes(store: ConfigVersionStore) -> None:
 
 
 def test_diff_configs_detects_added_keys(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     c1 = _make_config(version="1.0.0", extra_mapping=False)
     c2 = _make_config(version="1.1.0", extra_mapping=True)
     id_a = store.commit_config("STUDY-01", c1, user="alice", desc="base")
@@ -238,6 +257,7 @@ def test_diff_configs_detects_added_keys(store: ConfigVersionStore) -> None:
 
 
 def test_diff_configs_missing_commit_raises(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     c1 = _make_config()
     id_a = store.commit_config("STUDY-01", c1, user="alice", desc="base")
     with pytest.raises(KeyError):
@@ -250,6 +270,7 @@ def test_diff_configs_missing_commit_raises(store: ConfigVersionStore) -> None:
 
 
 def test_rollback_config_restores_original(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     original = _make_config(version="1.0.0")
     commit_id = store.commit_config("STUDY-01", original, user="alice", desc="base")
 
@@ -265,6 +286,7 @@ def test_rollback_config_restores_original(store: ConfigVersionStore) -> None:
 
 
 def test_rollback_config_is_non_destructive(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     c1 = _make_config(version="1.0.0")
     c2 = _make_config(version="1.1.0")
     id1 = store.commit_config("STUDY-01", c1, user="alice", desc="v1")
@@ -278,6 +300,7 @@ def test_rollback_config_is_non_destructive(store: ConfigVersionStore) -> None:
 
 
 def test_rollback_config_wrong_study_raises(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config = _make_config(study_key="STUDY-01")
     commit_id = store.commit_config("STUDY-01", config, user="alice", desc="base")
     with pytest.raises(KeyError, match="not found for study"):
@@ -285,6 +308,7 @@ def test_rollback_config_wrong_study_raises(store: ConfigVersionStore) -> None:
 
 
 def test_rollback_config_unknown_commit_raises(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     with pytest.raises(KeyError):
         store.rollback_config("STUDY-01", "deadbeef" * 8)
 
@@ -322,6 +346,7 @@ def test_multiple_studies_independent(store: ConfigVersionStore) -> None:
 
 
 def test_get_history_detects_invalid_signature(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config_json = json.dumps(
         _make_config(version="9.9.9").model_dump(mode="json", by_alias=True),
         sort_keys=True,
@@ -351,6 +376,7 @@ def test_get_history_detects_invalid_signature(store: ConfigVersionStore) -> Non
 
 
 def test_rollback_config_detects_invalid_signature(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config_json = json.dumps(
         _make_config(version="9.9.9").model_dump(mode="json", by_alias=True),
         sort_keys=True,
@@ -381,6 +407,7 @@ def test_rollback_config_detects_invalid_signature(store: ConfigVersionStore) ->
 
 
 def test_diff_configs_detects_invalid_signature(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     valid = _make_config(version="1.0.0")
     valid_commit = store.commit_config("STUDY-01", valid, user="alice", desc="valid")
     forged_json = json.dumps(
@@ -413,6 +440,7 @@ def test_diff_configs_detects_invalid_signature(store: ConfigVersionStore) -> No
 
 
 def test_history_rows_cannot_be_updated(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config = _make_config(version="1.0.0")
     commit_id = store.commit_config("STUDY-01", config, user="alice", desc="base")
 
@@ -427,6 +455,7 @@ def test_history_rows_cannot_be_updated(store: ConfigVersionStore) -> None:
 
 
 def test_history_rows_cannot_be_deleted(store: ConfigVersionStore) -> None:
+    """TODO: Add docstring."""
     config = _make_config(version="1.0.0")
     commit_id = store.commit_config("STUDY-01", config, user="alice", desc="base")
 

@@ -1,6 +1,4 @@
-"""
-HTTP request execution with retries and monitoring.
-"""
+"""HTTP request execution with retries and monitoring."""
 
 from __future__ import annotations
 
@@ -45,6 +43,7 @@ class BaseRequestExecutor(ABC):
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         self.send = send
         self.retries = retries
         self.backoff_factor = backoff_factor
@@ -55,6 +54,7 @@ class BaseRequestExecutor(ABC):
     @staticmethod
     @contextmanager
     def _suppress_httpx_request_logging() -> Iterator[None]:
+        """TODO: Add docstring."""
         loggers = {
             "httpx": logging.getLogger("httpx"),
             "httpcore": logging.getLogger("httpcore"),
@@ -73,6 +73,7 @@ class BaseRequestExecutor(ABC):
         policy = self.retry_policy
 
         def should_retry(retry_state: RetryCallState) -> bool:
+            """TODO: Add docstring."""
             state = RetryState(
                 attempt_number=retry_state.attempt_number,
                 exception=(
@@ -129,6 +130,7 @@ class BaseRequestExecutor(ABC):
 
     @staticmethod
     def _parse_retry_after_seconds(response: httpx.Response) -> Optional[float]:
+        """TODO: Add docstring."""
         value = response.headers.get("Retry-After")
         if not value:
             return None
@@ -149,6 +151,7 @@ class BaseRequestExecutor(ABC):
             return None
 
     def _wait_strategy(self, retry_state: RetryCallState) -> float:
+        """TODO: Add docstring."""
         if retry_state.outcome and not retry_state.outcome.failed:
             result = retry_state.outcome.result()
             if isinstance(result, httpx.Response):
@@ -173,13 +176,16 @@ class SyncRequestExecutor(BaseRequestExecutor):
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(send, retries, backoff_factor, tracer, retry_policy)
         # self.send is set in super
 
     def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        """TODO: Add docstring."""
         get_global_circuit_breaker().check_request_allowed()
 
         def send_fn() -> httpx.Response:
+            """TODO: Add docstring."""
             with self._suppress_httpx_request_logging():
                 return self.send(method, url, **kwargs)
 
@@ -215,13 +221,16 @@ class AsyncRequestExecutor(BaseRequestExecutor):
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(send, retries, backoff_factor, tracer, retry_policy)
         # self.send is set in super
 
     async def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        """TODO: Add docstring."""
         get_global_circuit_breaker().check_request_allowed()
 
         async def send_fn() -> httpx.Response:
+            """TODO: Add docstring."""
             with self._suppress_httpx_request_logging():
                 return await self.send(method, url, **kwargs)
 

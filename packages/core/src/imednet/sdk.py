@@ -1,5 +1,4 @@
-"""
-Public entry-point for the iMednet SDK.
+"""Public entry-point for the iMednet SDK.
 
 This module provides the ImednetSDK class which:
 - Manages configuration and authentication
@@ -51,6 +50,7 @@ class WorkflowPluginProtocol(PluginProtocol):
 
 
 class _BaseSDK:
+    """TODO: Add docstring."""
     config: Config
 
     def _get_plugin_entry_point(self, name: str) -> EntryPoint | None:
@@ -70,16 +70,18 @@ class _BaseSDK:
         return plugin_entry_points[0]
 
     def _get_workflow_entry_point(self) -> EntryPoint | None:
+        """TODO: Add docstring."""
         return self._get_plugin_entry_point("workflows")
 
     def _init_workflows(self) -> Optional[WorkflowsNamespaceProtocol]:
         """Instantiate workflow namespace when optional workflows plugin is available."""
-
         workflows_entry_point = self._get_workflow_entry_point()
         if workflows_entry_point is None:
 
             class _MissingWorkflows:
+                """TODO: Add docstring."""
                 def __getattr__(self, name: str) -> Any:
+                    """TODO: Add docstring."""
                     raise ImportError(
                         "This feature requires the optional 'imednet-workflows' package."
                     )
@@ -110,7 +112,6 @@ class _BaseSDK:
 
     def _init_sinks(self) -> Optional[SinksNamespaceProtocol]:
         """Instantiate sinks namespace when optional sinks plugin is available."""
-
         sinks_entry_point = self._get_plugin_entry_point("sinks")
         if sinks_entry_point is None:
             return None
@@ -145,8 +146,7 @@ class _BaseSDK:
 
 
 class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
-    """
-    Public entry-point for library users.
+    """Public entry-point for library users.
 
     Provides access to all iMednet API endpoints and maintains configuration.
     """
@@ -180,7 +180,6 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         client: Optional[Client] = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
-
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
         self.config = config
@@ -205,14 +204,17 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
 
     @property
     def auth(self) -> Any:
+        """TODO: Add docstring."""
         return getattr(self._client, "auth", None)
 
     @property
     def retry_policy(self) -> RetryPolicy:
+        """TODO: Add docstring."""
         return self._client.retry_policy
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
+        """TODO: Add docstring."""
         self._client.retry_policy = policy
 
     def _init_endpoints(self) -> None:
@@ -249,6 +251,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         self._client.close()
 
     async def aclose(self) -> None:
+        """TODO: Add docstring."""
         raise TypeError(
             "ImednetSDK is a synchronous client. "
             "Use `sdk.close()` or `with ImednetSDK(...)` instead. "
@@ -291,6 +294,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         retry_policy: RetryPolicy | None = None,
         async_client: Optional[AsyncClient] = None,
     ) -> None:
+        """TODO: Add docstring."""
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
         self.config = config
         self._api_key = config.api_key
@@ -311,17 +315,21 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
 
     @property
     def auth(self) -> Any:
+        """TODO: Add docstring."""
         return getattr(self._async_client, "auth", None)
 
     @property
     def retry_policy(self) -> RetryPolicy:
+        """TODO: Add docstring."""
         return self._async_client.retry_policy
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
+        """TODO: Add docstring."""
         self._async_client.retry_policy = policy
 
     def _init_endpoints(self) -> None:
+        """TODO: Add docstring."""
         for attr, endpoint_cls in ASYNC_ENDPOINT_REGISTRY.items():
             setattr(self, attr, endpoint_cls(self._async_client))  # type: ignore[arg-type]
 
@@ -333,24 +341,29 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         )
 
     def __enter__(self) -> "AsyncImednetSDK":
+        """TODO: Add docstring."""
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous context manager protocol. "
             "Use `async with AsyncImednetSDK(...)` instead."
         )
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """TODO: Add docstring."""
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous context manager protocol. "
             "Use `async with AsyncImednetSDK(...)` instead."
         )
 
     async def __aenter__(self) -> "AsyncImednetSDK":
+        """TODO: Add docstring."""
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """TODO: Add docstring."""
         await self.aclose()
 
     async def aclose(self) -> None:
+        """TODO: Add docstring."""
         await self._async_client.aclose()
 
 

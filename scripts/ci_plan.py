@@ -1,8 +1,10 @@
+"""TODO: Add docstring."""
 import json
 import sys
 
 
 def main():
+    """TODO: Add docstring."""
     all_packages = [
         'core',
         'plugins-workflows',

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -24,8 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class RecordMapper:
-    """
-    Maps EDC records for a study into a pandas DataFrame.
+    """Maps EDC records for a study into a pandas DataFrame.
 
     Features:
       - Fetches variable definitions for column mapping.
@@ -142,6 +142,7 @@ class RecordMapper:
         visit_key: Optional[str] = None,
         extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
     ) -> Iterable[RecordModel]:
+        """TODO: Add docstring."""
         form_ids: set[Any] | None = None
         filters = dict(extra_filters) if extra_filters else {}
         if "formIds" in filters and isinstance(filters["formIds"], list):
@@ -174,6 +175,7 @@ class RecordMapper:
         visit_key: Optional[str],
         form_ids: set[Any] | None,
     ) -> Iterator[RecordModel]:
+        """TODO: Add docstring."""
         visit_id: int | None = None
         if visit_key is not None:
             try:
@@ -196,6 +198,7 @@ class RecordMapper:
         rec: RecordModel,
         record_model: Type[BaseModel],
     ) -> Dict[str, Any]:
+        """TODO: Add docstring."""
         meta = {
             "recordId": rec.record_id,
             "subjectKey": rec.subject_key,
@@ -230,6 +233,7 @@ class RecordMapper:
         records: Iterable[RecordModel],
         record_model: Type[BaseModel],
     ) -> Iterator[Tuple[List[Dict[str, Any]], int]]:
+        """TODO: Add docstring."""
         for chunk in iter_chunks(records, chunk_size=self._pipeline.chunk_size):
             rows: List[Dict[str, Any]] = []
             errors = 0

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import asyncio
 import threading
 import time
@@ -14,6 +15,7 @@ from imednet.errors.validation import ConfigurationError
 
 
 async def async_worker(study_key: str, delay: float) -> str:
+    """TODO: Add docstring."""
     token = set_study_context(study_key)
     try:
         await asyncio.sleep(delay)
@@ -24,6 +26,7 @@ async def async_worker(study_key: str, delay: float) -> str:
 
 @pytest.mark.asyncio
 async def test_contextvars_prevents_race_conditions() -> None:
+    """TODO: Add docstring."""
     results = await asyncio.gather(
         async_worker("STUDY-A", 0.2),
         async_worker("STUDY-B", 0.1),
@@ -37,6 +40,7 @@ def test_study_context_is_visible_inside_worker_thread() -> None:
     result: list[str | None] = []
 
     def worker() -> None:
+        """TODO: Add docstring."""
         with study_context("THREAD-A"):
             result.append(get_current_study())
 
@@ -52,6 +56,7 @@ def test_study_context_is_isolated_between_threads() -> None:
     results: dict[str, str] = {}
 
     def worker(key: str) -> None:
+        """TODO: Add docstring."""
         with study_context(key):
             time.sleep(0.05)
             results[key] = get_current_study()
@@ -70,6 +75,7 @@ def test_study_context_is_reset_after_worker_thread_completes() -> None:
     sentinel: list[str | Exception] = []
 
     def worker() -> None:
+        """TODO: Add docstring."""
         with study_context("TRANSIENT"):
             pass  # context manager exits before thread ends
 

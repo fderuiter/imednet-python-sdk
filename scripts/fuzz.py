@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import csv
 import json
 import logging
@@ -34,11 +35,13 @@ with atheris.instrument_imports():
 
 # Dummy config for Snowflake
 class DummyConfig:
+    """TODO: Add docstring."""
     batch_size = 100
     idempotent = True
 
 
 def fuzz_dynamic_model(data: bytes):
+    """TODO: Add docstring."""
     # Fuzzing the dynamic model loading by writing random JSON/data to a fake postman file
     postman_path = "/tmp/fuzz_postman.json"
     os.environ["IMEDNET_POSTMAN_PATH"] = postman_path
@@ -60,6 +63,7 @@ def fuzz_dynamic_model(data: bytes):
 
 
 def fuzz_data_dictionary(data: bytes):
+    """TODO: Add docstring."""
     try:
         DataDictionaryLoader.from_zip(BytesIO(data))
     except (zipfile.BadZipFile, UnicodeDecodeError, csv.Error, KeyError, Exception):
@@ -68,6 +72,7 @@ def fuzz_data_dictionary(data: bytes):
 
 
 def fuzz_warehouse_transformation(data: bytes):
+    """TODO: Add docstring."""
     import pyarrow as pa
     from imednet_sinks.warehouse import _records_to_arrow_table
 
@@ -89,7 +94,9 @@ def fuzz_warehouse_transformation(data: bytes):
 
         # Mock class for records
         class DummyRecord:
+            """TODO: Add docstring."""
             def __init__(self, d):
+                """TODO: Add docstring."""
                 self.record_id = str(d.get("id", "1"))
                 self.form_id = str(d.get("form_id", "1"))
                 self.visit_id = str(d.get("visit_id", "1"))
@@ -109,6 +116,7 @@ def fuzz_warehouse_transformation(data: bytes):
 
 
 def TestOneInput(data):
+    """TODO: Add docstring."""
     if len(data) < 1:
         return
 

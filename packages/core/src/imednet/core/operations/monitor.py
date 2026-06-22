@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -17,6 +18,7 @@ class OperationMonitor:
     """Helper to handle generic operation monitoring (tracing, timing, logging)."""
 
     def __init__(self, tracer: Optional[Tracer], operation_name: str, **attributes: Any) -> None:
+        """TODO: Add docstring."""
         self.tracer = tracer
         self.operation_name = operation_name
         self.attributes = attributes
@@ -25,6 +27,7 @@ class OperationMonitor:
         self._cm: Any = None
 
     def _create_cm(self) -> Any:
+        """TODO: Add docstring."""
         if self.tracer:
             return self.tracer.start_as_current_span(
                 self.operation_name,
@@ -33,16 +36,19 @@ class OperationMonitor:
         return nullcontext()
 
     def __enter__(self) -> "OperationMonitor":
+        """TODO: Add docstring."""
         self._cm = self._create_cm()
         self.span = self._cm.__enter__()
         self.start_time = time.monotonic()
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """TODO: Add docstring."""
         if self._cm:
             self._cm.__exit__(exc_type, exc_val, exc_tb)
 
     async def __aenter__(self) -> "OperationMonitor":
+        """TODO: Add docstring."""
         self._cm = self._create_cm()
         # Handle async context managers if the tracer supports them
         if hasattr(self._cm, "__aenter__"):
@@ -53,6 +59,7 @@ class OperationMonitor:
         return self
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """TODO: Add docstring."""
         if self._cm:
             if hasattr(self._cm, "__aexit__"):
                 await self._cm.__aexit__(exc_type, exc_val, exc_tb)
@@ -60,6 +67,7 @@ class OperationMonitor:
                 self._cm.__exit__(exc_type, exc_val, exc_tb)
 
     def on_success(self, **extra_attributes: Any) -> None:
+        """TODO: Add docstring."""
         latency = time.monotonic() - self.start_time
         logger.info(
             f"{self.operation_name} succeeded",
@@ -71,6 +79,7 @@ class OperationMonitor:
             self.span.set_attribute("status", "success")
 
     def on_retry_error(self, cause: Exception, retries: int) -> NoReturn:
+        """TODO: Add docstring."""
         logger.error(
             f"{self.operation_name} failed after retries",
             extra={**self.attributes, "retries": retries},
@@ -81,5 +90,6 @@ class OperationMonitor:
         raise cause
 
     def on_failure(self, cause: Exception) -> None:
+        """TODO: Add docstring."""
         if self.span:
             self.span.set_attribute("status", "failed")

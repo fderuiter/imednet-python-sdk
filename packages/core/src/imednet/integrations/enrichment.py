@@ -1,3 +1,9 @@
+"""Data enrichment and transformation pipeline.
+
+This module provides the :class:`EnrichmentPipeline` for transforming raw API
+data using configured mappings, terminology lookups, and PHI masking rules.
+"""
+
 import ast
 import logging
 from typing import Any, Dict
@@ -8,7 +14,18 @@ logger = logging.getLogger(__name__)
 
 
 class EnrichmentPipeline:
+    """Pipeline for transforming and enriching study data.
+
+    Applies a set of rules defined in a :class:`StudyConfiguration` to data
+    objects, including PHI masking, terminology mapping, and custom business logic.
+    """
+
     def __init__(self, config: StudyConfiguration):
+        """Initialize the enrichment pipeline.
+
+        Args:
+            config: The study configuration containing enrichment rules.
+        """
         self.config = config
 
         self.phi_keys = set(getattr(config, 'phi_fields', []))
@@ -21,9 +38,26 @@ class EnrichmentPipeline:
                 self.mappings[mapping.source_variable_name] = mapping
 
     def process(self, data: Any) -> Any:
+        """Process the input data through the enrichment pipeline.
+
+        Args:
+            data: The raw data to be enriched.
+
+        Returns:
+            The enriched and transformed data.
+        """
         return self._transform_recursive(data, depth=0)
 
     def _evaluate_business_logic(self, expr: str, value: Any) -> Any:
+        """Evaluate a business logic expression on a value.
+
+        Args:
+            expr: The python expression to evaluate.
+            value: The current value.
+
+        Returns:
+            The result of the evaluated expression, or the original value if evaluation fails.
+        """
         try:
             # Provide a safe evaluation environment
             env = {"value": value}
@@ -36,6 +70,15 @@ class EnrichmentPipeline:
             return value
 
     def _transform_recursive(self, data: Any, depth: int) -> Any:
+        """Recursively transform data structures.
+
+        Args:
+            data: The data structure to transform.
+            depth: The current recursion depth.
+
+        Returns:
+            The transformed data structure.
+        """
         if isinstance(data, dict):
             new_dict = {}
             for k, v in data.items():

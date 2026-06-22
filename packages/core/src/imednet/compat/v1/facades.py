@@ -1,6 +1,4 @@
-"""
-Compatibility facades for exposing internal endpoint methods safely.
-"""
+"""Compatibility facades for exposing internal endpoint methods safely."""
 
 from typing import Any, Optional
 

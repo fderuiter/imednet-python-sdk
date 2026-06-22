@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import httpx
 import pytest
 
@@ -8,10 +9,12 @@ from imednet.form_designer.models import Layout, Page
 
 @pytest.fixture
 def mock_layout():
+    """TODO: Add docstring."""
     return Layout(pages=[Page(entities=[])])
 
 
 def test_save_form_success(mock_layout, respx_mock):
+    """TODO: Add docstring."""
     base_url = "https://test.imednet.com"
     client = FormDesignerClient(base_url, "fake_sessid")
 
@@ -30,6 +33,7 @@ def test_save_form_success(mock_layout, respx_mock):
 
 
 def test_save_form_server_error(mock_layout, respx_mock):
+    """TODO: Add docstring."""
     base_url = "https://test.imednet.com"
     client = FormDesignerClient(base_url, "fake_sessid")
 
@@ -42,6 +46,7 @@ def test_save_form_server_error(mock_layout, respx_mock):
 
 
 def test_save_form_http_error(mock_layout, respx_mock):
+    """TODO: Add docstring."""
     base_url = "https://test.imednet.com"
     client = FormDesignerClient(base_url, "fake_sessid")
 
@@ -54,8 +59,8 @@ def test_save_form_http_error(mock_layout, respx_mock):
 
 
 def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
-    """
-    Simulate a legacy PHP endpoint returning HTML instead of JSON.
+    """Simulate a legacy PHP endpoint returning HTML instead of JSON.
+
     The client should catch json.JSONDecodeError and raise ApiError instead of returning text.
     """
     base_url = "https://test.imednet.com"
@@ -86,6 +91,7 @@ def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
     ],
 )
 def test_save_form_validation_sad_paths(mock_layout, csrf, form_id, comm_id, rev, expected_error):
+    """TODO: Add docstring."""
     base_url = "https://test.imednet.com"
     client = FormDesignerClient(base_url, "fake_sessid")
 

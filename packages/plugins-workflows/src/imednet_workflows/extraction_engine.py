@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import collections
@@ -43,6 +44,7 @@ class ExtractionResult(BaseModel):
 
 
 def _get_from_path(value: Any, path: str) -> Any:
+    """TODO: Add docstring."""
     if not path:
         return None
     current = value
@@ -59,6 +61,7 @@ def _get_from_path(value: Any, path: str) -> Any:
 def _extract_rule_value_from_payload(
     record: Record, rule: MappingRule, top_level_payload: dict[str, Any]
 ) -> Any:
+    """TODO: Add docstring."""
     source_path = rule.source_variable_name
     if not source_path:
         return None
@@ -80,12 +83,14 @@ def _extract_rule_value_from_payload(
 
 
 def _is_missing_value(value: Any) -> bool:
+    """TODO: Add docstring."""
     return value is None or (isinstance(value, str) and value == "")
 
 
 def _group_mappings_by_domain_and_form(
     study_configuration: StudyConfiguration,
 ) -> dict[str, dict[str, list[MappingRule]]]:
+    """TODO: Add docstring."""
     grouped: dict[str, dict[str, list[MappingRule]]] = {}
     for rule in study_configuration.mappings:
         domain_key = rule.domain.upper()
@@ -96,7 +101,9 @@ def _group_mappings_by_domain_and_form(
 
 
 class SubjectContext:
+    """TODO: Add docstring."""
     def __init__(self, subject_key: str):
+        """TODO: Add docstring."""
         self.subject_key = subject_key
         self.state: dict[str, Any] = {}
         self.baseline: dict[str, Any] = {}
@@ -105,6 +112,7 @@ class SubjectContext:
 def _evaluate_business_logic(
     logic: str, record: Record, payload: dict[str, Any], context: SubjectContext, value: Any = None
 ) -> Any:
+    """TODO: Add docstring."""
     try:
         # evaluate safely
         env = {

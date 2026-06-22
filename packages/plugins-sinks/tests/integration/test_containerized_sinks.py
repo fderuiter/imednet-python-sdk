@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import logging
 import os
 from typing import List
@@ -17,17 +18,21 @@ pytestmark = pytest.mark.skipif(
 
 
 class DriftError(Exception):
+    """TODO: Add docstring."""
     pass
 
 
 class DriftFailingHandler(logging.Handler):
+    """TODO: Add docstring."""
     def emit(self, record):
+        """TODO: Add docstring."""
         if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
             raise DriftError(record.getMessage())
 
 
 @pytest.fixture(autouse=True)
 def fail_on_drift():
+    """TODO: Add docstring."""
     logger = logging.getLogger("imednet.drift")
     handler = DriftFailingHandler()
     logger.addHandler(handler)
@@ -40,6 +45,7 @@ from dataclasses import dataclass
 
 @dataclass
 class FakeRecord:
+    """TODO: Add docstring."""
     record_id: int
     subject_id: str
     subject_key: str
@@ -52,6 +58,7 @@ class FakeRecord:
 
 @pytest.fixture
 def fake_records() -> List[FakeRecord]:
+    """TODO: Add docstring."""
     return [
         FakeRecord(
             record_id=1,
@@ -78,21 +85,26 @@ def fake_records() -> List[FakeRecord]:
 
 @pytest.fixture
 def mock_record_mapper(monkeypatch, fake_records):
+    """TODO: Add docstring."""
     from unittest.mock import MagicMock
 
     from imednet.integrations import export as export_mod
 
     class FakeMapper:
+        """TODO: Add docstring."""
         def __init__(self, *args, **kwargs):
+            """TODO: Add docstring."""
             pass
 
         def __iter__(self):
+            """TODO: Add docstring."""
             return iter(fake_records)
 
     monkeypatch.setattr(export_mod, "_record_mapper", lambda *a, **kw: FakeMapper)
 
 
 def test_mongodb_containerized_upserts(fake_records, monkeypatch):
+    """TODO: Add docstring."""
     import pymongo
 
     uri = "mongodb://root:password@localhost:27017"
@@ -120,6 +132,7 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
 
 
 def test_neo4j_containerized_merges(fake_records, monkeypatch):
+    """TODO: Add docstring."""
     import neo4j
 
     uri = "bolt://localhost:7687"

@@ -1,5 +1,4 @@
-"""
-Parameter processing strategies for endpoints.
+"""Parameter processing strategies for endpoints.
 
 This module implements the ParamProcessor strategy pattern, allowing endpoints
 to customize how filters are processed and special parameters are extracted.
@@ -11,15 +10,13 @@ from imednet.core.protocols import ParamProcessor
 
 
 class DefaultParamProcessor(ParamProcessor):
-    """
-    Default parameter processor.
+    """Default parameter processor.
 
     Simply passes filters through without modification.
     """
 
     def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """
-        Return filters as-is and no special parameters.
+        """Return filters as-is and no special parameters.
 
         Args:
             filters: The input filters dictionary.
@@ -31,8 +28,7 @@ class DefaultParamProcessor(ParamProcessor):
 
 
 class MappingParamProcessor(ParamProcessor):
-    """
-    ParamProcessor that maps specific filter keys to API parameters.
+    """ParamProcessor that maps specific filter keys to API parameters.
 
     Extracts keys defined in the mapping and returns them as special parameters,
     optionally renaming them according to the mapping values.
@@ -43,8 +39,7 @@ class MappingParamProcessor(ParamProcessor):
         mapping: Dict[str, str],
         defaults: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize the processor with a mapping.
+        """Initialize the processor with a mapping.
 
         Args:
             mapping: A dictionary where keys are the filter keys to look for,
@@ -55,8 +50,7 @@ class MappingParamProcessor(ParamProcessor):
         self.defaults = defaults or {}
 
     def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """
-        Process filters using the configured mapping.
+        """Process filters using the configured mapping.
 
         Args:
             filters: The input filters dictionary.
@@ -89,8 +83,7 @@ class StudyKeyStrategy(Protocol):
     """Protocol for study key handling strategies."""
 
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
-        """
-        Process the study key from filters.
+        """Process the study key from filters.
 
         Args:
             filters: The current filters dictionary.
@@ -102,15 +95,13 @@ class StudyKeyStrategy(Protocol):
 
 
 class KeepStudyKeyStrategy:
-    """
-    Strategy that requires a study key and keeps it in the filters.
+    """Strategy that requires a study key and keeps it in the filters.
 
     Used when the API expects 'studyKey' as a query parameter.
     """
 
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
-        """
-        Extract study key and keep in filters.
+        """Extract study key and keep in filters.
 
         Args:
             filters: The filters dictionary.
@@ -123,16 +114,14 @@ class KeepStudyKeyStrategy:
 
 
 class PopStudyKeyStrategy:
-    """
-    Strategy that requires a study key but removes it from the filters.
+    """Strategy that requires a study key but removes it from the filters.
 
     Used when the study key is part of the path or handled separately,
     not sent as a query parameter.
     """
 
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
-        """
-        Extract study key and remove from filters.
+        """Extract study key and remove from filters.
 
         Args:
             filters: The filters dictionary.
@@ -146,15 +135,13 @@ class PopStudyKeyStrategy:
 
 
 class OptionalStudyKeyStrategy:
-    """
-    Strategy that allows the study key to be optional.
+    """Strategy that allows the study key to be optional.
 
     If present, it is kept in the filters.
     """
 
     def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
-        """
-        Extract study key if present.
+        """Extract study key if present.
 
         Args:
             filters: The filters dictionary.

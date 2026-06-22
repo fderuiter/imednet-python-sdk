@@ -1,6 +1,4 @@
-"""
-Legacy v1 compatibility namespace.
-"""
+"""Legacy v1 compatibility namespace."""
 
 import logging
 import warnings

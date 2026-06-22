@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -94,12 +95,14 @@ def _fetch_site_metrics(
 
 
 def _highlight_high_rate(val: float) -> str:
+    """TODO: Add docstring."""
     return f"background-color: {_HIGH_RATE_COLOR}" if val > _HIGH_QUERY_RATE_THRESHOLD else ""
 
 
 def _top_sites_with_other(
     df: pd.DataFrame, *, rank_column: str, top_n: int = _MAX_CHART_SITES
 ) -> pd.DataFrame:
+    """TODO: Add docstring."""
     if df.empty:
         return df
 

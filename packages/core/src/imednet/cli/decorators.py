@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import inspect
@@ -18,12 +19,12 @@ R = TypeVar("R")
 
 def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
     """Initialize the SDK and pass it to the wrapped command function."""
-
     sig = inspect.signature(func)
     wrapper_params = list(sig.parameters.values())[1:]
 
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        """TODO: Add docstring."""
         from .utils.context import get_sdk
 
         sdk = get_sdk()

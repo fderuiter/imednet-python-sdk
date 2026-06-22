@@ -1,6 +1,4 @@
-"""
-Re-exports core components for easier access.
-"""
+"""Re-exports core components for easier access."""
 
 from imednet.errors import (
     ApiError,

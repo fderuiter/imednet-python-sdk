@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import pandas as pd
 import pytest
 from typer.testing import CliRunner
@@ -8,30 +9,36 @@ from imednet.integrations import export as export_mod
 
 @pytest.fixture(scope="session")
 def runner() -> CliRunner:
+    """TODO: Add docstring."""
     return CliRunner()
 
 
 def test_cli_studies_list(runner: CliRunner) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["studies", "list"])
     assert result.exit_code == 0
 
 
 def test_cli_sites_list(runner: CliRunner, study_key: str) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["sites", "list", study_key])
     assert result.exit_code == 0
 
 
 def test_cli_subjects_list(runner: CliRunner, study_key: str) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["subjects", "list", study_key])
     assert result.exit_code == 0
 
 
 def test_cli_records_list(runner: CliRunner, study_key: str) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["records", "list", study_key])
     assert result.exit_code == 0
 
 
 def test_cli_jobs_status(runner: CliRunner, study_key: str, generated_batch_id: str) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(
         cli.app,
         ["jobs", "status", study_key, generated_batch_id],
@@ -40,6 +47,7 @@ def test_cli_jobs_status(runner: CliRunner, study_key: str, generated_batch_id: 
 
 
 def test_cli_jobs_wait(runner: CliRunner, study_key: str, generated_batch_id: str) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(
         cli.app,
         ["jobs", "wait", study_key, generated_batch_id, "--interval", "1", "--timeout", "60"],
@@ -48,6 +56,7 @@ def test_cli_jobs_wait(runner: CliRunner, study_key: str, generated_batch_id: st
 
 
 def test_cli_export_parquet(runner: CliRunner, study_key: str, tmp_path) -> None:
+    """TODO: Add docstring."""
     pytest.importorskip("pyarrow")
     out = tmp_path / "data.parquet"
     result = runner.invoke(cli.app, ["export", "parquet", study_key, str(out)])
@@ -56,6 +65,7 @@ def test_cli_export_parquet(runner: CliRunner, study_key: str, tmp_path) -> None
 
 
 def test_cli_export_csv(runner: CliRunner, study_key: str, tmp_path) -> None:
+    """TODO: Add docstring."""
     out = tmp_path / "data.csv"
     result = runner.invoke(cli.app, ["export", "csv", study_key, str(out)])
     assert result.exit_code == 0
@@ -63,6 +73,7 @@ def test_cli_export_csv(runner: CliRunner, study_key: str, tmp_path) -> None:
 
 
 def test_cli_export_excel(runner: CliRunner, study_key: str, tmp_path) -> None:
+    """TODO: Add docstring."""
     pytest.importorskip("openpyxl")
     out = tmp_path / "data.xlsx"
     result = runner.invoke(cli.app, ["export", "excel", study_key, str(out)])
@@ -71,6 +82,7 @@ def test_cli_export_excel(runner: CliRunner, study_key: str, tmp_path) -> None:
 
 
 def test_cli_export_json(runner: CliRunner, study_key: str, tmp_path) -> None:
+    """TODO: Add docstring."""
     out = tmp_path / "data.json"
     result = runner.invoke(cli.app, ["export", "json", study_key, str(out)])
     assert result.exit_code == 0
@@ -80,6 +92,7 @@ def test_cli_export_json(runner: CliRunner, study_key: str, tmp_path) -> None:
 def test_cli_export_sql_chunks_tables(
     runner: CliRunner, study_key: str, tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """TODO: Add docstring."""
     pytest.importorskip("sqlalchemy")
     from sqlalchemy import create_engine, inspect, text
 
@@ -111,5 +124,6 @@ def test_cli_export_sql_chunks_tables(
 
 
 def test_cli_workflows_extract(runner: CliRunner, study_key: str) -> None:
+    """TODO: Add docstring."""
     result = runner.invoke(cli.app, ["workflows", "extract-records", study_key])
     assert result.exit_code == 0

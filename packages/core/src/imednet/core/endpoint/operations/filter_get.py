@@ -1,5 +1,4 @@
-"""
-Operation for executing get requests via filtering.
+"""Operation for executing get requests via filtering.
 
 This module encapsulates the logic for fetching a list of resources with a filter,
 and then parsing and validating that a single item was found.
@@ -16,8 +15,7 @@ T = TypeVar("T")
 
 
 class FilterGetOperation(Generic[T]):
-    """
-    Operation for executing get requests via filtering.
+    """Operation for executing get requests via filtering.
 
     Encapsulates the logic for making the list request, and validating
     that the target item exists in the result set.
@@ -32,8 +30,7 @@ class FilterGetOperation(Generic[T]):
         list_sync_func: Optional[Callable[..., List[T]]] = None,
         list_async_func: Optional[Callable[..., Awaitable[List[T]]]] = None,
     ) -> None:
-        """
-        Initialize the filter get operation.
+        """Initialize the filter get operation.
 
         Args:
             study_key: The study key.
@@ -59,8 +56,7 @@ class FilterGetOperation(Generic[T]):
         client: RequestorProtocol,
         paginator_cls: type[Paginator],
     ) -> T:
-        """
-        Execute synchronous get request.
+        """Execute synchronous get request.
 
         Args:
             client: The synchronous HTTP client.
@@ -85,8 +81,7 @@ class FilterGetOperation(Generic[T]):
         client: AsyncRequestorProtocol,
         paginator_cls: type[AsyncPaginator],
     ) -> T:
-        """
-        Execute asynchronous get request.
+        """Execute asynchronous get request.
 
         Args:
             client: The asynchronous HTTP client.

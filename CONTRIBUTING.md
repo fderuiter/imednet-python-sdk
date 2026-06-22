@@ -206,8 +206,7 @@ Configuration requirements:
 
 ## Docstring standards
 
-All public APIs must be documented using **Google-style docstrings** so that `sphinx.ext.napoleon`
-can parse them correctly.
+All modules, classes, functions, and methods (regardless of visibility—public or private) MUST be documented using **Google-style docstrings** to comply with the project's strict documentation governance policy. The CI pipeline will fail if any code member is missing a docstring.
 
 Key rules:
 

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -17,6 +18,7 @@ def test_isolation_study_a_failure_does_not_affect_b_and_c(
     """STUDY-A raises RuntimeError; STUDY-B and STUDY-C must succeed."""
 
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter, **kwargs: Any) -> str:
+        """TODO: Add docstring."""
         if study_key == "STUDY-A":
             raise RuntimeError("Simulated failure")
         return f"processed:{study_key}"
@@ -35,6 +37,7 @@ def test_sdk_immutability_across_threads(mock_sdk: MagicMock) -> None:
     original_id = id(mock_sdk)
 
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> bool:
+        """TODO: Add docstring."""
         assert id(sdk) == original_id
         return True
 
@@ -51,6 +54,7 @@ def test_logger_study_key_propagated_to_worker(
     """Log records emitted inside workers must carry the correct study_key."""
 
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
+        """TODO: Add docstring."""
         logger.info("Processing %s", study_key)
         return study_key
 
@@ -67,7 +71,9 @@ def test_logger_study_key_propagated_to_worker(
 
 
 def test_result_contains_duration_seconds(orchestrator: MultiStudyOrchestrator) -> None:
+    """TODO: Add docstring."""
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
+        """TODO: Add docstring."""
         sleep(0.02)
         return study_key
 
@@ -77,7 +83,9 @@ def test_result_contains_duration_seconds(orchestrator: MultiStudyOrchestrator) 
 
 
 def test_successful_result_error_is_none(orchestrator: MultiStudyOrchestrator) -> None:
+    """TODO: Add docstring."""
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
+        """TODO: Add docstring."""
         return study_key
 
     results = orchestrator.execute_pipeline(pipeline)
@@ -87,7 +95,9 @@ def test_successful_result_error_is_none(orchestrator: MultiStudyOrchestrator) -
 
 
 def test_failed_result_data_is_none(orchestrator: MultiStudyOrchestrator) -> None:
+    """TODO: Add docstring."""
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
+        """TODO: Add docstring."""
         raise RuntimeError(f"Boom:{study_key}")
 
     results = orchestrator.execute_pipeline(pipeline)
@@ -98,7 +108,9 @@ def test_failed_result_data_is_none(orchestrator: MultiStudyOrchestrator) -> Non
 
 
 def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrator) -> None:
+    """TODO: Add docstring."""
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
+        """TODO: Add docstring."""
         return study_key
 
     results = orchestrator.execute_pipeline(pipeline, whitelist={"STUDY-A"})
@@ -107,7 +119,9 @@ def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrato
 
 
 def test_execute_pipeline_context_propagation(orchestrator: MultiStudyOrchestrator) -> None:
+    """TODO: Add docstring."""
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
+        """TODO: Add docstring."""
         return get_current_study()
 
     results = orchestrator.execute_pipeline(pipeline)
@@ -119,6 +133,7 @@ def test_execute_pipeline_context_propagation(orchestrator: MultiStudyOrchestrat
 
 @pytest.mark.parametrize("mock_sdk", [[]], indirect=True)
 def test_empty_study_list_returns_empty_dict(mock_sdk: MagicMock) -> None:
+    """TODO: Add docstring."""
     orchestrator = MultiStudyOrchestrator(mock_sdk, max_workers=3)
 
     results = orchestrator.execute_pipeline(lambda *_args, **_kwargs: True)

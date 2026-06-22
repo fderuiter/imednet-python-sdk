@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import pytest
 
 import imednet.sdk as sdk_mod
@@ -5,60 +6,74 @@ import imednet.sdk as sdk_mod
 
 @pytest.mark.asyncio
 async def test_async_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
+    """TODO: Add docstring."""
     sdk = sdk_mod.AsyncImednetSDK(
         api_key="key", security_key="secret", base_url="https://example.com"
     )
     calls = {}
 
     async def fake_studies_async_list(study_key=None, **kw):
+        """TODO: Add docstring."""
         calls["studies"] = kw
         return ["STUDY"]
 
     async def fake_records_async_list(study_key, record_data_filter=None, **kw):
+        """TODO: Add docstring."""
         calls["records"] = (study_key, record_data_filter, kw)
         return ["REC"]
 
     async def fake_sites_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["sites"] = (study_key, kw)
         return ["SITE"]
 
     async def fake_subjects_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["subjects"] = (study_key, kw)
         return ["SUB"]
 
     async def fake_forms_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["forms"] = (study_key, kw)
         return ["FORM"]
 
     async def fake_intervals_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["intervals"] = (study_key, kw)
         return ["INT"]
 
     async def fake_variables_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["variables"] = (study_key, kw)
         return ["VAR"]
 
     async def fake_visits_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["visits"] = (study_key, kw)
         return ["VIS"]
 
     async def fake_codings_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["codings"] = (study_key, kw)
         return ["COD"]
 
     async def fake_queries_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["queries"] = (study_key, kw)
         return ["QUERY"]
 
     async def fake_record_revisions_async_list(study_key, **kw):
+        """TODO: Add docstring."""
         calls["record_revisions"] = (study_key, kw)
         return ["REV"]
 
     async def fake_users_async_list(study_key, include_inactive=False):
+        """TODO: Add docstring."""
         calls["users"] = (study_key, include_inactive)
         return ["USER"]
 
     async def fake_async_get_job(study_key, batch_id):
+        """TODO: Add docstring."""
         calls["job"] = (study_key, batch_id)
         return "JOBOBJ"
 
@@ -107,16 +122,20 @@ async def test_async_convenience_methods_delegate_to_endpoints(monkeypatch) -> N
 
 @pytest.mark.asyncio
 async def test_async_poll_job_convenience(monkeypatch) -> None:
+    """TODO: Add docstring."""
     sdk = sdk_mod.AsyncImednetSDK(
         api_key="key", security_key="secret", base_url="https://example.com"
     )
     calls = {}
 
     class FakePoller:
+        """TODO: Add docstring."""
         def __init__(self, get_func, **kwargs):
+            """TODO: Add docstring."""
             calls["init"] = get_func
 
         async def run(self, study_key, batch_id, interval, timeout):
+            """TODO: Add docstring."""
             calls["run"] = (study_key, batch_id, interval, timeout)
             return "JOBOBJ"
 

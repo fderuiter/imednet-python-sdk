@@ -28,10 +28,12 @@ _SENSITIVE_PATTERN = re.compile(
 
 
 def _replace_sensitive_match(match: re.Match[str]) -> str:
+    """TODO: Add docstring."""
     return f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}"
 
 
 def _redact_sensitive_value(value: Any) -> Any:
+    """TODO: Add docstring."""
     if isinstance(value, dict):
         return {
             key: ("***" if str(key).lower() in _SENSITIVE_KEYS else _redact_sensitive_value(val))
@@ -47,8 +49,7 @@ def _redact_sensitive_value(value: Any) -> Any:
 
 
 class ApiError(ImednetError):
-    """
-    Raised for generic API errors (non-2xx HTTP status codes).
+    """Raised for generic API errors (non-2xx HTTP status codes).
 
     Attributes:
         status_code: HTTP status code returned by the API.
@@ -58,12 +59,14 @@ class ApiError(ImednetError):
     def __init__(
         self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = None
     ) -> None:
+        """TODO: Add docstring."""
         sanitized_response = _redact_sensitive_value(response)
         super().__init__(str(sanitized_response))
         self.status_code = status_code
         self.response = sanitized_response
 
     def __str__(self) -> str:
+        """TODO: Add docstring."""
         base = super().__str__()
         details = []
         if self.status_code is not None:

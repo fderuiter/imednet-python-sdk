@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import logging
 from unittest.mock import Mock
 
@@ -12,6 +13,7 @@ from imednet.testing import typed_values
 
 
 def test_submit_record_uses_configured_timeout() -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.records.create.return_value = Mock(batch_id="B1")
     sdk.poll_job.return_value = Mock(state="COMPLETED", batch_id="B1")
@@ -23,6 +25,7 @@ def test_submit_record_uses_configured_timeout() -> None:
 
 
 def test_submit_record_reports_failure_details() -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.records.create.return_value = Mock(batch_id="B1")
     sdk.poll_job.return_value = Mock(
@@ -37,10 +40,12 @@ def test_submit_record_reports_failure_details() -> None:
 
 
 def _var(name: str, var_type: str) -> Variable:
+    """TODO: Add docstring."""
     return Variable(variable_name=name, variable_type=var_type, form_id=1, form_key="F1")
 
 
 def test_build_record_returns_typed_values() -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.variables.list.return_value = [
         _var("text", "text"),
@@ -92,6 +97,7 @@ def test_build_record_returns_typed_values() -> None:
     ],
 )
 def test_build_record_optional_identifiers(kwargs: dict[str, str], extra: dict[str, str]) -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.variables.list.return_value = []
 
@@ -102,6 +108,7 @@ def test_build_record_optional_identifiers(kwargs: dict[str, str], extra: dict[s
 
 
 def test_discover_identifiers_returns_all() -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.sites.list.return_value = [
         Site(study_key="S", site_name="SITE", site_enrollment_status="Active")
@@ -120,6 +127,7 @@ def test_discover_identifiers_returns_all() -> None:
 
 
 def test_discover_identifiers_reports_missing(monkeypatch, capsys) -> None:
+    """TODO: Add docstring."""
     monkeypatch.setattr(smoke, "discover_site_name", Mock(side_effect=Exception("no site")))
     monkeypatch.setattr(smoke, "discover_subject_key", Mock(side_effect=Exception("no subject")))
     monkeypatch.setattr(smoke, "discover_interval_name", Mock(side_effect=Exception("no int")))
@@ -134,6 +142,7 @@ def test_discover_identifiers_reports_missing(monkeypatch, capsys) -> None:
 
 
 def test_main_verbose_logs(monkeypatch, caplog) -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.__enter__ = Mock(return_value=sdk)
     sdk.__exit__ = Mock(return_value=False)
@@ -159,6 +168,7 @@ def test_main_verbose_logs(monkeypatch, caplog) -> None:
 
 
 def test_main_returns_skip_when_identifiers_missing(monkeypatch, capsys) -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.__enter__ = Mock(return_value=sdk)
     sdk.__exit__ = Mock(return_value=False)
@@ -174,6 +184,7 @@ def test_main_returns_skip_when_identifiers_missing(monkeypatch, capsys) -> None
 
 
 def test_main_returns_skip_on_discovery_failure(monkeypatch, capsys) -> None:
+    """TODO: Add docstring."""
     sdk = Mock()
     sdk.__enter__ = Mock(return_value=sdk)
     sdk.__exit__ = Mock(return_value=False)

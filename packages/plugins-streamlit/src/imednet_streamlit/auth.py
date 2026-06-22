@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import streamlit as st
@@ -23,6 +24,7 @@ def _build_sdk(api_key: str, security_key: str) -> None:
 
 
 def _mark_disconnected() -> None:
+    """TODO: Add docstring."""
     st.session_state[_KEY_CONNECTED] = False
     st.session_state.pop(_KEY_SDK, None)
 
@@ -32,6 +34,7 @@ import sqlite3
 
 
 def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
+    """TODO: Add docstring."""
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )
@@ -50,6 +53,7 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
 
 
 def get_provisioned_studies() -> list[str]:
+    """TODO: Add docstring."""
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )

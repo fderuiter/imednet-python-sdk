@@ -10,6 +10,7 @@ from imednet.utils.typing import ItemId
 
 
 class JobsOperationDef:
+    """TODO: Add docstring."""
     PATH = "jobs"
     MODEL = JobStatus
     PAGINATOR_CLS = JsonListPaginator
@@ -20,6 +21,7 @@ class JobsOperationDef:
         study_key: Optional[str],
         item_id: ItemId,
     ) -> PathGetOperation[JobStatus]:
+        """TODO: Add docstring."""
         path = self._get_endpoint_path(study_key, item_id)  # type: ignore
         return PathGetOperation[JobStatus](
             path=path,
@@ -29,7 +31,9 @@ class JobsOperationDef:
 
 
 class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
+    """TODO: Add docstring."""
     def get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
+        """TODO: Add docstring."""
         self._require_item_id(item_id)
         return self._create_path_get_operation(study_key, item_id).execute_sync(
             self._require_sync_client()
@@ -37,7 +41,9 @@ class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type
 
 
 class AsyncJobsEndpoint(JobsOperationDef, EdcAsyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
+    """TODO: Add docstring."""
     async def async_get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
+        """TODO: Add docstring."""
         self._require_item_id(item_id)
         return await self._create_path_get_operation(study_key, item_id).execute_async(
             self._require_async_client()

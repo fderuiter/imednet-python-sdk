@@ -1,5 +1,5 @@
-"""
-Universal execution wrapper that applies exponential backoff retries and circuit breaking
+"""Universal execution wrapper that applies exponential backoff retries and circuit breaking.
+
 to any compliant operation.
 """
 
@@ -32,6 +32,7 @@ T = TypeVar("T")
 
 
 class OperationRetryPolicy(ABC):
+    """TODO: Add docstring."""
     @abstractmethod
     def should_retry(self, exception: Exception) -> bool:
         """Return True if the exception should trigger a retry."""
@@ -39,7 +40,9 @@ class OperationRetryPolicy(ABC):
 
 
 class DefaultOperationRetryPolicy(OperationRetryPolicy):
+    """TODO: Add docstring."""
     def should_retry(self, exception: Exception) -> bool:
+        """TODO: Add docstring."""
         # Default fallback: retry on any exception?
         # Usually we only retry on specific ones, but for universal wrapper, we can allow everything or leave it configurable
         return True
@@ -59,6 +62,7 @@ class UniversalExecutor:
         retry_predicate: Optional[Callable[[RetryCallState], bool]] = None,
         **attributes: Any,
     ) -> None:
+        """TODO: Add docstring."""
         self.retries = retries
         self.backoff_factor = backoff_factor
         self.tracer = tracer
@@ -70,6 +74,7 @@ class UniversalExecutor:
         self.retry_predicate = retry_predicate or self._should_retry_wrapper
 
     def _should_retry_wrapper(self, retry_state: RetryCallState) -> bool:
+        """TODO: Add docstring."""
         if retry_state.outcome and retry_state.outcome.failed:
             exc = retry_state.outcome.exception()
             if isinstance(exc, Exception):
@@ -125,6 +130,7 @@ class UniversalExecutor:
             try:
 
                 async def _async_wrapper() -> T:
+                    """TODO: Add docstring."""
                     return await func()
 
                 result: Any = await retryer(_async_wrapper)

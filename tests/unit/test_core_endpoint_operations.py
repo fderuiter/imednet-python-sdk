@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -11,10 +12,12 @@ from imednet.errors import ClientError, NotFoundError
 
 
 def dummy_parse_func(data):
+    """TODO: Add docstring."""
     return data
 
 
 def test_path_get_operation_execute_sync():
+    """TODO: Add docstring."""
     client = MagicMock()
     response = MagicMock()
     response.json.return_value = {"id": 1, "name": "Test"}
@@ -34,6 +37,7 @@ def test_path_get_operation_execute_sync():
 
 
 def test_path_get_operation_execute_sync_not_found():
+    """TODO: Add docstring."""
     client = MagicMock()
     response = MagicMock()
     response.json.return_value = None
@@ -54,6 +58,7 @@ def test_path_get_operation_execute_sync_not_found():
 
 @pytest.mark.asyncio
 async def test_path_get_operation_execute_async():
+    """TODO: Add docstring."""
     client = AsyncMock()
     response = MagicMock()
     response.json.return_value = {"id": 1, "name": "Test"}
@@ -74,6 +79,7 @@ async def test_path_get_operation_execute_async():
 
 @pytest.mark.asyncio
 async def test_path_get_operation_execute_async_not_found():
+    """TODO: Add docstring."""
     client = AsyncMock()
     response = MagicMock()
     response.json.return_value = None
@@ -93,6 +99,7 @@ async def test_path_get_operation_execute_async_not_found():
 
 
 def test_list_operation_sync():
+    """TODO: Add docstring."""
     client = MagicMock()
     paginator_cls = MagicMock()
     paginator_instance = [{"id": 1}, {"id": 2}]
@@ -109,14 +116,18 @@ def test_list_operation_sync():
 
 @pytest.mark.asyncio
 async def test_list_operation_async():
+    """TODO: Add docstring."""
     client = AsyncMock()
     paginator_cls = MagicMock()
 
     class AsyncIteratorMock:
+        """TODO: Add docstring."""
         def __init__(self, items):
+            """TODO: Add docstring."""
             self.items = items
 
         async def __aiter__(self):
+            """TODO: Add docstring."""
             for item in self.items:
                 yield item
 
@@ -132,6 +143,7 @@ async def test_list_operation_async():
 
 
 def test_filter_get_operation_sync():
+    """TODO: Add docstring."""
     list_sync_func = MagicMock(return_value=[{"id": 1}])
     validate_func = MagicMock(return_value={"id": 1})
     client = MagicMock()
@@ -153,6 +165,7 @@ def test_filter_get_operation_sync():
 
 
 def test_filter_get_operation_sync_missing_list_func():
+    """TODO: Add docstring."""
     client = MagicMock()
     paginator_cls = MagicMock()
 
@@ -169,6 +182,7 @@ def test_filter_get_operation_sync_missing_list_func():
 
 @pytest.mark.asyncio
 async def test_filter_get_operation_async():
+    """TODO: Add docstring."""
     list_async_func = AsyncMock(return_value=[{"id": 1}])
     validate_func = MagicMock(return_value={"id": 1})
     client = AsyncMock()
@@ -191,6 +205,7 @@ async def test_filter_get_operation_async():
 
 @pytest.mark.asyncio
 async def test_filter_get_operation_async_missing_list_func():
+    """TODO: Add docstring."""
     client = AsyncMock()
     paginator_cls = MagicMock()
 
@@ -206,6 +221,7 @@ async def test_filter_get_operation_async_missing_list_func():
 
 
 def test_record_create_operation_sync():
+    """TODO: Add docstring."""
     client = MagicMock()
     response = MagicMock()
     response.json.return_value = {"status": "created"}
@@ -226,6 +242,7 @@ def test_record_create_operation_sync():
 
 
 def test_record_create_operation_header_validation_failure():
+    """TODO: Add docstring."""
     with pytest.raises(ClientError, match="Header value must not contain newlines"):
         RecordCreateOperation(
             path="/create",
@@ -235,6 +252,7 @@ def test_record_create_operation_header_validation_failure():
 
 
 def test_record_create_operation_schema_validation_failure():
+    """TODO: Add docstring."""
     schema_mock = MagicMock()
 
     with pytest.MonkeyPatch.context() as m:
@@ -251,6 +269,7 @@ def test_record_create_operation_schema_validation_failure():
 
 @pytest.mark.asyncio
 async def test_record_create_operation_async():
+    """TODO: Add docstring."""
     client = AsyncMock()
     response = MagicMock()
     response.json.return_value = {"status": "created"}

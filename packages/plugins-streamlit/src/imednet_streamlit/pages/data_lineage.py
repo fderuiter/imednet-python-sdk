@@ -57,6 +57,7 @@ def _load_data(study_key: str) -> None:
 def _get_domain_models(
     extraction: ExtractionResult, domain: str
 ) -> list[AdverseEvent | ProtocolDeviation | DeviceDeficiency]:
+    """TODO: Add docstring."""
     if domain == "AE":
         return list(extraction.adverse_events)
     if domain == "PD":
@@ -67,6 +68,7 @@ def _get_domain_models(
 def _models_to_frame(
     models: list[Any],
 ) -> pd.DataFrame:
+    """TODO: Add docstring."""
     if not models:
         return pd.DataFrame()
     rows = [m.model_dump(mode="python", by_alias=False) for m in models]
@@ -245,6 +247,7 @@ def _render_config_input() -> None:
 
 
 def render_page() -> None:
+    """TODO: Add docstring."""
     st.title("🔭 Data Lineage Explorer")
 
     if not st.session_state.get(_KEY_CONNECTED):

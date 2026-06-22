@@ -14,6 +14,7 @@ from uuid import uuid4
 
 
 def _import_pyarrow() -> tuple[Any, Any]:
+    """TODO: Add docstring."""
     try:
         pyarrow_module = import_module("pyarrow")
         dataset_module = import_module("pyarrow.dataset")
@@ -57,6 +58,7 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         form_key: str,
         commit_id: str,
     ) -> Any:
+        """TODO: Add docstring."""
         if not hasattr(table, "replace_schema_metadata"):
             return table
         schema = getattr(table, "schema", None)
@@ -80,6 +82,7 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         study_key: str,
         form_key: str,
     ) -> None:
+        """TODO: Add docstring."""
         pyarrow_module, dataset_module = _import_pyarrow()
         commit_id = uuid4().hex
         base_path = Path(base_dir)

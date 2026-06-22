@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
@@ -31,6 +32,7 @@ class ChunkedRecordPipeline:
     """Chunked iteration utilities for large-study workflows."""
 
     def __init__(self, *, chunk_size: int = DEFAULT_CHUNK_SIZE) -> None:
+        """TODO: Add docstring."""
         if chunk_size <= 0:
             raise ValueError("chunk_size must be greater than zero")
         self.chunk_size = chunk_size

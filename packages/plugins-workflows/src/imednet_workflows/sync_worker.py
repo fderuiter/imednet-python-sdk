@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import logging
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass(slots=True)
 class SyncWorkerConfig:
+    """TODO: Add docstring."""
     study_key: str
     interval_seconds: int = 900
     reconcile: bool = True
@@ -30,6 +32,7 @@ class SyncWorker:
         config: SyncWorkerConfig,
         stop_event: Event | None = None,
     ) -> None:
+        """TODO: Add docstring."""
         self._loader = loader
         self._config = config
         self._stop_event = stop_event or Event()

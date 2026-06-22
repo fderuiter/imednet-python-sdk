@@ -1,5 +1,4 @@
-"""
-HTTP request execution and monitoring utilities.
+"""HTTP request execution and monitoring utilities.
 
 .. note::
 

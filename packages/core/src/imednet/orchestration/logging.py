@@ -40,6 +40,7 @@ class StudyContextLogAdapter(logging.LoggerAdapter):
     """A logger adapter that enriches records with a bound study key."""
 
     def __init__(self, logger: logging.Logger, study_key: str) -> None:
+        """TODO: Add docstring."""
         super().__init__(logger, extra={"study_key": study_key})
         self._study_key = study_key
 

@@ -85,7 +85,9 @@ class StudyWorkerCallable(Protocol[T_Output]):
         logger: Any,
         *args: Any,
         **kwargs: Any,
-    ) -> T_Output: ...
+    ) -> T_Output:
+        """TODO: Add docstring."""
+        ...
 
 
 class OrchestratorResult(TypedDict, total=False):

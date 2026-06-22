@@ -1,5 +1,4 @@
-"""
-Test utilities for the iMedNet SDK.
+"""Test utilities for the iMedNet SDK.
 
 .. warning::
 

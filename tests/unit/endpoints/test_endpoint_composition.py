@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import imednet.endpoints.records as records_module
 from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
 from imednet.endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
@@ -47,6 +48,7 @@ ALL_ASYNC_ENDPOINT_CLASSES = [
 
 
 def test_records_endpoint_keeps_public_read_api(dummy_client, context, paginator_factory):
+    """TODO: Add docstring."""
     endpoint = RecordsEndpoint(dummy_client, context)
     capture = paginator_factory(records_module, [{"recordId": 1}])
 
@@ -61,6 +63,7 @@ def test_records_endpoint_keeps_public_read_api(dummy_client, context, paginator
 
 
 def test_jobs_endpoint_keeps_public_read_api(dummy_client, context, response_factory):
+    """TODO: Add docstring."""
     endpoint = JobsEndpoint(dummy_client, context)
     dummy_client.get.return_value = response_factory({"jobId": "1"})
 

@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from __future__ import annotations
 
 import asyncio
@@ -17,6 +18,7 @@ from imednet_workflows.uat import StudySchemaInspector, StudySnapshot
 
 
 def test_study_snapshot_builds_indexes_and_filters() -> None:
+    """TODO: Add docstring."""
     enrollment = Form(form_key="ENR", form_type="Enrollment", form_name="Enroll")
     scheduled = Form(form_key="LABS", form_type="CRF", form_name="Labs")
     unscheduled = Form(
@@ -49,6 +51,7 @@ def test_study_snapshot_builds_indexes_and_filters() -> None:
 
 
 def test_inspect_uses_cache_and_force_refresh() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_forms.return_value = [Form(form_key="F1", form_name="Form 1")]
     sdk.get_variables.return_value = [Variable(variable_name="V1", form_key="F1")]
@@ -74,6 +77,7 @@ def test_inspect_uses_cache_and_force_refresh() -> None:
 
 
 def test_clear_cache_for_single_key_and_all_keys() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_forms.return_value = []
     sdk.get_variables.return_value = []
@@ -96,12 +100,14 @@ def test_clear_cache_for_single_key_and_all_keys() -> None:
 
 @pytest.mark.asyncio
 async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     calls = {"forms": 0, "variables": 0, "intervals": 0, "sites": 0}
     started = 0
     release = asyncio.Event()
 
     async def delayed_result(name: str, payload: list[Any]) -> list[Any]:
+        """TODO: Add docstring."""
         nonlocal started
         calls[name] += 1
         started += 1
@@ -131,9 +137,11 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
 
 @pytest.mark.asyncio
 async def test_async_inspect_force_refresh_bypasses_cache() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
 
     async def empty_async_gen(*args, **kwargs) -> list[Any]:
+        """TODO: Add docstring."""
         return []
 
     sdk.async_get_forms = MagicMock(side_effect=empty_async_gen)
@@ -152,6 +160,7 @@ async def test_async_inspect_force_refresh_bypasses_cache() -> None:
 
 
 def test_inspect_with_async_sdk_raises_type_error() -> None:
+    """TODO: Add docstring."""
     sdk = AsyncImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     inspector = StudySchemaInspector(sdk)
     try:
@@ -163,6 +172,7 @@ def test_inspect_with_async_sdk_raises_type_error() -> None:
 
 @pytest.mark.asyncio
 async def test_async_inspect_with_sync_sdk_raises_type_error() -> None:
+    """TODO: Add docstring."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     inspector = StudySchemaInspector(sdk)
     with pytest.raises(AttributeError):
@@ -170,6 +180,7 @@ async def test_async_inspect_with_sync_sdk_raises_type_error() -> None:
 
 
 def _form_payload(form_id: int) -> dict[str, object]:
+    """TODO: Add docstring."""
     return {
         "studyKey": "ST",
         "formId": form_id,
@@ -180,6 +191,7 @@ def _form_payload(form_id: int) -> dict[str, object]:
 
 
 def _variable_payload(variable_id: int) -> dict[str, object]:
+    """TODO: Add docstring."""
     return {
         "studyKey": "ST",
         "variableId": variable_id,
@@ -194,6 +206,7 @@ def _variable_payload(variable_id: int) -> dict[str, object]:
 
 @respx.mock
 def test_inspect_consumes_paginated_forms_and_variables() -> None:
+    """TODO: Add docstring."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     forms_route = respx.get("https://api.test/api/v1/edc/studies/ST/forms").mock(
         side_effect=[

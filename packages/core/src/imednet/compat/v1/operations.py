@@ -1,6 +1,4 @@
-"""
-Compatibility facades for aliasing divergent operational patterns.
-"""
+"""Compatibility facades for aliasing divergent operational patterns."""
 
 from typing import Any, Optional
 

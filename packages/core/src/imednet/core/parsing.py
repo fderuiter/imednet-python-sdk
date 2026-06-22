@@ -1,5 +1,4 @@
-"""
-Centralized model parsing strategy for the iMednet SDK.
+"""Centralized model parsing strategy for the iMednet SDK.
 
 This module provides a consistent approach to parsing API responses into
 Pydantic models, eliminating duplicated parsing logic across endpoints.
@@ -18,8 +17,7 @@ T = TypeVar("T", bound=BaseModel)
 
 
 def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
-    """
-    Return the appropriate parsing function for a model.
+    """Return the appropriate parsing function for a model.
 
     This function implements a strategy pattern for model parsing:
     1. If the model has a custom `from_json` classmethod, use it
@@ -46,8 +44,7 @@ def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
 
 
 class ModelParser:
-    """
-    Stateful parser that can be configured with a specific model.
+    """Stateful parser that can be configured with a specific model.
 
     This class provides a convenient interface for repeated parsing
     operations with the same model type.
@@ -63,8 +60,7 @@ class ModelParser:
     """
 
     def __init__(self, model: Type[BaseModel]) -> None:
-        """
-        Initialize parser with a model type.
+        """Initialize parser with a model type.
 
         Args:
             model: The model class to parse data into
@@ -73,8 +69,7 @@ class ModelParser:
         self._parse_func: Callable[[Any], BaseModel] = get_model_parser(model)
 
     def parse(self, data: Any) -> BaseModel:
-        """
-        Parse raw data into a model instance.
+        """Parse raw data into a model instance.
 
         Args:
             data: Raw data (usually dict) to parse
@@ -85,8 +80,7 @@ class ModelParser:
         return self._parse_func(data)
 
     def parse_many(self, items: list[Any]) -> list[BaseModel]:
-        """
-        Parse a list of raw data items into model instances.
+        """Parse a list of raw data items into model instances.
 
         Args:
             items: List of raw data items

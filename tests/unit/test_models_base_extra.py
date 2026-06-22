@@ -22,12 +22,14 @@ from imednet.models.users import User
 
 
 def test_sort_field_defaults():
+    """TODO: Add docstring."""
     model = SortField.model_validate({"property": None, "direction": None})
     assert model.property == ""
     assert model.direction == ""
 
 
 def test_pagination_aliases_and_defaults():
+    """TODO: Add docstring."""
     data = {
         "currentPage": "2",
         "size": "5",
@@ -44,6 +46,7 @@ def test_pagination_aliases_and_defaults():
 
 
 def test_error_and_metadata_parsing():
+    """TODO: Add docstring."""
     err = Error.model_validate({"details": {"foo": "bar"}})
     assert err.code == ""
     assert err.message == ""
@@ -61,6 +64,7 @@ def test_error_and_metadata_parsing():
 
 
 def test_api_response_generic():
+    """TODO: Add docstring."""
     resp = ApiResponse[int].model_validate(
         {
             "metadata": {"timestamp": "2023-01-01T00:00:00Z"},
@@ -191,14 +195,14 @@ def test_study_survives_null_informational_fields():
 
 
 def test_site_survives_null_site_name():
-    """siteName returning null must not crash the parser."""
+    """SiteName returning null must not crash the parser."""
     payload = {"studyKey": "PHARMADEMO", "siteId": 1, "siteName": None}
     site = Site.model_validate(payload)
     assert site.study_key == "PHARMADEMO"
 
 
 def test_subject_survives_null_status():
-    """subjectStatus returning null must not crash the parser."""
+    """SubjectStatus returning null must not crash the parser."""
     payload = {"studyKey": "PHARMADEMO", "subjectId": 42, "subjectStatus": None}
     subject = Subject.model_validate(payload)
     assert subject.study_key == "PHARMADEMO"

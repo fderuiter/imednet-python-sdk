@@ -1,8 +1,10 @@
+"""TODO: Add docstring."""
 import re
 from pathlib import Path
 
 
 def get_mermaid_lines(path: Path):
+    """TODO: Add docstring."""
     lines = []
     inside = False
     skip_blank = False
@@ -27,6 +29,7 @@ PATTERN = re.compile(r"\[[^\]]*\([^\)]*\)\]")
 
 
 def test_no_unquoted_parentheses_in_mermaid_blocks():
+    """TODO: Add docstring."""
     errors = []
     for path in Path("docs").rglob("*.rst"):
         if "_build" in path.parts:

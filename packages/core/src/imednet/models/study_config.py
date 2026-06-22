@@ -1,3 +1,9 @@
+"""Study configuration models and validation.
+
+This module provides Pydantic models for parsing and validating study configurations,
+including reporting profiles, widgets, and mapping rules.
+"""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -48,6 +54,7 @@ class StudyConfiguration(JsonModel):
     @field_validator("reporting_profile", check_fields=False, mode="before")
     @classmethod
     def _validate_reporting_profile(cls, value: object) -> object:
+        """TODO: Add docstring."""
         if not isinstance(value, str):
             raise ValueError("reportingProfile must be a string.")
 

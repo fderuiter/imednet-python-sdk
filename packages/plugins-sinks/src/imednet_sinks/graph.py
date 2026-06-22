@@ -148,7 +148,7 @@ class Neo4jExportSink(ExportSink):
         Optional :class:`Neo4jSinkConfig` (or plain :class:`SinkConfig`).
         Defaults to :class:`Neo4jSinkConfig` with all values at defaults.
 
-    Raises
+    Raises:
     ------
     ~imednet.errors.ExportConfigurationError
         When the driver cannot connect to the database.
@@ -164,6 +164,7 @@ class Neo4jExportSink(ExportSink):
         *,
         config: Optional[SinkConfig] = None,
     ) -> None:
+        """TODO: Add docstring."""
         super().__init__(config if config is not None else Neo4jSinkConfig())
         self._uri = uri
         self._auth = auth
@@ -176,6 +177,7 @@ class Neo4jExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def _connect(self) -> None:
+        """TODO: Add docstring."""
         neo4j_mod = _require_optional_dep("neo4j", "neo4j")
         redacted = _redact_uri(self._uri)
         logger.debug("Connecting to Neo4j at %s", redacted)
@@ -201,6 +203,7 @@ class Neo4jExportSink(ExportSink):
         from imednet.core.operations.executor import UniversalExecutor
 
         def execute_export() -> int:
+            """TODO: Add docstring."""
             with self._driver.session(database=cfg.database) as session:
                 session.run(cypher, rows=rows)
             logger.debug("Wrote batch %s (%d records)", batch_id, len(rows))

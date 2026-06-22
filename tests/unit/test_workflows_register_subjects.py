@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 from unittest.mock import MagicMock
 
 import pytest
@@ -9,6 +10,7 @@ from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
 
 
 def test_register_subjects_passes_records_correctly() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     job = Job(jobId="1", batchId="1", state="PROCESSING")
     sdk.create_record.return_value = job
@@ -31,6 +33,7 @@ def test_register_subjects_passes_records_correctly() -> None:
 
 
 def test_register_subjects_missing_site() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_sites.return_value = []
     wf = RegisterSubjectsWorkflow(sdk)
@@ -41,6 +44,7 @@ def test_register_subjects_missing_site() -> None:
 
 
 def test_register_subjects_missing_site_name() -> None:
+    """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_sites.return_value = [
         Site(studyKey="S", siteId=1, siteName="SITE", siteEnrollmentStatus="Active")

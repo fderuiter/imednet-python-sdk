@@ -1,3 +1,4 @@
+"""TODO: Add docstring."""
 import httpx
 import pytest
 
@@ -6,6 +7,7 @@ from imednet.core.async_client import AsyncClient
 
 @pytest.mark.asyncio
 async def test_get_request(respx_mock):
+    """TODO: Add docstring."""
     client = AsyncClient("key", "secret", base_url="https://api.test")
     respx_mock.base_url = client.base_url
     respx_mock.get("/ping").mock(return_value=httpx.Response(200, json={"ok": True}))

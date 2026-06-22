@@ -1,5 +1,4 @@
-"""
-Factory for creating HTTP clients.
+"""Factory for creating HTTP clients.
 
 This module encapsulates the creation logic for `Client` and `AsyncClient`,
 handling authentication, configuration, and retry policies.

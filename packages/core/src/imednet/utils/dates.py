@@ -1,6 +1,4 @@
-"""
-Utility functions for parsing and formatting ISO date/time strings.
-"""
+"""Utility functions for parsing and formatting ISO date/time strings."""
 
 from __future__ import annotations
 
@@ -24,8 +22,7 @@ _ISO8601_FRAC_REGEX = re.compile(r"\.(\d+)(?=[+-]\d{2}:\d{2}|$)")
 
 
 def parse_iso_datetime(date_str: str) -> datetime:
-    """
-    Parse an ISO 8601 date/time string into a datetime object.
+    """Parse an ISO 8601 date/time string into a datetime object.
 
     Handles timestamps ending with 'Z' as UTC.
 
@@ -57,8 +54,7 @@ def parse_iso_datetime(date_str: str) -> datetime:
 
 
 def format_iso_datetime(dt: datetime) -> str:
-    """
-    Format a datetime object into an ISO 8601 string ending with 'Z'.
+    """Format a datetime object into an ISO 8601 string ending with 'Z'.
 
     Args:
         dt: datetime object (naive or timezone-aware).

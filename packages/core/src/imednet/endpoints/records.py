@@ -12,6 +12,7 @@ from imednet.validation.cache import SchemaCache
 
 
 class RecordsOperationDef:
+    """TODO: Add docstring."""
     PATH = "records"
     MODEL = Record
     _id_param = "recordId"
@@ -25,6 +26,7 @@ class RecordsOperationDef:
         *,
         schema: Optional[SchemaCache] = None,
     ) -> RecordCreateOperation[Job]:
+        """TODO: Add docstring."""
         path = self._get_endpoint_path(study_key)  # type: ignore
         return RecordCreateOperation[Job](
             path=path,
@@ -45,6 +47,7 @@ class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # t
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
+        """TODO: Add docstring."""
         return self._create_operation(
             study_key, records_data, email_notify, schema=schema
         ).execute_sync(self._require_sync_client(), parse_func=Job.from_json)
@@ -61,6 +64,7 @@ class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record])
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
+        """TODO: Add docstring."""
         return await self._create_operation(
             study_key, records_data, email_notify, schema=schema
         ).execute_async(self._require_async_client(), parse_func=Job.from_json)

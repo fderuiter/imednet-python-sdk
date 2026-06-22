@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class FormVariableMap(TypedDict):
+    """TODO: Add docstring."""
     form: Form
     variables: list[Variable]
 
@@ -34,6 +35,7 @@ class StudySnapshot(ImednetBaseModel):
     intervals_by_name: dict[str, Interval] = Field(default_factory=dict)
 
     def model_post_init(self, __context: object) -> None:
+        """TODO: Add docstring."""
         self.forms_by_key = {form.form_key: form for form in self.forms}  # type: ignore
         self.variables_by_form = {}
         for variable in self.variables:
@@ -73,6 +75,7 @@ class StudySchemaInspector:
     """
 
     def __init__(self, sdk: ImednetFacade | AsyncImednetFacade) -> None:
+        """TODO: Add docstring."""
         self._sdk = sdk
         self._cache: dict[str, StudySnapshot] = {}
 
@@ -100,15 +103,19 @@ class StudySchemaInspector:
         sdk = cast("AsyncImednetFacade", self._sdk)
 
         async def fetch_forms():
+            """TODO: Add docstring."""
             return await sdk.async_get_forms(study_key)
 
         async def fetch_variables():
+            """TODO: Add docstring."""
             return await sdk.async_get_variables(study_key)
 
         async def fetch_intervals():
+            """TODO: Add docstring."""
             return await sdk.async_get_intervals(study_key)
 
         async def fetch_sites():
+            """TODO: Add docstring."""
             return await sdk.async_get_sites(study_key)
 
         forms, variables, intervals, sites = await asyncio.gather(

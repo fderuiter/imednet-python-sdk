@@ -15,6 +15,7 @@ _FORM_KEY_OVERRIDE = os.getenv("IMEDNET_FORM_KEY")
 
 
 def _skip(msg: str) -> NoReturn:
+    """TODO: Add docstring."""
     pytest.skip(msg)
     raise AssertionError("unreachable")
 

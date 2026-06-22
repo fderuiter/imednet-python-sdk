@@ -11,8 +11,7 @@ from imednet.models.json_base import JsonModel
 
 
 class ImednetBaseModel(JsonModel):
-    """
-    Core base model for all iMedNet API responses.
+    """Core base model for all iMedNet API responses.
 
     Design philosophy:
     extra='ignore' silently drops new undocumented fields the API introduces.

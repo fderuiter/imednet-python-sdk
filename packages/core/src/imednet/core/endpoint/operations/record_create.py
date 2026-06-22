@@ -1,5 +1,4 @@
-"""
-Operation for creating records.
+"""Operation for creating records.
 
 Encapsulates validation, header construction, and execution logic for record creation.
 """
@@ -17,8 +16,7 @@ T = TypeVar("T")
 
 
 class RecordCreateOperation(Generic[T]):
-    """
-    Operation for creating records.
+    """Operation for creating records.
 
     Handles validation against schema and security checks for headers
     before executing the creation request.
@@ -31,8 +29,7 @@ class RecordCreateOperation(Generic[T]):
         email_notify: Union[bool, str, None] = None,
         schema: Optional[BaseSchemaCache[Any]] = None,
     ) -> None:
-        """
-        Initialize the record creation operation.
+        """Initialize the record creation operation.
 
         Args:
             path: The full API path for the request.
@@ -59,8 +56,7 @@ class RecordCreateOperation(Generic[T]):
                 validate_record_entry(self.schema, rec)
 
     def _build_headers(self) -> Dict[str, str]:
-        """
-        Build headers for record creation request.
+        """Build headers for record creation request.
 
         Returns:
             Dictionary of headers.
@@ -86,8 +82,7 @@ class RecordCreateOperation(Generic[T]):
         client: RequestorProtocol,
         parse_func: Callable[[Any], T],
     ) -> T:
-        """
-        Execute synchronous creation request.
+        """Execute synchronous creation request.
 
         Args:
             client: The synchronous HTTP client.
@@ -108,8 +103,7 @@ class RecordCreateOperation(Generic[T]):
         client: AsyncRequestorProtocol,
         parse_func: Callable[[Any], T],
     ) -> T:
-        """
-        Execute asynchronous creation request.
+        """Execute asynchronous creation request.
 
         Args:
             client: The asynchronous HTTP client.
