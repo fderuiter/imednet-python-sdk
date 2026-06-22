@@ -48,17 +48,4 @@ Request Lifecycle
 The client logs each request and, when a tracer is supplied, surrounds the HTTP call
 with a span.
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the logging and tracing process.
-
-   sequenceDiagram
-       participant App
-       participant Client
-       participant HTTPX
-       App->>Client: call endpoint
-       Client->>Client: start span (optional)
-       Client->>HTTPX: send request
-       HTTPX-->>Client: response
-       Client->>Client: log JSON
-       Client->>Client: end span (optional)
-       Client-->>App: return result
+.. mermaid:: diagrams/logging_and_tracing_1.mmd

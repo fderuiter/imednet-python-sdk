@@ -1,0 +1,9 @@
+graph TD
+    A[run_forever] --> B{stop_event set?}
+    B -- No --> C[acquire FileLock]
+    C --> D[load_records / delta sync]
+    D --> E[reconcile hard-deletes]
+    E --> F[release FileLock]
+    F --> G[wait interval_seconds]
+    G --> B
+    B -- Yes --> H[log stopped]

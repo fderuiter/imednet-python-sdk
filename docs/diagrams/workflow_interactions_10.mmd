@@ -1,0 +1,10 @@
+graph TD
+    A[get_all_subject_data] --> B[subjects.list]
+    A --> C[visits.list]
+    A --> D[records.list]
+    A --> E[queries.list]
+    B --> F[aggregate]
+    C --> F
+    D --> F
+    E --> F
+    F --> G[return SubjectComprehensiveData]
