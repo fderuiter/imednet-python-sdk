@@ -46,7 +46,8 @@ dev = [
     "sphinx-click>=6.2.0,<7.0.0"
 ]
 docs = [
-    "furo<2023.0.0"
+    "furo<2023.0.0",
+    "pyyaml>=6.0"
 ]
 
 [build-system]
