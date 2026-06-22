@@ -334,7 +334,14 @@ jobs:
 
       - name: Install Dependencies
         if: steps.filter.outputs.export_logic == 'true'
-        run: poetry install --with dev
+        run: |
+          python -m pip install --upgrade pip
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              python -m pip install -e "$package"
+            fi
+          done
+          python -m pip install -e ".[dev,docs]" 
 
       - name: Run Hermetic Integration Sandbox
         if: steps.filter.outputs.export_logic == 'true'
@@ -418,7 +425,15 @@ jobs:
         with:
           python-version: "3.10"
 
-      - run: poetry install --with dev
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              python -m pip install -e "$package"
+            fi
+          done
+          python -m pip install -e ".[dev,docs]" 
 
       - name: Run Doctests
         run: make doctest
