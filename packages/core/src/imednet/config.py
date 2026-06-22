@@ -6,7 +6,7 @@ This module provides the core configuration object for the iMednet SDK.
 from __future__ import annotations
 
 import os
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -174,7 +174,7 @@ def load_config(
     Raises:
         ValueError: If required authentication parameters are missing.
     """
-    kwargs = {}
+    kwargs: dict[str, Any] = {}
     if api_key is not None:
         kwargs["api_key"] = api_key
     if security_key is not None:
