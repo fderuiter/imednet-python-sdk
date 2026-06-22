@@ -37,7 +37,7 @@ def test_dashboard_command_falls_back_when_plugin_missing(
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
         """TODO: Add docstring."""
-        if name == "imednet_streamlit.app":
+        if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return None
         return real_find_spec(name, package)
 
@@ -62,7 +62,7 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
         """TODO: Add docstring."""
-        if name == "imednet_streamlit.app":
+        if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
 
@@ -105,7 +105,7 @@ def test_dashboard_command_uses_default_options(
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
         """TODO: Add docstring."""
-        if name == "imednet_streamlit.app":
+        if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
 
@@ -140,7 +140,7 @@ def test_dashboard_command_fails_when_app_path_missing(
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
         """TODO: Add docstring."""
-        if name == "imednet_streamlit.app":
+        if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
 
@@ -161,7 +161,7 @@ def test_dashboard_command_propagates_streamlit_failure(
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
         """TODO: Add docstring."""
-        if name == "imednet_streamlit.app":
+        if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
 
@@ -185,7 +185,7 @@ def test_dashboard_command_handles_subprocess_oserror(
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
         """TODO: Add docstring."""
-        if name == "imednet_streamlit.app":
+        if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
 
