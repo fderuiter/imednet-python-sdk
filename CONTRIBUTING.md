@@ -19,7 +19,6 @@ quality gates, and release expectations.
 For the architecture view, see `docs/architecture.rst`.
 
 ## Prerequisites
-- [Poetry](https://python-poetry.org/docs/) (for dependency management)
 - [Make](https://www.gnu.org/software/make/) (optional, for building docs)
 
 ## Setup
@@ -43,12 +42,12 @@ Issue titles should use the format `<type>(<area>): <concise outcome>`, for exam
 Run before committing:
 
 ```bash
-poetry run ruff format --check .
-poetry run ruff check .
-poetry run mypy packages/core/src/imednet
-poetry run mypy packages/plugins-workflows/src/imednet_workflows
-poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-poetry run pytest -q \
+ruff format --check .
+ruff check .
+mypy packages/core/src/imednet
+mypy packages/plugins-workflows/src/imednet_workflows
+mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+pytest -q \
   --cov=imednet \
   --cov=imednet_workflows \
   --cov=apache_airflow_providers_imednet \
@@ -79,7 +78,7 @@ strict-mode migration.
 ### Ratchet rules
 - Keep global mypy at non-strict while tightening module by module.
 - `imednet.models.*` and `imednet.errors.*` are strict targets and must remain
-  clean under `poetry run mypy --strict`.
+  clean under `mypy --strict`.
 - `ignore_missing_imports` must stay scoped only to third-party modules that do
   not currently ship complete typing information (`pandas`, `pythonjsonlogger`,
   `opentelemetry`, `airflow`).
@@ -122,12 +121,12 @@ Releases are fully automated and driven by merged PR titles:
    `Semantic PR Title` check enforces this.
 2. Ensure your branch is up to date and all validation checks pass:
    ```bash
-   poetry run ruff format --check .
-   poetry run ruff check .
-   poetry run mypy packages/core/src/imednet
-   poetry run mypy packages/plugins-workflows/src/imednet_workflows
-   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-   poetry run pytest -q \
+   ruff format --check .
+   ruff check .
+   mypy packages/core/src/imednet
+   mypy packages/plugins-workflows/src/imednet_workflows
+   mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+   pytest -q \
      --cov=imednet \
      --cov=imednet_workflows \
      --cov=apache_airflow_providers_imednet \
@@ -244,9 +243,9 @@ def fetch_records(study_key: str, page: int = 0) -> list[Record]:
 
 Before opening a pull request that adds or modifies public APIs:
 
-1. Run `poetry run mypy packages/core/src/imednet` and confirm zero errors.
-2. Run `poetry run mypy packages/plugins-workflows/src/imednet_workflows`.
-3. Run `poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet`.
+1. Run `mypy packages/core/src/imednet` and confirm zero errors.
+2. Run `mypy packages/plugins-workflows/src/imednet_workflows`.
+3. Run `mypy packages/providers-airflow/src/apache_airflow_providers_imednet`.
 4. Run `make docs` locally. This command regenerates `docs/api/` via `sphinx-apidoc` and then
    compiles the HTML with `-W --keep-going`, treating every Sphinx warning as an error.
 5. Open `docs/_build/html/index.html` and verify that type hints appear in the parameter
@@ -263,4 +262,4 @@ Before opening a pull request that adds or modifies public APIs:
 Our CI pipeline is optimized to run quality gates and test suites only for packages affected by your changes. 
 - A change to a "leaf" package (e.g., the Airflow provider) will trigger tests exclusively for that package.
 - A change to the core `imednet` package will trigger the full validation matrix for all dependent packages in the monorepo.
-- Ensure your tests and linters pass locally using `poetry run pytest` and `poetry run ruff check .` before submitting a PR.
+- Ensure your tests and linters pass locally using `pytest` and `ruff check .` before submitting a PR.
