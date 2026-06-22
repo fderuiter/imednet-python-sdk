@@ -1281,8 +1281,8 @@ develop = true
 
 [package.dependencies]
 altair = ">=5.0.0"
-imednet = {path = "../core", develop = true}
-imednet-workflows = {path = "../plugins-workflows", develop = true}
+imednet = ">=0.8.0"
+imednet-workflows = ">=0.6.0"
 pandas = ">=2.0.0"
 streamlit = ">=1.30.0"
 
