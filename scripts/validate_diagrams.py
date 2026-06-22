@@ -1,10 +1,14 @@
+"""Script to validate diagrams."""
+import ast
 import os
 import re
-import ast
 import sys
+
 import yaml
 
+
 def get_code_symbols(search_dirs):
+    """Get code symbols."""
     symbols = set()
     for directory in search_dirs:
         for root, _, files in os.walk(directory):
@@ -26,41 +30,59 @@ def get_code_symbols(search_dirs):
                             pass
     return symbols
 
+
 def get_facade_signatures():
-    return {"subjects.list", "subjects.get", "records.list", "records.create", "records.get", "variables.list", "queries.list", "visits.list", "sdk.variables.list"}
+    """Get facade signatures."""
+    return {
+        "subjects.list",
+        "subjects.get",
+        "records.list",
+        "records.create",
+        "records.get",
+        "variables.list",
+        "queries.list",
+        "visits.list",
+        "sdk.variables.list",
+    }
+
 
 def clean_label(label):
+    """Clean label."""
     c = re.sub(r'\(.*?\)', '', label).strip()
     c = c.replace('?', '').strip()
     return c
 
+
 def main():
+    """Main function."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     docs_dir = os.path.join(base_dir, "docs", "diagrams")
     registry_path = os.path.join(docs_dir, "registry.yaml")
-    
+
     with open(registry_path, "r") as f:
         registry = yaml.safe_load(f) or {}
 
     search_dirs = [
         os.path.join(base_dir, "packages", "core", "src", "imednet"),
         os.path.join(base_dir, "packages", "plugins-workflows", "src", "imednet_workflows"),
-        os.path.join(base_dir, "packages", "providers-airflow", "src", "apache_airflow_providers_imednet"),
+        os.path.join(
+            base_dir, "packages", "providers-airflow", "src", "apache_airflow_providers_imednet"
+        ),
         os.path.join(base_dir, "packages", "plugins-sinks", "src"),
-        os.path.join(base_dir, "packages", "plugins-streamlit", "src")
+        os.path.join(base_dir, "packages", "plugins-streamlit", "src"),
     ]
     code_symbols = get_code_symbols(search_dirs)
     facade_sigs = get_facade_signatures()
     all_symbols = code_symbols | facade_sigs
-    
+
     errors = []
-    
+
     for file in os.listdir(docs_dir):
         if not file.endswith(".mmd"):
             continue
-        
+
         filepath = os.path.join(docs_dir, file)
-        
+
         # Pass 1: Extract all explicit labels
         # node_id -> label
         nodes = {}
@@ -76,23 +98,36 @@ def main():
                         if m2:
                             nodes[m2.group(1)] = m2.group(1)
                     continue
-                
-                if line.startswith("%%") or line.startswith("graph ") or line.startswith("subgraph ") or line == "end" or line.startswith("Note ") or line.startswith("activate ") or line.startswith("deactivate ") or line.startswith("sequenceDiagram"):
+
+                if (
+                    line.startswith("%%")
+                    or line.startswith("graph ")
+                    or line.startswith("subgraph ")
+                    or line == "end"
+                    or line.startswith("Note ")
+                    or line.startswith("activate ")
+                    or line.startswith("deactivate ")
+                    or line.startswith("sequenceDiagram")
+                ):
                     continue
-                
+
                 parts = re.split(r'-->>|->>|--!?>|---|==>|<--!?>|<--|-.->', line)
-                if len(parts) == 1 and not re.search(r'\[|\(', line): 
+                if len(parts) == 1 and not re.search(r'\[|\(', line):
                     # Probably not a node definition
                     continue
-                
+
                 for part in parts:
                     part = part.strip()
-                    if not part: continue
+                    if not part:
+                        continue
                     # remove edge labels
                     part = re.sub(r'^\|[^|]+\|\s*', '', part)
                     part = part.strip()
-                    
-                    m = re.search(r'^([a-zA-Z0-9_.-]+)(?:\["([^"]*)"\]|\[([^\]]*)\]|\("([^"]*)"\)|\(([^)]*)\)|\{"([^"]*)"\}|\{([^}]*)\})?', part)
+
+                    m = re.search(
+                        r'^([a-zA-Z0-9_.-]+)(?:\["([^"]*)"\]|\[([^\]]*)\]|\("([^"]*)"\)|\(([^)]*)\)|\{"([^"]*)"\}|\{([^}]*)\})?',
+                        part,
+                    )
                     if m:
                         id_ = m.group(1)
                         label = next((g for g in m.groups()[1:] if g is not None), None)
@@ -100,18 +135,18 @@ def main():
                             nodes[id_] = label
                         elif id_ not in nodes:
                             nodes[id_] = id_
-        
+
         # Now validate all unique labels
         for id_, label in nodes.items():
             if label in registry:
                 continue
             if id_ in registry:
                 continue
-            
+
             cleaned = clean_label(label)
             if cleaned in all_symbols or label in all_symbols or id_ in all_symbols:
                 continue
-            
+
             # Allow strings that match specific internal names if not in registry
             errors.append(f"File: {file} | Node ID: {id_} | Unknown Label: '{label}'")
 
@@ -120,8 +155,9 @@ def main():
         for e in sorted(set(errors)):
             print(f" - {e}")
         sys.exit(1)
-    
+
     print("All diagrams passed validation!")
+
 
 if __name__ == "__main__":
     main()

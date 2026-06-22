@@ -77,6 +77,10 @@ def test_imednet_export_operator(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
     monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
     monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
+    
+    # Safely patch BaseHook in the compat layer
+    from apache_airflow_providers_imednet import _airflow_compat
+    monkeypatch.setattr(_airflow_compat, "BaseHook", DummyBaseHook)
 
     import apache_airflow_providers_imednet.operators.export as export_ops
     from apache_airflow_providers_imednet import ImednetExportOperator
@@ -129,6 +133,10 @@ def test_imednet_hook_returns_sdk(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
     monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
     monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
+    
+    # Safely patch BaseHook in the compat layer
+    from apache_airflow_providers_imednet import _airflow_compat
+    monkeypatch.setattr(_airflow_compat, "BaseHook", DummyBaseHook)
 
     from apache_airflow_providers_imednet import ImednetHook
 

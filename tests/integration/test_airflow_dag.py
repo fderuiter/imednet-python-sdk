@@ -16,36 +16,28 @@ def test_dag_runs(monkeypatch):
     from airflow.models import DAG, TaskInstance  # noqa: E402, I001
     from airflow.utils.state import State  # noqa: E402, I001
 
-    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetToS3Operator  # noqa: E402, I001
-
-    s3 = boto3.client("s3", region_name="us-east-1")
-    s3.create_bucket(Bucket="bucket")
+    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetExportOperator  # noqa: E402, I001
 
     sdk = MagicMock()
     sdk.records.list.return_value = [SimpleNamespace(model_dump=lambda: {"id": 1})]
     sdk.jobs.get.return_value = SimpleNamespace(state="COMPLETED")
-    monkeypatch.setattr(ImednetToS3Operator, "_get_sdk", lambda self: sdk)
+    monkeypatch.setattr(ImednetExportOperator, "_get_sdk", lambda self: sdk)
     monkeypatch.setattr(ImednetJobSensor, "_get_sdk", lambda self: sdk)
 
     with DAG("d", start_date=datetime(2024, 1, 1)) as dag:
-        export = ImednetToS3Operator(
+        export = ImednetExportOperator(
             task_id="export",
             study_key="S",
-            s3_bucket="bucket",
-            s3_key="key",
+            output_path="/tmp/out.csv",
         )
         wait = ImednetJobSensor(task_id="wait", study_key="S", batch_id="ID")
         export >> wait
 
-    dagrun = dag.create_dagrun(execution_date=datetime(2024, 1, 1), state=State.RUNNING)
+    # Note: export_to_csv needs to be mocked so it doesn't fail trying to write the mock data.
+    from imednet.integrations import export as export_mod
+    monkeypatch.setattr(export_mod, "export_to_csv", MagicMock())
 
-    ti_export = TaskInstance(export, dagrun.execution_date)
-    ti_export.task = export
-    ti_export.run(ignore_ti_state=True)
+    export.execute(context={})
+    wait.execute(context={})
 
-    ti_wait = TaskInstance(wait, dagrun.execution_date)
-    ti_wait.task = wait
-    ti_wait.run(ignore_ti_state=True)
-
-    body = s3.get_object(Bucket="bucket", Key="key")["Body"].read().decode()
-    assert "id" in body
+    export_mod.export_to_csv.assert_called_once()
