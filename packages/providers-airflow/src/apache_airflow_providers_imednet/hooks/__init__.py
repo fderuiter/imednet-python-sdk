@@ -7,7 +7,6 @@ from datetime import date, datetime
 from typing import Any, Dict, List, Mapping, MutableMapping, TypeAlias, Union, cast
 
 from apache_airflow_providers_imednet._airflow_compat import BaseHook
-
 from imednet import Config, ImednetSDK, load_config
 
 Primitive = Union[str, int, float, bool, None]
