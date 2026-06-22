@@ -1,0 +1,5 @@
+graph TD
+    CLI[CLI] --> |invokes| Workflows
+    Workflows --> |coordinate| Endpoints
+    Endpoints --> |use| Client["(HTTP Client)"]
+    Client --> |httpx| API

@@ -5,17 +5,7 @@ Job Polling Mechanism
 finish. It repeatedly checks the job status until a terminal state is reached or
 a timeout occurs.
 
-.. mermaid::
-   :alt: Flowchart diagram detailing the job polling process.
-
-   graph TD
-       A["start run()"] --> B[get job status]
-       B --> C{terminal state?}
-       C -- Yes --> D[return status]
-       C -- No --> E{timeout exceeded?}
-       E -- Yes --> F[raise JobTimeoutError]
-       E -- No --> G[sleep interval]
-       G --> B
+.. mermaid:: diagrams/job_polling_2.mmd
 
 Using the SDK
 -------------
