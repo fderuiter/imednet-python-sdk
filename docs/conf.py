@@ -1,4 +1,5 @@
 """Sphinx configuration."""
+
 # Configuration file for the Sphinx documentation builder.
 import logging
 import os
@@ -48,6 +49,7 @@ if "pandas" not in sys.modules:
 
     class DataFrame:  # pragma: no cover - simple stub
         """Dummy DataFrame class."""
+
         pass
 
     def json_normalize(*args: Any, **kwargs: Any) -> DataFrame:  # type: ignore
@@ -143,7 +145,6 @@ autodoc_typehints = "description"
 # Autodoc default options applied to all automodule/autoclass directives.
 autodoc_default_options = {
     "members": True,
-    
     "show-inheritance": True,
 }
 autodoc_class_signature = "separated"

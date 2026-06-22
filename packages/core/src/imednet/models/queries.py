@@ -7,28 +7,32 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class QueryComment(JsonModel):
-    """A comment or response within a data query thread."""
+    """TODO: Add docstring."""
 
-    closed: bool | None = Field(default=None, alias="closed")
-    sequence: int | None = Field(default=None, alias="sequence")
-    annotation_status: str | None = Field(default=None, alias="annotationStatus")
-    user: str | None = Field(default=None, alias="user")
-    comment: str | None = Field(default=None, alias="comment")
-    date: str | None = Field(default=None, alias="date")
+    user: Optional[str] = Field(default=None, alias="user")
+    date: Optional[str] = Field(default=None, alias="date")
+    comment: Optional[str] = Field(default=None, alias="comment")
+    annotation_status: Optional[str] = Field(default=None, alias="annotationStatus")
+    closed: Optional[bool] = Field(default=None, alias="closed")
+    sequence: Optional[int] = Field(default=None, alias="sequence")
 
-
-QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
 
 
 class Query(JsonModel):
-    """Represents a data query (discrepancy) raised on a record."""
+    """TODO: Add docstring."""
 
+    study_key: Optional[str] = Field(default=None, alias="studyKey")
+    subject_id: Optional[int] = Field(default=None, alias="subjectId")
+    annotation_id: Optional[int] = Field(default=None, alias="annotationId")
+    description: Optional[str] = Field(default=None, alias="description")
+    record_id: Optional[int] = Field(default=None, alias="recordId")
+    variable: Optional[str] = Field(default=None, alias="variable")
+    subject_key: Optional[str] = Field(default=None, alias="subjectKey")
+    date_created: Optional[str] = Field(default=None, alias="dateCreated")
+    date_modified: Optional[str] = Field(default=None, alias="dateModified")
     query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
 
-
-Query = ModelEngine.get_model('Query', Query)

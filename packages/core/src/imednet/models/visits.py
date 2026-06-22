@@ -7,12 +7,25 @@ from typing import Any, Optional
 
 from pydantic import Field, model_validator
 
-from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class Visit(JsonModel):
-    """A specific instance of a subject visiting a site (or equivalent event)."""
+    """TODO: Add docstring."""
+
+    visit_id: Optional[int] = Field(default=None, alias="visitId")
+    study_key: Optional[str] = Field(default=None, alias="studyKey")
+    interval_id: Optional[int] = Field(default=None, alias="intervalId")
+    interval_name: Optional[str] = Field(default=None, alias="intervalName")
+    subject_id: Optional[int] = Field(default=None, alias="subjectId")
+    subject_key: Optional[str] = Field(default=None, alias="subjectKey")
+    start_date: Optional[str] = Field(default=None, alias="startDate")
+    end_date: Optional[str] = Field(default=None, alias="endDate")
+    due_date: Optional[str] = Field(default=None, alias="dueDate")
+    visit_date: Optional[str] = Field(default=None, alias="visitDate")
+    deleted: Optional[bool] = Field(default=None, alias="deleted")
+    date_created: Optional[str] = Field(default=None, alias="dateCreated")
+    date_modified: Optional[str] = Field(default=None, alias="dateModified")
 
     @model_validator(mode="before")
     @classmethod
@@ -32,6 +45,3 @@ class Visit(JsonModel):
                 if data.get(key) == "":
                     data[key] = None
         return data
-
-
-Visit = ModelEngine.get_model('Visit', Visit)

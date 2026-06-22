@@ -1,87 +1,51 @@
 """TODO: Add docstring."""
 
-import json
 import logging
 import os
 
 import pytest
 
-from imednet.models.codings import Coding
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
-from imednet.models.queries import Query
-from imednet.models.record_revisions import RecordRevision
-from imednet.models.records import Record
-from imednet.models.sites import Site
-from imednet.models.studies import Study
-from imednet.models.subjects import Subject
-from imednet.models.users import User
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
 from imednet.sdk import ImednetSDK
 
 logger = logging.getLogger(__name__)
 
-MODEL_MAP = {
-    "studies": Study,
-    "forms": Form,
-    "intervals": Interval,
-    "queries": Query,
-    "records": Record,
-    "record_revisions": RecordRevision,
-    "sites": Site,
-    "subjects": Subject,
-    "users": User,
-    "variables": Variable,
-    "visits": Visit,
-    "codings": Coding,
-}
-
 
 def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
-    """Reads the Postman collection, identifies API endpoints,.
-
-    and compares the live API responses against the SDK's internal models.
+    """Iterates over ENDPOINT_REGISTRY to test all read endpoints
+    against live API and validates against SDK internal models.
     """
     os.environ["IMEDNET_STRICT_MODE"] = "1"
 
-    collection_path = "/app/imednet.postman_collection.json"
-    if not os.path.exists(collection_path):
-        pytest.skip("Postman collection not found")
-
-    with open(collection_path, 'r') as f:
-        data = json.load(f)
-
-    # Walk the collection to find endpoints
-    endpoints_to_test = set()
-
-    def walk(items):
-        """TODO: Add docstring."""
-        for item in items:
-            if "item" in item:
-                walk(item["item"])
-            elif "request" in item:
-                req = item["request"]
-                if "url" in req and "path" in req["url"]:
-                    path = req["url"]["path"]
-                    # Usually paths are like ['api', 'v1', 'studies'] or ['studies']
-                    for p in path:
-                        if p in MODEL_MAP:
-                            endpoints_to_test.add(p)
-
-    walk(data.get("item", []))
-
-    assert len(endpoints_to_test) > 0, "No endpoints found in Postman collection"
+    endpoints_to_test = list(ENDPOINT_REGISTRY.keys())
+    assert len(endpoints_to_test) > 0, "No endpoints found in registry"
 
     for endpoint in endpoints_to_test:
-        model_cls = MODEL_MAP[endpoint]
+        endpoint_cls = ENDPOINT_REGISTRY[endpoint]
+        # Some endpoints like jobs don't implement list natively or require special params,
+        # but the test checks all endpoints that have a MODEL defined.
+        if not hasattr(endpoint_cls, "MODEL"):
+            continue
 
-        # Build URL using the SDK's internal path builder
+        model_cls = endpoint_cls.MODEL
+
+        # Get instance from sdk
+        if not hasattr(sdk, endpoint):
+            continue
+
         endpoint_obj = getattr(sdk, endpoint)
-        path = endpoint_obj._get_endpoint_path(study_key if endpoint != "studies" else None)
+
+        # Build path using endpoint's PATH
+        path = endpoint_cls.PATH
+
+        # Add studyKey if it's required (mostly everything except studies)
+        params = {}
+        if endpoint != "studies" and endpoint != "jobs":
+            params["studyKey"] = study_key
 
         try:
-            response = sdk._client.get(path)
+            response = sdk._client.get(path, params=params)
+            response.raise_for_status()
             data = response.json()
             items = data.get("recordData") if "recordData" in data else data.get("data", [])
             for item in items:

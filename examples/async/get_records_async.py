@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import asyncio
 
 from imednet import AsyncImednetSDK, load_config

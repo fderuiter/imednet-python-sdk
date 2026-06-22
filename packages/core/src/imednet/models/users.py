@@ -3,33 +3,37 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import Field, computed_field
 
-from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class Role(JsonModel):
-    """A role assigned to a user within a study or community."""
+    """TODO: Add docstring."""
 
-    role_id: str | None = Field(default=None, alias="roleId")
-    name: str | None = Field(default=None, alias="name")
-    description: str | None = Field(default=None, alias="description")
-    level: int | None = Field(default=None, alias="level")
-    type: str | None = Field(default=None, alias="type")
-    inactive: bool | None = Field(default=None, alias="inactive")
-    community_id: int | None = Field(default=None, alias="communityId")
-    date_created: str | None = Field(default=None, alias="dateCreated")
-    date_modified: str | None = Field(default=None, alias="dateModified")
+    role_id: Optional[str] = Field(default=None, alias="roleId")
+    name: Optional[str] = Field(default=None, alias="name")
+    description: Optional[str] = Field(default=None, alias="description")
+    level: Optional[int] = Field(default=None, alias="level")
+    type: Optional[str] = Field(default=None, alias="type")
+    inactive: Optional[bool] = Field(default=None, alias="inactive")
+    community_id: Optional[int] = Field(default=None, alias="communityId")
+    date_created: Optional[str] = Field(default=None, alias="dateCreated")
+    date_modified: Optional[str] = Field(default=None, alias="dateModified")
 
-
-Role = ModelEngine.get_model('Role', Role)
 
 
 class User(JsonModel):
-    """A user account in the system."""
+    """TODO: Add docstring."""
+
+    user_id: Optional[str] = Field(default=None, alias="userId")
+    login: Optional[str] = Field(default=None, alias="login")
+    first_name: Optional[str] = Field(default=None, alias="firstName")
+    last_name: Optional[str] = Field(default=None, alias="lastName")
+    email: Optional[str] = Field(default=None, alias="email")
+    user_active_in_study: Optional[bool] = Field(default=None, alias="userActiveInStudy")
 
     @computed_field
     def name(self) -> str:
@@ -39,6 +43,3 @@ class User(JsonModel):
         """
         # will strip extra spaces if either is empty
         return " ".join(filter(None, (self.first_name, self.last_name)))
-
-
-User = ModelEngine.get_model('User', User)

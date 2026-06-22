@@ -3,28 +3,36 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import Field
 
-from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class FormSummary(JsonModel):
-    """Minimal form details embedded within an interval definition."""
+    """TODO: Add docstring."""
 
-    form_id: int = Field(0, alias="formId")
-    form_key: str = Field("", alias="formKey")
-    form_name: str = Field("", alias="formName")
+    form_id: Optional[int] = Field(default=None, alias="formId")
+    form_key: Optional[str] = Field(default=None, alias="formKey")
+    form_name: Optional[str] = Field(default=None, alias="formName")
+
 
     pass
 
 
 class Interval(JsonModel):
-    """Represents a visit interval or event within the study timeline."""
+    """TODO: Add docstring."""
 
-    forms: list[FormSummary] | None = Field(default=None, alias="forms")
+    study_key: Optional[str] = Field(default=None, alias="studyKey")
+    interval_id: Optional[int] = Field(default=None, alias="intervalId")
+    interval_name: Optional[str] = Field(default=None, alias="intervalName")
+    interval_description: Optional[str] = Field(default=None, alias="intervalDescription")
+    interval_sequence: Optional[int] = Field(default=None, alias="intervalSequence")
+    interval_group_id: Optional[int] = Field(default=None, alias="intervalGroupId")
+    interval_group_name: Optional[str] = Field(default=None, alias="intervalGroupName")
+    disabled: Optional[bool] = Field(default=None, alias="disabled")
+    date_created: Optional[str] = Field(default=None, alias="dateCreated")
+    date_modified: Optional[str] = Field(default=None, alias="dateModified")
+    forms: List[FormSummary] = Field(default_factory=list, alias="forms")
 
-
-Interval = ModelEngine.get_model('Interval', Interval)

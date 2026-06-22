@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import Field, field_validator
 
-from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class Job(JsonModel):
-    """Represents an asynchronous background job."""
+    """TODO: Add docstring."""
+
+    job_id: Optional[str] = Field(default=None, alias="jobId")
+    batch_id: Optional[str] = Field(default=None, alias="batchId")
+    state: Optional[str] = Field(default=None, alias="state")
 
     @property
     def is_terminal(self) -> bool:
@@ -34,12 +37,14 @@ class Job(JsonModel):
         return self.state.upper() in {"FAILED", "CANCELLED"} if self.state else False
 
 
-Job = ModelEngine.get_model('Job', Job)
-
-
 class JobStatus(Job):
     """Extended job information returned when polling."""
 
+    date_created: Optional[str] = Field(default=None, alias="dateCreated")
+    date_started: Optional[str] = Field(default=None, alias="dateStarted")
+    date_finished: Optional[str] = Field(default=None, alias="dateFinished")
+    progress: Optional[int] = Field(default=None, alias="progress")
+    result_url: Optional[str] = Field(default=None, alias="resultUrl")
     results: Any = Field(default=None)
 
     @field_validator("progress", mode="before", check_fields=False)
@@ -93,6 +98,3 @@ class JobStatus(Job):
             return 1
         # If it's plain text and state is failed, we count it as 1 failure.
         return 0
-
-
-JobStatus = ModelEngine.get_model('JobStatus', JobStatus)

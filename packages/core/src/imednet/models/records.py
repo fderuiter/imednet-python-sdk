@@ -3,38 +3,53 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import Field, RootModel
 
-from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
 class Keyword(JsonModel):
-    """A keyword or tag associated with a record."""
+    """TODO: Add docstring."""
 
     pass
 
-
-Keyword = ModelEngine.get_model('Keyword', Keyword)
+    pass
 
 
 class Record(JsonModel):
-    """A data record for a subject, form, and visit."""
+    """TODO: Add docstring."""
+
+    study_key: Optional[str] = Field(default=None, alias="studyKey")
+    interval_id: Optional[int] = Field(default=None, alias="intervalId")
+    form_id: Optional[int] = Field(default=None, alias="formId")
+    form_key: Optional[str] = Field(default=None, alias="formKey")
+    site_id: Optional[int] = Field(default=None, alias="siteId")
+    record_id: Optional[int] = Field(default=None, alias="recordId")
+    record_oid: Optional[str] = Field(default=None, alias="recordOid")
+    record_type: Optional[str] = Field(default=None, alias="recordType")
+    record_status: Optional[str] = Field(default=None, alias="recordStatus")
+    deleted: Optional[bool] = Field(default=None, alias="deleted")
+    date_created: Optional[str] = Field(default=None, alias="dateCreated")
+    date_modified: Optional[str] = Field(default=None, alias="dateModified")
+    subject_id: Optional[int] = Field(default=None, alias="subjectId")
+    subject_oid: Optional[str] = Field(default=None, alias="subjectOid")
+    subject_key: Optional[str] = Field(default=None, alias="subjectKey")
+    visit_id: Optional[int] = Field(default=None, alias="visitId")
+    parent_record_id: Optional[int] = Field(default=None, alias="parentRecordId")
+    record_data: Optional[Any] = Field(default=None, alias="recordData")
 
     pass
 
 
-Record = ModelEngine.get_model('Record', Record)
-
-
 class RecordJobResponse(JsonModel):
-    """Response for a record-related job (batch operations, etc)."""
+    """TODO: Add docstring."""
 
-    job_id: str = Field("", alias="jobId")
-    batch_id: str = Field("", alias="batchId")
-    state: str = Field("", alias="state")
+    job_id: Optional[str] = Field(default=None, alias="jobId")
+    batch_id: Optional[str] = Field(default=None, alias="batchId")
+    state: Optional[str] = Field(default=None, alias="state")
+
 
     pass
 
@@ -46,10 +61,10 @@ class RecordData(RootModel[Dict[str, Any]]):
 
 
 class BaseRecordRequest(JsonModel):
-    """Base class for record creation/update requests."""
+    """TODO: Add docstring."""
 
-    form_key: str = Field("", alias="formKey")
-    data: RecordData = Field(default_factory=lambda: RecordData({}), alias="data")
+    data: Optional[RecordData] = Field(default=None, alias="data")
+
 
     pass
 
@@ -73,7 +88,6 @@ class RegisterSubjectRequest(BaseRecordRequest):
 class UpdateScheduledRecordRequest(BaseRecordRequest):
     """Payload for updating an existing scheduled record."""
 
-    subject_key: str = Field("", alias="subjectKey")
     interval_name: str = Field("", alias="intervalName")
 
     pass
@@ -82,6 +96,5 @@ class UpdateScheduledRecordRequest(BaseRecordRequest):
 class CreateNewRecordRequest(BaseRecordRequest):
     """Payload for creating a new unscheduled record."""
 
-    subject_key: str = Field("", alias="subjectKey")
 
     pass
