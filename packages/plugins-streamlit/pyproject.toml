@@ -1,19 +1,27 @@
-[tool.poetry]
+[project]
 name = "imednet-streamlit"
 version = "0.2.0"
 description = "Interactive Streamlit reporting dashboards for iMednet EDC."
-authors = ["Frederick de Ruiter <127706008+fderuiter@users.noreply.github.com>"]
-packages = [{ include = "imednet_streamlit", from = "src" }]
-include = [{ path = "src/imednet_streamlit/py.typed", format = ["sdist", "wheel"] }]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-imednet = ">=0.8.0"
-imednet-workflows = ">=0.6.0"
-streamlit = ">=1.30.0"
-altair = ">=5.0.0"
-pandas = ">=2.0.0"
+authors = [
+    { name = "Frederick de Ruiter", email = "127706008+fderuiter@users.noreply.github.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "imednet>=0.8.0",
+    "imednet-workflows>=0.6.0",
+    "streamlit>=1.30.0",
+    "altair>=5.0.0",
+    "pandas>=2.0.0"
+]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/imednet_streamlit"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src/imednet_streamlit"
+]
