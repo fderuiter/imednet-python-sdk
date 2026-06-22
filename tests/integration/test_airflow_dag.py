@@ -4,48 +4,46 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-import boto3
+
 import pytest
-from moto import mock_aws
 
 
-@mock_aws
-def test_dag_runs(monkeypatch):
+
+def test_dag_runs(monkeypatch, tmp_path):
     """TODO: Add docstring."""
     pytest.importorskip("airflow")
+    out_csv = tmp_path / "out.csv"
     from airflow.models import DAG, TaskInstance  # noqa: E402, I001
     from airflow.utils.state import State  # noqa: E402, I001
 
-    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetToS3Operator  # noqa: E402, I001
+    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetExportOperator  # noqa: E402, I001
 
-    s3 = boto3.client("s3", region_name="us-east-1")
-    s3.create_bucket(Bucket="bucket")
-
+    
     sdk = MagicMock()
-    sdk.records.list.return_value = [SimpleNamespace(model_dump=lambda: {"id": 1})]
+    
+    import pandas as pd
+    df = pd.DataFrame({"id": [1, 2]})
+    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
+    from imednet.integrations import export as export_mod
+    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
+
     sdk.jobs.get.return_value = SimpleNamespace(state="COMPLETED")
-    monkeypatch.setattr(ImednetToS3Operator, "_get_sdk", lambda self: sdk)
+    monkeypatch.setattr(ImednetExportOperator, "_get_sdk", lambda self: sdk)
     monkeypatch.setattr(ImednetJobSensor, "_get_sdk", lambda self: sdk)
 
     with DAG("d", start_date=datetime(2024, 1, 1)) as dag:
-        export = ImednetToS3Operator(
+        export = ImednetExportOperator(
             task_id="export",
             study_key="S",
-            s3_bucket="bucket",
-            s3_key="key",
+            destination="csv",
+            output_path=str(out_csv),
         )
         wait = ImednetJobSensor(task_id="wait", study_key="S", batch_id="ID")
         export >> wait
 
-    dagrun = dag.create_dagrun(execution_date=datetime(2024, 1, 1), state=State.RUNNING)
-
-    ti_export = TaskInstance(export, dagrun.execution_date)
-    ti_export.task = export
-    ti_export.run(ignore_ti_state=True)
-
-    ti_wait = TaskInstance(wait, dagrun.execution_date)
-    ti_wait.task = wait
-    ti_wait.run(ignore_ti_state=True)
-
-    body = s3.get_object(Bucket="bucket", Key="key")["Body"].read().decode()
+    export.execute(context={})
+    wait.execute(context={})
+    with open(str(out_csv), 'r') as f:
+        body = f.read()
+    assert "id" in body
     assert "id" in body

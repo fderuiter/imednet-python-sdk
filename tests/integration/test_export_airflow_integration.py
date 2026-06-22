@@ -1,3 +1,46 @@
+def _setup_airflow(monkeypatch):
+    import sys
+    from types import ModuleType, SimpleNamespace
+    airflow_mod = ModuleType("airflow")
+    hooks_pkg = ModuleType("airflow.hooks")
+    hooks_mod = ModuleType("airflow.sdk.bases.hook")
+    sdk_mod = ModuleType("airflow.sdk")
+    sdk_bases = ModuleType("airflow.sdk.bases")
+    sdk_defs = ModuleType("airflow.sdk.definitions")
+    sdk_ctx = ModuleType("airflow.sdk.definitions.context")
+    models_mod = ModuleType("airflow.models")
+
+    class DummyBaseHook:
+        @classmethod
+        def get_connection(cls, conn_id):
+            return SimpleNamespace(login="K", password="S", extra_dejson={})
+
+    class DummyBaseOperator:
+        template_fields = ()
+        def __init__(self, **kwargs):
+            pass
+
+    hooks_mod.BaseHook = DummyBaseHook
+    models_mod.BaseOperator = DummyBaseOperator
+
+    sdk_bases.hook = hooks_mod
+    sdk_mod.bases = sdk_bases
+    sdk_defs.context = sdk_ctx
+    sdk_mod.definitions = sdk_defs
+    airflow_mod.sdk = sdk_mod
+    airflow_mod.hooks = hooks_pkg
+    airflow_mod.models = models_mod
+
+    monkeypatch.setitem(sys.modules, "airflow", airflow_mod)
+    monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
+    monkeypatch.setitem(sys.modules, "airflow.sdk.bases.hook", hooks_mod)
+    monkeypatch.setitem(sys.modules, "airflow.sdk", sdk_mod)
+    monkeypatch.setitem(sys.modules, "airflow.sdk.bases", sdk_bases)
+    monkeypatch.setitem(sys.modules, "airflow.sdk.definitions", sdk_defs)
+    monkeypatch.setitem(sys.modules, "airflow.sdk.definitions.context", sdk_ctx)
+    monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
+
+
 """TODO: Add docstring."""
 
 import sys
@@ -46,37 +89,10 @@ def test_export_to_sql(tmp_path, monkeypatch):
 
 def test_imednet_export_operator(monkeypatch):
     """TODO: Add docstring."""
-    airflow = ModuleType("airflow")
-    hooks_pkg = ModuleType("airflow.hooks")
-    hooks_base = ModuleType("airflow.hooks.base")
-    models_mod = ModuleType("airflow.models")
-
-    class DummyBaseHook:
-        """TODO: Add docstring."""
-
-        @classmethod
-        def get_connection(cls, conn_id):
-            """TODO: Add docstring."""
-            return SimpleNamespace(login="K", password="S", extra_dejson={})
-
-    class DummyBaseOperator:
-        """TODO: Add docstring."""
-
-        template_fields = ()
-
-        def __init__(self, **kwargs):
-            """TODO: Add docstring."""
-            pass
-
-    hooks_base.BaseHook = DummyBaseHook
-    models_mod.BaseOperator = DummyBaseOperator
-    hooks_pkg.base = hooks_base
-    airflow.hooks = hooks_pkg
-    airflow.models = models_mod
-    monkeypatch.setitem(sys.modules, "airflow", airflow)
-    monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
-    monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
-    monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
+    
+    _setup_airflow(monkeypatch)
 
     import apache_airflow_providers_imednet.operators.export as export_ops
     from apache_airflow_providers_imednet import ImednetExportOperator
@@ -96,39 +112,20 @@ def test_imednet_export_operator(monkeypatch):
 
 def test_imednet_hook_returns_sdk(monkeypatch):
     """TODO: Add docstring."""
-    airflow = ModuleType("airflow")
-    hooks_pkg = ModuleType("airflow.hooks")
-    hooks_base = ModuleType("airflow.hooks.base")
-    models_mod = ModuleType("airflow.models")
+    if "apache_airflow_providers_imednet" in sys.modules:
+        del sys.modules["apache_airflow_providers_imednet"]
 
-    class DummyBaseHook:
-        """TODO: Add docstring."""
-
-        @classmethod
-        def get_connection(cls, conn_id):
-            """TODO: Add docstring."""
-            return SimpleNamespace(
-                login="KEY", password="SEC", extra_dejson={"base_url": "https://x"}
-            )
-
-    class DummyBaseOperator:
-        """TODO: Add docstring."""
-
-        template_fields = ()
-
-        def __init__(self, **kwargs):
-            """TODO: Add docstring."""
-            pass
-
-    hooks_base.BaseHook = DummyBaseHook
-    models_mod.BaseOperator = DummyBaseOperator
-    hooks_pkg.base = hooks_base
-    airflow.hooks = hooks_pkg
-    airflow.models = models_mod
-    monkeypatch.setitem(sys.modules, "airflow", airflow)
-    monkeypatch.setitem(sys.modules, "airflow.hooks", hooks_pkg)
-    monkeypatch.setitem(sys.modules, "airflow.hooks.base", hooks_base)
-    monkeypatch.setitem(sys.modules, "airflow.models", models_mod)
+    _setup_airflow(monkeypatch)
+    import airflow.sdk.bases.hook as hooks_base
+    
+    conn = SimpleNamespace(
+        login="KEY", password="SEC", extra_dejson={"base_url": "https://x"}
+    )
+    monkeypatch.setattr(
+        hooks_base.BaseHook,
+        "get_connection",
+        classmethod(lambda cls, cid: conn),
+    )
 
     from apache_airflow_providers_imednet import ImednetHook
 
