@@ -38,6 +38,7 @@ def _make_ledger_state(study_key: str, stream_name: str) -> LedgerState:
 
 class TestShowState:
     """TODO: Add docstring."""
+
     def test_show_all_entries(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
@@ -83,6 +84,7 @@ class TestShowState:
 
 class TestSetState:
     """TODO: Add docstring."""
+
     def test_set_valid_utc_timestamp(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
@@ -179,6 +181,7 @@ class TestSetState:
 
 class TestResetState:
     """TODO: Add docstring."""
+
     def test_reset_whole_study_when_found(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")

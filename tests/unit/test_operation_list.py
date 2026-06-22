@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -23,8 +24,10 @@ def test_list_operation_sync_uses_paginator():
 @pytest.mark.asyncio
 async def test_list_operation_async_uses_paginator():
     """TODO: Add docstring."""
+
     class _AsyncPaginator:
         """TODO: Add docstring."""
+
         def __init__(self, *_args, **_kwargs):
             """TODO: Add docstring."""
             pass

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import pytest
 
 import imednet.endpoints.records as records

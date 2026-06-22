@@ -178,6 +178,7 @@ def test_sdk_convenience_mixin_uses_filter_value() -> None:
 
     class DummySDK(SDKConvenienceMixin):
         """TODO: Add docstring."""
+
         def __init__(self):
             """TODO: Add docstring."""
             from unittest.mock import MagicMock

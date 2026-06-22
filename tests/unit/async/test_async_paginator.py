@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import pytest
 
 from imednet.core.paginator import AsyncPaginator
@@ -6,6 +7,7 @@ from imednet.core.paginator import AsyncPaginator
 
 class DummyAsyncClient:
     """TODO: Add docstring."""
+
     def __init__(self, responses):
         """TODO: Add docstring."""
         self.responses = responses

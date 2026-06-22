@@ -21,6 +21,7 @@ MODULE_NAME = "imednet_streamlit.pages.data_lineage"
 
 class _FakeContextManager:
     """TODO: Add docstring."""
+
     def __enter__(self) -> "_FakeContextManager":
         """TODO: Add docstring."""
         return self
@@ -53,6 +54,7 @@ class _FakeContextManager:
 
 class _FakeStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
@@ -233,6 +235,7 @@ def _run_data_lineage(
 
     class _FakeLoader:
         """TODO: Add docstring."""
+
         def __init__(self, sdk: object) -> None:
             """TODO: Add docstring."""
             pass

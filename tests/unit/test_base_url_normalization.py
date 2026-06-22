@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import MagicMock
 
 import httpx
@@ -13,11 +14,13 @@ from imednet.models.json_base import JsonModel
 
 class MockModel(JsonModel):
     """TODO: Add docstring."""
+
     pass
 
 
 class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
     """TODO: Add docstring."""
+
     MODEL = MockModel
     PATH = "/test"
 

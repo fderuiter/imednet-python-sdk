@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import importlib.util
 import sys
 from datetime import datetime, timezone
@@ -20,6 +21,7 @@ def _setup_airflow(monkeypatch):
 
     class DummyBaseHook:
         """TODO: Add docstring."""
+
         @classmethod
         def get_connection(cls, conn_id):
             """TODO: Add docstring."""
@@ -27,6 +29,7 @@ def _setup_airflow(monkeypatch):
 
     class DummyBaseOperator:
         """TODO: Add docstring."""
+
         template_fields = ()
 
         def __init__(self, **kwargs):
@@ -446,6 +449,7 @@ def test_imednet_hook_study_discovery_serialization_safe(monkeypatch):
 
     class _StudyModel:
         """TODO: Add docstring."""
+
         def model_dump(self, mode="json", by_alias=True):
             """TODO: Add docstring."""
             assert mode == "json"
@@ -493,6 +497,7 @@ def _setup_airflow_for_dag(monkeypatch):
 
     class _DummyDAG:
         """TODO: Add docstring."""
+
         def __init__(self, *args, **kwargs):
             """TODO: Add docstring."""
             pass
@@ -529,6 +534,7 @@ def _setup_airflow_for_dag(monkeypatch):
 
     class _DummyOperator:
         """TODO: Add docstring."""
+
         template_fields = ()
         # Mirrors ImednetExportOperator.mapped_runtime_fields: these are the fields
         # that Airflow sets at runtime (via template rendering / expand_kwargs) and
@@ -542,8 +548,10 @@ def _setup_airflow_for_dag(monkeypatch):
         @classmethod
         def partial(cls, **kwargs):
             """TODO: Add docstring."""
+
             class _PartialOp:
                 """TODO: Add docstring."""
+
                 def expand_kwargs(self, targets):
                     """TODO: Add docstring."""
                     pass
@@ -552,6 +560,7 @@ def _setup_airflow_for_dag(monkeypatch):
 
     class _DummyHook:
         """TODO: Add docstring."""
+
         def __init__(self, conn_id: str = "imednet_default") -> None:
             """TODO: Add docstring."""
             pass
@@ -573,6 +582,7 @@ def test_to_primitive_unknown_object_type_falls_back_to_str(monkeypatch):
 
     class _Opaque:
         """TODO: Add docstring."""
+
         def __str__(self):
             """TODO: Add docstring."""
             return "opaque-repr"

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -122,6 +123,7 @@ async def test_list_operation_async():
 
     class AsyncIteratorMock:
         """TODO: Add docstring."""
+
         def __init__(self, items):
             """TODO: Add docstring."""
             self.items = items

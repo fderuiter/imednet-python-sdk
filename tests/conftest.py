@@ -1,6 +1,7 @@
 # ruff: noqa: E402
 
 """TODO: Add docstring."""
+
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -72,6 +73,7 @@ def reset_circuit_breaker_between_tests():
 
 class DummyResponse:
     """TODO: Add docstring."""
+
     def __init__(self, data):
         """TODO: Add docstring."""
         self._data = data
@@ -96,6 +98,7 @@ def dummy_client():
 @pytest.fixture
 def response_factory():
     """TODO: Add docstring."""
+
     def factory(data):
         """TODO: Add docstring."""
         return DummyResponse(data)
@@ -115,6 +118,7 @@ def paginator_factory(monkeypatch):
 
         class DummyPaginator:
             """TODO: Add docstring."""
+
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
                 """TODO: Add docstring."""
                 captured["client"] = client
@@ -160,6 +164,7 @@ def async_paginator_factory(monkeypatch):
 
         class DummyPaginator:
             """TODO: Add docstring."""
+
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
                 """TODO: Add docstring."""
                 captured["client"] = client
@@ -198,6 +203,7 @@ def async_paginator_factory(monkeypatch):
 @pytest.fixture
 def patch_build_filter(monkeypatch):
     """TODO: Add docstring."""
+
     def patch(module):
         """TODO: Add docstring."""
         captured = {}

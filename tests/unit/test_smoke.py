@@ -1,4 +1,6 @@
 """TODO: Add docstring."""
+
+
 def test_smoke_import() -> None:
     """TODO: Add docstring."""
     import imednet

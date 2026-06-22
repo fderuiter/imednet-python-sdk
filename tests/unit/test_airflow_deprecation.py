@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import sys
 from types import ModuleType
 
@@ -12,6 +13,7 @@ def _setup_airflow(monkeypatch):
 
     class DummyBaseHook:
         """TODO: Add docstring."""
+
         @classmethod
         def get_connection(cls, conn_id):  # pragma: no cover
             """TODO: Add docstring."""
@@ -19,6 +21,7 @@ def _setup_airflow(monkeypatch):
 
     class DummyBaseOperator:
         """TODO: Add docstring."""
+
         template_fields = ()
 
         def __init__(self, **kwargs):  # pragma: no cover

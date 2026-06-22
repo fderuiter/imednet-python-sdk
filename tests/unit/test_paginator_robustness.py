@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import Mock
 
 import pytest
@@ -9,6 +10,7 @@ from imednet.errors import PaginationError
 
 class MockClient:
     """TODO: Add docstring."""
+
     def __init__(self, response_data):
         """TODO: Add docstring."""
         self.response_data = response_data

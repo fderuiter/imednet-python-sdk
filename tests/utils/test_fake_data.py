@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from types import SimpleNamespace
 from typing import Any, cast
 

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import pytest
 
 import imednet.sdk as sdk_mod
@@ -130,6 +131,7 @@ async def test_async_poll_job_convenience(monkeypatch) -> None:
 
     class FakePoller:
         """TODO: Add docstring."""
+
         def __init__(self, get_func, **kwargs):
             """TODO: Add docstring."""
             calls["init"] = get_func

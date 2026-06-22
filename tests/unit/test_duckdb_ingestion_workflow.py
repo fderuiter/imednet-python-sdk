@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import sys
@@ -170,6 +171,7 @@ def test_ingest_revisions_returns_row_count() -> None:
 
 def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
+
     def fake_import(
         name: str,
         globals_arg: Any = None,

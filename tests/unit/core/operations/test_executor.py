@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import pytest
 
 from imednet.core.operations.circuit_breaker import get_global_circuit_breaker
@@ -8,6 +9,7 @@ from imednet.core.operations.protocols import OperationProtocol
 
 class RESTTask(OperationProtocol[str]):
     """TODO: Add docstring."""
+
     def __init__(self, fail_times=0):
         """TODO: Add docstring."""
         self.fail_times = fail_times
@@ -23,6 +25,7 @@ class RESTTask(OperationProtocol[str]):
 
 class NonRESTTask(OperationProtocol[str]):
     """TODO: Add docstring."""
+
     def __init__(self, fail_times=0):
         """TODO: Add docstring."""
         self.fail_times = fail_times

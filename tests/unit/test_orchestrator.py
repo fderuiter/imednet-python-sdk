@@ -20,6 +20,7 @@ def _make_study(study_key: str) -> Study:
 
 def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> None:
     """TODO: Add docstring."""
+
     def infinite_clock():
         """TODO: Add docstring."""
         for v in values:

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -25,6 +26,7 @@ def _component_palette() -> list[str]:
 
 class _FakeNavigation:
     """TODO: Add docstring."""
+
     def __init__(self, pages: list[dict[str, Any]]) -> None:
         """TODO: Add docstring."""
         self.pages = pages
@@ -37,6 +39,7 @@ class _FakeNavigation:
 
 class _FakeSidebar:
     """TODO: Add docstring."""
+
     def toggle(self, label: str, value: bool = False, on_change: Any = None, **kwargs: Any) -> bool:
         """TODO: Add docstring."""
         return value
@@ -44,6 +47,7 @@ class _FakeSidebar:
 
 class _FakeStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.page_config: dict[str, Any] | None = None
@@ -113,6 +117,7 @@ class _FakeStreamlit:
 
 class _FakePageStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self, *, connected: bool) -> None:
         """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {"_imednet_connected": connected}

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import MagicMock
 
 from imednet.models.queries import Query, QueryComment

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import httpx
 import pytest
 import respx
@@ -10,6 +11,7 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 class NamedPolicy(RetryPolicy):
     """TODO: Add docstring."""
+
     def __init__(self, name: str) -> None:
         """TODO: Add docstring."""
         self.name = name

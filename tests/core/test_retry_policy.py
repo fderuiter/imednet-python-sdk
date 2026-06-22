@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import httpx
 import pytest
 
@@ -63,8 +64,10 @@ def test_default_policy_non_request_exception(monkeypatch):
 
 def test_custom_policy(monkeypatch):
     """TODO: Add docstring."""
+
     class ServerPolicy:
         """TODO: Add docstring."""
+
         def should_retry(self, state: RetryState) -> bool:
             """TODO: Add docstring."""
             return isinstance(state.exception, ServerError)
@@ -89,8 +92,10 @@ def test_custom_policy(monkeypatch):
 
 def test_custom_policy_based_on_result(monkeypatch):
     """TODO: Add docstring."""
+
     class ResponsePolicy:
         """TODO: Add docstring."""
+
         def should_retry(self, state: RetryState) -> bool:
             """TODO: Add docstring."""
             resp = state.result

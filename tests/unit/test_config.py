@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import pytest
 
 from imednet.config import Config, load_config

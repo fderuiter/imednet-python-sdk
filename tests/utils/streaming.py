@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import asyncio
 from typing import Any, AsyncIterator, Generic, Iterable, Iterator, List, TypeVar, Union, overload
 
@@ -98,6 +99,7 @@ class StreamingMockWrapper(Generic[T]):
 
     def __await__(self):
         """TODO: Add docstring."""
+
         # Handle incorrect awaiting by gracefully returning self so test assertions can pass.
         async def _mock_coroutine():
             """TODO: Add docstring."""
@@ -112,6 +114,7 @@ def unified_paginator_factory(monkeypatch, module, items, is_async=False):
 
     class DummyPaginator(StreamingMockWrapper):
         """TODO: Add docstring."""
+
         def __init__(self, client, path, params=None, page_size=100, **kwargs):
             """TODO: Add docstring."""
             super().__init__(items)

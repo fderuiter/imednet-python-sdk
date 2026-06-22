@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -13,6 +14,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 class _FakeNavigation:
     """TODO: Add docstring."""
+
     def __init__(self, pages: list[dict[str, Any]]) -> None:
         """TODO: Add docstring."""
         self.pages = pages
@@ -25,6 +27,7 @@ class _FakeNavigation:
 
 class _FakeStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.page_config: dict[str, Any] | None = None
@@ -73,6 +76,7 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 
     class FakeSidebar:
         """TODO: Add docstring."""
+
         def toggle(self, *args, **kwargs):
             """TODO: Add docstring."""
             pass

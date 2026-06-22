@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import httpx
 import pytest
 import respx
@@ -182,6 +183,7 @@ async def test_async_executor_retries_exhausted_with_error_response():
 
 class FakeAttempt:
     """TODO: Add docstring."""
+
     def __init__(self, failed):
         """TODO: Add docstring."""
         self.failed = failed
@@ -197,6 +199,7 @@ class FakeAttempt:
 
 class FakeRetryError(RetryError):
     """TODO: Add docstring."""
+
     def __init__(self, failed):
         """TODO: Add docstring."""
         self.last_attempt = FakeAttempt(failed)

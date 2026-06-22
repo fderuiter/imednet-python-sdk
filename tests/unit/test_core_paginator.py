@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from typing import Any, Dict, List
 
 import pytest
@@ -13,6 +14,7 @@ from imednet.core.paginator import (
 
 class DummyClient:
     """TODO: Add docstring."""
+
     def __init__(self, responses: List[Dict[str, Any]]):
         """TODO: Add docstring."""
         self.responses = responses
@@ -27,6 +29,7 @@ class DummyClient:
 
 class AsyncDummyClient:
     """TODO: Add docstring."""
+
     def __init__(self, responses: List[Dict[str, Any]]):
         """TODO: Add docstring."""
         self.responses = responses

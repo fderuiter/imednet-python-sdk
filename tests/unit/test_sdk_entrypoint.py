@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from typing import Any, Callable
 
 import pytest
@@ -69,6 +70,7 @@ def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
 
         class FakeWorkflows:
             """TODO: Add docstring."""
+
             def __init__(self, sdk_instance):
                 """TODO: Add docstring."""
                 self.sdk_instance = sdk_instance
@@ -96,6 +98,7 @@ def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
     monkeypatch, exception_class
 ) -> None:
     """TODO: Add docstring."""
+
     def failing_loader():
         """TODO: Add docstring."""
         raise exception_class("boom")
@@ -148,8 +151,10 @@ def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None
 
 def test_sdk_workflows_instantiation_failure_raises_import_error(monkeypatch) -> None:
     """TODO: Add docstring."""
+
     class BrokenWorkflows:
         """TODO: Add docstring."""
+
         def __init__(self, sdk_instance):
             """TODO: Add docstring."""
             raise TypeError("broken")
@@ -363,6 +368,7 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
 
     class FakePoller:
         """TODO: Add docstring."""
+
         def __init__(self, get_func, **kwargs):
             """TODO: Add docstring."""
             calls["init"] = get_func

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -15,6 +16,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 class _FakeColumn:
     """TODO: Add docstring."""
+
     def __init__(self, parent: "_FakeStreamlit") -> None:
         """TODO: Add docstring."""
         self._parent = parent
@@ -38,6 +40,7 @@ class _FakeColumn:
 
 class _FakeContextManager:
     """TODO: Add docstring."""
+
     def __enter__(self) -> "_FakeContextManager":
         """TODO: Add docstring."""
         return self
@@ -49,6 +52,7 @@ class _FakeContextManager:
 
 class _FakeStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {
@@ -179,6 +183,7 @@ class _FakeStreamlit:
 
 class _WidgetOwnedSessionState(dict[str, Any]):
     """TODO: Add docstring."""
+
     def __init__(self, initial_state: dict[str, Any]) -> None:
         """TODO: Add docstring."""
         super().__init__(initial_state)
@@ -197,6 +202,7 @@ class _WidgetOwnedSessionState(dict[str, Any]):
 
 class _StrictWidgetStateFakeStreamlit(_FakeStreamlit):
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         super().__init__()
@@ -284,6 +290,7 @@ def _run_setup_wizard(
 
     class _FakeLoader:
         """TODO: Add docstring."""
+
         def __init__(self, sdk: object) -> None:
             """TODO: Add docstring."""
             self.sdk = sdk
@@ -294,6 +301,7 @@ def _run_setup_wizard(
 
     class _FakeProfiler:
         """TODO: Add docstring."""
+
         def __init__(self, sdk: object, loader: object) -> None:
             """TODO: Add docstring."""
             self.sdk = sdk
@@ -533,6 +541,7 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
 
     class MockStore:
         """TODO: Add docstring."""
+
         def commit_config(self, study_key, config, user, desc):
             """TODO: Add docstring."""
             self.study_key = study_key
@@ -558,6 +567,7 @@ def test_setup_wizard_save_managed_reports_error(monkeypatch: Any) -> None:
 
     class MockStore:
         """TODO: Add docstring."""
+
         def commit_config(self, study_key, config, user, desc):
             """TODO: Add docstring."""
             raise OSError("boom")
