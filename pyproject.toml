@@ -16,6 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pandas>=2.2.3,<3.0.0",
+    "numpy<2.5.0",
     "duckdb>=1.1.0",
     "pyarrow>=14.0.1",
     "ruff>=0.11.6,<0.12.0",
