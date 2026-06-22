@@ -1,3 +1,5 @@
+"""Integration tests for Airflow export functionality."""
+
 def _setup_airflow(monkeypatch):
     import sys
     from types import ModuleType, SimpleNamespace
