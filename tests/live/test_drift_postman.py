@@ -12,8 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
-    """Iterates over ENDPOINT_REGISTRY to test all read endpoints
-    against live API and validates against SDK internal models.
+    """Iterates over ENDPOINT_REGISTRY to test all read endpoints.
+    
+    Validates against live API and against SDK internal models.
     """
     os.environ["IMEDNET_STRICT_MODE"] = "1"
 
@@ -35,16 +36,11 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
 
         endpoint_obj = getattr(sdk, endpoint)
 
-        # Build path using endpoint's PATH
-        path = endpoint_cls.PATH
-
-        # Add studyKey if it's required (mostly everything except studies)
-        params = {}
-        if endpoint != "studies" and endpoint != "jobs":
-            params["studyKey"] = study_key
+        # Build path using endpoint's _get_endpoint_path
+        path = endpoint_obj._get_endpoint_path(study_key if endpoint != "studies" else None)
 
         try:
-            response = sdk._client.get(path, params=params)
+            response = sdk._client.get(path)
             response.raise_for_status()
             data = response.json()
             items = data.get("recordData") if "recordData" in data else data.get("data", [])
