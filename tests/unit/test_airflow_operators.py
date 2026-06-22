@@ -12,7 +12,11 @@ def _setup_airflow(monkeypatch):
     """TODO: Add docstring."""
     airflow = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
-    hooks_base = ModuleType("airflow.hooks.base")
+    hooks_base = ModuleType("airflow.sdk.bases.hook")
+    sdk_mod = ModuleType("airflow.sdk")
+    sdk_bases = ModuleType("airflow.sdk.bases")
+    sdk_defs = ModuleType("airflow.sdk.definitions")
+    sdk_ctx = ModuleType("airflow.sdk.definitions.context")
     models_mod = ModuleType("airflow.models")
     sensors_base = ModuleType("airflow.sensors.base")
     exc_mod = ModuleType("airflow.exceptions")
@@ -56,7 +60,11 @@ def _setup_airflow(monkeypatch):
     exc_mod.AirflowException = DummyAirflowError
     s3_mod.S3Hook = MagicMock
 
-    hooks_pkg.base = hooks_base
+    sdk_bases.hook = hooks_base
+    sdk_mod.bases = sdk_bases
+    sdk_defs.context = sdk_ctx
+    sdk_mod.definitions = sdk_defs
+    airflow.sdk = sdk_mod
     airflow.hooks = hooks_pkg
     airflow.models = models_mod
     airflow.sensors = ModuleType("airflow.sensors")
@@ -70,7 +78,11 @@ def _setup_airflow(monkeypatch):
     modules = {
         "airflow": airflow,
         "airflow.hooks": hooks_pkg,
-        "airflow.hooks.base": hooks_base,
+        "airflow.sdk.bases.hook": hooks_base,
+        "airflow.sdk": sdk_mod,
+        "airflow.sdk.bases": sdk_bases,
+        "airflow.sdk.definitions": sdk_defs,
+        "airflow.sdk.definitions.context": sdk_ctx,
         "airflow.models": models_mod,
         "airflow.sensors": airflow.sensors,
         "airflow.sensors.base": sensors_base,

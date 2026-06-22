@@ -6,7 +6,7 @@ import json
 from datetime import date, datetime
 from typing import Any, Dict, List, Mapping, MutableMapping, TypeAlias, Union, cast
 
-from airflow.hooks.base import BaseHook
+from airflow.sdk.bases.hook import BaseHook
 
 from imednet import Config, ImednetSDK, load_config
 
@@ -79,7 +79,7 @@ class ImednetHook(BaseHook):
 
     def _resolved_config(self) -> Config:
         """Resolve hook configuration from Airflow connection fields and env fallback."""
-        from airflow.hooks.base import BaseHook
+        from airflow.sdk.bases.hook import BaseHook
 
         conn = BaseHook.get_connection(self.imednet_conn_id)
         extras_dict = self._connection_extras(conn)
