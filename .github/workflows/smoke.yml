@@ -23,10 +23,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - uses: abatilo/actions-poetry@v2
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          poetry install --with dev
+          python -m pip install --upgrade pip
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              python -m pip install -e "$package"
+            fi
+          done
+          python -m pip install -e ".[dev,docs]" 
       - name: Install Newman
         run: npm install -g newman
       - name: Run Postman tests
@@ -48,7 +53,7 @@ jobs:
           IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
           set +e
-          poetry run python scripts/post_smoke_record.py --verbose 2>&1 | tee smoke.log
+          python scripts/post_smoke_record.py --verbose 2>&1 | tee smoke.log
           code=${PIPESTATUS[0]}
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           set -e
@@ -75,7 +80,7 @@ jobs:
           IMEDNET_RUN_E2E: "1"
           IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
-          poetry run pytest -vv -s --log-cli-level=INFO tests/live 2>&1 | tee live_tests.log
+          pytest -vv -s --log-cli-level=INFO tests/live 2>&1 | tee live_tests.log
       - name: Analyze API Drift
         if: always()
         run: |
