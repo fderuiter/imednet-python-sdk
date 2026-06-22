@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import sys
 from builtins import __import__ as builtin_import
 from pathlib import Path
@@ -96,6 +97,7 @@ def test_export_to_duckdb_by_form_creates_per_form_tables(
 
 def test_export_to_duckdb_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
+
     def fake_import(
         name: str,
         globals_arg: Any = None,

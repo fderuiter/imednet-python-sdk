@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from typing import Any, Dict, Type
 
 import pytest
@@ -9,11 +10,13 @@ from imednet.models.json_base import JsonModel
 
 class MockModel(JsonModel):
     """TODO: Add docstring."""
+
     id: int
 
 
 class ConcreteEndpoint(EndpointABC[MockModel]):
     """TODO: Add docstring."""
+
     @property
     def PATH(self) -> str:  # noqa: N802
         """TODO: Add docstring."""
@@ -35,6 +38,7 @@ class ConcreteEndpoint(EndpointABC[MockModel]):
 
 class UnimplementedEndpoint(EndpointABC[MockModel]):
     """TODO: Add docstring."""
+
     pass
 
 

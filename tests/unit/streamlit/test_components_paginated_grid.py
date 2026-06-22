@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -11,6 +12,7 @@ import imednet_streamlit.components.paginated_grid as paginated_grid
 
 class _FakeColumn:
     """TODO: Add docstring."""
+
     def __init__(self, *, next_click: bool = False, prev_click: bool = False) -> None:
         """TODO: Add docstring."""
         self._next_click = next_click

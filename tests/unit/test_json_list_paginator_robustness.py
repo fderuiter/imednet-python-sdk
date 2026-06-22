@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import Mock
 
 import pytest
@@ -8,6 +9,7 @@ from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 
 class MockClient:
     """TODO: Add docstring."""
+
     def __init__(self, response_data):
         """TODO: Add docstring."""
         self.response_data = response_data
@@ -21,6 +23,7 @@ class MockClient:
 
 class MockAsyncClient:
     """TODO: Add docstring."""
+
     def __init__(self, response_data):
         """TODO: Add docstring."""
         self.response_data = response_data

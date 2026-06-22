@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import logging
@@ -72,6 +73,7 @@ def test_logger_study_key_propagated_to_worker(
 
 def test_result_contains_duration_seconds(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
+
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         """TODO: Add docstring."""
         sleep(0.02)
@@ -84,6 +86,7 @@ def test_result_contains_duration_seconds(orchestrator: MultiStudyOrchestrator) 
 
 def test_successful_result_error_is_none(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
+
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         """TODO: Add docstring."""
         return study_key
@@ -96,6 +99,7 @@ def test_successful_result_error_is_none(orchestrator: MultiStudyOrchestrator) -
 
 def test_failed_result_data_is_none(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
+
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         """TODO: Add docstring."""
         raise RuntimeError(f"Boom:{study_key}")
@@ -109,6 +113,7 @@ def test_failed_result_data_is_none(orchestrator: MultiStudyOrchestrator) -> Non
 
 def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
+
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         """TODO: Add docstring."""
         return study_key
@@ -120,6 +125,7 @@ def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrato
 
 def test_execute_pipeline_context_propagation(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
+
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
         """TODO: Add docstring."""
         return get_current_study()

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import tracemalloc
 from datetime import datetime
 from typing import Any
@@ -203,6 +204,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
 
     class DummyModel(BaseModel):
         """TODO: Add docstring."""
+
         def __init__(self, **kwargs):
             """TODO: Add docstring."""
             raise ValidationError([], DummyModel)
@@ -243,6 +245,7 @@ def test_parse_records_counts_errors() -> None:
 
     class Dummy(BaseModel):
         """TODO: Add docstring."""
+
         def __init__(self, **_: Any) -> None:  # noqa: D401 - simple
             """Always fail."""
             raise ValidationError([], Dummy)
@@ -267,6 +270,7 @@ def test_iter_dataframes_streams_large_study_with_bounded_memory() -> None:
 
     class _StreamingLoader:
         """TODO: Add docstring."""
+
         def __init__(self) -> None:
             """TODO: Add docstring."""
             self.sync_records = MagicMock()

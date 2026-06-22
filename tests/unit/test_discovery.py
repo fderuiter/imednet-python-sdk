@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import Mock
 
 import pytest

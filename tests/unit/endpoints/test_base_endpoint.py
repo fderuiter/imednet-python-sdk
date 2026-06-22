@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import inspect
 from unittest.mock import MagicMock
 
@@ -13,11 +14,13 @@ from imednet.models.json_base import JsonModel
 
 class MockModel(JsonModel):
     """TODO: Add docstring."""
+
     pass
 
 
 class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):
     """TODO: Add docstring."""
+
     PATH = "/test"
     MODEL = MockModel
 
@@ -28,6 +31,7 @@ class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):
 
 class MockListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[MockModel]):
     """TODO: Add docstring."""
+
     PATH = "/items"
     MODEL = MockModel
     _id_param = "recordId"
@@ -35,6 +39,7 @@ class MockListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[MockModel]):
 
 class TestBaseEndpoint:
     """TODO: Add docstring."""
+
     @pytest.fixture
     def client(self):
         """TODO: Add docstring."""

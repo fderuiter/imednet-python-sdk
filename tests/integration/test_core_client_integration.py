@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import contextlib
 
 import httpx
@@ -24,8 +25,10 @@ def test_successful_get_sync_client():
 @respx.mock(assert_all_mocked=False)
 def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
+
     class Policy:
         """TODO: Add docstring."""
+
         def should_retry(self, state) -> bool:
             """TODO: Add docstring."""
             return isinstance(state.exception, errors.ServerError)
@@ -77,8 +80,10 @@ def test_timeout_handling():
 @respx.mock
 def test_tracer_records_span():
     """TODO: Add docstring."""
+
     class DummyTracer:
         """TODO: Add docstring."""
+
         def __init__(self):
             """TODO: Add docstring."""
             self.called = False

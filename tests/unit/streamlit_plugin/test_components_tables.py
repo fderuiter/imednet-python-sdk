@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import pandas as pd
@@ -9,6 +10,7 @@ from imednet_streamlit.components import filterable_dataframe, paginated_grid, t
 
 class _FakeColumn:
     """TODO: Add docstring."""
+
     def button(self, *_: object, **__: object) -> bool:
         """TODO: Add docstring."""
         return False
@@ -20,6 +22,7 @@ class _FakeColumn:
 
 class _FakeTableStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self, *, query: str) -> None:
         """TODO: Add docstring."""
         self._query = query

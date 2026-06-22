@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import pytest
 
 from imednet.utils.url import build_safe_path, redact_url_query, sanitize_base_url

@@ -26,6 +26,7 @@ from imednet.integrations.sink_base import (
 
 class TestRedactUri:
     """TODO: Add docstring."""
+
     def test_redacts_user_and_password(self):
         """TODO: Add docstring."""
         userpass_uri = "mongodb://" + "user:pass" + "@localhost:27017/db"
@@ -52,6 +53,7 @@ class TestRedactUri:
 
 class TestRequireOptionalDep:
     """TODO: Add docstring."""
+
     def test_returns_module_when_installed(self):
         """TODO: Add docstring."""
         mod = _require_optional_dep("sys", "dummy")
@@ -59,6 +61,7 @@ class TestRequireOptionalDep:
 
     def test_raises_import_error_when_missing(self, monkeypatch):
         """TODO: Add docstring."""
+
         def fake_import(name):
             """TODO: Add docstring."""
             raise ModuleNotFoundError(name=name)
@@ -69,6 +72,7 @@ class TestRequireOptionalDep:
 
     def test_reraises_unrelated_module_not_found_error(self, monkeypatch):
         """TODO: Add docstring."""
+
         def fake_import(name):
             """TODO: Add docstring."""
             raise ModuleNotFoundError(name="some_other_missing_lib")
@@ -85,6 +89,7 @@ class TestRequireOptionalDep:
 
 class TestSinkConfig:
     """TODO: Add docstring."""
+
     def test_defaults(self):
         """TODO: Add docstring."""
         cfg = SinkConfig()
@@ -104,6 +109,7 @@ class TestSinkConfig:
 
 class TestIterBatches:
     """TODO: Add docstring."""
+
     def test_splits_sequence_by_batch_size(self):
         """TODO: Add docstring."""
         batches = list(iter_batches([1, 2, 3, 4, 5], 2))
@@ -146,6 +152,7 @@ class _StubSink(ExportSink):
 
 class TestExportSinkContextManager:
     """TODO: Add docstring."""
+
     def test_flush_and_close_called_on_clean_exit(self):
         """TODO: Add docstring."""
         sink = _StubSink()
@@ -179,6 +186,7 @@ class TestExportSinkContextManager:
 
 class TestExportErrors:
     """TODO: Add docstring."""
+
     def test_export_error_is_imednet_error(self):
         """TODO: Add docstring."""
         from imednet.errors import ImednetError

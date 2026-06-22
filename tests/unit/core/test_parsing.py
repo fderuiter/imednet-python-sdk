@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from typing import Any, Dict
 
 from pydantic import BaseModel
@@ -8,12 +9,14 @@ from imednet.core.parsing import ModelParser, get_model_parser
 
 class BasicModel(BaseModel):
     """TODO: Add docstring."""
+
     id: int
     name: str
 
 
 class CustomModel(BaseModel):
     """TODO: Add docstring."""
+
     id: int
     name: str
 

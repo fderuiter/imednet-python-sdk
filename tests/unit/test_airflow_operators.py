@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import importlib
 import sys
 from types import ModuleType, SimpleNamespace
@@ -19,6 +20,7 @@ def _setup_airflow(monkeypatch):
 
     class DummyBaseHook:
         """TODO: Add docstring."""
+
         @classmethod
         def get_connection(cls, conn_id):
             """TODO: Add docstring."""
@@ -26,6 +28,7 @@ def _setup_airflow(monkeypatch):
 
     class DummyBaseOperator:
         """TODO: Add docstring."""
+
         template_fields = ()
 
         def __init__(self, *a, **kw):
@@ -34,6 +37,7 @@ def _setup_airflow(monkeypatch):
 
     class DummySensorOperator:
         """TODO: Add docstring."""
+
         template_fields = ()
 
         def __init__(self, *a, **kw):
@@ -46,6 +50,7 @@ def _setup_airflow(monkeypatch):
 
     class DummyAirflowError(Exception):
         """TODO: Add docstring."""
+
         pass
 
     exc_mod.AirflowException = DummyAirflowError

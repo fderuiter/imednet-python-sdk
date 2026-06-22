@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import pytest
@@ -8,6 +9,7 @@ from imednet_streamlit.components import kpi_card, kpi_row, metrics
 
 class _ColumnContext:
     """TODO: Add docstring."""
+
     def __enter__(self) -> None:
         """TODO: Add docstring."""
         return None
@@ -19,6 +21,7 @@ class _ColumnContext:
 
 class _FakeMetricStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.columns_calls: list[int] = []

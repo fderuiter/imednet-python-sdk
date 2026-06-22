@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import MagicMock
 
 import httpx
@@ -11,6 +12,7 @@ from imednet.core.base_client import BaseClient
 
 class DummyClient(BaseClient):
     """TODO: Add docstring."""
+
     def _create_client(self, auth: AuthStrategy) -> httpx.Client:
         """TODO: Add docstring."""
         headers = auth.get_headers()

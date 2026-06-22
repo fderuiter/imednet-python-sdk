@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import sys
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
@@ -52,6 +53,7 @@ def test_imednet_export_operator(monkeypatch):
 
     class DummyBaseHook:
         """TODO: Add docstring."""
+
         @classmethod
         def get_connection(cls, conn_id):
             """TODO: Add docstring."""
@@ -59,6 +61,7 @@ def test_imednet_export_operator(monkeypatch):
 
     class DummyBaseOperator:
         """TODO: Add docstring."""
+
         template_fields = ()
 
         def __init__(self, **kwargs):
@@ -100,6 +103,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
 
     class DummyBaseHook:
         """TODO: Add docstring."""
+
         @classmethod
         def get_connection(cls, conn_id):
             """TODO: Add docstring."""
@@ -109,6 +113,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
 
     class DummyBaseOperator:
         """TODO: Add docstring."""
+
         template_fields = ()
 
         def __init__(self, **kwargs):

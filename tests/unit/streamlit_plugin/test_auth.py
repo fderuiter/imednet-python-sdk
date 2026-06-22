@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from types import SimpleNamespace
@@ -10,6 +11,7 @@ from imednet_streamlit import auth
 
 class _SidebarContext:
     """TODO: Add docstring."""
+
     def __enter__(self) -> None:
         """TODO: Add docstring."""
         return None
@@ -21,6 +23,7 @@ class _SidebarContext:
 
 class _FakeStreamlit:
     """TODO: Add docstring."""
+
     def __init__(
         self,
         *,
@@ -189,6 +192,7 @@ def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
 
     class FakeSDK:
         """TODO: Add docstring."""
+
         def __init__(self, api_key: str, security_key: str) -> None:
             """TODO: Add docstring."""
             sdk_args["api_key"] = api_key

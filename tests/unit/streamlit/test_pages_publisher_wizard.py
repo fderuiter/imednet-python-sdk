@@ -42,6 +42,7 @@ def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> Config
 
 class _FakeContextManager:
     """TODO: Add docstring."""
+
     def __enter__(self) -> "_FakeContextManager":
         """TODO: Add docstring."""
         return self
@@ -53,6 +54,7 @@ class _FakeContextManager:
 
 class _FakeStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
@@ -195,6 +197,7 @@ def _run_publisher_wizard(
 
     class FakeAuth:
         """TODO: Add docstring."""
+
         def get_user_roles(self):
             """TODO: Add docstring."""
             # Read from session state simulator instead of UI
@@ -206,6 +209,7 @@ def _run_publisher_wizard(
 
     class FakeSDK:
         """TODO: Add docstring."""
+
         auth = FakeAuth()
 
     fake_auth_module.get_sdk = lambda: FakeSDK()  # type: ignore[attr-defined]

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from imednet.core.endpoint.strategies import (
     KeepStudyKeyStrategy,
     OptionalStudyKeyStrategy,
@@ -8,6 +9,7 @@ from imednet.core.endpoint.strategies import (
 
 class TestKeepStudyKeyStrategy:
     """TODO: Add docstring."""
+
     def test_process_with_valid_key(self):
         """TODO: Add docstring."""
         strategy = KeepStudyKeyStrategy()
@@ -27,6 +29,7 @@ class TestKeepStudyKeyStrategy:
 
 class TestPopStudyKeyStrategy:
     """TODO: Add docstring."""
+
     def test_process_with_valid_key(self):
         """TODO: Add docstring."""
         strategy = PopStudyKeyStrategy()
@@ -46,6 +49,7 @@ class TestPopStudyKeyStrategy:
 
 class TestOptionalStudyKeyStrategy:
     """TODO: Add docstring."""
+
     def test_process_with_key(self):
         """TODO: Add docstring."""
         strategy = OptionalStudyKeyStrategy()

@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import io
@@ -12,6 +13,7 @@ from imednet_streamlit.components import csv_download_button, excel_download_but
 
 class _FakeExportStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.download_calls: list[dict[str, object]] = []

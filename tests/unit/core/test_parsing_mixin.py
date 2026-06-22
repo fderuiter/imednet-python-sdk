@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from unittest.mock import MagicMock
 
 from imednet.core.context import Context
@@ -8,11 +9,13 @@ from imednet.models.json_base import JsonModel
 
 class MockModel(JsonModel):
     """TODO: Add docstring."""
+
     id: int
 
 
 class EndpointWithParsing(GenericListGetEndpoint[MockModel]):
     """TODO: Add docstring."""
+
     PATH = "items"
     MODEL = MockModel
 

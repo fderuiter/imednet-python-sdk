@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import sys
 from builtins import __import__ as builtin_import
 from datetime import datetime
@@ -165,6 +166,7 @@ def test_export_to_duckdb_handles_wide_dataframe(monkeypatch):
 
 def test_export_to_duckdb_import_error(monkeypatch):
     """TODO: Add docstring."""
+
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
         """TODO: Add docstring."""
         if name == "duckdb":
@@ -347,6 +349,7 @@ def test_export_to_duckdb_by_form(monkeypatch):
 
 def test_export_to_duckdb_by_form_import_error(monkeypatch):
     """TODO: Add docstring."""
+
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
         """TODO: Add docstring."""
         if name == "duckdb":

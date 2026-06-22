@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from datetime import datetime
 from enum import Enum
 from typing import Any, Union, get_args, get_origin

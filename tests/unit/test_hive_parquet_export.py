@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -29,6 +30,7 @@ def test_export_to_hive_parquet_directory_structure(
 
     class FakeMapper:
         """TODO: Add docstring."""
+
         def __init__(self, sdk: MagicMock) -> None:
             """TODO: Add docstring."""
             self._sdk = sdk
@@ -82,6 +84,7 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
 
     class FakeMapper:
         """TODO: Add docstring."""
+
         def __init__(self, sdk: MagicMock) -> None:
             """TODO: Add docstring."""
             self._sdk = sdk
@@ -141,6 +144,7 @@ def test_hive_parquet_query_returns_correct_string() -> None:
 
 def test_export_to_hive_parquet_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
+
     def _raise_import_error(module_name: str):
         """TODO: Add docstring."""
         if module_name == "pyarrow":

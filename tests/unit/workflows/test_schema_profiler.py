@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -134,6 +135,7 @@ def test_schema_profiler_streams_chunked_loader_records() -> None:
 
     class _ChunkedLoader:
         """TODO: Add docstring."""
+
         def __init__(self) -> None:
             """TODO: Add docstring."""
             self.load_records = MagicMock()

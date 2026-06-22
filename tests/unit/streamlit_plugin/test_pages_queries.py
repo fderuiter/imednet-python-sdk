@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import runpy
@@ -14,6 +15,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 class _FakeContextManager:
     """TODO: Add docstring."""
+
     def __enter__(self) -> "_FakeContextManager":
         """TODO: Add docstring."""
         return self
@@ -25,6 +27,7 @@ class _FakeContextManager:
 
 class _FakeCacheDataDecorator:
     """TODO: Add docstring."""
+
     def __call__(self, func: Any = None, **kwargs: Any) -> Any:
         """TODO: Add docstring."""
         if func is not None:
@@ -38,6 +41,7 @@ class _FakeCacheDataDecorator:
 
 class _FakeQueriesStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}

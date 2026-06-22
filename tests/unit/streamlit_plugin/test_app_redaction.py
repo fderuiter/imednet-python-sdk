@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import pytest
@@ -29,6 +30,7 @@ def test_sanitize_body_unprintable_exception():
 
     class BadError(Exception):
         """TODO: Add docstring."""
+
         def __str__(self):
             """TODO: Add docstring."""
             raise RuntimeError("Cannot print")
@@ -104,6 +106,7 @@ def test_secure_st_methods(monkeypatch):
 
 class _FakeChart:
     """TODO: Add docstring."""
+
     def __init__(self, title="Test Chart"):
         """TODO: Add docstring."""
         self.title = title
@@ -184,6 +187,7 @@ def test_accessible_altair_chart_with_dataframe(monkeypatch):
 
     class FakeExpander:
         """TODO: Add docstring."""
+
         def __init__(self, label, expanded):
             """TODO: Add docstring."""
             calls.append(("expander", label, expanded))

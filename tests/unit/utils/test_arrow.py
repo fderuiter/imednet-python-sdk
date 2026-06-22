@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from datetime import datetime, timezone
 
 import pyarrow as pa
@@ -41,8 +42,10 @@ def test_to_arrow_table_preserves_datetime_bool_and_float_types() -> None:
 
 def test_to_arrow_table_accepts_pydantic_like_records() -> None:
     """TODO: Add docstring."""
+
     class Visit(BaseModel):
         """TODO: Add docstring."""
+
         subject_key: str
         completed: bool
         systolic: float | None = None

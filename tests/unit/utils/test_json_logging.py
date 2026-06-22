@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import importlib
 import json
 import logging
@@ -27,6 +28,7 @@ def _install_formatter(monkeypatch: pytest.MonkeyPatch, submodule: str) -> type[
 
     class DummyFormatter(logging.Formatter):
         """TODO: Add docstring."""
+
         def format(self, record: logging.LogRecord) -> str:  # type: ignore[override]
             """TODO: Add docstring."""
             return json.dumps({"message": record.getMessage(), "levelname": record.levelname})

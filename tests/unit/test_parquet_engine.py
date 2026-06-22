@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +10,7 @@ from imednet.integrations.parquet_engine import PyArrowDatasetPartitionedStorage
 
 class _FakeTable:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.num_rows = 2
@@ -29,6 +31,7 @@ class _FakeTable:
 
 class _FakeParquetFormat:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.options: dict[str, Any] | None = None
@@ -41,6 +44,7 @@ class _FakeParquetFormat:
 
 class _FakeDatasetModule:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.partitioning_args: dict[str, Any] | None = None
@@ -72,6 +76,7 @@ class _FakeDatasetModule:
 
 class _FakePyArrowModule:
     """TODO: Add docstring."""
+
     def string(self) -> str:
         """TODO: Add docstring."""
         return "string"

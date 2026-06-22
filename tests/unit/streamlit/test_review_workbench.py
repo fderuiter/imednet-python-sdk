@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -34,6 +35,7 @@ DRAWER_PATH = (
 
 class _FakeContextManager:
     """TODO: Add docstring."""
+
     def __init__(self, streamlit_client: "_FakeStreamlit | None" = None) -> None:
         """TODO: Add docstring."""
         self._streamlit_client = streamlit_client
@@ -55,6 +57,7 @@ class _FakeContextManager:
 
 class _FakeStreamlit:
     """TODO: Add docstring."""
+
     def __init__(self) -> None:
         """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {}

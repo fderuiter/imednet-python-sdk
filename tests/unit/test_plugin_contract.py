@@ -44,8 +44,10 @@ def test_valid_namespace_satisfies_protocol() -> None:
 
 def test_object_missing_attributes_does_not_satisfy_namespace_protocol() -> None:
     """TODO: Add docstring."""
+
     class _Incomplete:
         """TODO: Add docstring."""
+
         data_extraction: Any = None
         # missing: query_management, record_mapper, record_update, subject_data
 
@@ -199,6 +201,7 @@ def test_init_workflows_returns_namespace_from_valid_plugin() -> None:
 
 def test_init_workflows_raises_plugin_load_error_when_factory_raises_type_error() -> None:
     """TODO: Add docstring."""
+
     def _bad_factory(*args: Any, **kwargs: Any) -> None:
         """TODO: Add docstring."""
         raise TypeError("unexpected argument")

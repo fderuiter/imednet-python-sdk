@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
@@ -33,6 +34,7 @@ def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
 
     class FakeMapper:
         """TODO: Add docstring."""
+
         def __init__(self, _sdk) -> None:
             """TODO: Add docstring."""
             self._sdk = _sdk
@@ -81,6 +83,7 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
 
     class FakeMapper:
         """TODO: Add docstring."""
+
         def __init__(self, _sdk) -> None:
             """TODO: Add docstring."""
             self._sdk = _sdk
@@ -127,6 +130,7 @@ def test_hive_parquet_query() -> None:
 
 def test_export_to_hive_parquet_missing_pyarrow(monkeypatch) -> None:
     """TODO: Add docstring."""
+
     def _raise_import_error(module_name: str):
         """TODO: Add docstring."""
         if module_name == "pyarrow":
@@ -176,6 +180,7 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
 
     class FakeMapper:
         """TODO: Add docstring."""
+
         def __init__(self, _sdk) -> None:
             """TODO: Add docstring."""
             self._sdk = _sdk
@@ -203,6 +208,7 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
 
     class FakeEngine:
         """TODO: Add docstring."""
+
         def write_form_table(self, table, **kwargs) -> None:
             """TODO: Add docstring."""
             assert kwargs == {
@@ -214,6 +220,7 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
 
     class _FakeTable:
         """TODO: Add docstring."""
+
         @staticmethod
         def from_pandas(df: pd.DataFrame, preserve_index: bool = False) -> pd.DataFrame:
             """TODO: Add docstring."""

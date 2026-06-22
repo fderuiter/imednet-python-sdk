@@ -1,4 +1,5 @@
 """TODO: Add docstring."""
+
 import importlib
 from pathlib import Path
 
@@ -9,6 +10,7 @@ test_conftest = importlib.import_module("tests.conftest")
 
 class _DummyNode:
     """TODO: Add docstring."""
+
     def __init__(self, *, path: Path, has_live_marker: bool = False):
         """TODO: Add docstring."""
         self.path = path
@@ -23,6 +25,7 @@ class _DummyNode:
 
 class _DummyRequest:
     """TODO: Add docstring."""
+
     def __init__(self, node: _DummyNode):
         """TODO: Add docstring."""
         self.node = node
