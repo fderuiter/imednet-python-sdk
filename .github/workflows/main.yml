@@ -135,10 +135,8 @@ jobs:
               packages+=("-e" "$package")
             fi
           done
-          if [ ${#packages[@]} -gt 0 ]; then
-            python -m pip install "${packages[@]}"
-          fi
-          python -m pip install -e ".[dev,docs]" 
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
 
       - name: Code Quality (Ruff)
         run: |
@@ -202,10 +200,8 @@ jobs:
               packages+=("-e" "$package")
             fi
           done
-          if [ ${#packages[@]} -gt 0 ]; then
-            python -m pip install "${packages[@]}"
-          fi
-          python -m pip install -e ".[dev,docs]" 
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
 
       - name: Build Workspace Packages
         run: |
@@ -279,10 +275,8 @@ jobs:
               packages+=("-e" "$package")
             fi
           done
-          if [ ${#packages[@]} -gt 0 ]; then
-            python -m pip install "${packages[@]}"
-          fi
-          python -m pip install -e ".[dev,docs]" 
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
           
       - name: Run Tests
         env:
@@ -354,10 +348,8 @@ jobs:
               packages+=("-e" "$package")
             fi
           done
-          if [ ${#packages[@]} -gt 0 ]; then
-            python -m pip install "${packages[@]}"
-          fi
-          python -m pip install -e ".[dev,docs]" 
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
 
       - name: Run Hermetic Integration Sandbox
         if: steps.filter.outputs.export_logic == 'true'
@@ -389,10 +381,8 @@ jobs:
               packages+=("-e" "$package")
             fi
           done
-          if [ ${#packages[@]} -gt 0 ]; then
-            python -m pip install "${packages[@]}"
-          fi
-          python -m pip install -e ".[dev,docs]" 
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
         
       - name: Run Coverage-Guided Fuzzing (1,000,000 iterations)
         run: ./scripts/fuzz_test.sh
@@ -454,10 +444,8 @@ jobs:
               packages+=("-e" "$package")
             fi
           done
-          if [ ${#packages[@]} -gt 0 ]; then
-            python -m pip install "${packages[@]}"
-          fi
-          python -m pip install -e ".[dev,docs]" 
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
 
       - name: Run Doctests
         run: make doctest
