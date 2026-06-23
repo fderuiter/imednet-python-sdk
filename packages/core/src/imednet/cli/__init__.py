@@ -138,7 +138,6 @@ def _exit_missing_dashboard_plugin() -> NoReturn:
 
 
 def _register_missing_dashboard_commands() -> None:
-
     @app.command("dashboard")
     def missing_dashboard() -> None:
         """Launch the iMednet Streamlit reporting dashboard (requires imednet-streamlit plugin)."""

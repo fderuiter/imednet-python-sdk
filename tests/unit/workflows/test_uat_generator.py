@@ -19,6 +19,7 @@ from imednet_workflows.uat.models import (
 
 @pytest.fixture
 def mock_snapshot():
+    """Fixture for StudySnapshot mock."""
     snapshot = MagicMock(spec=StudySnapshot)
     snapshot.active_sites.return_value = [MagicMock(site_name="Test Site")]
     return snapshot
@@ -26,6 +27,7 @@ def mock_snapshot():
 
 @pytest.fixture
 def basic_spec():
+    """Fixture for basic UATSpecification."""
     return UATSpecification(
         study_key="STUDY01",
         study_name="Test Study",
@@ -55,6 +57,7 @@ def basic_spec():
 
 
 def test_generate_registration(basic_spec, mock_snapshot):
+    """Test subject registration generation."""
     generator = SyntheticRecordGenerator(seed=42)
     results = generator.generate(basic_spec, mock_snapshot)
 
@@ -69,6 +72,7 @@ def test_generate_registration(basic_spec, mock_snapshot):
 
 
 def test_fixed_strategy(mock_snapshot):
+    """Test FIXED strategy generation."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -98,6 +102,7 @@ def test_fixed_strategy(mock_snapshot):
 
 
 def test_skip_strategy(mock_snapshot):
+    """Test SKIP strategy generation."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -126,6 +131,7 @@ def test_skip_strategy(mock_snapshot):
 
 
 def test_boundary_strategy(mock_snapshot):
+    """Test BOUNDARY strategy generation."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -158,6 +164,7 @@ def test_boundary_strategy(mock_snapshot):
 
 
 def test_coded_all_strategy(mock_snapshot):
+    """Test CODED_ALL strategy generation."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -190,6 +197,7 @@ def test_coded_all_strategy(mock_snapshot):
 
 
 def test_coded_all_warning(mock_snapshot):
+    """Test CODED_ALL warning path."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -228,6 +236,7 @@ def test_coded_all_warning(mock_snapshot):
 
 
 def test_seed_reproducibility(basic_spec, mock_snapshot):
+    """Test reproducibility with random seed."""
     gen1 = SyntheticRecordGenerator(seed=123)
     res1 = gen1.generate(basic_spec, mock_snapshot)
 
@@ -238,6 +247,7 @@ def test_seed_reproducibility(basic_spec, mock_snapshot):
 
 
 def test_faker_missing_error(basic_spec, mock_snapshot, monkeypatch):
+    """Test error when Faker is missing."""
     import imednet_workflows.uat.generator as generator_mod
 
     monkeypatch.setattr(generator_mod, "Faker", None)
@@ -253,6 +263,7 @@ def test_faker_missing_error(basic_spec, mock_snapshot, monkeypatch):
 
 
 def test_various_types(mock_snapshot):
+    """Test generation across various variable types."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -314,6 +325,7 @@ def test_various_types(mock_snapshot):
 
 
 def test_subject_pool_logic(mock_snapshot):
+    """Test subject pooling and wrap-around logic."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -338,6 +350,7 @@ def test_subject_pool_logic(mock_snapshot):
 
 
 def test_unrecognized_type(mock_snapshot, caplog):
+    """Test handling of unrecognized variable types."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
@@ -373,6 +386,7 @@ def test_unrecognized_type(mock_snapshot, caplog):
 
 
 def test_no_subjects_pool_default(mock_snapshot):
+    """Test default subject pool when none provided."""
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
