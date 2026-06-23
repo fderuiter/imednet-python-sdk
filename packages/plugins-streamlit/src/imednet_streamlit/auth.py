@@ -25,9 +25,15 @@ def _build_sdk(api_key: str, security_key: str) -> None:
 
 
 def _mark_disconnected() -> None:
-    """TODO: Add docstring."""
+    """Mark the session as disconnected and clear the cached SDK.
+
+    This ensures that any subsequent interaction requires a fresh connection,
+    and prevents stale SDK instances from being used after a context switch.
+    """
     st.session_state[_KEY_CONNECTED] = False
     st.session_state.pop(_KEY_SDK, None)
+    # Also clear cache to prevent stale data leaks across contexts
+    st.cache_data.clear()
 
 
 import os
@@ -111,9 +117,18 @@ def render_auth_sidebar() -> bool:
             st.warning("No studies available. Contact Global Admin to provision environments.")
             return False
 
-        study_key = st.selectbox("Select Authorized Study", options=studies, key=_KEY_STUDY_KEY)
+        study_key = st.selectbox(
+            "Select Authorized Study",
+            options=studies,
+            key=_KEY_STUDY_KEY,
+            on_change=_mark_disconnected,
+        )
 
-        if st.button("Connect"):
+        if st.session_state.get(_KEY_CONNECTED):
+            if st.button("Disconnect", type="primary"):
+                clear_credentials()
+                st.rerun()
+        elif st.button("Connect"):
             api_key, security_key = get_tenant_credentials(study_key)
             if not api_key or not security_key:
                 st.error("Managed credentials for this tenant are missing.")
@@ -181,3 +196,5 @@ def clear_credentials() -> None:
     """
     for key in (_KEY_API_KEY, _KEY_SECURITY_KEY, _KEY_STUDY_KEY, _KEY_SDK, _KEY_CONNECTED):
         st.session_state.pop(key, None)
+    # Ensure cache is also purged when credentials are cleared
+    st.cache_data.clear()
