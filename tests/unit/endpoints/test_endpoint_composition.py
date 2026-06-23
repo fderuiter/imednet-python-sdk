@@ -82,7 +82,7 @@ def test_all_endpoints_inherit_from_single_edc_base():
     for endpoint_cls in ALL_ENDPOINT_CLASSES:
         direct_bases = endpoint_cls.__bases__
         base_names = {b.__name__ for b in direct_bases if not b.__name__.endswith("OperationDef")}
-        assert base_names == {"EdcSyncListGetEndpoint"}, (
+        assert base_names == {"EdcListGetEndpoint"}, (
             f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"
         )
 
@@ -99,11 +99,12 @@ def test_no_endpoint_directly_inherits_edc_mixin():
 
 
 def test_all_async_endpoints_inherit_from_single_edc_base():
-    """Async endpoints must have EdcAsyncListGetEndpoint as their sole direct parent."""
+    """Async endpoints must have their sync counterpart as their sole direct parent."""
     for endpoint_cls in ALL_ASYNC_ENDPOINT_CLASSES:
         base_names = {
             b.__name__ for b in endpoint_cls.__bases__ if not b.__name__.endswith("OperationDef")
         }
-        assert base_names == {"EdcAsyncListGetEndpoint"}, (
+        sync_name = endpoint_cls.__name__[5:]
+        assert base_names == {sync_name}, (
             f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"
         )

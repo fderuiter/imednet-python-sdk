@@ -1,3 +1,4 @@
+from typing import Any
 """TODO: Add docstring."""
 
 from unittest.mock import MagicMock
@@ -13,7 +14,7 @@ class MockModel(JsonModel):
     id: int
 
 
-class EndpointWithParsing(GenericListGetEndpoint[MockModel]):
+class EndpointWithParsing(GenericListGetEndpoint[MockModel, Any]):
     """TODO: Add docstring."""
 
     PATH = "items"

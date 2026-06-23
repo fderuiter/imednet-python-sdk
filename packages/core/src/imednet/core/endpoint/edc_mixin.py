@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, TypeVar
+from typing import Any, Dict, Generic, TypeVar, Union
 
 from imednet.core.context import get_study_context
-from imednet.core.endpoint.base import AsyncListGetEndpoint, SyncListGetEndpoint
+from imednet.core.endpoint.base import ListGetEndpoint
+from imednet.core.protocols import RequestorProtocol, AsyncRequestorProtocol
+
+ClientT = TypeVar('ClientT', bound=Union[RequestorProtocol, AsyncRequestorProtocol])
 from imednet.models.json_base import JsonModel
 
 T = TypeVar("T", bound=JsonModel)
@@ -73,16 +76,13 @@ class _EdcEndpointBase:
         return _inject_study_key(filters)
 
 
-class EdcSyncListGetEndpoint(_EdcEndpointBase, SyncListGetEndpoint[T]):
-    """Sync EDC list/get endpoint base."""
+class EdcListGetEndpoint(_EdcEndpointBase, ListGetEndpoint[T, ClientT]):
+    """Unified EDC list/get endpoint base."""
 
     BASE_PATH = _EDC_BASE_PATH
 
-
-class EdcAsyncListGetEndpoint(_EdcEndpointBase, AsyncListGetEndpoint[T]):
-    """Async EDC list/get endpoint base."""
-
-    BASE_PATH = _EDC_BASE_PATH
+EdcSyncListGetEndpoint = EdcListGetEndpoint
+EdcAsyncListGetEndpoint = EdcListGetEndpoint
 
 
 # Backward-compatible alias. New code should use EdcSyncListGetEndpoint / EdcAsyncListGetEndpoint.

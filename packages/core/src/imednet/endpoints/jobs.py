@@ -1,10 +1,11 @@
 """Endpoint for checking job status in a study."""
 
-from typing import Optional
+from typing import Awaitable, Optional, Union, overload
 
-from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
+from imednet.core.endpoint.edc_mixin import ClientT, EdcListGetEndpoint
 from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.jobs import JobStatus
 from imednet.utils.typing import ItemId
 
@@ -31,23 +32,27 @@ class JobsOperationDef:
         )
 
 
-class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
+class JobsEndpoint(JobsOperationDef, EdcListGetEndpoint[JobStatus, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
-    def get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
+    @overload
+    def get(self: "JobsEndpoint[RequestorProtocol]", study_key: Optional[str], item_id: ItemId) -> JobStatus: ...
+
+    @overload
+    def get(self: "JobsEndpoint[AsyncRequestorProtocol]", study_key: Optional[str], item_id: ItemId) -> Awaitable[JobStatus]: ...
+
+    def get(self, study_key: Optional[str], item_id: ItemId) -> Union[JobStatus, Awaitable[JobStatus]]:
         """TODO: Add docstring."""
         self._require_item_id(item_id)
-        return self._create_path_get_operation(study_key, item_id).execute_sync(
-            self._require_sync_client()
-        )
+        operation = self._create_path_get_operation(study_key, item_id)
+        if self._async_client:
+            return operation.execute_async(self._require_async_client())
+        else:
+            return operation.execute_sync(self._require_sync_client())
 
-
-class AsyncJobsEndpoint(JobsOperationDef, EdcAsyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
-    """TODO: Add docstring."""
-
-    async def async_get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
+class AsyncJobsEndpoint(JobsEndpoint):  # type: ignore[misc]
+    """Legacy backwards-compatible async endpoint."""
+    def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
-        self._require_item_id(item_id)
-        return await self._create_path_get_operation(study_key, item_id).execute_async(
-            self._require_async_client()
-        )
+        super().__init__(client, ctx=ctx)
+        self._async_client = client

@@ -1,10 +1,11 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import List, Optional, Union
+from typing import Awaitable, List, Optional, Union, overload
 
-from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
+from imednet.core.endpoint.edc_mixin import ClientT, EdcListGetEndpoint
 from imednet.core.endpoint.operations import RecordCreateOperation
 from imednet.core.endpoint.strategies import MappingParamProcessor
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 from imednet.models.jobs import Job
 from imednet.models.records import Record
 from imednet.utils.typing import JsonDict
@@ -37,8 +38,28 @@ class RecordsOperationDef:
         )
 
 
-class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # type: ignore[misc]
+class RecordsEndpoint(RecordsOperationDef, EdcListGetEndpoint[Record, ClientT]):  # type: ignore[misc]
     """API endpoint for interacting with records (eCRF instances)."""
+
+    @overload
+    def create(
+        self: "RecordsEndpoint[RequestorProtocol]",
+        study_key: str,
+        records_data: List[JsonDict],
+        email_notify: Union[bool, str, None] = None,
+        *,
+        schema: Optional[SchemaCache] = None,
+    ) -> Job: ...
+
+    @overload
+    def create(
+        self: "RecordsEndpoint[AsyncRequestorProtocol]",
+        study_key: str,
+        records_data: List[JsonDict],
+        email_notify: Union[bool, str, None] = None,
+        *,
+        schema: Optional[SchemaCache] = None,
+    ) -> Awaitable[Job]: ...
 
     def create(
         self,
@@ -47,17 +68,18 @@ class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # t
         email_notify: Union[bool, str, None] = None,
         *,
         schema: Optional[SchemaCache] = None,
-    ) -> Job:
+    ) -> Union[Job, Awaitable[Job]]:
         """TODO: Add docstring."""
-        return self._create_operation(
-            study_key, records_data, email_notify, schema=schema
-        ).execute_sync(self._require_sync_client(), parse_func=Job.from_json)
+        operation = self._create_operation(study_key, records_data, email_notify, schema=schema)
+        if self._async_client:
+            return operation.execute_async(self._require_async_client(), parse_func=Job.from_json)
+        else:
+            return operation.execute_sync(self._require_sync_client(), parse_func=Job.from_json)
 
 
-class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record]):  # type: ignore[misc]
-    """Async API endpoint for interacting with records (eCRF instances)."""
 
-    async def async_create(
+    async def async_create(  # pragma: no cover
+
         self,
         study_key: str,
         records_data: List[JsonDict],
@@ -65,7 +87,15 @@ class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record])
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
+        """Alias for create()."""
+        import warnings
+        warnings.warn("async_create is deprecated, use create()", DeprecationWarning, stacklevel=2)
+        result = self.create(study_key, records_data, email_notify, schema=schema)  # type: ignore[misc,return-value]
+        return await result if hasattr(result, "__await__") else result # type: ignore
+
+class AsyncRecordsEndpoint(RecordsEndpoint):  # type: ignore[misc]
+    """Legacy backwards-compatible async endpoint."""
+    def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
-        return await self._create_operation(
-            study_key, records_data, email_notify, schema=schema
-        ).execute_async(self._require_async_client(), parse_func=Job.from_json)
+        super().__init__(client, ctx=ctx)
+        self._async_client = client

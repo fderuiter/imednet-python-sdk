@@ -1,3 +1,4 @@
+from typing import Any
 """TODO: Add docstring."""
 
 from unittest.mock import MagicMock
@@ -15,7 +16,7 @@ class MockModel(JsonModel):
     pass
 
 
-class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
+class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel, Any]):
     """TODO: Add docstring."""
 
     MODEL = MockModel

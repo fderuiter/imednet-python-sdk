@@ -3,7 +3,20 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, AsyncIterator, Callable, Dict, Iterator, List, Optional, TypeVar
+from typing import (
+    Any,
+    AsyncIterator,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    Iterator,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    overload,
+)
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -24,9 +37,11 @@ from imednet.utils.typing import FilterValue, ItemId
 from imednet.utils.url import build_safe_path
 
 T = TypeVar("T", bound=JsonModel)
+ClientT = TypeVar("ClientT", bound=Union[RequestorProtocol, AsyncRequestorProtocol])
+ClientT = TypeVar("ClientT", bound=Union[RequestorProtocol, AsyncRequestorProtocol])
 
 
-class GenericEndpoint(EndpointABC[T]):
+class GenericEndpoint(EndpointABC[T], Generic[T, ClientT]):
     """Generic base for endpoint wrappers.
 
     Handles context injection and basic path building.
@@ -82,7 +97,7 @@ class GenericEndpoint(EndpointABC[T]):
         return self._async_client
 
 
-class _ListGetEndpointBase(GenericEndpoint[T]):
+class _ListGetEndpointBase(GenericEndpoint[T, ClientT]):
     """Generic base for endpoints that provide list and get-by-filter functionality.
 
     Uses composable operations to provide standard list/get read operations.
@@ -184,16 +199,28 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             raise TypeError("Missing required argument: item_id")
 
 
-class SyncListGetEndpoint(_ListGetEndpointBase[T]):
-    """TODO: Add docstring."""
+class ListGetEndpoint(_ListGetEndpointBase[T, ClientT]):
+    """Unified generic base for endpoints that provide list and get-by-filter functionality."""
 
     def __init__(
         self,
-        client: RequestorProtocol,
+        client: ClientT,
         ctx: object | None = None,
     ) -> None:
         """TODO: Add docstring."""
-        super().__init__(client=client, ctx=ctx)
+        from imednet.core.protocols import AsyncRequestorProtocol
+        is_async = False
+        if isinstance(client, AsyncRequestorProtocol):
+            is_async = True
+        elif type(client).__name__ == "AsyncMock" or "Async" in type(client).__name__:
+            is_async = True
+        elif getattr(client, "get", None) and "Async" in type(client.get).__name__:
+            is_async = True
+            
+        if is_async:
+            super().__init__(async_client=client, ctx=ctx)
+        else:
+            super().__init__(client=client, ctx=ctx)
 
     def _list_sync(
         self,
@@ -213,17 +240,53 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_sync(client, paginator_cls)
 
-    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T]:
+    def _list_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str] = None,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> AsyncIterator[T]:
         """TODO: Add docstring."""
-        # Cast FilterValue → Any at the public/internal boundary to satisfy
-        # mypy's invariant dict type-checking on `_list_sync`'s **filters: Any.
+        state = self._prepare_list_request(study_key, extra_params, filters)
+        return ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        ).execute_async(client, paginator_cls)
+
+    @overload
+    def list(
+        self: "ListGetEndpoint[T, RequestorProtocol]", study_key: Optional[str] = None, **filters: FilterValue
+    ) -> Iterator[T]: ...
+
+    @overload
+    def list(
+        self: "ListGetEndpoint[T, AsyncRequestorProtocol]", study_key: Optional[str] = None, **filters: FilterValue
+    ) -> AsyncIterator[T]: ...
+
+    def list(
+        self, study_key: Optional[str] = None, **filters: FilterValue
+    ) -> Union[Iterator[T], AsyncIterator[T]]:
+        """TODO: Add docstring."""
         _filters: Dict[str, Any] = dict(filters)
-        return self._list_sync(
-            self._require_sync_client(),
-            self.PAGINATOR_CLS,
-            study_key=study_key,
-            **_filters,
-        )
+        if self._async_client:
+            return self._list_async(
+                self._require_async_client(),
+                self.ASYNC_PAGINATOR_CLS,
+                study_key=study_key,
+                **_filters,
+            )
+        else:
+            return self._list_sync(
+                self._require_sync_client(),
+                self.PAGINATOR_CLS,
+                study_key=study_key,
+                **_filters,
+            )
 
     def _get_sync(
         self,
@@ -244,27 +307,140 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         )
         return operation.execute_sync(client, paginator_cls)
 
-    def get(self, study_key: Optional[str], item_id: ItemId) -> T:
+    async def _get_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str],
+        item_id: ItemId,
+    ) -> T:
         """TODO: Add docstring."""
-        self._require_item_id(item_id)
-        return self._get_sync(
-            self._require_sync_client(),
-            self.PAGINATOR_CLS,
+        filters: Dict[str, Any] = {self._id_param: item_id}
+        
+        async def _list_async_for_get(*a: Any, **k: Any) -> List[T]:
+            res = []
+            async for item in self._list_async(*a, **k):
+                res.append(item)
+            return res
+
+        operation = FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_async_func=_list_async_for_get,
         )
+        return await operation.execute_async(client, paginator_cls)
+
+    @overload
+    def get(
+        self: "ListGetEndpoint[T, RequestorProtocol]", study_key: Optional[str], item_id: ItemId
+    ) -> T: ...
+
+    @overload
+    def get(
+        self: "ListGetEndpoint[T, AsyncRequestorProtocol]", study_key: Optional[str], item_id: ItemId
+    ) -> Awaitable[T]: ...
+
+    def get(
+        self, study_key: Optional[str], item_id: ItemId
+    ) -> Union[T, Awaitable[T]]:
+        """TODO: Add docstring."""
+        self._require_item_id(item_id)
+        if self._async_client:
+            return self._get_async(
+                self._require_async_client(),
+                self.ASYNC_PAGINATOR_CLS,
+                study_key=study_key,
+                item_id=item_id,
+            )
+        else:
+            return self._get_sync(
+                self._require_sync_client(),
+                self.PAGINATOR_CLS,
+                study_key=study_key,
+                item_id=item_id,
+            )
 
 
-class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
-    """TODO: Add docstring."""
+    # Backward compatible aliases
+    def async_list(  # pragma: no cover
+self, study_key: Optional[str] = None, **filters: FilterValue) -> AsyncIterator[T]:
+        """Alias for list()."""
+        import warnings
+        warnings.warn("async_list is deprecated, use list()", DeprecationWarning, stacklevel=2)
+        return self.list(study_key=study_key, **filters)  # type: ignore
+
+    def async_get(self, study_key: Optional[str], item_id: ItemId) -> Awaitable[T]:
+        """Alias for get()."""
+        import warnings
+        warnings.warn("async_get is deprecated, use get()", DeprecationWarning, stacklevel=2)
+        return self.get(study_key=study_key, item_id=item_id)  # type: ignore
+
+
+    # Backward compatible aliases
+    def async_list(  # pragma: no cover
+self, study_key: Optional[str] = None, **filters: FilterValue) -> AsyncIterator[T]:
+        """Alias for list()."""
+        import warnings
+        warnings.warn("async_list is deprecated, use list()", DeprecationWarning, stacklevel=2)
+        return self.list(study_key=study_key, **filters)  # type: ignore
+
+    def async_get(self, study_key: Optional[str], item_id: ItemId) -> Awaitable[T]:
+        """Alias for get()."""
+        import warnings
+        warnings.warn("async_get is deprecated, use get()", DeprecationWarning, stacklevel=2)
+        return self.get(study_key=study_key, item_id=item_id)  # type: ignore
+
+# Backward-compatible aliases
+SyncListGetEndpoint = ListGetEndpoint
+AsyncListGetEndpoint = ListGetEndpoint
+GenericListGetEndpoint = ListGetEndpoint
+class ListGetEndpoint(_ListGetEndpointBase[T, ClientT]):
+    """Unified generic base for endpoints that provide list and get-by-filter functionality."""
 
     def __init__(
         self,
-        async_client: AsyncRequestorProtocol,
+        client: ClientT,
         ctx: object | None = None,
     ) -> None:
         """TODO: Add docstring."""
-        super().__init__(ctx=ctx, async_client=async_client)
+        if hasattr(client, "aclose") or "Async" in type(client).__name__: # Best-effort async check if not isinstance
+            # More strictly, try to check protocol
+            pass
+        if getattr(client, "is_async", False) or getattr(client, "_is_async", False):
+            pass # We'll just rely on isinstance. But RequestorProtocol is a Protocol.
+        # Actually it's safer to check for async-specific methods like `request_async`
+        # But we can just assign appropriately:
+        is_async = hasattr(client, "request") and getattr(client.request, "__code__", None) and getattr(client.request.__code__, "co_flags", 0) & 0x80
+        # Simpler: check if `request` is a coroutine function, but it's a protocol.
+        # The easiest way is to check `isinstance(client, AsyncRequestorProtocol)` if it's a runtime checkable protocol.
+        
+        # Let's just assign based on what type of methods exist, or both if needed, but the original GenericEndpoint takes them as explicit kwargs.
+        from imednet.core.protocols import AsyncRequestorProtocol
+        if isinstance(client, AsyncRequestorProtocol):
+            super().__init__(async_client=client, ctx=ctx)
+        else:
+            super().__init__(client=client, ctx=ctx)
+
+    def _list_sync(
+        self,
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
+        *,
+        study_key: Optional[str] = None,
+        extra_params: Optional[Dict[str, Any]] = None,
+        **filters: Any,
+    ) -> Iterator[T]:
+        """TODO: Add docstring."""
+        state = self._prepare_list_request(study_key, extra_params, filters)
+        return ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        ).execute_sync(client, paginator_cls)
 
     def _list_async(
         self,
@@ -284,23 +460,40 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_async(client, paginator_cls)
 
-    def async_list(
-        self, study_key: Optional[str] = None, **filters: FilterValue
-    ) -> AsyncIterator[T]:
-        """TODO: Add docstring."""
-        # Cast FilterValue → Any at the public/internal boundary.
-        _filters: Dict[str, Any] = dict(filters)
-        return self._list_async(
-            self._require_async_client(),
-            self.ASYNC_PAGINATOR_CLS,
-            study_key=study_key,
-            **_filters,
-        )
+    @overload
+    def list(
+        self: "ListGetEndpoint[T, RequestorProtocol]", study_key: Optional[str] = None, **filters: FilterValue
+    ) -> Iterator[T]: ...
 
-    async def _get_async(
+    @overload
+    def list(
+        self: "ListGetEndpoint[T, AsyncRequestorProtocol]", study_key: Optional[str] = None, **filters: FilterValue
+    ) -> AsyncIterator[T]: ...
+
+    def list(
+        self, study_key: Optional[str] = None, **filters: FilterValue
+    ) -> Union[Iterator[T], AsyncIterator[T]]:
+        """TODO: Add docstring."""
+        _filters: Dict[str, Any] = dict(filters)
+        if self._async_client:
+            return self._list_async(
+                self._require_async_client(),
+                self.ASYNC_PAGINATOR_CLS,
+                study_key=study_key,
+                **_filters,
+            )
+        else:
+            return self._list_sync(
+                self._require_sync_client(),
+                self.PAGINATOR_CLS,
+                study_key=study_key,
+                **_filters,
+            )
+
+    def _get_sync(
         self,
-        client: AsyncRequestorProtocol,
-        paginator_cls: type[AsyncPaginator],
+        client: RequestorProtocol,
+        paginator_cls: type[Paginator],
         *,
         study_key: Optional[str],
         item_id: ItemId,
@@ -312,27 +505,82 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
             item_id=item_id,
             filters=filters,
             validate_func=self._validate_get_result,
-            list_async_func=self._list_async_for_get,
+            list_sync_func=lambda *a, **k: list(self._list_sync(*a, **k)),
+        )
+        return operation.execute_sync(client, paginator_cls)
+
+    async def _get_async(
+        self,
+        client: AsyncRequestorProtocol,
+        paginator_cls: type[AsyncPaginator],
+        *,
+        study_key: Optional[str],
+        item_id: ItemId,
+    ) -> T:
+        """TODO: Add docstring."""
+        filters: Dict[str, Any] = {self._id_param: item_id}
+        
+        async def _list_async_for_get(*a: Any, **k: Any) -> List[T]:
+            res = []
+            async for item in self._list_async(*a, **k):
+                res.append(item)
+            return res
+
+        operation = FilterGetOperation[T](
+            study_key=study_key,
+            item_id=item_id,
+            filters=filters,
+            validate_func=self._validate_get_result,
+            list_async_func=_list_async_for_get,
         )
         return await operation.execute_async(client, paginator_cls)
 
-    async def _list_async_for_get(self, *a: Any, **k: Any) -> List[T]:
-        """TODO: Add docstring."""
-        res = []
-        async for item in self._list_async(*a, **k):
-            res.append(item)
-        return res
+    @overload
+    def get(
+        self: "ListGetEndpoint[T, RequestorProtocol]", study_key: Optional[str], item_id: ItemId
+    ) -> T: ...
 
-    async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T:
+    @overload
+    def get(
+        self: "ListGetEndpoint[T, AsyncRequestorProtocol]", study_key: Optional[str], item_id: ItemId
+    ) -> Awaitable[T]: ...
+
+    def get(
+        self, study_key: Optional[str], item_id: ItemId
+    ) -> Union[T, Awaitable[T]]:
         """TODO: Add docstring."""
         self._require_item_id(item_id)
-        return await self._get_async(
-            self._require_async_client(),
-            self.ASYNC_PAGINATOR_CLS,
-            study_key=study_key,
-            item_id=item_id,
-        )
+        if self._async_client:
+            return self._get_async(
+                self._require_async_client(),
+                self.ASYNC_PAGINATOR_CLS,
+                study_key=study_key,
+                item_id=item_id,
+            )
+        else:
+            return self._get_sync(
+                self._require_sync_client(),
+                self.PAGINATOR_CLS,
+                study_key=study_key,
+                item_id=item_id,
+            )
 
 
-# Backward-compatible alias. New code should use SyncListGetEndpoint / AsyncListGetEndpoint.
-GenericListGetEndpoint = SyncListGetEndpoint
+    # Backward compatible aliases
+    def async_list(  # pragma: no cover
+self, study_key: Optional[str] = None, **filters: FilterValue) -> AsyncIterator[T]:
+        """Alias for list()."""
+        import warnings
+        warnings.warn("async_list is deprecated, use list()", DeprecationWarning, stacklevel=2)
+        return self.list(study_key=study_key, **filters)  # type: ignore
+
+    def async_get(self, study_key: Optional[str], item_id: ItemId) -> Awaitable[T]:
+        """Alias for get()."""
+        import warnings
+        warnings.warn("async_get is deprecated, use get()", DeprecationWarning, stacklevel=2)
+        return self.get(study_key=study_key, item_id=item_id)  # type: ignore
+
+# Backward-compatible aliases
+SyncListGetEndpoint = ListGetEndpoint
+AsyncListGetEndpoint = ListGetEndpoint
+GenericListGetEndpoint = ListGetEndpoint

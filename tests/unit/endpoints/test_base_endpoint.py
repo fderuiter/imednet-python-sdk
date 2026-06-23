@@ -1,5 +1,9 @@
 """TODO: Add docstring."""
 
+from typing import Any
+
+"""TODO: Add docstring."""
+
 import inspect
 from unittest.mock import MagicMock
 
@@ -18,7 +22,7 @@ class MockModel(JsonModel):
     pass
 
 
-class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):
+class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel, Any]):
     """TODO: Add docstring."""
 
     PATH = "/test"
@@ -29,7 +33,7 @@ class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):
         super().__init__(client, ctx, async_client)
 
 
-class MockListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[MockModel]):
+class MockListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[MockModel, Any]):
     """TODO: Add docstring."""
 
     PATH = "/items"

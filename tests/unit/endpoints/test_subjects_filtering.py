@@ -35,10 +35,11 @@ async def test_async_list_by_site_filtering():
         if False:
             yield
 
-    endpoint.async_list = Mock(side_effect=fake_async_list)
+    endpoint.list = Mock(return_value=fake_async_list())
 
     await endpoint.async_list_by_site("sk", 101)
-    endpoint.async_list.assert_called_with(study_key="sk", site_id=101)
+    endpoint.list.assert_called_with(study_key="sk", site_id=101)
 
+    endpoint.list = Mock(return_value=fake_async_list())
     await endpoint.async_list_by_site("sk", "101")
-    endpoint.async_list.assert_called_with(study_key="sk", site_id="101")
+    endpoint.list.assert_called_with(study_key="sk", site_id="101")
