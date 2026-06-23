@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Job and background operation models for iMedNet."""
 
 from __future__ import annotations
 
@@ -44,7 +44,14 @@ class JobStatus(Job):
 
     @field_validator("progress", mode="before", check_fields=False)
     def _parse_progress(cls, v: Any) -> int:
-        """TODO: Add docstring."""
+        """Parse progress value as an integer.
+
+        Args:
+            v: The progress value from the API.
+
+        Returns:
+            The parsed integer progress.
+        """
         try:
             return int(v)
         except (TypeError, ValueError):

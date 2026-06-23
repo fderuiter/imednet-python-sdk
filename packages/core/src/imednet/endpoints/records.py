@@ -12,7 +12,7 @@ from imednet.validation.cache import SchemaCache
 
 
 class RecordsOperationDef:
-    """TODO: Add docstring."""
+    """Definition for Record operations."""
 
     PATH = "records"
     MODEL = Record
@@ -27,7 +27,17 @@ class RecordsOperationDef:
         *,
         schema: Optional[SchemaCache] = None,
     ) -> RecordCreateOperation[Job]:
-        """TODO: Add docstring."""
+        """Create a RecordCreateOperation.
+
+        Args:
+            study_key: The study key.
+            records_data: The data for the records to create.
+            email_notify: Whether to send email notifications.
+            schema: Optional schema cache for validation.
+
+        Returns:
+            The create operation.
+        """
         path = self._get_endpoint_path(study_key)  # type: ignore
         return RecordCreateOperation[Job](
             path=path,
@@ -48,7 +58,17 @@ class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # t
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        """TODO: Add docstring."""
+        """Create one or more records in a study.
+
+        Args:
+            study_key: The study key.
+            records_data: The data for the records to create.
+            email_notify: Whether to send email notifications.
+            schema: Optional schema cache for validation.
+
+        Returns:
+            The background job for the creation operation.
+        """
         return self._create_operation(
             study_key, records_data, email_notify, schema=schema
         ).execute_sync(self._require_sync_client(), parse_func=Job.from_json)
@@ -65,7 +85,17 @@ class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record])
         *,
         schema: Optional[SchemaCache] = None,
     ) -> Job:
-        """TODO: Add docstring."""
+        """Create one or more records in a study asynchronously.
+
+        Args:
+            study_key: The study key.
+            records_data: The data for the records to create.
+            email_notify: Whether to send email notifications.
+            schema: Optional schema cache for validation.
+
+        Returns:
+            The background job for the creation operation.
+        """
         return await self._create_operation(
             study_key, records_data, email_notify, schema=schema
         ).execute_async(self._require_async_client(), parse_func=Job.from_json)

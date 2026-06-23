@@ -10,7 +10,7 @@ from imednet.utils.typing import ItemId
 
 
 class JobsOperationDef:
-    """TODO: Add docstring."""
+    """Definition for Job operations."""
 
     PATH = "jobs"
     MODEL = JobStatus
@@ -22,7 +22,15 @@ class JobsOperationDef:
         study_key: Optional[str],
         item_id: ItemId,
     ) -> PathGetOperation[JobStatus]:
-        """TODO: Add docstring."""
+        """Create a PathGetOperation for a Job.
+
+        Args:
+            study_key: The study key.
+            item_id: The job ID (batch ID).
+
+        Returns:
+            The get operation.
+        """
         path = self._get_endpoint_path(study_key, item_id)  # type: ignore
         return PathGetOperation[JobStatus](
             path=path,
@@ -32,10 +40,18 @@ class JobsOperationDef:
 
 
 class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Synchronous endpoint for managing Jobs."""
 
     def get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
-        """TODO: Add docstring."""
+        """Get a single Job by ID.
+
+        Args:
+            study_key: The study key.
+            item_id: The job ID (batch ID).
+
+        Returns:
+            The job status.
+        """
         self._require_item_id(item_id)
         return self._create_path_get_operation(study_key, item_id).execute_sync(
             self._require_sync_client()
@@ -43,10 +59,18 @@ class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type
 
 
 class AsyncJobsEndpoint(JobsOperationDef, EdcAsyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Asynchronous endpoint for managing Jobs."""
 
     async def async_get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
-        """TODO: Add docstring."""
+        """Get a single Job by ID asynchronously.
+
+        Args:
+            study_key: The study key.
+            item_id: The job ID (batch ID).
+
+        Returns:
+            The job status.
+        """
         self._require_item_id(item_id)
         return await self._create_path_get_operation(study_key, item_id).execute_async(
             self._require_async_client()

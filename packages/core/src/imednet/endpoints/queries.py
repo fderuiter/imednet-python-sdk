@@ -5,7 +5,7 @@ from imednet.models.queries import Query
 
 
 class QueriesOperationDef:
-    """TODO: Add docstring."""
+    """Definition for Query operations."""
 
     PATH = "queries"
     MODEL = Query
@@ -13,12 +13,12 @@ class QueriesOperationDef:
 
 
 class QueriesEndpoint(QueriesOperationDef, EdcSyncListGetEndpoint[Query]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Synchronous endpoint for managing Queries."""
 
     pass
 
 
 class AsyncQueriesEndpoint(QueriesOperationDef, EdcAsyncListGetEndpoint[Query]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Asynchronous endpoint for managing Queries."""
 
     pass
