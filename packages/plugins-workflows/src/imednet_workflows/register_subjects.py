@@ -4,7 +4,7 @@ This workflow is self-contained and does not borrow from record_update.py.
 It provides a simple, robust interface for registering one or more subjects.
 """
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, cast
 
 from imednet.spi.models import Job, RegisterSubjectRequest
 
@@ -29,6 +29,9 @@ class RegisterSubjectsWorkflow:
         study_key: str,
         subjects: List[RegisterSubjectRequest],
         email_notify: Optional[str] = None,
+        wait_for_completion: bool = False,
+        timeout: int = 300,
+        poll_interval: int = 5,
     ) -> Job:
         """Registers multiple subjects in the specified study.
 
@@ -39,6 +42,9 @@ class RegisterSubjectsWorkflow:
             subjects: A list of RegisterSubjectRequest objects, each defining a subject
                       to be registered.
             email_notify: Optional email address to notify upon completion.
+            wait_for_completion: If True, wait for the job to complete.
+            timeout: Timeout in seconds for waiting.
+            poll_interval: Polling interval in seconds.
 
         Returns:
             A :class:`Job` object representing the background job
@@ -61,7 +67,18 @@ class RegisterSubjectsWorkflow:
 
         subjects_data = [s.model_dump(by_alias=True) for s in subjects]
 
-        response = self._sdk.create_record(
+        job = self._sdk.create_record(
             study_key=study_key, records_data=subjects_data, email_notify=email_notify
         )
-        return response
+
+        if not wait_for_completion:
+            return job
+
+        if not job.batch_id:
+            return job
+
+        from imednet.spi.facade import ImednetFacade
+
+        return (cast(ImednetFacade, self._sdk)).poll_job(
+            study_key, job.batch_id, timeout=timeout, interval=poll_interval
+        )

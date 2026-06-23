@@ -5,11 +5,11 @@ import importlib.util
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 from types import ModuleType
 from unittest.mock import MagicMock
 
 import pytest
-from pathlib import Path
 from typer.testing import CliRunner
 
 import imednet.cli as cli
@@ -209,7 +209,9 @@ def test_records_list_success(runner: CliRunner, sdk: MagicMock) -> None:
     assert "S1" in result.stdout
 
 
-def test_records_list_output_csv(runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_records_list_output_csv(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     """TODO: Add docstring."""
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1}
@@ -221,7 +223,9 @@ def test_records_list_output_csv(runner: CliRunner, sdk: MagicMock, monkeypatch:
     sdk.records.list.assert_called_once_with("STUDY")
 
 
-def test_records_list_output_json(runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_records_list_output_json(
+    runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     """TODO: Add docstring."""
     rec = MagicMock()
     rec.model_dump.return_value = {"recordId": 1}
