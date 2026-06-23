@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Workflow for managing a triage queue of records using a local SQLite database."""
 
 from __future__ import annotations
 
@@ -39,7 +39,13 @@ class TriageStore:
         timeout: float = 30.0,
         retry_attempts: int = 3,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the triage store.
+
+        Args:
+            db_path: Path to the SQLite database file.
+            timeout: Maximum time to wait for a database connection.
+            retry_attempts: Number of write retry attempts.
+        """
         self.db_path = Path(db_path).expanduser()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._timeout = timeout
@@ -49,7 +55,7 @@ class TriageStore:
 
     @contextmanager
     def _connection(self) -> Iterator[sqlite3.Connection]:
-        """TODO: Add docstring."""
+        """Context manager for a configured SQLite connection."""
         try:
             conn = sqlite3.connect(self.db_path, timeout=self._timeout)
         except sqlite3.Error as exc:
@@ -68,7 +74,7 @@ class TriageStore:
             conn.close()
 
     def _initialize_schema(self) -> None:
-        """TODO: Add docstring."""
+        """Create database tables and indexes if they do not exist."""
         with self._connection() as conn:
             current_version = int(conn.execute("PRAGMA user_version").fetchone()[0])
             conn.execute("""
@@ -122,13 +128,13 @@ class TriageStore:
             conn.commit()
 
     def get_journal_mode(self) -> str:
-        """TODO: Add docstring."""
+        """Return the current SQLite journal mode."""
         with self._connection() as conn:
             value = conn.execute("PRAGMA journal_mode").fetchone()[0]
         return str(value)
 
     def _execute_write(self, callback: Callable[[sqlite3.Connection], None]) -> None:
-        """TODO: Add docstring."""
+        """Execute a write callback within a transaction with retries."""
         last_error: sqlite3.OperationalError | None = None
         for attempt in range(self._retry_attempts):
             try:
@@ -149,11 +155,11 @@ class TriageStore:
             ) from last_error
 
     def upsert_item(self, item: TriageItem) -> None:
-        """TODO: Add docstring."""
+        """Insert or update a triage item and its associated annotations and history."""
         now = datetime.now(timezone.utc).isoformat()
 
         def _write(conn: sqlite3.Connection) -> None:
-            """TODO: Add docstring."""
+            """Internal helper to write triage item data."""
             conn.execute(
                 """
                 INSERT INTO triage_items (
@@ -221,7 +227,7 @@ class TriageStore:
         self._execute_write(_write)
 
     def get_triage_item(self, item_id: str) -> Optional[TriageItem]:
-        """TODO: Add docstring."""
+        """Fetch a single triage item by ID."""
         with self._connection() as conn:
             row = conn.execute(
                 """
@@ -247,7 +253,7 @@ class TriageStore:
             )
 
     def get_queue(self, study_key: str, status: Optional[TriageStatus] = None) -> list[TriageItem]:
-        """TODO: Add docstring."""
+        """Fetch the triage queue for a study, optionally filtered by status."""
         with self._connection() as conn:
             if status is None:
                 rows = conn.execute(
@@ -353,10 +359,10 @@ class TriageStore:
             ]
 
     def assign_item(self, item_id: str, assignee: str) -> None:
-        """TODO: Add docstring."""
+        """Assign a triage item to a specific user."""
 
         def _write(conn: sqlite3.Connection) -> None:
-            """TODO: Add docstring."""
+            """Internal helper to update item assignee."""
             cursor = conn.execute(
                 """
                 UPDATE triage_items
@@ -377,12 +383,12 @@ class TriageStore:
         user_id: str,
         comment: Optional[str],
     ) -> None:
-        """TODO: Add docstring."""
+        """Update the status of a triage item and record the transition in history."""
         normalized_comment = comment.strip() if comment else None
         timestamp = datetime.now(timezone.utc).isoformat()
 
         def _write(conn: sqlite3.Connection) -> None:
-            """TODO: Add docstring."""
+            """Internal helper to update item status."""
             row = conn.execute(
                 "SELECT status FROM triage_items WHERE item_id = ?",
                 (item_id,),
@@ -420,7 +426,7 @@ class TriageStore:
         self._execute_write(_write)
 
     def add_annotation(self, item_id: str, user_id: str, comment: str) -> None:
-        """TODO: Add docstring."""
+        """Add a comment/annotation to a triage item."""
         cleaned_comment = comment.strip()
         if not cleaned_comment:
             raise ValueError("Annotation comment must not be empty")
@@ -428,7 +434,7 @@ class TriageStore:
         timestamp = datetime.now(timezone.utc).isoformat()
 
         def _write(conn: sqlite3.Connection) -> None:
-            """TODO: Add docstring."""
+            """Internal helper to add item annotation."""
             row = conn.execute(
                 "SELECT item_id FROM triage_items WHERE item_id = ?",
                 (item_id,),
@@ -451,7 +457,7 @@ class TriageStore:
         self._execute_write(_write)
 
     def get_item_last_updated(self, item_id: str) -> Optional[datetime]:
-        """TODO: Add docstring."""
+        """Get the last updated timestamp for a triage item."""
         with self._connection() as conn:
             row = conn.execute(
                 "SELECT updated_at FROM triage_items WHERE item_id = ?",
@@ -462,7 +468,7 @@ class TriageStore:
         return datetime.fromisoformat(str(row["updated_at"]))
 
     def _get_annotations(self, conn: sqlite3.Connection, item_id: str) -> list[TriageAnnotation]:
-        """TODO: Add docstring."""
+        """Internal helper to fetch annotations for an item."""
         rows = conn.execute(
             """
             SELECT annotation_id, user_id, comment, timestamp
@@ -483,7 +489,7 @@ class TriageStore:
         ]
 
     def _get_history(self, conn: sqlite3.Connection, item_id: str) -> list[TriageHistoryEntry]:
-        """TODO: Add docstring."""
+        """Internal helper to fetch history entries for an item."""
         rows = conn.execute(
             """
             SELECT transition_id, from_status, to_status, user_id, comment, timestamp
@@ -506,7 +512,7 @@ class TriageStore:
         ]
 
     def _migrate_schema(self, conn: sqlite3.Connection) -> None:
-        """TODO: Add docstring."""
+        """Perform schema migrations to reach the latest version."""
         columns = {
             str(row["name"]) for row in conn.execute("PRAGMA table_info(triage_items)").fetchall()
         }
@@ -533,7 +539,7 @@ class TriageStore:
             )
 
     def _redact_sqlite_target(self, target: str) -> str:
-        """TODO: Add docstring."""
+        """Redact sensitive information from a SQLite connection string."""
         if "://" not in target and not target.startswith("file:"):
             return target
 
@@ -554,7 +560,7 @@ class TriageStore:
         return urlunsplit((split.scheme, netloc, split.path, redacted_query, split.fragment))
 
     def _redact_error_text(self, message: str) -> str:
-        """TODO: Add docstring."""
+        """Redact sensitive information from an error message."""
         redacted = _SENSITIVE_QUOTED_PATTERN.sub(
             lambda match: f"{match.group(1)}{match.group(2)}***",
             message,

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Workflow for loading study records with local SQLite caching for performance."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ _db_init_locks_guard = threading.Lock()
 
 
 def _get_db_init_lock(resolved_path: Path) -> threading.Lock:
-    """TODO: Add docstring."""
+    """Return a thread-safe lock for initializing a specific database file."""
     key = str(resolved_path)
     with _db_init_locks_guard:
         return _db_init_locks.setdefault(key, threading.Lock())
@@ -65,7 +65,14 @@ class CachedRecordsLoader:
         database_name: str = "records_cache.sqlite3",
         retry_attempts: int = 3,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the cached records loader.
+
+        Args:
+            sdk: An instance of the iMednet SDK facade.
+            cache_dir: Directory to store the SQLite cache. Defaults to ~/.imednet/cache.
+            database_name: Name of the SQLite database file.
+            retry_attempts: Number of API retry attempts.
+        """
         self._sdk = sdk
         base_dir = DEFAULT_CACHE_DIR if cache_dir is None else Path(cache_dir).expanduser()
         self.db_path = base_dir / database_name
@@ -149,7 +156,7 @@ class CachedRecordsLoader:
                 )
 
     def _initialise_cache(self) -> None:
-        """TODO: Add docstring."""
+        """Ensure the cache database and tables are created."""
         resolved = Path(self.db_path).expanduser().resolve()
         with _get_db_init_lock(resolved):
             conn = get_cache_connection(self.db_path)
@@ -173,7 +180,7 @@ class CachedRecordsLoader:
                 conn.close()
 
     def _get_high_water_mark(self, conn: sqlite3.Connection, study_key: str) -> str | None:
-        """TODO: Add docstring."""
+        """Get the latest modification timestamp from the local cache for a study."""
         row = conn.execute(
             "SELECT MAX(date_modified) AS max_date_modified FROM record_cache WHERE study_key = ?",
             (study_key,),
@@ -183,7 +190,7 @@ class CachedRecordsLoader:
         return cast(str | None, row["max_date_modified"])
 
     def _fetch_delta_records(self, study_key: str, high_water_mark: str | None) -> list[Record]:
-        """TODO: Add docstring."""
+        """Fetch records from the API that have been modified since the high water mark."""
         if not high_water_mark:
             return self._list_records(study_key=study_key, record_data_filter=None)
 
@@ -196,12 +203,12 @@ class CachedRecordsLoader:
         )
 
     def _fetch_active_record_ids(self, study_key: str) -> set[int]:
-        """TODO: Add docstring."""
+        """Fetch the set of all non-deleted record IDs for a study from the API."""
         records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
         return {record.record_id for record in records}  # type: ignore
 
     def _list_records(self, **filters: Any) -> list[Record]:
-        """TODO: Add docstring."""
+        """Call the SDK records list endpoint with retry logic."""
         retryer = Retrying(
             stop=stop_after_attempt(self._retry_attempts),
             wait=wait_exponential(multiplier=1, min=1, max=8),
@@ -237,7 +244,7 @@ class CachedRecordsLoader:
         )
 
     def _upsert_records(self, conn: sqlite3.Connection, records: Iterable[Record]) -> None:
-        """TODO: Add docstring."""
+        """Insert or update records in the local SQLite cache."""
         payloads = [
             (
                 record.study_key,

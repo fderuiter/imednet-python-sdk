@@ -19,7 +19,11 @@ class Workflows:
     """Namespace for accessing workflow classes."""
 
     def __init__(self, sdk_instance: ImednetFacade):
-        """TODO: Add docstring."""
+        """Initialize the workflows namespace.
+
+        Args:
+            sdk_instance: An instance of the iMednet SDK facade.
+        """
         self.data_extraction = DataExtractionWorkflow(sdk_instance)
         self.query_management = QueryManagementWorkflow(sdk_instance)
         self.record_mapper = RecordMapper(sdk_instance)

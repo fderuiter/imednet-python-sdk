@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Workflow for profiling form and record-data population across cached records."""
 
 from __future__ import annotations
 
@@ -56,7 +56,12 @@ class SchemaProfiler:
     """Profile form and record-data population across cached records."""
 
     def __init__(self, sdk: "ImednetFacade", loader: CachedRecordsLoader | None = None) -> None:
-        """TODO: Add docstring."""
+        """Initialize the schema profiler.
+
+        Args:
+            sdk: An instance of the iMednet SDK facade.
+            loader: Optional cached records loader. If not provided, one will be created.
+        """
         self._sdk = sdk
         self._loader = loader
 
@@ -111,7 +116,7 @@ class SchemaProfiler:
         return profiles
 
     def _iter_records(self, study_key: str) -> Iterable[Record]:
-        """TODO: Add docstring."""
+        """Internal helper to iterate over records for profiling."""
         if self._loader is None:
             self._loader = CachedRecordsLoader(self._sdk)
         sync_method = getattr(self._loader, "sync_records", None)
@@ -134,7 +139,7 @@ class SchemaProfiler:
         accumulator: "_FieldAccumulator",
         variable: Variable | None,
     ) -> FieldProfile:
-        """TODO: Add docstring."""
+        """Internal helper to construct a FieldProfile from accumulated statistics."""
         inferred_type = accumulator.inferred_type(variable)
         population_rate = 0.0
         if record_count:
@@ -162,7 +167,7 @@ class SchemaProfiler:
 
 @dataclass
 class _FormAccumulator:
-    """TODO: Add docstring."""
+    """Internal helper to accumulate statistics for a form."""
 
     record_count: int = 0
     fields: dict[str, "_FieldAccumulator"] = field(default_factory=dict)
@@ -170,7 +175,7 @@ class _FormAccumulator:
 
 @dataclass
 class _FieldAccumulator:
-    """TODO: Add docstring."""
+    """Internal helper to accumulate statistics for a form field."""
 
     populated_count: int = 0
     unique_values: set[str] = field(default_factory=set)
@@ -181,11 +186,11 @@ class _FieldAccumulator:
 
     @property
     def unique_count(self) -> int:
-        """TODO: Add docstring."""
+        """Return the number of unique values observed."""
         return len(self.unique_values)
 
     def observe(self, value: Any) -> None:
-        """TODO: Add docstring."""
+        """Record an observation of a field value."""
         if not _is_populated(value):
             return
 
@@ -200,7 +205,7 @@ class _FieldAccumulator:
         self.all_date = self.all_date and _is_date_value(value)
 
     def inferred_type(self, variable: Variable | None) -> str:
-        """TODO: Add docstring."""
+        """Infer the data type based on observed values and optional variable definition."""
         if self.populated_count > 0:
             if self.all_boolean:
                 return "boolean"
@@ -216,7 +221,7 @@ class _FieldAccumulator:
 
 
 def _is_populated(value: Any) -> bool:
-    """TODO: Add docstring."""
+    """Return True if the value is considered 'populated' (not null or empty)."""
     if value is None:
         return False
     if isinstance(value, str):
@@ -227,7 +232,7 @@ def _is_populated(value: Any) -> bool:
 
 
 def _render_value(value: Any) -> str:
-    """TODO: Add docstring."""
+    """Render a value to a string representation for statistics."""
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (dict, list)):
@@ -236,7 +241,7 @@ def _render_value(value: Any) -> str:
 
 
 def _is_boolean_value(value: Any) -> bool:
-    """TODO: Add docstring."""
+    """Return True if the value can be interpreted as a boolean."""
     if isinstance(value, bool):
         return True
     if isinstance(value, str):
@@ -245,7 +250,7 @@ def _is_boolean_value(value: Any) -> bool:
 
 
 def _is_numeric_value(value: Any) -> bool:
-    """TODO: Add docstring."""
+    """Return True if the value can be interpreted as numeric."""
     if isinstance(value, bool):
         return False
     if isinstance(value, (int, float)):
@@ -260,7 +265,7 @@ def _is_numeric_value(value: Any) -> bool:
 
 
 def _is_date_value(value: Any) -> bool:
-    """TODO: Add docstring."""
+    """Return True if the value can be interpreted as a date or datetime."""
     if isinstance(value, (date, datetime)):
         return True
     if not isinstance(value, str):

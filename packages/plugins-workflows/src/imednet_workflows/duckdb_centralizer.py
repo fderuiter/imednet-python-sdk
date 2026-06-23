@@ -16,7 +16,12 @@ class DuckDBIngestionWorkflow:
     """Incremental eCRF centralization pipeline using a bronze/silver DuckDB layout."""
 
     def __init__(self, sdk: "ImednetFacade", db_path: str) -> None:
-        """TODO: Add docstring."""
+        """Initialize the DuckDB ingestion workflow.
+
+        Args:
+            sdk: An instance of the iMednet SDK facade.
+            db_path: Path to the DuckDB database file.
+        """
         try:
             import duckdb
         except ImportError as error:
@@ -94,7 +99,7 @@ class DuckDBIngestionWorkflow:
         self._connection.execute(query)  # nosem
 
     def _ensure_bronze_table(self) -> None:
-        """TODO: Add docstring."""
+        """Ensure the bronze_revisions table exists in DuckDB."""
         self._connection.execute("""
             CREATE TABLE IF NOT EXISTS bronze_revisions (
                 study_key VARCHAR,
@@ -111,7 +116,7 @@ class DuckDBIngestionWorkflow:
     def _to_rows(
         self, study_key: str, revisions: Iterable["RecordRevision"]
     ) -> Iterable[tuple[str, int, int, str, str, int, Optional[datetime], str]]:
-        """TODO: Add docstring."""
+        """Internal helper to convert RecordRevision models into database rows."""
         for revision in revisions:
             value = getattr(revision, "value", "")
             date_modified = getattr(

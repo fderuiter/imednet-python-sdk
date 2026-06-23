@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Workflow for validating data records against clinical data standards."""
 
 from __future__ import annotations
 
@@ -11,14 +11,14 @@ from imednet.spi.utils import is_boolean_token, is_missing_value, parse_bool
 
 
 class NormalizationResult(BaseModel):
-    """TODO: Add docstring."""
+    """Result of a record normalization operation."""
 
     normalized_record: dict[str, Any]
     warnings: list[str] = Field(default_factory=list)
 
 
 class CategoricalNormalizer:
-    """TODO: Add docstring."""
+    """Normalizes categorical values in data records using terminology lookups."""
 
     def normalize_record(
         self,
@@ -26,7 +26,15 @@ class CategoricalNormalizer:
         *,
         terminology_lookups: dict[str, dict[str, str]],
     ) -> NormalizationResult:
-        """TODO: Add docstring."""
+        """Normalize a single data record.
+
+        Args:
+            record: The raw data record as a dictionary.
+            terminology_lookups: A mapping of field names to their terminology maps.
+
+        Returns:
+            A NormalizationResult containing the normalized record and any warnings.
+        """
         normalized_record: dict[str, Any] = {}
         warnings: list[str] = []
         normalized_lookups = self._normalize_lookups(terminology_lookups)
@@ -48,7 +56,7 @@ class CategoricalNormalizer:
     def _normalize_lookups(
         self, terminology_lookups: dict[str, dict[str, str]]
     ) -> dict[str, dict[str, str]]:
-        """TODO: Add docstring."""
+        """Internal helper to normalize terminology lookup keys for case-insensitive matching."""
         return {
             field_name: {str(key).strip().upper(): value for key, value in lookup.items()}
             for field_name, lookup in terminology_lookups.items()
@@ -62,7 +70,7 @@ class CategoricalNormalizer:
         normalized_lookups: dict[str, dict[str, str]],
         subject_key: Any,
     ) -> tuple[Any, str | None]:
-        """TODO: Add docstring."""
+        """Internal helper to normalize a single field value."""
         lookup = normalized_lookups.get(field_name)
         if lookup and isinstance(raw_value, str):
             lookup_key = raw_value.strip().upper()
@@ -82,7 +90,7 @@ class CategoricalNormalizer:
 
 
 class StandardsReadinessReport(BaseModel):
-    """TODO: Add docstring."""
+    """Comprehensive report on the readiness of data records against clinical standards."""
 
     score: float
     successfully_validated_fields: int
@@ -92,12 +100,17 @@ class StandardsReadinessReport(BaseModel):
 
 
 class StandardsReadinessValidator:
-    """TODO: Add docstring."""
+    """Validates and scores data records against a clinical standards profile."""
 
     def __init__(
         self, profile: StandardsProfile, normalizer: CategoricalNormalizer | None = None
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the validator.
+
+        Args:
+            profile: The standards profile to validate against.
+            normalizer: Optional custom normalizer.
+        """
         self._profile = profile
         self._normalizer = normalizer or CategoricalNormalizer()
 
@@ -107,7 +120,15 @@ class StandardsReadinessValidator:
         records_by_domain: dict[str, list[dict[str, Any]]],
         terminology_lookups: dict[str, dict[str, str]] | None = None,
     ) -> StandardsReadinessReport:
-        """TODO: Add docstring."""
+        """Validate and score multiple domains of records.
+
+        Args:
+            records_by_domain: Mapping of domain names to lists of records.
+            terminology_lookups: Optional terminology lookups for normalization.
+
+        Returns:
+            A StandardsReadinessReport containing scores and violations.
+        """
         lookups = terminology_lookups or {}
         warnings: list[str] = []
         violations: list[ValidationViolation] = []

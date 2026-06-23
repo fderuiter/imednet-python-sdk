@@ -11,12 +11,23 @@ class OIDCAuth:
     """Authentication strategy using OIDC token."""
 
     def __init__(self, token: str) -> None:
-        """TODO: Add docstring."""
+        """Initialize the OIDC authentication strategy.
+
+        Args:
+            token: The OIDC bearer token to use for authentication.
+        """
         self.token = token
         self._decoded_claims = self._decode_token_claims(token)
 
     def _decode_token_claims(self, token: str) -> dict:
-        """TODO: Add docstring."""
+        """Extract and decode the claims from the JWT token.
+
+        Args:
+            token: The JWT token string.
+
+        Returns:
+            A dictionary containing the decoded token claims.
+        """
         parts = token.split(".")
         if len(parts) != 3:
             return {}  # Not a valid JWT, return empty claims
@@ -32,11 +43,19 @@ class OIDCAuth:
         return {"Authorization": f"Bearer {self.token}"}
 
     def get_user_id(self) -> Optional[str]:
-        """TODO: Add docstring."""
+        """Extract the user identifier from the token claims.
+
+        Returns:
+            The user ID (sub or preferred_username) if found, otherwise None.
+        """
         return self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
 
     def get_user_roles(self) -> List[str]:
-        """TODO: Add docstring."""
+        """Extract and map user roles from the token claims.
+
+        Returns:
+            A list of mapped system roles.
+        """
         # Assume groups or roles claim maps to our roles
         # In a real environment, role mapping config would be applied here
         roles = self._decoded_claims.get("roles") or self._decoded_claims.get("groups") or []
@@ -60,7 +79,7 @@ class OIDCAuth:
         return mapped_roles if mapped_roles else list(roles)
 
     def __repr__(self) -> str:
-        """TODO: Add docstring."""
+        """Return a redacted string representation of the OIDC authentication."""
         return "OIDCAuth(token='********')"
 
     __str__ = __repr__

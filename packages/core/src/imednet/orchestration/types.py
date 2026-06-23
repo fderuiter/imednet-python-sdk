@@ -86,7 +86,18 @@ class StudyWorkerCallable(Protocol[T_Output]):
         *args: Any,
         **kwargs: Any,
     ) -> T_Output:
-        """TODO: Add docstring."""
+        """Invoke the pipeline task for a specific study context.
+
+        Args:
+            study_key: The identifier of the study being processed.
+            sdk_client: A shared (read-only) instance of the iMednet SDK.
+            logger: A study-specific logger instance.
+            *args: Variable positional arguments passed to the pipeline.
+            **kwargs: Variable keyword arguments passed to the pipeline.
+
+        Returns:
+            The output of the pipeline task of type T_Output.
+        """
         ...
 
 

@@ -45,12 +45,16 @@ class ExtractionStateLedger:
     """Manages transactional state bookmarks per study to guarantee absolute ingestion tracking."""
 
     def __init__(self, ledger_path: str = "/var/lib/imednet/pipeline_ledger.json") -> None:
-        """TODO: Add docstring."""
+        """Initialize the extraction state ledger.
+
+        Args:
+            ledger_path: Path to the JSON file where state is persisted.
+        """
         self.ledger_path = Path(ledger_path)
         self._lock_path = self.ledger_path.with_suffix(".lock")
 
     def _ensure_ledger_exists(self) -> None:
-        """TODO: Add docstring."""
+        """Ensure the ledger file and its parent directory exist."""
         if not self.ledger_path.exists():
             self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.ledger_path, "w", encoding="utf-8") as f:

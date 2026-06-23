@@ -18,7 +18,7 @@ class BaseJobPoller:
     """Base class for polling a job until it reaches a terminal state."""
 
     def _check_complete(self, status: JobStatus, batch_id: str) -> JobStatus:
-        """TODO: Add docstring."""
+        """Internal hook to check if the status is complete."""
         return status
 
     def _evaluate(self, start_time: float, timeout: int, batch_id: str, status: JobStatus) -> bool:
@@ -49,7 +49,12 @@ class JobPoller(BaseJobPoller):
         get_job: Callable[[str, str], JobStatus],
         fetch_result: Callable[[str], Any] | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the synchronous job poller.
+
+        Args:
+            get_job: Callable that takes study_key and batch_id and returns JobStatus.
+            fetch_result: Optional callable to fetch the result data from the result URL.
+        """
         self._get_job = get_job
         self._fetch_result = fetch_result
 
@@ -83,7 +88,12 @@ class AsyncJobPoller(BaseJobPoller):
         get_job: Callable[[str, str], Awaitable[JobStatus]],
         fetch_result: Callable[[str], Awaitable[Any]] | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the asynchronous job poller.
+
+        Args:
+            get_job: Awaitable callable that takes study_key and batch_id and returns JobStatus.
+            fetch_result: Optional awaitable callable to fetch the result data.
+        """
         self._get_job = get_job
         self._fetch_result = fetch_result
 

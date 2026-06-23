@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Utilities for processing large datasets in memory-bounded chunks."""
 
 from __future__ import annotations
 
@@ -33,7 +33,11 @@ class ChunkedRecordPipeline:
     """Chunked iteration utilities for large-study workflows."""
 
     def __init__(self, *, chunk_size: int = DEFAULT_CHUNK_SIZE) -> None:
-        """TODO: Add docstring."""
+        """Initialize the chunked record pipeline.
+
+        Args:
+            chunk_size: The number of items per chunk.
+        """
         if chunk_size <= 0:
             raise ValueError("chunk_size must be greater than zero")
         self.chunk_size = chunk_size

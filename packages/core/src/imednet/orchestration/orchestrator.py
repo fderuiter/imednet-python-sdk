@@ -55,7 +55,11 @@ class AdaptiveConcurrencyLimiter:
     """Manages adaptive backpressure by limiting concurrency based on task latency."""
 
     def __init__(self, initial_concurrency: int):
-        """TODO: Add docstring."""
+        """Initialize the adaptive concurrency limiter.
+
+        Args:
+            initial_concurrency: The starting maximum number of concurrent tasks.
+        """
         self._max_concurrency = initial_concurrency
         self._current_concurrency = 0
         self._cond = threading.Condition()
@@ -65,20 +69,24 @@ class AdaptiveConcurrencyLimiter:
         self._initial_concurrency = initial_concurrency
 
     def acquire(self) -> None:
-        """TODO: Add docstring."""
+        """Acquire a concurrency slot, blocking if the limit is reached."""
         with self._cond:
             while self._current_concurrency >= self._max_concurrency:
                 self._cond.wait()
             self._current_concurrency += 1
 
     def release(self) -> None:
-        """TODO: Add docstring."""
+        """Release a concurrency slot and notify waiting threads."""
         with self._cond:
             self._current_concurrency -= 1
             self._cond.notify_all()
 
     def record_latency(self, latency: float) -> None:
-        """TODO: Add docstring."""
+        """Record the latency of a completed task and adjust concurrency.
+
+        Args:
+            latency: The time taken to complete the task in seconds.
+        """
         with self._lock:
             if self._latency_baseline is None:
                 self._latency_baseline = latency
@@ -160,7 +168,12 @@ class MultiStudyOrchestrator:
     """
 
     def __init__(self, sdk: Any, max_workers: int = 4) -> None:
-        """TODO: Add docstring."""
+        """Initialize the multi-study orchestrator.
+
+        Args:
+            sdk: An initialized iMednet SDK instance.
+            max_workers: Maximum number of concurrent worker threads.
+        """
         if max_workers < 1:
             raise ValueError(f"max_workers must be >= 1, got {max_workers}")
         self._sdk = sdk
