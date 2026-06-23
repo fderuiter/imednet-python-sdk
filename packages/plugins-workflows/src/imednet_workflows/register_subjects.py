@@ -79,6 +79,9 @@ class RegisterSubjectsWorkflow:
 
         from imednet.spi.facade import ImednetFacade
 
-        return (cast(ImednetFacade, self._sdk)).poll_job(
-            study_key, job.batch_id, timeout=timeout, interval=poll_interval
+        return cast(
+            Job,
+            (cast(ImednetFacade, self._sdk)).poll_job(
+                study_key, job.batch_id, timeout=timeout, interval=poll_interval
+            ),
         )
