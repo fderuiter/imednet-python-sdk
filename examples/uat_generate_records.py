@@ -2,18 +2,21 @@
 
 from datetime import date
 from unittest.mock import MagicMock
+
 from imednet_workflows.uat import (
+    RecordTestType,
+    StudySnapshot,
+    SyntheticRecordGenerator,
+    UATFormSpec,
     UATSpecification,
     UATSubjectSpec,
-    UATFormSpec,
     UATVariableSpec,
-    SyntheticRecordGenerator,
-    RecordTestType,
     VariableTestStrategy,
-    StudySnapshot
 )
 
+
 def main():
+    """Execute the UAT record generation example."""
     # 1. Create a mocked StudySnapshot (normally from StudySchemaInspector)
     snapshot = MagicMock(spec=StudySnapshot)
     snapshot.active_sites.return_value = [MagicMock(site_name="North Site")]
@@ -40,16 +43,16 @@ def main():
                         variable_type="Number",
                         form_key="F_DM",
                         min_value=18,
-                        max_value=99
+                        max_value=99,
                     ),
                     UATVariableSpec(
                         variable_name="GENDER",
                         variable_key="V_GENDER",
                         variable_type="Coded",
                         form_key="F_DM",
-                        coded_values=["Male", "Female", "Other"]
-                    )
-                ]
+                        coded_values=["Male", "Female", "Other"],
+                    ),
+                ],
             ),
             UATFormSpec(
                 form_key="F_VS",
@@ -66,17 +69,17 @@ def main():
                         form_key="F_VS",
                         strategy=VariableTestStrategy.SYNTHETIC,
                         min_value=50.0,
-                        max_value=120.0
+                        max_value=120.0,
                     ),
                     UATVariableSpec(
                         variable_name="COMMENT",
                         variable_key="V_COMMENT",
                         variable_type="TextArea",
-                        form_key="F_VS"
-                    )
-                ]
-            )
-        ]
+                        form_key="F_VS",
+                    ),
+                ],
+            ),
+        ],
     )
 
     # 3. Initialize generator with a seed for reproducibility
@@ -95,6 +98,7 @@ def main():
         if record_set.warnings:
             print(f"  Warnings: {record_set.warnings}")
         print()
+
 
 if __name__ == "__main__":
     main()

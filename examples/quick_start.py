@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Synchronous quickstart example."""
 
 from __future__ import annotations
 

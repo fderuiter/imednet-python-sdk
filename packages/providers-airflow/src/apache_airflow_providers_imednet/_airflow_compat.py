@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Documentation placeholder."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
     except (ImportError, ModuleNotFoundError):
 
         class _FallbackAirflowError(Exception):
-            """TODO: Add docstring."""
+            """Documentation placeholder."""
 
             pass
 
