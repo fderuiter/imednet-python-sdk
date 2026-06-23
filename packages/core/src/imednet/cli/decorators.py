@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import inspect
+import os
 from functools import wraps
 from typing import Callable, Concatenate, ParamSpec, TypeVar
-
-import os
 
 import typer
 from rich import print
