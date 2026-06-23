@@ -7,7 +7,7 @@ from imednet.models.subjects import Subject
 
 
 class SubjectsOperationDef:
-    """TODO: Add docstring."""
+    """Definition for Subject operations."""
 
     PATH = "subjects"
     MODEL = Subject
@@ -15,16 +15,32 @@ class SubjectsOperationDef:
 
 
 class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Synchronous endpoint for managing Subjects."""
 
     def list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
-        """TODO: Add docstring."""
+        """List subjects by site ID.
+
+        Args:
+            study_key: The study key.
+            site_id: The site ID or site key.
+
+        Returns:
+            A list of subjects for the specified site.
+        """
         return list(self.list(study_key=study_key, site_id=site_id))
 
 
 class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Asynchronous endpoint for managing Subjects."""
 
     async def async_list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
-        """TODO: Add docstring."""
+        """List subjects by site ID asynchronously.
+
+        Args:
+            study_key: The study key.
+            site_id: The site ID or site key.
+
+        Returns:
+            A list of subjects for the specified site.
+        """
         return [item async for item in self.async_list(study_key=study_key, site_id=site_id)]

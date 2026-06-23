@@ -6,7 +6,7 @@ from imednet.models.variables import Variable
 
 
 class VariablesOperationDef:
-    """TODO: Add docstring."""
+    """Definition for Variable operations."""
 
     PATH = "variables"
     MODEL = Variable
@@ -16,12 +16,12 @@ class VariablesOperationDef:
 
 
 class VariablesEndpoint(VariablesOperationDef, EdcSyncListGetEndpoint[Variable]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Synchronous endpoint for managing Variables."""
 
     pass
 
 
 class AsyncVariablesEndpoint(VariablesOperationDef, EdcAsyncListGetEndpoint[Variable]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Asynchronous endpoint for managing Variables."""
 
     pass

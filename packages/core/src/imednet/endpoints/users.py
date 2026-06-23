@@ -6,7 +6,7 @@ from imednet.models.users import User
 
 
 class UsersOperationDef:
-    """TODO: Add docstring."""
+    """Definition for User operations."""
 
     PATH = "users"
     MODEL = User
@@ -19,12 +19,12 @@ class UsersOperationDef:
 
 
 class UsersEndpoint(UsersOperationDef, EdcSyncListGetEndpoint[User]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Synchronous endpoint for managing Users."""
 
     pass
 
 
 class AsyncUsersEndpoint(UsersOperationDef, EdcAsyncListGetEndpoint[User]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Asynchronous endpoint for managing Users."""
 
     pass

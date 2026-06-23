@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Record (eCRF instance) models for iMedNet."""
 
 from __future__ import annotations
 

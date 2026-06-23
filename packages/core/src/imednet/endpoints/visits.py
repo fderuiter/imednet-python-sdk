@@ -5,7 +5,7 @@ from imednet.models.visits import Visit
 
 
 class VisitsOperationDef:
-    """TODO: Add docstring."""
+    """Definition for Visit operations."""
 
     PATH = "visits"
     MODEL = Visit
@@ -13,12 +13,12 @@ class VisitsOperationDef:
 
 
 class VisitsEndpoint(VisitsOperationDef, EdcSyncListGetEndpoint[Visit]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Synchronous endpoint for managing Visits."""
 
     pass
 
 
 class AsyncVisitsEndpoint(VisitsOperationDef, EdcAsyncListGetEndpoint[Visit]):  # type: ignore[misc]
-    """TODO: Add docstring."""
+    """Asynchronous endpoint for managing Visits."""
 
     pass
