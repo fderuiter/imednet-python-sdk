@@ -15,6 +15,13 @@ This page shows a minimal asynchronous example using ``AsyncImednetSDK``.
    * Using ``with AsyncImednetSDK(...)`` (the synchronous context manager)
      raises a :exc:`TypeError`.
 
+.. note::
+   **Architectural Pattern:** Streaming list endpoints (e.g., ``async_list()``)
+   return asynchronous iterators rather than coroutines. You must consume them
+   using ``async for`` or async comprehensions (e.g., ``[item async for item in ...]``).
+   Only single-resource methods (e.g., ``async_get()``, ``async_create()``, or
+   ``async_poll_job()``) are directly awaitable.
+
 Install the package from PyPI:
 
 .. code-block:: console
@@ -53,8 +60,7 @@ List studies asynchronously and poll a job:
            security_key=cfg.security_key,
            base_url=cfg.base_url,
        ) as sdk:
-           studies = await sdk.studies.async_list()
-           for study in studies:
+           async for study in sdk.studies.async_list():
                print(f"{study.study_name} ({study.study_key})")
            status = await sdk.async_poll_job("STUDY", "BATCH", interval=2, timeout=60)
            print(status)

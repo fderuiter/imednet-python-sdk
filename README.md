@@ -241,7 +241,7 @@ async def main() -> None:
         security_key=cfg.security_key,
         base_url=cfg.base_url,
     ) as sdk:
-        studies = await sdk.studies.async_list()
+        studies = [study async for study in sdk.studies.async_list()]
         print(studies)
 
         job_study = os.getenv("IMEDNET_JOB_STUDY_KEY")
@@ -257,6 +257,8 @@ if __name__ == "__main__":
 
 
 See [docs/async_quick_start.rst](docs/async_quick_start.rst) for more details.
+
+> **Note on Async Methods:** In the asynchronous SDK, list methods like `async_list()` return **asynchronous iterators** and must be consumed using `async for`. Only single-item methods like `async_get()`, `async_create()`, or `async_poll_job()` are directly awaitable coroutines.
 
 ---
 

@@ -97,15 +97,6 @@ class StreamingMockWrapper(Generic[T]):
             return self._buffer == other
         return super().__eq__(other)
 
-    def __await__(self):
-        """TODO: Add docstring."""
-
-        # Handle incorrect awaiting by gracefully returning self so test assertions can pass.
-        async def _mock_coroutine():
-            """TODO: Add docstring."""
-            return self
-
-        return _mock_coroutine().__await__()
 
 
 def unified_paginator_factory(monkeypatch, module, items, is_async=False):
