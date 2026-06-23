@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Workflow for retrieving and aggregating study structural metadata."""
 
 import asyncio
 from typing import TYPE_CHECKING, Dict, List
@@ -82,15 +82,15 @@ async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -
     try:
 
         async def fetch_intervals():
-            """TODO: Add docstring."""
+            """Asynchronously fetch visit intervals."""
             return await sdk.async_get_intervals(study_key)
 
         async def fetch_forms():
-            """TODO: Add docstring."""
+            """Asynchronously fetch form definitions."""
             return await sdk.async_get_forms(study_key)
 
         async def fetch_variables():
-            """TODO: Add docstring."""
+            """Asynchronously fetch variable definitions."""
             return await sdk.async_get_variables(study_key)
 
         intervals, forms, variables = await asyncio.gather(
