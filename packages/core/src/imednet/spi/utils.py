@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""SPI for utility functions."""
 
 from imednet.utils.filters import build_filter_string
 from imednet.utils.serialization import flatten

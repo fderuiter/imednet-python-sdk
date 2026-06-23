@@ -28,12 +28,26 @@ _SENSITIVE_PATTERN = re.compile(
 
 
 def _replace_sensitive_match(match: re.Match[str]) -> str:
-    """TODO: Add docstring."""
+    """Replace sensitive part of a regex match with asterisks.
+
+    Args:
+        match: The regex match object.
+
+    Returns:
+        str: The redacted string.
+    """
     return f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}"
 
 
 def _redact_sensitive_value(value: Any) -> Any:
-    """TODO: Add docstring."""
+    """Recursively redact sensitive information from a value.
+
+    Args:
+        value: The value to redact (dict, list, str, etc.).
+
+    Returns:
+        Any: The redacted value.
+    """
     if isinstance(value, dict):
         return {
             key: ("***" if str(key).lower() in _SENSITIVE_KEYS else _redact_sensitive_value(val))
@@ -59,7 +73,12 @@ class ApiError(ImednetError):
     def __init__(
         self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = None
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize an API error.
+
+        Args:
+            response: The error response from the API.
+            status_code: Optional HTTP status code.
+        """
         sanitized_response = _redact_sensitive_value(response)
 
         message_arg = str(sanitized_response)
@@ -87,7 +106,11 @@ class ApiError(ImednetError):
         self.message = parsed_message if parsed_message is not None else message_arg
 
     def __str__(self) -> str:
-        """TODO: Add docstring."""
+        """Return a string representation of the error, including status and response.
+
+        Returns:
+            str: The formatted error message.
+        """
         base = super().__str__()
         details = []
         if self.status_code is not None:

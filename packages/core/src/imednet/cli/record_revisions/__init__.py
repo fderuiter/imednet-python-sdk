@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""CLI commands for viewing record revision history."""
 
 from __future__ import annotations
 

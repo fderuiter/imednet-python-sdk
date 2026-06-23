@@ -43,7 +43,15 @@ class BaseRequestExecutor(ABC):
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the request executor.
+
+        Args:
+            send: The function to use for sending requests (sync or async).
+            retries: Maximum number of retry attempts.
+            backoff_factor: Factor for exponential backoff.
+            tracer: Optional OpenTelemetry tracer for monitoring.
+            retry_policy: Policy defining which responses/exceptions to retry.
+        """
         self.send = send
         self.retries = retries
         self.backoff_factor = backoff_factor
@@ -54,7 +62,11 @@ class BaseRequestExecutor(ABC):
     @staticmethod
     @contextmanager
     def _suppress_httpx_request_logging() -> Iterator[None]:
-        """TODO: Add docstring."""
+        """Context manager to suppress low-level HTTPX logging.
+
+        Yields:
+            None
+        """
         loggers = {
             "httpx": logging.getLogger("httpx"),
             "httpcore": logging.getLogger("httpcore"),
@@ -73,7 +85,14 @@ class BaseRequestExecutor(ABC):
         policy = self.retry_policy
 
         def should_retry(retry_state: RetryCallState) -> bool:
-            """TODO: Add docstring."""
+            """Determine if the request should be retried based on retry state.
+
+            Args:
+                retry_state: Tenacity's retry state.
+
+            Returns:
+                bool: True if the request should be retried.
+            """
             state = RetryState(
                 attempt_number=retry_state.attempt_number,
                 exception=(
@@ -130,7 +149,14 @@ class BaseRequestExecutor(ABC):
 
     @staticmethod
     def _parse_retry_after_seconds(response: httpx.Response) -> Optional[float]:
-        """TODO: Add docstring."""
+        """Parse the 'Retry-After' header from an HTTP response.
+
+        Args:
+            response: The HTTP response containing the header.
+
+        Returns:
+            Optional[float]: The number of seconds to wait, or None if not present or invalid.
+        """
         value = response.headers.get("Retry-After")
         if not value:
             return None
@@ -151,7 +177,14 @@ class BaseRequestExecutor(ABC):
             return None
 
     def _wait_strategy(self, retry_state: RetryCallState) -> float:
-        """TODO: Add docstring."""
+        """Calculate the wait time before the next retry attempt.
+
+        Args:
+            retry_state: Tenacity's retry state.
+
+        Returns:
+            float: Number of seconds to wait.
+        """
         if retry_state.outcome and not retry_state.outcome.failed:
             result = retry_state.outcome.result()
             if isinstance(result, httpx.Response):
@@ -176,16 +209,41 @@ class SyncRequestExecutor(BaseRequestExecutor):
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the synchronous request executor.
+
+        Args:
+            send: The synchronous function to use for sending requests.
+            retries: Maximum number of retry attempts.
+            backoff_factor: Factor for exponential backoff.
+            tracer: Optional OpenTelemetry tracer for monitoring.
+            retry_policy: Policy defining which responses/exceptions to retry.
+        """
         super().__init__(send, retries, backoff_factor, tracer, retry_policy)
         # self.send is set in super
 
     def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Execute the request synchronously.
+
+        Args:
+            method: HTTP method.
+            url: Request URL.
+            **kwargs: Additional arguments for the request.
+
+        Returns:
+            httpx.Response: The HTTP response.
+
+        Raises:
+            CircuitBreakerError: If the circuit is open.
+            Exception: Re-raises exceptions from the send function or retryer.
+        """
         get_global_circuit_breaker().check_request_allowed()
 
         def send_fn() -> httpx.Response:
-            """TODO: Add docstring."""
+            """Wrapper to send the request with suppressed logging.
+
+            Returns:
+                httpx.Response: The HTTP response.
+            """
             with self._suppress_httpx_request_logging():
                 return self.send(method, url, **kwargs)
 
@@ -221,16 +279,41 @@ class AsyncRequestExecutor(BaseRequestExecutor):
         tracer: Optional[Tracer] = None,
         retry_policy: RetryPolicy | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the asynchronous request executor.
+
+        Args:
+            send: The asynchronous function to use for sending requests.
+            retries: Maximum number of retry attempts.
+            backoff_factor: Factor for exponential backoff.
+            tracer: Optional OpenTelemetry tracer for monitoring.
+            retry_policy: Policy defining which responses/exceptions to retry.
+        """
         super().__init__(send, retries, backoff_factor, tracer, retry_policy)
         # self.send is set in super
 
     async def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Execute the request asynchronously.
+
+        Args:
+            method: HTTP method.
+            url: Request URL.
+            **kwargs: Additional arguments for the request.
+
+        Returns:
+            httpx.Response: The HTTP response.
+
+        Raises:
+            CircuitBreakerError: If the circuit is open.
+            Exception: Re-raises exceptions from the send function or retryer.
+        """
         get_global_circuit_breaker().check_request_allowed()
 
         async def send_fn() -> httpx.Response:
-            """TODO: Add docstring."""
+            """Wrapper to send the request with suppressed logging.
+
+            Returns:
+                httpx.Response: The HTTP response.
+            """
             with self._suppress_httpx_request_logging():
                 return await self.send(method, url, **kwargs)
 

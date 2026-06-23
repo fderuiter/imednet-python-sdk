@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Decorators for CLI command functions."""
 
 from __future__ import annotations
 
@@ -43,7 +43,14 @@ def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
 
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        """TODO: Add docstring."""
+        """Initialize the SDK, execute the command, and handle common API errors.
+
+        Returns:
+            R: The result of the decorated function.
+
+        Raises:
+            typer.Exit: On expected errors or user abort.
+        """
         from .utils.context import get_sdk
 
         sdk = get_sdk()

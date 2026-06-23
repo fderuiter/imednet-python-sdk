@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""CLI utility functions and classes."""
 
 from .args import STUDY_KEY_ARG, parse_filter_args
 from .commands import register_list_command

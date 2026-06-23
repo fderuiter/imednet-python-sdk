@@ -1,3 +1,3 @@
-"""TODO: Add docstring."""
+"""SPI for constants."""
 
 from imednet.constants import *

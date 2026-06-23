@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Standard form layout presets for the Form Designer."""
 
 from typing import Callable, Dict
 

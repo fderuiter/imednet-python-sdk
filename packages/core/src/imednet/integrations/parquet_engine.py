@@ -14,7 +14,14 @@ from uuid import uuid4
 
 
 def _import_pyarrow() -> tuple[Any, Any]:
-    """TODO: Add docstring."""
+    """Import and return the pyarrow and pyarrow.dataset modules.
+
+    Returns:
+        tuple[Any, Any]: A tuple containing (pyarrow, pyarrow.dataset).
+
+    Raises:
+        ImportError: If pyarrow is not installed.
+    """
     try:
         pyarrow_module = import_module("pyarrow")
         dataset_module = import_module("pyarrow.dataset")
@@ -58,7 +65,17 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         form_key: str,
         commit_id: str,
     ) -> Any:
-        """TODO: Add docstring."""
+        """Inject iMednet-specific metadata into the table schema.
+
+        Args:
+            table: The pyarrow table to modify.
+            study_key: The iMednet study key.
+            form_key: The iMednet form key.
+            commit_id: The unique commit identifier for this write operation.
+
+        Returns:
+            Any: The table with updated schema metadata.
+        """
         if not hasattr(table, "replace_schema_metadata"):
             return table
         schema = getattr(table, "schema", None)
@@ -82,7 +99,20 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         study_key: str,
         form_key: str,
     ) -> None:
-        """TODO: Add docstring."""
+        """Persist a form table into a partitioned dataset layout using PyArrow.
+
+        This implementation uses a staging directory and atomic renames to ensure
+        that data is written consistently.
+
+        Args:
+            table: The pyarrow table to write.
+            base_dir: The base directory for the Hive dataset.
+            study_key: The iMednet study key (used for partitioning).
+            form_key: The iMednet form key (used for partitioning).
+
+        Raises:
+            RuntimeError: If the write operation fails or produces unexpected output.
+        """
         pyarrow_module, dataset_module = _import_pyarrow()
         commit_id = uuid4().hex
         base_path = Path(base_dir)

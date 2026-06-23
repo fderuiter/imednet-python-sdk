@@ -1,0 +1,2825 @@
+FILE: packages/core/src/imednet/integrations/parquet.py:17
+PREV: def _ensure_pyarrow() -> ModuleType:
+LINE: """TODO: Add docstring."""
+NEXT: try:
+
+----------------------------------------
+FILE: packages/core/src/imednet/integrations/parquet.py:28
+PREV: def _cached_records_loader() -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: try:
+
+----------------------------------------
+FILE: packages/core/src/imednet/integrations/parquet_engine.py:17
+PREV: def _import_pyarrow() -> tuple[Any, Any]:
+LINE: """TODO: Add docstring."""
+NEXT: try:
+
+----------------------------------------
+FILE: packages/core/src/imednet/integrations/parquet_engine.py:61
+PREV: ) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if not hasattr(table, "replace_schema_metadata"):
+
+----------------------------------------
+FILE: packages/core/src/imednet/integrations/parquet_engine.py:85
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: pyarrow_module, dataset_module = _import_pyarrow()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/protocols.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/protocols.py:13
+PREV: def execute(self, *args: Any, **kwargs: Any) -> T:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/protocols.py:22
+PREV: def execute(self, *args: Any, **kwargs: Any) -> Awaitable[T]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:22
+PREV: def __init__(self, tracer: Optional[Tracer], operation_name: str, **attributes: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.tracer = tracer
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:31
+PREV: def _create_cm(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if self.tracer:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:40
+PREV: def __enter__(self) -> "OperationMonitor":
+LINE: """TODO: Add docstring."""
+NEXT: self._cm = self._create_cm()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:47
+PREV: def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if self._cm:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:52
+PREV: async def __aenter__(self) -> "OperationMonitor":
+LINE: """TODO: Add docstring."""
+NEXT: self._cm = self._create_cm()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:63
+PREV: async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if self._cm:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:71
+PREV: def on_success(self, **extra_attributes: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: latency = time.monotonic() - self.start_time
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:83
+PREV: def on_retry_error(self, cause: Exception, retries: int) -> NoReturn:
+LINE: """TODO: Add docstring."""
+NEXT: logger.error(
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/monitor.py:94
+PREV: def on_failure(self, cause: Exception) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if self.span:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/__init__.py:1
+LINE: """TODO: Add docstring."""
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/circuit_breaker.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/circuit_breaker.py:17
+PREV: class CircuitState(Enum):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/circuit_breaker.py:41
+PREV: ):
+LINE: """TODO: Add docstring."""
+NEXT: self.failure_threshold = failure_threshold
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/circuit_breaker.py:54
+PREV: def state(self) -> CircuitState:
+LINE: """TODO: Add docstring."""
+NEXT: with self._lock:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/circuit_breaker.py:115
+PREV: def get_global_circuit_breaker() -> CircuitBreaker:
+LINE: """TODO: Add docstring."""
+NEXT: return _global_circuit_breaker
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/executor.py:35
+PREV: class OperationRetryPolicy(ABC):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/executor.py:44
+PREV: class DefaultOperationRetryPolicy(OperationRetryPolicy):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/executor.py:47
+PREV: def should_retry(self, exception: Exception) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: # Default fallback: retry on any exception?
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/executor.py:67
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.retries = retries
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/executor.py:79
+PREV: def _should_retry_wrapper(self, retry_state: RetryCallState) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: if retry_state.outcome and retry_state.outcome.failed:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/operations/executor.py:135
+PREV: async def _async_wrapper() -> T:
+LINE: """TODO: Add docstring."""
+NEXT: return await func()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:28
+PREV: def __init__(self, tracer: Optional[Tracer], method: str, url: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.tracer = tracer
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:37
+PREV: def _create_cm(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if self.tracer:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:46
+PREV: def __enter__(self) -> "RequestMonitor":
+LINE: """TODO: Add docstring."""
+NEXT: self._cm = self._create_cm()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:53
+PREV: def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if self._cm:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:58
+PREV: async def __aenter__(self) -> "RequestMonitor":
+LINE: """TODO: Add docstring."""
+NEXT: self._cm = self._create_cm()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:69
+PREV: async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if self._cm:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:77
+PREV: def on_success(self, response: httpx.Response) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: latency = time.monotonic() - self.start_time
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/monitor.py:92
+PREV: def on_retry_error(self, e: RetryError) -> NoReturn:
+LINE: """TODO: Add docstring."""
+NEXT: logger.error(
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:46
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.send = send
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:57
+PREV: def _suppress_httpx_request_logging() -> Iterator[None]:
+LINE: """TODO: Add docstring."""
+NEXT: loggers = {
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:76
+PREV: def should_retry(retry_state: RetryCallState) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: state = RetryState(
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:133
+PREV: def _parse_retry_after_seconds(response: httpx.Response) -> Optional[float]:
+LINE: """TODO: Add docstring."""
+NEXT: value = response.headers.get("Retry-After")
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:154
+PREV: def _wait_strategy(self, retry_state: RetryCallState) -> float:
+LINE: """TODO: Add docstring."""
+NEXT: if retry_state.outcome and not retry_state.outcome.failed:
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:179
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(send, retries, backoff_factor, tracer, retry_policy)
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:184
+PREV: def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+LINE: """TODO: Add docstring."""
+NEXT: get_global_circuit_breaker().check_request_allowed()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:188
+PREV: def send_fn() -> httpx.Response:
+LINE: """TODO: Add docstring."""
+NEXT: with self._suppress_httpx_request_logging():
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:224
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(send, retries, backoff_factor, tracer, retry_policy)
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:229
+PREV: async def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+LINE: """TODO: Add docstring."""
+NEXT: get_global_circuit_breaker().check_request_allowed()
+
+----------------------------------------
+FILE: packages/core/src/imednet/core/http/executor.py:233
+PREV: async def send_fn() -> httpx.Response:
+LINE: """TODO: Add docstring."""
+NEXT: with self._suppress_httpx_request_logging():
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/presets.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/builder.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/builder.py:36
+PREV: def __init__(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.pages: List[Page] = []
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/builder.py:43
+PREV: def _ensure_page(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if not self.pages:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/builder.py:49
+PREV: def current_page(self) -> Page:
+LINE: """TODO: Add docstring."""
+NEXT: self._ensure_page()
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/builder.py:67
+PREV: def _create_entity(self, props: EntityProps, rows: Optional[List[Row]] = None) -> Entity:
+LINE: """TODO: Add docstring."""
+NEXT: return Entity(props=props, id=self._generate_dom_id(), rows=rows)
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/client.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/client.py:124
+PREV: def _execute_request() -> str:
+LINE: """TODO: Add docstring."""
+NEXT: response = self.session.post(url, data=payload, headers=headers)
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:56
+PREV: class TableProps(BaseModel):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:63
+PREV: class LabelProps(BaseModel):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:74
+PREV: class SeparatorProps(BaseModel):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:82
+PREV: class ExtQuestionProps(BaseModel):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:94
+PREV: class TextFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:102
+PREV: class NumberFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:112
+PREV: class MemoFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:121
+PREV: class RadioFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:129
+PREV: class DropdownFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:141
+PREV: class CheckboxFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:148
+PREV: class FileUploadProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:156
+PREV: class DateTimeFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/form_designer/models.py:172
+PREV: class PrecisionDateFieldProps(BaseFieldProps):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/schema.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/data_dictionary.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/data_dictionary.py:37
+PREV: def _open_text(source: Path | TextIO) -> Iterator[TextIO]:
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(source, (str, Path)):
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/data_dictionary.py:46
+PREV: def _load_csv(cls, source: Path | TextIO) -> list[dict[str, str]]:
+LINE: """TODO: Add docstring."""
+NEXT: with cls._open_text(source) as f:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:35
+PREV: def __init__(self, is_async: bool) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._is_async = is_async
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:56
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: vars_list = [v async for v in variables.async_list(study_key=study_key)]
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:66
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: vars_list = variables.list(study_key=study_key)
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:76
+PREV: ) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if self._is_async:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:90
+PREV: def variables_for_form(self, form_key: str) -> Dict[str, Variable]:
+LINE: """TODO: Add docstring."""
+NEXT: return self._form_variables.get(form_key, {})
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:94
+PREV: def form_key_from_id(self, form_id: int) -> Optional[str]:
+LINE: """TODO: Add docstring."""
+NEXT: return self._form_id_to_key.get(form_id)
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:104
+PREV: class SchemaCache(BaseSchemaCache["ImednetFacade"]):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:107
+PREV: def __init__(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(is_async=False)
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:112
+PREV: class AsyncSchemaCache(BaseSchemaCache["AsyncImednetFacade"]):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:115
+PREV: def __init__(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(is_async=True)
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:120
+PREV: def _validate_int(value: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if not isinstance(value, int):
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:126
+PREV: def _validate_float(value: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if not isinstance(value, (int, float)):
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:132
+PREV: def _validate_bool(value: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if not isinstance(value, bool):
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:138
+PREV: def _validate_text(value: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if not isinstance(value, str):
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:166
+PREV: def _check_type(var_type: str | None, value: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if value is None or not var_type:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:278
+PREV: def _refresh_common(self, variables: Iterable[Variable]) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.schema.populate(variables)
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/cache.py:296
+PREV: def __new__(cls, sdk: "ImednetFacade", *args: Any, **kwargs: Any) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if kwargs.get("is_async") or (args and args[0] is True):
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/_base.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/_base.py:14
+PREV: def _resolve_form_key(self, record: Dict[str, Any]) -> Optional[str]:
+LINE: """TODO: Add docstring."""
+NEXT: return record.get("formKey") or self.schema.form_key_from_id(record.get("formId", 0))
+
+----------------------------------------
+FILE: packages/core/src/imednet/validation/_base.py:18
+PREV: def _validate_cached(self, form_key: Optional[str], data: Dict[str, Any]) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if form_key:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/__init__.py:102
+PREV: def _register_missing_workflow_commands() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: workflows_app = typer.Typer(
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/__init__.py:109
+PREV: def _missing_plugin() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: typer.secho(
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/__init__.py:135
+PREV: def _exit_missing_dashboard_plugin() -> NoReturn:
+LINE: """TODO: Add docstring."""
+NEXT: typer.secho(
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/__init__.py:144
+PREV: def _register_missing_dashboard_commands() -> None:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/decorators.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/decorators.py:46
+PREV: def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+LINE: """TODO: Add docstring."""
+NEXT: from .utils.context import get_sdk
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/sites/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/variables/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/export/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/record_revisions/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/intervals/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/args.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/output.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/commands.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/commands.py:32
+PREV: def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: with fetching_status(name, study_key):
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/commands.py:44
+PREV: def list_cmd_no_study(sdk: ImednetSDK) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: with fetching_status(name):
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/context.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/utils/export.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/queries/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/jobs/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/studies/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/records/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/cli/subjects/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/constants.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/endpoints.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/validation.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/utils.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/cli.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/models.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/errors.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:22
+PREV: class ImednetFacade(Protocol):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:25
+PREV: def get_codings(self, study_key: str, **filters: FilterValue) -> List[Coding]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:29
+PREV: def get_forms(self, study_key: str, **filters: FilterValue) -> List[Form]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:33
+PREV: def get_intervals(self, study_key: str, **filters: FilterValue) -> List[Interval]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:37
+PREV: def get_job(self, study_key: str, batch_id: str) -> JobStatus:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:41
+PREV: def get_queries(self, study_key: str, **filters: FilterValue) -> List[Query]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:45
+PREV: def get_record_revisions(self, study_key: str, **filters: FilterValue) -> List[RecordRevision]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:49
+PREV: def get_records(self, study_key: str, **filters: FilterValue) -> List[Record]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:53
+PREV: def get_sites(self, study_key: str, **filters: FilterValue) -> List[Site]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:57
+PREV: def get_studies(self, **filters: FilterValue) -> List[Study]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:61
+PREV: def get_subjects(self, study_key: str, **filters: FilterValue) -> List[Subject]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:65
+PREV: def get_users(self, study_key: str, **filters: FilterValue) -> List[User]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:69
+PREV: def get_variables(self, study_key: str, **filters: FilterValue) -> List[Variable]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:73
+PREV: def get_visits(self, study_key: str, **filters: FilterValue) -> List[Visit]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:84
+PREV: ) -> Job:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:90
+PREV: ) -> JobStatus:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:95
+PREV: def auth(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:100
+PREV: class AsyncImednetFacade(Protocol):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:103
+PREV: async def async_get_codings(self, study_key: str, **filters: FilterValue) -> List[Coding]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:107
+PREV: async def async_get_forms(self, study_key: str, **filters: FilterValue) -> List[Form]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:111
+PREV: async def async_get_intervals(self, study_key: str, **filters: FilterValue) -> List[Interval]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:115
+PREV: async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:119
+PREV: async def async_get_queries(self, study_key: str, **filters: FilterValue) -> List[Query]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:125
+PREV: ) -> List[RecordRevision]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:129
+PREV: async def async_get_records(self, study_key: str, **filters: FilterValue) -> List[Record]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:133
+PREV: async def async_get_sites(self, study_key: str, **filters: FilterValue) -> List[Site]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:137
+PREV: async def async_get_studies(self, **filters: FilterValue) -> List[Study]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:141
+PREV: async def async_get_subjects(self, study_key: str, **filters: FilterValue) -> List[Subject]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:145
+PREV: async def async_get_users(self, study_key: str, **filters: FilterValue) -> List[User]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:149
+PREV: async def async_get_variables(self, study_key: str, **filters: FilterValue) -> List[Variable]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:153
+PREV: async def async_get_visits(self, study_key: str, **filters: FilterValue) -> List[Visit]:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:164
+PREV: ) -> Job:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/spi/facade.py:170
+PREV: ) -> JobStatus:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/errors/api.py:31
+PREV: def _replace_sensitive_match(match: re.Match[str]) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: return f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}"
+
+----------------------------------------
+FILE: packages/core/src/imednet/errors/api.py:36
+PREV: def _redact_sensitive_value(value: Any) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(value, dict):
+
+----------------------------------------
+FILE: packages/core/src/imednet/errors/api.py:62
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: sanitized_response = _redact_sensitive_value(response)
+
+----------------------------------------
+FILE: packages/core/src/imednet/errors/api.py:90
+PREV: def __str__(self) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: base = super().__str__()
+
+----------------------------------------
+FILE: packages/core/src/imednet/errors/export.py:22
+PREV: def __init__(self, message: str, *, batch_id: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(message)
+
+----------------------------------------
+FILE: packages/core/src/imednet/errors/orchestration.py:39
+PREV: def __init__(self, whitelist: set[str], blacklist: set[str]) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(
+
+----------------------------------------
+FILE: packages/core/src/imednet/compat/__init__.py:1
+LINE: """TODO: Add docstring."""
+
+----------------------------------------
+FILE: packages/core/src/imednet/orchestration/logging.py:43
+PREV: def __init__(self, logger: logging.Logger, study_key: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(logger, extra={"study_key": study_key})
+
+----------------------------------------
+FILE: packages/core/src/imednet/orchestration/orchestrator.py:58
+PREV: def __init__(self, initial_concurrency: int):
+LINE: """TODO: Add docstring."""
+NEXT: self._max_concurrency = initial_concurrency
+
+----------------------------------------
+FILE: packages/core/src/imednet/orchestration/orchestrator.py:68
+PREV: def acquire(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: with self._cond:
+
+----------------------------------------
+FILE: packages/core/src/imednet/orchestration/orchestrator.py:75
+PREV: def release(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: with self._cond:
+
+----------------------------------------
+FILE: packages/core/src/imednet/orchestration/orchestrator.py:81
+PREV: def record_latency(self, latency: float) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: with self._lock:
+
+----------------------------------------
+FILE: packages/core/src/imednet/orchestration/orchestrator.py:163
+PREV: def __init__(self, sdk: Any, max_workers: int = 4) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if max_workers < 1:
+
+----------------------------------------
+FILE: packages/core/src/imednet/orchestration/types.py:89
+PREV: ) -> T_Output:
+LINE: """TODO: Add docstring."""
+NEXT: ...
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/oidc.py:14
+PREV: def __init__(self, token: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.token = token
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/oidc.py:19
+PREV: def _decode_token_claims(self, token: str) -> dict:
+LINE: """TODO: Add docstring."""
+NEXT: parts = token.split(".")
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/oidc.py:35
+PREV: def get_user_id(self) -> Optional[str]:
+LINE: """TODO: Add docstring."""
+NEXT: return self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/oidc.py:39
+PREV: def get_user_roles(self) -> List[str]:
+LINE: """TODO: Add docstring."""
+NEXT: # Assume groups or roles claim maps to our roles
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/oidc.py:63
+PREV: def __repr__(self) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: return "OIDCAuth(token='********')"
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/api_key.py:12
+PREV: def __init__(self, api_key: str, security_key: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.api_key = api_key
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/api_key.py:24
+PREV: def get_user_roles(self) -> list[str]:
+LINE: """TODO: Add docstring."""
+NEXT: # Server-side role resolution for API keys would require an API call.
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/api_key.py:32
+PREV: def get_user_id(self) -> str | None:
+LINE: """TODO: Add docstring."""
+NEXT: return "api-key-user"
+
+----------------------------------------
+FILE: packages/core/src/imednet/auth/api_key.py:36
+PREV: def __repr__(self) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: return "ApiKeyAuth(api_key='********', security_key='********')"
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/register_subjects.py:24
+PREV: def __init__(self, sdk: "ImednetFacade"):  # Use string literal for type hint
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:14
+PREV: class NormalizationResult(BaseModel):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:21
+PREV: class CategoricalNormalizer:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:29
+PREV: ) -> NormalizationResult:
+LINE: """TODO: Add docstring."""
+NEXT: normalized_record: dict[str, Any] = {}
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:51
+PREV: ) -> dict[str, dict[str, str]]:
+LINE: """TODO: Add docstring."""
+NEXT: return {
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:65
+PREV: ) -> tuple[Any, str | None]:
+LINE: """TODO: Add docstring."""
+NEXT: lookup = normalized_lookups.get(field_name)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:85
+PREV: class StandardsReadinessReport(BaseModel):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:95
+PREV: class StandardsReadinessValidator:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:100
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._profile = profile
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/standards_validation.py:110
+PREV: ) -> StandardsReadinessReport:
+LINE: """TODO: Add docstring."""
+NEXT: lookups = terminology_lookups or {}
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:36
+PREV: def _get_db_init_lock(resolved_path: Path) -> threading.Lock:
+LINE: """TODO: Add docstring."""
+NEXT: key = str(resolved_path)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:68
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:152
+PREV: def _initialise_cache(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: resolved = Path(self.db_path).expanduser().resolve()
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:176
+PREV: def _get_high_water_mark(self, conn: sqlite3.Connection, study_key: str) -> str | None:
+LINE: """TODO: Add docstring."""
+NEXT: row = conn.execute(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:186
+PREV: def _fetch_delta_records(self, study_key: str, high_water_mark: str | None) -> list[Record]:
+LINE: """TODO: Add docstring."""
+NEXT: if not high_water_mark:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:199
+PREV: def _fetch_active_record_ids(self, study_key: str) -> set[int]:
+LINE: """TODO: Add docstring."""
+NEXT: records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:204
+PREV: def _list_records(self, **filters: Any) -> list[Record]:
+LINE: """TODO: Add docstring."""
+NEXT: retryer = Retrying(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cached_loader.py:240
+PREV: def _upsert_records(self, conn: sqlite3.Connection, records: Iterable[Record]) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: payloads = [
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:59
+PREV: def __init__(self, sdk: "ImednetFacade", loader: CachedRecordsLoader | None = None) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:114
+PREV: def _iter_records(self, study_key: str) -> Iterable[Record]:
+LINE: """TODO: Add docstring."""
+NEXT: if self._loader is None:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:137
+PREV: ) -> FieldProfile:
+LINE: """TODO: Add docstring."""
+NEXT: inferred_type = accumulator.inferred_type(variable)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:165
+PREV: class _FormAccumulator:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:173
+PREV: class _FieldAccumulator:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:184
+PREV: def unique_count(self) -> int:
+LINE: """TODO: Add docstring."""
+NEXT: return len(self.unique_values)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:188
+PREV: def observe(self, value: Any) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if not _is_populated(value):
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:203
+PREV: def inferred_type(self, variable: Variable | None) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: if self.populated_count > 0:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:219
+PREV: def _is_populated(value: Any) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: if value is None:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:230
+PREV: def _render_value(value: Any) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(value, bool):
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:239
+PREV: def _is_boolean_value(value: Any) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(value, bool):
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:248
+PREV: def _is_numeric_value(value: Any) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(value, bool):
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/schema_profiler.py:263
+PREV: def _is_date_value(value: Any) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(value, (date, datetime)):
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:42
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.db_path = Path(db_path).expanduser()
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:52
+PREV: def _connection(self) -> Iterator[sqlite3.Connection]:
+LINE: """TODO: Add docstring."""
+NEXT: try:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:71
+PREV: def _initialize_schema(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: with self._connection() as conn:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:125
+PREV: def get_journal_mode(self) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: with self._connection() as conn:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:131
+PREV: def _execute_write(self, callback: Callable[[sqlite3.Connection], None]) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: last_error: sqlite3.OperationalError | None = None
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:152
+PREV: def upsert_item(self, item: TriageItem) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: now = datetime.now(timezone.utc).isoformat()
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:156
+PREV: def _write(conn: sqlite3.Connection) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: conn.execute(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:224
+PREV: def get_triage_item(self, item_id: str) -> Optional[TriageItem]:
+LINE: """TODO: Add docstring."""
+NEXT: with self._connection() as conn:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:250
+PREV: def get_queue(self, study_key: str, status: Optional[TriageStatus] = None) -> list[TriageItem]:
+LINE: """TODO: Add docstring."""
+NEXT: with self._connection() as conn:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:356
+PREV: def assign_item(self, item_id: str, assignee: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:359
+PREV: def _write(conn: sqlite3.Connection) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: cursor = conn.execute(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:380
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: normalized_comment = comment.strip() if comment else None
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:385
+PREV: def _write(conn: sqlite3.Connection) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: row = conn.execute(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:423
+PREV: def add_annotation(self, item_id: str, user_id: str, comment: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: cleaned_comment = comment.strip()
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:431
+PREV: def _write(conn: sqlite3.Connection) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: row = conn.execute(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:454
+PREV: def get_item_last_updated(self, item_id: str) -> Optional[datetime]:
+LINE: """TODO: Add docstring."""
+NEXT: with self._connection() as conn:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:465
+PREV: def _get_annotations(self, conn: sqlite3.Connection, item_id: str) -> list[TriageAnnotation]:
+LINE: """TODO: Add docstring."""
+NEXT: rows = conn.execute(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:486
+PREV: def _get_history(self, conn: sqlite3.Connection, item_id: str) -> list[TriageHistoryEntry]:
+LINE: """TODO: Add docstring."""
+NEXT: rows = conn.execute(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:509
+PREV: def _migrate_schema(self, conn: sqlite3.Connection) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: columns = {
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:536
+PREV: def _redact_sqlite_target(self, target: str) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: if "://" not in target and not target.startswith("file:"):
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/triage_store.py:557
+PREV: def _redact_error_text(self, message: str) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: redacted = _SENSITIVE_QUOTED_PATTERN.sub(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/sync_worker.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/sync_worker.py:19
+PREV: class SyncWorkerConfig:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/sync_worker.py:37
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._loader = loader
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/state_ledger.py:48
+PREV: def __init__(self, ledger_path: str = "/var/lib/imednet/pipeline_ledger.json") -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.ledger_path = Path(ledger_path)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/state_ledger.py:53
+PREV: def _ensure_ledger_exists(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if not self.ledger_path.exists():
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/chunked_pipeline.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/chunked_pipeline.py:36
+PREV: def __init__(self, *, chunk_size: int = DEFAULT_CHUNK_SIZE) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if chunk_size <= 0:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/job_poller.py:21
+PREV: def _check_complete(self, status: JobStatus, batch_id: str) -> JobStatus:
+LINE: """TODO: Add docstring."""
+NEXT: return status
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/job_poller.py:52
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._get_job = get_job
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/job_poller.py:86
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._get_job = get_job
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/namespace.py:22
+PREV: def __init__(self, sdk_instance: ImednetFacade):
+LINE: """TODO: Add docstring."""
+NEXT: self.data_extraction = DataExtractionWorkflow(sdk_instance)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/duckdb_centralizer.py:19
+PREV: def __init__(self, sdk: "ImednetFacade", db_path: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: try:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/duckdb_centralizer.py:97
+PREV: def _ensure_bronze_table(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._connection.execute("""
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/duckdb_centralizer.py:114
+PREV: ) -> Iterable[tuple[str, int, int, str, str, int, Optional[datetime], str]]:
+LINE: """TODO: Add docstring."""
+NEXT: for revision in revisions:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/study_structure.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/study_structure.py:85
+PREV: async def fetch_intervals():
+LINE: """TODO: Add docstring."""
+NEXT: return await sdk.async_get_intervals(study_key)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/study_structure.py:89
+PREV: async def fetch_forms():
+LINE: """TODO: Add docstring."""
+NEXT: return await sdk.async_get_forms(study_key)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/study_structure.py:93
+PREV: async def fetch_variables():
+LINE: """TODO: Add docstring."""
+NEXT: return await sdk.async_get_variables(study_key)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/record_update.py:25
+PREV: def __init__(self, sdk: "FacadeLike"):
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/record_update.py:114
+PREV: def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
+LINE: """TODO: Add docstring."""
+NEXT: warnings.warn(
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/subject_data.py:34
+PREV: def __init__(self, sdk: "ImednetFacade"):
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/cli.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/config_version_control.py:29
+PREV: def _sha256_of(content: str) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/config_version_control.py:46
+PREV: def __init__(self, db_path: str | Path = _DEFAULT_DB_PATH) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.db_path = Path(db_path).expanduser()
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/config_version_control.py:54
+PREV: def _connection(self) -> Iterator[sqlite3.Connection]:
+LINE: """TODO: Add docstring."""
+NEXT: conn = sqlite3.connect(self.db_path, timeout=30.0)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/config_version_control.py:65
+PREV: def _initialize_schema(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: with self._lock, self._connection() as conn:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/config_version_control.py:302
+PREV: def _fetch_config_data(self, commit_id: str) -> dict[str, Any]:
+LINE: """TODO: Add docstring."""
+NEXT: with self._lock, self._connection() as conn:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/config_version_control.py:314
+PREV: def _verify_commit_signature(self, commit_id: str, config_data: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: if _sha256_of(config_data) != commit_id:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:48
+PREV: def _get_from_path(value: Any, path: str) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if not path:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:65
+PREV: ) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: source_path = rule.source_variable_name
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:87
+PREV: def _is_missing_value(value: Any) -> bool:
+LINE: """TODO: Add docstring."""
+NEXT: return value is None or (isinstance(value, str) and value == "")
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:94
+PREV: ) -> dict[str, dict[str, list[MappingRule]]]:
+LINE: """TODO: Add docstring."""
+NEXT: grouped: dict[str, dict[str, list[MappingRule]]] = {}
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:105
+PREV: class SubjectContext:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:108
+PREV: def __init__(self, subject_key: str):
+LINE: """TODO: Add docstring."""
+NEXT: self.subject_key = subject_key
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/extraction_engine.py:117
+PREV: ) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: try:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/record_mapper.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/record_mapper.py:146
+PREV: ) -> Iterable[RecordModel]:
+LINE: """TODO: Add docstring."""
+NEXT: form_ids: set[Any] | None = None
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/record_mapper.py:179
+PREV: ) -> Iterator[RecordModel]:
+LINE: """TODO: Add docstring."""
+NEXT: visit_id: int | None = None
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/record_mapper.py:202
+PREV: ) -> Dict[str, Any]:
+LINE: """TODO: Add docstring."""
+NEXT: meta = {
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/record_mapper.py:237
+PREV: ) -> Iterator[Tuple[List[Dict[str, Any]], int]]:
+LINE: """TODO: Add docstring."""
+NEXT: for chunk in iter_chunks(records, chunk_size=self._pipeline.chunk_size):
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/data_extraction.py:19
+PREV: def __init__(self, sdk: "ImednetFacade"):
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/query_management.py:19
+PREV: def __init__(self, sdk: "ImednetFacade"):
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/engine.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/engine.py:18
+PREV: class EditCheckResultStatus(str, Enum):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/engine.py:28
+PREV: class EditCheckVerificationReport:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/engine.py:42
+PREV: def __init__(self, sdk: ImednetFacade, data_dictionary: DataDictionary):
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/engine.py:48
+PREV: def _parse_business_logic(self, rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+LINE: """TODO: Add docstring."""
+NEXT: rules = []
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/inspector.py:19
+PREV: class FormVariableMap(TypedDict):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/inspector.py:39
+PREV: def model_post_init(self, __context: object) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self.forms_by_key = {form.form_key: form for form in self.forms}  # type: ignore
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/inspector.py:79
+PREV: def __init__(self, sdk: ImednetFacade | AsyncImednetFacade) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/inspector.py:107
+PREV: async def fetch_forms():
+LINE: """TODO: Add docstring."""
+NEXT: return await sdk.async_get_forms(study_key)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/inspector.py:111
+PREV: async def fetch_variables():
+LINE: """TODO: Add docstring."""
+NEXT: return await sdk.async_get_variables(study_key)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/inspector.py:115
+PREV: async def fetch_intervals():
+LINE: """TODO: Add docstring."""
+NEXT: return await sdk.async_get_intervals(study_key)
+
+----------------------------------------
+FILE: packages/plugins-workflows/src/imednet_workflows/uat/inspector.py:119
+PREV: async def fetch_sites():
+LINE: """TODO: Add docstring."""
+NEXT: return await sdk.async_get_sites(study_key)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:24
+PREV: def toggle_high_contrast():
+LINE: """TODO: Add docstring."""
+NEXT: st.session_state["high_contrast"] = not st.session_state["high_contrast"]
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:81
+PREV: def accessible_altair_chart(altair_chart, use_container_width=False, theme="streamlit", **kwargs):
+LINE: """TODO: Add docstring."""
+NEXT: title = getattr(altair_chart, "title", "Chart")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:111
+PREV: def _sanitize_body(body):
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(body, Exception):
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:132
+PREV: def secure_st_error(body, *args, **kwargs):
+LINE: """TODO: Add docstring."""
+NEXT: return original_st_error(_sanitize_body(body), *args, **kwargs)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:137
+PREV: def secure_st_exception(exception, *args, **kwargs):
+LINE: """TODO: Add docstring."""
+NEXT: return original_st_exception(_sanitize_body(exception), *args, **kwargs)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:142
+PREV: def secure_st_warning(body, *args, **kwargs):
+LINE: """TODO: Add docstring."""
+NEXT: return original_st_warning(_sanitize_body(body), *args, **kwargs)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/app.py:147
+PREV: def secure_st_info(body, *args, **kwargs):
+LINE: """TODO: Add docstring."""
+NEXT: return original_st_info(_sanitize_body(body), *args, **kwargs)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/auth.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/auth.py:44
+PREV: def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
+LINE: """TODO: Add docstring."""
+NEXT: db_path = os.environ.get(
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/auth.py:63
+PREV: def get_provisioned_studies() -> list[str]:
+LINE: """TODO: Add docstring."""
+NEXT: db_path = os.environ.get(
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/metrics.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/tables.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/charts.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/charts.py:13
+PREV: def _color_encoding(field: str) -> alt.Color:
+LINE: """TODO: Add docstring."""
+NEXT: return alt.Color(f"{field}:N", scale=alt.Scale(range=PALETTE))
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/triage_drawer.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/triage_drawer.py:27
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.session_state[_LAST_ACTION_KEY] = {
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/paginated_grid.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/export.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/components/data_lineage.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/queries.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/conformance.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/admin.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/home.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/__init__.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:27
+PREV: def _get_store() -> TriageStore:
+LINE: """TODO: Add docstring."""
+NEXT: raw_path = st.session_state.get(
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:36
+PREV: def _resolve_db_path(raw_path: object) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: import os
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:54
+PREV: def _last_activity(item: TriageItem) -> datetime | None:
+LINE: """TODO: Add docstring."""
+NEXT: timestamps = [entry.timestamp for entry in item.history] + [
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:62
+PREV: def _age_hours(item: TriageItem) -> float:
+LINE: """TODO: Add docstring."""
+NEXT: if item.status == TriageStatus.RESOLVED:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:74
+PREV: def _severity_bucket(severity: str) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: normalized = severity.strip().lower()
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:84
+PREV: def _category(item: TriageItem) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: prefix = item.item_id.split("-", 1)[0].upper()
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:94
+PREV: def _queue_dataframe(items: list[TriageItem]) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: rows = [
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:125
+PREV: def _render_kpis(queue_df: pd.DataFrame) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: open_count = int(queue_df[queue_df["status"] != TriageStatus.RESOLVED.value].shape[0])
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:144
+PREV: def _filter_queue(queue_df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: severity_options = sorted(queue_df["severity_bucket"].dropna().astype(str).unique().tolist())
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:172
+PREV: def _get_current_user() -> str:
+LINE: """TODO: Add docstring."""
+NEXT: user_value = st.session_state.get("_imednet_user", "reviewer")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/review_workbench.py:178
+PREV: def render_page() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.title("🧪 Review Workbench")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:43
+PREV: def _resolve_form_name(form: object) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: form_name = getattr(form, "form_name", "")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:50
+PREV: def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:76
+PREV: def _fetch_form_metadata(_sdk: object, study_key: str) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: forms = _sdk.get_forms(study_key=study_key)  # type: ignore[attr-defined]
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:83
+PREV: def _prepare_records_dataframe(records_df: pd.DataFrame, forms_df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if records_df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:98
+PREV: def _status_options(df: pd.DataFrame) -> list[str]:
+LINE: """TODO: Add docstring."""
+NEXT: if df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:108
+PREV: def _sorted_unique_values(series: pd.Series) -> list[object]:
+LINE: """TODO: Add docstring."""
+NEXT: return sorted(series.dropna().unique().tolist(), key=lambda value: str(value))
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:119
+PREV: ) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: filtered = df.copy()
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:131
+PREV: def _build_status_counts(df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:147
+PREV: def _build_incomplete_form_counts(df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:165
+PREV: def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: columns = ["subject_key", "form_name", "completion_flag", "completion_status"]
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:195
+PREV: def _build_heatmap_chart(heatmap_df: pd.DataFrame) -> alt.Chart:
+LINE: """TODO: Add docstring."""
+NEXT: unique_subjects = heatmap_df["subject_key"].nunique()
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/records.py:223
+PREV: def render_page() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.title("📋 Data Completeness")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:136
+PREV: def _render_design_specification() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.markdown("### Wizard UX design specification")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:147
+PREV: def _initialise_state(study_key: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.session_state.setdefault(_KEY_WIZARD_STEP, 1)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:182
+PREV: def _go_to_step(step: int) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.session_state[_KEY_WIZARD_STEP] = max(1, min(len(_WIZARD_STEPS), step))
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:187
+PREV: def _get_mapping_config() -> StudyConfiguration:
+LINE: """TODO: Add docstring."""
+NEXT: return cast(StudyConfiguration, st.session_state[_KEY_MAPPING_CONFIG])
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:192
+PREV: def _sanitise_study_key(study_key: str) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: safe_study_key = re.sub(r"[^a-z0-9_-]+", "_", study_key.lower()).strip("_")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:198
+PREV: def _scan_schema(sdk: ImednetFacade, study_key: str) -> dict[str, Any]:
+LINE: """TODO: Add docstring."""
+NEXT: loader = CachedRecordsLoader(sdk=sdk)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:243
+PREV: def _schema() -> dict[str, Any]:
+LINE: """TODO: Add docstring."""
+NEXT: discovered_schema = st.session_state.get(_KEY_DISCOVERED_SCHEMA)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:251
+PREV: def _selected_forms(schema: dict[str, Any]) -> list[str]:
+LINE: """TODO: Add docstring."""
+NEXT: selected = [
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:264
+PREV: def _field_candidates(schema: dict[str, Any], forms: list[str]) -> dict[str, list[str]]:
+LINE: """TODO: Add docstring."""
+NEXT: by_form: dict[str, list[str]] = {}
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:283
+PREV: ) -> MappingRule | None:
+LINE: """TODO: Add docstring."""
+NEXT: for rule in config.mappings:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:291
+PREV: def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.subheader("1. Scan & Profile Study Structure")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:335
+PREV: def _step_field_mapping() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.subheader("2. Field Mapping")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:440
+PREV: ) -> list[str]:
+LINE: """TODO: Add docstring."""
+NEXT: for form in schema.get("forms", []):
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:451
+PREV: def _step_terminology() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.subheader("3. Categorical Terminology Normalization")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:507
+PREV: def _apply_lookup(config: StudyConfiguration, lookup_key: str, value: Any) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: if isinstance(value, str):
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:516
+PREV: ) -> list[dict[str, Any]]:
+LINE: """TODO: Add docstring."""
+NEXT: rows: list[dict[str, Any]] = []
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:540
+PREV: def _step_preview_and_layout() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.subheader("4. Layout & Visual Configuration")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:597
+PREV: def _step_export(study_key: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.subheader("5. Export / Save")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/setup_wizard.py:640
+PREV: def render_page() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.title("🧭 Study Setup Wizard")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/enrollment.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/sites.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/sites.py:99
+PREV: def _highlight_high_rate(val: float) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: return f"background-color: {_HIGH_RATE_COLOR}" if val > _HIGH_QUERY_RATE_THRESHOLD else ""
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/sites.py:106
+PREV: ) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:49
+PREV: class _AppliedFilters:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:58
+PREV: def _get_date_range_defaults(frames: Sequence[pd.DataFrame]) -> tuple[date, date]:
+LINE: """TODO: Add docstring."""
+NEXT: candidates: list[pd.Series] = []
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:75
+PREV: def _fetch_subjects_df(_sdk: object, study_key: str) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: rows = [
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:92
+PREV: def _fetch_records(_sdk: object, study_key: str) -> list[Record]:
+LINE: """TODO: Add docstring."""
+NEXT: return list(_sdk.get_records(study_key=study_key))  # type: ignore[attr-defined]
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:98
+PREV: def _fetch_forms_df(_sdk: object, study_key: str) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: forms = _sdk.get_forms(study_key=study_key)  # type: ignore[attr-defined]
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:115
+PREV: ) -> tuple[list[AdverseEvent], list[ProtocolDeviation], list[DeviceDeficiency]]:
+LINE: """TODO: Add docstring."""
+NEXT: aes: list[AdverseEvent] = []
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:138
+PREV: def _models_to_frame(models: Sequence[object], *, date_column: str | None = None) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if not models:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:154
+PREV: ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+LINE: """TODO: Add docstring."""
+NEXT: from imednet_workflows.extraction_engine import extract_canonical_records
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:173
+PREV: ) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: rows = [
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:222
+PREV: def _attach_site_name(df: pd.DataFrame, subjects_df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:234
+PREV: def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: from imednet_workflows.query_management import QueryManagementWorkflow
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:283
+PREV: def _highlight_high_rate(value: float) -> str:
+LINE: """TODO: Add docstring."""
+NEXT: return f"background-color: {_HIGH_RATE_COLOR}" if value > _HIGH_QUERY_RATE_THRESHOLD else ""
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:294
+PREV: ) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:312
+PREV: def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if df.empty:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:338
+PREV: def _default_configuration(template_name: str) -> StudyConfiguration:
+LINE: """TODO: Add docstring."""
+NEXT: profile = "device" if template_name == "Device Deficiencies" else "general"
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:352
+PREV: ) -> tuple[str, _AppliedFilters]:
+LINE: """TODO: Add docstring."""
+NEXT: saved_views = st.session_state.setdefault(_VIEW_STORE_KEY, {})
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:418
+PREV: def _render_adverse_events_tab(df: pd.DataFrame, enrolled_subjects: int) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: total_aes = len(df)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:474
+PREV: def _render_protocol_deviations_tab(df: pd.DataFrame, enrolled_subjects: int) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: total = len(df)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:529
+PREV: def _render_device_deficiencies_tab(df: pd.DataFrame) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: total = len(df)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:557
+PREV: def _render_site_performance_tab(df_site_metrics: pd.DataFrame) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: components.kpi_row(
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:588
+PREV: def _render_data_completeness_tab(df_records: pd.DataFrame) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: heatmap_df = _build_heatmap_source(df_records)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/reporting_dashboard.py:620
+PREV: def render_page() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.title("📊 Safety Reporting Dashboard")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/publisher_wizard.py:33
+PREV: def _get_store() -> ConfigVersionStore:
+LINE: """TODO: Add docstring."""
+NEXT: path = st.session_state.get(_KEY_CONFIG_STORE_PATH, _DEFAULT_STORE_PATH)
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/publisher_wizard.py:124
+PREV: def _render_check(label: str, passed: bool, detail: str) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: icon = "✅" if passed else "❌"
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/publisher_wizard.py:274
+PREV: def render_page() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.title("🏛️ Configuration Publisher Wizard")
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/data_lineage.py:60
+PREV: ) -> list[AdverseEvent | ProtocolDeviation | DeviceDeficiency]:
+LINE: """TODO: Add docstring."""
+NEXT: if domain == "AE":
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/data_lineage.py:71
+PREV: ) -> pd.DataFrame:
+LINE: """TODO: Add docstring."""
+NEXT: if not models:
+
+----------------------------------------
+FILE: packages/plugins-streamlit/src/imednet_streamlit/pages/data_lineage.py:250
+PREV: def render_page() -> None:
+LINE: """TODO: Add docstring."""
+NEXT: st.title("🔭 Data Lineage Explorer")
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/document.py:149
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(config)
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/document.py:164
+PREV: def _connect(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: pymongo = _require_optional_dep("pymongo", "mongodb")
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/document.py:192
+PREV: def execute_export() -> int:
+LINE: """TODO: Add docstring."""
+NEXT: if self.config.idempotent:
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:10
+PREV: class SinksNamespace:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:13
+PREV: def __init__(self, sdk: Union["ImednetFacade", "AsyncImednetFacade"]):
+LINE: """TODO: Add docstring."""
+NEXT: self._sdk = sdk
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:18
+PREV: def export_to_mongodb(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .document import export_to_mongodb
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:25
+PREV: def MongoDbExportSink(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .document import MongoDbExportSink
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:32
+PREV: def export_to_neo4j(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .graph import export_to_neo4j
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:39
+PREV: def Neo4jSinkConfig(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .graph import Neo4jSinkConfig
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:46
+PREV: def Neo4jExportSink(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .graph import Neo4jExportSink
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:53
+PREV: def export_to_snowflake(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .warehouse import export_to_snowflake
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:60
+PREV: def SnowflakeSinkConfig(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .warehouse import SnowflakeSinkConfig
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:67
+PREV: def SnowflakeExportSink(self) -> Any:
+LINE: """TODO: Add docstring."""
+NEXT: from .warehouse import SnowflakeExportSink
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/plugin.py:74
+PREV: def create_sinks(sdk: Union["ImednetFacade", "AsyncImednetFacade"]) -> SinksNamespace:
+LINE: """TODO: Add docstring."""
+NEXT: return SinksNamespace(sdk)
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/graph.py:167
+PREV: ) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: super().__init__(config if config is not None else Neo4jSinkConfig())
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/graph.py:180
+PREV: def _connect(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: neo4j_mod = _require_optional_dep("neo4j", "neo4j")
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/graph.py:206
+PREV: def execute_export() -> int:
+LINE: """TODO: Add docstring."""
+NEXT: with self._driver.session(database=cfg.database) as session:
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/warehouse.py:173
+PREV: def __init__(self, config: Optional[SinkConfig] = None) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: cfg = config if isinstance(config, SnowflakeSinkConfig) else SnowflakeSinkConfig()
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/warehouse.py:186
+PREV: def _connect(self) -> None:
+LINE: """TODO: Add docstring."""
+NEXT: cfg = self._cfg
+
+----------------------------------------
+FILE: packages/plugins-sinks/src/imednet_sinks/warehouse.py:252
+PREV: def execute_export() -> int:
+LINE: """TODO: Add docstring."""
+NEXT: cur = self._conn.cursor()
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:22
+PREV: class DriftError(Exception):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:28
+PREV: class DriftFailingHandler(logging.Handler):
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:31
+PREV: def emit(self, record):
+LINE: """TODO: Add docstring."""
+NEXT: if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:38
+PREV: def fail_on_drift():
+LINE: """TODO: Add docstring."""
+NEXT: logger = logging.getLogger("imednet.drift")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:51
+PREV: class FakeRecord:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:65
+PREV: def fake_records() -> List[FakeRecord]:
+LINE: """TODO: Add docstring."""
+NEXT: return [
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:92
+PREV: def mock_record_mapper(monkeypatch, fake_records):
+LINE: """TODO: Add docstring."""
+NEXT: from unittest.mock import MagicMock
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:98
+PREV: class FakeMapper:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:101
+PREV: def __init__(self, *args, **kwargs):
+LINE: """TODO: Add docstring."""
+NEXT: pass
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:105
+PREV: def __iter__(self):
+LINE: """TODO: Add docstring."""
+NEXT: return iter(fake_records)
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:112
+PREV: def test_mongodb_containerized_upserts(fake_records, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import pymongo
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/integration/test_containerized_sinks.py:140
+PREV: def test_neo4j_containerized_merges(fake_records, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import neo4j
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:1
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:26
+PREV: def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:
+LINE: """TODO: Add docstring."""
+NEXT: neo4j = ModuleType("neo4j")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:37
+PREV: def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
+LINE: """TODO: Add docstring."""
+NEXT: pymongo = ModuleType("pymongo")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:57
+PREV: def _fake_snowflake_module() -> tuple:
+LINE: """TODO: Add docstring."""
+NEXT: sf = ModuleType("snowflake.connector")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:67
+PREV: def _fake_pyarrow_modules() -> tuple:
+LINE: """TODO: Add docstring."""
+NEXT: pa = ModuleType("pyarrow")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:78
+PREV: class TestNeo4jExportSink:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:81
+PREV: def test_connect_calls_verify_connectivity(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:94
+PREV: def test_connect_raises_configuration_error_on_failure(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:106
+PREV: def test_write_batch_returns_count(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:123
+PREV: def test_write_batch_uses_structure_preserving_payload_shape(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:162
+PREV: def test_write_batch_empty_returns_zero(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:175
+PREV: def test_write_batch_raises_after_retries_exhausted(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:196
+PREV: def test_close_is_idempotent(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:215
+PREV: def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
+LINE: """TODO: Add docstring."""
+NEXT: pymongo = ModuleType("pymongo")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:236
+PREV: class TestMongoDbExportSink:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:239
+PREV: def test_connect_raises_configuration_error_on_failure(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:251
+PREV: def test_connect_error_message_redacts_credentials(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:268
+PREV: def test_write_batch_upsert_returns_count(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:286
+PREV: def test_write_batch_upsert_document_envelope_shape(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:332
+PREV: def test_write_batch_empty_returns_zero(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:345
+PREV: def test_write_batch_raises_after_retries(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:364
+PREV: def test_document_id_format(self):
+LINE: """TODO: Add docstring."""
+NEXT: from imednet_sinks.document import _make_document_id
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:370
+PREV: def test_close_is_idempotent(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:389
+PREV: def _fake_snowflake_module() -> ModuleType:
+LINE: """TODO: Add docstring."""
+NEXT: sf = ModuleType("snowflake.connector")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:399
+PREV: def _fake_pyarrow_modules() -> tuple:
+LINE: """TODO: Add docstring."""
+NEXT: pa = ModuleType("pyarrow")
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:410
+PREV: class TestSnowflakeExportSink:
+LINE: """TODO: Add docstring."""
+NEXT:
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:413
+PREV: def _make_sink(self, monkeypatch, *, tmp_path, fail_connect=False):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.warehouse as wh_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:423
+PREV: def fake_require(pkg, extras):
+LINE: """TODO: Add docstring."""
+NEXT: if pkg == "snowflake.connector":
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:448
+PREV: def test_connect_raises_configuration_error_on_failure(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.warehouse as wh_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:457
+PREV: def fake_require(pkg, extras):
+LINE: """TODO: Add docstring."""
+NEXT: if pkg == "snowflake.connector":
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:479
+PREV: def test_raises_for_missing_required_config(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.warehouse as wh_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:492
+PREV: def test_records_to_arrow_table_uses_snowflake_extra(self, monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.warehouse as wh_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:499
+PREV: def fake_require(pkg, extras):
+LINE: """TODO: Add docstring."""
+NEXT: seen.append((pkg, extras))
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:513
+PREV: def test_write_batch_calls_put_and_copy(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: from imednet_sinks.warehouse import SnowflakeExportSink
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:531
+PREV: def test_write_batch_uses_snowflake_extra_for_parquet(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.warehouse as wh_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:539
+PREV: def fake_require(pkg, extras):
+LINE: """TODO: Add docstring."""
+NEXT: seen.append((pkg, extras))
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:562
+PREV: def test_write_batch_empty_returns_zero(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: from imednet_sinks.warehouse import SnowflakeExportSink
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:571
+PREV: def test_write_batch_raises_after_retries(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.warehouse as wh_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:580
+PREV: def fake_require(pkg, extras):
+LINE: """TODO: Add docstring."""
+NEXT: if pkg == "snowflake.connector":
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:612
+PREV: def test_manifest_appended(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: import json
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:640
+PREV: def fake_require2(pkg, extras):
+LINE: """TODO: Add docstring."""
+NEXT: if pkg == "snowflake.connector":
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:662
+PREV: def test_close_is_idempotent(self, monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: from imednet_sinks.warehouse import SnowflakeExportSink
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:672
+PREV: def test_plugin_namespace():
+LINE: """TODO: Add docstring."""
+NEXT: from imednet_sinks.plugin import create_sinks
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:689
+PREV: def test_export_to_neo4j(monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.graph as graph_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:703
+PREV: def test_export_to_mongodb(monkeypatch):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.document as doc_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:717
+PREV: def test_export_to_snowflake(monkeypatch, tmp_path):
+LINE: """TODO: Add docstring."""
+NEXT: import imednet_sinks.warehouse as wh_mod
+
+----------------------------------------
+FILE: packages/plugins-sinks/tests/unit/test_sinks.py:725
+PREV: def fake_require(pkg, extras):
+LINE: """TODO: Add docstring."""
+NEXT: if pkg == "snowflake.connector":
+
+----------------------------------------

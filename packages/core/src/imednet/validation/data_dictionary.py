@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Loading and container for iMednet Data Dictionary files."""
 
 from __future__ import annotations
 
@@ -34,7 +34,14 @@ class DataDictionaryLoader:
     @staticmethod
     @contextmanager
     def _open_text(source: Path | TextIO) -> Iterator[TextIO]:
-        """TODO: Add docstring."""
+        """Provide a text stream for the given source (Path or already opened TextIO).
+
+        Args:
+            source: A Path object or a TextIO stream.
+
+        Yields:
+            Iterator[TextIO]: An open text stream.
+        """
         if isinstance(source, (str, Path)):
             with open(source, encoding="utf-8", newline="") as f:
                 yield f
@@ -43,7 +50,14 @@ class DataDictionaryLoader:
 
     @classmethod
     def _load_csv(cls, source: Path | TextIO) -> list[dict[str, str]]:
-        """TODO: Add docstring."""
+        """Load a CSV file into a list of dictionaries.
+
+        Args:
+            source: A Path object or a TextIO stream.
+
+        Returns:
+            list[dict[str, str]]: The CSV data as a list of dictionaries.
+        """
         with cls._open_text(source) as f:
             reader = csv.DictReader(f)
             return list(reader)

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""CLI context and SDK initialization helpers."""
 
 from __future__ import annotations
 

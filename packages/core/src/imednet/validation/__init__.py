@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Validation utilities for iMednet data.
+
+This package provides tools for validating record data against study schemas,
+including caching of variable metadata and data dictionary management.
+"""
 
 from .cache import (
     AsyncSchemaCache,

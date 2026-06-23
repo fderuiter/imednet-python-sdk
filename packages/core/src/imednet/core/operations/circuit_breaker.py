@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Circuit breaker implementation to prevent cascading failures."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ T = TypeVar("T")
 
 
 class CircuitState(Enum):
-    """TODO: Add docstring."""
+    """Possible states of the circuit breaker."""
 
     CLOSED = "CLOSED"
     OPEN = "OPEN"
@@ -38,7 +38,13 @@ class CircuitBreaker:
         recovery_timeout: float = 10.0,
         half_open_max_probes: int = 1,
     ):
-        """TODO: Add docstring."""
+        """Initialize the circuit breaker.
+
+        Args:
+            failure_threshold: Number of consecutive failures before opening the circuit.
+            recovery_timeout: Time in seconds to wait before transitioning to HALF_OPEN.
+            half_open_max_probes: Max number of probes allowed in HALF_OPEN state.
+        """
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.half_open_max_probes = half_open_max_probes
@@ -51,7 +57,11 @@ class CircuitBreaker:
 
     @property
     def state(self) -> CircuitState:
-        """TODO: Add docstring."""
+        """Get the current state of the circuit breaker, handling auto-recovery.
+
+        Returns:
+            CircuitState: The current state (CLOSED, OPEN, or HALF_OPEN).
+        """
         with self._lock:
             # Check if we should transition from OPEN to HALF_OPEN
             if self._state == CircuitState.OPEN:
@@ -112,5 +122,9 @@ _global_circuit_breaker = CircuitBreaker()
 
 
 def get_global_circuit_breaker() -> CircuitBreaker:
-    """TODO: Add docstring."""
+    """Get the global circuit breaker instance.
+
+    Returns:
+        CircuitBreaker: The singleton circuit breaker instance.
+    """
     return _global_circuit_breaker

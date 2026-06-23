@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""iMednet Form Designer integration.
+
+This package provides tools for programmatically building and publishing
+iMednet form layouts.
+"""
 
 from .builder import FormBuilder
 from .client import FormDesignerClient

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Caching and validation logic for iMednet variable schemas."""
 
 from __future__ import annotations
 
@@ -32,7 +32,11 @@ class BaseSchemaCache(Generic[_TClient]):
     """Cache of variables by form key with optional async refresh."""
 
     def __init__(self, is_async: bool) -> None:
-        """TODO: Add docstring."""
+        """Initialize the schema cache.
+
+        Args:
+            is_async: Whether this cache is used in an asynchronous context.
+        """
         self._is_async = is_async
         self._form_variables: Dict[str, Dict[str, Variable]] = {}
         self._form_id_to_key: Dict[int, str] = {}
@@ -53,7 +57,13 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Refresh the cache asynchronously by fetching all variables for a study.
+
+        Args:
+            forms: The asynchronous forms endpoint.
+            variables: The asynchronous variables endpoint.
+            study_key: The study key to refresh variables for.
+        """
         vars_list = [v async for v in variables.async_list(study_key=study_key)]
         self.populate(vars_list)
 
@@ -63,7 +73,13 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: VariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Refresh the cache synchronously by fetching all variables for a study.
+
+        Args:
+            forms: The synchronous forms endpoint.
+            variables: The synchronous variables endpoint.
+            study_key: The study key to refresh variables for.
+        """
         vars_list = variables.list(study_key=study_key)
         self.populate(vars_list)
 
@@ -73,7 +89,16 @@ class BaseSchemaCache(Generic[_TClient]):
         variables: VariablesEndpoint | AsyncVariablesEndpoint,
         study_key: Optional[str] = None,
     ) -> Any:
-        """TODO: Add docstring."""
+        """Refresh the cache, using the appropriate sync or async implementation.
+
+        Args:
+            forms: The forms endpoint (sync or async).
+            variables: The variables endpoint (sync or async).
+            study_key: The study key to refresh variables for.
+
+        Returns:
+            Any: An awaitable if async, else None.
+        """
         if self._is_async:
             return self._refresh_async(
                 cast("AsyncFormsEndpoint", forms),
@@ -87,11 +112,25 @@ class BaseSchemaCache(Generic[_TClient]):
         )
 
     def variables_for_form(self, form_key: str) -> Dict[str, Variable]:
-        """TODO: Add docstring."""
+        """Return the variables associated with the given form key.
+
+        Args:
+            form_key: The form key to look up.
+
+        Returns:
+            Dict[str, Variable]: A mapping of variable names to Variable objects.
+        """
         return self._form_variables.get(form_key, {})
 
     def form_key_from_id(self, form_id: int) -> Optional[str]:
-        """TODO: Add docstring."""
+        """Resolve a form key from a form ID.
+
+        Args:
+            form_id: The form ID to look up.
+
+        Returns:
+            Optional[str]: The form key if found, else None.
+        """
         return self._form_id_to_key.get(form_id)
 
     @property
@@ -101,41 +140,69 @@ class BaseSchemaCache(Generic[_TClient]):
 
 
 class SchemaCache(BaseSchemaCache["ImednetFacade"]):
-    """TODO: Add docstring."""
+    """Synchronous implementation of the schema cache."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the synchronous schema cache."""
         super().__init__(is_async=False)
 
 
 class AsyncSchemaCache(BaseSchemaCache["AsyncImednetFacade"]):
-    """TODO: Add docstring."""
+    """Asynchronous implementation of the schema cache."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the asynchronous schema cache."""
         super().__init__(is_async=True)
 
 
 def _validate_int(value: Any) -> None:
-    """TODO: Add docstring."""
+    """Validate that the value is an integer.
+
+    Args:
+        value: The value to validate.
+
+    Raises:
+        ValidationError: If the value is not an integer.
+    """
     if not isinstance(value, int):
         raise ValidationError("Value must be an integer")
 
 
 def _validate_float(value: Any) -> None:
-    """TODO: Add docstring."""
+    """Validate that the value is numeric (int or float).
+
+    Args:
+        value: The value to validate.
+
+    Raises:
+        ValidationError: If the value is not numeric.
+    """
     if not isinstance(value, (int, float)):
         raise ValidationError("Value must be numeric")
 
 
 def _validate_bool(value: Any) -> None:
-    """TODO: Add docstring."""
+    """Validate that the value is a boolean.
+
+    Args:
+        value: The value to validate.
+
+    Raises:
+        ValidationError: If the value is not a boolean.
+    """
     if not isinstance(value, bool):
         raise ValidationError("Value must be boolean")
 
 
 def _validate_text(value: Any) -> None:
-    """TODO: Add docstring."""
+    """Validate that the value is a string.
+
+    Args:
+        value: The value to validate.
+
+    Raises:
+        ValidationError: If the value is not a string.
+    """
     if not isinstance(value, str):
         raise ValidationError("Value must be a string")
 
@@ -163,7 +230,16 @@ for key, validator in list(_TYPE_VALIDATORS.items()):
 
 
 def _check_type(var_type: str | None, value: Any) -> None:
-    """TODO: Add docstring."""
+    """Check the type of a value against an iMednet variable type.
+
+    Args:
+        var_type: The expected iMednet variable type (e.g., 'int', 'text').
+        value: The value to check.
+
+    Raises:
+        UnknownVariableTypeError: If the variable type is not recognized.
+        ValidationError: If the value does not match the expected type.
+    """
     if value is None or not var_type:
         return
 
@@ -275,7 +351,11 @@ class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
     schema: BaseSchemaCache[_TClient]
 
     def _refresh_common(self, variables: Iterable[Variable]) -> None:
-        """TODO: Add docstring."""
+        """Common logic to populate the schema cache.
+
+        Args:
+            variables: An iterable of variables to populate the cache with.
+        """
         self.schema.populate(variables)
 
     def _needs_refresh(self, record: Dict[str, Any]) -> Tuple[Optional[str], bool]:
@@ -293,7 +373,16 @@ class SchemaValidator(BaseSchemaValidator["ImednetFacade"]):
     """Validate record payloads using variable metadata from the API (Synchronous)."""
 
     def __new__(cls, sdk: "ImednetFacade", *args: Any, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Create a new instance of the validator, handling deprecation of is_async.
+
+        Args:
+            sdk: The iMednet facade instance.
+            *args: Positional arguments.
+            **kwargs: Keyword arguments.
+
+        Returns:
+            Any: A SchemaValidator or AsyncSchemaValidator instance.
+        """
         if kwargs.get("is_async") or (args and args[0] is True):
             import warnings
 
