@@ -1,6 +1,8 @@
 import pytest
 from playwright.sync_api import Page, expect
 
+pytestmark = pytest.mark.browser
+
 def connect_to_study(page: Page):
     """Helper to connect to the test study."""
     page.get_by_label("Select Authorized Study").click()
