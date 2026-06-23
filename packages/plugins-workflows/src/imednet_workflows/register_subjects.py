@@ -21,7 +21,11 @@ class RegisterSubjectsWorkflow:
     """
 
     def __init__(self, sdk: "ImednetFacade"):  # Use string literal for type hint
-        """TODO: Add docstring."""
+        """Initialize the RegisterSubjectsWorkflow.
+
+        Args:
+            sdk: An instance of the iMednet SDK facade.
+        """
         self._sdk = sdk
 
     def register_subjects(

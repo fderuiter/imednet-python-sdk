@@ -26,55 +26,158 @@ class ImednetFacade(Protocol):
     """Protocol for the synchronous iMednet SDK facade."""
 
     def get_codings(self, study_key: str, **filters: FilterValue) -> List[Coding]:
-        """TODO: Add docstring."""
+        """Fetch code list definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Coding models.
+        """
         ...
 
     def get_forms(self, study_key: str, **filters: FilterValue) -> List[Form]:
-        """TODO: Add docstring."""
+        """Fetch form definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Form models.
+        """
         ...
 
     def get_intervals(self, study_key: str, **filters: FilterValue) -> List[Interval]:
-        """TODO: Add docstring."""
+        """Fetch visit interval definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Interval models.
+        """
         ...
 
     def get_job(self, study_key: str, batch_id: str) -> JobStatus:
-        """TODO: Add docstring."""
+        """Fetch the status of a specific background job.
+
+        Args:
+            study_key: The unique identifier for the study.
+            batch_id: The unique identifier for the job batch.
+
+        Returns:
+            A JobStatus model.
+        """
         ...
 
     def get_queries(self, study_key: str, **filters: FilterValue) -> List[Query]:
-        """TODO: Add docstring."""
+        """Fetch queries for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Query models.
+        """
         ...
 
     def get_record_revisions(self, study_key: str, **filters: FilterValue) -> List[RecordRevision]:
-        """TODO: Add docstring."""
+        """Fetch record revision history for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of RecordRevision models.
+        """
         ...
 
     def get_records(self, study_key: str, **filters: FilterValue) -> List[Record]:
-        """TODO: Add docstring."""
+        """Fetch data records for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Record models.
+        """
         ...
 
     def get_sites(self, study_key: str, **filters: FilterValue) -> List[Site]:
-        """TODO: Add docstring."""
+        """Fetch site definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Site models.
+        """
         ...
 
     def get_studies(self, **filters: FilterValue) -> List[Study]:
-        """TODO: Add docstring."""
+        """Fetch all studies accessible to the current user.
+
+        Args:
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Study models.
+        """
         ...
 
     def get_subjects(self, study_key: str, **filters: FilterValue) -> List[Subject]:
-        """TODO: Add docstring."""
+        """Fetch subject records for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Subject models.
+        """
         ...
 
     def get_users(self, study_key: str, **filters: FilterValue) -> List[User]:
-        """TODO: Add docstring."""
+        """Fetch user definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of User models.
+        """
         ...
 
     def get_variables(self, study_key: str, **filters: FilterValue) -> List[Variable]:
-        """TODO: Add docstring."""
+        """Fetch variable definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Variable models.
+        """
         ...
 
     def get_visits(self, study_key: str, **filters: FilterValue) -> List[Visit]:
-        """TODO: Add docstring."""
+        """Fetch visit definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Visit models.
+        """
         ...
 
     def create_record(
@@ -85,18 +188,38 @@ class ImednetFacade(Protocol):
         *,
         schema: Any = None,
     ) -> Job:
-        """TODO: Add docstring."""
+        """Submit a request to create one or more data records.
+
+        Args:
+            study_key: The unique identifier for the study.
+            records_data: List of dictionaries containing record field data.
+            email_notify: Optional email notification settings.
+            schema: Optional validation schema.
+
+        Returns:
+            A Job model representing the background operation.
+        """
         ...
 
     def poll_job(
         self, study_key: str, batch_id: str, timeout: float = 300.0, interval: float = 2.0
     ) -> JobStatus:
-        """TODO: Add docstring."""
+        """Wait for a background job to reach a terminal state.
+
+        Args:
+            study_key: The unique identifier for the study.
+            batch_id: The unique identifier for the job batch.
+            timeout: Maximum time to wait in seconds.
+            interval: Time between poll attempts in seconds.
+
+        Returns:
+            The final JobStatus of the operation.
+        """
         ...
 
     @property
     def auth(self) -> Any:
-        """TODO: Add docstring."""
+        """Access the authentication provider for the facade."""
         ...
 
 
@@ -104,57 +227,160 @@ class AsyncImednetFacade(Protocol):
     """Protocol for the asynchronous iMednet SDK facade."""
 
     async def async_get_codings(self, study_key: str, **filters: FilterValue) -> List[Coding]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch code list definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Coding models.
+        """
         ...
 
     async def async_get_forms(self, study_key: str, **filters: FilterValue) -> List[Form]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch form definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Form models.
+        """
         ...
 
     async def async_get_intervals(self, study_key: str, **filters: FilterValue) -> List[Interval]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch visit interval definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Interval models.
+        """
         ...
 
     async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
-        """TODO: Add docstring."""
+        """Asynchronously fetch the status of a specific background job.
+
+        Args:
+            study_key: The unique identifier for the study.
+            batch_id: The unique identifier for the job batch.
+
+        Returns:
+            A JobStatus model.
+        """
         ...
 
     async def async_get_queries(self, study_key: str, **filters: FilterValue) -> List[Query]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch queries for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Query models.
+        """
         ...
 
     async def async_get_record_revisions(
         self, study_key: str, **filters: FilterValue
     ) -> List[RecordRevision]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch record revision history for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of RecordRevision models.
+        """
         ...
 
     async def async_get_records(self, study_key: str, **filters: FilterValue) -> List[Record]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch data records for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Record models.
+        """
         ...
 
     async def async_get_sites(self, study_key: str, **filters: FilterValue) -> List[Site]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch site definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Site models.
+        """
         ...
 
     async def async_get_studies(self, **filters: FilterValue) -> List[Study]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch all studies accessible to the current user.
+
+        Args:
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Study models.
+        """
         ...
 
     async def async_get_subjects(self, study_key: str, **filters: FilterValue) -> List[Subject]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch subject records for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Subject models.
+        """
         ...
 
     async def async_get_users(self, study_key: str, **filters: FilterValue) -> List[User]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch user definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of User models.
+        """
         ...
 
     async def async_get_variables(self, study_key: str, **filters: FilterValue) -> List[Variable]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch variable definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Variable models.
+        """
         ...
 
     async def async_get_visits(self, study_key: str, **filters: FilterValue) -> List[Visit]:
-        """TODO: Add docstring."""
+        """Asynchronously fetch visit definitions for a specific study.
+
+        Args:
+            study_key: The unique identifier for the study.
+            **filters: Optional API filters to apply.
+
+        Returns:
+            A list of Visit models.
+        """
         ...
 
     async def async_create_record(
@@ -165,11 +391,31 @@ class AsyncImednetFacade(Protocol):
         *,
         schema: Any = None,
     ) -> Job:
-        """TODO: Add docstring."""
+        """Asynchronously submit a request to create one or more data records.
+
+        Args:
+            study_key: The unique identifier for the study.
+            records_data: List of dictionaries containing record field data.
+            email_notify: Optional email notification settings.
+            schema: Optional validation schema.
+
+        Returns:
+            A Job model representing the background operation.
+        """
         ...
 
     async def async_poll_job(
         self, study_key: str, batch_id: str, timeout: float = 300.0, interval: float = 2.0
     ) -> JobStatus:
-        """TODO: Add docstring."""
+        """Asynchronously wait for a background job to reach a terminal state.
+
+        Args:
+            study_key: The unique identifier for the study.
+            batch_id: The unique identifier for the job batch.
+            timeout: Maximum time to wait in seconds.
+            interval: Time between poll attempts in seconds.
+
+        Returns:
+            The final JobStatus of the operation.
+        """
         ...

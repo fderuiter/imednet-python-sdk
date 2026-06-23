@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class FormVariableMap(TypedDict):
-    """TODO: Add docstring."""
+    """Mapping of a form to its associated variables."""
 
     form: Form
     variables: list[Variable]
@@ -36,7 +36,7 @@ class StudySnapshot(ImednetBaseModel):
     intervals_by_name: dict[str, Interval] = Field(default_factory=dict)
 
     def model_post_init(self, __context: object) -> None:
-        """TODO: Add docstring."""
+        """Initialize derived lookup dictionaries after model initialization."""
         self.forms_by_key = {form.form_key: form for form in self.forms}  # type: ignore
         self.variables_by_form = {}
         for variable in self.variables:
@@ -76,7 +76,11 @@ class StudySchemaInspector:
     """
 
     def __init__(self, sdk: ImednetFacade | AsyncImednetFacade) -> None:
-        """TODO: Add docstring."""
+        """Initialize the study schema inspector.
+
+        Args:
+            sdk: An instance of the synchronous or asynchronous iMednet SDK facade.
+        """
         self._sdk = sdk
         self._cache: dict[str, StudySnapshot] = {}
 
@@ -104,19 +108,19 @@ class StudySchemaInspector:
         sdk = cast("AsyncImednetFacade", self._sdk)
 
         async def fetch_forms():
-            """TODO: Add docstring."""
+            """Asynchronous fetch for forms."""
             return await sdk.async_get_forms(study_key)
 
         async def fetch_variables():
-            """TODO: Add docstring."""
+            """Asynchronous fetch for variables."""
             return await sdk.async_get_variables(study_key)
 
         async def fetch_intervals():
-            """TODO: Add docstring."""
+            """Asynchronous fetch for intervals."""
             return await sdk.async_get_intervals(study_key)
 
         async def fetch_sites():
-            """TODO: Add docstring."""
+            """Asynchronous fetch for sites."""
             return await sdk.async_get_sites(study_key)
 
         forms, variables, intervals, sites = await asyncio.gather(

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Engine for automated UAT (User Acceptance Testing) and edit check verification."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class EditCheckResultStatus(str, Enum):
-    """TODO: Add docstring."""
+    """Possible outcomes for an edit check verification rule."""
 
     PASS = "Pass"
     FAIL = "Fail"
@@ -25,7 +25,7 @@ class EditCheckResultStatus(str, Enum):
 
 @dataclass
 class EditCheckVerificationReport:
-    """TODO: Add docstring."""
+    """Consolidated report for an automated edit check verification run."""
 
     study_key: str
     total_rules: int = 0
@@ -39,13 +39,18 @@ class UATExecutionEngine:
     """Automated Edit Check Verification execution engine."""
 
     def __init__(self, sdk: ImednetFacade, data_dictionary: DataDictionary):
-        """TODO: Add docstring."""
+        """Initialize the UAT execution engine.
+
+        Args:
+            sdk: An instance of the iMednet SDK facade.
+            data_dictionary: The data dictionary containing business rules.
+        """
         self._sdk = sdk
         self._data_dictionary = data_dictionary
         self._rules = self._parse_business_logic(data_dictionary.business_logic)
 
     def _parse_business_logic(self, rows: list[dict[str, str]]) -> list[dict[str, Any]]:
-        """TODO: Add docstring."""
+        """Internal helper to parse raw data dictionary rows into structured rules."""
         rules = []
         for row in rows:
             status = row.get("Status", "Active")

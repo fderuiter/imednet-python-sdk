@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Background worker for maintaining a local record cache via incremental synchronization."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass(slots=True)
 class SyncWorkerConfig:
-    """TODO: Add docstring."""
+    """Configuration for a synchronization worker."""
 
     study_key: str
     interval_seconds: int = 900
@@ -34,7 +34,13 @@ class SyncWorker:
         config: SyncWorkerConfig,
         stop_event: Event | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the sync worker.
+
+        Args:
+            loader: The cached records loader to use for synchronization.
+            config: Worker configuration including study key and interval.
+            stop_event: Optional threading event to control worker termination.
+        """
         self._loader = loader
         self._config = config
         self._stop_event = stop_event or Event()
