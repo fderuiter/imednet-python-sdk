@@ -1,0 +1,355 @@
+"""Synthetic record payload generator for UAT."""
+
+from __future__ import annotations
+
+import logging
+import random
+from datetime import date, datetime, timezone
+from typing import Any, Dict, List, Optional
+
+from pydantic import Field
+
+from imednet.spi.models import ImednetBaseModel
+
+from .inspector import StudySnapshot
+from .models import (
+    RecordTestType,
+    UATFormSpec,
+    UATSpecification,
+    UATVariableSpec,
+    VariableTestStrategy,
+)
+
+logger = logging.getLogger(__name__)
+
+try:
+    from faker import Faker
+except ImportError:
+    Faker = None  # type: ignore
+
+
+class GeneratedRecordSet(ImednetBaseModel):
+    """Output of the generator for a single form spec."""
+
+    form_key: str
+    form_name: str
+    test_type: RecordTestType
+    payloads: List[Dict[str, Any]]  # ready to pass to records.create()
+    subject_keys: List[str]  # subject keys that were used/will be used
+    warnings: List[str] = Field(default_factory=list)  # non-fatal issues (skipped vars, etc.)
+
+
+class SyntheticRecordGenerator:
+    """Generate synthetic record payloads from a UATSpecification and StudySnapshot.
+
+    Parameters
+    ----------
+    seed : Optional[int]
+        Random seed for reproducible generation. None means non-deterministic.
+    locale : str
+        Faker locale for text data. Default "en_US".
+    """
+
+    def __init__(
+        self,
+        seed: Optional[int] = None,
+        locale: str = "en_US",
+    ) -> None:
+        """Initialize the generator.
+
+        Args:
+            seed: Optional seed for reproducibility.
+            locale: Faker locale for text data.
+        """
+        self._rng = random.Random(seed)
+        self._seed = seed
+        self._locale = locale
+        self._faker: Any | None = None
+        if Faker is not None:
+            self._faker = Faker(locale)
+            if seed is not None:
+                self._faker.seed_instance(seed)
+
+    def _get_faker(self) -> Any:
+        if self._faker is None:
+            raise ImportError(
+                "faker is required for synthetic data generation. "
+                "Install with `pip install imednet-workflows[uat]`"
+            )
+        return self._faker
+
+    def generate(
+        self,
+        spec: UATSpecification,
+        snapshot: StudySnapshot,
+    ) -> List[GeneratedRecordSet]:
+        """Generate all record payloads for the enabled forms in the spec.
+
+        Returns one GeneratedRecordSet per enabled UATFormSpec, in the correct
+        submission order: RegisterSubject records first, then scheduled/unscheduled.
+        """
+        results: List[GeneratedRecordSet] = []
+        subject_pool = self._get_subject_pool(spec)
+
+        # Phase 1: Enrollment/registration forms
+        for form_spec in spec.forms_by_type(RecordTestType.REGISTER_SUBJECT):
+            results.append(self._generate_registration_set(spec, form_spec, snapshot, subject_pool))
+
+        # Phase 2: Scheduled forms
+        for form_spec in spec.forms_by_type(RecordTestType.UPDATE_SCHEDULED_RECORD):
+            results.append(self._generate_scheduled_set(spec, form_spec, snapshot, subject_pool))
+
+        # Phase 3: Unscheduled forms
+        for form_spec in spec.forms_by_type(RecordTestType.CREATE_NEW_RECORD):
+            results.append(self._generate_unscheduled_set(spec, form_spec, snapshot, subject_pool))
+
+        return results
+
+    def _get_subject_pool(self, spec: UATSpecification) -> List[str]:
+        pool = []
+        for s_spec in spec.subject_specs:
+            for i in range(s_spec.subject_count):
+                pool.append(f"{s_spec.subject_key_prefix}{i + 1:03d}")
+        if not pool:
+            pool = ["UAT-TEST-001"]
+        return pool
+
+    def _generate_value(self, var_spec: UATVariableSpec, spec: UATSpecification) -> Optional[str]:
+        """Generate a single value for a variable according to its strategy."""
+        if var_spec.strategy == VariableTestStrategy.SKIP:
+            return None
+        if var_spec.strategy == VariableTestStrategy.FIXED:
+            return str(var_spec.fixed_value) if var_spec.fixed_value is not None else ""
+
+        return self._synthesize_value(var_spec, spec)
+
+    def _synthesize_value(self, var_spec: UATVariableSpec, spec: UATSpecification) -> str:
+        v_type = var_spec.variable_type
+
+        if v_type == "Text":
+            max_len = var_spec.max_length or spec.global_text_length or 10
+            return self._get_faker().lexify("?" * max_len)
+
+        if v_type in ("Number", "Integer"):
+            min_v = var_spec.min_value if var_spec.min_value is not None else 1
+            max_v = var_spec.max_value if var_spec.max_value is not None else 100
+            return str(self._rng.randint(int(min_v), int(max_v)))
+
+        if v_type in ("Float", "Decimal"):
+            min_v = var_spec.min_value if var_spec.min_value is not None else 1.0
+            max_v = var_spec.max_value if var_spec.max_value is not None else 100.0
+            val = self._rng.uniform(min_v, max_v)
+            return f"{val:.2f}"
+
+        if v_type == "Date":
+            if spec.global_date_value:
+                return spec.global_date_value.isoformat()
+            return date.today().isoformat()
+
+        if v_type == "DateTime":
+            return datetime.now(timezone.utc).isoformat()
+
+        if v_type == "Coded":
+            if var_spec.coded_values:
+                return self._rng.choice(var_spec.coded_values)
+            return ""
+
+        if v_type in ("Boolean", "Yes/No"):
+            return self._rng.choice(["Yes", "No"])
+
+        if v_type == "Checkbox":
+            if var_spec.coded_values:
+                count = self._rng.randint(1, min(3, len(var_spec.coded_values)))
+                choices = self._rng.sample(var_spec.coded_values, count)
+                return "`".join(choices)
+            return ""
+
+        if v_type == "TextArea":
+            return self._get_faker().paragraph(nb_sentences=3)
+
+        if v_type in ("Signature", "File"):
+            return ""
+
+        logger.warning(
+            f"Unrecognized variable type '{v_type}' for variable '{var_spec.variable_name}'. "
+            "Defaulting to short text."
+        )
+        return self._get_faker().lexify("???????")
+
+    def _generate_data_payloads(
+        self, spec: UATSpecification, form_spec: UATFormSpec, subject_pool: List[str]
+    ) -> tuple[List[Dict[str, Any]], List[str], List[str]]:
+        warnings = []
+        coded_all_vars = [
+            v for v in form_spec.variables if v.strategy == VariableTestStrategy.CODED_ALL
+        ]
+
+        if len(coded_all_vars) > 1:
+            warnings.append(
+                f"Multiple CODED_ALL variables found in form {form_spec.form_key}. "
+                "Falling back to one payload per subject."
+            )
+            coded_all_vars = []
+
+        if coded_all_vars:
+            var_spec = coded_all_vars[0]
+            payloads = []
+            used_subjects = []
+            for i, code in enumerate(var_spec.coded_values):
+                subj_key = subject_pool[i % len(subject_pool)]
+                used_subjects.append(subj_key)
+                data = {}
+                for v in form_spec.variables:
+                    if v.variable_key == var_spec.variable_key:
+                        data[v.variable_name] = code
+                    else:
+                        val = self._generate_value(v, spec)
+                        if val is not None:
+                            data[v.variable_name] = val
+                payloads.append(data)
+            return payloads, warnings, used_subjects
+
+        if any(v.strategy == VariableTestStrategy.BOUNDARY for v in form_spec.variables):
+            payloads = []
+            used_subjects = []
+            # Min boundary
+            data_min = {}
+            for v in form_spec.variables:
+                if v.strategy == VariableTestStrategy.BOUNDARY and v.variable_type in (
+                    "Number",
+                    "Integer",
+                    "Float",
+                    "Decimal",
+                ):
+                    data_min[v.variable_name] = str(v.min_value) if v.min_value is not None else "1"
+                else:
+                    val = self._generate_value(v, spec)
+                    if val is not None:
+                        data_min[v.variable_name] = val
+            payloads.append(data_min)
+            used_subjects.append(subject_pool[0])
+
+            # Max boundary
+            data_max = {}
+            for v in form_spec.variables:
+                if v.strategy == VariableTestStrategy.BOUNDARY and v.variable_type in (
+                    "Number",
+                    "Integer",
+                    "Float",
+                    "Decimal",
+                ):
+                    data_max[v.variable_name] = (
+                        str(v.max_value) if v.max_value is not None else "100"
+                    )
+                else:
+                    val = self._generate_value(v, spec)
+                    if val is not None:
+                        data_max[v.variable_name] = val
+            payloads.append(data_max)
+            used_subjects.append(subject_pool[1 % len(subject_pool)])
+            return payloads, warnings, used_subjects
+
+        payloads = []
+        used_subjects = []
+        for i in range(form_spec.subject_count):
+            subj_key = subject_pool[i % len(subject_pool)]
+            used_subjects.append(subj_key)
+            data = {}
+            for v in form_spec.variables:
+                val = self._generate_value(v, spec)
+                if val is not None:
+                    data[v.variable_name] = val
+            payloads.append(data)
+        return payloads, warnings, used_subjects
+
+    def _generate_registration_set(
+        self,
+        spec: UATSpecification,
+        form_spec: UATFormSpec,
+        snapshot: StudySnapshot,
+        subject_pool: List[str],
+    ) -> GeneratedRecordSet:
+        data_payloads, warnings, subject_keys = self._generate_data_payloads(
+            spec, form_spec, subject_pool
+        )
+
+        subj_spec = spec.subject_specs[0] if spec.subject_specs else None
+        site_name = (
+            subj_spec.site_name
+            if subj_spec
+            else (
+                snapshot.active_sites()[0].site_name if snapshot.active_sites() else "Default Site"
+            )
+        )
+
+        final_payloads = []
+        for data in data_payloads:
+            final_payloads.append(
+                {"formKey": form_spec.form_key, "siteName": site_name, "data": data}
+            )
+
+        return GeneratedRecordSet(
+            form_key=form_spec.form_key,
+            form_name=form_spec.form_name,
+            test_type=form_spec.test_type,
+            payloads=final_payloads,
+            subject_keys=subject_keys,
+            warnings=warnings,
+        )
+
+    def _generate_scheduled_set(
+        self,
+        spec: UATSpecification,
+        form_spec: UATFormSpec,
+        snapshot: StudySnapshot,
+        subject_pool: List[str],
+    ) -> GeneratedRecordSet:
+        data_payloads, warnings, subject_keys = self._generate_data_payloads(
+            spec, form_spec, subject_pool
+        )
+
+        final_payloads = []
+        for i, data in enumerate(data_payloads):
+            final_payloads.append(
+                {
+                    "formKey": form_spec.form_key,
+                    "subjectKey": subject_keys[i],
+                    "intervalName": form_spec.interval_name or "Default Interval",
+                    "data": data,
+                }
+            )
+
+        return GeneratedRecordSet(
+            form_key=form_spec.form_key,
+            form_name=form_spec.form_name,
+            test_type=form_spec.test_type,
+            payloads=final_payloads,
+            subject_keys=subject_keys,
+            warnings=warnings,
+        )
+
+    def _generate_unscheduled_set(
+        self,
+        spec: UATSpecification,
+        form_spec: UATFormSpec,
+        snapshot: StudySnapshot,
+        subject_pool: List[str],
+    ) -> GeneratedRecordSet:
+        data_payloads, warnings, subject_keys = self._generate_data_payloads(
+            spec, form_spec, subject_pool
+        )
+
+        final_payloads = []
+        for i, data in enumerate(data_payloads):
+            final_payloads.append(
+                {"formKey": form_spec.form_key, "subjectKey": subject_keys[i], "data": data}
+            )
+
+        return GeneratedRecordSet(
+            form_key=form_spec.form_key,
+            form_name=form_spec.form_name,
+            test_type=form_spec.test_type,
+            payloads=final_payloads,
+            subject_keys=subject_keys,
+            warnings=warnings,
+        )
