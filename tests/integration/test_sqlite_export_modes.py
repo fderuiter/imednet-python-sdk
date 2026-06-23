@@ -2,12 +2,12 @@
 
 import importlib.util
 import sys
+from pathlib import Path
 from types import ModuleType
 from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
-from pathlib import Path
 from typer.testing import CliRunner
 
 import imednet.cli as cli
@@ -66,7 +66,9 @@ def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     return mock_to_sql
 
 
-def test_default_sqlite_mode_splits_by_form(sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_default_sqlite_mode_splits_by_form(
+    sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     """TODO: Add docstring."""
     _setup_per_form_mapper(monkeypatch)
     runner = CliRunner()
@@ -78,7 +80,9 @@ def test_default_sqlite_mode_splits_by_form(sqlite_env, monkeypatch: pytest.Monk
     assert result.exit_code == 0
 
 
-def test_single_table_mode_chunks(sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_single_table_mode_chunks(
+    sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     """TODO: Add docstring."""
     mock_to_sql = _setup_single_table_mapper(monkeypatch)
     runner = CliRunner()

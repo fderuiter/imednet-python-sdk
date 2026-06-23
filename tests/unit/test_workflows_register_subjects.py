@@ -33,6 +33,28 @@ def test_register_subjects_passes_records_correctly() -> None:
     assert result == job
 
 
+def test_register_subjects_with_polling() -> None:
+    """TODO: Add docstring."""
+    sdk = MagicMock()
+    job = Job(jobId="1", batchId="BATCH", state="PROCESSING")
+    completed_job = Job(jobId="1", batchId="BATCH", state="COMPLETED")
+    sdk.create_record.return_value = job
+    sdk.poll_job.return_value = completed_job
+    sdk.get_sites.return_value = [
+        Site(studyKey="S", siteId=1, siteName="SITE", siteEnrollmentStatus="Active")
+    ]
+    wf = RegisterSubjectsWorkflow(sdk)
+    req = RegisterSubjectRequest(formKey="F", siteName="SITE")
+
+    result = wf.register_subjects(
+        "STUDY", [req], wait_for_completion=True, timeout=10, poll_interval=1
+    )
+
+    sdk.create_record.assert_called_once()
+    sdk.poll_job.assert_called_once_with("STUDY", "BATCH", timeout=10, interval=1)
+    assert result == completed_job
+
+
 def test_register_subjects_missing_site() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
