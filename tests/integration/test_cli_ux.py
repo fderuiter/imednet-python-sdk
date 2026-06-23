@@ -26,7 +26,12 @@ def runner():
 def mock_sdk(monkeypatch):
     """Mock the SDK for CLI tests."""
     sdk = MagicMock()
+    # Patch get_sdk in both places it might be used
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
+    monkeypatch.setattr("imednet.cli.decorators.get_sdk", MagicMock(return_value=sdk), raising=False)
+    # Also set dummy env vars to avoid load_config failure if it's called anyway
+    monkeypatch.setenv("IMEDNET_API_KEY", "dummy")
+    monkeypatch.setenv("IMEDNET_SECURITY_KEY", "dummy")
     return sdk
 
 

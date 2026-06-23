@@ -99,6 +99,6 @@ def test_cli_surfaces_redacted_authentication_errors(monkeypatch: pytest.MonkeyP
     result = runner.invoke(cli_module.app, ["studies", "list"])
 
     assert result.exit_code == 1
-    assert "API Error" in result.stdout
+    assert "Authentication Failed" in result.stdout
     assert "very-secret-api-key" not in result.stdout
     assert "very-secret-authorization" not in result.stdout
