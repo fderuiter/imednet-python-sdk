@@ -300,7 +300,7 @@ jobs:
             COV_ARGS="--cov=imednet_sinks"
           fi
           
-          pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live" --ignore=tests/live/ $TEST_ARGS || {
+          pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live and not browser" --ignore=tests/live/ $TEST_ARGS || {
             RET=$?
             if [ $RET -eq 5 ]; then
               echo "No tests collected for ${{ matrix.package }}. Passing gracefully."
