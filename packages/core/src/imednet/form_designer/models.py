@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Pydantic models for iMednet Form Designer layouts."""
 
 from __future__ import annotations
 
@@ -53,14 +53,14 @@ class BaseFieldProps(BaseModel):
 
 
 class TableProps(BaseModel):
-    """TODO: Add docstring."""
+    """Properties for a table layout component."""
 
     type: Literal["table"]
     columns: int
 
 
 class LabelProps(BaseModel):
-    """TODO: Add docstring."""
+    """Properties for a label component."""
 
     type: Literal["label"]
     label: str
@@ -71,7 +71,7 @@ class LabelProps(BaseModel):
 
 
 class SeparatorProps(BaseModel):
-    """TODO: Add docstring."""
+    """Properties for a separator/section header component."""
 
     type: Literal["sep"]
     septype: int
@@ -79,7 +79,7 @@ class SeparatorProps(BaseModel):
 
 
 class ExtQuestionProps(BaseModel):
-    """TODO: Add docstring."""
+    """Properties for an external question component."""
 
     type: Literal["ext_question"]
     ext_source: Literal["interval", "form"]
@@ -91,7 +91,7 @@ class ExtQuestionProps(BaseModel):
 
 
 class TextFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a text input field."""
 
     type: Literal["text"]
     length: Union[str, int]
@@ -99,7 +99,7 @@ class TextFieldProps(BaseFieldProps):
 
 
 class NumberFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a number input field."""
 
     type: Literal["number"]
     length: Union[str, int]
@@ -109,7 +109,7 @@ class NumberFieldProps(BaseFieldProps):
 
 
 class MemoFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a memo/multiline text field."""
 
     type: Literal["memo"]
     length: Union[str, int]
@@ -118,7 +118,7 @@ class MemoFieldProps(BaseFieldProps):
 
 
 class RadioFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a radio button field."""
 
     type: Literal["radio"]
     choices: List[Choice]
@@ -126,7 +126,7 @@ class RadioFieldProps(BaseFieldProps):
 
 
 class DropdownFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a dropdown/select field."""
 
     type: Literal["dropdown"]
     choices: List[Choice]
@@ -138,14 +138,14 @@ class DropdownFieldProps(BaseFieldProps):
 
 
 class CheckboxFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a checkbox field."""
 
     type: Literal["checkbox"]
     choices: Optional[List[Choice]] = None
 
 
 class FileUploadProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a file upload field."""
 
     type: Literal["upload"]
     mfs: int  # Multi-File Support
@@ -153,7 +153,7 @@ class FileUploadProps(BaseFieldProps):
 
 
 class DateTimeFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a date/time input field."""
 
     type: Literal["datetime"]
     time_ctrl: Optional[int] = None  # 1 = Show Time
@@ -169,7 +169,7 @@ class DateTimeFieldProps(BaseFieldProps):
 
 
 class PrecisionDateFieldProps(BaseFieldProps):
-    """TODO: Add docstring."""
+    """Properties for a precision date input field (supporting partial dates)."""
 
     type: Literal["precisiondate"]
 

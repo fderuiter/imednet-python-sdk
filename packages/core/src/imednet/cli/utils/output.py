@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""CLI output formatting and display utilities."""
 
 from __future__ import annotations
 

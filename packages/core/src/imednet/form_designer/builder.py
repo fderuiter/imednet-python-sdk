@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Builder for iMednet Form Designer layouts.
+
+This module provides a programmatic interface for constructing complex
+form layouts for iMednet, handling ID generation and hierarchical structure.
+"""
 
 import secrets
 import string
@@ -33,20 +37,24 @@ class FormBuilder:
     """
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize a new FormBuilder instance."""
         self.pages: List[Page] = []
         self._ensure_page()
         # Track generated IDs to avoid collisions (though random large int makes it rare)
         self._generated_ids: set[int] = set()
 
     def _ensure_page(self) -> None:
-        """TODO: Add docstring."""
+        """Ensure that there is at least one page in the layout."""
         if not self.pages:
             self.pages.append(Page(entities=[]))
 
     @property
     def current_page(self) -> Page:
-        """TODO: Add docstring."""
+        """Return the current (last) page being built.
+
+        Returns:
+            Page: The current page instance.
+        """
         self._ensure_page()
         return self.pages[-1]
 
@@ -64,7 +72,15 @@ class FormBuilder:
         return f"lfdiv_{suffix}"
 
     def _create_entity(self, props: EntityProps, rows: Optional[List[Row]] = None) -> Entity:
-        """TODO: Add docstring."""
+        """Create a new layout entity with a generated DOM ID.
+
+        Args:
+            props: The properties of the entity.
+            rows: Optional list of rows for container entities like tables.
+
+        Returns:
+            Entity: The created entity.
+        """
         return Entity(props=props, id=self._generate_dom_id(), rows=rows)
 
     def add_page(self) -> None:

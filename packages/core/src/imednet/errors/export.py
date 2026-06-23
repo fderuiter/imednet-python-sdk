@@ -19,6 +19,11 @@ class ExportBatchError(ExportError):
     """Raised when a single batch write fails after all retries are exhausted."""
 
     def __init__(self, message: str, *, batch_id: str) -> None:
-        """TODO: Add docstring."""
+        """Initialize an export batch error.
+
+        Args:
+            message: The error message.
+            batch_id: The ID of the failed batch.
+        """
         super().__init__(message)
         self.batch_id = batch_id

@@ -36,7 +36,12 @@ class FilterConflictError(OrchestratorError):
     """
 
     def __init__(self, whitelist: set[str], blacklist: set[str]) -> None:
-        """TODO: Add docstring."""
+        """Initialize a filter conflict error.
+
+        Args:
+            whitelist: The provided study key whitelist.
+            blacklist: The provided study key blacklist.
+        """
         super().__init__(
             "Whitelist and blacklist are mutually exclusive. "
             f"Received whitelist={whitelist!r} and blacklist={blacklist!r}. "

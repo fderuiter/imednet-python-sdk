@@ -25,7 +25,13 @@ class RequestMonitor:
     """Helper to handle request monitoring (tracing, timing, logging)."""
 
     def __init__(self, tracer: Optional[Tracer], method: str, url: str) -> None:
-        """TODO: Add docstring."""
+        """Initialize the request monitor.
+
+        Args:
+            tracer: Optional OpenTelemetry tracer for tracing requests.
+            method: HTTP method of the request.
+            url: URL of the request (will be redacted for logging).
+        """
         self.tracer = tracer
         self.method = method
         self.safe_url = redact_url_query(url)
@@ -34,7 +40,11 @@ class RequestMonitor:
         self._cm: Any = None
 
     def _create_cm(self) -> Any:
-        """TODO: Add docstring."""
+        """Create a context manager for the request span.
+
+        Returns:
+            Any: A context manager (either a span or a null context).
+        """
         if self.tracer:
             return self.tracer.start_as_current_span(
                 "http_request",
@@ -43,19 +53,33 @@ class RequestMonitor:
         return nullcontext()
 
     def __enter__(self) -> "RequestMonitor":
-        """TODO: Add docstring."""
+        """Enter the synchronous monitoring context.
+
+        Returns:
+            RequestMonitor: The monitor instance.
+        """
         self._cm = self._create_cm()
         self.span = self._cm.__enter__()
         self.start_time = time.monotonic()
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        """TODO: Add docstring."""
+        """Exit the synchronous monitoring context.
+
+        Args:
+            exc_type: Exception type if an error occurred.
+            exc_val: Exception value if an error occurred.
+            exc_tb: Exception traceback if an error occurred.
+        """
         if self._cm:
             self._cm.__exit__(exc_type, exc_val, exc_tb)
 
     async def __aenter__(self) -> "RequestMonitor":
-        """TODO: Add docstring."""
+        """Enter the asynchronous monitoring context.
+
+        Returns:
+            RequestMonitor: The monitor instance.
+        """
         self._cm = self._create_cm()
         # Handle async context managers if the tracer supports them
         if hasattr(self._cm, "__aenter__"):
@@ -66,7 +90,13 @@ class RequestMonitor:
         return self
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        """TODO: Add docstring."""
+        """Exit the asynchronous monitoring context.
+
+        Args:
+            exc_type: Exception type if an error occurred.
+            exc_val: Exception value if an error occurred.
+            exc_tb: Exception traceback if an error occurred.
+        """
         if self._cm:
             if hasattr(self._cm, "__aexit__"):
                 await self._cm.__aexit__(exc_type, exc_val, exc_tb)
@@ -74,7 +104,11 @@ class RequestMonitor:
                 self._cm.__exit__(exc_type, exc_val, exc_tb)
 
     def on_success(self, response: httpx.Response) -> None:
-        """TODO: Add docstring."""
+        """Record a successful request completion.
+
+        Args:
+            response: The successful HTTPX response.
+        """
         latency = time.monotonic() - self.start_time
         logger.info(
             "http_request",
@@ -89,7 +123,14 @@ class RequestMonitor:
             self.span.set_attribute("status_code", response.status_code)
 
     def on_retry_error(self, e: RetryError) -> NoReturn:
-        """TODO: Add docstring."""
+        """Record a request failure after all retries are exhausted.
+
+        Args:
+            e: The Tenacity RetryError that occurred.
+
+        Raises:
+            RequestError: Wraps the cause of the failure in a RequestError.
+        """
         logger.error(
             "Request failed after retries",
             extra={"method": self.method, "url": self.safe_url},

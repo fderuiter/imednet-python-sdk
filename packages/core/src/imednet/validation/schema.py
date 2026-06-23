@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Deprecated module for schema validation; use :mod:`imednet.validation.cache` instead."""
 
 from __future__ import annotations
 

@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Facade protocols for the iMednet SDK.
+
+These protocols define the expected interface for the iMednet SDK clients,
+allowing for easier mocking and decoupling in dependent packages.
+"""
 
 from typing import Any, List, Optional, Protocol, Union
 
@@ -19,7 +23,7 @@ from imednet.utils.typing import FilterValue, JsonDict
 
 
 class ImednetFacade(Protocol):
-    """TODO: Add docstring."""
+    """Protocol for the synchronous iMednet SDK facade."""
 
     def get_codings(self, study_key: str, **filters: FilterValue) -> List[Coding]:
         """TODO: Add docstring."""
@@ -97,7 +101,7 @@ class ImednetFacade(Protocol):
 
 
 class AsyncImednetFacade(Protocol):
-    """TODO: Add docstring."""
+    """Protocol for the asynchronous iMednet SDK facade."""
 
     async def async_get_codings(self, study_key: str, **filters: FilterValue) -> List[Coding]:
         """TODO: Add docstring."""

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Helpers for registering common CLI commands."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ def register_list_command(
         @app.command("list")
         @with_sdk
         def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
-            """TODO: Add docstring."""
+            """List all items of the given type in the study."""
             with fetching_status(name, study_key):
                 items = list(getattr(sdk, attr).list(study_key))
             display_list(items, name, empty_msg, fields=summary_fields)
@@ -41,7 +41,7 @@ def register_list_command(
         @app.command("list")
         @with_sdk
         def list_cmd_no_study(sdk: ImednetSDK) -> None:
-            """TODO: Add docstring."""
+            """List all items of the given type."""
             with fetching_status(name):
                 items = list(getattr(sdk, attr).list())
             display_list(items, name, empty_msg, fields=summary_fields)

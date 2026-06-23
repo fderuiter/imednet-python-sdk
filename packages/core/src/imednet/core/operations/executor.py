@@ -32,7 +32,7 @@ T = TypeVar("T")
 
 
 class OperationRetryPolicy(ABC):
-    """TODO: Add docstring."""
+    """Base class for defining retry policies for operations."""
 
     @abstractmethod
     def should_retry(self, exception: Exception) -> bool:
@@ -41,10 +41,17 @@ class OperationRetryPolicy(ABC):
 
 
 class DefaultOperationRetryPolicy(OperationRetryPolicy):
-    """TODO: Add docstring."""
+    """Default retry policy that retries on all exceptions."""
 
     def should_retry(self, exception: Exception) -> bool:
-        """TODO: Add docstring."""
+        """Return True if the exception should trigger a retry.
+
+        Args:
+            exception: The exception that occurred during execution.
+
+        Returns:
+            bool: True, as the default policy retries everything.
+        """
         # Default fallback: retry on any exception?
         # Usually we only retry on specific ones, but for universal wrapper, we can allow everything or leave it configurable
         return True
@@ -64,7 +71,18 @@ class UniversalExecutor:
         retry_predicate: Optional[Callable[[RetryCallState], bool]] = None,
         **attributes: Any,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the executor.
+
+        Args:
+            retries: Maximum number of retry attempts.
+            backoff_factor: Factor for exponential backoff wait calculation.
+            tracer: Optional OpenTelemetry tracer for monitoring.
+            retry_policy: Policy defining which exceptions should be retried.
+            operation_name: Name of the operation (used in logs and spans).
+            wait_strategy: Optional custom wait strategy function.
+            retry_predicate: Optional custom retry predicate function.
+            **attributes: Additional attributes to attach to logs and spans.
+        """
         self.retries = retries
         self.backoff_factor = backoff_factor
         self.tracer = tracer
@@ -76,7 +94,14 @@ class UniversalExecutor:
         self.retry_predicate = retry_predicate or self._should_retry_wrapper
 
     def _should_retry_wrapper(self, retry_state: RetryCallState) -> bool:
-        """TODO: Add docstring."""
+        """Internal wrapper to adapt Tenacity's retry state to the retry policy.
+
+        Args:
+            retry_state: Tenacity's retry state.
+
+        Returns:
+            bool: True if the operation should be retried.
+        """
         if retry_state.outcome and retry_state.outcome.failed:
             exc = retry_state.outcome.exception()
             if isinstance(exc, Exception):
@@ -132,7 +157,11 @@ class UniversalExecutor:
             try:
 
                 async def _async_wrapper() -> T:
-                    """TODO: Add docstring."""
+                    """Wrapper to await the function.
+
+                    Returns:
+                        T: Result of the operation.
+                    """
                     return await func()
 
                 result: Any = await retryer(_async_wrapper)

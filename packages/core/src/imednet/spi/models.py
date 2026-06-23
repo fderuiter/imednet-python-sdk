@@ -1,3 +1,3 @@
-"""TODO: Add docstring."""
+"""SPI for models."""
 
 from imednet.models import *

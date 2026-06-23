@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""HTTP client for interacting with the iMednet Form Designer backend."""
 
 import json
 
@@ -121,7 +121,15 @@ class FormDesignerClient:
         )
 
         def _execute_request() -> str:
-            """TODO: Add docstring."""
+            """Internal function to execute the POST request with session state.
+
+            Returns:
+                str: The raw response text.
+
+            Raises:
+                httpx.HTTPStatusError: If the server returns a non-2xx status.
+                ApiError: If the server returns an application-level error.
+            """
             response = self.session.post(url, data=payload, headers=headers)
             response.raise_for_status()
 

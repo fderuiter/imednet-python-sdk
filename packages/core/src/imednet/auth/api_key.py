@@ -9,7 +9,12 @@ class ApiKeyAuth:
     """Authentication strategy using API Key and Security Key."""
 
     def __init__(self, api_key: str, security_key: str) -> None:
-        """TODO: Add docstring."""
+        """Initialize the API Key authentication strategy.
+
+        Args:
+            api_key: The iMednet API key.
+            security_key: The iMednet security key.
+        """
         self.api_key = api_key
         self.security_key = security_key
 
@@ -21,7 +26,11 @@ class ApiKeyAuth:
         }
 
     def get_user_roles(self) -> list[str]:
-        """TODO: Add docstring."""
+        """Return the roles associated with the authenticated user.
+
+        Returns:
+            list[str]: An empty list, as roles are handled by the API.
+        """
         # Server-side role resolution for API keys would require an API call.
         # For legacy fallback, this could be handled at the endpoint level,
         # but here we return empty or "admin" if we trust the key.
@@ -29,11 +38,19 @@ class ApiKeyAuth:
         return []
 
     def get_user_id(self) -> str | None:
-        """TODO: Add docstring."""
+        """Return the ID of the authenticated user.
+
+        Returns:
+            str | None: A placeholder user ID for API key users.
+        """
         return "api-key-user"
 
     def __repr__(self) -> str:
-        """TODO: Add docstring."""
+        """Return a redacted string representation of the authentication object.
+
+        Returns:
+            str: The redacted string.
+        """
         return "ApiKeyAuth(api_key='********', security_key='********')"
 
     __str__ = __repr__

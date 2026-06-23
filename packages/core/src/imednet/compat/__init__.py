@@ -1,1 +1,1 @@
-"""TODO: Add docstring."""
+"""Compatibility helpers for different Python versions."""
