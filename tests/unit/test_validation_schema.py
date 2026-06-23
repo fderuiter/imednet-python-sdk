@@ -10,7 +10,7 @@ def test_schema_module_exports_and_deprecation_warning() -> None:
     # First ensure we import it, and catch the warning so it doesn't fail strict CI
     with pytest.warns(
         DeprecationWarning,
-        match=r"imednet.validation.schema is deprecated; use imednet.validation.cache \(deprecated in 0\\.7\\.0, to be removed in 0\\.9\\.0\)",
+        match=r"imednet.validation.schema is deprecated; use imednet.validation.cache \(deprecated in 0\.7\.0, to be removed in 0\.9\.0\)",
     ):
         import imednet.validation.schema as schema
 

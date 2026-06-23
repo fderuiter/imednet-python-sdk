@@ -171,7 +171,7 @@ def test_schema_validator_is_async_deprecation_warning() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     with pytest.warns(
-        DeprecationWarning, match=r"Passing `is_async=True` to SchemaValidator is deprecated \(deprecated in 0\\.7\\.0, to be removed in 0\\.9\\.0\)"
+        DeprecationWarning, match=r"Passing `is_async=True` to SchemaValidator is deprecated \(deprecated in 0\.7\.0, to be removed in 0\.9\.0\)"
     ):
         validator = SchemaValidator(sdk, is_async=True)
 
@@ -182,7 +182,7 @@ def test_schema_validator_is_async_positional_deprecation_warning() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     with pytest.warns(
-        DeprecationWarning, match=r"Passing `is_async=True` to SchemaValidator is deprecated \(deprecated in 0\\.7\\.0, to be removed in 0\\.9\\.0\)"
+        DeprecationWarning, match=r"Passing `is_async=True` to SchemaValidator is deprecated \(deprecated in 0\.7\.0, to be removed in 0\.9\.0\)"
     ):
         validator = SchemaValidator(sdk, True)
 
