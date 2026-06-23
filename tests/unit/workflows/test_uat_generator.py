@@ -1,15 +1,21 @@
 """Unit tests for SyntheticRecordGenerator."""
 
-import pytest
 from datetime import date
 from unittest.mock import MagicMock
 
-from imednet_workflows.uat.generator import SyntheticRecordGenerator, GeneratedRecordSet
-from imednet_workflows.uat.models import (
-    UATSpecification, UATFormSpec, UATVariableSpec, UATSubjectSpec,
-    RecordTestType, VariableTestStrategy
-)
+import pytest
+
+from imednet_workflows.uat.generator import GeneratedRecordSet, SyntheticRecordGenerator
 from imednet_workflows.uat.inspector import StudySnapshot
+from imednet_workflows.uat.models import (
+    RecordTestType,
+    UATFormSpec,
+    UATSpecification,
+    UATSubjectSpec,
+    UATVariableSpec,
+    VariableTestStrategy,
+)
+
 
 @pytest.fixture
 def mock_snapshot():
@@ -17,12 +23,15 @@ def mock_snapshot():
     snapshot.active_sites.return_value = [MagicMock(site_name="Test Site")]
     return snapshot
 
+
 @pytest.fixture
 def basic_spec():
     return UATSpecification(
         study_key="STUDY01",
         study_name="Test Study",
-        subject_specs=[UATSubjectSpec(site_name="Test Site", subject_count=2, subject_key_prefix="SUBJ-")],
+        subject_specs=[
+            UATSubjectSpec(site_name="Test Site", subject_count=2, subject_key_prefix="SUBJ-")
+        ],
         form_specs=[
             UATFormSpec(
                 form_key="F_REG",
@@ -37,12 +46,13 @@ def basic_spec():
                         variable_type="Text",
                         form_key="F_REG",
                         strategy=VariableTestStrategy.SYNTHETIC,
-                        max_length=5
+                        max_length=5,
                     )
-                ]
+                ],
             )
-        ]
+        ],
     )
+
 
 def test_generate_registration(basic_spec, mock_snapshot):
     generator = SyntheticRecordGenerator(seed=42)
@@ -56,6 +66,7 @@ def test_generate_registration(basic_spec, mock_snapshot):
     assert res.payloads[0]["siteName"] == "Test Site"
     assert "SUBJID" in res.payloads[0]["data"]
     assert len(res.payloads[0]["data"]["SUBJID"]) == 5
+
 
 def test_fixed_strategy(mock_snapshot):
     spec = UATSpecification(
@@ -75,15 +86,16 @@ def test_fixed_strategy(mock_snapshot):
                         variable_type="Text",
                         form_key="F1",
                         strategy=VariableTestStrategy.FIXED,
-                        fixed_value="FIXED_VAL"
+                        fixed_value="FIXED_VAL",
                     )
-                ]
+                ],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
     assert results[0].payloads[0]["data"]["VAR1"] == "FIXED_VAL"
+
 
 def test_skip_strategy(mock_snapshot):
     spec = UATSpecification(
@@ -102,15 +114,16 @@ def test_skip_strategy(mock_snapshot):
                         variable_key="V1",
                         variable_type="Text",
                         form_key="F1",
-                        strategy=VariableTestStrategy.SKIP
+                        strategy=VariableTestStrategy.SKIP,
                     )
-                ]
+                ],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
     assert "VAR1" not in results[0].payloads[0]["data"]
+
 
 def test_boundary_strategy(mock_snapshot):
     spec = UATSpecification(
@@ -122,7 +135,7 @@ def test_boundary_strategy(mock_snapshot):
                 form_name="F1",
                 form_type="Standard",
                 test_type=RecordTestType.CREATE_NEW_RECORD,
-                subject_count=1, # Boundary generates 2 payloads regardless
+                subject_count=1,  # Boundary generates 2 payloads regardless
                 variables=[
                     UATVariableSpec(
                         variable_name="NUM",
@@ -131,17 +144,18 @@ def test_boundary_strategy(mock_snapshot):
                         form_key="F1",
                         strategy=VariableTestStrategy.BOUNDARY,
                         min_value=10,
-                        max_value=20
+                        max_value=20,
                     )
-                ]
+                ],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
     assert len(results[0].payloads) == 2
     assert results[0].payloads[0]["data"]["NUM"] == "10.0"
     assert results[0].payloads[1]["data"]["NUM"] == "20.0"
+
 
 def test_coded_all_strategy(mock_snapshot):
     spec = UATSpecification(
@@ -161,11 +175,11 @@ def test_coded_all_strategy(mock_snapshot):
                         variable_type="Coded",
                         form_key="F1",
                         strategy=VariableTestStrategy.CODED_ALL,
-                        coded_values=["A", "B", "C"]
+                        coded_values=["A", "B", "C"],
                     )
-                ]
+                ],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
@@ -173,6 +187,7 @@ def test_coded_all_strategy(mock_snapshot):
     assert results[0].payloads[0]["data"]["CODED"] == "A"
     assert results[0].payloads[1]["data"]["CODED"] == "B"
     assert results[0].payloads[2]["data"]["CODED"] == "C"
+
 
 def test_coded_all_warning(mock_snapshot):
     spec = UATSpecification(
@@ -192,7 +207,7 @@ def test_coded_all_warning(mock_snapshot):
                         variable_type="Coded",
                         form_key="F1",
                         strategy=VariableTestStrategy.CODED_ALL,
-                        coded_values=["A", "B"]
+                        coded_values=["A", "B"],
                     ),
                     UATVariableSpec(
                         variable_name="C2",
@@ -200,16 +215,17 @@ def test_coded_all_warning(mock_snapshot):
                         variable_type="Coded",
                         form_key="F1",
                         strategy=VariableTestStrategy.CODED_ALL,
-                        coded_values=["X", "Y"]
-                    )
-                ]
+                        coded_values=["X", "Y"],
+                    ),
+                ],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
     assert len(results[0].warnings) > 0
-    assert len(results[0].payloads) == 1 # Fallback to 1 subject
+    assert len(results[0].payloads) == 1  # Fallback to 1 subject
+
 
 def test_seed_reproducibility(basic_spec, mock_snapshot):
     gen1 = SyntheticRecordGenerator(seed=123)
@@ -220,8 +236,10 @@ def test_seed_reproducibility(basic_spec, mock_snapshot):
 
     assert res1[0].payloads[0]["data"] == res2[0].payloads[0]["data"]
 
+
 def test_faker_missing_error(basic_spec, mock_snapshot, monkeypatch):
     import imednet_workflows.uat.generator as generator_mod
+
     monkeypatch.setattr(generator_mod, "Faker", None)
 
     # We need to re-instantiate or bypass the check in __init__ if we want to test _get_faker
@@ -232,6 +250,7 @@ def test_faker_missing_error(basic_spec, mock_snapshot, monkeypatch):
 
     with pytest.raises(ImportError, match="faker is required"):
         generator._get_faker()
+
 
 def test_various_types(mock_snapshot):
     spec = UATSpecification(
@@ -246,16 +265,40 @@ def test_various_types(mock_snapshot):
                 test_type=RecordTestType.CREATE_NEW_RECORD,
                 subject_count=1,
                 variables=[
-                    UATVariableSpec(variable_name="N", variable_key="V1", variable_type="Number", form_key="F1"),
-                    UATVariableSpec(variable_name="F", variable_key="V2", variable_type="Float", form_key="F1"),
-                    UATVariableSpec(variable_name="D", variable_key="V3", variable_type="Date", form_key="F1"),
-                    UATVariableSpec(variable_name="DT", variable_key="V4", variable_type="DateTime", form_key="F1"),
-                    UATVariableSpec(variable_name="B", variable_key="V5", variable_type="Boolean", form_key="F1"),
-                    UATVariableSpec(variable_name="CB", variable_key="V6", variable_type="Checkbox", form_key="F1", coded_values=["X", "Y"]),
-                    UATVariableSpec(variable_name="TA", variable_key="V7", variable_type="TextArea", form_key="F1"),
-                ]
+                    UATVariableSpec(
+                        variable_name="N", variable_key="V1", variable_type="Number", form_key="F1"
+                    ),
+                    UATVariableSpec(
+                        variable_name="F", variable_key="V2", variable_type="Float", form_key="F1"
+                    ),
+                    UATVariableSpec(
+                        variable_name="D", variable_key="V3", variable_type="Date", form_key="F1"
+                    ),
+                    UATVariableSpec(
+                        variable_name="DT",
+                        variable_key="V4",
+                        variable_type="DateTime",
+                        form_key="F1",
+                    ),
+                    UATVariableSpec(
+                        variable_name="B", variable_key="V5", variable_type="Boolean", form_key="F1"
+                    ),
+                    UATVariableSpec(
+                        variable_name="CB",
+                        variable_key="V6",
+                        variable_type="Checkbox",
+                        form_key="F1",
+                        coded_values=["X", "Y"],
+                    ),
+                    UATVariableSpec(
+                        variable_name="TA",
+                        variable_key="V7",
+                        variable_type="TextArea",
+                        form_key="F1",
+                    ),
+                ],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator(seed=42)
     results = generator.generate(spec, mock_snapshot)
@@ -269,6 +312,7 @@ def test_various_types(mock_snapshot):
     assert any(c in data["CB"] for c in ("X", "Y"))
     assert len(data["TA"]) > 0
 
+
 def test_subject_pool_logic(mock_snapshot):
     spec = UATSpecification(
         study_key="S1",
@@ -280,10 +324,10 @@ def test_subject_pool_logic(mock_snapshot):
                 form_name="F1",
                 form_type="Standard",
                 test_type=RecordTestType.UPDATE_SCHEDULED_RECORD,
-                subject_count=5, # Should wrap around pool
-                variables=[]
+                subject_count=5,  # Should wrap around pool
+                variables=[],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
@@ -291,6 +335,7 @@ def test_subject_pool_logic(mock_snapshot):
     assert res.subject_keys == ["TEST-001", "TEST-002", "TEST-003", "TEST-001", "TEST-002"]
     assert res.payloads[0]["subjectKey"] == "TEST-001"
     assert res.payloads[4]["subjectKey"] == "TEST-002"
+
 
 def test_unrecognized_type(mock_snapshot, caplog):
     spec = UATSpecification(
@@ -304,17 +349,28 @@ def test_unrecognized_type(mock_snapshot, caplog):
                 test_type=RecordTestType.CREATE_NEW_RECORD,
                 subject_count=1,
                 variables=[
-                    UATVariableSpec(variable_name="UNK", variable_key="V1", variable_type="UNKNOWN", form_key="F1"),
-                    UATVariableSpec(variable_name="SIG", variable_key="V2", variable_type="Signature", form_key="F1"),
-                ]
+                    UATVariableSpec(
+                        variable_name="UNK",
+                        variable_key="V1",
+                        variable_type="UNKNOWN",
+                        form_key="F1",
+                    ),
+                    UATVariableSpec(
+                        variable_name="SIG",
+                        variable_key="V2",
+                        variable_type="Signature",
+                        form_key="F1",
+                    ),
+                ],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
     assert "UNK" in results[0].payloads[0]["data"]
     assert results[0].payloads[0]["data"]["SIG"] == ""
     assert "Unrecognized variable type" in caplog.text
+
 
 def test_no_subjects_pool_default(mock_snapshot):
     spec = UATSpecification(
@@ -328,9 +384,9 @@ def test_no_subjects_pool_default(mock_snapshot):
                 form_type="Standard",
                 test_type=RecordTestType.CREATE_NEW_RECORD,
                 subject_count=1,
-                variables=[]
+                variables=[],
             )
-        ]
+        ],
     )
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)

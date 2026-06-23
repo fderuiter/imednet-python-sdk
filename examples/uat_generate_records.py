@@ -94,7 +94,7 @@ def main():
         print(f"Test Type: {record_set.test_type}")
         print(f"Payloads Generated: {len(record_set.payloads)}")
         for i, payload in enumerate(record_set.payloads):
-            print(f"  Payload {i+1}: {payload}")
+            print(f"  Payload {i + 1}: {payload}")
         if record_set.warnings:
             print(f"  Warnings: {record_set.warnings}")
         print()

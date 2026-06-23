@@ -17,7 +17,9 @@ APP_PATH = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_strea
 def mock_auth_env():
     """Set up mocks for authentication and studies."""
     with (
-        patch("imednet_streamlit.auth.get_provisioned_studies", return_value=["STUDY-A", "STUDY-B"]),
+        patch(
+            "imednet_streamlit.auth.get_provisioned_studies", return_value=["STUDY-A", "STUDY-B"]
+        ),
         patch(
             "imednet_streamlit.auth.get_tenant_credentials",
             side_effect=lambda s: ("key-" + s, "sec-" + s),
@@ -35,7 +37,10 @@ def test_scenario_1_fresh_vs_connected_session(mock_auth_env) -> None:
     at.run()
 
     # Should not be connected initially
-    assert "_imednet_connected" not in at.session_state or at.session_state["_imednet_connected"] is not True
+    assert (
+        "_imednet_connected" not in at.session_state
+        or at.session_state["_imednet_connected"] is not True
+    )
 
     # Select the study and click connect
     at.sidebar.selectbox(key="_imednet_study_key").select("STUDY-A")
@@ -83,7 +88,11 @@ def test_scenario_3_study_switch_disconnects(mock_auth_env) -> None:
     at.run()
 
     # SHOULD be disconnected now because we don't want to use STUDY-A SDK with STUDY-B key
-    connected = at.session_state["_imednet_connected"] if "_imednet_connected" in at.session_state else False
+    connected = (
+        at.session_state["_imednet_connected"]
+        if "_imednet_connected" in at.session_state
+        else False
+    )
     assert connected is False
 
 
@@ -125,7 +134,11 @@ def test_scenario_5_error_recovery(mock_auth_env) -> None:
     # Should show error and NOT be connected
     all_error_values = [e.value for e in at.error] + [e.value for e in at.sidebar.error]
     assert any("missing" in v for v in all_error_values)
-    connected = at.session_state["_imednet_connected"] if "_imednet_connected" in at.session_state else False
+    connected = (
+        at.session_state["_imednet_connected"]
+        if "_imednet_connected" in at.session_state
+        else False
+    )
     assert connected is not True
 
     # 2. Recover - provide valid credentials
@@ -158,7 +171,11 @@ def test_scenario_6_multi_session_isolation(mock_auth_env) -> None:
     assert at1.session_state["_imednet_connected"] is True
 
     # Check session 2 status
-    connected2 = at2.session_state["_imednet_connected"] if "_imednet_connected" in at2.session_state else False
+    connected2 = (
+        at2.session_state["_imednet_connected"]
+        if "_imednet_connected" in at2.session_state
+        else False
+    )
     assert connected2 is not True
 
     # Connect session 2 to a different study
