@@ -298,7 +298,8 @@ class SchemaValidator(BaseSchemaValidator["ImednetFacade"]):
             import warnings
 
             warnings.warn(
-                "Passing `is_async=True` to SchemaValidator is deprecated. "
+                "Passing `is_async=True` to SchemaValidator is deprecated "
+                "(deprecated in 0.7.0, to be removed in 0.9.0). "
                 "Use `AsyncSchemaValidator` instead.",
                 DeprecationWarning,
                 stacklevel=2,

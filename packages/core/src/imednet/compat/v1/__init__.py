@@ -13,7 +13,7 @@ from .operations import get_resource_async, get_resource_sync
 
 logger = logging.getLogger(__name__)
 
-msg = "Plugin initialized using legacy compatibility namespace (compat.v1). Please migrate to the modern core APIs."
+msg = "Plugin initialized using legacy compatibility namespace (compat.v1) (deprecated in 0.8.0, to be removed in 0.10.0). Please migrate to the modern core APIs."
 warnings.warn(msg, DeprecationWarning, stacklevel=2)
 logger.warning(msg)
 

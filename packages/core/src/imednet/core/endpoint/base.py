@@ -46,7 +46,8 @@ class GenericEndpoint(EndpointABC[T]):
         """TODO: Add docstring."""
         if ctx is not None:
             warnings.warn(
-                "The 'ctx' constructor argument is deprecated and ignored. "
+                "The 'ctx' constructor argument is deprecated and ignored "
+                "(deprecated in 0.7.0, to be removed in 0.9.0). "
                 "Pass study_key explicitly or use ImednetSDK.study_context(...).",
                 DeprecationWarning,
                 stacklevel=2,

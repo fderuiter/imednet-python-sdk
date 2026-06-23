@@ -49,5 +49,6 @@ Describe the tests added or updated. If tests were intentionally skipped, explai
 ### Process
 - [ ] PR title follows [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `refactor:`, `docs:`, etc.)
 - [ ] This PR is linked to an issue above
+- [ ] Checked for and removed any expired deprecated code scheduled for removal in this version
 - [ ] New modules align with package boundaries described in `AGENTS.md`
 - [ ] No secrets, tokens, or credentials added to source code

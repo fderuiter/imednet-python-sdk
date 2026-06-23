@@ -601,3 +601,11 @@ This refactoring guide provides a structured approach to improving the SDK's cod
 
 **Estimated Total Effort**: 60-80 hours for complete implementation
 **Recommended Timeline**: 8-12 weeks with 1-2 developers
+
+## 10. Deprecation Policy and Standardized Lifecycle Process
+
+To reduce maintenance overhead and ensure legacy code is cleaned up regularly, all code deprecations must follow these standards:
+
+- **String Convention:** All `DeprecationWarning` messages must explicitly state when the deprecation was introduced and when the code will be removed. The standard string convention is: `"... (deprecated in <version>, to be removed in <version>)"`.
+- **Removal Window Policy:** Code should be scheduled for removal **two minor versions** after it is deprecated. For example, if a feature is deprecated in `0.8.0`, it must be scheduled for removal in `0.10.0`.
+- **PR Verification:** Every Pull Request must include a review step to audit and remove any expired legacy code whose removal version matches or is older than the current release version.
