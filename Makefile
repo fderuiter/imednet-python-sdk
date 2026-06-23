@@ -30,10 +30,18 @@ validate-diagrams:
 	@echo "Validating mermaid diagrams..."
 	python scripts/validate_diagrams.py
 
-docs: apidocs validate-diagrams
+docs: apidocs validate-diagrams validate-docs
 	@echo "Building HTML..."
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) docs docs/_build/html
 
 doctest: apidocs
 	@echo "Running Sphinx doctests..."
 	$(SPHINXBUILD) -b doctest $(SPHINXOPTS) docs docs/_build/doctest
+
+sync-readme:
+	@echo "Syncing README snippets..."
+	python scripts/sync_readme.py
+
+validate-docs:
+	@echo "Validating documentation..."
+	python scripts/validate_docs.py

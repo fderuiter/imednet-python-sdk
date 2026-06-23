@@ -19,12 +19,12 @@ try:  # pragma: no cover - optional Airflow dependency
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
 
     class BaseOperator:  # type: ignore
-        """TODO: Add docstring."""
+        """Fallback BaseOperator for offline tests."""
 
         template_fields: Sequence[str] = ()
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
-            """TODO: Add docstring."""
+            """Initialize fallback BaseOperator."""
             pass
 
 
@@ -63,7 +63,19 @@ class ImednetExportOperator(BaseOperator):
         idempotent: bool = True,
         **kwargs: Any,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the operator.
+
+        :param study_key: The study key identifier.
+        :param destination: The destination sink format or database.
+        :param output_path: The filesystem path to export to (if applicable).
+        :param export_func: The specific legacy tabular export function to use.
+        :param export_kwargs: Extra keyword arguments passed to the sink/export function.
+        :param imednet_conn_id: Airflow connection ID to use for credentials.
+        :param batch_size: Number of records to read and write per batch.
+        :param max_retries: Maximum number of export attempts.
+        :param idempotent: Whether the export execution should be safely repeatable, automatically deduplicating or replacing existing outputs as appropriate.
+        :param kwargs: Additional Airflow BaseOperator arguments.
+        """
         super().__init__(**kwargs)
         self.study_key = study_key
         self.destination = destination
@@ -117,7 +129,7 @@ class ImednetExportOperator(BaseOperator):
         return None
 
     def execute(self, context: Context) -> str | None:
-        """TODO: Add docstring."""
+        """Execute the export task."""
         # Resolve destination early to fail fast on invalid configs (like legacy _get_export_callable)
         dest = self.destination
         if not dest and self.export_func:

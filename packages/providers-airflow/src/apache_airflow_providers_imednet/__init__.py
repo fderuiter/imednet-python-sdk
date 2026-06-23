@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Documentation placeholder."""
 
 from __future__ import annotations
 
