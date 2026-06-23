@@ -6,16 +6,35 @@ import inspect
 from functools import wraps
 from typing import Callable, Concatenate, ParamSpec, TypeVar
 
+import os
+
 import typer
 from rich import print
 from rich.markup import escape
 
-from imednet.errors import ApiError
+from imednet.errors import (
+    ApiError,
+    AuthenticationError,
+    AuthorizationError,
+    ForbiddenError,
+    NotFoundError,
+    RateLimitError,
+    UnauthorizedError,
+)
 
 from ..sdk import ImednetSDK
 
 P = ParamSpec("P")
 R = TypeVar("R")
+
+
+def _redact_secrets(msg: str) -> str:
+    """Redact secrets from error messages."""
+    for env_var in ["IMEDNET_API_KEY", "IMEDNET_SECURITY_KEY"]:
+        val = os.environ.get(env_var)
+        if val and val in msg:
+            msg = msg.replace(val, "********")
+    return msg
 
 
 def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
@@ -33,11 +52,32 @@ def with_sdk(func: Callable[Concatenate[ImednetSDK, P], R]) -> Callable[P, R]:
             return func(sdk, *args, **kwargs)
         except typer.Exit:  # allow commands to exit early
             raise
-        except ApiError as exc:
-            print(f"[bold red]API Error:[/bold red] {escape(str(exc))}")
+        except (AuthenticationError, UnauthorizedError) as exc:
+            msg = _redact_secrets(str(exc))
+            print(f"[bold red]Authentication Failed:[/bold red] {escape(msg)}")
             raise typer.Exit(code=1)
+        except (AuthorizationError, ForbiddenError) as exc:
+            msg = _redact_secrets(str(exc))
+            print(f"[bold red]Permission Denied:[/bold red] {escape(msg)}")
+            raise typer.Exit(code=1)
+        except RateLimitError as exc:
+            msg = _redact_secrets(str(exc))
+            print(f"[bold red]Rate Limit Exceeded:[/bold red] {escape(msg)}")
+            raise typer.Exit(code=1)
+        except NotFoundError as exc:
+            msg = _redact_secrets(str(exc))
+            print(f"[bold red]Not Found:[/bold red] {escape(msg)}")
+            raise typer.Exit(code=1)
+        except ApiError as exc:
+            msg = _redact_secrets(str(exc))
+            print(f"[bold red]API Error:[/bold red] {escape(msg)}")
+            raise typer.Exit(code=1)
+        except KeyboardInterrupt:
+            print("\n[bold yellow]Aborted by user.[/bold yellow]")
+            raise typer.Exit(code=130)
         except Exception as exc:  # pragma: no cover - defensive
-            print(f"[bold red]Unexpected error:[/bold red] {escape(str(exc))}")
+            msg = _redact_secrets(str(exc))
+            print(f"[bold red]Unexpected error:[/bold red] {escape(msg)}")
             raise typer.Exit(code=1)
         finally:
             close = getattr(sdk, "close", None)
