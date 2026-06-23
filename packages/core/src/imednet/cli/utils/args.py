@@ -18,13 +18,20 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
         return None
     filter_dict: Dict[str, Union[str, bool, int]] = {}
     for arg in filter_args:
-        if "=" not in arg:
+        if "=" not in arg or arg.startswith("=") or arg.endswith("="):
             print(
                 f"[bold red]Error:[/bold red] Invalid filter format: '{escape(arg)}'. "
-                "Use 'key=value'."
+                "Use 'key=value' with non-empty key and value."
             )
             raise typer.Exit(code=1)
         key, value = arg.split("=", 1)
+        if not key.strip() or not value.strip():
+            print(
+                f"[bold red]Error:[/bold red] Invalid filter format: '{escape(arg)}'. "
+                "Key and value cannot be empty."
+            )
+            raise typer.Exit(code=1)
+
         if value.lower() == "true":
             filter_dict[key.strip()] = True
         elif value.lower() == "false":

@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Protocol, Sequence
 
+import typer
 from rich import print
 
 from imednet.utils import sanitize_csv_formula
@@ -29,13 +30,18 @@ def export_list_to_file(
 
     Handles CSV and JSON formats. Sanitize CSV data to prevent injection.
     """
-    path = Path(f"{filename_prefix}.{output_format}")
+    fmt = output_format.lower()
+    if fmt not in {"csv", "json"}:
+        print(f"[bold red]Error:[/bold red] Invalid output format: '{fmt}'. Supported: csv, json.")
+        raise typer.Exit(code=1)
+
+    path = Path(f"{filename_prefix}.{fmt}")
 
     # Export full data
     # We use by_alias=True to match the API response structure
     data = [item.model_dump(by_alias=True) for item in items]
 
-    if output_format == "csv":
+    if fmt == "csv":
         if data:
             # Sanitize data to prevent CSV injection
             for row in data:
