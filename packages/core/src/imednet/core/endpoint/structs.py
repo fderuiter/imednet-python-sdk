@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Data structures for endpoint request state."""
 
 from __future__ import annotations
 

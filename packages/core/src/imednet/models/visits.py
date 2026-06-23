@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Models for subject visits and study events."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ class Visit(JsonModel):
     @model_validator(mode="before")
     @classmethod
     def _clean_empty_dates(cls, data: Any) -> Any:
-        """TODO: Add docstring."""
+        """Coerce empty strings in date fields to None before validation."""
         if isinstance(data, dict):
             for key in [
                 "start_date",

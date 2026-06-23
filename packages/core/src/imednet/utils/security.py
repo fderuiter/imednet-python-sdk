@@ -9,10 +9,10 @@ _WINDOWS_ABSOLUTE_PATH_RE = re.compile(r"^[A-Za-z]:[/\\]")
 
 
 class SensitivityRegistry:
-    """TODO: Add docstring."""
+    """Registry for managing sensitive fields (PHI) that should be masked in logs."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the registry with default sensitive and exempt keys."""
         # Default clinical PHI fields
         self._sensitive_keys = {
             "patient_name",
@@ -29,24 +29,24 @@ class SensitivityRegistry:
         self._exempt_keys = {"subject_key", "study_key", "record_id"}
 
     def add_sensitive_key(self, key: str) -> None:
-        """TODO: Add docstring."""
+        """Add a key to the sensitive list if it is not exempted."""
         if key not in self._exempt_keys:
             self._sensitive_keys.add(key)
 
     def remove_sensitive_key(self, key: str) -> None:
-        """TODO: Add docstring."""
+        """Remove a key from the sensitive list."""
         self._sensitive_keys.discard(key)
 
     def add_exempt_key(self, key: str) -> None:
-        """TODO: Add docstring."""
+        """Add a key to the exemption list."""
         self._exempt_keys.add(key)
 
     def remove_exempt_key(self, key: str) -> None:
-        """TODO: Add docstring."""
+        """Remove a key from the exemption list."""
         self._exempt_keys.discard(key)
 
     def is_sensitive(self, key: str) -> bool:
-        """TODO: Add docstring."""
+        """Check if a key is considered sensitive and not exempted."""
         if key in self._exempt_keys:
             return False
         return key in self._sensitive_keys

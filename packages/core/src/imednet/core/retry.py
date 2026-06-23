@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Retry logic and policies for iMedNet API requests."""
 
 from __future__ import annotations
 
@@ -71,7 +71,7 @@ class DefaultRetryPolicy:
     """
 
     def should_retry(self, state: RetryState) -> bool:
-        """TODO: Add docstring."""
+        """Return True if the request should be retried based on the state."""
         method = (state.method or "").upper()
         is_idempotent = method in IDEMPOTENT_METHODS
 

@@ -1,6 +1,6 @@
 # Base HTTP client for iMednet SDK
 
-"""TODO: Add docstring."""
+"""Common base client initialization for both synchronous and asynchronous SDKs."""
 
 from __future__ import annotations
 
@@ -49,7 +49,18 @@ class BaseClient:
         tracer: Optional[Tracer] = None,
         auth: Optional[AuthStrategy] = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize common client settings.
+
+        Args:
+            api_key: iMednet API key.
+            security_key: iMednet security key.
+            base_url: Base URL for the iMednet API.
+            timeout: Default request timeout in seconds or httpx.Timeout.
+            retries: Number of retry attempts.
+            backoff_factor: Exponential backoff factor.
+            tracer: Optional OpenTelemetry tracer instance.
+            auth: Optional pre-configured AuthStrategy.
+        """
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
         self.base_url = sanitize_base_url(config.base_url or DEFAULT_BASE_URL)
@@ -75,5 +86,5 @@ class BaseClient:
             self._tracer = None
 
     def _create_client(self, auth: AuthStrategy) -> Any:
-        """TODO: Add docstring."""
+        """Create the underlying HTTP client (to be implemented by subclasses)."""
         raise NotImplementedError

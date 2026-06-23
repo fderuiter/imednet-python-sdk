@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Models for triage and reviewer workflows."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from imednet.models.json_base import JsonModel
 
 
 class TriageStatus(str, Enum):
-    """TODO: Add docstring."""
+    """Enumeration of possible triage statuses."""
 
     NEW = "NEW"
     UNDER_REVIEW = "UNDER_REVIEW"
@@ -41,7 +41,7 @@ class TriageHistoryEntry(JsonModel):
     @field_validator("comment", check_fields=False, mode="before")
     @classmethod
     def _normalise_comment(cls, value: object) -> object:
-        """TODO: Add docstring."""
+        """Normalize comment string, returning None if empty or whitespace."""
         if value is None:
             return None
         text = str(value).strip()

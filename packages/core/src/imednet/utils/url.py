@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""URL manipulation and sanitization utilities."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def redact_sensitive_text(text: Any) -> str:
 
     # Redact query parameters in any URLs
     def replace_url(match: re.Match) -> str:
-        """TODO: Add docstring."""
+        """Redact query parameters in the matched URL string."""
         return redact_url_query(match.group(0))
 
     text = re.sub(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\"'>]*[^\s\"'>.,;:!?\)\]]", replace_url, text)

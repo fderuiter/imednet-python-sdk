@@ -43,7 +43,13 @@ class GenericEndpoint(EndpointABC[T]):
         ctx: object | None = None,
         async_client: Optional[AsyncRequestorProtocol] = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the generic endpoint.
+
+        Args:
+            client: Synchronous requestor instance.
+            ctx: Deprecated context object.
+            async_client: Asynchronous requestor instance.
+        """
         if ctx is not None:
             warnings.warn(
                 "The 'ctx' constructor argument is deprecated and ignored. "
@@ -97,7 +103,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
     @property
     def study_key_strategy(self) -> StudyKeyStrategy:
-        """TODO: Add docstring."""
+        """Return the strategy for handling study keys in this endpoint."""
         if self.STUDY_KEY_STRATEGY:
             return self.STUDY_KEY_STRATEGY
         if self.requires_study_key:
@@ -106,18 +112,18 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
     @property
     def param_processor(self) -> ParamProcessor:
-        """TODO: Add docstring."""
+        """Return the parameter processor for this endpoint."""
         if self.PARAM_PROCESSOR:
             return self.PARAM_PROCESSOR
         return self.PARAM_PROCESSOR_CLS()
 
     def _parse_item(self, item: Any) -> T:
-        """TODO: Add docstring."""
+        """Parse a raw API item into a Pydantic model instance."""
         parse_func = get_model_parser(self.MODEL)
         return parse_func(item)
 
     def _resolve_parse_func(self) -> Callable[[Any], T]:
-        """TODO: Add docstring."""
+        """Return the function used to parse items for this endpoint."""
         return self._parse_item
 
     def _resolve_params(
@@ -126,7 +132,16 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
     ) -> ParamState:
-        """TODO: Add docstring."""
+        """Resolve filters and extra parameters into a ParamState.
+
+        Args:
+            study_key: The study key to use.
+            extra_params: Additional query parameters.
+            filters: Key-value filters to apply.
+
+        Returns:
+            A ParamState containing the resolved study, parameters, and other filters.
+        """
         filters = self._auto_filter(filters.copy())
 
         processed_filters, special_params = self.param_processor.process_filters(filters)
@@ -159,7 +174,16 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         extra_params: Optional[Dict[str, Any]],
         filters: Dict[str, Any],
     ) -> ListRequestState[T]:
-        """TODO: Add docstring."""
+        """Prepare the state required for a list request.
+
+        Args:
+            study_key: Optional study key override.
+            extra_params: Additional query parameters.
+            filters: Resource filters.
+
+        Returns:
+            A ListRequestState containing path and resolved parameters.
+        """
         param_state = self._resolve_params(study_key, extra_params, filters)
         study = param_state.study
         params = param_state.params
@@ -172,27 +196,44 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         )
 
     def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: ItemId) -> T:
-        """TODO: Add docstring."""
+        """Validate that a get operation returned exactly one item.
+
+        Args:
+            items: The list of items returned by the filter.
+            study_key: The study key used for the request.
+            item_id: The ID of the item being requested.
+
+        Returns:
+            The first item in the list.
+
+        Raises:
+            NotFoundError: If the list is empty.
+        """
         if not items:
             self._raise_not_found(study_key, item_id)
         return items[0]
 
     @staticmethod
     def _require_item_id(item_id: ItemId) -> None:
-        """TODO: Add docstring."""
+        """Ensure that an item ID was provided."""
         if item_id is None:
             raise TypeError("Missing required argument: item_id")
 
 
 class SyncListGetEndpoint(_ListGetEndpointBase[T]):
-    """TODO: Add docstring."""
+    """Synchronous endpoint providing list and get functionality."""
 
     def __init__(
         self,
         client: RequestorProtocol,
         ctx: object | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the synchronous endpoint.
+
+        Args:
+            client: Synchronous requestor instance.
+            ctx: Deprecated context object.
+        """
         super().__init__(client=client, ctx=ctx)
 
     def _list_sync(
@@ -204,7 +245,18 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> Iterator[T]:
-        """TODO: Add docstring."""
+        """Internal synchronous list implementation.
+
+        Args:
+            client: Requestor to use.
+            paginator_cls: Paginator class to use.
+            study_key: Optional study key.
+            extra_params: Additional query parameters.
+            **filters: Resource filters.
+
+        Returns:
+            An iterator over the items.
+        """
         state = self._prepare_list_request(study_key, extra_params, filters)
         return ListOperation[T](
             path=state.path,
@@ -214,7 +266,15 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         ).execute_sync(client, paginator_cls)
 
     def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T]:
-        """TODO: Add docstring."""
+        """List resources matching the given filters.
+
+        Args:
+            study_key: Optional study key to override the default.
+            **filters: Resource filters.
+
+        Returns:
+            An iterator over the matching resources.
+        """
         # Cast FilterValue → Any at the public/internal boundary to satisfy
         # mypy's invariant dict type-checking on `_list_sync`'s **filters: Any.
         _filters: Dict[str, Any] = dict(filters)
@@ -233,7 +293,17 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         study_key: Optional[str],
         item_id: ItemId,
     ) -> T:
-        """TODO: Add docstring."""
+        """Internal synchronous get implementation.
+
+        Args:
+            client: Requestor to use.
+            paginator_cls: Paginator class to use.
+            study_key: Optional study key.
+            item_id: The ID of the item to retrieve.
+
+        Returns:
+            The requested item.
+        """
         filters: Dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
@@ -245,7 +315,15 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         return operation.execute_sync(client, paginator_cls)
 
     def get(self, study_key: Optional[str], item_id: ItemId) -> T:
-        """TODO: Add docstring."""
+        """Retrieve a single resource by its ID.
+
+        Args:
+            study_key: The study key.
+            item_id: The ID of the resource to retrieve.
+
+        Returns:
+            The requested resource.
+        """
         self._require_item_id(item_id)
         return self._get_sync(
             self._require_sync_client(),
@@ -256,14 +334,19 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
 
 
 class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
-    """TODO: Add docstring."""
+    """Asynchronous endpoint providing list and get functionality."""
 
     def __init__(
         self,
         async_client: AsyncRequestorProtocol,
         ctx: object | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the asynchronous endpoint.
+
+        Args:
+            async_client: Asynchronous requestor instance.
+            ctx: Deprecated context object.
+        """
         super().__init__(ctx=ctx, async_client=async_client)
 
     def _list_async(
@@ -275,7 +358,18 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         extra_params: Optional[Dict[str, Any]] = None,
         **filters: Any,
     ) -> AsyncIterator[T]:
-        """TODO: Add docstring."""
+        """Internal asynchronous list implementation.
+
+        Args:
+            client: Asynchronous requestor to use.
+            paginator_cls: Asynchronous paginator class to use.
+            study_key: Optional study key.
+            extra_params: Additional query parameters.
+            **filters: Resource filters.
+
+        Returns:
+            An asynchronous iterator over the items.
+        """
         state = self._prepare_list_request(study_key, extra_params, filters)
         return ListOperation[T](
             path=state.path,
@@ -287,7 +381,15 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
     def async_list(
         self, study_key: Optional[str] = None, **filters: FilterValue
     ) -> AsyncIterator[T]:
-        """TODO: Add docstring."""
+        """List resources matching the given filters asynchronously.
+
+        Args:
+            study_key: Optional study key override.
+            **filters: Resource filters.
+
+        Returns:
+            An asynchronous iterator over the matching resources.
+        """
         # Cast FilterValue → Any at the public/internal boundary.
         _filters: Dict[str, Any] = dict(filters)
         return self._list_async(
@@ -305,7 +407,17 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         study_key: Optional[str],
         item_id: ItemId,
     ) -> T:
-        """TODO: Add docstring."""
+        """Internal asynchronous get implementation.
+
+        Args:
+            client: Asynchronous requestor to use.
+            paginator_cls: Asynchronous paginator class to use.
+            study_key: Optional study key.
+            item_id: The ID of the item to retrieve.
+
+        Returns:
+            The requested item.
+        """
         filters: Dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
@@ -317,14 +429,22 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         return await operation.execute_async(client, paginator_cls)
 
     async def _list_async_for_get(self, *a: Any, **k: Any) -> List[T]:
-        """TODO: Add docstring."""
+        """Helper to collect async list results into a list for get validation."""
         res = []
         async for item in self._list_async(*a, **k):
             res.append(item)
         return res
 
     async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T:
-        """TODO: Add docstring."""
+        """Retrieve a single resource by its ID asynchronously.
+
+        Args:
+            study_key: The study key.
+            item_id: The ID of the resource to retrieve.
+
+        Returns:
+            The requested resource.
+        """
         self._require_item_id(item_id)
         return await self._get_async(
             self._require_async_client(),

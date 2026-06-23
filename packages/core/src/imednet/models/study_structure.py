@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Models for representing the hierarchical structure of a study."""
 
 from __future__ import annotations
 

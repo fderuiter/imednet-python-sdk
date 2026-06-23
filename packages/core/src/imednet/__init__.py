@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""iMednet SDK - A Python client for the iMednet EDC REST API."""
 
 from importlib import metadata as _metadata
 

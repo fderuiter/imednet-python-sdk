@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Base Pydantic model with data normalization and drift detection logic."""
 
 from __future__ import annotations
 
@@ -22,32 +22,32 @@ _NORMALIZERS: Dict[type, Dict[str, Callable[[Any], Any]]] = {}
 
 
 def _identity(v: Any) -> Any:
-    """TODO: Add docstring."""
+    """Return the value as-is."""
     return v
 
 
 def _optional_str(v: Any) -> Any:
-    """TODO: Add docstring."""
+    """Convert value to string, returning None if missing."""
     return None if is_missing_value(v) else parse_str_or_default(v)
 
 
 def _optional_int(v: Any) -> Any:
-    """TODO: Add docstring."""
+    """Convert value to int, returning None if missing."""
     return None if is_missing_value(v) else parse_int_or_default(v)
 
 
 def _optional_bool(v: Any) -> Any:
-    """TODO: Add docstring."""
+    """Convert value to bool, returning None if missing."""
     return None if is_missing_value(v) else parse_bool(v)
 
 
 def _optional_datetime(v: Any) -> Any:
-    """TODO: Add docstring."""
+    """Convert value to datetime, returning None if missing."""
     return None if is_missing_value(v) else parse_datetime(v)
 
 
 def _extract_single_item(v: Any) -> Any:
-    """TODO: Add docstring."""
+    """Extract the first item if a list is provided where an object was expected."""
     if isinstance(v, list) and len(v) > 0 and isinstance(v[0], dict):
         import logging
 
@@ -62,7 +62,11 @@ import types
 
 
 def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
-    """TODO: Add docstring."""
+    """Determine the appropriate normalization function for a model field.
+
+    Analyzes type hints to select a parser for strings, integers, booleans,
+    datetimes, or nested models.
+    """
     if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
         return _NORMALIZERS[cls][field_name]
 
@@ -148,7 +152,7 @@ class JsonModel(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def _detect_drift(cls, data: Any) -> Any:
-        """TODO: Add docstring."""
+        """Compare incoming JSON data against the model definition to detect API drift."""
         if not isinstance(data, dict):
             return data
 

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""JSON logging configuration utility."""
 
 import logging
 

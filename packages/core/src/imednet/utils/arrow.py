@@ -12,7 +12,7 @@ except ImportError:  # pragma: no cover - exercised when optional dependency is 
 
 
 class _ModelDumpable(Protocol):
-    """TODO: Add docstring."""
+    """Protocol for objects that can be dumped to a dictionary (e.g., Pydantic models)."""
 
     def model_dump(self) -> Dict[str, Any]: ...
 
@@ -22,14 +22,14 @@ _FALSE_STRINGS = {"false", "0", "no", "n", "f"}
 
 
 def _normalize_datetime(value: datetime) -> datetime:
-    """TODO: Add docstring."""
+    """Ensure a datetime object is timezone-aware and set to UTC."""
     if value.tzinfo is None:
         return value.replace(tzinfo=timezone.utc)
     return value.astimezone(timezone.utc)
 
 
 def _normalize_record(record: Any) -> Dict[str, Any]:
-    """TODO: Add docstring."""
+    """Convert an input record (dict or model) into a standard dictionary."""
     if isinstance(record, dict):
         return record
 
@@ -43,7 +43,7 @@ def _normalize_record(record: Any) -> Dict[str, Any]:
 
 
 def _normalize_value(value: Any) -> Any:
-    """TODO: Add docstring."""
+    """Normalize individual values for Arrow serialization (empty strings to None, etc.)."""
     if value is None:
         return None
     if isinstance(value, str) and value == "":
@@ -58,7 +58,7 @@ def _normalize_value(value: Any) -> Any:
 
 
 def _infer_type(values: List[Any]) -> pa.DataType:
-    """TODO: Add docstring."""
+    """Infer the Arrow data type from a list of normalized values."""
     non_null_values = [v for v in values if v is not None]
     if not non_null_values:
         return pa.null()
@@ -72,7 +72,7 @@ def _infer_type(values: List[Any]) -> pa.DataType:
 
 
 def _coerce_value(value: Any, target_type: pa.DataType) -> Any:
-    """TODO: Add docstring."""
+    """Coerce a value to the target Arrow data type."""
     if value is None:
         return None
     if pa.types.is_null(target_type):

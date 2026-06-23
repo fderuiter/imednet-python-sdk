@@ -50,7 +50,11 @@ class WorkflowPluginProtocol(PluginProtocol):
 
 
 class _BaseSDK:
-    """TODO: Add docstring."""
+    """Base class for iMednet SDK variants.
+
+    Provides shared logic for configuration management, plugin discovery,
+    and workflow/sink initialization.
+    """
 
     config: Config
 
@@ -71,7 +75,7 @@ class _BaseSDK:
         return plugin_entry_points[0]
 
     def _get_workflow_entry_point(self) -> EntryPoint | None:
-        """TODO: Add docstring."""
+        """Return the configured workflow plugin entry point."""
         return self._get_plugin_entry_point("workflows")
 
     def _init_workflows(self) -> Optional[WorkflowsNamespaceProtocol]:
@@ -80,10 +84,13 @@ class _BaseSDK:
         if workflows_entry_point is None:
 
             class _MissingWorkflows:
-                """TODO: Add docstring."""
+                """Proxy for missing workflows plugin.
+
+                Raises ImportError when any workflow attribute is accessed.
+                """
 
                 def __getattr__(self, name: str) -> Any:
-                    """TODO: Add docstring."""
+                    """Raise ImportError indicating the missing optional package."""
                     raise ImportError(
                         "This feature requires the optional 'imednet-workflows' package."
                     )
@@ -206,17 +213,17 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
 
     @property
     def auth(self) -> Any:
-        """TODO: Add docstring."""
+        """Return the authentication provider used by the client."""
         return getattr(self._client, "auth", None)
 
     @property
     def retry_policy(self) -> RetryPolicy:
-        """TODO: Add docstring."""
+        """Return the current retry policy."""
         return self._client.retry_policy
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
-        """TODO: Add docstring."""
+        """Set a new retry policy for the client."""
         self._client.retry_policy = policy
 
     def _init_endpoints(self) -> None:
@@ -253,7 +260,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         self._client.close()
 
     async def aclose(self) -> None:
-        """TODO: Add docstring."""
+        """Asynchronous close is not supported on the synchronous SDK."""
         raise TypeError(
             "ImednetSDK is a synchronous client. "
             "Use `sdk.close()` or `with ImednetSDK(...)` instead. "
@@ -296,7 +303,18 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         retry_policy: RetryPolicy | None = None,
         async_client: Optional[AsyncClient] = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the asynchronous SDK.
+
+        Args:
+            api_key: iMednet API key.
+            security_key: iMednet security key.
+            base_url: Base URL for the iMednet API.
+            timeout: Default request timeout in seconds.
+            retries: Number of retry attempts.
+            backoff_factor: Exponential backoff factor.
+            retry_policy: Custom retry policy.
+            async_client: Pre-configured async client instance.
+        """
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
         self.config = config
         self._api_key = config.api_key
@@ -317,21 +335,21 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
 
     @property
     def auth(self) -> Any:
-        """TODO: Add docstring."""
+        """Return the authentication provider used by the async client."""
         return getattr(self._async_client, "auth", None)
 
     @property
     def retry_policy(self) -> RetryPolicy:
-        """TODO: Add docstring."""
+        """Return the current retry policy of the async client."""
         return self._async_client.retry_policy
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
-        """TODO: Add docstring."""
+        """Set a new retry policy for the async client."""
         self._async_client.retry_policy = policy
 
     def _init_endpoints(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize all asynchronous endpoint instances."""
         for attr, endpoint_cls in ASYNC_ENDPOINT_REGISTRY.items():
             setattr(self, attr, endpoint_cls(self._async_client))  # type: ignore[arg-type]
 
@@ -343,29 +361,29 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         )
 
     def __enter__(self) -> "AsyncImednetSDK":
-        """TODO: Add docstring."""
+        """Synchronous context manager is not supported."""
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous context manager protocol. "
             "Use `async with AsyncImednetSDK(...)` instead."
         )
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        """TODO: Add docstring."""
+        """Synchronous context manager is not supported."""
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous context manager protocol. "
             "Use `async with AsyncImednetSDK(...)` instead."
         )
 
     async def __aenter__(self) -> "AsyncImednetSDK":
-        """TODO: Add docstring."""
+        """Enter the asynchronous context manager."""
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        """TODO: Add docstring."""
+        """Exit the asynchronous context manager and close the client."""
         await self.aclose()
 
     async def aclose(self) -> None:
-        """TODO: Add docstring."""
+        """Close the underlying asynchronous client and free resources."""
         await self._async_client.aclose()
 
 

@@ -89,7 +89,7 @@ class ListOperation(Generic[T]):
         )
 
         async def _generator():
-            """TODO: Add docstring."""
+            """Async generator to yield processed items from the paginator."""
             async for item in paginator:
                 yield self._process_item(item)
 
