@@ -80,6 +80,17 @@ def render_auth_sidebar() -> bool:
         # OIDC integration for corporate credentials
         is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(st, "user", {})
 
+        # Test mode bypass for browser E2E tests
+        if os.environ.get("IMEDNET_BROWSER_TEST") == "1":
+            is_logged_in = True
+            if not hasattr(st, "user") or not st.user:
+
+                class MockUser:
+                    email = "test-operator@example.com"
+                    is_logged_in = True
+
+                st.user = MockUser()  # type: ignore[assignment]
+
         if not is_logged_in:
             st.info("Please authenticate using your corporate IdP.")
             if hasattr(st, "login"):
@@ -108,7 +119,13 @@ def render_auth_sidebar() -> bool:
                 st.error("Managed credentials for this tenant are missing.")
             else:
                 try:
-                    _build_sdk(api_key=api_key, security_key=security_key)
+                    if os.environ.get("IMEDNET_BROWSER_TEST") == "1":
+                        # In browser tests, we mock the SDK to avoid real network calls
+                        from unittest.mock import MagicMock
+
+                        st.session_state[_KEY_SDK] = MagicMock()
+                    else:
+                        _build_sdk(api_key=api_key, security_key=security_key)
                     st.session_state[_KEY_CONNECTED] = True
                     st.success("Connected ✓")
                 except Exception as exc:
