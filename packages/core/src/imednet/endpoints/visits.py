@@ -11,23 +11,20 @@ class VisitsOperationDef:
     MODEL = Visit
     _id_param = "visitId"
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class VisitsEndpoint(VisitsOperationDef, EdcListGetEndpoint[Visit, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncVisitsEndpoint(VisitsEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

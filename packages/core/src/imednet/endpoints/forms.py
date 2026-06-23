@@ -14,23 +14,20 @@ class FormsOperationDef:
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
     PAGE_SIZE = 500
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class FormsEndpoint(FormsOperationDef, EdcListGetEndpoint[Form, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncFormsEndpoint(FormsEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

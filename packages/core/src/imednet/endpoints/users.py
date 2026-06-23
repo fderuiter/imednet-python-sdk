@@ -17,23 +17,20 @@ class UsersOperationDef:
         defaults={"include_inactive": False},
     )
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class UsersEndpoint(UsersOperationDef, EdcListGetEndpoint[User, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncUsersEndpoint(UsersEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

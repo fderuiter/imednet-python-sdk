@@ -14,23 +14,20 @@ class VariablesOperationDef:
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
     PAGE_SIZE = 500
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class VariablesEndpoint(VariablesOperationDef, EdcListGetEndpoint[Variable, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncVariablesEndpoint(VariablesEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

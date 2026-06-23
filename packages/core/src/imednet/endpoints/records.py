@@ -76,10 +76,7 @@ class RecordsEndpoint(RecordsOperationDef, EdcListGetEndpoint[Record, ClientT]):
         else:
             return operation.execute_sync(self._require_sync_client(), parse_func=Job.from_json)
 
-
-
     async def async_create(  # pragma: no cover
-
         self,
         study_key: str,
         records_data: List[JsonDict],
@@ -89,12 +86,15 @@ class RecordsEndpoint(RecordsOperationDef, EdcListGetEndpoint[Record, ClientT]):
     ) -> Job:
         """Alias for create()."""
         import warnings
+
         warnings.warn("async_create is deprecated, use create()", DeprecationWarning, stacklevel=2)
         result = self.create(study_key, records_data, email_notify, schema=schema)  # type: ignore[misc,return-value]
-        return await result if hasattr(result, "__await__") else result # type: ignore
+        return await result if hasattr(result, "__await__") else result  # type: ignore
+
 
 class AsyncRecordsEndpoint(RecordsEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

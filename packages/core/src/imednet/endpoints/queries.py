@@ -11,23 +11,20 @@ class QueriesOperationDef:
     MODEL = Query
     _id_param = "annotationId"
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class QueriesEndpoint(QueriesOperationDef, EdcListGetEndpoint[Query, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncQueriesEndpoint(QueriesEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

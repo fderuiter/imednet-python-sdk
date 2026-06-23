@@ -36,12 +36,18 @@ class JobsEndpoint(JobsOperationDef, EdcListGetEndpoint[JobStatus, ClientT]):  #
     """TODO: Add docstring."""
 
     @overload
-    def get(self: "JobsEndpoint[RequestorProtocol]", study_key: Optional[str], item_id: ItemId) -> JobStatus: ...
+    def get(
+        self: "JobsEndpoint[RequestorProtocol]", study_key: Optional[str], item_id: ItemId
+    ) -> JobStatus: ...
 
     @overload
-    def get(self: "JobsEndpoint[AsyncRequestorProtocol]", study_key: Optional[str], item_id: ItemId) -> Awaitable[JobStatus]: ...
+    def get(
+        self: "JobsEndpoint[AsyncRequestorProtocol]", study_key: Optional[str], item_id: ItemId
+    ) -> Awaitable[JobStatus]: ...
 
-    def get(self, study_key: Optional[str], item_id: ItemId) -> Union[JobStatus, Awaitable[JobStatus]]:
+    def get(
+        self, study_key: Optional[str], item_id: ItemId
+    ) -> Union[JobStatus, Awaitable[JobStatus]]:
         """TODO: Add docstring."""
         self._require_item_id(item_id)
         operation = self._create_path_get_operation(study_key, item_id)
@@ -50,8 +56,10 @@ class JobsEndpoint(JobsOperationDef, EdcListGetEndpoint[JobStatus, ClientT]):  #
         else:
             return operation.execute_sync(self._require_sync_client())
 
+
 class AsyncJobsEndpoint(JobsEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

@@ -12,23 +12,20 @@ class StudiesOperationDef:
     _id_param = "studyKey"
     requires_study_key: bool = False
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class StudiesEndpoint(StudiesOperationDef, EdcListGetEndpoint[Study, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncStudiesEndpoint(StudiesEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

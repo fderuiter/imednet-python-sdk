@@ -6,7 +6,7 @@ from typing import Any, Dict, Generic, TypeVar, Union
 
 from imednet.core.context import get_study_context
 from imednet.core.endpoint.base import ListGetEndpoint
-from imednet.core.protocols import RequestorProtocol, AsyncRequestorProtocol
+from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
 
 ClientT = TypeVar('ClientT', bound=Union[RequestorProtocol, AsyncRequestorProtocol])
 from imednet.models.json_base import JsonModel
@@ -80,6 +80,7 @@ class EdcListGetEndpoint(_EdcEndpointBase, ListGetEndpoint[T, ClientT]):
     """Unified EDC list/get endpoint base."""
 
     BASE_PATH = _EDC_BASE_PATH
+
 
 EdcSyncListGetEndpoint = EdcListGetEndpoint
 EdcAsyncListGetEndpoint = EdcListGetEndpoint

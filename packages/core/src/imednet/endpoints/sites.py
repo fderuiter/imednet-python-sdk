@@ -13,23 +13,20 @@ class SitesOperationDef:
     _id_param = "siteId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class SitesEndpoint(SitesOperationDef, EdcListGetEndpoint[Site, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncSitesEndpoint(SitesEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)

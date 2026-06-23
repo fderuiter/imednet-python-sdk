@@ -13,23 +13,20 @@ class CodingsOperationDef:
     _id_param = "codingId"
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
 
-
-
+    pass
 
     pass
 
-
-
-
-    pass
 
 class CodingsEndpoint(CodingsOperationDef, EdcListGetEndpoint[Coding, ClientT]):  # type: ignore[misc]
     """TODO: Add docstring."""
 
     pass
 
+
 class AsyncCodingsEndpoint(CodingsEndpoint):  # type: ignore[misc]
     """Legacy backwards-compatible async endpoint."""
+
     def __init__(self, client, ctx=None):
         """TODO: Add docstring."""
         super().__init__(client, ctx=ctx)
