@@ -1,6 +1,7 @@
 """UAT specification models."""
 
 from .engine import EditCheckResultStatus, EditCheckVerificationReport, UATExecutionEngine
+from .generator import GeneratedRecordSet, SyntheticRecordGenerator
 from .inspector import StudySchemaInspector, StudySnapshot
 from .models import (
     RecordTestType,
@@ -23,4 +24,6 @@ __all__ = [
     "UATExecutionEngine",
     "EditCheckResultStatus",
     "EditCheckVerificationReport",
+    "GeneratedRecordSet",
+    "SyntheticRecordGenerator",
 ]
