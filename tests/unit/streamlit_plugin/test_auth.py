@@ -21,6 +21,14 @@ class _SidebarContext:
         return None
 
 
+class _FakeCacheData:
+    """TODO: Add docstring."""
+
+    def clear(self) -> None:
+        """TODO: Add docstring."""
+        pass
+
+
 class _FakeStreamlit:
     """TODO: Add docstring."""
 
@@ -39,6 +47,7 @@ class _FakeStreamlit:
         self.error_messages: list[str] = []
         self.warning_messages: list[str] = []
         self.info_messages: list[str] = []
+        self.cache_data = _FakeCacheData()
 
         self.user = {"email": "test@enterprise.com", "is_logged_in": logged_in} if logged_in else {}
         self.login_called = False
@@ -54,14 +63,18 @@ class _FakeStreamlit:
         self.session_state[key] = ""
         return ""
 
-    def selectbox(self, label: str, options: list[str], key: str) -> str:
+    def selectbox(self, label: str, options: list[str], key: str, **kwargs: object) -> str:
         """TODO: Add docstring."""
         self.session_state[key] = self._selected_study
         return self._selected_study
 
-    def button(self, _: str) -> bool:
+    def button(self, _: str, **kwargs: object) -> bool:
         """TODO: Add docstring."""
         return self._connect_clicked
+
+    def rerun(self) -> None:
+        """TODO: Add docstring."""
+        pass
 
     def success(self, message: str) -> None:
         """TODO: Add docstring."""
