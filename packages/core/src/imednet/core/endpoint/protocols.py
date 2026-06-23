@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Protocols defining the interfaces for API endpoints and operations."""
 
 from typing import (
     Any,
@@ -131,7 +131,7 @@ class SyncOperationProtocol(Protocol, Generic[T_co]):
     """
 
     def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Initialize the synchronous operation."""
         ...
 
     def execute(self) -> T_co:
@@ -150,7 +150,7 @@ class AsyncOperationProtocol(Protocol, Generic[T_co]):
     def __init__(
         self, client: AsyncRequestorProtocol, path: str, *args: Any, **kwargs: Any
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the asynchronous operation."""
         ...
 
     async def execute(self) -> T_co:

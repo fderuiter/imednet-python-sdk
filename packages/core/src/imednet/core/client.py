@@ -35,13 +35,13 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
     """
 
     def _get_client_class(self) -> type[httpx.Client]:
-        """TODO: Add docstring."""
+        """Return the underlying synchronous HTTP client class."""
         return httpx.Client
 
     def _create_executor(
         self, client: httpx.Client, retry_policy: Optional[RetryPolicy] = None
     ) -> SyncRequestExecutor:
-        """TODO: Add docstring."""
+        """Create a synchronous request executor for this client."""
         return SyncRequestExecutor(
             send=client.request,
             retries=self.retries,
@@ -51,7 +51,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         )
 
     def __enter__(self) -> Client:
-        """TODO: Add docstring."""
+        """Enter the synchronous context manager."""
         return self
 
     def __exit__(
@@ -60,7 +60,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         exc: Optional[BaseException],
         tb: Optional[TracebackType],
     ) -> None:
-        """TODO: Add docstring."""
+        """Exit the synchronous context manager and close the client."""
         self.close()
 
     def close(self) -> None:
@@ -68,7 +68,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         self._client.close()
 
     def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Internal method to dispatch a request via the executor."""
         return self._executor(method, path, **kwargs)
 
     def get(

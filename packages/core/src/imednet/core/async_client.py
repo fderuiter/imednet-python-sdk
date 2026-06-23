@@ -19,13 +19,13 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
     """Asynchronous variant of :class:`~imednet.core.client.Client`."""
 
     def _get_client_class(self) -> type[httpx.AsyncClient]:
-        """TODO: Add docstring."""
+        """Return the underlying asynchronous HTTP client class."""
         return httpx.AsyncClient
 
     def _create_executor(
         self, client: httpx.AsyncClient, retry_policy: Optional[RetryPolicy] = None
     ) -> AsyncRequestExecutor:
-        """TODO: Add docstring."""
+        """Create an asynchronous request executor for this client."""
         return AsyncRequestExecutor(
             send=client.request,
             retries=self.retries,
@@ -35,11 +35,11 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         )
 
     async def __aenter__(self) -> "AsyncClient":
-        """TODO: Add docstring."""
+        """Enter the asynchronous context manager."""
         return self
 
     async def __aexit__(self, exc_type, exc, tb) -> None:
-        """TODO: Add docstring."""
+        """Exit the asynchronous context manager and close the client."""
         await self.aclose()
 
     async def aclose(self) -> None:
@@ -47,7 +47,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         await self._client.aclose()
 
     async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Internal method to dispatch an asynchronous request via the executor."""
         return await self._executor(method, path, **kwargs)
 
     async def get(
@@ -56,7 +56,13 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Make an asynchronous GET request.
+
+        Args:
+            path: URL path or full URL.
+            params: Query parameters.
+            **kwargs: Additional arguments passed to the underlying executor.
+        """
         return await self._request("GET", path, params=params, **kwargs)
 
     async def post(
@@ -65,5 +71,11 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         json: Optional[Any] = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Make an asynchronous POST request.
+
+        Args:
+            path: URL path or full URL.
+            json: JSON body for the request.
+            **kwargs: Additional arguments passed to the underlying executor.
+        """
         return await self._request("POST", path, json=json, **kwargs)

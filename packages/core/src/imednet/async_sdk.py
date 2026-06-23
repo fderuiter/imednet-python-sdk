@@ -1,4 +1,7 @@
-"""TODO: Add docstring."""
+"""Deprecated entry-point for the asynchronous iMednet SDK.
+
+Use ``from imednet.sdk import AsyncImednetSDK`` instead.
+"""
 
 import importlib
 import warnings

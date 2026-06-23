@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Data serialization and flattening utilities."""
 
 from typing import Any, Dict
 

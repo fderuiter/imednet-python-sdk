@@ -24,7 +24,18 @@ class BasePaginator(Generic[ClientT]):
         data_key: str = "data",
         metadata_key: str = "metadata",
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the paginator.
+
+        Args:
+            client: Requestor instance (sync or async).
+            path: API path for the request.
+            params: Query parameters.
+            page_size: Number of items per page.
+            page_param: Query parameter name for the page index.
+            size_param: Query parameter name for the page size.
+            data_key: Key in the response JSON containing the items list.
+            metadata_key: Key in the response JSON containing pagination metadata.
+        """
         self.client: ClientT = client
         self.path = path
         self.params = params.copy() if params else {}
@@ -41,14 +52,14 @@ class BasePaginator(Generic[ClientT]):
         return self._cursor
 
     def _build_params(self, page: int) -> Dict[str, Any]:
-        """TODO: Add docstring."""
+        """Build the query parameters for a specific page."""
         query = dict(self.params)
         query[self.page_param] = page
         query[self.size_param] = self.page_size
         return query
 
     def _extract_items(self, payload: Dict[str, Any]) -> list[Any]:
-        """TODO: Add docstring."""
+        """Extract item list from the API response payload."""
         if not isinstance(payload, dict):
             raise TypeError(f"API response must be a dictionary, got {type(payload).__name__}")
 
@@ -64,7 +75,7 @@ class BasePaginator(Generic[ClientT]):
         return items
 
     def _next_page(self, payload: Dict[str, Any], page: int, items_count: int) -> Optional[int]:
-        """TODO: Add docstring."""
+        """Determine the next page index based on the response payload and metadata."""
         pagination = payload.get("pagination")
         if pagination is not None and not isinstance(pagination, dict):
             raise TypeError(
@@ -104,7 +115,7 @@ class Paginator(BasePaginator[RequestorProtocol]):
     """Iterate synchronously over paginated API results."""
 
     def __iter__(self) -> Iterator[Any]:
-        """TODO: Add docstring."""
+        """Iterate over all items across all pages."""
         page = 0
         self._cursor = page
         while True:
@@ -125,7 +136,7 @@ class AsyncPaginator(BasePaginator[AsyncRequestorProtocol]):
     """Asynchronous variant of :class:`Paginator`."""
 
     async def __aiter__(self) -> AsyncIterator[Any]:
-        """TODO: Add docstring."""
+        """Iterate asynchronously over all items across all pages."""
         page = 0
         self._cursor = page
         while True:
@@ -146,7 +157,7 @@ class JsonListPaginator(Paginator):
     """Paginator for endpoints returning a raw list."""
 
     def __iter__(self) -> Iterator[Any]:
-        """TODO: Add docstring."""
+        """Iterate over a single response that returns a list directly."""
         # Raw list endpoints do not support pagination params
         response: httpx.Response = self.client.get(self.path, params=self.params)
         payload = response.json()
@@ -159,7 +170,7 @@ class AsyncJsonListPaginator(AsyncPaginator):
     """Asynchronous variant of :class:`JsonListPaginator`."""
 
     async def __aiter__(self) -> AsyncIterator[Any]:
-        """TODO: Add docstring."""
+        """Iterate asynchronously over a single response that returns a list directly."""
         # Raw list endpoints do not support pagination params
         response: httpx.Response = await self.client.get(self.path, params=self.params)
         payload = response.json()

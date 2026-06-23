@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Models for form variables (data fields) in iMedNet."""
 
 from __future__ import annotations
 

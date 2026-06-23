@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Data standard profiles and validation models for clinical domains."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from imednet.utils.validators import is_missing_value
 
 
 class ValidationViolation(BaseModel):
-    """TODO: Add docstring."""
+    """Represents a violation of a data standard constraint."""
 
     field: str
     message: str
@@ -18,7 +18,7 @@ class ValidationViolation(BaseModel):
 
 
 class StandardsProfile:
-    """TODO: Add docstring."""
+    """A profile defining required, recommended, and optional fields for data domains."""
 
     def __init__(
         self,
@@ -29,7 +29,15 @@ class StandardsProfile:
         optional_fields: dict[str, list[str]] | None = None,
         value_constraints: dict[str, list[Any]] | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize a standards profile.
+
+        Args:
+            profile_name: Unique name for the profile.
+            required_fields: Mapping of domain to required field names.
+            recommended_fields: Mapping of domain to recommended field names.
+            optional_fields: Mapping of domain to optional field names.
+            value_constraints: Mapping of field or domain.field to allowed values.
+        """
         self.profile_name = profile_name
         self.required_fields = required_fields or {}
         self.recommended_fields = recommended_fields or {}
@@ -37,7 +45,7 @@ class StandardsProfile:
         self.value_constraints = value_constraints or {}
 
     def expected_fields(self, domain: str) -> list[str]:
-        """TODO: Add docstring."""
+        """Return the list of expected (required + recommended) fields for a domain."""
         domain_key = domain.upper()
         return [
             *self.required_fields.get(domain_key, []),
@@ -45,7 +53,15 @@ class StandardsProfile:
         ]
 
     def validate(self, domain: str, data: dict[str, Any]) -> list[ValidationViolation]:
-        """TODO: Add docstring."""
+        """Validate a data dictionary against the profile for a specific domain.
+
+        Args:
+            domain: The domain name (e.g., 'AE', 'PD').
+            data: The data dictionary to validate.
+
+        Returns:
+            A list of ValidationViolation objects.
+        """
         domain_key = domain.upper()
         violations: list[ValidationViolation] = []
 
@@ -97,10 +113,10 @@ class StandardsProfile:
 
 
 class GeneralClinicalProfile(StandardsProfile):
-    """TODO: Add docstring."""
+    """General clinical profile with basic AE and PD requirements."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the general clinical profile."""
         super().__init__(
             profile_name="general",
             required_fields={
@@ -118,10 +134,10 @@ class GeneralClinicalProfile(StandardsProfile):
 
 
 class DrugSafetyProfile(StandardsProfile):
-    """TODO: Add docstring."""
+    """Drug safety profile with stricter requirements for AE data."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the drug safety profile."""
         super().__init__(
             profile_name="drug",
             required_fields={
@@ -135,10 +151,10 @@ class DrugSafetyProfile(StandardsProfile):
 
 
 class DeviceSafetyProfile(StandardsProfile):
-    """TODO: Add docstring."""
+    """Device safety profile including device deficiency (DD) requirements."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the device safety profile."""
         super().__init__(
             profile_name="device",
             required_fields={
@@ -151,7 +167,7 @@ class DeviceSafetyProfile(StandardsProfile):
         )
 
     def validate(self, domain: str, data: dict[str, Any]) -> list[ValidationViolation]:
-        """TODO: Add docstring."""
+        """Validate device-specific constraints for DD and other domains."""
         violations = super().validate(domain=domain, data=data)
         domain_key = domain.upper()
 
@@ -185,22 +201,22 @@ class DeviceSafetyProfile(StandardsProfile):
 
 
 class StandardsProfileRegistry:
-    """TODO: Add docstring."""
+    """Registry for managing and retrieving standards profiles."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize an empty profile registry."""
         self._profiles: dict[str, StandardsProfile] = {}
 
     def register(self, profile: StandardsProfile) -> None:
-        """TODO: Add docstring."""
+        """Register a new standards profile."""
         self._profiles[profile.profile_name] = profile
 
     def get(self, profile_name: str) -> StandardsProfile:
-        """TODO: Add docstring."""
+        """Retrieve a profile by its name."""
         return self._profiles[profile_name]
 
     def list_profiles(self) -> list[str]:
-        """TODO: Add docstring."""
+        """List all registered profile names."""
         return sorted(self._profiles.keys())
 
 

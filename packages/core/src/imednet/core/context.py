@@ -59,13 +59,13 @@ class Context:
 
     @property
     def default_study_key(self) -> Optional[str]:
-        """TODO: Add docstring."""
+        """Return the current default study key from the context."""
         return _active_study.get()
 
     def set_default_study_key(self, study_key: str) -> None:
-        """TODO: Add docstring."""
+        """Set the default study key for the current context."""
         _active_study.set(study_key)
 
     def clear_default_study_key(self) -> None:
-        """TODO: Add docstring."""
+        """Clear the default study key from the current context."""
         clear_study_context()

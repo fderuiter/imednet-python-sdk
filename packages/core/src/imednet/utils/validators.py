@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Validation and normalization utilities for API response data."""
 
 from __future__ import annotations
 
@@ -22,12 +22,12 @@ _SENTINEL_DATETIME = datetime(1969, 4, 20, 16, 20)
 
 
 def is_missing_value(value: Any) -> bool:
-    """TODO: Add docstring."""
+    """Check if a value is None or an empty/whitespace-only string."""
     return value is None or (isinstance(value, str) and value.strip() == "")
 
 
 def is_boolean_token(value: str) -> bool:
-    """TODO: Add docstring."""
+    """Check if a string represents a boolean value (e.g., 'true', 'yes', '0')."""
     normalized = value.strip().lower()
     return normalized in _TRUE_LOWER or normalized in _FALSE_LOWER
 

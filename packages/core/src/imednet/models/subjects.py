@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Models for subjects and participant keywords."""
 
 from __future__ import annotations
 

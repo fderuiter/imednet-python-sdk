@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Reporting and analysis models for iMedNet, including CDISC-aligned datasets."""
 
 from __future__ import annotations
 

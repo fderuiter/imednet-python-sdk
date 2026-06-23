@@ -44,12 +44,12 @@ except Exception:
 
 
 def _trace_method(func: Any) -> Any:
-    """TODO: Add docstring."""
+    """Decorator to trace synchronous method execution with OpenTelemetry."""
     from functools import wraps
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Wrapper to start a span around the function call."""
         if tracer:
             with tracer.start_as_current_span(func.__name__):
                 return func(*args, **kwargs)
@@ -59,12 +59,12 @@ def _trace_method(func: Any) -> Any:
 
 
 def _async_trace_method(func: Any) -> Any:
-    """TODO: Add docstring."""
+    """Decorator to trace asynchronous method execution with OpenTelemetry."""
     from functools import wraps
 
     @wraps(func)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Wrapper to start a span around the async function call."""
         if tracer:
             with tracer.start_as_current_span(func.__name__):
                 return await func(*args, **kwargs)
@@ -93,7 +93,7 @@ if TYPE_CHECKING:
 
 
 def _workflow_poller(name: str) -> Any:
-    """TODO: Add docstring."""
+    """Lazy load a poller class from the imednet_workflows package."""
     try:
         module = import_module("imednet_workflows.job_poller")
     except ModuleNotFoundError as error:
@@ -107,12 +107,12 @@ def _workflow_poller(name: str) -> Any:
 
 
 def JobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
-    """TODO: Add docstring."""
+    """Create a synchronous JobPoller instance."""
     return _workflow_poller("JobPoller")(*args, **kwargs)
 
 
 def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
-    """TODO: Add docstring."""
+    """Create an asynchronous JobPoller instance."""
     return _workflow_poller("AsyncJobPoller")(*args, **kwargs)
 
 
@@ -120,16 +120,16 @@ T = TypeVar("T")
 
 
 class _ListOperation(Generic[T]):
-    """TODO: Add docstring."""
+    """Descriptor that provides convenience list methods on the SDK."""
 
     def __init__(self, endpoint_name: str, name: str, is_async: bool = False):
-        """TODO: Add docstring."""
+        """Initialize the list operation descriptor."""
         self.endpoint_name = endpoint_name
         self.name = name
         self.is_async = is_async
 
     def __get__(self, instance: Any, owner: Any) -> Callable[..., Any]:
-        """TODO: Add docstring."""
+        """Return a wrapped list method bound to the SDK instance."""
         if instance is None:
             return self  # type: ignore
         endpoint = getattr(instance, self.endpoint_name)
@@ -138,7 +138,7 @@ class _ListOperation(Generic[T]):
 
             @_async_trace_method
             async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
-                """TODO: Add docstring."""
+                """Execute the asynchronous list operation and return a list of items."""
                 _filters: Dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
                     res = endpoint.async_list(**_filters)
@@ -151,7 +151,7 @@ class _ListOperation(Generic[T]):
 
             @_trace_method
             def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
-                """TODO: Add docstring."""
+                """Execute the synchronous list operation and return a list of items."""
                 _filters: Dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
                     return list(endpoint.list(**_filters))

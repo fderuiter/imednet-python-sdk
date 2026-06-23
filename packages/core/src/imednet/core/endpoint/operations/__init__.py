@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Endpoint operation classes for standard API actions."""
 
 from .filter_get import FilterGetOperation
 from .get import PathGetOperation

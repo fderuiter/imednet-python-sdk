@@ -54,7 +54,7 @@ class StudyConfiguration(JsonModel):
     @field_validator("reporting_profile", check_fields=False, mode="before")
     @classmethod
     def _validate_reporting_profile(cls, value: object) -> object:
-        """TODO: Add docstring."""
+        """Ensure the reporting profile exists in the registry."""
         if not isinstance(value, str):
             raise ValueError("reportingProfile must be a string.")
 

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Base class for HTTP clients with shared initialization and configuration."""
 
 from __future__ import annotations
 
@@ -53,7 +53,19 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         retry_policy: RetryPolicy | None = None,
         auth: Optional[AuthStrategy] = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the HTTP client.
+
+        Args:
+            api_key: iMednet API key.
+            security_key: iMednet security key.
+            base_url: Base URL for the iMednet API.
+            timeout: Default request timeout in seconds or httpx.Timeout.
+            retries: Number of retry attempts.
+            backoff_factor: Exponential backoff factor.
+            tracer: Optional OpenTelemetry tracer instance.
+            retry_policy: Custom retry policy for the executor.
+            auth: Optional pre-configured AuthStrategy.
+        """
         super().__init__(
             api_key=api_key,
             security_key=security_key,
@@ -68,7 +80,7 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         self._executor = self._create_executor(self._client, retry_policy)
 
     def _create_client(self, auth: AuthStrategy) -> ClientT:
-        """TODO: Add docstring."""
+        """Create the underlying httpx client with appropriate headers and configuration."""
         headers = {
             HEADER_ACCEPT: CONTENT_TYPE_JSON,
             HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
@@ -87,12 +99,12 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
 
     @property
     def retry_policy(self) -> RetryPolicy:
-        """TODO: Add docstring."""
+        """Return the current retry policy of the executor."""
         return cast(RetryPolicy, self._executor.retry_policy)
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
-        """TODO: Add docstring."""
+        """Set a new retry policy for the executor."""
         self._executor.retry_policy = policy
 
     @abstractmethod
