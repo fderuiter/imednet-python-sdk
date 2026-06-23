@@ -282,7 +282,7 @@ jobs:
           IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
           if [ "${{ matrix.package }}" = "core" ]; then
-            TEST_ARGS="--ignore-glob=*airflow* --ignore-glob=*workflows* --ignore-glob=*streamlit* --ignore-glob=*sinks* tests/"
+            TEST_ARGS="--ignore-glob=*airflow* --ignore-glob=*workflows* --ignore-glob=*streamlit* --ignore-glob=*sinks* --ignore-glob=*browser* tests/"
             COV_ARGS="--cov=imednet"
           elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
 
@@ -300,7 +300,7 @@ jobs:
             COV_ARGS="--cov=imednet_sinks"
           fi
           
-          pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live and not browser" --ignore=tests/live/ $TEST_ARGS || {
+          pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live and not browser" --ignore=tests/live/ --ignore=tests/browser/ $TEST_ARGS || {
             RET=$?
             if [ $RET -eq 5 ]; then
               echo "No tests collected for ${{ matrix.package }}. Passing gracefully."

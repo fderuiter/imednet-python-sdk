@@ -28,7 +28,9 @@ def mock_sdk(monkeypatch):
     sdk = MagicMock()
     # Patch get_sdk in both places it might be used
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
-    monkeypatch.setattr("imednet.cli.decorators.get_sdk", MagicMock(return_value=sdk), raising=False)
+    monkeypatch.setattr(
+        "imednet.cli.decorators.get_sdk", MagicMock(return_value=sdk), raising=False
+    )
     # Also set dummy env vars to avoid load_config failure if it's called anyway
     monkeypatch.setenv("IMEDNET_API_KEY", "dummy")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "dummy")
@@ -168,7 +170,7 @@ def test_output_file_correctness_csv(runner, mock_sdk, tmp_path):
         "subject_key": "SUBJ1",
         "form_key": "FORM1",
         "record_status": "Active",
-        "date_created": "2023-01-01"
+        "date_created": "2023-01-01",
     }
 
     mock_sdk.records.list.return_value = [mock_record]
@@ -201,6 +203,7 @@ def test_output_file_correctness_json(runner, mock_sdk, tmp_path):
     assert json_file.exists()
 
     import json
+
     with open(json_file) as f:
         data = json.load(f)
 
