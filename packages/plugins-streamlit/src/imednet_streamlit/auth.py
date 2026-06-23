@@ -84,9 +84,11 @@ def render_auth_sidebar() -> bool:
         if os.environ.get("IMEDNET_BROWSER_TEST") == "1":
             is_logged_in = True
             if not hasattr(st, "user") or not st.user:
+
                 class MockUser:
                     email = "test-operator@example.com"
                     is_logged_in = True
+
                 st.user = MockUser()
 
         if not is_logged_in:
@@ -120,6 +122,7 @@ def render_auth_sidebar() -> bool:
                     if os.environ.get("IMEDNET_BROWSER_TEST") == "1":
                         # In browser tests, we mock the SDK to avoid real network calls
                         from unittest.mock import MagicMock
+
                         st.session_state[_KEY_SDK] = MagicMock()
                     else:
                         _build_sdk(api_key=api_key, security_key=security_key)
