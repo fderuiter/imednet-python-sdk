@@ -18,11 +18,13 @@ from imednet.errors import (
 
 @pytest.fixture
 def runner():
+    """Create a Typer CLI runner."""
     return CliRunner()
 
 
 @pytest.fixture
 def mock_sdk(monkeypatch):
+    """Mock the SDK for CLI tests."""
     sdk = MagicMock()
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
     return sdk
