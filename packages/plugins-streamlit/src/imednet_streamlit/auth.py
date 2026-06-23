@@ -89,7 +89,7 @@ def render_auth_sidebar() -> bool:
                     email = "test-operator@example.com"
                     is_logged_in = True
 
-                st.user = MockUser()
+                st.user = MockUser()  # type: ignore[assignment]
 
         if not is_logged_in:
             st.info("Please authenticate using your corporate IdP.")
