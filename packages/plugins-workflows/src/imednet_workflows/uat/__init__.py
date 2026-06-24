@@ -11,6 +11,12 @@ from .models import (
     UATVariableSpec,
     VariableTestStrategy,
 )
+from .submission import (
+    BatchSubmission,
+    BulkRecordSubmissionWorkflow,
+    BulkSubmissionError,
+    SubmissionResult,
+)
 
 __all__ = [
     "RecordTestType",
@@ -26,4 +32,8 @@ __all__ = [
     "EditCheckVerificationReport",
     "GeneratedRecordSet",
     "SyntheticRecordGenerator",
+    "BatchSubmission",
+    "BulkRecordSubmissionWorkflow",
+    "BulkSubmissionError",
+    "SubmissionResult",
 ]
