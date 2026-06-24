@@ -221,7 +221,7 @@ class BulkRecordSubmissionWorkflow:
             # Update the job state in the batch object
             batch.job.state = status.state
 
-            if not status.is_successful:
+            if not status.state or status.state.upper() not in ("COMPLETED", "SUCCESS"):
                 failed_batches.append(batch)
 
         if failed_batches:
