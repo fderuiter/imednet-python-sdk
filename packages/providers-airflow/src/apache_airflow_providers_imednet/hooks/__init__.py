@@ -10,7 +10,9 @@ try:
     from airflow.sdk.bases.hook import BaseHook as AirflowBaseHook
 except (ImportError, ModuleNotFoundError):
     try:
-        from airflow.hooks.base import BaseHook as AirflowBaseHook  # type: ignore[no-redef,no-redef]
+        from airflow.hooks.base import (
+            BaseHook as AirflowBaseHook,  # type: ignore[no-redef,no-redef]
+        )
     except (ImportError, ModuleNotFoundError):
 
         class AirflowBaseHook:  # type: ignore[no-redef]
@@ -22,6 +24,7 @@ except (ImportError, ModuleNotFoundError):
             @classmethod
             def get_connection(cls, conn_id: str) -> Any:
                 raise RuntimeError("Airflow is not installed; cannot get connection.")
+
 
 from imednet import Config, ImednetSDK, load_config
 
@@ -95,14 +98,16 @@ class ImednetHook(AirflowBaseHook):
     def _resolved_config(self) -> Config:
         """Resolve hook configuration from Airflow connection fields and env fallback."""
         try:
-            from airflow.sdk.bases.hook import BaseHook
+            from airflow.sdk.bases.hook import BaseHook as AirflowSDKBaseHook
         except (ImportError, ModuleNotFoundError):
             try:
-                from airflow.hooks.base import BaseHook  # type: ignore[no-redef]
+                from airflow.hooks.base import (
+                    BaseHook as AirflowSDKBaseHook,  # type: ignore[no-redef,no-redef]
+                )
             except (ImportError, ModuleNotFoundError):
-                BaseHook = AirflowBaseHook  # type: ignore[assignment]
+                AirflowSDKBaseHook = AirflowBaseHook  # type: ignore[assignment]
 
-        conn = BaseHook.get_connection(self.imednet_conn_id)
+        conn = AirflowSDKBaseHook.get_connection(self.imednet_conn_id)
         extras_dict = self._connection_extras(conn)
 
         config = load_config(

@@ -147,8 +147,7 @@ def test_sync_worker_interaction_correctness(tmp_path: Path) -> None:
 
     loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
     worker = SyncWorker(
-        loader,
-        config=SyncWorkerConfig(study_key="PROT-01", interval_seconds=0, reconcile=True)
+        loader, config=SyncWorkerConfig(study_key="PROT-01", interval_seconds=0, reconcile=True)
     )
 
     # run_once should call loader.sync_records (indirectly via load_records in some versions,

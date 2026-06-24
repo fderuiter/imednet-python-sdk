@@ -8,6 +8,7 @@ or missing optional dependencies.
 from __future__ import annotations
 
 import sys
+from typing import Any
 from types import ModuleType
 from unittest.mock import MagicMock
 
@@ -32,7 +33,11 @@ def test_provider_importability_without_airflow_installed(monkeypatch) -> None:
     from apache_airflow_providers_imednet._airflow_compat import AirflowException, Context
 
     assert issubclass(AirflowException, Exception)
-    assert Context is dict or (hasattr(Context, "__origin__") and Context.__origin__ is dict) or Context == dict[str, Any]
+    assert (
+        Context is dict
+        or (hasattr(Context, "__origin__") and Context.__origin__ is dict)
+        or Context == dict[str, Any]
+    )
 
 
 def test_optional_amazon_dependency_absence(monkeypatch) -> None:
@@ -43,6 +48,7 @@ def test_optional_amazon_dependency_absence(monkeypatch) -> None:
 
     # Hook should still be importable
     from apache_airflow_providers_imednet.hooks import ImednetHook
+
     hook = ImednetHook(imednet_conn_id="test")
     assert hook.imednet_conn_id == "test"
 
@@ -63,14 +69,12 @@ def test_hook_operator_sensor_instantiation() -> None:
         task_id="test_export",
         study_key="S",
         base_dir="/tmp/test",
-        imednet_conn_id="imednet_default"
+        imednet_conn_id="imednet_default",
     )
     assert op.task_id == "test_export"
 
     sensor = ImednetJobSensor(
-        task_id="test_sensor",
-        job_id="J123",
-        imednet_conn_id="imednet_default"
+        task_id="test_sensor", job_id="J123", imednet_conn_id="imednet_default"
     )
     assert sensor.task_id == "test_sensor"
 

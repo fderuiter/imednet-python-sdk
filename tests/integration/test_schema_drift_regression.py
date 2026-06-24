@@ -95,11 +95,19 @@ def test_order_independent_reads(tmp_path: Path) -> None:
     base_dir.mkdir()
 
     pa.Table.from_pandas(pd.DataFrame({"A": [1], "B": [2]}), preserve_index=False)
-    engine.write_form_table(pa.Table.from_pandas(pd.DataFrame({"A": [1], "B": [2]}), preserve_index=False),
-                            base_dir=str(base_dir), study_key="S", form_key="F")
+    engine.write_form_table(
+        pa.Table.from_pandas(pd.DataFrame({"A": [1], "B": [2]}), preserve_index=False),
+        base_dir=str(base_dir),
+        study_key="S",
+        form_key="F",
+    )
 
-    engine.write_form_table(pa.Table.from_pandas(pd.DataFrame({"B": [4], "A": [3]}), preserve_index=False),
-                            base_dir=str(base_dir), study_key="S", form_key="F")
+    engine.write_form_table(
+        pa.Table.from_pandas(pd.DataFrame({"B": [4], "A": [3]}), preserve_index=False),
+        base_dir=str(base_dir),
+        study_key="S",
+        form_key="F",
+    )
 
     # Select specific order
     query = f"SELECT B, A FROM read_parquet('{base_dir}/**/*.parquet', hive_partitioning=True, union_by_name=True)"
