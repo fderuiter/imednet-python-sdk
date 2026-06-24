@@ -97,17 +97,22 @@ class ImednetHook(AirflowBaseHook):
 
     def _resolved_config(self) -> Config:
         """Resolve hook configuration from Airflow connection fields and env fallback."""
+        # Use local import to avoid hard dependency on Airflow at module level
+        # if not already resolved via AirflowBaseHook.
+        base_hook: Any
         try:
-            from airflow.sdk.bases.hook import BaseHook as AirflowSDKBaseHook
+            from airflow.sdk.bases.hook import BaseHook
+
+            base_hook = BaseHook
         except (ImportError, ModuleNotFoundError):
             try:
-                from airflow.hooks.base import (
-                    BaseHook as AirflowSDKBaseHook,  # type: ignore[no-redef,no-redef]
-                )
-            except (ImportError, ModuleNotFoundError):
-                AirflowSDKBaseHook = AirflowBaseHook  # type: ignore[assignment]
+                from airflow.hooks.base import BaseHook as LegacyBaseHook
 
-        conn = AirflowSDKBaseHook.get_connection(self.imednet_conn_id)
+                base_hook = LegacyBaseHook
+            except (ImportError, ModuleNotFoundError):
+                base_hook = AirflowBaseHook
+
+        conn = base_hook.get_connection(self.imednet_conn_id)
         extras_dict = self._connection_extras(conn)
 
         config = load_config(
