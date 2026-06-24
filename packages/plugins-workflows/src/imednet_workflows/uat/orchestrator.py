@@ -112,10 +112,10 @@ class UATSpecificationBuilder:
         seed : Optional[int]
             Passed through to UATSpecification for traceability.
         """
-        site = self._resolve_site(snapshot, site_name)
+        resolved_site_name = self._resolve_site_name(snapshot, site_name)
 
         subject_spec = UATSubjectSpec(
-            site_name=site.site_name or "Default Site",
+            site_name=resolved_site_name,
             subject_count=subject_count,
         )
 
@@ -175,23 +175,21 @@ class UATSpecificationBuilder:
             strategy=VariableTestStrategy.SYNTHETIC,
         )
 
-    def _resolve_site(self, snapshot: StudySnapshot, site_name: Optional[str]) -> Any:
+    def _resolve_site_name(self, snapshot: StudySnapshot, site_name: Optional[str]) -> str:
         """Find the requested site or the first active site."""
         if site_name:
             for site in snapshot.sites:
                 if site.site_name == site_name:
-                    return site
+                    return site.site_name or site_name
 
         active_sites = snapshot.active_sites()
         if active_sites:
-            return active_sites[0]
+            return active_sites[0].site_name or "Default Site"
 
         if snapshot.sites:
-            return snapshot.sites[0]
+            return snapshot.sites[0].site_name or "Default Site"
 
-        from imednet.spi.models import Site
-
-        return Site(site_name="Default Site")
+        return "Default Site"
 
     def _resolve_interval(self, snapshot: StudySnapshot, form_key: Optional[str]) -> Optional[str]:
         """Find the first interval that contains this form."""
