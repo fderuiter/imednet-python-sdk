@@ -8,7 +8,12 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import httpx
 
-__all__ = ["sanitize_base_url", "redact_url_query", "build_safe_path", "redact_sensitive_text"]
+__all__ = [
+    "sanitize_base_url",
+    "redact_url_query",
+    "build_safe_path",
+    "redact_sensitive_text",
+]
 _DUMMY_BASE_URL = "http://dummy/"
 
 
@@ -28,7 +33,9 @@ def redact_sensitive_text(text: Any) -> str:
         """Redact query parameters in the matched URL string."""
         return redact_url_query(match.group(0))
 
-    text = re.sub(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\"'>]*[^\s\"'>.,;:!?\)\]]", replace_url, text)
+    text = re.sub(
+        r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\"'>]*[^\s\"'>.,;:!?\)\]]", replace_url, text
+    )
 
     return text
 

@@ -81,7 +81,9 @@ def test_fixed_strategy_requires_fixed_value() -> None:
 @pytest.mark.parametrize("count", [0, 101])
 def test_subject_count_bounds(count: int) -> None:
     """TODO: Add docstring."""
-    with pytest.raises(ValidationError, match="subject_count must be between 1 and 100"):
+    with pytest.raises(
+        ValidationError, match="subject_count must be between 1 and 100"
+    ):
         UATFormSpec(
             form_key="DEMOG",
             form_name="Demographics",
@@ -89,7 +91,9 @@ def test_subject_count_bounds(count: int) -> None:
             test_type=RecordTestType.CREATE_NEW_RECORD,
             subject_count=count,
         )
-    with pytest.raises(ValidationError, match="subject_count must be between 1 and 100"):
+    with pytest.raises(
+        ValidationError, match="subject_count must be between 1 and 100"
+    ):
         UATSubjectSpec(site_name="Main Site", subject_count=count)
 
 
@@ -158,7 +162,9 @@ def test_enabled_forms_and_forms_by_type_filters_correctly() -> None:
     assert spec.forms_by_type(RecordTestType.REGISTER_SUBJECT) == [enabled_register]
 
 
-def test_from_yaml_raises_when_pyyaml_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_from_yaml_raises_when_pyyaml_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """TODO: Add docstring."""
     monkeypatch.setattr(uat_models, "find_spec", lambda _: None)
     with pytest.raises(ImportError, match="PyYAML is required"):

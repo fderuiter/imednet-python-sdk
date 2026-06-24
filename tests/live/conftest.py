@@ -38,7 +38,9 @@ def _typed_value(var_type: str) -> Any:
 def _print_startup_context() -> None:
     """Print environment context so operators can verify the correct target."""
     print("\n[live-tests] ── startup context ──────────────────────────")
-    print(f"[live-tests]   IMEDNET_RUN_E2E       : {os.getenv('IMEDNET_RUN_E2E', '(not set)')}")
+    print(
+        f"[live-tests]   IMEDNET_RUN_E2E       : {os.getenv('IMEDNET_RUN_E2E', '(not set)')}"
+    )
     print(
         f"[live-tests]   IMEDNET_ALLOW_MUTATION: {os.getenv('IMEDNET_ALLOW_MUTATION', '(not set)')}"
     )
@@ -71,18 +73,24 @@ def allow_mutation() -> bool:
 @pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
     """TODO: Add docstring."""
-    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
+    with ImednetSDK(
+        api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL
+    ) as client:
         yield client
 
 
 @pytest.fixture(scope="session")
-async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[AsyncImednetSDK]:
+async def async_sdk(
+    event_loop: asyncio.AbstractEventLoop,
+) -> AsyncIterator[AsyncImednetSDK]:
     """Provides a session-scoped asynchronous ImednetSDK client.
 
     The `event_loop` parameter is required to ensure proper async fixture teardown and SDK cleanup,
     as pytest needs an explicit event loop for session-scoped async fixtures.
     """
-    client = AsyncImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+    client = AsyncImednetSDK(
+        api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL
+    )
     try:
         yield client
     finally:
@@ -147,7 +155,8 @@ def generated_batch_id(sdk: ImednetSDK, study_key: str, first_form_key: str) -> 
     data: dict[str, Any] = {}
     for var in variables:
         required = any(
-            getattr(var, attr, False) for attr in ("is_required", "required", "mandatory")
+            getattr(var, attr, False)
+            for attr in ("is_required", "required", "mandatory")
         )
         if required:
             data[var.variable_name] = _typed_value(var.variable_type)
@@ -180,7 +189,8 @@ def typed_record(
             selected[var_type] = var
 
     data = {
-        var.variable_name: typed_values.value_for(var.variable_type) for var in selected.values()
+        var.variable_name: typed_values.value_for(var.variable_type)
+        for var in selected.values()
     }
 
     def build(
@@ -215,7 +225,9 @@ def record_payload(
     if scenario == "register":
         return typed_record(site_name=first_site_name)
     if scenario == "scheduled":
-        return typed_record(subject_key=first_subject_key, interval_name=first_interval_name)
+        return typed_record(
+            subject_key=first_subject_key, interval_name=first_interval_name
+        )
     if scenario == "new":
         return typed_record(subject_key=first_subject_key)
     raise ValueError(f"Unknown record scenario: {scenario}")

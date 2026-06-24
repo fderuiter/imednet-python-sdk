@@ -14,7 +14,9 @@ from imednet.core.client import Client
 def test_successful_get_sync_client():
     """TODO: Add docstring."""
     client = Client("k", "s", base_url="https://api.test")
-    respx.get("https://api.test/api/v1/edc/studies").respond(status_code=200, json={"data": [1]})
+    respx.get("https://api.test/api/v1/edc/studies").respond(
+        status_code=200, json={"data": [1]}
+    )
 
     resp = client.get("/api/v1/edc/studies")
 
@@ -33,7 +35,9 @@ def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
             """TODO: Add docstring."""
             return isinstance(state.exception, errors.ServerError)
 
-    client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=Policy())
+    client = Client(
+        "k", "s", base_url="https://api.test", retries=3, retry_policy=Policy()
+    )
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:

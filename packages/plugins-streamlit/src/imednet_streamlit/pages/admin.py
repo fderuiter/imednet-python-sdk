@@ -20,7 +20,8 @@ if st.button("Provision Tenant Environment"):
     else:
         try:
             db_path = os.environ.get(
-                "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
+                "IMEDNET_TENANT_DB_PATH",
+                os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"),
             )
             os.makedirs(os.path.dirname(db_path), exist_ok=True)
             with sqlite3.connect(db_path) as conn:

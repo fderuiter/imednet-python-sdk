@@ -40,7 +40,9 @@ class _FakeNavigation:
 class _FakeSidebar:
     """TODO: Add docstring."""
 
-    def toggle(self, label: str, value: bool = False, on_change: Any = None, **kwargs: Any) -> bool:
+    def toggle(
+        self, label: str, value: bool = False, on_change: Any = None, **kwargs: Any
+    ) -> bool:
         """TODO: Add docstring."""
         return value
 
@@ -327,7 +329,9 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
     # Fake components module (avoids needing real altair/streamlit rendering)
     fake_components_module = _make_fake_components_module(fake_st)
     package_module = sys.modules.get("imednet_streamlit")
-    saved_auth_attr = getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    saved_auth_attr = (
+        getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    )
     saved_components_attr = (
         getattr(package_module, "components", _MISSING) if package_module else _MISSING
     )
@@ -429,7 +433,9 @@ def _run_sites_page(
 
     fake_components_module = _make_fake_components_module(fake_st)
     package_module = sys.modules.get("imednet_streamlit")
-    saved_auth_attr = getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    saved_auth_attr = (
+        getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    )
     saved_components_attr = (
         getattr(package_module, "components", _MISSING) if package_module else _MISSING
     )
@@ -530,7 +536,9 @@ def _run_records_page(
 
     fake_components_module = _make_fake_components_module(fake_st)
     package_module = sys.modules.get("imednet_streamlit")
-    saved_auth_attr = getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    saved_auth_attr = (
+        getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    )
     saved_components_attr = (
         getattr(package_module, "components", _MISSING) if package_module else _MISSING
     )
@@ -1038,7 +1046,10 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
 
     # Build a minimal site mock
     mock_site = MagicMock()
-    mock_site.model_dump.return_value = {"site_name": "Site A", "site_enrollment_status": "Open"}
+    mock_site.model_dump.return_value = {
+        "site_name": "Site A",
+        "site_enrollment_status": "Open",
+    }
 
     mock_sdk = MagicMock()
     mock_sdk.get_subjects.return_value = mock_subjects
@@ -1053,7 +1064,9 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
         data=df.copy(), kwargs=kw
     )
     package_module = sys.modules.get("imednet_streamlit")
-    saved_auth_attr = getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    saved_auth_attr = (
+        getattr(package_module, "auth", _MISSING) if package_module else _MISSING
+    )
     saved_components_attr = (
         getattr(package_module, "components", _MISSING) if package_module else _MISSING
     )

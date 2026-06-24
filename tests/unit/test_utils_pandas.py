@@ -76,7 +76,9 @@ def test_export_records_csv_no_flatten(tmp_path) -> None:
 def test_records_to_dataframe_raises_importerror_when_pandas_missing(monkeypatch):
     """TODO: Add docstring."""
     monkeypatch.setattr("imednet.utils.pandas.pd", None)
-    with pytest.raises(ImportError, match="pandas is required for records_to_dataframe"):
+    with pytest.raises(
+        ImportError, match="pandas is required for records_to_dataframe"
+    ):
         records_to_dataframe([])
 
 

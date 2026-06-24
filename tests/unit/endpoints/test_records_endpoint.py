@@ -53,7 +53,9 @@ def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
     context.set_default_study_key("S1")
     ep = records.RecordsEndpoint(dummy_client, context)
     monkeypatch.setattr(
-        records.RecordsEndpoint, "_list_sync", lambda *args, **kwargs: [Record(record_id=1)]
+        records.RecordsEndpoint,
+        "_list_sync",
+        lambda *args, **kwargs: [Record(record_id=1)],
     )
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'record_id'"):
@@ -74,7 +76,9 @@ def test_get_not_found(monkeypatch, dummy_client, context):
         ep.get("S1", 1)
 
 
-def test_create_sends_headers_and_parses_job(dummy_client, context, response_factory, monkeypatch):
+def test_create_sends_headers_and_parses_job(
+    dummy_client, context, response_factory, monkeypatch
+):
     """TODO: Add docstring."""
     ep = records.RecordsEndpoint(dummy_client, context)
     dummy_client.post.return_value = response_factory({"jobId": "1"})
@@ -102,7 +106,9 @@ def test_create_validates_data(dummy_client, context, response_factory):
     """TODO: Add docstring."""
     ep = records.RecordsEndpoint(dummy_client, context)
     schema = SchemaCache()
-    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    var = Variable(
+        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
+    )
     schema._form_variables = {"F1": {"age": var}}
     schema._form_id_to_key = {1: "F1"}
 
@@ -122,11 +128,15 @@ def test_create_validates_data(dummy_client, context, response_factory):
     dummy_client.post.assert_called_once()
 
 
-def test_create_validates_data_with_snake_case_keys(dummy_client, context, response_factory):
+def test_create_validates_data_with_snake_case_keys(
+    dummy_client, context, response_factory
+):
     """TODO: Add docstring."""
     ep = records.RecordsEndpoint(dummy_client, context)
     schema = SchemaCache()
-    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
+    var = Variable(
+        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
+    )
     schema._form_variables = {"F1": {"age": var}}
     schema._form_id_to_key = {1: "F1"}
 

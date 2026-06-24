@@ -8,7 +8,9 @@ from imednet.errors.validation import ConfigurationError
 from imednet.models.users import User
 
 
-def test_list_requires_study_key_and_include_inactive(dummy_client, context, paginator_factory):
+def test_list_requires_study_key_and_include_inactive(
+    dummy_client, context, paginator_factory
+):
     """TODO: Add docstring."""
     ep = users.UsersEndpoint(dummy_client, context)
     capture = paginator_factory(users, [{"userId": 1}])

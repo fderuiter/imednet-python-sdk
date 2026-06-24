@@ -43,7 +43,11 @@ def bar_chart(
             x=alt.X(f"{x}:Q", title=x_title),
             y=alt.Y(f"{y}:N", title=y_title, sort="-x"),
             color=_color_encoding(color),
-            tooltip=[alt.Tooltip(f"{y}:N"), alt.Tooltip(f"{x}:Q"), alt.Tooltip(f"{color}:N")],
+            tooltip=[
+                alt.Tooltip(f"{y}:N"),
+                alt.Tooltip(f"{x}:Q"),
+                alt.Tooltip(f"{color}:N"),
+            ],
         )
     else:
         chart = chart.encode(
@@ -81,7 +85,11 @@ def line_chart(
             x=alt.X(f"{x}:T"),
             y=alt.Y(f"{y}:Q"),
             color=_color_encoding(color),
-            tooltip=[alt.Tooltip(f"{x}:T"), alt.Tooltip(f"{y}:Q"), alt.Tooltip(f"{color}:N")],
+            tooltip=[
+                alt.Tooltip(f"{x}:T"),
+                alt.Tooltip(f"{y}:Q"),
+                alt.Tooltip(f"{color}:N"),
+            ],
         )
     else:
         chart = chart.encode(
@@ -119,7 +127,9 @@ def pie_chart(
             color=_color_encoding(color),
             tooltip=[alt.Tooltip(f"{color}:N"), alt.Tooltip(f"{theta}:Q")],
         )
-        .properties(width="container", title=title, description=f"Pie chart for {title}")
+        .properties(
+            width="container", title=title, description=f"Pie chart for {title}"
+        )
     )
 
 

@@ -55,7 +55,9 @@ class FormProfile(BaseModel):
 class SchemaProfiler:
     """Profile form and record-data population across cached records."""
 
-    def __init__(self, sdk: "ImednetFacade", loader: CachedRecordsLoader | None = None) -> None:
+    def __init__(
+        self, sdk: "ImednetFacade", loader: CachedRecordsLoader | None = None
+    ) -> None:
         """Initialize the schema profiler.
 
         Args:
@@ -77,7 +79,9 @@ class SchemaProfiler:
         schema = SchemaCache()
         schema.populate(variables)
         form_names = {form.form_key: form.form_name for form in forms}
-        records_iterable = records if records is not None else self._iter_records(study_key)
+        records_iterable = (
+            records if records is not None else self._iter_records(study_key)
+        )
 
         form_accumulators: dict[str, _FormAccumulator] = {}
         for record in records_iterable:
@@ -90,7 +94,9 @@ class SchemaProfiler:
             if not isinstance(record.record_data, dict):
                 continue
             for field_name, value in record.record_data.items():
-                field_accumulator = accumulator.fields.setdefault(field_name, _FieldAccumulator())
+                field_accumulator = accumulator.fields.setdefault(
+                    field_name, _FieldAccumulator()
+                )
                 field_accumulator.observe(value)
 
         profiles: dict[str, FormProfile] = {}
@@ -143,15 +149,17 @@ class SchemaProfiler:
         inferred_type = accumulator.inferred_type(variable)
         population_rate = 0.0
         if record_count:
-            population_rate = round((accumulator.populated_count / record_count) * 100, 2)
+            population_rate = round(
+                (accumulator.populated_count / record_count) * 100, 2
+            )
 
         label = field_name
         if variable is not None:
-            var_label = getattr(variable, 'label', None)
+            var_label = getattr(variable, "label", None)
             if not var_label:
-                extra = getattr(variable, 'model_extra', None)
+                extra = getattr(variable, "model_extra", None)
                 if extra:
-                    var_label = extra.get('label', '')
+                    var_label = extra.get("label", "")
             if var_label:
                 label = str(var_label)
 

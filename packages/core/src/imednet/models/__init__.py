@@ -4,12 +4,12 @@ This package contains all data models used by the SDK to represent iMedNet resou
 """
 
 from imednet.models.base import (
-    ApiResponse,
-    Error,
-    ImednetBaseModel,
-    Metadata,
-    Pagination,
-    SortField,
+                                 ApiResponse,
+                                 Error,
+                                 ImednetBaseModel,
+                                 Metadata,
+                                 Pagination,
+                                 SortField,
 )
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
@@ -18,32 +18,32 @@ from imednet.models.jobs import Job, JobStatus
 from imednet.models.queries import Query, QueryComment
 from imednet.models.record_revisions import RecordRevision
 from imednet.models.records import (
-    BaseRecordRequest,
-    CreateNewRecordRequest,
-    Keyword,
-    Record,
-    RecordData,
-    RecordJobResponse,
-    RegisterSubjectRequest,
-    UpdateScheduledRecordRequest,
+                                 BaseRecordRequest,
+                                 CreateNewRecordRequest,
+                                 Keyword,
+                                 Record,
+                                 RecordData,
+                                 RecordJobResponse,
+                                 RegisterSubjectRequest,
+                                 UpdateScheduledRecordRequest,
 )
 from imednet.models.reporting import (
-    AdverseEvent,
-    AnalysisAdverseEvent,
-    AnalysisLabResult,
-    DeviceDeficiency,
-    ProtocolDeviation,
-    SubjectLevelAnalysis,
+                                 AdverseEvent,
+                                 AnalysisAdverseEvent,
+                                 AnalysisLabResult,
+                                 DeviceDeficiency,
+                                 ProtocolDeviation,
+                                 SubjectLevelAnalysis,
 )
 from imednet.models.sites import Site
 from imednet.models.standards import (
-    PROFILE_REGISTRY,
-    DeviceSafetyProfile,
-    DrugSafetyProfile,
-    GeneralClinicalProfile,
-    StandardsProfile,
-    StandardsProfileRegistry,
-    ValidationViolation,
+                                 PROFILE_REGISTRY,
+                                 DeviceSafetyProfile,
+                                 DrugSafetyProfile,
+                                 GeneralClinicalProfile,
+                                 StandardsProfile,
+                                 StandardsProfileRegistry,
+                                 ValidationViolation,
 )
 from imednet.models.studies import Study
 from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
@@ -54,12 +54,12 @@ from imednet.models.users import Role, User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
 from imednet.utils.validators import (
-    parse_bool,
-    parse_datetime,
-    parse_dict_or_default,
-    parse_int_or_default,
-    parse_list_or_default,
-    parse_str_or_default,
+                                 parse_bool,
+                                 parse_datetime,
+                                 parse_dict_or_default,
+                                 parse_int_or_default,
+                                 parse_list_or_default,
+                                 parse_str_or_default,
 )
 
 __all__: list[str] = [

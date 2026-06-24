@@ -93,8 +93,14 @@ def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [
-        [_record(1, "2024-01-01 00:00:00+00:00"), _record(2, "2024-01-02 00:00:00+00:00")],
-        [_record(1, "2024-01-01 00:00:00+00:00"), _record(2, "2024-01-02 00:00:00+00:00")],
+        [
+            _record(1, "2024-01-01 00:00:00+00:00"),
+            _record(2, "2024-01-02 00:00:00+00:00"),
+        ],
+        [
+            _record(1, "2024-01-01 00:00:00+00:00"),
+            _record(2, "2024-01-02 00:00:00+00:00"),
+        ],
     ]
     loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
 
@@ -133,7 +139,9 @@ def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None
     assert row[0] == 1
 
 
-def test_sync_records_handles_empty_delta_without_reconciliation(tmp_path: Path) -> None:
+def test_sync_records_handles_empty_delta_without_reconciliation(
+    tmp_path: Path,
+) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [

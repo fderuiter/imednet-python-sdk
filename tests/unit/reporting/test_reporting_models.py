@@ -84,7 +84,9 @@ def test_device_deficiency_parses_valid_input() -> None:
         ),
     ],
 )
-def test_reporting_models_reject_missing_required_fields(model_cls: type, payload: dict) -> None:
+def test_reporting_models_reject_missing_required_fields(
+    model_cls: type, payload: dict
+) -> None:
     """TODO: Add docstring."""
     with pytest.raises(ValidationError):
         model_cls.model_validate(payload)

@@ -41,7 +41,9 @@ def test_dashboard_missing_plugin() -> None:
 def test_dashboard_launches_subprocess() -> None:
     """When plugin is installed, subprocess.run is called with correct args."""
     streamlit_mock = ModuleType("streamlit")
-    dashboard_spec = ModuleSpec("imednet_streamlit.app", loader=None, origin="/fake/path/app.py")
+    dashboard_spec = ModuleSpec(
+        "imednet_streamlit.app", loader=None, origin="/fake/path/app.py"
+    )
 
     from importlib.util import find_spec
 
@@ -67,7 +69,9 @@ def test_dashboard_launches_subprocess() -> None:
             runner = CliRunner()
             with patch("subprocess.run") as mock_run:
                 mock_run.return_value = MagicMock(returncode=0)
-                result = runner.invoke(app, ["dashboard", "--port", "9999", "--no-browser"])
+                result = runner.invoke(
+                    app, ["dashboard", "--port", "9999", "--no-browser"]
+                )
 
     mock_run.assert_called_once()
     call_args = mock_run.call_args[0][0]

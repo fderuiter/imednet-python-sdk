@@ -53,7 +53,9 @@ async def main() -> None:
         job_study = os.getenv("IMEDNET_JOB_STUDY_KEY")
         batch_id = os.getenv("IMEDNET_BATCH_ID")
         if job_study and batch_id:
-            status = await sdk.async_poll_job(job_study, batch_id, interval=2, timeout=60)
+            status = await sdk.async_poll_job(
+                job_study, batch_id, interval=2, timeout=60
+            )
             print(status)
 
 

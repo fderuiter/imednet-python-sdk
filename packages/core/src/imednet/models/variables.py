@@ -18,4 +18,4 @@ class Variable(JsonModel):
     variable_oid: str | None = Field(default=None, alias="variableOid")
 
 
-Variable = ModelEngine.get_model('Variable', Variable)
+Variable = ModelEngine.get_model("Variable", Variable)

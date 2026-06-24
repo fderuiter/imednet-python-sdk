@@ -119,7 +119,9 @@ class UniversalExecutor:
             reraise=False,
         )
 
-        with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
+        with OperationMonitor(
+            self.tracer, self.operation_name, **self.attributes
+        ) as monitor:
             try:
                 result: Any = retryer(func)
                 get_global_circuit_breaker().record_success()
@@ -153,7 +155,9 @@ class UniversalExecutor:
             reraise=False,
         )
 
-        async with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
+        async with OperationMonitor(
+            self.tracer, self.operation_name, **self.attributes
+        ) as monitor:
             try:
 
                 async def _async_wrapper() -> T:

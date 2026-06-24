@@ -79,7 +79,9 @@ def _fetch_form_metadata(_sdk: object, study_key: str) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=FORM_COLUMNS)
 
 
-def _prepare_records_dataframe(records_df: pd.DataFrame, forms_df: pd.DataFrame) -> pd.DataFrame:
+def _prepare_records_dataframe(
+    records_df: pd.DataFrame, forms_df: pd.DataFrame
+) -> pd.DataFrame:
     """TODO: Add docstring."""
     if records_df.empty:
         return pd.DataFrame(columns=[*RECORD_COLUMNS, "form_name"])
@@ -215,7 +217,9 @@ def _build_heatmap_chart(heatmap_df: pd.DataFrame) -> alt.Chart:
                 alt.Tooltip("completion_status:N", title="Status"),
             ],
         )
-        .properties(width="container", height=chart_height, title="Subject × Form Completion")
+        .properties(
+            width="container", height=chart_height, title="Subject × Form Completion"
+        )
     )
 
 
@@ -245,7 +249,9 @@ def render_page() -> None:
         else []
     )
     site_options = (
-        [str(value) for value in _sorted_unique_values(df["site_id"])] if "site_id" in df else []
+        [str(value) for value in _sorted_unique_values(df["site_id"])]
+        if "site_id" in df
+        else []
     )
     status_options = _status_options(df)
 
@@ -254,7 +260,9 @@ def render_page() -> None:
         st.subheader("Filters")
         form_filter: list[str] = st.multiselect("Form", form_options)
         site_filter = st.multiselect("Site", site_options)
-        status_filter: list[str] = st.multiselect("Status", status_options, default=status_options)
+        status_filter: list[str] = st.multiselect(
+            "Status", status_options, default=status_options
+        )
 
     df_filtered = _apply_filters(
         df,
@@ -266,7 +274,10 @@ def render_page() -> None:
     components.kpi_row(
         [
             {"label": "Total Records", "value": len(df_filtered)},
-            {"label": "Complete", "value": int((df_filtered["record_status"] == "Complete").sum())},
+            {
+                "label": "Complete",
+                "value": int((df_filtered["record_status"] == "Complete").sum()),
+            },
             {
                 "label": "Incomplete",
                 "value": int((df_filtered["record_status"] == "Incomplete").sum()),
@@ -275,7 +286,10 @@ def render_page() -> None:
                 "label": "Pending SDV",
                 "value": int((df_filtered["record_status"] == "Pending SDV").sum()),
             },
-            {"label": "Verified", "value": int((df_filtered["record_status"] == "Verified").sum())},
+            {
+                "label": "Verified",
+                "value": int((df_filtered["record_status"] == "Verified").sum()),
+            },
         ]
     )
 

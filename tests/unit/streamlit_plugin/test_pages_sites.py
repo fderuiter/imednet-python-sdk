@@ -10,7 +10,9 @@ from typing import Any
 from unittest.mock import MagicMock
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+PACKAGE_ROOT = (
+    REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+)
 
 
 class _FakeContextManager:

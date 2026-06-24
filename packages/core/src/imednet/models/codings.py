@@ -14,4 +14,4 @@ class Coding(JsonModel):
     """Represents a medical coding entry associated with a record."""
 
 
-Coding = ModelEngine.get_model('Coding', Coding)
+Coding = ModelEngine.get_model("Coding", Coding)

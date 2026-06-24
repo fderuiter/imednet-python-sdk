@@ -11,7 +11,9 @@ from typing import Any
 import imednet_streamlit.pages  # noqa: F401
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+PACKAGE_ROOT = (
+    REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+)
 
 
 class _FakePageStreamlit:

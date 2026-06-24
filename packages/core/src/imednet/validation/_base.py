@@ -19,7 +19,9 @@ class _ValidatorMixin:
         Returns:
             Optional[str]: The resolved form key.
         """
-        return record.get("formKey") or self.schema.form_key_from_id(record.get("formId", 0))
+        return record.get("formKey") or self.schema.form_key_from_id(
+            record.get("formId", 0)
+        )
 
     def _validate_cached(self, form_key: Optional[str], data: Dict[str, Any]) -> None:
         """Validate data against a cached form schema.

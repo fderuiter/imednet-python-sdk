@@ -19,7 +19,9 @@ def test_get_study_structure(sdk: ImednetSDK, study_key: str) -> None:
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_async_get_study_structure(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+async def test_async_get_study_structure(
+    async_sdk: AsyncImednetSDK, study_key: str
+) -> None:
     """TODO: Add docstring."""
     struct = await async_get_study_structure(async_sdk, study_key)
     assert struct.study_key == study_key
@@ -40,7 +42,9 @@ def test_register_subjects_workflow(
     )
     wf = RegisterSubjectsWorkflow(sdk)
     job = wf.register_subjects(study_key, [req])
-    assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    assert (
+        job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    )
 
 
 def test_extract_records_by_criteria(sdk: ImednetSDK, study_key: str) -> None:
@@ -57,7 +61,9 @@ def test_extract_audit_trail(sdk: ImednetSDK, study_key: str) -> None:
     assert isinstance(trail, list)
 
 
-def test_subject_data_workflow(sdk: ImednetSDK, study_key: str, first_subject_key: str) -> None:
+def test_subject_data_workflow(
+    sdk: ImednetSDK, study_key: str, first_subject_key: str
+) -> None:
     """TODO: Add docstring."""
     data = sdk.workflows.subject_data.get_all_subject_data(study_key, first_subject_key)
     assert data.subject_details is not None
@@ -104,7 +110,9 @@ def test_record_update_submit_batch(sdk: ImednetSDK, study_key: str) -> None:
     """TODO: Add docstring."""
     require_mutation()
     job = sdk.workflows.record_update.create_or_update_records(study_key, [])
-    assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    assert (
+        job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    )
 
 
 def test_record_update_register_subject(sdk: ImednetSDK, study_key: str) -> None:
@@ -117,7 +125,9 @@ def test_record_update_register_subject(sdk: ImednetSDK, study_key: str) -> None
         {},
         wait_for_completion=False,
     )
-    assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    assert (
+        job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    )
 
 
 def test_record_update_update_scheduled(
@@ -133,10 +143,14 @@ def test_record_update_update_scheduled(
         {},
         wait_for_completion=False,
     )
-    assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    assert (
+        job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    )
 
 
-def test_record_update_create_new(sdk: ImednetSDK, study_key: str, first_subject_key: str) -> None:
+def test_record_update_create_new(
+    sdk: ImednetSDK, study_key: str, first_subject_key: str
+) -> None:
     """TODO: Add docstring."""
     require_mutation()
     job = sdk.workflows.record_update.create_new_record(
@@ -146,4 +160,6 @@ def test_record_update_create_new(sdk: ImednetSDK, study_key: str, first_subject
         {},
         wait_for_completion=False,
     )
-    assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    assert (
+        job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
+    )

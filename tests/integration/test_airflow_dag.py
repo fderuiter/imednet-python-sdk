@@ -13,8 +13,8 @@ def test_dag_runs(monkeypatch, tmp_path):
     out_csv = tmp_path / "out.csv"
     from airflow.models import DAG, TaskInstance  # noqa: E402, I001
     from airflow.utils.state import State  # noqa: E402, I001
-
-    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetExportOperator  # noqa: E402, I001
+    from apache_airflow_providers_imednet import (  # noqa: E402, I001
+        ImednetExportOperator, ImednetJobSensor)
 
     sdk = MagicMock()
 
@@ -25,7 +25,9 @@ def test_dag_runs(monkeypatch, tmp_path):
     from imednet.integrations import export as export_mod
 
     monkeypatch.setattr(
-        export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
+        export_mod,
+        "_record_mapper",
+        MagicMock(return_value=MagicMock(return_value=mapper_inst)),
     )
 
     sdk.jobs.get.return_value = SimpleNamespace(state="COMPLETED")
@@ -44,7 +46,7 @@ def test_dag_runs(monkeypatch, tmp_path):
 
     export.execute(context={})
     wait.execute(context={})
-    with open(str(out_csv), 'r') as f:
+    with open(str(out_csv), "r") as f:
         body = f.read()
     assert "id" in body
     assert "id" in body

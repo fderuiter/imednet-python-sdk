@@ -49,7 +49,9 @@ def discover_form_key(sdk: ImednetSDK, study_key: str) -> str:
     for form in forms:
         if form.subject_record_report is not False and not form.disabled:
             # Form must have variables to be useful for record creation.
-            variables = list(sdk.variables.list(study_key=study_key, formKey=form.form_key))
+            variables = list(
+                sdk.variables.list(study_key=study_key, formKey=form.form_key)
+            )
             if variables:
                 return form.form_key or ""
     raise NoLiveDataError("No forms available for record creation")
@@ -76,7 +78,9 @@ def discover_site_name(sdk: ImednetSDK, study_key: str) -> str:
         study_key,
         counts,
     )
-    raise NoLiveDataError(f"No eligible sites available for live tests (encountered: {counts})")
+    raise NoLiveDataError(
+        f"No eligible sites available for live tests (encountered: {counts})"
+    )
 
 
 def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
@@ -100,7 +104,9 @@ def discover_subject_key(sdk: ImednetSDK, study_key: str) -> str:
         study_key,
         counts,
     )
-    raise NoLiveDataError(f"No eligible subjects available for live tests (encountered: {counts})")
+    raise NoLiveDataError(
+        f"No eligible subjects available for live tests (encountered: {counts})"
+    )
 
 
 def discover_interval_name(sdk: ImednetSDK, study_key: str) -> str:

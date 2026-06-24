@@ -32,14 +32,18 @@ class _FakeColumn:
         self.captions.append(value)
 
 
-def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_paginated_slice_limits_rows_to_active_page(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """TODO: Add docstring."""
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
     next_col = _FakeColumn()
 
-    monkeypatch.setattr(paginated_grid.st, "session_state", session_state, raising=False)
+    monkeypatch.setattr(
+        paginated_grid.st, "session_state", session_state, raising=False
+    )
     monkeypatch.setattr(paginated_grid.st, "selectbox", lambda *args, **kwargs: 100)
     monkeypatch.setattr(
         paginated_grid.st,
@@ -63,7 +67,9 @@ def test_paginated_slice_moves_to_next_page(monkeypatch: pytest.MonkeyPatch) -> 
     info_col = _FakeColumn()
     next_col = _FakeColumn(next_click=True)
 
-    monkeypatch.setattr(paginated_grid.st, "session_state", session_state, raising=False)
+    monkeypatch.setattr(
+        paginated_grid.st, "session_state", session_state, raising=False
+    )
     monkeypatch.setattr(paginated_grid.st, "selectbox", lambda *args, **kwargs: 100)
     monkeypatch.setattr(
         paginated_grid.st,

@@ -14,7 +14,9 @@ R = TypeVar("R")
 DEFAULT_CHUNK_SIZE = 5_000
 
 
-def iter_chunks(items: Iterable[T], *, chunk_size: int = DEFAULT_CHUNK_SIZE) -> Iterator[list[T]]:
+def iter_chunks(
+    items: Iterable[T], *, chunk_size: int = DEFAULT_CHUNK_SIZE
+) -> Iterator[list[T]]:
     """Yield ``items`` in bounded chunks."""
     if chunk_size <= 0:
         raise ValueError("chunk_size must be greater than zero")
@@ -42,7 +44,9 @@ class ChunkedRecordPipeline:
             raise ValueError("chunk_size must be greater than zero")
         self.chunk_size = chunk_size
 
-    def map_chunks(self, items: Iterable[T], mapper: Callable[[T], R]) -> Iterator[list[R]]:
+    def map_chunks(
+        self, items: Iterable[T], mapper: Callable[[T], R]
+    ) -> Iterator[list[R]]:
         """Apply ``mapper`` to ``items`` and yield mapped chunks."""
         for chunk in iter_chunks(items, chunk_size=self.chunk_size):
             mapped = [mapper(item) for item in chunk]
@@ -62,7 +66,9 @@ class ChunkedRecordPipeline:
         target_dir.mkdir(parents=True, exist_ok=True)
 
         written: list[Path] = []
-        for index, chunk in enumerate(iter_chunks(rows, chunk_size=self.chunk_size), start=1):
+        for index, chunk in enumerate(
+            iter_chunks(rows, chunk_size=self.chunk_size), start=1
+        ):
             frame = pd.DataFrame(chunk)
             destination = target_dir / f"{filename_prefix}_chunk_{index:05d}.parquet"
             frame.to_parquet(destination, index=False)

@@ -129,7 +129,9 @@ def test_sync_executor_null_response(monkeypatch):
 
     executor = SyncRequestExecutor(client.request, retries=0, backoff_factor=0)
 
-    with pytest.raises(RuntimeError, match="Request failed without response or exception"):
+    with pytest.raises(
+        RuntimeError, match="Request failed without response or exception"
+    ):
         executor("GET", "/ping")
 
     client.close()
@@ -149,7 +151,9 @@ async def test_async_executor_null_response(monkeypatch):
 
     executor = AsyncRequestExecutor(async_client.request, retries=0, backoff_factor=0)
 
-    with pytest.raises(RuntimeError, match="Request failed without response or exception"):
+    with pytest.raises(
+        RuntimeError, match="Request failed without response or exception"
+    ):
         try:
             await executor("GET", "/ping")
         finally:

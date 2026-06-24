@@ -10,7 +10,9 @@ class ValidationError(ApiError):
     """Raised when a request is malformed or validation fails (HTTP 400)."""
 
     def __init__(
-        self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = 400
+        self,
+        response: Union[Dict[str, Any], str, Any],
+        status_code: Optional[int] = 400,
     ) -> None:
         """Initialize validation error."""
         super().__init__(response, status_code=status_code)

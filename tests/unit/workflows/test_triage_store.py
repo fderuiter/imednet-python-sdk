@@ -94,7 +94,9 @@ def test_triage_store_handles_parallel_reads_and_writes(tmp_path: Path) -> None:
             pool.submit(_reader) for _ in range(10)
         ]
 
-    failures = [future.exception() for future in futures if future.exception() is not None]
+    failures = [
+        future.exception() for future in futures if future.exception() is not None
+    ]
     assert failures == []
 
     latest = store.get_triage_item("AE-99")
@@ -140,7 +142,8 @@ def test_triage_store_migrates_legacy_schema(tmp_path: Path) -> None:
 
     with sqlite3.connect(db_path) as conn:
         columns = {
-            str(row[1]) for row in conn.execute("PRAGMA table_info(triage_items)").fetchall()
+            str(row[1])
+            for row in conn.execute("PRAGMA table_info(triage_items)").fetchall()
         }
         version = int(conn.execute("PRAGMA user_version").fetchone()[0])
 
@@ -167,7 +170,9 @@ def test_triage_store_masks_sensitive_operational_errors(
 
     def _failing_write(_conn: sqlite3.Connection) -> None:
         """TODO: Add docstring."""
-        raise sqlite3.OperationalError("unable to open database file: token=supersecret")
+        raise sqlite3.OperationalError(
+            "unable to open database file: token=supersecret"
+        )
 
     with pytest.raises(sqlite3.OperationalError) as exc_info:
         store._execute_write(_failing_write)

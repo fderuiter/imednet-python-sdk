@@ -27,10 +27,12 @@ class QueryManagementWorkflow:
         """
         if not getattr(
             query,
-            'query_comments',
-            getattr(query, 'model_extra', {}).get('query_comments', [])
-            if getattr(query, 'model_extra', None) is not None
-            else [],
+            "query_comments",
+            (
+                getattr(query, "model_extra", {}).get("query_comments", [])
+                if getattr(query, "model_extra", None) is not None
+                else []
+            ),
         ):  # type: ignore
             return None
 
@@ -38,10 +40,12 @@ class QueryManagementWorkflow:
         latest_comment = max(
             getattr(
                 query,
-                'query_comments',
-                getattr(query, 'model_extra', {}).get('query_comments', [])
-                if getattr(query, 'model_extra', None) is not None
-                else [],
+                "query_comments",
+                (
+                    getattr(query, "model_extra", {}).get("query_comments", [])
+                    if getattr(query, "model_extra", None) is not None
+                    else []
+                ),
             ),
             key=lambda c: c.sequence,
         )  # type: ignore
@@ -52,7 +56,9 @@ class QueryManagementWorkflow:
     def get_open_queries(
         self,
         study_key: str,
-        additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        additional_filter: Optional[
+            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
+        ] = None,
         **kwargs: Any,
     ) -> List[Query]:
         """Retrieves all open queries for a given study, potentially filtered further.
@@ -87,7 +93,9 @@ class QueryManagementWorkflow:
         self,
         study_key: str,
         subject_key: str,
-        additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        additional_filter: Optional[
+            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
+        ] = None,
         **kwargs: Any,
     ) -> List[Query]:
         """Retrieves all queries for a specific subject within a study.
@@ -113,7 +121,9 @@ class QueryManagementWorkflow:
         self,
         study_key: str,
         site_key: str,
-        additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        additional_filter: Optional[
+            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
+        ] = None,
         **kwargs: Any,
     ) -> List[Query]:
         """Retrieves all queries for a specific site within a study.

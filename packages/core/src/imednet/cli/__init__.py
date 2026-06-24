@@ -24,7 +24,6 @@ except ImportError:  # pragma: no cover
 from dotenv import load_dotenv
 
 from ..integrations import SinkConfig  # noqa: F401
-
 # Re-export for tests
 from ..integrations.export import export_to_csv  # noqa: F401
 from ..integrations.export import export_to_duckdb  # noqa: F401
@@ -145,7 +144,9 @@ def _register_missing_dashboard_commands() -> None:
 
 
 def run_dashboard(
-    port: int = typer.Option(8501, "--port", "-p", help="Port to run the dashboard on."),
+    port: int = typer.Option(
+        8501, "--port", "-p", help="Port to run the dashboard on."
+    ),
     no_browser: bool = typer.Option(
         False, "--no-browser", help="Suppress automatic browser launch."
     ),
@@ -164,7 +165,15 @@ def run_dashboard(
         typer.secho("Cannot resolve dashboard app path.", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    cmd = [sys.executable, "-m", "streamlit", "run", app_path, "--server.port", str(port)]
+    cmd = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        app_path,
+        "--server.port",
+        str(port),
+    ]
     if no_browser:
         cmd += ["--server.headless", "true"]
 
@@ -185,17 +194,25 @@ try:  # pragma: no cover - optional workflows plugin
     DataExtractionWorkflow = import_module(  # noqa: F401
         "imednet_workflows.data_extraction"
     ).DataExtractionWorkflow
-    SubjectDataWorkflow = import_module("imednet_workflows.subject_data").SubjectDataWorkflow  # noqa: F401
+    SubjectDataWorkflow = import_module(
+        "imednet_workflows.subject_data"
+    ).SubjectDataWorkflow  # noqa: F401
     app.add_typer(workflows_cli.app)
     app.command("subject-data")(workflows_cli.subject_data)
     app.command("sync-worker")(workflows_cli.sync_worker)
-except (ImportError, ModuleNotFoundError, AttributeError):  # pragma: no cover - optional plugin
+except (
+    ImportError,
+    ModuleNotFoundError,
+    AttributeError,
+):  # pragma: no cover - optional plugin
     DataExtractionWorkflow = None  # type: ignore[assignment]
     SubjectDataWorkflow = None  # type: ignore[assignment]
     _register_missing_workflow_commands()
 
 
-if find_spec("imednet_streamlit") is not None:  # pragma: no cover - optional streamlit plugin
+if (
+    find_spec("imednet_streamlit") is not None
+):  # pragma: no cover - optional streamlit plugin
     app.command("dashboard")(run_dashboard)
 else:  # pragma: no cover
     _register_missing_dashboard_commands()

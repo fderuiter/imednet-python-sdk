@@ -7,7 +7,9 @@ from typing import Any
 from imednet.orchestration import OrchestratorResult, StudyWorkerCallable
 
 
-def _worker(study_key: str, sdk_client: Any, logger: Any, *args: Any, **kwargs: Any) -> int:
+def _worker(
+    study_key: str, sdk_client: Any, logger: Any, *args: Any, **kwargs: Any
+) -> int:
     """TODO: Add docstring."""
     _ = (study_key, sdk_client, logger, args, kwargs)
     return 1

@@ -36,7 +36,9 @@ async def test_async_context_manager():
     async_client_mock = MagicMock(spec=AsyncClient)
     async_client_mock.aclose = AsyncMock()
 
-    with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
+    with patch(
+        "imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock
+    ):
         async with AsyncImednetSDK() as sdk:
             assert isinstance(sdk, AsyncImednetSDK)
 
@@ -61,7 +63,10 @@ def test_sync_sdk_does_not_create_async_client():
 def test_async_sdk_close_raises_type_error():
     """AsyncImednetSDK.close() raises TypeError — sync close is forbidden."""
     with patch("imednet.sdk.load_config"):
-        with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
+        with patch(
+            "imednet.sdk.ClientFactory.create_client",
+            return_value=MagicMock(spec=Client),
+        ):
             with patch(
                 "imednet.sdk.ClientFactory.create_async_client",
                 return_value=MagicMock(spec=AsyncClient),
@@ -74,7 +79,10 @@ def test_async_sdk_close_raises_type_error():
 def test_async_sdk_sync_context_manager_raises_type_error():
     """TODO: Add docstring."""
     with patch("imednet.sdk.load_config"):
-        with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
+        with patch(
+            "imednet.sdk.ClientFactory.create_client",
+            return_value=MagicMock(spec=Client),
+        ):
             with patch(
                 "imednet.sdk.ClientFactory.create_async_client",
                 return_value=MagicMock(spec=AsyncClient),
@@ -88,7 +96,10 @@ def test_async_sdk_sync_context_manager_raises_type_error():
 def test_async_sdk_exit_raises_type_error():
     """__exit__ on AsyncImednetSDK raises TypeError when called directly."""
     with patch("imednet.sdk.load_config"):
-        with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
+        with patch(
+            "imednet.sdk.ClientFactory.create_client",
+            return_value=MagicMock(spec=Client),
+        ):
             with patch(
                 "imednet.sdk.ClientFactory.create_async_client",
                 return_value=MagicMock(spec=AsyncClient),
@@ -213,7 +224,10 @@ async def test_async_sdk_aenter_aexit():
     async_client_mock.aclose = AsyncMock()
 
     with patch("imednet.sdk.load_config"):
-        with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
+        with patch(
+            "imednet.sdk.ClientFactory.create_async_client",
+            return_value=async_client_mock,
+        ):
             async with AsyncImednetSDK() as sdk:
                 assert isinstance(sdk, AsyncImednetSDK)
 
@@ -225,7 +239,10 @@ def test_async_sdk_sync_init():
     async_client_mock = MagicMock(spec=AsyncClient)
 
     with patch("imednet.sdk.load_config"):
-        with patch("imednet.sdk.ClientFactory.create_async_client", return_value=async_client_mock):
+        with patch(
+            "imednet.sdk.ClientFactory.create_async_client",
+            return_value=async_client_mock,
+        ):
             sdk = AsyncImednetSDK()
             assert sdk._async_client == async_client_mock
 

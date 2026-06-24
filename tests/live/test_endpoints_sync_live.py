@@ -141,7 +141,9 @@ def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
         assert revision.record_revision_id == revisions[0].record_revision_id
 
 
-def test_job_get_known_batch(sdk: ImednetSDK, study_key: str, generated_batch_id: str) -> None:
+def test_job_get_known_batch(
+    sdk: ImednetSDK, study_key: str, generated_batch_id: str
+) -> None:
     """TODO: Add docstring."""
     job = sdk.jobs.get(study_key, generated_batch_id)
     assert job.batch_id == generated_batch_id

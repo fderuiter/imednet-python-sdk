@@ -112,7 +112,9 @@ def test_discover_form_key_chooses_subject_form() -> None:
 def test_discover_form_key_raises_when_no_valid_forms() -> None:
     """TODO: Add docstring."""
     sdk = Mock()
-    sdk.forms.list.return_value = [Form(study_key="S", form_key="SS", subject_record_report=False)]
+    sdk.forms.list.return_value = [
+        Form(study_key="S", form_key="SS", subject_record_report=False)
+    ]
     sdk.variables.list.return_value = [Mock()]
 
     with pytest.raises(NoLiveDataError):
@@ -141,7 +143,11 @@ def test_discover_site_name_returns_enrollment_open_site() -> None:
     sdk = Mock()
     sdk.sites.list.return_value = [
         Site(study_key="S", site_name="ReadOnly", site_enrollment_status="READ_ONLY"),
-        Site(study_key="S", site_name="EnrollOpen", site_enrollment_status="ENROLLMENT_OPEN"),
+        Site(
+            study_key="S",
+            site_name="EnrollOpen",
+            site_enrollment_status="ENROLLMENT_OPEN",
+        ),
     ]
 
     assert discover_site_name(sdk, "S") == "EnrollOpen"
@@ -278,7 +284,9 @@ def test_discover_interval_name_returns_active_interval() -> None:
 def test_discover_interval_name_raises_when_all_disabled() -> None:
     """TODO: Add docstring."""
     sdk = Mock()
-    sdk.intervals.list.return_value = [Interval(study_key="S", interval_name="I1", disabled=True)]
+    sdk.intervals.list.return_value = [
+        Interval(study_key="S", interval_name="I1", disabled=True)
+    ]
 
     with pytest.raises(NoLiveDataError):
         discover_interval_name(sdk, "S")

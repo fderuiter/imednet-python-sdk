@@ -34,4 +34,4 @@ class Visit(JsonModel):
         return data
 
 
-Visit = ModelEngine.get_model('Visit', Visit)
+Visit = ModelEngine.get_model("Visit", Visit)

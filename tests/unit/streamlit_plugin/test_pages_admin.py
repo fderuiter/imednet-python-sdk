@@ -8,7 +8,9 @@ from unittest.mock import MagicMock
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+PACKAGE_ROOT = (
+    REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+)
 
 
 def test_admin_page_renders():
@@ -29,7 +31,9 @@ def test_admin_page_renders():
     sys.modules["streamlit"] = fake_st
     sys.modules["imednet_streamlit.auth"] = fake_auth
 
-    spec = importlib.util.spec_from_file_location("imednet_streamlit.pages.admin", str(page_path))
+    spec = importlib.util.spec_from_file_location(
+        "imednet_streamlit.pages.admin", str(page_path)
+    )
     mod = importlib.util.module_from_spec(spec)
     sys.modules["imednet_streamlit.pages.admin"] = mod
 

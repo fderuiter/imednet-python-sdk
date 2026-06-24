@@ -44,7 +44,9 @@ async def test_async_intervals(async_sdk: AsyncImednetSDK, study_key: str) -> No
     intervals = [item async for item in async_sdk.intervals.async_list(study_key)]
     assert isinstance(intervals, list)
     if intervals:
-        interval = await async_sdk.intervals.async_get(study_key, intervals[0].interval_id)
+        interval = await async_sdk.intervals.async_get(
+            study_key, intervals[0].interval_id
+        )
         assert interval.interval_id == intervals[0].interval_id
 
 
@@ -64,7 +66,9 @@ async def test_async_variables(async_sdk: AsyncImednetSDK, study_key: str) -> No
     variables = [item async for item in async_sdk.variables.async_list(study_key)]
     assert isinstance(variables, list)
     if variables:
-        variable = await async_sdk.variables.async_get(study_key, variables[0].variable_id)
+        variable = await async_sdk.variables.async_get(
+            study_key, variables[0].variable_id
+        )
         assert variable.variable_id == variables[0].variable_id
 
 
@@ -89,12 +93,18 @@ async def test_async_queries(async_sdk: AsyncImednetSDK, study_key: str) -> None
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_async_record_revisions(async_sdk: AsyncImednetSDK, study_key: str) -> None:
+async def test_async_record_revisions(
+    async_sdk: AsyncImednetSDK, study_key: str
+) -> None:
     """TODO: Add docstring."""
-    revisions = [item async for item in async_sdk.record_revisions.async_list(study_key)]
+    revisions = [
+        item async for item in async_sdk.record_revisions.async_list(study_key)
+    ]
     assert isinstance(revisions, list)
     if revisions:
-        rev = await async_sdk.record_revisions.async_get(study_key, revisions[0].record_revision_id)
+        rev = await async_sdk.record_revisions.async_get(
+            study_key, revisions[0].record_revision_id
+        )
         assert rev.record_revision_id == revisions[0].record_revision_id
 
 

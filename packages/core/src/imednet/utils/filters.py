@@ -69,5 +69,7 @@ def build_filter_string(
     >>> build_filter_string({'type': ['A', 'B']})
     'type==A,type==B'
     """
-    parts = [_build_filter_part(key, value, or_connector) for key, value in filters.items()]
+    parts = [
+        _build_filter_part(key, value, or_connector) for key, value in filters.items()
+    ]
     return and_connector.join(parts)

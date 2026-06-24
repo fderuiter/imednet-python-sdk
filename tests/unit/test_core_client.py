@@ -22,7 +22,9 @@ def test_initialization_sets_defaults() -> None:
 
 def test_retry_logic_retries_request_errors() -> None:
     """TODO: Add docstring."""
-    client = Client(api_key="A", security_key="B", base_url="https://api.test", retries=2)
+    client = Client(
+        api_key="A", security_key="B", base_url="https://api.test", retries=2
+    )
     call_count = {"count": 0}
 
     def side_effect(request: httpx.Request) -> httpx.Response:
@@ -58,7 +60,9 @@ def test_request_error_mapping(status, exc) -> None:
     client = Client(api_key="A", security_key="B", base_url="https://api.test")
 
     with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
-        respx_mock.get("https://api.test/some").respond(status_code=status, json={"error": status})
+        respx_mock.get("https://api.test/some").respond(
+            status_code=status, json={"error": status}
+        )
 
         with pytest.raises(exc):
             client.get("/some")
@@ -72,10 +76,14 @@ def test_tracer_records_span() -> None:
     span_cm.__enter__.return_value = span
     tracer.start_as_current_span.return_value = span_cm
 
-    client = Client(api_key="A", security_key="B", base_url="https://api.test", tracer=tracer)
+    client = Client(
+        api_key="A", security_key="B", base_url="https://api.test", tracer=tracer
+    )
 
     with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
-        respx_mock.get("https://api.test/trace").respond(status_code=200, json={"ok": True})
+        respx_mock.get("https://api.test/trace").respond(
+            status_code=200, json={"ok": True}
+        )
         client.get("/trace")
 
     tracer.start_as_current_span.assert_called_with(

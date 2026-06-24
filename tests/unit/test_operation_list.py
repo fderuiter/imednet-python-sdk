@@ -18,7 +18,9 @@ def test_list_operation_sync_uses_paginator():
     result = list(operation.execute_sync(client, paginator_cls))
 
     assert result == [{"id": 1}, {"id": 2}]
-    paginator_cls.assert_called_once_with(client, "/records", params={"q": "x"}, page_size=50)
+    paginator_cls.assert_called_once_with(
+        client, "/records", params={"q": "x"}, page_size=50
+    )
 
 
 @pytest.mark.asyncio
@@ -39,7 +41,11 @@ async def test_list_operation_async_uses_paginator():
 
     paginator_cls = MagicMock(return_value=_AsyncPaginator())
 
-    operation = ListOperation(path="/records", params={}, page_size=100, parse_func=lambda x: x)
-    result = [item async for item in operation.execute_async(AsyncMock(), paginator_cls)]
+    operation = ListOperation(
+        path="/records", params={}, page_size=100, parse_func=lambda x: x
+    )
+    result = [
+        item async for item in operation.execute_async(AsyncMock(), paginator_cls)
+    ]
 
     assert result == [{"id": 1}, {"id": 2}]

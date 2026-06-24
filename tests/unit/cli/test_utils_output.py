@@ -149,7 +149,9 @@ def test_format_cell_value_status_colors() -> None:
 
     # Yellow statuses
     assert _format_cell_value("Pending", key="status") == "[yellow]Pending[/yellow]"
-    assert _format_cell_value("Processing", key="state") == "[yellow]Processing[/yellow]"
+    assert (
+        _format_cell_value("Processing", key="state") == "[yellow]Processing[/yellow]"
+    )
 
     # Red statuses
     assert _format_cell_value("Inactive", key="status") == "[red]Inactive[/red]"

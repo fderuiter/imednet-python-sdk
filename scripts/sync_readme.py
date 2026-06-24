@@ -17,7 +17,7 @@ def sync_readme(readme_path: str = "README.md", dry_run: bool = False) -> bool:
     # Regex to find snippet blocks
     # It looks for <!-- SNIPPET START: path/to/file --> ... <!-- SNIPPET END -->
     pattern = re.compile(
-        r'(<!--\s*SNIPPET START:\s*(?P<filepath>[^\s]+)\s*-->\n)(.*?)(<!--\s*SNIPPET END\s*-->)',
+        r"(<!--\s*SNIPPET START:\s*(?P<filepath>[^\s]+)\s*-->\n)(.*?)(<!--\s*SNIPPET END\s*-->)",
         re.DOTALL,
     )
 
@@ -27,7 +27,7 @@ def sync_readme(readme_path: str = "README.md", dry_run: bool = False) -> bool:
     def replacer(match):
         nonlocal changed
         start_marker = match.group(1)
-        filepath = match.group('filepath')
+        filepath = match.group("filepath")
         end_marker = match.group(3)
         old_snippet = match.group(2)
 

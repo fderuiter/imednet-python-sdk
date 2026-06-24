@@ -21,7 +21,9 @@ from imednet.spi.models import StudyConfiguration
 from imednet.spi.utils import flatten
 
 _DEFAULT_DB_PATH = Path(
-    os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3")
+    os.environ.get(
+        "IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3"
+    )
 )
 
 
@@ -135,7 +137,11 @@ class ConfigVersionStore:
             roles = sdk.auth.get_user_roles()
 
             # Legacy fallback: if using static keys, validate server-side by making an API call
-            if not roles and hasattr(sdk.auth, "api_key") and getattr(sdk.auth, "api_key"):
+            if (
+                not roles
+                and hasattr(sdk.auth, "api_key")
+                and getattr(sdk.auth, "api_key")
+            ):
                 try:
                     # Validate the key has access by requesting study data
                     sdk.get_sites(study_key, limit=1)
@@ -159,7 +165,9 @@ class ConfigVersionStore:
         if not user:
             raise ValueError("A user identifier is required to commit.")
 
-        config_json = json.dumps(config.model_dump(mode="json", by_alias=True), sort_keys=True)
+        config_json = json.dumps(
+            config.model_dump(mode="json", by_alias=True), sort_keys=True
+        )
         commit_id = _sha256_of(config_json)
         timestamp = datetime.now(timezone.utc).isoformat()
 

@@ -75,10 +75,14 @@ class FormDesignerClient:
             raise ClientError("CSRF Key cannot be empty.")
 
         if form_id <= 0:
-            raise ClientError(f"Invalid form_id: {form_id}. Must be a positive integer.")
+            raise ClientError(
+                f"Invalid form_id: {form_id}. Must be a positive integer."
+            )
 
         if community_id <= 0:
-            raise ClientError(f"Invalid community_id: {community_id}. Must be a positive integer.")
+            raise ClientError(
+                f"Invalid community_id: {community_id}. Must be a positive integer."
+            )
 
         if revision < 0:
             raise ClientError(f"Invalid revision: {revision}. Must be non-negative.")
@@ -143,7 +147,8 @@ class FormDesignerClient:
                 # Example error: {"error": "..."}
                 if isinstance(resp_data, dict) and resp_data.get("error"):
                     raise ApiError(
-                        f"Server Error: {resp_data['error']}", status_code=response.status_code
+                        f"Server Error: {resp_data['error']}",
+                        status_code=response.status_code,
                     )
             except json.JSONDecodeError as exc:
                 # Fallback if not JSON (legacy endpoints sometimes return HTML on error)

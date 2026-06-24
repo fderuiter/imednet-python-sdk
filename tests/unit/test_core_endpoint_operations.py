@@ -112,7 +112,9 @@ def test_list_operation_sync():
     result = operation.execute_sync(client, paginator_cls)
 
     assert list(result) == [{"id": 1}, {"id": 2}]
-    paginator_cls.assert_called_once_with(client, "/test", params={"q": "1"}, page_size=10)
+    paginator_cls.assert_called_once_with(
+        client, "/test", params={"q": "1"}, page_size=10
+    )
 
 
 @pytest.mark.asyncio
@@ -141,7 +143,9 @@ async def test_list_operation_async():
     result = [item async for item in operation.execute_async(client, paginator_cls)]
 
     assert result == [{"id": 1}, {"id": 2}]
-    paginator_cls.assert_called_once_with(client, "/test", params={"q": "1"}, page_size=10)
+    paginator_cls.assert_called_once_with(
+        client, "/test", params={"q": "1"}, page_size=10
+    )
 
 
 def test_filter_get_operation_sync():
@@ -162,7 +166,9 @@ def test_filter_get_operation_sync():
     result = operation.execute_sync(client, paginator_cls)
 
     assert result == {"id": 1}
-    list_sync_func.assert_called_once_with(client, paginator_cls, study_key="STUDY1", name="test")
+    list_sync_func.assert_called_once_with(
+        client, paginator_cls, study_key="STUDY1", name="test"
+    )
     validate_func.assert_called_once_with([{"id": 1}], "STUDY1", 1)
 
 
@@ -201,7 +207,9 @@ async def test_filter_get_operation_async():
     result = await operation.execute_async(client, paginator_cls)
 
     assert result == {"id": 1}
-    list_async_func.assert_called_once_with(client, paginator_cls, study_key="STUDY1", name="test")
+    list_async_func.assert_called_once_with(
+        client, paginator_cls, study_key="STUDY1", name="test"
+    )
     validate_func.assert_called_once_with([{"id": 1}], "STUDY1", 1)
 
 

@@ -66,9 +66,10 @@ class UATVariableSpec(UATBaseModel):
 
         strategy = data.get("strategy", VariableTestStrategy.SYNTHETIC)
         fixed_value = data.get("fixed_value", data.get("fixedValue"))
-        if strategy in (VariableTestStrategy.FIXED, VariableTestStrategy.FIXED.value) and (
-            fixed_value is None
-        ):
+        if strategy in (
+            VariableTestStrategy.FIXED,
+            VariableTestStrategy.FIXED.value,
+        ) and (fixed_value is None):
             raise ValueError("fixed_value must be provided when strategy is 'fixed'.")
         return data
 
@@ -169,7 +170,9 @@ class UATSpecification(UATBaseModel):
     def from_yaml(cls, payload: str | bytes | Path) -> UATSpecification:
         """Load a UAT specification from YAML text, bytes, or file path."""
         if find_spec("yaml") is None:
-            raise ImportError("PyYAML is required to load YAML. Install with `pip install pyyaml`.")
+            raise ImportError(
+                "PyYAML is required to load YAML. Install with `pip install pyyaml`."
+            )
 
         import yaml  # type: ignore[import-untyped]
 

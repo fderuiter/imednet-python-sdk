@@ -43,14 +43,16 @@ import sqlite3
 def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
     """TODO: Add docstring."""
     db_path = os.environ.get(
-        "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
+        "IMEDNET_TENANT_DB_PATH",
+        os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"),
     )
     if not os.path.exists(db_path):
         return None, None
     try:
         with sqlite3.connect(db_path) as conn:
             row = conn.execute(
-                "SELECT api_key, security_key FROM tenants WHERE study_key=?", (study_key,)
+                "SELECT api_key, security_key FROM tenants WHERE study_key=?",
+                (study_key,),
             ).fetchone()
             if row:
                 return row[0], row[1]
@@ -62,7 +64,8 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
 def get_provisioned_studies() -> list[str]:
     """TODO: Add docstring."""
     db_path = os.environ.get(
-        "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
+        "IMEDNET_TENANT_DB_PATH",
+        os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"),
     )
     if not os.path.exists(db_path):
         return []
@@ -84,7 +87,9 @@ def render_auth_sidebar() -> bool:
         st.header("🔐 Enterprise SSO")
 
         # OIDC integration for corporate credentials
-        is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(st, "user", {})
+        is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(
+            st, "user", {}
+        )
 
         # Test mode bypass for browser E2E tests
         if os.environ.get("IMEDNET_BROWSER_TEST") == "1":
@@ -114,7 +119,9 @@ def render_auth_sidebar() -> bool:
 
         studies = get_provisioned_studies()
         if not studies:
-            st.warning("No studies available. Contact Global Admin to provision environments.")
+            st.warning(
+                "No studies available. Contact Global Admin to provision environments."
+            )
             return False
 
         study_key = st.selectbox(
@@ -147,7 +154,9 @@ def render_auth_sidebar() -> bool:
                     _mark_disconnected()
                     err_str = str(exc)
                     if "Unauthorized" in err_str or "AuthError" in type(exc).__name__:
-                        st.warning("Session expired or Unauthorized. Redirecting to SSO flow...")
+                        st.warning(
+                            "Session expired or Unauthorized. Redirecting to SSO flow..."
+                        )
                         if hasattr(st, "login"):
                             st.login()
                     else:
@@ -194,7 +203,13 @@ def clear_credentials() -> None:
     This removes the cached SDK instance, connection flag, and any credential
     input values currently held in ``st.session_state``.
     """
-    for key in (_KEY_API_KEY, _KEY_SECURITY_KEY, _KEY_STUDY_KEY, _KEY_SDK, _KEY_CONNECTED):
+    for key in (
+        _KEY_API_KEY,
+        _KEY_SECURITY_KEY,
+        _KEY_STUDY_KEY,
+        _KEY_SDK,
+        _KEY_CONNECTED,
+    ):
         st.session_state.pop(key, None)
     # Ensure cache is also purged when credentials are cleared
     st.cache_data.clear()

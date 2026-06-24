@@ -107,7 +107,9 @@ class AdaptiveConcurrencyLimiter:
                 # If latency is good, slowly recover concurrency
                 elif latency <= self._latency_baseline * 1.2:
                     with self._cond:
-                        new_max = min(self._initial_concurrency, self._max_concurrency + 1)
+                        new_max = min(
+                            self._initial_concurrency, self._max_concurrency + 1
+                        )
                         if new_max > self._max_concurrency:
                             logger.info(
                                 "Adaptive backpressure: downstream latency recovered. "
@@ -219,7 +221,9 @@ class MultiStudyOrchestrator:
         logger.debug("Resolved %d studies from registry.", len(all_studies))
 
         if whitelist:
-            filtered = [study_key for study_key in all_studies if study_key in whitelist]
+            filtered = [
+                study_key for study_key in all_studies if study_key in whitelist
+            ]
             logger.info(
                 "Whitelist filter applied: %d/%d studies selected.",
                 len(filtered),
@@ -228,7 +232,9 @@ class MultiStudyOrchestrator:
             return filtered
 
         if blacklist:
-            filtered = [study_key for study_key in all_studies if study_key not in blacklist]
+            filtered = [
+                study_key for study_key in all_studies if study_key not in blacklist
+            ]
             logger.info(
                 "Blacklist filter applied: %d/%d studies selected.",
                 len(filtered),
@@ -305,7 +311,9 @@ class MultiStudyOrchestrator:
                             study_key,
                             duration,
                         )
-                    except Exception as exc:  # noqa: BLE001 - broad catch for per-study isolation.
+                    except (
+                        Exception
+                    ) as exc:  # noqa: BLE001 - broad catch for per-study isolation.
                         results[study_key] = OrchestratorResult(
                             status="FAILED",
                             data=None,

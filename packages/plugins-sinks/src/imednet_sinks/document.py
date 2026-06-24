@@ -257,7 +257,9 @@ def export_to_mongodb(
     total_written = 0
     with MongoDbExportSink(uri, database, collection, study_key, config=cfg) as sink:
         for index, batch in enumerate(iter_batches(filtered_records, cfg.batch_size)):
-            total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
+            total_written += sink.write_batch(
+                batch, batch_id=f"{study_key}/records/{index}"
+            )
     return total_written
 
 

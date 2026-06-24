@@ -11,7 +11,9 @@ from imednet.validation.cache import SchemaCache, SchemaValidator, _check_type, 
 
 def _make_var(name: str, var_type: str = "integer") -> Variable:
     """TODO: Add docstring."""
-    return Variable(variable_name=name, variable_type=var_type, form_id=1, form_key="F1")
+    return Variable(
+        variable_name=name, variable_type=var_type, form_id=1, form_key="F1"
+    )
 
 
 def test_schema_cache_refresh() -> None:

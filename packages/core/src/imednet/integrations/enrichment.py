@@ -28,7 +28,7 @@ class EnrichmentPipeline:
         """
         self.config = config
 
-        self.phi_keys = set(getattr(config, 'phi_fields', []))
+        self.phi_keys = set(getattr(config, "phi_fields", []))
 
         self.terminology = config.terminology_lookups or {}
 
@@ -100,7 +100,9 @@ class EnrichmentPipeline:
                     if k in self.mappings:
                         rule = self.mappings[k]
                         if rule.business_logic:
-                            new_val = self._evaluate_business_logic(rule.business_logic, new_val)
+                            new_val = self._evaluate_business_logic(
+                                rule.business_logic, new_val
+                            )
                         if rule.target_field and rule.target_field != k:
                             new_key = rule.target_field
 

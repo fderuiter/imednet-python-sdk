@@ -69,7 +69,9 @@ def test_paginator_raises_type_error_on_invalid_pagination_field():
     paginator = Paginator(client, "/path")
 
     # Before the fix, this raises AttributeError because it tries to call .get() on a string
-    with pytest.raises(TypeError, match="Response field 'pagination' must be a dictionary"):
+    with pytest.raises(
+        TypeError, match="Response field 'pagination' must be a dictionary"
+    ):
         list(paginator)
 
 
@@ -79,7 +81,9 @@ def test_paginator_infinite_loop_protection():
     preventing an exception when calculating `total_pages - 1` and ensuring we don't
     get stuck in an infinite loop due to a badly typed response.
     """
-    client = MockClient({"data": [{"id": 1}], "pagination": {"totalPages": "not an integer"}})
+    client = MockClient(
+        {"data": [{"id": 1}], "pagination": {"totalPages": "not an integer"}}
+    )
     paginator = Paginator(client, "/path")
 
     with pytest.raises(PaginationError):

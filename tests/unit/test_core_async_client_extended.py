@@ -65,9 +65,13 @@ async def test_tracing():
     span_cm.__aenter__.return_value = span
     tracer.start_as_current_span.return_value = span_cm
 
-    async with AsyncClient("k", "s", base_url="https://api.test", tracer=tracer) as client:
+    async with AsyncClient(
+        "k", "s", base_url="https://api.test", tracer=tracer
+    ) as client:
         with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
-            respx_mock.get("https://api.test/trace").respond(status_code=200, json={"ok": True})
+            respx_mock.get("https://api.test/trace").respond(
+                status_code=200, json={"ok": True}
+            )
             await client.get("/trace")
 
     tracer.start_as_current_span.assert_called_with(

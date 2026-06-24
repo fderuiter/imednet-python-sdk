@@ -151,7 +151,9 @@ def test_parse_bool_handles_unusual_strings():
     assert parse_bool("+") is False
     assert parse_bool("-") is False
     assert parse_bool("n") is False  # 'n' is in _FALSE_LOWER, explicitly False
-    assert parse_bool("i") is False  # 'i' not in TRUE/FALSE sets, but triggers float fallback check
+    assert (
+        parse_bool("i") is False
+    )  # 'i' not in TRUE/FALSE sets, but triggers float fallback check
 
 
 def test_parse_bool_handles_non_string_types():

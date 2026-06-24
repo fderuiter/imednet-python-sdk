@@ -137,7 +137,12 @@ def test_record_ignores_undocumented_fields():
 
 def test_job_ignores_undocumented_fields():
     """Injecting undocumented API keys into a Job payload must not raise a ValidationError."""
-    payload = {"jobId": "abc", "batchId": "batch1", "state": "PROCESSING", **_EXTRA_FIELDS}
+    payload = {
+        "jobId": "abc",
+        "batchId": "batch1",
+        "state": "PROCESSING",
+        **_EXTRA_FIELDS,
+    }
     job = Job.model_validate(payload)
     assert job.job_id == "abc"
     for field in _EXTRA_FIELDS:
