@@ -60,6 +60,12 @@ class BulkSubmissionError(Exception):
     """Raised when Phase 1 registration jobs fail, blocking Phase 2 submission."""
 
     def __init__(self, message: str, failed_batches: List[BatchSubmission]) -> None:
+        """Initialize the error.
+
+        Args:
+            message: The error message.
+            failed_batches: List of batches that failed during submission.
+        """
         super().__init__(message)
         self.failed_batches = failed_batches
 

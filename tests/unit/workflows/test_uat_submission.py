@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
 import pytest
+
 from imednet.spi.models import Job, JobStatus, Subject
 from imednet_workflows.uat import (
     BatchSubmission,
@@ -17,23 +18,21 @@ from imednet_workflows.uat import (
 
 @pytest.fixture
 def mock_sdk():
+    """Fixture to provide a mocked SDK facade."""
     sdk = MagicMock()
     return sdk
 
 
 def test_submission_result_properties():
+    """Test the properties of SubmissionResult model."""
     job1 = Job(batch_id="batch1", state="COMPLETED")
     job2 = Job(batch_id="batch2", state="COMPLETED")
 
     result = SubmissionResult(
         study_key="test_study",
         started_at=datetime.now(timezone.utc),
-        registration_batches=[
-            BatchSubmission(phase="registration", record_count=2, job=job1)
-        ],
-        data_batches=[
-            BatchSubmission(phase="data", record_count=3, job=job2)
-        ]
+        registration_batches=[BatchSubmission(phase="registration", record_count=2, job=job1)],
+        data_batches=[BatchSubmission(phase="data", record_count=3, job=job2)],
     )
 
     assert result.total_records_submitted == 5
@@ -42,6 +41,7 @@ def test_submission_result_properties():
 
 
 def test_chunk_payloads():
+    """Test the payload chunking logic."""
     workflow = BulkRecordSubmissionWorkflow(MagicMock(), batch_size=2)
     payloads = [{"a": 1}, {"b": 2}, {"c": 3}]
     chunks = list(workflow._chunk_payloads(payloads))
@@ -52,6 +52,7 @@ def test_chunk_payloads():
 
 
 def test_phase1_only(mock_sdk):
+    """Test submission with only phase 1 (registration) records."""
     workflow = BulkRecordSubmissionWorkflow(mock_sdk, skip_existing_subjects=False)
     mock_sdk.create_record.return_value = Job(batch_id="job1", state="PENDING")
     mock_sdk.get_job.return_value = JobStatus(batch_id="job1", state="COMPLETED")
@@ -61,7 +62,7 @@ def test_phase1_only(mock_sdk):
         form_name="Registration",
         test_type=RecordTestType.REGISTER_SUBJECT,
         payloads=[{"data": 1}],
-        subject_keys=["S1"]
+        subject_keys=["S1"],
     )
 
     result = workflow.submit("study1", [rs])
@@ -73,6 +74,7 @@ def test_phase1_only(mock_sdk):
 
 
 def test_phase2_only(mock_sdk):
+    """Test submission with only phase 2 (data) records."""
     workflow = BulkRecordSubmissionWorkflow(mock_sdk, await_registration=False)
     mock_sdk.create_record.return_value = Job(batch_id="job2", state="PENDING")
 
@@ -81,7 +83,7 @@ def test_phase2_only(mock_sdk):
         form_name="Data Form",
         test_type=RecordTestType.UPDATE_SCHEDULED_RECORD,
         payloads=[{"data": 2}],
-        subject_keys=["S1"]
+        subject_keys=["S1"],
     )
 
     result = workflow.submit("study1", [rs])
@@ -92,6 +94,7 @@ def test_phase2_only(mock_sdk):
 
 
 def test_full_two_phase_flow(mock_sdk):
+    """Test the complete two-phase submission flow."""
     workflow = BulkRecordSubmissionWorkflow(mock_sdk, skip_existing_subjects=False)
 
     # Mock Phase 1 call
@@ -109,14 +112,14 @@ def test_full_two_phase_flow(mock_sdk):
         form_name="Registration",
         test_type=RecordTestType.REGISTER_SUBJECT,
         payloads=[{"data": 1}],
-        subject_keys=["S1"]
+        subject_keys=["S1"],
     )
     rs2 = GeneratedRecordSet(
         form_key="DATA",
         form_name="Data Form",
         test_type=RecordTestType.UPDATE_SCHEDULED_RECORD,
         payloads=[{"data": 2}],
-        subject_keys=["S1"]
+        subject_keys=["S1"],
     )
 
     result = workflow.submit("study1", [rs1, rs2])
@@ -128,6 +131,7 @@ def test_full_two_phase_flow(mock_sdk):
 
 
 def test_bulk_submission_error_on_phase1_failure(mock_sdk):
+    """Test that BulkSubmissionError is raised when phase 1 fails."""
     workflow = BulkRecordSubmissionWorkflow(mock_sdk, skip_existing_subjects=False)
 
     job1 = Job(batch_id="job1", state="PENDING")
@@ -141,7 +145,7 @@ def test_bulk_submission_error_on_phase1_failure(mock_sdk):
         form_name="Registration",
         test_type=RecordTestType.REGISTER_SUBJECT,
         payloads=[{"data": 1}],
-        subject_keys=["S1"]
+        subject_keys=["S1"],
     )
 
     with pytest.raises(BulkSubmissionError) as excinfo:
@@ -152,6 +156,7 @@ def test_bulk_submission_error_on_phase1_failure(mock_sdk):
 
 
 def test_batch_size_logic(mock_sdk):
+    """Test that payloads are correctly batched according to batch_size."""
     workflow = BulkRecordSubmissionWorkflow(mock_sdk, batch_size=2)
     mock_sdk.create_record.return_value = Job(batch_id="job", state="PENDING")
 
@@ -160,7 +165,7 @@ def test_batch_size_logic(mock_sdk):
         form_name="Data Form",
         test_type=RecordTestType.CREATE_NEW_RECORD,
         payloads=[{"d": 1}, {"d": 2}, {"d": 3}],
-        subject_keys=["S1", "S2", "S3"]
+        subject_keys=["S1", "S2", "S3"],
     )
 
     result = workflow.submit("study1", [rs])
@@ -172,6 +177,7 @@ def test_batch_size_logic(mock_sdk):
 
 
 def test_skip_existing_subjects_true(mock_sdk):
+    """Test that existing subjects are skipped during phase 1."""
     workflow = BulkRecordSubmissionWorkflow(mock_sdk, skip_existing_subjects=True)
 
     # Mock existing subject
@@ -184,7 +190,7 @@ def test_skip_existing_subjects_true(mock_sdk):
         form_name="Registration",
         test_type=RecordTestType.REGISTER_SUBJECT,
         payloads=[{"data": "for S1"}],
-        subject_keys=["S1"]
+        subject_keys=["S1"],
     )
 
     result = workflow.submit("study1", [rs])
@@ -196,6 +202,7 @@ def test_skip_existing_subjects_true(mock_sdk):
 
 
 def test_skip_existing_subjects_false(mock_sdk):
+    """Test that registration is attempted even if subjects exist when skip_existing_subjects=False."""
     workflow = BulkRecordSubmissionWorkflow(mock_sdk, skip_existing_subjects=False)
     mock_sdk.create_record.return_value = Job(batch_id="job1", state="PENDING")
     mock_sdk.get_job.return_value = JobStatus(batch_id="job1", state="COMPLETED")
@@ -205,7 +212,7 @@ def test_skip_existing_subjects_false(mock_sdk):
         form_name="Registration",
         test_type=RecordTestType.REGISTER_SUBJECT,
         payloads=[{"data": "for S1"}],
-        subject_keys=["S1"]
+        subject_keys=["S1"],
     )
 
     result = workflow.submit("study1", [rs])
