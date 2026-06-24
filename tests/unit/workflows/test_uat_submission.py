@@ -5,12 +5,12 @@ from unittest.mock import MagicMock
 
 import pytest
 from imednet.spi.models import Job, JobStatus, Subject
-from imednet_workflows.uat.generator import GeneratedRecordSet
-from imednet_workflows.uat.models import RecordTestType
-from imednet_workflows.uat.submission import (
+from imednet_workflows.uat import (
     BatchSubmission,
     BulkRecordSubmissionWorkflow,
     BulkSubmissionError,
+    GeneratedRecordSet,
+    RecordTestType,
     SubmissionResult,
 )
 
