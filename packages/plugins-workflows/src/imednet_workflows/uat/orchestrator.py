@@ -79,8 +79,7 @@ class UATRunResult(ImednetBaseModel):
 
 
 class UATSpecificationBuilder:
-    """
-    Auto-generate a UATSpecification from a StudySnapshot.
+    """Auto-generate a UATSpecification from a StudySnapshot.
 
     The generated spec uses SYNTHETIC strategy for all variables.
     Users can then edit the JSON/YAML output to apply FIXED or SKIP strategies
@@ -98,8 +97,7 @@ class UATSpecificationBuilder:
         enabled_form_keys: Optional[List[str]] = None,
         seed: Optional[int] = None,
     ) -> UATSpecification:
-        """
-        Build a complete UATSpecification from a StudySnapshot.
+        """Build a complete UATSpecification from a StudySnapshot.
 
         Parameters
         ----------
@@ -207,8 +205,7 @@ class UATSpecificationBuilder:
 
 
 class UATWorkflow:
-    """
-    End-to-end UAT execution coordinator.
+    """End-to-end UAT execution coordinator.
 
     Composes StudySchemaInspector, UATSpecificationBuilder,
     SyntheticRecordGenerator, BulkRecordSubmissionWorkflow, and JobPoller
