@@ -4,26 +4,37 @@ from __future__ import annotations
 
 import json
 from datetime import date, datetime
-from typing import Any, Dict, List, Mapping, MutableMapping, TypeAlias, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Mapping,
+    MutableMapping,
+    TypeAlias,
+    Union,
+    cast,
+)
 
-try:
+if TYPE_CHECKING:
     from airflow.sdk.bases.hook import BaseHook as AirflowBaseHook
-except (ImportError, ModuleNotFoundError):
+else:
     try:
-        from airflow.hooks.base import (
-            BaseHook as AirflowBaseHook,  # type: ignore[no-redef,attr-defined]
-        )
+        from airflow.sdk.bases.hook import BaseHook as AirflowBaseHook
     except (ImportError, ModuleNotFoundError):
+        try:
+            from airflow.hooks.base import BaseHook as AirflowBaseHook  # type: ignore[attr-defined]
+        except (ImportError, ModuleNotFoundError):
 
-        class AirflowBaseHook:  # type: ignore[no-redef]
-            """Fallback for BaseHook when Airflow is not installed."""
+            class AirflowBaseHook:
+                """Fallback for BaseHook when Airflow is not installed."""
 
-            def __init__(self, *args: Any, **kwargs: Any) -> None:
-                pass
+                def __init__(self, *args: Any, **kwargs: Any) -> None:
+                    pass
 
-            @classmethod
-            def get_connection(cls, conn_id: str) -> Any:
-                raise RuntimeError("Airflow is not installed; cannot get connection.")
+                @classmethod
+                def get_connection(cls, conn_id: str) -> Any:
+                    raise RuntimeError("Airflow is not installed; cannot get connection.")
 
 
 from imednet import Config, ImednetSDK, load_config
@@ -101,16 +112,16 @@ class ImednetHook(AirflowBaseHook):
         # if not already resolved via AirflowBaseHook.
         base_hook: Any
         try:
-            from airflow.sdk.bases.hook import BaseHook
+            from airflow.sdk.bases.hook import BaseHook as _LocalSDKBaseHook
 
-            base_hook = BaseHook
+            base_hook = _LocalSDKBaseHook
         except (ImportError, ModuleNotFoundError):
             try:
                 from airflow.hooks.base import (
-                    BaseHook as LegacyBaseHook,  # type: ignore[attr-defined]
+                    BaseHook as _LocalLegacyBaseHook,  # type: ignore[attr-defined]
                 )
 
-                base_hook = LegacyBaseHook
+                base_hook = _LocalLegacyBaseHook
             except (ImportError, ModuleNotFoundError):
                 base_hook = AirflowBaseHook
 
