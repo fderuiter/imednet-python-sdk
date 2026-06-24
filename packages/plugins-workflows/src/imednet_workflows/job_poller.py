@@ -8,7 +8,7 @@ import logging
 import threading
 import time
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, runtime_checkable
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, cast, runtime_checkable
 
 from imednet.spi.constants import TERMINAL_JOB_STATES
 from imednet.spi.models import JobStatus
@@ -63,12 +63,12 @@ class JobPollSummary:
     @property
     def all_successful(self) -> bool:
         """Return True if all jobs were successful."""
-        return not self.failures and all(s.is_successful for s in self.results.values())
+        return not self.failures and all(cast(Any, s).is_successful for s in self.results.values())
 
     @property
     def any_failed(self) -> bool:
         """Return True if any job failed or timed out."""
-        return bool(self.failures) or any(s.is_failed for s in self.results.values())
+        return bool(self.failures) or any(cast(Any, s).is_failed for s in self.results.values())
 
 
 class JobTimeoutError(TimeoutError):
@@ -178,7 +178,7 @@ class JobPoller(BaseJobPoller):
             self._trigger_callback(on_progress, event)
 
             if is_terminal:
-                if status.is_successful:
+                if cast(Any, status).is_successful:
                     logger.info(
                         "[JobPoller] batch_id=%s COMPLETED after %s polls (%ss)",
                         batch_id,
@@ -328,7 +328,7 @@ class AsyncJobPoller(BaseJobPoller):
             self._trigger_callback(on_progress, event)
 
             if is_terminal:
-                if status.is_successful:
+                if cast(Any, status).is_successful:
                     logger.info(
                         "[JobPoller] batch_id=%s COMPLETED after %s polls (%ss)",
                         batch_id,
