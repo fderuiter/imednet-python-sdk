@@ -145,9 +145,7 @@ class UATSpecificationBuilder:
 
         return UATSpecification(
             study_key=snapshot.study_key,
-            study_name=getattr(snapshot.forms[0], "study_key", snapshot.study_key)
-            if snapshot.forms
-            else snapshot.study_key,
+            study_name=snapshot.study_key,
             subject_specs=[subject_spec],
             form_specs=form_specs,
             forms_snapshot_count=len(snapshot.forms),
@@ -243,7 +241,8 @@ class UATWorkflow:
             from .submission import BulkRecordSubmissionWorkflow
 
             self._submitter = BulkRecordSubmissionWorkflow(
-                self._sdk, batch_size=self._batch_size  # type: ignore
+                self._sdk,
+                batch_size=self._batch_size,  # type: ignore
             )
         return self._submitter
 
