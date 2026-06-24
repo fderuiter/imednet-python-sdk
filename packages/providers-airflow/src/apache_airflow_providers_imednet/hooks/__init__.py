@@ -11,7 +11,7 @@ try:
 except (ImportError, ModuleNotFoundError):
     try:
         from airflow.hooks.base import (
-            BaseHook as AirflowBaseHook,  # type: ignore[no-redef,no-redef]
+            BaseHook as AirflowBaseHook,  # type: ignore[no-redef,attr-defined]
         )
     except (ImportError, ModuleNotFoundError):
 
@@ -106,7 +106,9 @@ class ImednetHook(AirflowBaseHook):
             base_hook = BaseHook
         except (ImportError, ModuleNotFoundError):
             try:
-                from airflow.hooks.base import BaseHook as LegacyBaseHook
+                from airflow.hooks.base import (
+                    BaseHook as LegacyBaseHook,  # type: ignore[attr-defined]
+                )
 
                 base_hook = LegacyBaseHook
             except (ImportError, ModuleNotFoundError):
