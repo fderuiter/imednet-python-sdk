@@ -13,8 +13,12 @@ if TYPE_CHECKING:
 class SubjectComprehensiveData(BaseModel):
     """Structure to hold aggregated data for a subject."""
 
-    subject_details: Optional[Subject] = Field(None, description="Core details of the subject.")
-    visits: List[Visit] = Field(default_factory=list, description="List of visits for the subject.")
+    subject_details: Optional[Subject] = Field(
+        None, description="Core details of the subject."
+    )
+    visits: List[Visit] = Field(
+        default_factory=list, description="List of visits for the subject."
+    )
     records: List[Record] = Field(
         default_factory=list, description="List of records for the subject."
     )
@@ -34,7 +38,9 @@ class SubjectDataWorkflow:
         """TODO: Add docstring."""
         self._sdk = sdk
 
-    def get_all_subject_data(self, study_key: str, subject_key: str) -> SubjectComprehensiveData:
+    def get_all_subject_data(
+        self, study_key: str, subject_key: str
+    ) -> SubjectComprehensiveData:
         """Retrieves subject details, visits, records, and queries for a specific subject.
 
         Args:

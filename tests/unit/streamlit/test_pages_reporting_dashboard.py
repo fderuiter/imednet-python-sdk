@@ -52,7 +52,9 @@ class _FakeCacheDataDecorator:
 class _FakeStreamlit:
     """TODO: Add docstring."""
 
-    def __init__(self, *, multiselect_values: dict[str, list[Any]] | None = None) -> None:
+    def __init__(
+        self, *, multiselect_values: dict[str, list[Any]] | None = None
+    ) -> None:
         """TODO: Add docstring."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.cache_data = _FakeCacheDataDecorator()
@@ -97,7 +99,9 @@ class _FakeStreamlit:
         """TODO: Add docstring."""
         return ""
 
-    def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
+    def selectbox(
+        self, label: str, options: list[Any], index: int = 0, **kwargs: Any
+    ) -> Any:
         """TODO: Add docstring."""
         if label in self.selectbox_values:
             return self.selectbox_values[label]
@@ -165,7 +169,9 @@ def _make_fake_components_module(fake_st: _FakeStreamlit) -> ModuleType:
     return module
 
 
-def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _FakeStreamlit:
+def _run_page(
+    *, multiselect_values: dict[str, list[Any]] | None = None
+) -> _FakeStreamlit:
     """TODO: Add docstring."""
     fake_st = _FakeStreamlit(multiselect_values=multiselect_values)
 
@@ -360,7 +366,9 @@ def test_reporting_dashboard_renders_expected_kpis_and_site_aggregation() -> Non
         if hasattr(df, "data") and "query_rate" in getattr(df, "data").columns
     )
     site_df = site_styler.data  # type: ignore[assignment]
-    assert int(site_df.loc[site_df["site_name"] == "Site A", "open_queries"].iloc[0]) == 1
+    assert (
+        int(site_df.loc[site_df["site_name"] == "Site A", "open_queries"].iloc[0]) == 1
+    )
 
 
 def test_reporting_dashboard_filters_cascade_to_adverse_event_table() -> None:

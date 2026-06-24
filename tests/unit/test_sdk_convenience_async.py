@@ -88,7 +88,9 @@ async def test_async_convenience_methods_delegate_to_endpoints(monkeypatch) -> N
     monkeypatch.setattr(sdk.visits, "async_list", fake_visits_async_list)
     monkeypatch.setattr(sdk.codings, "async_list", fake_codings_async_list)
     monkeypatch.setattr(sdk.queries, "async_list", fake_queries_async_list)
-    monkeypatch.setattr(sdk.record_revisions, "async_list", fake_record_revisions_async_list)
+    monkeypatch.setattr(
+        sdk.record_revisions, "async_list", fake_record_revisions_async_list
+    )
     monkeypatch.setattr(sdk.users, "async_list", fake_users_async_list)
     monkeypatch.setattr(sdk.jobs, "async_get", fake_async_get_job)
 

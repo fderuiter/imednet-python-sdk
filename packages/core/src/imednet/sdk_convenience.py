@@ -137,20 +137,28 @@ class _ListOperation(Generic[T]):
         if self.is_async:
 
             @_async_trace_method
-            async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+            async def wrapper(
+                study_key: str | None = None, **filters: FilterValue
+            ) -> List[T]:
                 """Execute the asynchronous list operation and return a list of items."""
                 _filters: Dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
                     res = endpoint.async_list(**_filters)
                 else:
                     res = endpoint.async_list(study_key, **_filters)
-                return [item async for item in res] if hasattr(res, "__aiter__") else await res
+                return (
+                    [item async for item in res]
+                    if hasattr(res, "__aiter__")
+                    else await res
+                )
 
             wrapper.__doc__ = f"Asynchronously list {self.endpoint_name}."
         else:
 
             @_trace_method
-            def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+            def wrapper(
+                study_key: str | None = None, **filters: FilterValue
+            ) -> List[T]:
                 """Execute the synchronous list operation and return a list of items."""
                 _filters: Dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
@@ -228,24 +236,36 @@ class AsyncSDKConvenienceMixin:
         jobs: AsyncJobsEndpoint
         _async_client: Any
 
-    async_get_codings = _ListOperation[Coding]("codings", "async_get_codings", is_async=True)
+    async_get_codings = _ListOperation[Coding](
+        "codings", "async_get_codings", is_async=True
+    )
     async_get_forms = _ListOperation[Form]("forms", "async_get_forms", is_async=True)
     async_get_intervals = _ListOperation[Interval](
         "intervals", "async_get_intervals", is_async=True
     )
-    async_get_queries = _ListOperation[Query]("queries", "async_get_queries", is_async=True)
+    async_get_queries = _ListOperation[Query](
+        "queries", "async_get_queries", is_async=True
+    )
     async_get_record_revisions = _ListOperation[RecordRevision](
         "record_revisions", "async_get_record_revisions", is_async=True
     )
-    async_get_records = _ListOperation[Record]("records", "async_get_records", is_async=True)
+    async_get_records = _ListOperation[Record](
+        "records", "async_get_records", is_async=True
+    )
     async_get_sites = _ListOperation[Site]("sites", "async_get_sites", is_async=True)
-    async_get_studies = _ListOperation[Study]("studies", "async_get_studies", is_async=True)
-    async_get_subjects = _ListOperation[Subject]("subjects", "async_get_subjects", is_async=True)
+    async_get_studies = _ListOperation[Study](
+        "studies", "async_get_studies", is_async=True
+    )
+    async_get_subjects = _ListOperation[Subject](
+        "subjects", "async_get_subjects", is_async=True
+    )
     async_get_users = _ListOperation[User]("users", "async_get_users", is_async=True)
     async_get_variables = _ListOperation[Variable](
         "variables", "async_get_variables", is_async=True
     )
-    async_get_visits = _ListOperation[Visit]("visits", "async_get_visits", is_async=True)
+    async_get_visits = _ListOperation[Visit](
+        "visits", "async_get_visits", is_async=True
+    )
 
     @_async_trace_method
     async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:

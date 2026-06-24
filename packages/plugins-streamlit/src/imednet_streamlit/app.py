@@ -31,7 +31,9 @@ def toggle_high_contrast():
 
 
 st.sidebar.toggle(
-    "High Contrast Mode", value=st.session_state["high_contrast"], on_change=toggle_high_contrast
+    "High Contrast Mode",
+    value=st.session_state["high_contrast"],
+    on_change=toggle_high_contrast,
 )
 
 if st.session_state["high_contrast"]:
@@ -77,7 +79,9 @@ import pandas as pd
 original_altair_chart = st.altair_chart
 
 
-def accessible_altair_chart(altair_chart, use_container_width=False, theme="streamlit", **kwargs):
+def accessible_altair_chart(
+    altair_chart, use_container_width=False, theme="streamlit", **kwargs
+):
     """TODO: Add docstring."""
     title = getattr(altair_chart, "title", "Chart")
     if isinstance(title, dict) and "text" in title:
@@ -87,8 +91,12 @@ def accessible_altair_chart(altair_chart, use_container_width=False, theme="stre
 
     df = getattr(altair_chart, "data", pd.DataFrame())
 
-    if not hasattr(altair_chart, "description") or not getattr(altair_chart, "description", None):
-        altair_chart = altair_chart.properties(description=f"Data visualization for {title}")
+    if not hasattr(altair_chart, "description") or not getattr(
+        altair_chart, "description", None
+    ):
+        altair_chart = altair_chart.properties(
+            description=f"Data visualization for {title}"
+        )
 
     original_altair_chart(
         altair_chart, use_container_width=use_container_width, theme=theme, **kwargs
@@ -166,11 +174,17 @@ reporting_dashboard_page = st.Page(
 sites_page = st.Page("pages/sites.py", title="Site Performance", icon="🏥")
 records_page = st.Page("pages/records.py", title="Data Completeness", icon="📋")
 setup_wizard_page = st.Page("pages/setup_wizard.py", title="Setup Wizard", icon="🧭")
-review_workbench_page = st.Page("pages/review_workbench.py", title="Review Workbench", icon="🧪")
-publisher_wizard_page = st.Page("pages/publisher_wizard.py", title="Publisher Wizard", icon="🏛️")
+review_workbench_page = st.Page(
+    "pages/review_workbench.py", title="Review Workbench", icon="🧪"
+)
+publisher_wizard_page = st.Page(
+    "pages/publisher_wizard.py", title="Publisher Wizard", icon="🏛️"
+)
 data_lineage_page = st.Page("pages/data_lineage.py", title="Data Lineage", icon="🔭")
 admin_page = st.Page("pages/admin.py", title="Enterprise Admin", icon="🏢")
-conformance_portal = st.Page("pages/conformance.py", title="Accessibility Portal", icon="♿")
+conformance_portal = st.Page(
+    "pages/conformance.py", title="Accessibility Portal", icon="♿"
+)
 
 if is_connected:
     nav = st.navigation(

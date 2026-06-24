@@ -67,7 +67,9 @@ class IntervalStructure(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra="ignore")
 
     @classmethod
-    def from_interval(cls, interval: Interval, forms: List[FormStructure]) -> IntervalStructure:
+    def from_interval(
+        cls, interval: Interval, forms: List[FormStructure]
+    ) -> IntervalStructure:
         """Creates IntervalStructure from an Interval model and its associated FormStructures."""
         interval_data = interval.model_dump(by_alias=True)
         # Remove the 'forms' key to avoid multiple values for keyword argument 'forms'

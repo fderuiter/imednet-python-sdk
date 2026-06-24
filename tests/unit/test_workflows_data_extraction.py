@@ -12,7 +12,10 @@ from imednet_workflows.data_extraction import DataExtractionWorkflow
 def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.get_subjects.return_value = [Subject(subject_key="S1"), Subject(subject_key="S2")]
+    sdk.get_subjects.return_value = [
+        Subject(subject_key="S1"),
+        Subject(subject_key="S2"),
+    ]
     sdk.get_visits.return_value = [
         Visit(visit_id=1, subject_key="S1"),
         Visit(visit_id=2, subject_key="S2"),
@@ -36,7 +39,10 @@ def test_extract_records_by_criteria_filters_subject_and_visit() -> None:
     sdk.get_visits.assert_called_once_with("STUDY", visit_id=1)
     assert sdk.get_visits.call_args.kwargs == {"visit_id": 1}
     sdk.get_records.assert_called_once_with(study_key="STUDY", record_data_filter=None)
-    assert sdk.get_records.call_args.kwargs == {"study_key": "STUDY", "record_data_filter": None}
+    assert sdk.get_records.call_args.kwargs == {
+        "study_key": "STUDY",
+        "record_data_filter": None,
+    }
 
     assert [r.record_id for r in result] == [1, 2]
 

@@ -97,7 +97,9 @@ def _group_mappings_by_domain_and_form(
         domain_key = rule.domain.upper()
         if domain_key not in _DOMAIN_MODEL_MAP:
             continue
-        grouped.setdefault(domain_key, {}).setdefault(rule.source_form_key, []).append(rule)
+        grouped.setdefault(domain_key, {}).setdefault(rule.source_form_key, []).append(
+            rule
+        )
     return grouped
 
 
@@ -112,7 +114,11 @@ class SubjectContext:
 
 
 def _evaluate_business_logic(
-    logic: str, record: Record, payload: dict[str, Any], context: SubjectContext, value: Any = None
+    logic: str,
+    record: Record,
+    payload: dict[str, Any],
+    context: SubjectContext,
+    value: Any = None,
 ) -> Any:
     """TODO: Add docstring."""
     try:
@@ -176,7 +182,9 @@ def extract_canonical_records(
                 for rule in rules:
                     # 1. Source value extraction
                     if rule.source_variable_name:
-                        value = _extract_rule_value_from_payload(record, rule, top_level_payload)
+                        value = _extract_rule_value_from_payload(
+                            record, rule, top_level_payload
+                        )
                     else:
                         value = None
 

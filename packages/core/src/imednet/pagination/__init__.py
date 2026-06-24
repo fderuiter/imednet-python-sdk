@@ -9,10 +9,10 @@
 """
 
 from imednet.core.paginator import (
-    AsyncJsonListPaginator,
-    AsyncPaginator,
-    JsonListPaginator,
-    Paginator,
+                                    AsyncJsonListPaginator,
+                                    AsyncPaginator,
+                                    JsonListPaginator,
+                                    Paginator,
 )
 
 __all__ = ["Paginator", "AsyncPaginator", "JsonListPaginator", "AsyncJsonListPaginator"]

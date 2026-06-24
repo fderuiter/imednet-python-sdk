@@ -72,7 +72,9 @@ def _setup_airflow(monkeypatch):
     airflow.providers = ModuleType("airflow.providers")
     airflow.providers.amazon = ModuleType("airflow.providers.amazon")
     airflow.providers.amazon.aws = ModuleType("airflow.providers.amazon.aws")
-    airflow.providers.amazon.aws.hooks = ModuleType("airflow.providers.amazon.aws.hooks")
+    airflow.providers.amazon.aws.hooks = ModuleType(
+        "airflow.providers.amazon.aws.hooks"
+    )
     airflow.providers.amazon.aws.hooks.s3 = s3_mod
 
     modules = {

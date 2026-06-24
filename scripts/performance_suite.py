@@ -68,7 +68,9 @@ def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
             r.model_dump()
     elapsed = time.time() - start
     results["mongo_conversion_latency"] = elapsed
-    print(f"Mongo conversion (serialization) for {record_count} records in {elapsed:.4f}s")
+    print(
+        f"Mongo conversion (serialization) for {record_count} records in {elapsed:.4f}s"
+    )
 
     # 3. Benchmark: Snowflake conversion (Arrow)
     start = time.time()
@@ -85,7 +87,9 @@ def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
     for r in records:
         nodes.append({"id": r.record_id, "label": "Record"})
         if getattr(r, "subject_key", None):
-            edges.append({"from": r.subject_key, "to": r.record_id, "type": "HAS_RECORD"})
+            edges.append(
+                {"from": r.subject_key, "to": r.record_id, "type": "HAS_RECORD"}
+            )
     elapsed = time.time() - start
     results["neo4j_conversion_latency"] = elapsed
     print(f"Neo4j Graph conversion for {record_count} records in {elapsed:.4f}s")

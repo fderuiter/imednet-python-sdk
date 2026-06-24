@@ -15,12 +15,17 @@ logging.disable(logging.CRITICAL)
 
 # Set up paths so we can import packages
 sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'packages', 'core', 'src'))
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "packages", "core", "src")
+    ),
 )
 sys.path.insert(
     0,
     os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..', 'packages', 'plugins-sinks', 'src')
+        os.path.join(
+            os.path.dirname(__file__), "..", "packages", "plugins-sinks", "src"
+        )
     ),
 )
 
@@ -80,7 +85,7 @@ def fuzz_warehouse_transformation(data: bytes):
 
     # Generate random string representations to pass as records
     try:
-        text = data.decode('utf-8', errors='ignore')
+        text = data.decode("utf-8", errors="ignore")
         if not text:
             return
 

@@ -34,7 +34,9 @@ def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
     obj.study_type = "Type"
     obj.sponsor_key = "Sponsor"
     sdk.studies.list.return_value = [obj]
-    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
+    monkeypatch.setattr(
+        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk)
+    )
 
     result = runner.invoke(cli.app, ["studies", "list"])
 
@@ -43,7 +45,9 @@ def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "study1" in result.stdout
 
 
-def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_records_list_output_csv(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     """TODO: Add docstring."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
@@ -53,7 +57,9 @@ def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     record.model_dump.return_value = {"id": 1}
     sdk = MagicMock()
     sdk.records.list.return_value = [record]
-    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
+    monkeypatch.setattr(
+        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk)
+    )
 
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(cli.app, ["records", "list", "ST", "--output", "csv"])
@@ -73,7 +79,9 @@ def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(
         "imednet_workflows.cli.DataExtractionWorkflow", MagicMock(return_value=workflow)
     )
-    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock()))
+    monkeypatch.setattr(
+        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock())
+    )
 
     result = runner.invoke(
         cli.app,
@@ -104,7 +112,9 @@ def test_invalid_filter_string(monkeypatch: pytest.MonkeyPatch) -> None:
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
-    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock()))
+    monkeypatch.setattr(
+        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock())
+    )
 
     result = runner.invoke(cli.app, ["subjects", "list", "ST", "--filter", "badfilter"])
 

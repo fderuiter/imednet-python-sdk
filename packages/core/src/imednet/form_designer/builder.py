@@ -71,7 +71,9 @@ class FormBuilder:
         suffix = "".join((secrets.choice(string.digits) for _ in range(5)))
         return f"lfdiv_{suffix}"
 
-    def _create_entity(self, props: EntityProps, rows: Optional[List[Row]] = None) -> Entity:
+    def _create_entity(
+        self, props: EntityProps, rows: Optional[List[Row]] = None
+    ) -> Entity:
         """Create a new layout entity with a generated DOM ID.
 
         Args:
@@ -127,7 +129,14 @@ class FormBuilder:
     def add_field(
         self,
         type: Literal[
-            "text", "number", "radio", "dropdown", "datetime", "upload", "checkbox", "memo"
+            "text",
+            "number",
+            "radio",
+            "dropdown",
+            "datetime",
+            "upload",
+            "checkbox",
+            "memo",
         ],
         label: str,
         question_name: str,
@@ -163,7 +172,11 @@ class FormBuilder:
         # 2. Control Entity (Col 2)
         ctrl_props: EntityProps
 
-        common_kwargs = {"question_name": question_name, "new_fld_id": shared_id, "bl_req": bl_req}
+        common_kwargs = {
+            "question_name": question_name,
+            "new_fld_id": shared_id,
+            "bl_req": bl_req,
+        }
 
         if type == "text":
             ctrl_props = TextFieldProps(

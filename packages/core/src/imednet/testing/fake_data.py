@@ -41,7 +41,9 @@ def fake_site() -> Dict[str, Any]:
         "studyKey": faker.bothify(text="??????"),
         "siteId": faker.random_int(min=1, max=10000),
         "siteName": faker.company(),
-        "siteEnrollmentStatus": faker.random_element(["Enrollment Open", "Enrollment Closed"]),
+        "siteEnrollmentStatus": faker.random_element(
+            ["Enrollment Open", "Enrollment Closed"]
+        ),
         "dateCreated": _timestamp(),
         "dateModified": _timestamp(),
     }
@@ -132,7 +134,8 @@ def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
         first_var = next(iter(variables.values()))
         form_id = first_var.form_id
         record_data = {
-            name: _fake_value(var.variable_type or "") for name, var in variables.items()
+            name: _fake_value(var.variable_type or "")
+            for name, var in variables.items()
         }
         return {
             "studyKey": faker.bothify(text="??????"),
@@ -143,7 +146,9 @@ def fake_record(schema: Optional[SchemaCache] = None) -> Dict[str, Any]:
             "recordId": faker.random_int(min=1, max=10000),
             "recordOid": faker.uuid4(),
             "recordType": "SUBJECT",
-            "recordStatus": faker.random_element(["Record Incomplete", "Record Complete"]),
+            "recordStatus": faker.random_element(
+                ["Record Incomplete", "Record Complete"]
+            ),
             "deleted": False,
             "dateCreated": _timestamp(),
             "dateModified": _timestamp(),
@@ -228,7 +233,9 @@ def fake_variable() -> Dict[str, Any]:
     }
 
 
-def fake_forms_for_cache(num_forms: int = 1, study_key: Optional[str] = None) -> List[Form]:
+def fake_forms_for_cache(
+    num_forms: int = 1, study_key: Optional[str] = None
+) -> List[Form]:
     """Return a list of :class:`~imednet.models.forms.Form` objects for caching."""
     forms: List[Form] = []
     for _ in range(num_forms):

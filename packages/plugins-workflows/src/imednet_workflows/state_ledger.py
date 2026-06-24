@@ -44,7 +44,9 @@ class LedgerState(BaseModel):
 class ExtractionStateLedger:
     """Manages transactional state bookmarks per study to guarantee absolute ingestion tracking."""
 
-    def __init__(self, ledger_path: str = "/var/lib/imednet/pipeline_ledger.json") -> None:
+    def __init__(
+        self, ledger_path: str = "/var/lib/imednet/pipeline_ledger.json"
+    ) -> None:
         """Initialize the extraction state ledger.
 
         Args:
@@ -95,7 +97,9 @@ class ExtractionStateLedger:
 
         dir_name = self.ledger_path.parent
         # Write to temp file in the same directory, then rename atomically
-        with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False, encoding="utf-8") as tf:
+        with tempfile.NamedTemporaryFile(
+            "w", dir=dir_name, delete=False, encoding="utf-8"
+        ) as tf:
             tf.write(serialized)
             temp_name = tf.name
 
@@ -107,7 +111,9 @@ class ExtractionStateLedger:
                 os.remove(temp_name)
             raise
 
-    def get_last_timestamp(self, study_key: str, stream_name: str) -> Optional[datetime]:
+    def get_last_timestamp(
+        self, study_key: str, stream_name: str
+    ) -> Optional[datetime]:
         """Returns the high-water mark timestamp for a given study and stream."""
         with self._lock():
             state = self.read_state()
@@ -202,7 +208,11 @@ class ExtractionStateLedger:
                     self.write_state(state)
             except Exception as err:
                 # Mark stream as failed
-                err_ts = tx_data.get("new_timestamp") or last_ts or datetime.now(timezone.utc)
+                err_ts = (
+                    tx_data.get("new_timestamp")
+                    or last_ts
+                    or datetime.now(timezone.utc)
+                )
                 if err_ts.tzinfo is None:
                     err_ts = err_ts.replace(tzinfo=timezone.utc)
                 study_entry = state.studies.setdefault(study_key, StudyState())

@@ -77,16 +77,22 @@ def test_top_n_with_other_zero_remainder_omits_other_row() -> None:
     assert len(result) == 2
 
 
-def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_paginated_slice_limits_rows_to_active_page(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """TODO: Add docstring."""
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
     next_col = _FakeColumn()
 
-    monkeypatch.setattr(paginated_grid.st, "session_state", session_state, raising=False)
+    monkeypatch.setattr(
+        paginated_grid.st, "session_state", session_state, raising=False
+    )
     monkeypatch.setattr(paginated_grid.st, "selectbox", lambda *args, **kwargs: 100)
-    monkeypatch.setattr(paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col])
+    monkeypatch.setattr(
+        paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col]
+    )
 
     df = pd.DataFrame({"row": range(20_000)})
     page_df = paginated_grid.paginated_slice(df, key="grid")
@@ -97,16 +103,22 @@ def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPa
     assert "Showing 1-100 of 20000" in info_col.captions[0]
 
 
-def test_paginated_slice_prev_button_decrements_page(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_paginated_slice_prev_button_decrements_page(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """TODO: Add docstring."""
     session_state: dict[str, Any] = {"grid_page": 3}
     prev_col = _FakeColumn(prev_click=True)
     info_col = _FakeColumn()
     next_col = _FakeColumn()
 
-    monkeypatch.setattr(paginated_grid.st, "session_state", session_state, raising=False)
+    monkeypatch.setattr(
+        paginated_grid.st, "session_state", session_state, raising=False
+    )
     monkeypatch.setattr(paginated_grid.st, "selectbox", lambda *args, **kwargs: 100)
-    monkeypatch.setattr(paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col])
+    monkeypatch.setattr(
+        paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col]
+    )
 
     df = pd.DataFrame({"row": range(500)})
     page_df = paginated_grid.paginated_slice(df, key="grid")
@@ -116,16 +128,22 @@ def test_paginated_slice_prev_button_decrements_page(monkeypatch: pytest.MonkeyP
     assert page_df["row"].iloc[-1] == 199
 
 
-def test_paginated_slice_clamps_page_above_total_pages(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_paginated_slice_clamps_page_above_total_pages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """TODO: Add docstring."""
     session_state: dict[str, Any] = {"grid_page": 999}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
     next_col = _FakeColumn()
 
-    monkeypatch.setattr(paginated_grid.st, "session_state", session_state, raising=False)
+    monkeypatch.setattr(
+        paginated_grid.st, "session_state", session_state, raising=False
+    )
     monkeypatch.setattr(paginated_grid.st, "selectbox", lambda *args, **kwargs: 100)
-    monkeypatch.setattr(paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col])
+    monkeypatch.setattr(
+        paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col]
+    )
 
     df = pd.DataFrame({"row": range(150)})
     page_df = paginated_grid.paginated_slice(df, key="grid")
@@ -143,9 +161,13 @@ def test_paginated_slice_custom_page_size_not_in_options(
     info_col = _FakeColumn()
     next_col = _FakeColumn()
 
-    monkeypatch.setattr(paginated_grid.st, "session_state", session_state, raising=False)
+    monkeypatch.setattr(
+        paginated_grid.st, "session_state", session_state, raising=False
+    )
     monkeypatch.setattr(paginated_grid.st, "selectbox", lambda *args, **kwargs: 75)
-    monkeypatch.setattr(paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col])
+    monkeypatch.setattr(
+        paginated_grid.st, "columns", lambda spec: [prev_col, info_col, next_col]
+    )
 
     df = pd.DataFrame({"row": range(300)})
     page_df = paginated_grid.paginated_slice(

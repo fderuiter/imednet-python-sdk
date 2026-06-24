@@ -62,7 +62,9 @@ def test_records_list_filter_param():
 async def test_async_endpoint_mirror():
     """TODO: Add docstring."""
     sync_sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
-    async_sdk = AsyncImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
+    async_sdk = AsyncImednetSDK(
+        api_key="k", security_key="s", base_url="https://api.test"
+    )
 
     respx.get("https://api.test/api/v1/edc/studies/S1/sites").mock(
         side_effect=[

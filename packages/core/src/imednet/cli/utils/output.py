@@ -94,7 +94,9 @@ def _format_cell_value(value: Any, key: str | None = None) -> str:
         if color:
             return f"[{color}]{escape(str_val)}[/{color}]"
 
-    if isinstance(value, list) and all(isinstance(x, (str, int, float, bool)) for x in value):
+    if isinstance(value, list) and all(
+        isinstance(x, (str, int, float, bool)) for x in value
+    ):
         if not value:
             return "[dim]-[/dim]"
         s = ", ".join(str(x) for x in value)

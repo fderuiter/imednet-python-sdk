@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 class OperationMonitor:
     """Helper to handle generic operation monitoring (tracing, timing, logging)."""
 
-    def __init__(self, tracer: Optional[Tracer], operation_name: str, **attributes: Any) -> None:
+    def __init__(
+        self, tracer: Optional[Tracer], operation_name: str, **attributes: Any
+    ) -> None:
         """Initialize the operation monitor.
 
         Args:

@@ -47,6 +47,8 @@ def test_redact_url_query() -> None:
         ("/", tuple(), ""),
     ],
 )
-def test_build_safe_path(base_path: str, segments: tuple[object, ...], expected: str) -> None:
+def test_build_safe_path(
+    base_path: str, segments: tuple[object, ...], expected: str
+) -> None:
     """TODO: Add docstring."""
     assert build_safe_path(base_path, *segments) == expected

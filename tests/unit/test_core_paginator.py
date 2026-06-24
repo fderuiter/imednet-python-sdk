@@ -131,7 +131,9 @@ def test_invalid_pagination_type_raises_error() -> None:
     """Test TypeError is raised when the 'pagination' field is not a dictionary."""
     client = DummyClient([{"data": [1, 2], "pagination": "not a dict"}])
     paginator = Paginator(client, "/p")
-    with pytest.raises(TypeError, match="Response field 'pagination' must be a dictionary"):
+    with pytest.raises(
+        TypeError, match="Response field 'pagination' must be a dictionary"
+    ):
         list(paginator)
 
 

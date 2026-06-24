@@ -185,7 +185,9 @@ class Neo4jExportSink(ExportSink):
             self._driver = neo4j_mod.GraphDatabase.driver(self._uri, auth=self._auth)
             self._driver.verify_connectivity()
         except Exception as exc:
-            raise ExportConfigurationError(f"Cannot connect to Neo4j at {redacted}: {exc}") from exc
+            raise ExportConfigurationError(
+                f"Cannot connect to Neo4j at {redacted}: {exc}"
+            ) from exc
 
     # ------------------------------------------------------------------
     # ExportSink interface
@@ -197,8 +199,14 @@ class Neo4jExportSink(ExportSink):
         if not rows:
             return 0
 
-        cypher = _MERGE_RECORD_CYPHER if self.config.idempotent else _CREATE_RECORD_CYPHER
-        cfg = self.config if isinstance(self.config, Neo4jSinkConfig) else Neo4jSinkConfig()
+        cypher = (
+            _MERGE_RECORD_CYPHER if self.config.idempotent else _CREATE_RECORD_CYPHER
+        )
+        cfg = (
+            self.config
+            if isinstance(self.config, Neo4jSinkConfig)
+            else Neo4jSinkConfig()
+        )
 
         from imednet.core.operations.executor import UniversalExecutor
 
@@ -251,7 +259,9 @@ def export_to_neo4j(
     total_written = 0
     with Neo4jExportSink(uri, auth, study_key, config=cfg) as sink:
         for index, batch in enumerate(iter_batches(list(records), cfg.batch_size)):
-            total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
+            total_written += sink.write_batch(
+                batch, batch_id=f"{study_key}/records/{index}"
+            )
     return total_written
 
 

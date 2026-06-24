@@ -18,7 +18,9 @@ def test_to_arrow_table_empty_records_returns_empty_table() -> None:
 
 def test_to_arrow_table_handles_key_variations_with_nulls() -> None:
     """TODO: Add docstring."""
-    table = to_arrow_table([{"subject_key": "S1", "weight": 73.5}, {"subject_key": "S2"}])
+    table = to_arrow_table(
+        [{"subject_key": "S1", "weight": 73.5}, {"subject_key": "S2"}]
+    )
 
     assert table.column("subject_key").to_pylist() == ["S1", "S2"]
     assert table.column("weight").to_pylist() == [73.5, None]

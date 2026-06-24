@@ -32,7 +32,9 @@ def export_list_to_file(
     """
     fmt = output_format.lower()
     if fmt not in {"csv", "json"}:
-        print(f"[bold red]Error:[/bold red] Invalid output format: '{fmt}'. Supported: csv, json.")
+        print(
+            f"[bold red]Error:[/bold red] Invalid output format: '{fmt}'. Supported: csv, json."
+        )
         raise typer.Exit(code=1)
 
     path = Path(f"{filename_prefix}.{fmt}")

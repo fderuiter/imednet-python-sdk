@@ -123,13 +123,18 @@ def _queue_dataframe(items: list[TriageItem]) -> pd.DataFrame:
 
 def _render_kpis(queue_df: pd.DataFrame) -> None:
     """TODO: Add docstring."""
-    open_count = int(queue_df[queue_df["status"] != TriageStatus.RESOLVED.value].shape[0])
+    open_count = int(
+        queue_df[queue_df["status"] != TriageStatus.RESOLVED.value].shape[0]
+    )
     sla_warning_count = int(
         queue_df[
-            (queue_df["status"] != TriageStatus.RESOLVED.value) & (queue_df["age_hours"] > 72.0)
+            (queue_df["status"] != TriageStatus.RESOLVED.value)
+            & (queue_df["age_hours"] > 72.0)
         ].shape[0]
     )
-    resolved_count = int(queue_df[queue_df["status"] == TriageStatus.RESOLVED.value].shape[0])
+    resolved_count = int(
+        queue_df[queue_df["status"] == TriageStatus.RESOLVED.value].shape[0]
+    )
 
     col_open, col_sla, col_resolved = st.columns(3)
     with col_open:
@@ -142,13 +147,25 @@ def _render_kpis(queue_df: pd.DataFrame) -> None:
 
 def _filter_queue(queue_df: pd.DataFrame) -> pd.DataFrame:
     """TODO: Add docstring."""
-    severity_options = sorted(queue_df["severity_bucket"].dropna().astype(str).unique().tolist())
-    category_options = sorted(queue_df["category"].dropna().astype(str).unique().tolist())
-    assignee_options = sorted(queue_df["assignee"].dropna().astype(str).unique().tolist())
+    severity_options = sorted(
+        queue_df["severity_bucket"].dropna().astype(str).unique().tolist()
+    )
+    category_options = sorted(
+        queue_df["category"].dropna().astype(str).unique().tolist()
+    )
+    assignee_options = sorted(
+        queue_df["assignee"].dropna().astype(str).unique().tolist()
+    )
 
-    severity_filter = st.multiselect("Severity", severity_options, default=severity_options)
-    category_filter = st.multiselect("Category", category_options, default=category_options)
-    assignee_filter = st.multiselect("Assignee", assignee_options, default=assignee_options)
+    severity_filter = st.multiselect(
+        "Severity", severity_options, default=severity_options
+    )
+    category_filter = st.multiselect(
+        "Category", category_options, default=category_options
+    )
+    assignee_filter = st.multiselect(
+        "Assignee", assignee_options, default=assignee_options
+    )
     search_term = st.text_input("Search by Subject Key")
 
     filtered = queue_df.copy()
@@ -160,12 +177,14 @@ def _filter_queue(queue_df: pd.DataFrame) -> pd.DataFrame:
         filtered = filtered[filtered["assignee"].isin(assignee_filter)]
     if search_term:
         filtered = filtered[
-            filtered["item_id"].astype(str).str.contains(search_term, case=False, na=False)
+            filtered["item_id"]
+            .astype(str)
+            .str.contains(search_term, case=False, na=False)
         ]
 
-    return filtered.sort_values(["status_rank", "age_hours"], ascending=[True, False]).reset_index(
-        drop=True
-    )
+    return filtered.sort_values(
+        ["status_rank", "age_hours"], ascending=[True, False]
+    ).reset_index(drop=True)
 
 
 def _get_current_user() -> str:
@@ -210,7 +229,9 @@ def render_page() -> None:
         st.info("No triage items match the selected filters.")
         return
 
-    display_df = filtered_df[["item_id", "severity", "category", "status", "assignee", "age_hours"]]
+    display_df = filtered_df[
+        ["item_id", "severity", "category", "status", "assignee", "age_hours"]
+    ]
     st.dataframe(display_df, use_container_width=True)
 
     item_options = filtered_df["item_id"].tolist()
@@ -218,11 +239,17 @@ def render_page() -> None:
     selected_item_id = st.selectbox(
         "Select item",
         item_options,
-        index=item_options.index(selected_item_id) if selected_item_id in item_options else 0,
+        index=(
+            item_options.index(selected_item_id)
+            if selected_item_id in item_options
+            else 0
+        ),
     )
     st.session_state[_SELECTED_ITEM_KEY] = selected_item_id
 
-    selected_item = next((item for item in items if item.item_id == selected_item_id), None)
+    selected_item = next(
+        (item for item in items if item.item_id == selected_item_id), None
+    )
     if selected_item is None:
         return
 

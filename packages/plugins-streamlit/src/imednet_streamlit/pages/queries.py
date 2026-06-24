@@ -64,7 +64,9 @@ with st.sidebar:
     status_filter: list[str] = st.multiselect(
         "Status", ["Open", "Closed"], default=["Open", "Closed"]
     )
-    type_options = df["annotation_type"].dropna().unique().tolist() if not df.empty else []
+    type_options = (
+        df["annotation_type"].dropna().unique().tolist() if not df.empty else []
+    )
     type_filter: list[str] = st.multiselect("Annotation Type", type_options)
 
     if not df.empty and pd.api.types.is_datetime64_any_dtype(df["date_created"]):
@@ -85,7 +87,9 @@ if type_filter:
     df_filtered = df_filtered[df_filtered["annotation_type"].isin(type_filter)]
 if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
     start_date, end_date = date_range[0], date_range[1]
-    if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(df_filtered["date_created"]):
+    if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(
+        df_filtered["date_created"]
+    ):
         df_filtered = df_filtered[
             (df_filtered["date_created"].dt.date >= start_date)
             & (df_filtered["date_created"].dt.date <= end_date)
@@ -93,8 +97,12 @@ if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
 
 # ── KPI Row ───────────────────────────────────────────────────────────────
 total = len(df_filtered)
-open_count = int((df_filtered["status"] == "Open").sum()) if not df_filtered.empty else 0
-closed_count = int((df_filtered["status"] == "Closed").sum()) if not df_filtered.empty else 0
+open_count = (
+    int((df_filtered["status"] == "Open").sum()) if not df_filtered.empty else 0
+)
+closed_count = (
+    int((df_filtered["status"] == "Closed").sum()) if not df_filtered.empty else 0
+)
 open_pct = f"{open_count / total * 100:.1f}%" if total > 0 else "N/A"
 
 components.kpi_row(
@@ -114,7 +122,9 @@ with col_left:
     if not df_filtered.empty:
         status_counts = df_filtered.groupby("status").size().reset_index(name="count")
         st.altair_chart(
-            components.bar_chart(status_counts, x="count", y="status", title="Status Breakdown"),
+            components.bar_chart(
+                status_counts, x="count", y="status", title="Status Breakdown"
+            ),
             use_container_width=True,
         )
 
@@ -128,13 +138,17 @@ with col_right:
             top_n=10,
         )
         st.altair_chart(
-            components.bar_chart(var_counts, x="count", y="variable", title="Top Variables"),
+            components.bar_chart(
+                var_counts, x="count", y="variable", title="Top Variables"
+            ),
             use_container_width=True,
         )
 
 # ── Trend line chart ───────────────────────────────────────────────────────
 st.subheader("Query Trend (by Day)")
-if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(df_filtered["date_created"]):
+if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(
+    df_filtered["date_created"]
+):
     trend_df = df_filtered.copy()
     trend_df["date"] = trend_df["date_created"].dt.normalize()
     trend_agg = trend_df.groupby(["date", "status"]).size().reset_index(name="count")

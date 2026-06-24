@@ -87,7 +87,9 @@ def _render_validation_checklist(
     # 1. Mapping completeness
     has_mappings = len(config.mappings) > 0
     report["has_mappings"] = has_mappings
-    _render_check("Field mappings defined", has_mappings, f"{len(config.mappings)} mapping(s)")
+    _render_check(
+        "Field mappings defined", has_mappings, f"{len(config.mappings)} mapping(s)"
+    )
 
     # 2. Terminology normalization
     has_terminology = len(config.terminology_lookups) > 0
@@ -102,21 +104,29 @@ def _render_validation_checklist(
     # 3. Widgets configured
     has_widgets = len(config.widgets) > 0
     report["has_widgets"] = has_widgets
-    _render_check("Dashboard widgets configured", has_widgets, f"{len(config.widgets)} widget(s)")
+    _render_check(
+        "Dashboard widgets configured", has_widgets, f"{len(config.widgets)} widget(s)"
+    )
 
     # 4. Version tag well-formed (semantic-version-like)
     import re
 
     version_ok = bool(re.match(r"^\d+\.\d+\.\d+", config.version))
     report["version_ok"] = version_ok
-    _render_check("Version tag is well-formed", version_ok, f"version = {config.version!r}")
+    _render_check(
+        "Version tag is well-formed", version_ok, f"version = {config.version!r}"
+    )
 
     # 5. Study key present
     study_key_ok = bool(config.study_key)
     report["study_key_ok"] = study_key_ok
-    _render_check("Study key is non-empty", study_key_ok, f"studyKey = {config.study_key!r}")
+    _render_check(
+        "Study key is non-empty", study_key_ok, f"studyKey = {config.study_key!r}"
+    )
 
-    all_passed = all([has_mappings, has_terminology, has_widgets, version_ok, study_key_ok])
+    all_passed = all(
+        [has_mappings, has_terminology, has_widgets, version_ok, study_key_ok]
+    )
     return all_passed, report
 
 
@@ -139,7 +149,8 @@ def _render_diff_section(
         return
 
     commit_options = [
-        f"{e['version_tag']} — {e['commit_id'][:12]} ({e['timestamp'][:19]})" for e in history
+        f"{e['version_tag']} — {e['commit_id'][:12]} ({e['timestamp'][:19]})"
+        for e in history
     ]
     # Default: compare the previous commit against the target
     target_idx = next(
@@ -212,17 +223,29 @@ def _render_publish_action(
             f"Roles **{roles}** are not authorised to publish.  "
             "Ask a **manager** or **admin** to perform this action."
         )
-        st.button("Approve & Publish to Production", disabled=True, key="publisher_publish_btn")
+        st.button(
+            "Approve & Publish to Production",
+            disabled=True,
+            key="publisher_publish_btn",
+        )
         return
 
     if not all_checks_passed:
         st.warning("All validation checks must pass before publishing.")
-        st.button("Approve & Publish to Production", disabled=True, key="publisher_publish_btn")
+        st.button(
+            "Approve & Publish to Production",
+            disabled=True,
+            key="publisher_publish_btn",
+        )
         return
 
     if not user:
         st.warning("A username is required to record the publish action.")
-        st.button("Approve & Publish to Production", disabled=True, key="publisher_publish_btn")
+        st.button(
+            "Approve & Publish to Production",
+            disabled=True,
+            key="publisher_publish_btn",
+        )
         return
 
     st.info(

@@ -32,10 +32,20 @@ def test_study_snapshot_builds_indexes_and_filters() -> None:
         study_key="ST",
         forms=[enrollment, scheduled, unscheduled],
         variables=[
-            Variable(variable_id=1, variable_name="DOB", form_key="ENR", variable_type="Date"),
-            Variable(variable_id=2, variable_name="HGB", form_key="LABS", variable_type="Number"),
+            Variable(
+                variable_id=1, variable_name="DOB", form_key="ENR", variable_type="Date"
+            ),
+            Variable(
+                variable_id=2,
+                variable_name="HGB",
+                form_key="LABS",
+                variable_type="Number",
+            ),
         ],
-        intervals=[Interval(interval_name="Baseline"), Interval(interval_name="Week 1")],
+        intervals=[
+            Interval(interval_name="Baseline"),
+            Interval(interval_name="Week 1"),
+        ],
         sites=[
             Site(site_name="Main", site_enrollment_status="Active"),
             Site(site_name="Backup", site_enrollment_status="Inactive"),
@@ -126,7 +136,9 @@ async def test_async_inspect_fetches_all_endpoints_concurrently() -> None:
     sdk.async_get_intervals = lambda study_key: delayed_result(
         "intervals", [Interval(interval_name="Baseline")]
     )
-    sdk.async_get_sites = lambda study_key: delayed_result("sites", [Site(site_name="Site A")])
+    sdk.async_get_sites = lambda study_key: delayed_result(
+        "sites", [Site(site_name="Site A")]
+    )
 
     inspector = StudySchemaInspector(sdk)
     snapshot = await asyncio.wait_for(inspector.async_inspect("ST"), timeout=0.5)
@@ -227,7 +239,9 @@ def test_inspect_consumes_paginated_forms_and_variables() -> None:
             ),
         ]
     )
-    variables_route = respx.get("https://api.test/api/v1/edc/studies/ST/variables").mock(
+    variables_route = respx.get(
+        "https://api.test/api/v1/edc/studies/ST/variables"
+    ).mock(
         side_effect=[
             httpx.Response(
                 200,
@@ -249,7 +263,11 @@ def test_inspect_consumes_paginated_forms_and_variables() -> None:
         json={"data": [{"intervalId": 1, "intervalName": "Baseline"}]}
     )
     respx.get("https://api.test/api/v1/edc/studies/ST/sites").respond(
-        json={"data": [{"siteId": 1, "siteName": "Main", "siteEnrollmentStatus": "Active"}]}
+        json={
+            "data": [
+                {"siteId": 1, "siteName": "Main", "siteEnrollmentStatus": "Active"}
+            ]
+        }
     )
 
     snapshot = StudySchemaInspector(sdk).inspect("ST")

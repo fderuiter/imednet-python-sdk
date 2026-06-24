@@ -14,4 +14,4 @@ class Study(JsonModel):
     """Represents a clinical study and its metadata."""
 
 
-Study = ModelEngine.get_model('Study', Study)
+Study = ModelEngine.get_model("Study", Study)

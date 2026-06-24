@@ -16,4 +16,4 @@ class Site(JsonModel):
     pass
 
 
-Site = ModelEngine.get_model('Site', Site)
+Site = ModelEngine.get_model("Site", Site)

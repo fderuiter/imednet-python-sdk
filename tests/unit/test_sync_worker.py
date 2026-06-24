@@ -14,7 +14,9 @@ def test_sync_worker_run_once_syncs_with_lock(tmp_path) -> None:
     loader.db_path = tmp_path / "records_cache.sqlite3"
     loader.load_records.return_value = [MagicMock(), MagicMock()]
 
-    worker = SyncWorker(loader, config=SyncWorkerConfig(study_key="PROT-01", interval_seconds=1))
+    worker = SyncWorker(
+        loader, config=SyncWorkerConfig(study_key="PROT-01", interval_seconds=1)
+    )
 
     synced_count = worker.run_once()
 

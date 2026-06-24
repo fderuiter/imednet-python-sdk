@@ -3,11 +3,7 @@
 import logging
 import warnings
 
-from .facades import (
-    execute_list_async,
-    execute_list_sync,
-    is_async_client,
-)
+from .facades import execute_list_async, execute_list_sync, is_async_client
 from .identifiers import ItemId
 from .operations import get_resource_async, get_resource_sync
 

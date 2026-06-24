@@ -49,8 +49,8 @@ def get_facade_signatures():
 
 def clean_label(label):
     """Clean the label by removing parentheses."""
-    c = re.sub(r'\(.*?\)', '', label).strip()
-    c = c.replace('?', '').strip()
+    c = re.sub(r"\(.*?\)", "", label).strip()
+    c = c.replace("?", "").strip()
     return c
 
 
@@ -65,9 +65,15 @@ def main():
 
     search_dirs = [
         os.path.join(base_dir, "packages", "core", "src", "imednet"),
-        os.path.join(base_dir, "packages", "plugins-workflows", "src", "imednet_workflows"),
         os.path.join(
-            base_dir, "packages", "providers-airflow", "src", "apache_airflow_providers_imednet"
+            base_dir, "packages", "plugins-workflows", "src", "imednet_workflows"
+        ),
+        os.path.join(
+            base_dir,
+            "packages",
+            "providers-airflow",
+            "src",
+            "apache_airflow_providers_imednet",
         ),
         os.path.join(base_dir, "packages", "plugins-sinks", "src"),
         os.path.join(base_dir, "packages", "plugins-streamlit", "src"),
@@ -95,7 +101,7 @@ def main():
                     if m:
                         nodes[m.group(1)] = m.group(2)
                     else:
-                        m2 = re.match(r'participant\s+(\w+)', line)
+                        m2 = re.match(r"participant\s+(\w+)", line)
                         if m2:
                             nodes[m2.group(1)] = m2.group(1)
                     continue
@@ -112,8 +118,8 @@ def main():
                 ):
                     continue
 
-                parts = re.split(r'-->>|->>|--!?>|---|==>|<--!?>|<--|-.->', line)
-                if len(parts) == 1 and not re.search(r'\[|\(', line):
+                parts = re.split(r"-->>|->>|--!?>|---|==>|<--!?>|<--|-.->", line)
+                if len(parts) == 1 and not re.search(r"\[|\(", line):
                     # Probably not a node definition
                     continue
 
@@ -122,7 +128,7 @@ def main():
                     if not part:
                         continue
                     # remove edge labels
-                    part = re.sub(r'^\|[^|]+\|\s*', '', part)
+                    part = re.sub(r"^\|[^|]+\|\s*", "", part)
                     part = part.strip()
 
                     m = re.search(

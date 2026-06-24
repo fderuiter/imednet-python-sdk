@@ -18,7 +18,9 @@ def test_isolation_study_a_failure_does_not_affect_b_and_c(
 ) -> None:
     """STUDY-A raises RuntimeError; STUDY-B and STUDY-C must succeed."""
 
-    def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter, **kwargs: Any) -> str:
+    def pipeline(
+        study_key: str, sdk: object, logger: logging.LoggerAdapter, **kwargs: Any
+    ) -> str:
         """TODO: Add docstring."""
         if study_key == "STUDY-A":
             raise RuntimeError("Simulated failure")
@@ -111,7 +113,9 @@ def test_failed_result_data_is_none(orchestrator: MultiStudyOrchestrator) -> Non
     assert all(isinstance(result["error"], str) for result in results.values())
 
 
-def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrator) -> None:
+def test_execute_pipeline_respects_whitelist(
+    orchestrator: MultiStudyOrchestrator,
+) -> None:
     """TODO: Add docstring."""
 
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:
@@ -123,7 +127,9 @@ def test_execute_pipeline_respects_whitelist(orchestrator: MultiStudyOrchestrato
     assert set(results) == {"STUDY-A"}
 
 
-def test_execute_pipeline_context_propagation(orchestrator: MultiStudyOrchestrator) -> None:
+def test_execute_pipeline_context_propagation(
+    orchestrator: MultiStudyOrchestrator,
+) -> None:
     """TODO: Add docstring."""
 
     def pipeline(study_key: str, sdk: object, logger: logging.LoggerAdapter) -> str:

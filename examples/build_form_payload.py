@@ -40,7 +40,9 @@ def run_headless(
     logger = logging.getLogger("imednet.headless")
 
     if preset_name not in PRESETS:
-        logger.error(f"Preset '{preset_name}' not found. Available: {list(PRESETS.keys())}")
+        logger.error(
+            f"Preset '{preset_name}' not found. Available: {list(PRESETS.keys())}"
+        )
         sys.exit(1)
 
     logger.info(f"Building layout using preset: {preset_name}")
@@ -53,7 +55,11 @@ def run_headless(
 
     try:
         resp = client.save_form(
-            csrf_key=csrf, form_id=form_id, community_id=comm_id, revision=revision, layout=layout
+            csrf_key=csrf,
+            form_id=form_id,
+            community_id=comm_id,
+            revision=revision,
+            layout=layout,
         )
         logger.info("Success! Server response:")
         print(resp)
@@ -123,7 +129,9 @@ def main() -> None:
             args.revision,
         )
     else:
-        print("TUI mode has been removed. Please use the CLI arguments to run in headless mode.")
+        print(
+            "TUI mode has been removed. Please use the CLI arguments to run in headless mode."
+        )
         parser.print_help()
         sys.exit(1)
 

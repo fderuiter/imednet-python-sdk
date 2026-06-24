@@ -8,7 +8,9 @@ import pandas as pd
 import streamlit as st
 
 
-def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Download CSV") -> None:
+def csv_download_button(
+    df: pd.DataFrame, filename: str, label: str = "⬇ Download CSV"
+) -> None:
     """Render a CSV download button for a DataFrame.
 
     Args:
@@ -20,7 +22,9 @@ def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Downl
     st.download_button(label=label, data=csv, file_name=filename, mime="text/csv")
 
 
-def excel_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Download Excel") -> None:
+def excel_download_button(
+    df: pd.DataFrame, filename: str, label: str = "⬇ Download Excel"
+) -> None:
     """Render an Excel download button for a DataFrame.
 
     Args:

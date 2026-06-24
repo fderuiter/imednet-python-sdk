@@ -18,7 +18,9 @@ from imednet_workflows.subject_data import SubjectDataWorkflow
 def test_data_extraction_filters():
     """TODO: Add docstring."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
-    respx.get("https://api.test/api/v1/edc/studies/ST/variables").respond(json={"data": []})
+    respx.get("https://api.test/api/v1/edc/studies/ST/variables").respond(
+        json={"data": []}
+    )
     respx.get("https://api.test/api/v1/edc/studies/ST/subjects").respond(
         json={"data": [{"subjectKey": "SUB1"}]}
     )
@@ -51,7 +53,14 @@ def test_record_update_submit_and_wait(monkeypatch: pytest.MonkeyPatch):
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get(re.compile("https://api.test/api/v1/edc/studies/ST/variables.*")).respond(
         json={
-            "data": [{"variableName": "x", "variableType": "integer", "formId": 1, "formKey": "F1"}]
+            "data": [
+                {
+                    "variableName": "x",
+                    "variableType": "integer",
+                    "formId": 1,
+                    "formKey": "F1",
+                }
+            ]
         }
     )
     respx.post("https://api.test/api/v1/edc/studies/ST/records").respond(
@@ -67,7 +76,10 @@ def test_record_update_submit_and_wait(monkeypatch: pytest.MonkeyPatch):
 
     wf = RecordUpdateWorkflow(sdk)
     job = wf.create_or_update_records(
-        "ST", [{"formKey": "F1", "data": {"x": 1}}], wait_for_completion=True, poll_interval=0
+        "ST",
+        [{"formKey": "F1", "data": {"x": 1}}],
+        wait_for_completion=True,
+        poll_interval=0,
     )
 
     assert job.state == "COMPLETED"
@@ -85,7 +97,9 @@ def test_subject_data_aggregation():
         json={"data": [{"visitId": 1, "subjectKey": "SUB1"}]}
     )
     respx.get("https://api.test/api/v1/edc/studies/ST/records").respond(
-        json={"data": [{"recordId": 1, "subjectKey": "SUB1", "visitId": 1, "formId": 10}]}
+        json={
+            "data": [{"recordId": 1, "subjectKey": "SUB1", "visitId": 1, "formId": 10}]
+        }
     )
     respx.get("https://api.test/api/v1/edc/studies/ST/queries").respond(
         json={"data": [{"queryComments": [{"sequence": 1, "closed": False}]}]}
@@ -124,9 +138,9 @@ def test_query_management_counts():
 def test_data_extraction_no_matching_subjects() -> None:
     """TODO: Add docstring."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
-    subjects_route = respx.get("https://api.test/api/v1/edc/studies/ST/subjects").respond(
-        json={"data": []}
-    )
+    subjects_route = respx.get(
+        "https://api.test/api/v1/edc/studies/ST/subjects"
+    ).respond(json={"data": []})
     visits_route = respx.get("https://api.test/api/v1/edc/studies/ST/visits").mock(
         side_effect=AssertionError("visits should not be called")
     )
@@ -149,7 +163,14 @@ def test_record_update_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get(re.compile("https://api.test/api/v1/edc/studies/ST/variables.*")).respond(
         json={
-            "data": [{"variableName": "x", "variableType": "integer", "formId": 1, "formKey": "F1"}]
+            "data": [
+                {
+                    "variableName": "x",
+                    "variableType": "integer",
+                    "formId": 1,
+                    "formKey": "F1",
+                }
+            ]
         }
     )
     respx.post("https://api.test/api/v1/edc/studies/ST/records").respond(

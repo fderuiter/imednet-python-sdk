@@ -70,10 +70,14 @@ with st.sidebar:
     site_options = df["site_name"].dropna().unique().tolist() if not df.empty else []
     site_filter: list[str] = st.multiselect("Site", site_options)
 
-    status_options = df["subject_status"].dropna().unique().tolist() if not df.empty else []
+    status_options = (
+        df["subject_status"].dropna().unique().tolist() if not df.empty else []
+    )
     status_filter: list[str] = st.multiselect("Subject Status", status_options)
 
-    if not df.empty and pd.api.types.is_datetime64_any_dtype(df["enrollment_start_date"]):
+    if not df.empty and pd.api.types.is_datetime64_any_dtype(
+        df["enrollment_start_date"]
+    ):
         valid_dates = df["enrollment_start_date"].dropna()
         if not valid_dates.empty:
             min_enroll = valid_dates.min().date()
@@ -105,16 +109,24 @@ if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
 # ── KPI Row ────────────────────────────────────────────────────────────────────
 total = len(df_filtered)
 enrolled_count = (
-    int((df_filtered["subject_status"] == "Enrolled").sum()) if not df_filtered.empty else 0
+    int((df_filtered["subject_status"] == "Enrolled").sum())
+    if not df_filtered.empty
+    else 0
 )
 screened_count = (
-    int((df_filtered["subject_status"] == "Screened").sum()) if not df_filtered.empty else 0
+    int((df_filtered["subject_status"] == "Screened").sum())
+    if not df_filtered.empty
+    else 0
 )
 withdrawn_count = (
-    int((df_filtered["subject_status"] == "Withdrawn").sum()) if not df_filtered.empty else 0
+    int((df_filtered["subject_status"] == "Withdrawn").sum())
+    if not df_filtered.empty
+    else 0
 )
 completed_count = (
-    int((df_filtered["subject_status"] == "Completed").sum()) if not df_filtered.empty else 0
+    int((df_filtered["subject_status"] == "Completed").sum())
+    if not df_filtered.empty
+    else 0
 )
 
 components.kpi_row(
@@ -135,17 +147,24 @@ with col_left:
     if not df_filtered.empty:
         site_counts = df_filtered.groupby("site_name").size().reset_index(name="count")
         st.altair_chart(
-            components.bar_chart(site_counts, x="count", y="site_name", title="Subjects per Site"),
+            components.bar_chart(
+                site_counts, x="count", y="site_name", title="Subjects per Site"
+            ),
             use_container_width=True,
         )
 
 with col_right:
     st.subheader("Status Breakdown")
     if not df_filtered.empty:
-        status_counts = df_filtered.groupby("subject_status").size().reset_index(name="count")
+        status_counts = (
+            df_filtered.groupby("subject_status").size().reset_index(name="count")
+        )
         st.altair_chart(
             components.pie_chart(
-                status_counts, theta="count", color="subject_status", title="Subject Status"
+                status_counts,
+                theta="count",
+                color="subject_status",
+                title="Subject Status",
             ),
             use_container_width=True,
         )
@@ -192,10 +211,14 @@ if not df_filtered.empty:
         }
     )
     site_totals = df_filtered.groupby("site_name").size().reset_index(name="total")
-    site_summary = site_summary.merge(site_totals, left_on="Site", right_on="site_name", how="left")
+    site_summary = site_summary.merge(
+        site_totals, left_on="Site", right_on="site_name", how="left"
+    )
     site_summary["enrollment_rate_pct"] = site_summary.apply(
         lambda row: (
-            f"{row['enrolled_count'] / row['total'] * 100:.1f}%" if row["total"] > 0 else "N/A"
+            f"{row['enrolled_count'] / row['total'] * 100:.1f}%"
+            if row["total"] > 0
+            else "N/A"
         ),
         axis=1,
     )

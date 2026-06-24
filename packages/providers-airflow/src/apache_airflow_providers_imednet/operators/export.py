@@ -139,7 +139,9 @@ class ImednetExportOperator(BaseOperator):
 
         export_callable = None
         if dest in _TABULAR_EXPORTS:
-            export_callable = getattr(export, f"export_to_{dest}", _TABULAR_EXPORTS[dest])
+            export_callable = getattr(
+                export, f"export_to_{dest}", _TABULAR_EXPORTS[dest]
+            )
         elif self.export_func and hasattr(export, self.export_func):
             export_callable = getattr(export, self.export_func)
 
@@ -172,21 +174,30 @@ class ImednetExportOperator(BaseOperator):
                         study_key=self.study_key, record_data_filter=None
                     )
                     records_list = list(
-                        sink_base.apply_quality_gate(sdk, self.study_key, raw_records, config)
+                        sink_base.apply_quality_gate(
+                            sdk, self.study_key, raw_records, config
+                        )
                     )
                     with sink:
                         for i, batch in enumerate(
                             sink_base.iter_batches(records_list, config.batch_size)
                         ):
-                            sink.write_batch(batch, batch_id=f"{self.study_key}/batch/{i}")
+                            sink.write_batch(
+                                batch, batch_id=f"{self.study_key}/batch/{i}"
+                            )
                 else:
                     # Execution path for legacy tabular functions
                     # We dispatch to getattr so mocks in tests are preserved
                     if not export_callable:
-                        raise AirflowException(f"Unsupported destination or export_func '{dest}'")
+                        raise AirflowException(
+                            f"Unsupported destination or export_func '{dest}'"
+                        )
 
                     export_callable(
-                        sdk, self.study_key, self.output_path, **self._get_runtime_export_kwargs()
+                        sdk,
+                        self.study_key,
+                        self.output_path,
+                        **self._get_runtime_export_kwargs(),
                     )
                 return self.output_path
             except Exception as e:

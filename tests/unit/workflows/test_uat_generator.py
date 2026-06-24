@@ -32,7 +32,9 @@ def basic_spec():
         study_key="STUDY01",
         study_name="Test Study",
         subject_specs=[
-            UATSubjectSpec(site_name="Test Site", subject_count=2, subject_key_prefix="SUBJ-")
+            UATSubjectSpec(
+                site_name="Test Site", subject_count=2, subject_key_prefix="SUBJ-"
+            )
         ],
         form_specs=[
             UATFormSpec(
@@ -277,13 +279,22 @@ def test_various_types(mock_snapshot):
                 subject_count=1,
                 variables=[
                     UATVariableSpec(
-                        variable_name="N", variable_key="V1", variable_type="Number", form_key="F1"
+                        variable_name="N",
+                        variable_key="V1",
+                        variable_type="Number",
+                        form_key="F1",
                     ),
                     UATVariableSpec(
-                        variable_name="F", variable_key="V2", variable_type="Float", form_key="F1"
+                        variable_name="F",
+                        variable_key="V2",
+                        variable_type="Float",
+                        form_key="F1",
                     ),
                     UATVariableSpec(
-                        variable_name="D", variable_key="V3", variable_type="Date", form_key="F1"
+                        variable_name="D",
+                        variable_key="V3",
+                        variable_type="Date",
+                        form_key="F1",
                     ),
                     UATVariableSpec(
                         variable_name="DT",
@@ -292,7 +303,10 @@ def test_various_types(mock_snapshot):
                         form_key="F1",
                     ),
                     UATVariableSpec(
-                        variable_name="B", variable_key="V5", variable_type="Boolean", form_key="F1"
+                        variable_name="B",
+                        variable_key="V5",
+                        variable_type="Boolean",
+                        form_key="F1",
                     ),
                     UATVariableSpec(
                         variable_name="CB",
@@ -329,7 +343,9 @@ def test_subject_pool_logic(mock_snapshot):
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
-        subject_specs=[UATSubjectSpec(site_name="S1", subject_count=3, subject_key_prefix="TEST-")],
+        subject_specs=[
+            UATSubjectSpec(site_name="S1", subject_count=3, subject_key_prefix="TEST-")
+        ],
         form_specs=[
             UATFormSpec(
                 form_key="F1",
@@ -344,7 +360,13 @@ def test_subject_pool_logic(mock_snapshot):
     generator = SyntheticRecordGenerator()
     results = generator.generate(spec, mock_snapshot)
     res = results[0]
-    assert res.subject_keys == ["TEST-001", "TEST-002", "TEST-003", "TEST-001", "TEST-002"]
+    assert res.subject_keys == [
+        "TEST-001",
+        "TEST-002",
+        "TEST-003",
+        "TEST-001",
+        "TEST-002",
+    ]
     assert res.payloads[0]["subjectKey"] == "TEST-001"
     assert res.payloads[4]["subjectKey"] == "TEST-002"
 

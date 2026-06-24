@@ -14,7 +14,8 @@ from imednet_sinks import (
 )
 
 pytestmark = pytest.mark.skipif(
-    os.getenv("IMEDNET_TEST_CONTAINERS") != "1", reason="Requires IMEDNET_TEST_CONTAINERS=1"
+    os.getenv("IMEDNET_TEST_CONTAINERS") != "1",
+    reason="Requires IMEDNET_TEST_CONTAINERS=1",
 )
 
 
@@ -29,7 +30,10 @@ class DriftFailingHandler(logging.Handler):
 
     def emit(self, record):
         """TODO: Add docstring."""
-        if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
+        if (
+            record.levelno >= logging.WARNING
+            and "Drift detected" in record.getMessage()
+        ):
             raise DriftError(record.getMessage())
 
 
@@ -155,7 +159,9 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
         count = result.single()["count"]
         assert count == 2
 
-        result2 = session.run("MATCH (n:Record {record_id: 2}) RETURN n.record_data AS record_data")
+        result2 = session.run(
+            "MATCH (n:Record {record_id: 2}) RETURN n.record_data AS record_data"
+        )
         import json
 
         record_data = json.loads(result2.single()["record_data"])

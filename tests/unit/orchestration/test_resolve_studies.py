@@ -22,7 +22,10 @@ def test_whitelist_filter(orchestrator: MultiStudyOrchestrator) -> None:
 
 def test_blacklist_filter(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
-    assert orchestrator.resolve_active_studies(blacklist={"STUDY-A"}) == ["STUDY-B", "STUDY-C"]
+    assert orchestrator.resolve_active_studies(blacklist={"STUDY-A"}) == [
+        "STUDY-B",
+        "STUDY-C",
+    ]
 
 
 def test_whitelist_with_nonexistent_key(orchestrator: MultiStudyOrchestrator) -> None:
@@ -32,13 +35,18 @@ def test_whitelist_with_nonexistent_key(orchestrator: MultiStudyOrchestrator) ->
 
 def test_blacklist_excludes_all(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
-    assert orchestrator.resolve_active_studies(blacklist={"STUDY-A", "STUDY-B", "STUDY-C"}) == []
+    assert (
+        orchestrator.resolve_active_studies(blacklist={"STUDY-A", "STUDY-B", "STUDY-C"})
+        == []
+    )
 
 
 def test_filter_conflict_raises(orchestrator: MultiStudyOrchestrator) -> None:
     """TODO: Add docstring."""
     with pytest.raises(FilterConflictError):
-        orchestrator.resolve_active_studies(whitelist={"STUDY-A"}, blacklist={"STUDY-B"})
+        orchestrator.resolve_active_studies(
+            whitelist={"STUDY-A"}, blacklist={"STUDY-B"}
+        )
 
 
 def test_filter_conflict_error_attributes(orchestrator: MultiStudyOrchestrator) -> None:
@@ -58,7 +66,9 @@ def test_filter_conflict_raised_before_api_call(mock_sdk: MagicMock) -> None:
     orchestrator = MultiStudyOrchestrator(mock_sdk)
 
     with pytest.raises(FilterConflictError):
-        orchestrator.resolve_active_studies(whitelist={"STUDY-A"}, blacklist={"STUDY-B"})
+        orchestrator.resolve_active_studies(
+            whitelist={"STUDY-A"}, blacklist={"STUDY-B"}
+        )
 
     mock_sdk.studies.list.assert_not_called()
 
@@ -69,6 +79,8 @@ def test_max_workers_validation(mock_sdk: MagicMock) -> None:
         MultiStudyOrchestrator(mock_sdk, max_workers=0)
 
 
-def test_sdk_stored_as_reference(mock_sdk: MagicMock, orchestrator: MultiStudyOrchestrator) -> None:
+def test_sdk_stored_as_reference(
+    mock_sdk: MagicMock, orchestrator: MultiStudyOrchestrator
+) -> None:
     """TODO: Add docstring."""
     assert orchestrator.sdk is mock_sdk

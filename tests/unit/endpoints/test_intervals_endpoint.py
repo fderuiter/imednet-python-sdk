@@ -50,7 +50,9 @@ def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
     assert capture["count"] == 2
 
 
-def test_list_different_study_keys_make_separate_requests(dummy_client, context, paginator_factory):
+def test_list_different_study_keys_make_separate_requests(
+    dummy_client, context, paginator_factory
+):
     """TODO: Add docstring."""
     ep = intervals.IntervalsEndpoint(dummy_client, context)
     capture = paginator_factory(intervals, [{"intervalId": 1}])

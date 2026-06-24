@@ -85,9 +85,13 @@ def main() -> int:
         status = result["status"]
         duration = result["duration_seconds"]
         if status == "SUCCESS":
-            logger.info("[%s] SUCCESS in %.2fs: %s", study_key, duration, result["data"])
+            logger.info(
+                "[%s] SUCCESS in %.2fs: %s", study_key, duration, result["data"]
+            )
         else:
-            logger.error("[%s] FAILED in %.2fs: %s", study_key, duration, result["error"])
+            logger.error(
+                "[%s] FAILED in %.2fs: %s", study_key, duration, result["error"]
+            )
 
     return 0 if failure_count == 0 else 1
 

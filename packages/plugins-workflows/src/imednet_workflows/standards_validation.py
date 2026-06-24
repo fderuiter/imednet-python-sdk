@@ -51,14 +51,18 @@ class CategoricalNormalizer:
             if warning_message is not None:
                 warnings.append(warning_message)
 
-        return NormalizationResult(normalized_record=normalized_record, warnings=warnings)
+        return NormalizationResult(
+            normalized_record=normalized_record, warnings=warnings
+        )
 
     def _normalize_lookups(
         self, terminology_lookups: dict[str, dict[str, str]]
     ) -> dict[str, dict[str, str]]:
         """Internal helper to normalize terminology lookup keys for case-insensitive matching."""
         return {
-            field_name: {str(key).strip().upper(): value for key, value in lookup.items()}
+            field_name: {
+                str(key).strip().upper(): value for key, value in lookup.items()
+            }
             for field_name, lookup in terminology_lookups.items()
         }
 
@@ -77,7 +81,9 @@ class CategoricalNormalizer:
             if lookup_key in lookup:
                 return lookup[lookup_key], None
             subject_prefix = (
-                f"Subject {subject_key} " if isinstance(subject_key, str) and subject_key else ""
+                f"Subject {subject_key} "
+                if isinstance(subject_key, str) and subject_key
+                else ""
             )
             return raw_value, f"{subject_prefix}record {field_name} is unmapped"
 

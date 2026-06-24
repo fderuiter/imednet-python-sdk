@@ -8,12 +8,7 @@ import pytest
 from typer.testing import CliRunner
 
 from imednet.cli import app
-from imednet.errors import (
-    AuthenticationError,
-    AuthorizationError,
-    NotFoundError,
-    RateLimitError,
-)
+from imednet.errors import AuthenticationError, AuthorizationError, NotFoundError, RateLimitError
 
 
 @pytest.fixture
@@ -27,7 +22,9 @@ def mock_sdk(monkeypatch):
     """Mock the SDK for CLI tests."""
     sdk = MagicMock()
     # Patch get_sdk in both places it might be used
-    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk))
+    monkeypatch.setattr(
+        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=sdk)
+    )
     monkeypatch.setattr(
         "imednet.cli.decorators.get_sdk", MagicMock(return_value=sdk), raising=False
     )
@@ -76,7 +73,9 @@ def test_authorization_error_handling(runner, mock_sdk):
 
 def test_rate_limit_error_handling(runner, mock_sdk):
     """Confirm actionable message for 429 errors."""
-    mock_sdk.studies.list.side_effect = RateLimitError("Rate limit exceeded. Try again in 60s.")
+    mock_sdk.studies.list.side_effect = RateLimitError(
+        "Rate limit exceeded. Try again in 60s."
+    )
 
     result = runner.invoke(app, ["studies", "list"])
 
@@ -98,7 +97,9 @@ def test_not_found_error_handling(runner, mock_sdk):
 
 def test_malformed_filter_input(runner, mock_sdk):
     """Confirm clear error for invalid filter syntax."""
-    result = runner.invoke(app, ["subjects", "list", "STUDY", "--filter", "invalid_filter"])
+    result = runner.invoke(
+        app, ["subjects", "list", "STUDY", "--filter", "invalid_filter"]
+    )
 
     assert result.exit_code == 1
     assert "Invalid filter format" in result.stdout

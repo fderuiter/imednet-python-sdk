@@ -50,14 +50,18 @@ def test_standards_readiness_validator_scores_records() -> None:
                 },
             ]
         },
-        terminology_lookups={"aeSeverity": {"1": "1", "2": "2", "3": "3", "4": "4", "5": "5"}},
+        terminology_lookups={
+            "aeSeverity": {"1": "1", "2": "2", "3": "3", "4": "4", "5": "5"}
+        },
     )
 
     assert report.total_expected_fields == 14
     assert report.successfully_validated_fields == 9
     assert report.score == pytest.approx((9 / 14) * 100)
     assert "Subject S004 record aeSeverity is unmapped" in report.warnings
-    assert {(violation.field, violation.severity) for violation in report.violations} == {
+    assert {
+        (violation.field, violation.severity) for violation in report.violations
+    } == {
         ("aeActionTaken", "WARNING"),
         ("aeDecod", "ERROR"),
         ("aeOutcome", "WARNING"),

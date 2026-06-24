@@ -44,7 +44,9 @@ def main():
             records = client.records.list(study_key=study_key)
             print(f"Records for study '{study_key}': {len(records)}")
             for record in records[:5]:
-                print(f"- Record ID: {record.record_id}, Subject Key: {record.subject_key}")
+                print(
+                    f"- Record ID: {record.record_id}, Subject Key: {record.subject_key}"
+                )
 
     except Exception as e:
         print(f"Error: {e}")

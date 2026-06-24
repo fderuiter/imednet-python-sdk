@@ -23,7 +23,11 @@ def unique_tag() -> str:
 
 
 def test_verify_subject_registration_outcome(
-    sdk: ImednetSDK, study_key: str, first_site_name: str, first_form_key: str, unique_tag: str
+    sdk: ImednetSDK,
+    study_key: str,
+    first_site_name: str,
+    first_form_key: str,
+    unique_tag: str,
 ) -> None:
     """Validate that subject registration results in an observable subject."""
     require_mutation()
@@ -36,7 +40,9 @@ def test_verify_subject_registration_outcome(
     var_name = variables[0].variable_name
     data = {var_name: unique_tag}
 
-    req = RegisterSubjectRequest(formKey=first_form_key, siteName=first_site_name, data=data)
+    req = RegisterSubjectRequest(
+        formKey=first_form_key, siteName=first_site_name, data=data
+    )
 
     wf = RegisterSubjectsWorkflow(sdk)
     # Step 1: Submit mutation and wait for completion
@@ -62,15 +68,21 @@ def test_verify_subject_registration_outcome(
         subj = sdk.subjects.get(study_key, subject_key)
         assert subj.subject_key == subject_key
         # Also check the record data
-        records = list(sdk.get_records(study_key, subjectKey=subject_key, formKey=first_form_key))
-        assert any(r.data.get(var_name) == unique_tag for r in records), "Record data mismatch"
+        records = list(
+            sdk.get_records(study_key, subjectKey=subject_key, formKey=first_form_key)
+        )
+        assert any(
+            r.data.get(var_name) == unique_tag for r in records
+        ), "Record data mismatch"
     else:
         # Search all subjects for this site (might be slow but robust for testing)
         subjects = list(sdk.get_subjects(study_key, siteName=first_site_name))
         found = False
         for s in subjects:
             recs = list(
-                sdk.get_records(study_key, subjectKey=s.subject_key, formKey=first_form_key)
+                sdk.get_records(
+                    study_key, subjectKey=s.subject_key, formKey=first_form_key
+                )
             )
             if any(r.data.get(var_name) == unique_tag for r in recs):
                 found = True
@@ -79,7 +91,11 @@ def test_verify_subject_registration_outcome(
 
 
 def test_verify_create_new_record_outcome(
-    sdk: ImednetSDK, study_key: str, first_subject_key: str, first_form_key: str, unique_tag: str
+    sdk: ImednetSDK,
+    study_key: str,
+    first_subject_key: str,
+    first_form_key: str,
+    unique_tag: str,
 ) -> None:
     """Validate that a newly created record is discoverable and correct."""
     require_mutation()
@@ -100,7 +116,9 @@ def test_verify_create_new_record_outcome(
     assert job.is_successful, f"Record creation job failed: {job.state}"
 
     # Step 3: Verify observable state
-    records = list(sdk.get_records(study_key, subjectKey=first_subject_key, formKey=first_form_key))
+    records = list(
+        sdk.get_records(study_key, subjectKey=first_subject_key, formKey=first_form_key)
+    )
     found_record = None
     for r in records:
         if r.data.get(var_name) == unique_tag:
@@ -156,13 +174,17 @@ def test_verify_update_scheduled_record_outcome(
         )
     )
 
-    assert any(r.data.get(var_name) == unique_tag for r in updated_records), (
-        "Update not reflected in follow-up read"
-    )
+    assert any(
+        r.data.get(var_name) == unique_tag for r in updated_records
+    ), "Update not reflected in follow-up read"
 
 
 def test_verify_batch_update_outcome(
-    sdk: ImednetSDK, study_key: str, first_subject_key: str, first_form_key: str, unique_tag: str
+    sdk: ImednetSDK,
+    study_key: str,
+    first_subject_key: str,
+    first_form_key: str,
+    unique_tag: str,
 ) -> None:
     """Validate that a batch mutation reaches terminal state and produces observable results."""
     require_mutation()
@@ -176,8 +198,16 @@ def test_verify_batch_update_outcome(
     tag2 = f"{unique_tag}-B2"
 
     records_data = [
-        {"formKey": first_form_key, "subjectKey": first_subject_key, "data": {var_name: tag1}},
-        {"formKey": first_form_key, "subjectKey": first_subject_key, "data": {var_name: tag2}},
+        {
+            "formKey": first_form_key,
+            "subjectKey": first_subject_key,
+            "data": {var_name: tag1},
+        },
+        {
+            "formKey": first_form_key,
+            "subjectKey": first_subject_key,
+            "data": {var_name: tag2},
+        },
     ]
 
     # Step 1: Submit batch
@@ -190,7 +220,9 @@ def test_verify_batch_update_outcome(
     assert job.successful_records >= 2
 
     # Step 3: Verify observable outcome
-    records = list(sdk.get_records(study_key, subjectKey=first_subject_key, formKey=first_form_key))
+    records = list(
+        sdk.get_records(study_key, subjectKey=first_subject_key, formKey=first_form_key)
+    )
     all_tags = [r.data.get(var_name) for r in records]
 
     assert tag1 in all_tags

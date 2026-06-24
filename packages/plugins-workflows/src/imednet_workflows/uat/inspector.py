@@ -45,20 +45,26 @@ class StudySnapshot(ImednetBaseModel):
 
     def enrollment_forms(self) -> list[Form]:
         """Return forms with form_type indicating subject registration."""
-        return [form for form in self.forms if form.form_type in ("Enrollment", "Registration")]
+        return [
+            form
+            for form in self.forms
+            if form.form_type in ("Enrollment", "Registration")
+        ]
 
     def scheduled_forms(self) -> list[Form]:
         """Return scheduled (non-enrollment, non-unscheduled) forms."""
         return [
             form
             for form in self.forms
-            if not getattr(form, 'unscheduled_visit', False)
+            if not getattr(form, "unscheduled_visit", False)
             and form.form_type not in ("Enrollment", "Registration")
         ]
 
     def unscheduled_forms(self) -> list[Form]:
         """Return unscheduled forms."""
-        return [form for form in self.forms if getattr(form, 'unscheduled_visit', False)]
+        return [
+            form for form in self.forms if getattr(form, "unscheduled_visit", False)
+        ]
 
     def active_sites(self) -> list[Site]:
         """Return sites that are actively enrolling."""
@@ -100,7 +106,9 @@ class StudySchemaInspector:
         self._cache[study_key] = snapshot
         return snapshot
 
-    async def async_inspect(self, study_key: str, *, force_refresh: bool = False) -> StudySnapshot:
+    async def async_inspect(
+        self, study_key: str, *, force_refresh: bool = False
+    ) -> StudySnapshot:
         """Asynchronously fetch metadata concurrently and return a study snapshot."""
         if not force_refresh and study_key in self._cache:
             return self._cache[study_key]

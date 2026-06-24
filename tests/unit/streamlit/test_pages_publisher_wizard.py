@@ -12,12 +12,16 @@ from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetC
 from imednet_workflows.config_version_control import ConfigVersionStore
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+PACKAGE_ROOT = (
+    REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
+)
 PAGE_PATH = PACKAGE_ROOT / "pages" / "publisher_wizard.py"
 MODULE_NAME = "imednet_streamlit.pages.publisher_wizard"
 
 
-def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> ConfigVersionStore:
+def _make_committed_store(
+    tmp_path: Path, study_key: str = "STUDY-01"
+) -> ConfigVersionStore:
     """TODO: Add docstring."""
     store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
     config = StudyConfiguration(
@@ -33,7 +37,9 @@ def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> Config
         ],
         terminologyLookups={"AE.aeTerm": {"mild": "MILD"}},
         widgets=[
-            WidgetConfig(widgetId="w1", type="kpi_card", title="AE", domain="AE", layoutCols=6)
+            WidgetConfig(
+                widgetId="w1", type="kpi_card", title="AE", domain="AE", layoutCols=6
+            )
         ],
     )
     store.commit_config(study_key, config, user="alice", desc="initial")
@@ -125,7 +131,9 @@ class _FakeStreamlit:
             col.selectbox = self.selectbox  # type: ignore[attr-defined]
         return cols
 
-    def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
+    def selectbox(
+        self, label: str, options: list[Any], index: int = 0, **kwargs: Any
+    ) -> Any:
         """TODO: Add docstring."""
         key = str(kwargs.get("key") or label)
         if key in self.selectbox_values and self.selectbox_values[key] in options:
@@ -293,9 +301,7 @@ def test_publisher_wizard_authorized_publish_succeeds(tmp_path: Path) -> None:
     """Manager role with all checks passed can publish."""
     store = _make_committed_store(tmp_path)
     history = store.get_history("STUDY-01")
-    commit_id_display = (
-        f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
-    )
+    commit_id_display = f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
 
     fake_st = _FakeStreamlit()
     fake_st.selectbox_values["_publisher_role"] = "manager"
@@ -328,9 +334,7 @@ def test_publisher_wizard_admin_can_publish(tmp_path: Path) -> None:
     """Admin role can also publish."""
     store = _make_committed_store(tmp_path)
     history = store.get_history("STUDY-01")
-    commit_id_display = (
-        f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
-    )
+    commit_id_display = f"1.0.0 — {history[0]['commit_id'][:12]} by alice ({history[0]['timestamp'][:19]})"
 
     fake_st = _FakeStreamlit()
     fake_st.selectbox_values["_publisher_role"] = "admin"

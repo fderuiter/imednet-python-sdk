@@ -16,7 +16,9 @@ from imednet.errors import (
 
 def test_get_success(http_client, respx_mock_client, sample_data):
     """TODO: Add docstring."""
-    respx_mock_client.get("/items").mock(return_value=httpx.Response(200, json=sample_data))
+    respx_mock_client.get("/items").mock(
+        return_value=httpx.Response(200, json=sample_data)
+    )
 
     response = http_client.get("/items")
 
@@ -38,7 +40,9 @@ def test_get_success(http_client, respx_mock_client, sample_data):
 )
 def test_request_error_mapping(http_client, respx_mock_client, status, exc):
     """TODO: Add docstring."""
-    respx_mock_client.get("/path").mock(return_value=httpx.Response(status, json={"err": "x"}))
+    respx_mock_client.get("/path").mock(
+        return_value=httpx.Response(status, json={"err": "x"})
+    )
 
     with pytest.raises(exc):
         http_client.get("/path")
@@ -46,7 +50,9 @@ def test_request_error_mapping(http_client, respx_mock_client, status, exc):
 
 def test_client_sends_auth_headers(http_client, respx_mock_client):
     """TODO: Add docstring."""
-    route = respx_mock_client.get("/headers").mock(return_value=httpx.Response(200, json={}))
+    route = respx_mock_client.get("/headers").mock(
+        return_value=httpx.Response(200, json={})
+    )
 
     http_client.get("/headers")
 

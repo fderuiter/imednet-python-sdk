@@ -27,7 +27,9 @@ def extract_records(
     record_filter: Optional[List[str]] = typer.Option(
         None,
         "--record-filter",
-        help=("Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters."),
+        help=(
+            "Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters."
+        ),
     ),
     subject_filter: Optional[List[str]] = typer.Option(
         None,
@@ -40,7 +42,9 @@ def extract_records(
     visit_filter: Optional[List[str]] = typer.Option(
         None,
         "--visit-filter",
-        help=("Visit filter criteria (e.g., 'visit_key=SCREENING'). Repeat for multiple filters."),
+        help=(
+            "Visit filter criteria (e.g., 'visit_key=SCREENING'). Repeat for multiple filters."
+        ),
     ),
 ) -> None:
     """Extract records based on criteria spanning subjects, visits, and records."""
@@ -82,7 +86,9 @@ def subject_data(
 def sync_worker(
     sdk: ImednetFacade,
     study_key: str = STUDY_KEY_ARG,
-    interval: int = typer.Option(900, "--interval", min=1, help="Polling interval in seconds."),
+    interval: int = typer.Option(
+        900, "--interval", min=1, help="Polling interval in seconds."
+    ),
     once: bool = typer.Option(
         False,
         "--once",
@@ -113,7 +119,9 @@ def sync_worker(
         print("[yellow]Sync worker termination requested. Exiting cleanly.[/yellow]")
 
 
-state_app = typer.Typer(name="state", help="Manage high-water mark execution ledger state.")
+state_app = typer.Typer(
+    name="state", help="Manage high-water mark execution ledger state."
+)
 
 
 @state_app.command("show")
@@ -176,7 +184,9 @@ def show_state(
 def set_state(
     study_key: str = typer.Option(..., "--study-key", "-s", help="The study key."),
     stream: str = typer.Option(..., "--stream", "-m", help="The stream name."),
-    timestamp: str = typer.Option(..., "--timestamp", "-t", help="The ISO-8601 timestamp (UTC)."),
+    timestamp: str = typer.Option(
+        ..., "--timestamp", "-t", help="The ISO-8601 timestamp (UTC)."
+    ),
     records_processed: int = typer.Option(
         0, "--records-processed", "-r", help="Number of records processed."
     ),
@@ -243,12 +253,16 @@ def reset_state(
                     f"[green]Successfully reset stream '{stream}' for study '{study_key}'.[/green]"
                 )
             else:
-                print(f"[yellow]No stream '{stream}' found for study '{study_key}'.[/yellow]")
+                print(
+                    f"[yellow]No stream '{stream}' found for study '{study_key}'.[/yellow]"
+                )
                 return
         else:
             removed = ledger.delete_entry(study_key)
             if removed:
-                print(f"[green]Successfully reset all streams for study '{study_key}'.[/green]")
+                print(
+                    f"[green]Successfully reset all streams for study '{study_key}'.[/green]"
+                )
             else:
                 print(f"[yellow]No state found for study '{study_key}'.[/yellow]")
                 return

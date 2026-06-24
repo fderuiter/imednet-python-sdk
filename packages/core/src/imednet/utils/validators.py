@@ -96,7 +96,9 @@ def parse_bool(v: Any) -> bool:
         # Fallback: Try float conversion (for "1.0", "inf", "nan")
         # Optimization: Only attempt if it looks numeric or special float
         # to avoid try/except overhead on common strings like "apple"
-        if val and (val[0].isdigit() or val[0] in ("-", "+", ".") or val[0] in ("n", "i")):
+        if val and (
+            val[0].isdigit() or val[0] in ("-", "+", ".") or val[0] in ("n", "i")
+        ):
             try:
                 return bool(float(val))
             except (ValueError, TypeError):
@@ -153,7 +155,9 @@ def parse_str_or_default(v: Any, default: str = "") -> str:
     return default if v is None else str(v)
 
 
-def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list) -> List[T]:
+def parse_list_or_default(
+    v: Any, default_factory: Callable[[], List[T]] = list
+) -> List[T]:
     """Normalize list values, defaulting if None. Ensures result is a list."""
     if is_missing_value(v):
         return default_factory()

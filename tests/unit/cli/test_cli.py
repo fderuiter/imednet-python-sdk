@@ -43,7 +43,9 @@ def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Provide a mocked SDK and patch get_sdk."""
     mock_sdk = MagicMock()
     # Patch the source of get_sdk used by decorators
-    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk))
+    monkeypatch.setattr(
+        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk)
+    )
     return mock_sdk
 
 
@@ -144,7 +146,9 @@ def test_subjects_list_success(runner: CliRunner, sdk: MagicMock) -> None:
 
 def test_subjects_list_invalid_filter(runner: CliRunner, sdk: MagicMock) -> None:
     """TODO: Add docstring."""
-    result = runner.invoke(cli.app, ["subjects", "list", "STUDY", "--filter", "badfilter"])
+    result = runner.invoke(
+        cli.app, ["subjects", "list", "STUDY", "--filter", "badfilter"]
+    )
     assert result.exit_code == 1
     assert "Invalid filter format" in result.stdout
     sdk.subjects.list.assert_not_called()
@@ -549,7 +553,9 @@ def test_export_sql_long_format_overrides_single(
     form_func.assert_not_called()
 
 
-def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_export_parquet_missing_pyarrow(
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """TODO: Add docstring."""
     original_find_spec = importlib.util.find_spec
 
@@ -565,7 +571,9 @@ def test_export_parquet_missing_pyarrow(runner: CliRunner, monkeypatch: pytest.M
     assert "pyarrow is required" in result.stdout
 
 
-def test_export_sql_missing_sqlalchemy(runner: CliRunner, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_export_sql_missing_sqlalchemy(
+    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """TODO: Add docstring."""
     original_find_spec = importlib.util.find_spec
 
@@ -626,10 +634,16 @@ def test_sync_worker_once_command(
     worker = MagicMock()
     worker.run_once.return_value = 42
     loader_cls = MagicMock()
-    monkeypatch.setattr("imednet_workflows.cached_loader.CachedRecordsLoader", loader_cls)
-    monkeypatch.setattr("imednet_workflows.cli.SyncWorker", MagicMock(return_value=worker))
+    monkeypatch.setattr(
+        "imednet_workflows.cached_loader.CachedRecordsLoader", loader_cls
+    )
+    monkeypatch.setattr(
+        "imednet_workflows.cli.SyncWorker", MagicMock(return_value=worker)
+    )
 
-    result = runner.invoke(cli.app, ["sync-worker", "STUDY", "--interval", "5", "--once"])
+    result = runner.invoke(
+        cli.app, ["sync-worker", "STUDY", "--interval", "5", "--once"]
+    )
 
     assert result.exit_code == 0
     loader_cls.assert_called_once_with(sdk)
@@ -644,8 +658,12 @@ def test_sync_worker_command_handles_keyboard_interrupt(
     worker = MagicMock()
     worker.run_forever.side_effect = KeyboardInterrupt()
     loader_cls = MagicMock()
-    monkeypatch.setattr("imednet_workflows.cached_loader.CachedRecordsLoader", loader_cls)
-    monkeypatch.setattr("imednet_workflows.cli.SyncWorker", MagicMock(return_value=worker))
+    monkeypatch.setattr(
+        "imednet_workflows.cached_loader.CachedRecordsLoader", loader_cls
+    )
+    monkeypatch.setattr(
+        "imednet_workflows.cli.SyncWorker", MagicMock(return_value=worker)
+    )
 
     result = runner.invoke(cli.app, ["sync-worker", "STUDY", "--interval", "1"])
 

@@ -304,7 +304,9 @@ def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
 
     wf = RecordUpdateWorkflow(sdk)
 
-    with pytest.raises(ValueError, match="Submission successful but no batch_id received."):
+    with pytest.raises(
+        ValueError, match="Submission successful but no batch_id received."
+    ):
         wf.create_or_update_records(
             "STUDY",
             [{"formKey": "F1", "data": {"a": 1}}],
@@ -340,7 +342,9 @@ async def test_async_create_or_update_records_no_wait() -> None:
     wf = RecordUpdateWorkflow(sdk)
     result = await wf.async_create_or_update_records("STUDY", [{"a": 1}])
 
-    sdk.async_create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    sdk.async_create_record.assert_called_once_with(
+        "STUDY", [{"a": 1}], schema=wf._schema
+    )
     assert result == job
 
 
@@ -366,7 +370,9 @@ async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -
         timeout=5,
     )
 
-    sdk.async_create_record.assert_called_once_with("STUDY", [{"a": 1}], schema=wf._schema)
+    sdk.async_create_record.assert_called_once_with(
+        "STUDY", [{"a": 1}], schema=wf._schema
+    )
     sdk.async_poll_job.assert_called_with("STUDY", "1", timeout=5, interval=0)
     assert result.state == "COMPLETED"
 
@@ -398,13 +404,17 @@ async def test_async_create_or_update_records_validation() -> None:
     wf = RecordUpdateWorkflow(sdk)
 
     with pytest.raises(ValidationError):
-        await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"bad": 1}}])
+        await wf.async_create_or_update_records(
+            "STUDY", [{"formKey": "F1", "data": {"bad": 1}}]
+        )
     sdk.async_create_record.assert_not_called()
 
     sdk.async_create_record = AsyncMock(
         return_value=Job(jobId="1", batchId="1", state="PROCESSING")
     )
-    await wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
+    await wf.async_create_or_update_records(
+        "STUDY", [{"formKey": "F1", "data": {"age": 5}}]
+    )
     sdk.async_get_variables.assert_called_once_with(study_key="STUDY")
     sdk.async_create_record.assert_called_once_with(
         "STUDY", [{"formKey": "F1", "data": {"age": 5}}], schema=wf._schema
@@ -438,7 +448,9 @@ async def test_async_create_or_update_records_wait_for_completion_no_batch_id() 
 
     wf = RecordUpdateWorkflow(sdk)
 
-    with pytest.raises(ValueError, match="Submission successful but no batch_id received."):
+    with pytest.raises(
+        ValueError, match="Submission successful but no batch_id received."
+    ):
         await wf.async_create_or_update_records(
             "STUDY",
             [{"formKey": "F1", "data": {"a": 1}}],

@@ -69,7 +69,10 @@ def export_excel(
     path: Path = typer.Argument(..., help="Destination Excel workbook."),
 ) -> None:
     """Export study records to an Excel workbook."""
-    if importlib.util.find_spec("pandas") is None or importlib.util.find_spec("openpyxl") is None:
+    if (
+        importlib.util.find_spec("pandas") is None
+        or importlib.util.find_spec("openpyxl") is None
+    ):
         print(
             "[bold red]Error:[/bold red] pandas and openpyxl are required for Excel export. "
             "Install with \"pip install 'imednet[export]'\"."
@@ -228,7 +231,9 @@ def export_mongodb(
     uri: str = typer.Argument(..., help="MongoDB connection URI."),
     database: str = typer.Argument(..., help="MongoDB database name."),
     collection: str = typer.Argument(..., help="MongoDB collection name."),
-    batch_size: int = typer.Option(500, "--batch-size", min=1, help="Records per batch."),
+    batch_size: int = typer.Option(
+        500, "--batch-size", min=1, help="Records per batch."
+    ),
     upsert: bool = typer.Option(
         True,
         "--upsert/--insert-only",
@@ -270,7 +275,9 @@ def export_neo4j(
     username: str = typer.Argument(..., help="Neo4j username."),
     password: str = typer.Argument(..., help="Neo4j password."),
     database: str = typer.Option("neo4j", "--database", help="Neo4j database name."),
-    batch_size: int = typer.Option(500, "--batch-size", min=1, help="Records per batch."),
+    batch_size: int = typer.Option(
+        500, "--batch-size", min=1, help="Records per batch."
+    ),
     merge: bool = typer.Option(
         True,
         "--merge/--create-only",
@@ -288,7 +295,9 @@ def export_neo4j(
         raise typer.Exit(code=1)
 
     assert sdk.sinks is not None
-    cfg = sdk.sinks.Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
+    cfg = sdk.sinks.Neo4jSinkConfig(
+        batch_size=batch_size, idempotent=merge, database=database
+    )
     with fetching_status("records for Neo4j export", study_key):
         sdk.sinks.export_to_neo4j(
             sdk,
@@ -312,14 +321,18 @@ def export_snowflake(
     warehouse: str = typer.Argument(..., help="Snowflake warehouse."),
     stage: str = typer.Argument(..., help="Internal stage name."),
     table: str = typer.Argument(..., help="Target table name."),
-    stage_prefix: str = typer.Option("imednet", "--stage-prefix", help="Path prefix in stage."),
+    stage_prefix: str = typer.Option(
+        "imednet", "--stage-prefix", help="Path prefix in stage."
+    ),
     local_staging_dir: Optional[Path] = typer.Option(
         None, "--local-staging-dir", help="Local directory for staged Parquet files."
     ),
     manifest_path: Optional[Path] = typer.Option(
         None, "--manifest-path", help="Optional JSONL manifest output path."
     ),
-    batch_size: int = typer.Option(500, "--batch-size", min=1, help="Records per batch."),
+    batch_size: int = typer.Option(
+        500, "--batch-size", min=1, help="Records per batch."
+    ),
     idempotent: bool = typer.Option(
         True,
         "--idempotent/--force-reload",

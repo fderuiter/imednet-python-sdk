@@ -11,7 +11,9 @@ import pytest
 MODULE_PATH = "imednet.utils.json_logging"
 
 
-def _install_formatter(monkeypatch: pytest.MonkeyPatch, submodule: str) -> type[logging.Formatter]:
+def _install_formatter(
+    monkeypatch: pytest.MonkeyPatch, submodule: str
+) -> type[logging.Formatter]:
     """Insert a dummy JsonFormatter under the given pythonjsonlogger submodule."""
     for name in (
         "pythonjsonlogger",
@@ -21,7 +23,9 @@ def _install_formatter(monkeypatch: pytest.MonkeyPatch, submodule: str) -> type[
         monkeypatch.delitem(sys.modules, name, raising=False)
 
     package = types.ModuleType("pythonjsonlogger")
-    package.__path__ = []  # mark as package so missing submodules raise ModuleNotFoundError
+    package.__path__ = (
+        []
+    )  # mark as package so missing submodules raise ModuleNotFoundError
     monkeypatch.setitem(sys.modules, "pythonjsonlogger", package)
 
     module = types.ModuleType(f"pythonjsonlogger.{submodule}")
@@ -31,14 +35,18 @@ def _install_formatter(monkeypatch: pytest.MonkeyPatch, submodule: str) -> type[
 
         def format(self, record: logging.LogRecord) -> str:  # type: ignore[override]
             """TODO: Add docstring."""
-            return json.dumps({"message": record.getMessage(), "levelname": record.levelname})
+            return json.dumps(
+                {"message": record.getMessage(), "levelname": record.levelname}
+            )
 
     module.JsonFormatter = DummyFormatter  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, f"pythonjsonlogger.{submodule}", module)
     return DummyFormatter
 
 
-def _configure_and_log(json_logging, caplog: pytest.LogCaptureFixture) -> logging.Handler:
+def _configure_and_log(
+    json_logging, caplog: pytest.LogCaptureFixture
+) -> logging.Handler:
     """TODO: Add docstring."""
     root = logging.getLogger()
     old_handlers, old_level = root.handlers[:], root.level

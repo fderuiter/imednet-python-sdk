@@ -128,7 +128,9 @@ class BulkRecordSubmissionWorkflow:
         registration_sets = [
             rs for rs in record_sets if rs.test_type == RecordTestType.REGISTER_SUBJECT
         ]
-        data_sets = [rs for rs in record_sets if rs.test_type != RecordTestType.REGISTER_SUBJECT]
+        data_sets = [
+            rs for rs in record_sets if rs.test_type != RecordTestType.REGISTER_SUBJECT
+        ]
 
         existing_subjects: Set[str] = set()
         if self.skip_existing_subjects:
@@ -141,7 +143,9 @@ class BulkRecordSubmissionWorkflow:
             for i, payload in enumerate(rs.payloads):
                 subj_key = rs.subject_keys[i] if i < len(rs.subject_keys) else None
                 if subj_key and subj_key in existing_subjects:
-                    logger.info("Skipping registration for existing subject: %s", subj_key)
+                    logger.info(
+                        "Skipping registration for existing subject: %s", subj_key
+                    )
                     continue
                 filtered_payloads.append(payload)
 
@@ -180,7 +184,9 @@ class BulkRecordSubmissionWorkflow:
         result.completed_at = datetime.now(timezone.utc)
         return result
 
-    def _chunk_payloads(self, payloads: List[Dict[str, Any]]) -> Iterator[List[Dict[str, Any]]]:
+    def _chunk_payloads(
+        self, payloads: List[Dict[str, Any]]
+    ) -> Iterator[List[Dict[str, Any]]]:
         """Yield successive batch_size chunks of payloads."""
         for i in range(0, len(payloads), self.batch_size):
             yield payloads[i : i + self.batch_size]
@@ -204,7 +210,9 @@ class BulkRecordSubmissionWorkflow:
             job=job,
         )
 
-    def _await_registration_jobs(self, study_key: str, batches: List[BatchSubmission]) -> None:
+    def _await_registration_jobs(
+        self, study_key: str, batches: List[BatchSubmission]
+    ) -> None:
         """Block until all Phase 1 jobs reach terminal state."""
         poller = JobPoller(get_job=self.sdk.get_job)
         failed_batches = []
@@ -235,7 +243,9 @@ class BulkRecordSubmissionWorkflow:
         subjects = self.sdk.get_subjects(study_key, keyword=keyword_tag)
         existing_keys = set()
         for subj in subjects:
-            key = getattr(subj, "subject_key", None) or getattr(subj, "subjectKey", None)
+            key = getattr(subj, "subject_key", None) or getattr(
+                subj, "subjectKey", None
+            )
             if key:
                 existing_keys.add(key)
         return existing_keys

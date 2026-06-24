@@ -35,7 +35,9 @@ class _FakeTableStreamlit:
         self.text_input_keys.append(key)
         return self._query
 
-    def selectbox(self, _: str, *, options: tuple[object, ...], key: str, index: int = 0) -> int:
+    def selectbox(
+        self, _: str, *, options: tuple[object, ...], key: str, index: int = 0
+    ) -> int:
         """TODO: Add docstring."""
         self.session_state[key] = options[index]
         return int(options[index])
@@ -44,7 +46,9 @@ class _FakeTableStreamlit:
         """TODO: Add docstring."""
         return (_FakeColumn(), _FakeColumn(), _FakeColumn())
 
-    def dataframe(self, df: pd.DataFrame, *, use_container_width: bool, height: int) -> None:
+    def dataframe(
+        self, df: pd.DataFrame, *, use_container_width: bool, height: int
+    ) -> None:
         """TODO: Add docstring."""
         assert use_container_width is True
         assert height == 400
