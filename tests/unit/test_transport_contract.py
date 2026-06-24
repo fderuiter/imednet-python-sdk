@@ -17,25 +17,19 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 @respx.mock(base_url="https://example.com")
 def test_retry_contract_by_method_class() -> None:
     """TODO: Add docstring."""
-    sdk = ImednetSDK(
-        api_key="k", security_key="s", base_url="https://example.com", retries=3
-    )
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
 
     get_route = respx.get("/retry-get").mock(return_value=httpx.Response(503))
     with pytest.raises(errors.ServerError):
         sdk._client.get("/retry-get")
     assert get_route.call_count == 3
 
-    post_server_error = respx.post("/retry-post-503").mock(
-        return_value=httpx.Response(503)
-    )
+    post_server_error = respx.post("/retry-post-503").mock(return_value=httpx.Response(503))
     with pytest.raises(errors.ServerError):
         sdk._client.post("/retry-post-503", json={})
     assert post_server_error.call_count == 1
 
-    post_rate_limited = respx.post("/retry-post-429").mock(
-        return_value=httpx.Response(429)
-    )
+    post_rate_limited = respx.post("/retry-post-429").mock(return_value=httpx.Response(429))
     with pytest.raises(errors.RateLimitError):
         sdk._client.post("/retry-post-429", json={})
     assert post_rate_limited.call_count == 3
@@ -79,9 +73,7 @@ async def test_transport_clients_use_base_url_for_relative_paths() -> None:
         )
 
         async_get_response = await async_client.get("/async-relative-get")
-        async_post_response = await async_client.post(
-            "/async-relative-post", json={"x": 1}
-        )
+        async_post_response = await async_client.post("/async-relative-post", json={"x": 1})
 
         assert async_get_response.status_code == 200
         assert async_get_response.json() == {"ok": True}
@@ -106,9 +98,7 @@ def test_retry_after_header_is_respected(monkeypatch: pytest.MonkeyPatch) -> Non
 
     monkeypatch.setattr(executor_module, "Retrying", retrying_with_captured_sleep)
 
-    sdk = ImednetSDK(
-        api_key="k", security_key="s", base_url="https://example.com", retries=2
-    )
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=2)
     route = respx.get("/rate-limited").mock(
         side_effect=[
             httpx.Response(429, headers={"Retry-After": "2"}),
@@ -149,9 +139,7 @@ async def test_timeout_propagates_to_httpx_clients() -> None:
     assert async_client._client.timeout.pool == 4.0
     await async_client.aclose()
 
-    sdk = ImednetSDK(
-        api_key="k", security_key="s", base_url="https://example.com", timeout=7.5
-    )
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", timeout=7.5)
     assert sdk._client._client.timeout.connect == 7.5
     sdk.close()
 
@@ -182,9 +170,7 @@ def test_status_code_error_mapping_contract(
 ) -> None:
     """TODO: Add docstring."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com")
-    respx.get("/error-map").mock(
-        return_value=httpx.Response(status_code, json={"error": "x"})
-    )
+    respx.get("/error-map").mock(return_value=httpx.Response(status_code, json={"error": "x"}))
 
     with pytest.raises(exception_type):
         sdk._client.get("/error-map")
@@ -198,9 +184,7 @@ def test_credentials_are_redacted_from_transport_logs_and_exceptions(
     api_key = "very-secret-api-key"
     security_key = "very-secret-security-key"
     token = "very-secret-token"
-    sensitive_path = (
-        f"/resource?api_key={api_key}&security_key={security_key}&token={token}"
-    )
+    sensitive_path = f"/resource?api_key={api_key}&security_key={security_key}&token={token}"
 
     sdk = ImednetSDK(
         api_key=api_key,
@@ -232,17 +216,13 @@ def test_credentials_are_redacted_from_transport_logs_and_exceptions(
             sdk._client.get("/network-failure")
 
     monitor_logs = [
-        record
-        for record in caplog.records
-        if record.name == "imednet.core.http.monitor"
+        record for record in caplog.records if record.name == "imednet.core.http.monitor"
     ]
 
     assert api_key not in str(exc_info.value)
     assert security_key not in str(exc_info.value)
     assert token not in str(exc_info.value)
-    assert any(
-        "Request failed after retries" in record.getMessage() for record in monitor_logs
-    )
+    assert any("Request failed after retries" in record.getMessage() for record in monitor_logs)
     assert all(api_key not in record.getMessage() for record in monitor_logs)
     assert all(security_key not in record.getMessage() for record in monitor_logs)
     assert all(token not in record.getMessage() for record in monitor_logs)

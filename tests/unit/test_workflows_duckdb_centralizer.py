@@ -104,9 +104,9 @@ def test_ingest_revisions_and_build_silver_view() -> None:
         call("STUDY", start_date=None, end_date=None),
     ]
 
-    bronze_count = workflow._connection.execute(
-        "SELECT COUNT(*) FROM bronze_revisions"
-    ).fetchone()[0]
+    bronze_count = workflow._connection.execute("SELECT COUNT(*) FROM bronze_revisions").fetchone()[
+        0
+    ]
     assert bronze_count == 4
     age_value = workflow._connection.execute("""
         SELECT value

@@ -35,7 +35,9 @@ class JobProgressCallback(Protocol):
         batch_id: str,
         status: JobStatus,
         elapsed: float,
-    ) -> None: ...
+    ) -> None:
+        """Invoke the progress callback."""
+        ...
 
 
 @dataclass(frozen=True)

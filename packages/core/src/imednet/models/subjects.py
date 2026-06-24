@@ -17,7 +17,7 @@ class SubjectKeyword(JsonModel):
     pass
 
 
-SubjectKeyword = ModelEngine.get_model("SubjectKeyword", SubjectKeyword)
+SubjectKeyword = ModelEngine.get_model('SubjectKeyword', SubjectKeyword)
 
 
 class Subject(JsonModel):
@@ -26,4 +26,4 @@ class Subject(JsonModel):
     pass
 
 
-Subject = ModelEngine.get_model("Subject", Subject)
+Subject = ModelEngine.get_model('Subject', Subject)

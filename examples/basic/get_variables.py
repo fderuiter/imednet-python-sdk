@@ -79,9 +79,7 @@ def main():
                 # Save all variables to JSON (with datetime serialization)
                 output_dir = os.path.join(os.path.dirname(__file__), "variables_output")
                 os.makedirs(output_dir, exist_ok=True)
-                json_path = os.path.join(
-                    output_dir, f"variables_{study.study_key}.json"
-                )
+                json_path = os.path.join(output_dir, f"variables_{study.study_key}.json")
                 with open(json_path, "w", encoding="utf-8") as f:
                     json.dump(
                         [v.model_dump(by_alias=True) for v in variables],
@@ -131,9 +129,7 @@ def main():
                         )
                 print(f"Saved variables to: {json_path} and {csv_path}")
             for variable in variables[:5]:
-                print(
-                    f"- Variable Name: {variable.variable_name}, ID: {variable.variable_id}"
-                )
+                print(f"- Variable Name: {variable.variable_name}, ID: {variable.variable_id}")
 
     except Exception as e:
         print(f"Error: {e}")

@@ -51,9 +51,7 @@ def test_csv_download_button_exports_utf8_csv(monkeypatch: pytest.MonkeyPatch) -
     ).startswith("name,count\nJosé,1\n")
 
 
-def test_excel_download_button_exports_valid_xlsx(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_excel_download_button_exports_valid_xlsx(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     fake_st = _FakeExportStreamlit()
     monkeypatch.setattr(export_components, "st", fake_st)
@@ -64,10 +62,7 @@ def test_excel_download_button_exports_valid_xlsx(
     assert len(fake_st.download_calls) == 1
     call = fake_st.download_calls[0]
     assert call["file_name"] == "report.xlsx"
-    assert (
-        call["mime"]
-        == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+    assert call["mime"] == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     data = call["data"]
     assert isinstance(data, bytes)
     exported = pd.read_excel(io.BytesIO(data))

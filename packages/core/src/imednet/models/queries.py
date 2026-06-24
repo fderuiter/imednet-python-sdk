@@ -22,15 +22,13 @@ class QueryComment(JsonModel):
     date: str | None = Field(default=None, alias="date")
 
 
-QueryComment = ModelEngine.get_model("QueryComment", QueryComment)
+QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
 
 
 class Query(JsonModel):
     """Represents a data query (discrepancy) raised on a record."""
 
-    query_comments: List[QueryComment] = Field(
-        default_factory=list, alias="queryComments"
-    )
+    query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
 
 
-Query = ModelEngine.get_model("Query", Query)
+Query = ModelEngine.get_model('Query', Query)

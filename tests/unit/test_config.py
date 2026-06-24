@@ -21,12 +21,8 @@ def test_load_config_overrides_env(monkeypatch):
     """TODO: Add docstring."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
-    cfg = load_config(
-        api_key="arg_key", security_key="arg_sec", base_url="https://override"
-    )
-    assert cfg == Config(
-        api_key="arg_key", security_key="arg_sec", base_url="https://override"
-    )
+    cfg = load_config(api_key="arg_key", security_key="arg_sec", base_url="https://override")
+    assert cfg == Config(api_key="arg_key", security_key="arg_sec", base_url="https://override")
 
 
 def test_load_config_missing(monkeypatch):
@@ -47,9 +43,7 @@ def test_load_config_missing(monkeypatch):
         ("valid", "", "Security key is required"),
     ],
 )
-def test_load_config_whitespace_args(
-    monkeypatch, api_key, security_key, expected_error
-):
+def test_load_config_whitespace_args(monkeypatch, api_key, security_key, expected_error):
     """Test that whitespace/empty arguments raise ValueError."""
     # Ensure no environment variables interfere
     monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
@@ -66,9 +60,7 @@ def test_load_config_whitespace_args(
         ("valid", "   ", "Security key is required"),
     ],
 )
-def test_load_config_whitespace_env(
-    monkeypatch, env_api_key, env_security_key, expected_error
-):
+def test_load_config_whitespace_env(monkeypatch, env_api_key, env_security_key, expected_error):
     """Test that whitespace environment variables raise ValueError."""
     monkeypatch.setenv("IMEDNET_API_KEY", env_api_key)
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", env_security_key)

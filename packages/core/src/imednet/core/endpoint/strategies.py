@@ -15,9 +15,7 @@ class DefaultParamProcessor(ParamProcessor):
     Simply passes filters through without modification.
     """
 
-    def process_filters(
-        self, filters: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """Return filters as-is and no special parameters.
 
         Args:
@@ -51,9 +49,7 @@ class MappingParamProcessor(ParamProcessor):
         self.mapping = mapping
         self.defaults = defaults or {}
 
-    def process_filters(
-        self, filters: Dict[str, Any]
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """Process filters using the configured mapping.
 
         Args:

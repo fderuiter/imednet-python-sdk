@@ -31,9 +31,7 @@ def main() -> None:
 
     study_key, table_name, output_db = sys.argv[1:]
 
-    missing = [
-        var for var in ("IMEDNET_API_KEY", "IMEDNET_SECURITY_KEY") if not os.getenv(var)
-    ]
+    missing = [var for var in ("IMEDNET_API_KEY", "IMEDNET_SECURITY_KEY") if not os.getenv(var)]
     if missing:
         vars_ = ", ".join(missing)
         print(f"Missing required environment variable(s): {vars_}", file=sys.stderr)

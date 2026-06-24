@@ -30,9 +30,7 @@ def runner() -> CliRunner:
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """TODO: Add docstring."""
     mock_sdk = MagicMock()
-    monkeypatch.setattr(
-        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk)
-    )
+    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk))
     return mock_sdk
 
 
@@ -295,19 +293,7 @@ def test_cli_export_snowflake_missing_dependency(
     monkeypatch.setattr(importlib.util, "find_spec", fake_find_spec)
     result = runner.invoke(
         cli.app,
-        [
-            "export",
-            "snowflake",
-            "STUDY",
-            "acct",
-            "user",
-            "secret",
-            "DB",
-            "PUBLIC",
-            "WH",
-            "S",
-            "T",
-        ],
+        ["export", "snowflake", "STUDY", "acct", "user", "secret", "DB", "PUBLIC", "WH", "S", "T"],
     )
 
     assert result.exit_code == 1

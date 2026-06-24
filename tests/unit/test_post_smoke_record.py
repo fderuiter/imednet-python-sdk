@@ -42,9 +42,7 @@ def test_submit_record_reports_failure_details() -> None:
 
 def _var(name: str, var_type: str) -> Variable:
     """TODO: Add docstring."""
-    return Variable(
-        variable_name=name, variable_type=var_type, form_id=1, form_key="F1"
-    )
+    return Variable(variable_name=name, variable_type=var_type, form_id=1, form_key="F1")
 
 
 def test_build_record_returns_typed_values() -> None:
@@ -99,9 +97,7 @@ def test_build_record_returns_typed_values() -> None:
         ),
     ],
 )
-def test_build_record_optional_identifiers(
-    kwargs: dict[str, str], extra: dict[str, str]
-) -> None:
+def test_build_record_optional_identifiers(kwargs: dict[str, str], extra: dict[str, str]) -> None:
     """TODO: Add docstring."""
     sdk = Mock()
     sdk.variables.list.return_value = []
@@ -121,9 +117,7 @@ def test_discover_identifiers_returns_all() -> None:
     sdk.subjects.list.return_value = [
         Subject(study_key="S", subject_key="SUB", subject_status="Active")
     ]
-    sdk.intervals.list.return_value = [
-        Interval(study_key="S", interval_name="INT", disabled=False)
-    ]
+    sdk.intervals.list.return_value = [Interval(study_key="S", interval_name="INT", disabled=False)]
 
     identifiers = smoke.discover_identifiers(sdk, "S")
 
@@ -135,15 +129,9 @@ def test_discover_identifiers_returns_all() -> None:
 
 def test_discover_identifiers_reports_missing(monkeypatch, capsys) -> None:
     """TODO: Add docstring."""
-    monkeypatch.setattr(
-        smoke, "discover_site_name", Mock(side_effect=Exception("no site"))
-    )
-    monkeypatch.setattr(
-        smoke, "discover_subject_key", Mock(side_effect=Exception("no subject"))
-    )
-    monkeypatch.setattr(
-        smoke, "discover_interval_name", Mock(side_effect=Exception("no int"))
-    )
+    monkeypatch.setattr(smoke, "discover_site_name", Mock(side_effect=Exception("no site")))
+    monkeypatch.setattr(smoke, "discover_subject_key", Mock(side_effect=Exception("no subject")))
+    monkeypatch.setattr(smoke, "discover_interval_name", Mock(side_effect=Exception("no int")))
 
     identifiers = smoke.discover_identifiers(Mock(), "S")
 
@@ -163,9 +151,7 @@ def test_main_verbose_logs(monkeypatch, caplog) -> None:
     sdk.poll_job.return_value = Mock(state="COMPLETED", batch_id="B1")
     monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
     monkeypatch.setattr(smoke, "discover_keys", Mock(return_value=("ST", "F1")))
-    monkeypatch.setattr(
-        smoke, "discover_identifiers", Mock(return_value=(None, "SUB", None))
-    )
+    monkeypatch.setattr(smoke, "discover_identifiers", Mock(return_value=(None, "SUB", None)))
     monkeypatch.setattr(
         smoke,
         "build_record",
@@ -189,9 +175,7 @@ def test_main_returns_skip_when_identifiers_missing(monkeypatch, capsys) -> None
     sdk.__exit__ = Mock(return_value=False)
     monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
     monkeypatch.setattr(smoke, "discover_keys", Mock(return_value=("ST", "F1")))
-    monkeypatch.setattr(
-        smoke, "discover_identifiers", Mock(return_value=(None, None, None))
-    )
+    monkeypatch.setattr(smoke, "discover_identifiers", Mock(return_value=(None, None, None)))
 
     exit_code = smoke.main([])
 
@@ -206,9 +190,7 @@ def test_main_returns_skip_on_discovery_failure(monkeypatch, capsys) -> None:
     sdk.__enter__ = Mock(return_value=sdk)
     sdk.__exit__ = Mock(return_value=False)
     monkeypatch.setattr(smoke, "authenticate", Mock(return_value=sdk))
-    monkeypatch.setattr(
-        smoke, "discover_keys", Mock(side_effect=Exception("no active studies"))
-    )
+    monkeypatch.setattr(smoke, "discover_keys", Mock(side_effect=Exception("no active studies")))
 
     exit_code = smoke.main([])
 

@@ -13,9 +13,7 @@ import pytest
 import imednet.integrations.export as export_mod
 
 
-def test_export_to_duckdb_happy_path(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_to_duckdb_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     duckdb = pytest.importorskip("duckdb")
 
@@ -28,9 +26,7 @@ def test_export_to_duckdb_happy_path(
 
     conn = duckdb.connect(str(db_path))
     try:
-        columns = [
-            row[1] for row in conn.execute("PRAGMA table_info('records')").fetchall()
-        ]
+        columns = [row[1] for row in conn.execute("PRAGMA table_info('records')").fetchall()]
         row_count = conn.execute("SELECT COUNT(*) FROM records").fetchone()[0]
     finally:
         conn.close()
@@ -39,18 +35,14 @@ def test_export_to_duckdb_happy_path(
     assert row_count == 2
 
 
-def test_export_to_duckdb_wide_dataframe(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_to_duckdb_wide_dataframe(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     duckdb = pytest.importorskip("duckdb")
 
     sdk = MagicMock()
     wide_columns = [f"c{i}" for i in range(2101)]
     wide_df = pd.DataFrame([range(2101)], columns=wide_columns)
-    monkeypatch.setattr(
-        export_mod, "_prepare_export_df", MagicMock(return_value=wide_df)
-    )
+    monkeypatch.setattr(export_mod, "_prepare_export_df", MagicMock(return_value=wide_df))
 
     db_path = tmp_path / "wide.duckdb"
     export_mod.export_to_duckdb(sdk, "STUDY", str(db_path), "wide_records")
@@ -128,9 +120,7 @@ def test_export_to_duckdb_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
         export_mod.export_to_duckdb_by_form(MagicMock(), "STUDY", "out.duckdb")
 
 
-def test_export_to_duckdb_type_handling(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_export_to_duckdb_type_handling(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     duckdb = pytest.importorskip("duckdb")
 
@@ -152,9 +142,7 @@ def test_export_to_duckdb_type_handling(
             row[1]: row[2].upper()
             for row in conn.execute("PRAGMA table_info('typed_records')").fetchall()
         }
-        rows = conn.execute(
-            "SELECT event_date, note FROM typed_records ORDER BY note"
-        ).fetchall()
+        rows = conn.execute("SELECT event_date, note FROM typed_records ORDER BY note").fetchall()
     finally:
         conn.close()
 
@@ -185,8 +173,6 @@ def test_export_to_duckdb_connection_closed_on_error(
     monkeypatch.setitem(sys.modules, "duckdb", duckdb_module)
 
     with pytest.raises(RuntimeError, match="boom"):
-        export_mod.export_to_duckdb(
-            sdk, "STUDY", str(tmp_path / "out.duckdb"), "records"
-        )
+        export_mod.export_to_duckdb(sdk, "STUDY", str(tmp_path / "out.duckdb"), "records")
 
     conn.close.assert_called_once_with()

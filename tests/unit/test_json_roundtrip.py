@@ -58,9 +58,7 @@ def test_fake_forms_for_cache():
 def test_fake_variables_for_cache():
     """TODO: Add docstring."""
     forms = fake_data.fake_forms_for_cache(num_forms=1)
-    variables = fake_data.fake_variables_for_cache(
-        forms, vars_per_form=2, study_key="TEST-1"
-    )
+    variables = fake_data.fake_variables_for_cache(forms, vars_per_form=2, study_key="TEST-1")
     assert len(variables) == 2
     for variable in variables:
         assert isinstance(variable, Variable)

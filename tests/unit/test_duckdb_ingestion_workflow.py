@@ -43,15 +43,11 @@ def test_ingest_revisions_append_mode() -> None:
         )
     ]
 
-    with patch.object(
-        DataExtractionWorkflow, "extract_audit_trail", side_effect=[first, second]
-    ):
+    with patch.object(DataExtractionWorkflow, "extract_audit_trail", side_effect=[first, second]):
         workflow.ingest_revisions("STUDY", mode="append")
         workflow.ingest_revisions("STUDY", mode="append")
 
-    count = workflow._connection.execute(
-        "SELECT COUNT(*) FROM bronze_revisions"
-    ).fetchone()[0]
+    count = workflow._connection.execute("SELECT COUNT(*) FROM bronze_revisions").fetchone()[0]
     assert count == 2
 
 
@@ -123,9 +119,7 @@ def test_build_silver_view_deduplication() -> None:
         ),
     ]
 
-    with patch.object(
-        DataExtractionWorkflow, "extract_audit_trail", return_value=revisions
-    ):
+    with patch.object(DataExtractionWorkflow, "extract_audit_trail", return_value=revisions):
         workflow.ingest_revisions("STUDY", mode="append")
 
     workflow.build_silver_view("STUDY")
@@ -171,9 +165,7 @@ def test_ingest_revisions_returns_row_count() -> None:
         ),
     ]
 
-    with patch.object(
-        DataExtractionWorkflow, "extract_audit_trail", return_value=revisions
-    ):
+    with patch.object(DataExtractionWorkflow, "extract_audit_trail", return_value=revisions):
         assert workflow.ingest_revisions("STUDY", mode="append") == 3
 
 

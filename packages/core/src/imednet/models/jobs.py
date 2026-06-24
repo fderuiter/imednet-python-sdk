@@ -34,7 +34,7 @@ class Job(JsonModel):
         return self.state.upper() in {"FAILED", "CANCELLED"} if self.state else False
 
 
-Job = ModelEngine.get_model("Job", Job)
+Job = ModelEngine.get_model('Job', Job)
 
 
 class JobStatus(Job):
@@ -102,4 +102,4 @@ class JobStatus(Job):
         return 0
 
 
-JobStatus = ModelEngine.get_model("JobStatus", JobStatus)
+JobStatus = ModelEngine.get_model('JobStatus', JobStatus)

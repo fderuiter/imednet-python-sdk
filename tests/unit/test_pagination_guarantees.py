@@ -14,9 +14,7 @@ from imednet.errors import PaginationError
 def test_empty_result_set_stops_immediately() -> None:
     """TODO: Add docstring."""
     respx.get("https://api.test/items").mock(
-        return_value=httpx.Response(
-            200, json={"data": [], "pagination": {"totalPages": 0}}
-        )
+        return_value=httpx.Response(200, json={"data": [], "pagination": {"totalPages": 0}})
     )
     with httpx.Client(base_url="https://api.test") as client:
         paginator = Paginator(client, "/items")
@@ -28,9 +26,7 @@ def test_empty_result_set_stops_immediately() -> None:
 def test_single_page_iteration() -> None:
     """TODO: Add docstring."""
     respx.get("https://api.test/items").mock(
-        return_value=httpx.Response(
-            200, json={"data": [1, 2], "pagination": {"totalPages": 1}}
-        )
+        return_value=httpx.Response(200, json={"data": [1, 2], "pagination": {"totalPages": 1}})
     )
     with httpx.Client(base_url="https://api.test") as client:
         paginator = Paginator(client, "/items", page_size=50)
@@ -50,9 +46,7 @@ def test_last_page_partial_results() -> None:
         page = int(request.url.params["page"])
         calls.append(page)
         if page == 0:
-            return httpx.Response(
-                200, json={"data": [1, 2], "pagination": {"totalPages": 2}}
-            )
+            return httpx.Response(200, json={"data": [1, 2], "pagination": {"totalPages": 2}})
         return httpx.Response(200, json={"data": [3], "pagination": {"totalPages": 2}})
 
     respx.get("https://api.test/items").mock(side_effect=responder)
@@ -121,9 +115,7 @@ def test_iteration_can_be_interrupted_and_resumed() -> None:
         page = int(request.url.params["page"])
         calls.append(page)
         if page == 0:
-            return httpx.Response(
-                200, json={"data": [1, 2], "pagination": {"totalPages": 2}}
-            )
+            return httpx.Response(200, json={"data": [1, 2], "pagination": {"totalPages": 2}})
         return httpx.Response(200, json={"data": [3], "pagination": {"totalPages": 2}})
 
     respx.get("https://api.test/items").mock(side_effect=responder)

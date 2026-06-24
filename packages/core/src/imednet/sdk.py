@@ -113,9 +113,7 @@ class _BaseSDK:
 
         try:
             workflows_factory = cast(PluginProtocol, workflows_plugin)
-            return workflows_factory(
-                cast(Union["ImednetFacade", "AsyncImednetFacade"], self)
-            )
+            return workflows_factory(cast(Union["ImednetFacade", "AsyncImednetFacade"], self))
         except TypeError as error:
             raise PluginLoadError(
                 "Failed to instantiate workflows from the discovered plugin entry point."
@@ -191,9 +189,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         client: Optional[Client] = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
-        config = load_config(
-            api_key=api_key, security_key=security_key, base_url=base_url
-        )
+        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
 
         self.config = config
         self._api_key = config.api_key
@@ -319,9 +315,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             retry_policy: Custom retry policy.
             async_client: Pre-configured async client instance.
         """
-        config = load_config(
-            api_key=api_key, security_key=security_key, base_url=base_url
-        )
+        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
         self.config = config
         self._api_key = config.api_key
         self._security_key = config.security_key

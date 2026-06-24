@@ -161,9 +161,7 @@ def test_dataframe_empty_when_no_variables() -> None:
 def test_invalid_visit_key_logs_warning(caplog) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.get_variables.return_value = [
-        Variable(variable_name="VAR", label="L", form_id=1)
-    ]
+    sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
     sdk.get_records.return_value = []
     mapper = RecordMapper(sdk)
 
@@ -178,9 +176,7 @@ def test_invalid_visit_key_logs_warning(caplog) -> None:
 def test_records_fetch_error_returns_empty(caplog) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.get_variables.return_value = [
-        Variable(variable_name="VAR", label="L", form_id=1)
-    ]
+    sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
     sdk.get_records.side_effect = Exception("boom")
     mapper = RecordMapper(sdk)
 
@@ -213,9 +209,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
             """TODO: Add docstring."""
             raise ValidationError([], DummyModel)
 
-    monkeypatch.setattr(
-        "imednet_workflows.record_mapper.create_model", lambda *a, **k: DummyModel
-    )
+    monkeypatch.setattr("imednet_workflows.record_mapper.create_model", lambda *a, **k: DummyModel)
 
     mapper = RecordMapper(sdk)
     with caplog.at_level("WARNING"):
@@ -266,9 +260,7 @@ def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
     """TODO: Add docstring."""
     monkeypatch.setattr("imednet_workflows.record_mapper.pd", None)
     mapper = RecordMapper(MagicMock())
-    with pytest.raises(
-        ImportError, match="pandas is required for RecordMapper.dataframe"
-    ):
+    with pytest.raises(ImportError, match="pandas is required for RecordMapper.dataframe"):
         mapper.dataframe("STUDY")
 
 

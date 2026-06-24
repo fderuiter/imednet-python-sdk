@@ -19,9 +19,7 @@ if os.path.exists(report_path):
     st.success(f"Latest Audit Passed: {report.get('passed', True)}")
     st.json(report)
 else:
-    st.info(
-        "Automated audit report pending CI execution. (All checks passed in latest pipeline)"
-    )
+    st.info("Automated audit report pending CI execution. (All checks passed in latest pipeline)")
     st.json(
         {
             "status": "compliant",
@@ -36,8 +34,5 @@ vpat_path = "/app/docs/VPAT.md"
 if os.path.exists(vpat_path):
     with open(vpat_path, "rb") as f:
         st.download_button(
-            "Download VPAT / ACR",
-            data=f.read(),
-            file_name="VPAT.md",
-            mime="text/markdown",
+            "Download VPAT / ACR", data=f.read(), file_name="VPAT.md", mime="text/markdown"
         )

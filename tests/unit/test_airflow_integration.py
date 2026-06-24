@@ -142,10 +142,7 @@ def test_export_operator_exposes_mapped_runtime_fields(monkeypatch):
         "output_path",
         "export_kwargs",
     )
-    assert (
-        ImednetExportOperator.template_fields
-        == ImednetExportOperator.mapped_runtime_fields
-    )
+    assert ImednetExportOperator.template_fields == ImednetExportOperator.mapped_runtime_fields
     assert ImednetExportOperator.template_fields_renderers == {"export_kwargs": "json"}
 
 
@@ -292,7 +289,9 @@ def test_imednet_hook_extra_json_string_fallback(monkeypatch):
     conn.password = None
     conn.extra_dejson = None
     conn.get_extra = MagicMock(return_value="not-json")
-    conn.extra = '{"api_key":"EXTRA_FIELD_KEY","security_key":"EXTRA_FIELD_SEC","base_url":"https://extra"}'
+    conn.extra = (
+        '{"api_key":"EXTRA_FIELD_KEY","security_key":"EXTRA_FIELD_SEC","base_url":"https://extra"}'
+    )
 
     import airflow.sdk.bases.hook as hooks_base
 
@@ -730,9 +729,7 @@ def test_export_operator_resolves_snowflake_sink(monkeypatch):
     conn = MagicMock()
     import airflow.sdk.bases.hook as hooks_base
 
-    monkeypatch.setattr(
-        hooks_base.BaseHook, "get_connection", classmethod(lambda cls, cid: conn)
-    )
+    monkeypatch.setattr(hooks_base.BaseHook, "get_connection", classmethod(lambda cls, cid: conn))
 
     # Mock imednet_sinks
     sinks_mock = MagicMock()
@@ -774,12 +771,8 @@ def test_reference_dag_safe_study_path_fragment(monkeypatch):
     _setup_airflow_for_dag(monkeypatch)
 
     dag_path = _EXAMPLES_AIRFLOW_DIR / "multi_study_pipeline.py"
-    spec = importlib.util.spec_from_file_location(
-        "_test_multi_study_pipeline", dag_path
-    )
-    assert (
-        spec is not None and spec.loader is not None
-    ), "Could not locate multi_study_pipeline.py"
+    spec = importlib.util.spec_from_file_location("_test_multi_study_pipeline", dag_path)
+    assert spec is not None and spec.loader is not None, "Could not locate multi_study_pipeline.py"
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore[union-attr]
 

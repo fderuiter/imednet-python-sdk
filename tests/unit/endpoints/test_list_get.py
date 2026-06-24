@@ -47,12 +47,7 @@ ASYNC_CASES = [
     (forms.AsyncFormsEndpoint, forms, Form, 1),
     (intervals.AsyncIntervalsEndpoint, intervals, Interval, 1),
     (queries.AsyncQueriesEndpoint, queries, Query, 1),
-    (
-        record_revisions.AsyncRecordRevisionsEndpoint,
-        record_revisions,
-        RecordRevision,
-        1,
-    ),
+    (record_revisions.AsyncRecordRevisionsEndpoint, record_revisions, RecordRevision, 1),
     (records.AsyncRecordsEndpoint, records, Record, 1),
     (sites.AsyncSitesEndpoint, sites, Site, 1),
     (studies.AsyncStudiesEndpoint, studies, Study, "S1"),
@@ -64,9 +59,7 @@ ASYNC_CASES = [
 
 
 @pytest.mark.parametrize("cls,module,model,item_id", CASES)
-def test_list_and_get(
-    dummy_client, context, paginator_factory, cls, module, model, item_id
-):
+def test_list_and_get(dummy_client, context, paginator_factory, cls, module, model, item_id):
     """TODO: Add docstring."""
     ep = cls(dummy_client, context)
     capture = paginator_factory(module, [{cls._id_param: item_id}])
@@ -82,9 +75,7 @@ def test_list_and_get(
     assert capture["path"] == expected_path
     assert isinstance(result[0], model)
 
-    get_args = (
-        ("S1", item_id) if getattr(ep, "requires_study_key", True) else (None, item_id)
-    )
+    get_args = ("S1", item_id) if getattr(ep, "requires_study_key", True) else (None, item_id)
     got = ep.get(*get_args)
     assert isinstance(got, model)
 
@@ -115,8 +106,6 @@ async def test_async_list_and_get(
     assert capture["path"] == expected_path
     assert isinstance(result[0], model)
 
-    get_args = (
-        ("S1", item_id) if getattr(ep, "requires_study_key", True) else (None, item_id)
-    )
+    get_args = ("S1", item_id) if getattr(ep, "requires_study_key", True) else (None, item_id)
     got = await ep.async_get(*get_args)
     assert isinstance(got, model)

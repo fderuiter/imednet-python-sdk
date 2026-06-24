@@ -23,9 +23,7 @@ def test_list_builds_path_and_filters(
     assert isinstance(result[0], Study)
 
 
-def test_get_success(
-    monkeypatch, dummy_client, context, paginator_factory, patch_build_filter
-):
+def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patch_build_filter):
     """TODO: Add docstring."""
     ep = studies.StudiesEndpoint(dummy_client, context)
     captured = paginator_factory(studies, [{"studyKey": "S1"}])

@@ -50,11 +50,7 @@ def _redact_sensitive_value(value: Any) -> Any:
     """
     if isinstance(value, dict):
         return {
-            key: (
-                "***"
-                if str(key).lower() in _SENSITIVE_KEYS
-                else _redact_sensitive_value(val)
-            )
+            key: ("***" if str(key).lower() in _SENSITIVE_KEYS else _redact_sensitive_value(val))
             for key, val in value.items()
         }
     if isinstance(value, list):
@@ -75,9 +71,7 @@ class ApiError(ImednetError):
     """
 
     def __init__(
-        self,
-        response: Union[Dict[str, Any], str, Any],
-        status_code: Optional[int] = None,
+        self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = None
     ) -> None:
         """Initialize an API error.
 

@@ -45,9 +45,7 @@ def _make_sdk(records: list[Record], study_key: str = "PROT-01") -> Any:
 class _ReaderLoop(threading.Thread):
     """Continuously reads cached records until ``stop_event`` is set."""
 
-    def __init__(
-        self, loader: CachedRecordsLoader, stop_event: threading.Event
-    ) -> None:
+    def __init__(self, loader: CachedRecordsLoader, stop_event: threading.Event) -> None:
         """TODO: Add docstring."""
         super().__init__(daemon=True)
         self.loader = loader
@@ -85,9 +83,7 @@ def test_concurrent_sync_and_readers_no_deadlock(tmp_path: Path) -> None:
     # Run several sequential sync cycles while readers are active.
     worker = SyncWorker(
         loader,
-        config=SyncWorkerConfig(
-            study_key="PROT-01", interval_seconds=0, reconcile=True
-        ),
+        config=SyncWorkerConfig(study_key="PROT-01", interval_seconds=0, reconcile=True),
     )
     sync_errors: list[Exception] = []
     for _ in range(5):
@@ -102,12 +98,8 @@ def test_concurrent_sync_and_readers_no_deadlock(tmp_path: Path) -> None:
 
     all_reader_errors = [err for reader in readers for err in reader.errors]
     assert sync_errors == [], f"Sync cycle raised exceptions: {sync_errors}"
-    assert (
-        all_reader_errors == []
-    ), f"Reader loop raised exceptions: {all_reader_errors}"
-    assert all(
-        reader.read_count > 0 for reader in readers
-    ), "Readers never completed a read"
+    assert all_reader_errors == [], f"Reader loop raised exceptions: {all_reader_errors}"
+    assert all(reader.read_count > 0 for reader in readers), "Readers never completed a read"
 
 
 def test_parallel_sync_workers_no_deadlock(tmp_path: Path) -> None:
@@ -136,9 +128,7 @@ def test_parallel_sync_workers_no_deadlock(tmp_path: Path) -> None:
         except Exception as exc:  # pragma: no cover - should never fire
             errors.append(exc)
 
-    threads = [
-        threading.Thread(target=_run_worker, args=(i,), daemon=True) for i in range(3)
-    ]
+    threads = [threading.Thread(target=_run_worker, args=(i,), daemon=True) for i in range(3)]
     for t in threads:
         t.start()
     for t in threads:
@@ -158,9 +148,7 @@ def test_wal_mode_reader_does_not_block_on_writer(tmp_path: Path) -> None:
 
     # Initialise the schema via a loader.
     sdk = _make_sdk([_make_record(1)])
-    loader = CachedRecordsLoader(
-        sdk, cache_dir=tmp_path, database_name="records.sqlite3"
-    )
+    loader = CachedRecordsLoader(sdk, cache_dir=tmp_path, database_name="records.sqlite3")
     loader.sync_records("PROT-01")
 
     writer_conn = get_cache_connection(db_path)
@@ -203,9 +191,7 @@ def test_sync_worker_respects_reconcile_false(tmp_path: Path) -> None:
 
     worker = SyncWorker(
         loader,
-        config=SyncWorkerConfig(
-            study_key="PROT-01", interval_seconds=0, reconcile=False
-        ),
+        config=SyncWorkerConfig(study_key="PROT-01", interval_seconds=0, reconcile=False),
     )
     worker.run_once()
 
@@ -221,9 +207,7 @@ def test_sync_worker_config_defaults() -> None:
 
 
 @pytest.mark.parametrize("n_readers,n_cycles", [(2, 10), (6, 5)])
-def test_high_concurrency_no_exceptions(
-    tmp_path: Path, n_readers: int, n_cycles: int
-) -> None:
+def test_high_concurrency_no_exceptions(tmp_path: Path, n_readers: int, n_cycles: int) -> None:
     """High reader/writer concurrency must not produce any exceptions."""
     records = [_make_record(i) for i in range(1, 21)]
     sdk = _make_sdk(records)

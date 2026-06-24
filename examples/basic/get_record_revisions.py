@@ -37,9 +37,7 @@ def main():
             record_revisions = client.record_revisions.list(study_key=study_key)
             print(f"Record Revisions for study '{study_key}': {len(record_revisions)}")
             for rev in record_revisions[:5]:
-                print(
-                    f"- Revision ID: {rev.record_revision_id}, Record ID: {rev.record_id}"
-                )
+                print(f"- Revision ID: {rev.record_revision_id}, Record ID: {rev.record_id}")
 
     except Exception as e:
         print(f"Error: {e}")

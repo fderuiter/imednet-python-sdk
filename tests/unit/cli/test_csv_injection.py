@@ -19,9 +19,7 @@ def runner() -> CliRunner:
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """TODO: Add docstring."""
     mock_sdk = MagicMock()
-    monkeypatch.setattr(
-        "imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk)
-    )
+    monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk))
     return mock_sdk
 
 
@@ -31,11 +29,7 @@ def test_records_list_output_csv_injection_prevention(
     """TODO: Add docstring."""
     rec = MagicMock()
     # Malicious payload and normal payload
-    rec.model_dump.return_value = {
-        "recordId": 1,
-        "note": "=cmd|' /C calc'!A0",
-        "normal": "hello",
-    }
+    rec.model_dump.return_value = {"recordId": 1, "note": "=cmd|' /C calc'!A0", "normal": "hello"}
     sdk.records.list.return_value = [rec]
 
     monkeypatch.chdir(tmp_path)

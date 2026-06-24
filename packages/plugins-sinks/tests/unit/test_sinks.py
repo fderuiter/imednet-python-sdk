@@ -112,14 +112,10 @@ class TestNeo4jExportSink:
         from imednet_sinks.graph import Neo4jExportSink
 
         records = [
-            MagicMock(
-                record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={}
-            )
+            MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={})
             for i in range(5)
         ]
-        with Neo4jExportSink(
-            "bolt://localhost:7687", ("neo4j", "pass"), "STUDY1"
-        ) as sink:
+        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
             count = sink.write_batch(records, batch_id="STUDY1/F1/0")
         assert count == 5
 
@@ -139,9 +135,7 @@ class TestNeo4jExportSink:
             subject_key="SUBJ-001",
             record_data={"labs": {"hemoglobin": 13.2}, "status": "Complete"},
         )
-        with Neo4jExportSink(
-            "bolt://localhost:7687", ("neo4j", "pass"), "STUDY1"
-        ) as sink:
+        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
             count = sink.write_batch([record], batch_id="STUDY1/F7/0")
 
         assert count == 1
@@ -173,9 +167,7 @@ class TestNeo4jExportSink:
 
         from imednet_sinks.graph import Neo4jExportSink
 
-        with Neo4jExportSink(
-            "bolt://localhost:7687", ("neo4j", "pass"), "STUDY1"
-        ) as sink:
+        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
             count = sink.write_batch([], batch_id="STUDY1/F1/0")
         assert count == 0
 
@@ -185,23 +177,17 @@ class TestNeo4jExportSink:
 
         neo4j, driver = _fake_neo4j_module()
         # Make session.run always fail
-        driver.session.return_value.__enter__.return_value.run.side_effect = (
-            RuntimeError("db down")
-        )
+        driver.session.return_value.__enter__.return_value.run.side_effect = RuntimeError("db down")
         monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
         monkeypatch.setattr(graph_mod.time, "sleep", lambda _: None)
 
         from imednet_sinks.graph import Neo4jExportSink, Neo4jSinkConfig
 
         cfg = Neo4jSinkConfig(max_retries=1, retry_backoff=0.0)
-        sink = Neo4jExportSink(
-            "bolt://localhost:7687", ("neo4j", "pass"), "S1", config=cfg
-        )
+        sink = Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "S1", config=cfg)
         with pytest.raises(ExportBatchError, match="STUDY1/F1/0"):
             records = [
-                MagicMock(
-                    record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={}
-                )
+                MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
             ]
             sink.write_batch(records, batch_id="STUDY1/F1/0")
         sink.close()
@@ -288,14 +274,10 @@ class TestMongoDbExportSink:
         from imednet_sinks.document import MongoDbExportSink
 
         records = [
-            MagicMock(
-                record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={}
-            )
+            MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={})
             for i in range(3)
         ]
-        with MongoDbExportSink(
-            "mongodb://localhost:27017", "db", "col", "STUDY1"
-        ) as sink:
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
             count = sink.write_batch(records, batch_id="STUDY1/F1/0")
         # return value reflects number of exported records in the batch
         assert count == 3
@@ -322,9 +304,7 @@ class TestMongoDbExportSink:
             date_modified=datetime(2024, 1, 15, tzinfo=timezone.utc),
             record_data={"labs": {"hemoglobin": 13.2}, "symptoms": ["fatigue"]},
         )
-        with MongoDbExportSink(
-            "mongodb://localhost:27017", "db", "col", "STUDY1"
-        ) as sink:
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
             count = sink.write_batch([record], batch_id="STUDY1/F1/0")
 
         assert count == 1
@@ -340,12 +320,8 @@ class TestMongoDbExportSink:
         assert update_doc["$set"]["form_key"] == "BASELINE"
         assert update_doc["$set"]["record_status"] == "Complete"
         assert update_doc["$set"]["deleted"] is False
-        assert update_doc["$set"]["date_created"] == datetime(
-            2024, 1, 1, tzinfo=timezone.utc
-        )
-        assert update_doc["$set"]["date_modified"] == datetime(
-            2024, 1, 15, tzinfo=timezone.utc
-        )
+        assert update_doc["$set"]["date_created"] == datetime(2024, 1, 1, tzinfo=timezone.utc)
+        assert update_doc["$set"]["date_modified"] == datetime(2024, 1, 15, tzinfo=timezone.utc)
         assert update_doc["$set"]["record_data"] == {
             "labs": {"hemoglobin": 13.2},
             "symptoms": ["fatigue"],
@@ -361,9 +337,7 @@ class TestMongoDbExportSink:
 
         from imednet_sinks.document import MongoDbExportSink
 
-        with MongoDbExportSink(
-            "mongodb://localhost:27017", "db", "col", "STUDY1"
-        ) as sink:
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
             count = sink.write_batch([], batch_id="b0")
         assert count == 0
 
@@ -379,18 +353,10 @@ class TestMongoDbExportSink:
         from imednet_sinks.document import MongoDbExportSink
 
         cfg = SinkConfig(max_retries=1, retry_backoff=0.0)
-        with MongoDbExportSink(
-            "mongodb://localhost:27017", "db", "col", "S1", config=cfg
-        ) as sink:
+        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "S1", config=cfg) as sink:
             with pytest.raises(ExportBatchError, match="S1/F1/0"):
                 records = [
-                    MagicMock(
-                        record_id=1,
-                        form_id=1,
-                        visit_id=1,
-                        subject_key="S",
-                        record_data={},
-                    )
+                    MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
                 ]
                 sink.write_batch(records, batch_id="S1/F1/0")
 
@@ -506,9 +472,7 @@ class TestSnowflakeExportSink:
             table="TBL",
             local_staging_dir=str(tmp_path),
         )
-        with pytest.raises(
-            ExportConfigurationError, match="Cannot connect to Snowflake"
-        ):
+        with pytest.raises(ExportConfigurationError, match="Cannot connect to Snowflake"):
             SnowflakeExportSink(config=cfg)
 
     def test_raises_for_missing_required_config(self, monkeypatch, tmp_path):
@@ -539,11 +503,7 @@ class TestSnowflakeExportSink:
         monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
 
         result = wh_mod._records_to_arrow_table(
-            [
-                MagicMock(
-                    record_id=1, form_id=2, visit_id=3, subject_key="S", record_data={}
-                )
-            ]
+            [MagicMock(record_id=1, form_id=2, visit_id=3, subject_key="S", record_data={})]
         )
 
         assert result is table
@@ -556,9 +516,7 @@ class TestSnowflakeExportSink:
         cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
         sink = SnowflakeExportSink(config=cfg)
         records = [
-            MagicMock(
-                record_id=i, form_id=1, visit_id=1, subject_key="S", record_data={}
-            )
+            MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S", record_data={})
             for i in range(3)
         ]
         count = sink.write_batch(records, batch_id="S1/F1/0")
@@ -583,9 +541,7 @@ class TestSnowflakeExportSink:
             if pkg == "snowflake.connector":
                 return sf
             if pkg == "pyarrow":
-                return MagicMock(
-                    Table=MagicMock(from_pylist=MagicMock(return_value=MagicMock()))
-                )
+                return MagicMock(Table=MagicMock(from_pylist=MagicMock(return_value=MagicMock())))
             if pkg == "pyarrow.parquet":
                 return pq
             return MagicMock()
@@ -594,11 +550,7 @@ class TestSnowflakeExportSink:
 
         sink = SnowflakeExportSink(config=cfg)
         sink.write_batch(
-            [
-                MagicMock(
-                    record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={}
-                )
-            ],
+            [MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})],
             batch_id="S1/F1/0",
         )
         sink.close()
@@ -651,11 +603,7 @@ class TestSnowflakeExportSink:
             retry_backoff=0.0,
         )
         sink = SnowflakeExportSink(config=cfg)
-        records = [
-            MagicMock(
-                record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={}
-            )
-        ]
+        records = [MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})]
         with pytest.raises(ExportBatchError, match="S1/F1/0"):
             sink.write_batch(records, batch_id="S1/F1/0")
         sink.close()
@@ -701,11 +649,7 @@ class TestSnowflakeExportSink:
         monkeypatch.setattr(wh_mod2, "_require_optional_dep", fake_require2)
 
         sink = SnowflakeExportSink(config=cfg)
-        records = [
-            MagicMock(
-                record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={}
-            )
-        ]
+        records = [MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})]
         sink.write_batch(records, batch_id="STUDY/FORM/0")
         sink.close()
 

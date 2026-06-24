@@ -11,9 +11,7 @@ from typing import Any
 from unittest.mock import MagicMock
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PACKAGE_ROOT = (
-    REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
-)
+PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
 
 
 class _FakeContextManager:
@@ -222,10 +220,7 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
 
     # Build a minimal site mock
     mock_site = MagicMock()
-    mock_site.model_dump.return_value = {
-        "site_name": "Site A",
-        "site_enrollment_status": "Open",
-    }
+    mock_site.model_dump.return_value = {"site_name": "Site A", "site_enrollment_status": "Open"}
 
     mock_sdk = MagicMock()
     mock_sdk.get_subjects.return_value = mock_subjects
@@ -324,10 +319,7 @@ def test_enrollment_page_empty_and_filters_and_refresh() -> None:
 
     # Build a minimal site mock
     mock_site = MagicMock()
-    mock_site.model_dump.return_value = {
-        "site_name": "Site A",
-        "site_enrollment_status": "Open",
-    }
+    mock_site.model_dump.return_value = {"site_name": "Site A", "site_enrollment_status": "Open"}
 
     mock_sdk = MagicMock()
     mock_sdk.get_subjects.return_value = []

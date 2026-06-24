@@ -60,9 +60,7 @@ def test_state_ledger_transaction_success(tmp_path) -> None:
 
     # Successful transaction
     new_ts = datetime(2026, 5, 22, 11, 0, 0, tzinfo=timezone.utc)
-    with ledger.transaction(
-        "STUDY-01", "records", fallback_timestamp=fallback_ts
-    ) as tx:
+    with ledger.transaction("STUDY-01", "records", fallback_timestamp=fallback_ts) as tx:
         assert tx["last_timestamp"] == fallback_ts
         tx["new_timestamp"] = new_ts
         tx["records_processed"] = 100
@@ -87,9 +85,7 @@ def test_state_ledger_transaction_failure(tmp_path) -> None:
 
     # Failed transaction due to an raised exception
     with pytest.raises(ValueError, match="API Error"):
-        with ledger.transaction(
-            "STUDY-01", "records", fallback_timestamp=fallback_ts
-        ) as tx:
+        with ledger.transaction("STUDY-01", "records", fallback_timestamp=fallback_ts) as tx:
             assert tx["last_timestamp"] == fallback_ts
             tx["records_processed"] = 10
             raise ValueError("API Error")

@@ -13,9 +13,7 @@ from imednet.form_designer.models import Layout
 @pytest.fixture
 def form_designer_client():
     """TODO: Add docstring."""
-    return FormDesignerClient(
-        base_url="https://test.imednet.com", phpsessid="test_session"
-    )
+    return FormDesignerClient(base_url="https://test.imednet.com", phpsessid="test_session")
 
 
 @pytest.fixture
@@ -33,9 +31,7 @@ def test_save_form_explicit_json_error(form_designer_client, empty_layout):
     url = "https://test.imednet.com/app/formdez/formdez_save.php"
 
     # Mock a 200 OK response with a JSON error payload
-    respx.post(url).respond(
-        status_code=200, json={"error": "Invalid form configuration"}
-    )
+    respx.post(url).respond(status_code=200, json={"error": "Invalid form configuration"})
 
     with pytest.raises(ApiError) as exc_info:
         form_designer_client.save_form(
@@ -63,9 +59,7 @@ def test_save_form_invalid_json_fallback(form_designer_client, empty_layout):
 
     # Mock a 200 OK response with HTML content
     respx.post(url).respond(
-        status_code=200,
-        content=html_error.encode("utf-8"),
-        headers={"Content-Type": "text/html"},
+        status_code=200, content=html_error.encode("utf-8"), headers={"Content-Type": "text/html"}
     )
 
     with pytest.raises(ApiError) as exc_info:

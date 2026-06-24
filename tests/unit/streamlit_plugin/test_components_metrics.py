@@ -51,9 +51,7 @@ class _FakeMetricStreamlit:
         )
 
 
-def test_kpi_row_uses_column_count_and_renders_metrics(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_kpi_row_uses_column_count_and_renders_metrics(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     fake_st = _FakeMetricStreamlit()
     monkeypatch.setattr(metrics, "st", fake_st)

@@ -61,9 +61,7 @@ class BasePaginator(Generic[ClientT]):
     def _extract_items(self, payload: Dict[str, Any]) -> list[Any]:
         """Extract item list from the API response payload."""
         if not isinstance(payload, dict):
-            raise TypeError(
-                f"API response must be a dictionary, got {type(payload).__name__}"
-            )
+            raise TypeError(f"API response must be a dictionary, got {type(payload).__name__}")
 
         if "recordData" in payload:
             items = payload.get("recordData", []) or []
@@ -76,9 +74,7 @@ class BasePaginator(Generic[ClientT]):
             )
         return items
 
-    def _next_page(
-        self, payload: Dict[str, Any], page: int, items_count: int
-    ) -> Optional[int]:
+    def _next_page(self, payload: Dict[str, Any], page: int, items_count: int) -> Optional[int]:
         """Determine the next page index based on the response payload and metadata."""
         pagination = payload.get("pagination")
         if pagination is not None and not isinstance(pagination, dict):
@@ -99,9 +95,7 @@ class BasePaginator(Generic[ClientT]):
                 f"got {type(total_pages).__name__}."
             )
         if total_pages < 0:
-            raise PaginationError(
-                "Response pagination cursor 'totalPages' cannot be negative."
-            )
+            raise PaginationError("Response pagination cursor 'totalPages' cannot be negative.")
         if total_pages == 0:
             if items_count > 0:
                 raise PaginationError(
@@ -168,9 +162,7 @@ class JsonListPaginator(Paginator):
         response: httpx.Response = self.client.get(self.path, params=self.params)
         payload = response.json()
         if not isinstance(payload, list):
-            raise TypeError(
-                f"API response must be a list, got {type(payload).__name__}"
-            )
+            raise TypeError(f"API response must be a list, got {type(payload).__name__}")
         yield from payload
 
 
@@ -183,8 +175,6 @@ class AsyncJsonListPaginator(AsyncPaginator):
         response: httpx.Response = await self.client.get(self.path, params=self.params)
         payload = response.json()
         if not isinstance(payload, list):
-            raise TypeError(
-                f"API response must be a list, got {type(payload).__name__}"
-            )
+            raise TypeError(f"API response must be a list, got {type(payload).__name__}")
         for item in payload:
             yield item

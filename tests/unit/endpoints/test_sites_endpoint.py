@@ -8,9 +8,7 @@ from imednet.errors.validation import ConfigurationError
 from imednet.models.sites import Site
 
 
-def test_list_requires_study_key(
-    dummy_client, context, paginator_factory, patch_build_filter
-):
+def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
     """TODO: Add docstring."""
     ep = sites.SitesEndpoint(dummy_client, context)
     paginator_capture = paginator_factory(sites, [{"siteId": 1}])

@@ -86,9 +86,7 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
                 b"imednet.commit_id": commit_id.encode("utf-8"),
                 b"imednet.study_key": study_key.encode("utf-8"),
                 b"imednet.form_key": form_key.encode("utf-8"),
-                b"imednet.written_at_utc": datetime.now(timezone.utc)
-                .isoformat()
-                .encode("utf-8"),
+                b"imednet.written_at_utc": datetime.now(timezone.utc).isoformat().encode("utf-8"),
             }
         )
         return table.replace_schema_metadata(existing_metadata)
@@ -120,12 +118,8 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         base_path = Path(base_dir)
         staging_root = base_path / self.staging_dir_name
         staging_base_dir = staging_root / commit_id
-        staged_partition_dir = (
-            staging_base_dir / f"study_key={study_key}" / f"form_key={form_key}"
-        )
-        final_partition_dir = (
-            base_path / f"study_key={study_key}" / f"form_key={form_key}"
-        )
+        staged_partition_dir = staging_base_dir / f"study_key={study_key}" / f"form_key={form_key}"
+        final_partition_dir = base_path / f"study_key={study_key}" / f"form_key={form_key}"
         committed_batch_dir = final_partition_dir / f"_batch_{commit_id}"
         commit_succeeded = False
 
@@ -139,14 +133,10 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
         )
         partitioned_table = table.append_column(
             "study_key",
-            pyarrow_module.array(
-                [study_key] * table.num_rows, type=pyarrow_module.string()
-            ),
+            pyarrow_module.array([study_key] * table.num_rows, type=pyarrow_module.string()),
         ).append_column(
             "form_key",
-            pyarrow_module.array(
-                [form_key] * table.num_rows, type=pyarrow_module.string()
-            ),
+            pyarrow_module.array([form_key] * table.num_rows, type=pyarrow_module.string()),
         )
         partitioned_table = self._table_with_metadata(
             partitioned_table,
@@ -164,9 +154,7 @@ class PyArrowDatasetPartitionedStorageEngine(PartitionedStorageEngine):
                 partitioned_table,
                 base_dir=str(staging_base_dir),
                 basename_template=f"{commit_id}-{{i}}.parquet",
-                partitioning=dataset_module.partitioning(
-                    flavor="hive", schema=partition_schema
-                ),
+                partitioning=dataset_module.partitioning(flavor="hive", schema=partition_schema),
                 format=parquet_format,
                 file_options=parquet_options,
                 existing_data_behavior=self.existing_data_behavior,

@@ -7,9 +7,7 @@ from imednet.errors import NotFoundError
 from imednet.models.visits import Visit
 
 
-def test_list_filters_and_path(
-    dummy_client, context, paginator_factory, patch_build_filter
-):
+def test_list_filters_and_path(dummy_client, context, paginator_factory, patch_build_filter):
     """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = visits.VisitsEndpoint(dummy_client, context)

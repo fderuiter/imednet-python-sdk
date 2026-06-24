@@ -51,9 +51,7 @@ def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
             """TODO: Add docstring."""
             return records, len(records)
 
-        def _build_dataframe(
-            self, rows, _variable_keys, _label_map, _use_labels_as_columns
-        ):
+        def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
             """TODO: Add docstring."""
             form_id = rows[0]
             if form_id == 1:
@@ -81,9 +79,7 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
 
     sdk = MagicMock()
     sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="DEMOGRAPHICS")]
-    sdk.variables.list.return_value = [
-        SimpleNamespace(form_id=1, variable_name="age", label="Age")
-    ]
+    sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
 
     class FakeMapper:
         """TODO: Add docstring."""
@@ -104,9 +100,7 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
             """TODO: Add docstring."""
             return records, len(records)
 
-        def _build_dataframe(
-            self, rows, _variable_keys, _label_map, _use_labels_as_columns
-        ):
+        def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
             """TODO: Add docstring."""
             study_key, _form_id = rows[0]
             return pd.DataFrame([{"study": study_key}])
@@ -121,12 +115,8 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
     assert study_a_path.exists()
     assert study_b_path.exists()
 
-    assert _read_partition_dataframe(study_a_path).to_dict("records") == [
-        {"study": "STUDY_A"}
-    ]
-    assert _read_partition_dataframe(study_b_path).to_dict("records") == [
-        {"study": "STUDY_B"}
-    ]
+    assert _read_partition_dataframe(study_a_path).to_dict("records") == [{"study": "STUDY_A"}]
+    assert _read_partition_dataframe(study_b_path).to_dict("records") == [{"study": "STUDY_B"}]
 
 
 def test_hive_parquet_query() -> None:
@@ -170,9 +160,7 @@ def test_export_to_hive_parquet_rejects_malicious_form_key(monkeypatch) -> None:
     monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: None)
 
     sdk = MagicMock()
-    sdk.forms.list.return_value = [
-        SimpleNamespace(form_id=1, form_key="../DEMOGRAPHICS")
-    ]
+    sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="../DEMOGRAPHICS")]
     sdk.variables.list.return_value = []
     mapper_factory = MagicMock()
     mapper = mapper_factory.return_value
@@ -188,9 +176,7 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
     """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="DEMOGRAPHICS")]
-    sdk.variables.list.return_value = [
-        SimpleNamespace(form_id=1, variable_name="age", label="Age")
-    ]
+    sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
 
     class FakeMapper:
         """TODO: Add docstring."""
@@ -214,9 +200,7 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
             yield values[:2], 0
             yield values[2:], 0
 
-        def _build_dataframe(
-            self, rows, _variable_keys, _label_map, _use_labels_as_columns
-        ):
+        def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
             """TODO: Add docstring."""
             return pd.DataFrame([{"age": value} for value in rows])
 
@@ -244,12 +228,8 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
             return df
 
     monkeypatch.setattr(parquet_mod, "_record_mapper", lambda: FakeMapper)
-    monkeypatch.setattr(
-        parquet_mod, "_ensure_pyarrow", lambda: SimpleNamespace(Table=_FakeTable)
-    )
-    monkeypatch.setattr(
-        parquet_mod, "PyArrowDatasetPartitionedStorageEngine", lambda: FakeEngine()
-    )
+    monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: SimpleNamespace(Table=_FakeTable))
+    monkeypatch.setattr(parquet_mod, "PyArrowDatasetPartitionedStorageEngine", lambda: FakeEngine())
 
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", str(tmp_path), chunk_size=2)
 

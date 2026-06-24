@@ -17,7 +17,7 @@ class Keyword(JsonModel):
     pass
 
 
-Keyword = ModelEngine.get_model("Keyword", Keyword)
+Keyword = ModelEngine.get_model('Keyword', Keyword)
 
 
 class Record(JsonModel):
@@ -26,7 +26,7 @@ class Record(JsonModel):
     pass
 
 
-Record = ModelEngine.get_model("Record", Record)
+Record = ModelEngine.get_model('Record', Record)
 
 
 class RecordJobResponse(JsonModel):
@@ -64,9 +64,7 @@ class RegisterSubjectRequest(BaseRecordRequest):
     """
 
     site_name: str = Field(
-        "",
-        alias="siteName",
-        description="Name of the site where the subject is enrolled",
+        "", alias="siteName", description="Name of the site where the subject is enrolled"
     )
 
     pass

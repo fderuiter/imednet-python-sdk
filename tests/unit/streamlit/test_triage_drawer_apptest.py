@@ -26,9 +26,7 @@ def _triage_drawer_app() -> None:
 
     db_path = st.session_state.get("_triage_drawer_test_db_path")
     if not isinstance(db_path, str):
-        db_path = str(
-            Path(tempfile.gettempdir()) / f"triage-drawer-{uuid.uuid4().hex}.sqlite3"
-        )
+        db_path = str(Path(tempfile.gettempdir()) / f"triage-drawer-{uuid.uuid4().hex}.sqlite3")
         st.session_state["_triage_drawer_test_db_path"] = db_path
 
     store = TriageStore(db_path)
@@ -81,10 +79,7 @@ def test_triage_drawer_submission_updates_session_state_and_persistence() -> Non
         at.run()
 
         assert at.session_state["_triage_drawer_last_action"]["action"] == "annotate"
-        assert (
-            at.session_state["_triage_drawer_last_action"]["comment"]
-            == "needs follow-up"
-        )
+        assert at.session_state["_triage_drawer_last_action"]["comment"] == "needs follow-up"
 
         at.text_area[0].input("ready for approval")
         at.button[_APPROVE_BUTTON_INDEX].click()
@@ -92,17 +87,14 @@ def test_triage_drawer_submission_updates_session_state_and_persistence() -> Non
 
         assert at.session_state["_triage_drawer_last_action"]["action"] == "approve"
         assert (
-            at.session_state["_triage_drawer_last_action"]["status"]
-            == TriageStatus.RESOLVED.value
+            at.session_state["_triage_drawer_last_action"]["status"] == TriageStatus.RESOLVED.value
         )
 
         db_path = str(at.session_state["_triage_drawer_test_db_path"])
         store = TriageStore(db_path)
         item = store.get_queue("STUDY-X")[0]
         assert item.status == TriageStatus.RESOLVED
-        assert [annotation.comment for annotation in item.annotations] == [
-            "needs follow-up"
-        ]
+        assert [annotation.comment for annotation in item.annotations] == ["needs follow-up"]
         assert item.history[-1].to_status == TriageStatus.RESOLVED
         assert item.history[-1].comment == "Approved: ready for approval"
     finally:

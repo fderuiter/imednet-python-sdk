@@ -41,9 +41,7 @@ def test_default_policy_retry_behavior():
 
     # Non-retryable exceptions
     assert not policy.should_retry(RetryState(1, exception=Exception("boom")))
-    assert not policy.should_retry(
-        RetryState(1, result=httpx.Response(200), exception=None)
-    )
+    assert not policy.should_retry(RetryState(1, result=httpx.Response(200), exception=None))
 
 
 def test_default_policy_non_request_exception(monkeypatch):
@@ -74,9 +72,7 @@ def test_custom_policy(monkeypatch):
             """TODO: Add docstring."""
             return isinstance(state.exception, ServerError)
 
-    client = Client(
-        "k", "s", base_url="https://api.test", retries=3, retry_policy=ServerPolicy()
-    )
+    client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=ServerPolicy())
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
@@ -105,9 +101,7 @@ def test_custom_policy_based_on_result(monkeypatch):
             resp = state.result
             return isinstance(resp, httpx.Response) and resp.status_code >= 500
 
-    client = Client(
-        "k", "s", base_url="https://api.test", retries=3, retry_policy=ResponsePolicy()
-    )
+    client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=ResponsePolicy())
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:

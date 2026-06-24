@@ -15,9 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checking
     from ..sdk import ImednetSDK
 
 
-def records_to_dataframe(
-    records: List[Record], *, flatten: bool = False
-) -> pd.DataFrame:
+def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.DataFrame:
     """Convert a list of :class:`~imednet.models.records.Record` to a DataFrame.
 
     Each record is converted using :meth:`pydantic.BaseModel.model_dump` with

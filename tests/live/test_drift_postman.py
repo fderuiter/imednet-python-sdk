@@ -49,7 +49,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     if not os.path.exists(collection_path):
         pytest.skip("Postman collection not found")
 
-    with open(collection_path, "r") as f:
+    with open(collection_path, 'r') as f:
         data = json.load(f)
 
     # Walk the collection to find endpoints
@@ -78,16 +78,12 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
 
         # Build URL using the SDK's internal path builder
         endpoint_obj = getattr(sdk, endpoint)
-        path = endpoint_obj._get_endpoint_path(
-            study_key if endpoint != "studies" else None
-        )
+        path = endpoint_obj._get_endpoint_path(study_key if endpoint != "studies" else None)
 
         try:
             response = sdk._client.get(path)
             data = response.json()
-            items = (
-                data.get("recordData") if "recordData" in data else data.get("data", [])
-            )
+            items = data.get("recordData") if "recordData" in data else data.get("data", [])
             for item in items:
                 # Validates using the internal model
                 model_cls.from_json(item)

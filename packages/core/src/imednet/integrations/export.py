@@ -46,15 +46,9 @@ def _mask_df(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = "***MASKED***"
 
     try:
-        object_cols = (
-            df.drop(columns=sensitive_cols)
-            .select_dtypes(include=[object, "str"])
-            .columns
-        )
+        object_cols = df.drop(columns=sensitive_cols).select_dtypes(include=[object, "str"]).columns
     except TypeError:
-        object_cols = (
-            df.drop(columns=sensitive_cols).select_dtypes(include=[object]).columns
-        )
+        object_cols = df.drop(columns=sensitive_cols).select_dtypes(include=[object]).columns
 
     for col in object_cols:
         df[col] = df[col].apply(mask_clinical_phi)
@@ -77,9 +71,7 @@ def _to_sql_with_chunking(
     ``_part1``, ``_part2`` and so on.
     """
     if engine.dialect.name == "sqlite" and len(df.columns) > MAX_SQLITE_COLUMNS:
-        for i, start in enumerate(
-            range(0, len(df.columns), MAX_SQLITE_COLUMNS), start=1
-        ):
+        for i, start in enumerate(range(0, len(df.columns), MAX_SQLITE_COLUMNS), start=1):
             chunk = df.iloc[:, start : start + MAX_SQLITE_COLUMNS]
             chunk.to_sql(
                 f"{table}_part{i}",
@@ -103,9 +95,7 @@ def _records_df(
     """Return a DataFrame of study records with duplicate columns removed."""
     if pd is None:
         raise ImportError(
-            (
-                "pandas is required for _records_df. Install with \"pip install 'imednet[export]'\"."
-            )
+            ("pandas is required for _records_df. Install with \"pip install 'imednet[export]'\".")
         )
     df: pd.DataFrame = _record_mapper()(sdk).dataframe(
         study_key,
@@ -266,9 +256,7 @@ def export_to_json(
 
     if hierarchical:
         mapper = _record_mapper()(sdk)
-        data = mapper.build_hierarchy(
-            study_key, use_labels_as_keys=use_labels_as_columns
-        )
+        data = mapper.build_hierarchy(study_key, use_labels_as_keys=use_labels_as_columns)
     else:
         df = _prepare_export_df(
             sdk,
@@ -518,9 +506,7 @@ def export_to_sql_by_form(
             if variable_whitelist is None or v.variable_name in variable_whitelist
         ]
         label_map = {
-            v.variable_name: v.label
-            for v in variables
-            if v.variable_name in variable_keys
+            v.variable_name: v.label for v in variables if v.variable_name in variable_keys
         }
         record_model = mapper._build_record_model(variable_keys, label_map)
         records = mapper._fetch_records(

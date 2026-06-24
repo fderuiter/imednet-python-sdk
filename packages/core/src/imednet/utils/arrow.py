@@ -97,8 +97,7 @@ def _coerce_value(value: Any, target_type: pa.DataType) -> Any:
 
 
 def to_arrow_table(
-    data_records: List[Dict[str, Any] | _ModelDumpable],
-    schema: Optional[pa.Schema] = None,
+    data_records: List[Dict[str, Any] | _ModelDumpable], schema: Optional[pa.Schema] = None
 ) -> pa.Table:
     """Serialize record dictionaries (or Pydantic-like objects) into a ``pyarrow.Table``.
 
@@ -137,14 +136,9 @@ def to_arrow_table(
     arrays: List[pa.Array] = []
     for name in column_names:
         values = [_normalize_value(record.get(name)) for record in records]
-        target_type = (
-            schema.field(name).type if schema is not None else _infer_type(values)
-        )
+        target_type = schema.field(name).type if schema is not None else _infer_type(values)
         arrays.append(
-            pa.array(
-                [_coerce_value(value, target_type) for value in values],
-                type=target_type,
-            )
+            pa.array([_coerce_value(value, target_type) for value in values], type=target_type)
         )
 
     if schema is not None:

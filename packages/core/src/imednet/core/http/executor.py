@@ -135,9 +135,7 @@ class BaseRequestExecutor(ABC):
             return handle_response(response)
         raise RuntimeError("Request failed without response or exception")
 
-    def _process_retry_error(
-        self, e: RetryError, monitor: RequestMonitor
-    ) -> httpx.Response:
+    def _process_retry_error(self, e: RetryError, monitor: RequestMonitor) -> httpx.Response:
         """Handle RetryError, extracting successful result if present, else escalate."""
         # A RetryError means we exhausted retries (which indicates consecutive failures)
         get_global_circuit_breaker().record_failure()
@@ -147,9 +145,7 @@ class BaseRequestExecutor(ABC):
             monitor.on_success(response)
             return handle_response(response)
         monitor.on_retry_error(e)
-        raise RuntimeError(
-            "Request failed without response or exception"
-        )  # Unreachable
+        raise RuntimeError("Request failed without response or exception")  # Unreachable
 
     @staticmethod
     def _parse_retry_after_seconds(response: httpx.Response) -> Optional[float]:

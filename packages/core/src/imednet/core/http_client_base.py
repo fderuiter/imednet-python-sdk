@@ -9,7 +9,11 @@ from typing import Any, Generic, Optional, TypeVar, Union, cast
 import httpx
 
 from imednet.auth.strategy import AuthStrategy
-from imednet.constants import CONTENT_TYPE_JSON, HEADER_ACCEPT, HEADER_CONTENT_TYPE
+from imednet.constants import (
+    CONTENT_TYPE_JSON,
+    HEADER_ACCEPT,
+    HEADER_CONTENT_TYPE,
+)
 from imednet.core.http.executor import BaseRequestExecutor
 
 from .base_client import BaseClient, Tracer

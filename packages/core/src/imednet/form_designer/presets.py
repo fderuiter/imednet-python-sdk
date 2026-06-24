@@ -12,29 +12,20 @@ def build_demo_form(builder: FormBuilder) -> None:
     builder.add_section_header("Demographics")
 
     builder.add_field(
-        type="text",
-        label="Subject Initials",
-        question_name="INIT",
-        required=True,
-        max_length=3,
+        type="text", label="Subject Initials", question_name="INIT", required=True, max_length=3
     )
 
     builder.add_field(type="number", label="Age", question_name="AGE", max_length=3)
 
     builder.add_field(
-        type="radio",
-        label="Gender",
-        question_name="SEX",
-        choices=[("Male", "1"), ("Female", "2")],
+        type="radio", label="Gender", question_name="SEX", choices=[("Male", "1"), ("Female", "2")]
     )
 
     builder.add_section_header("Medical History")
 
     builder.add_group_header("General Information")
 
-    builder.add_field(
-        type="datetime", label="Date of Diagnosis", question_name="DXDATE"
-    )
+    builder.add_field(type="datetime", label="Date of Diagnosis", question_name="DXDATE")
 
     builder.add_field(type="memo", label="Notes", question_name="NOTES")
 
@@ -43,9 +34,7 @@ def build_cv_pathology(builder: FormBuilder) -> None:
     """A CV Pathology sample form."""
     builder.add_section_header("Cardiovascular Pathology")
 
-    builder.add_field(
-        type="text", label="Pathology ID", question_name="PATHID", required=True
-    )
+    builder.add_field(type="text", label="Pathology ID", question_name="PATHID", required=True)
 
     builder.add_group_header("Specimen Details")
 
