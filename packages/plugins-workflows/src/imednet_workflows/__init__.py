@@ -5,7 +5,14 @@ from .chunked_pipeline import ChunkedRecordPipeline, iter_chunks
 from .config_version_control import ConfigVersionStore
 from .duckdb_centralizer import DuckDBIngestionWorkflow
 from .extraction_engine import ExtractionResult, extract_canonical_records
-from .job_poller import AsyncJobPoller, JobPoller, JobTimeoutError
+from .job_poller import (
+    AsyncJobPoller,
+    JobPoller,
+    JobPollSummary,
+    JobProgressCallback,
+    JobStatusEvent,
+    JobTimeoutError,
+)
 from .query_management import QueryManagementWorkflow
 from .record_mapper import RecordMapper
 from .record_update import RecordUpdateWorkflow
@@ -35,6 +42,9 @@ __all__ = [
     "FieldProfile",
     "FormProfile",
     "JobPoller",
+    "JobPollSummary",
+    "JobProgressCallback",
+    "JobStatusEvent",
     "JobTimeoutError",
     "LedgerState",
     "CategoricalNormalizer",
