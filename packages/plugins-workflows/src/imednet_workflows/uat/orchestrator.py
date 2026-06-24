@@ -24,7 +24,7 @@ from .models import (
 from .submission import SubmissionResult
 
 if TYPE_CHECKING:
-    from imednet.spi.facade import ImednetFacade
+    from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
     from imednet_workflows.job_poller import JobPollSummary, JobProgressCallback
 
     from .inspector import StudySnapshot
@@ -212,7 +212,7 @@ class UATWorkflow:
 
     def __init__(
         self,
-        sdk: ImednetFacade,
+        sdk: ImednetFacade | AsyncImednetFacade,
         *,
         batch_size: int = 100,
         poll_interval: float = 10.0,
@@ -221,21 +221,39 @@ class UATWorkflow:
         on_progress: Optional[JobProgressCallback] = None,
     ) -> None:
         """Initialize the UAT workflow orchestrator."""
-        from imednet_workflows.job_poller import JobPoller
-
         from .generator import SyntheticRecordGenerator
         from .inspector import StudySchemaInspector
-        from .submission import BulkRecordSubmissionWorkflow
 
         self._sdk = sdk
         self._inspector = StudySchemaInspector(sdk)
         self._builder = UATSpecificationBuilder()
         self._generator = SyntheticRecordGenerator(seed=seed)
-        self._submitter = BulkRecordSubmissionWorkflow(sdk, batch_size=batch_size)
-        self._poller = JobPoller(get_job=sdk.get_job)
+
+        # Config for lazy initialization of sync components
+        self._batch_size = batch_size
         self._poll_interval = poll_interval
         self._poll_timeout = poll_timeout
         self._on_progress = on_progress
+
+        self._submitter: Any | None = None
+        self._poller: Any | None = None
+
+    def _get_submitter(self) -> Any:
+        if self._submitter is None:
+            from .submission import BulkRecordSubmissionWorkflow
+
+            self._submitter = BulkRecordSubmissionWorkflow(
+                self._sdk, batch_size=self._batch_size  # type: ignore
+            )
+        return self._submitter
+
+    def _get_poller(self) -> Any:
+        if self._poller is None:
+            from imednet_workflows.job_poller import JobPoller
+
+            self._poller = JobPoller(get_job=self._sdk.get_job)  # type: ignore
+
+        return self._poller
 
     def run(
         self,
@@ -248,8 +266,6 @@ class UATWorkflow:
         email_notify: Optional[Union[bool, str]] = None,
     ) -> UATRunResult:
         """Execute the full UAT pipeline and return a UATRunResult."""
-        from imednet_workflows.job_poller import JobPollSummary
-
         started_at = datetime.now(timezone.utc)
         phase_durations: Dict[str, float] = {}
 
@@ -314,11 +330,11 @@ class UATWorkflow:
         email_notify: Optional[Union[bool, str]] = None,
     ) -> SubmissionResult:
         """Execute the two-phase bulk submission."""
-        return self._submitter.submit(study_key, record_sets, email_notify=email_notify)
+        return self._get_submitter().submit(study_key, record_sets, email_notify=email_notify)
 
     def monitor(self, study_key: str, submission_result: SubmissionResult) -> Any:
         """Poll all resulting jobs to completion via JobPoller."""
-        return self._poller.poll_many(
+        return self._get_poller().poll_many(
             study_key,
             submission_result.all_batch_ids,
             interval=self._poll_interval,
