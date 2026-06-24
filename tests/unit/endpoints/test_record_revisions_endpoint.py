@@ -7,9 +7,7 @@ from imednet.errors import NotFoundError
 from imednet.models.record_revisions import RecordRevision
 
 
-def test_list_uses_filters(
-    dummy_client, context, paginator_factory, patch_build_filter
-):
+def test_list_uses_filters(dummy_client, context, paginator_factory, patch_build_filter):
     """TODO: Add docstring."""
     context.set_default_study_key("S1")
     ep = record_revisions.RecordRevisionsEndpoint(dummy_client, context)
@@ -32,9 +30,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
         """TODO: Add docstring."""
         return []
 
-    monkeypatch.setattr(
-        record_revisions.RecordRevisionsEndpoint, "_list_sync", fake_impl
-    )
+    monkeypatch.setattr(record_revisions.RecordRevisionsEndpoint, "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", 1)

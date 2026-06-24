@@ -98,9 +98,7 @@ def _select_variables(variables: list[Variable]) -> Dict[str, Variable]:
 
 def _build_data(variables: Dict[str, Variable]) -> Dict[str, Any]:
     """Map variables to deterministic example values."""
-    return {
-        var.variable_name: value_for(var.variable_type) for var in variables.values()
-    }
+    return {var.variable_name: value_for(var.variable_type) for var in variables.values()}
 
 
 def _redact(record: Dict[str, Any]) -> Dict[str, Any]:
@@ -146,9 +144,7 @@ def _extract_error(sdk: ImednetSDK, status: Any) -> str:
     return status.state
 
 
-def submit_record(
-    sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, timeout: int
-) -> str:
+def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, timeout: int) -> str:
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
     if not job.batch_id:
@@ -218,9 +214,7 @@ def main(argv: list[str] | None = None) -> int:
             if subject_key:
                 scenarios.append({"subject_key": subject_key})
                 if interval_name:
-                    scenarios.append(
-                        {"subject_key": subject_key, "interval_name": interval_name}
-                    )
+                    scenarios.append({"subject_key": subject_key, "interval_name": interval_name})
             if not scenarios:
                 # Study and form exist but no write identifiers are available.
                 # Per the charter this is a skip, not a failure.

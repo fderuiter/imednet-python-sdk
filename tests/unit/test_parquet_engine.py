@@ -129,9 +129,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_defaults(
         ("study_key", ["STUDY_A", "STUDY_A"]),
         ("form_key", ["DEMOGRAPHICS", "DEMOGRAPHICS"]),
     ]
-    files = list(
-        (tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS").glob("**/*.parquet")
-    )
+    files = list((tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS").glob("**/*.parquet"))
     assert len(files) >= 1
 
 
@@ -213,9 +211,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_schema_drift_duckdb(
         form_key="DEMOGRAPHICS",
     )
 
-    files = sorted(
-        (tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS").glob("**/*.parquet")
-    )
+    files = sorted((tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS").glob("**/*.parquet"))
     assert len(files) == 2
 
     metadata = parquet_module.read_metadata(str(files[0])).metadata

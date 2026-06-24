@@ -123,9 +123,7 @@ def test_flatten_mixed() -> None:
 def test_commit_config_returns_sha256(store: ConfigVersionStore) -> None:
     """TODO: Add docstring."""
     config = _make_config()
-    commit_id = store.commit_config(
-        "STUDY-01", config, user="alice", desc="Initial commit"
-    )
+    commit_id = store.commit_config("STUDY-01", config, user="alice", desc="Initial commit")
     assert len(commit_id) == 64
     assert commit_id.islower()
 
@@ -147,9 +145,7 @@ def test_commit_config_different_content_succeeds(store: ConfigVersionStore) -> 
     assert id_a != id_b
 
 
-def test_commit_config_persists_metadata(
-    store: ConfigVersionStore, tmp_path: Path
-) -> None:
+def test_commit_config_persists_metadata(store: ConfigVersionStore, tmp_path: Path) -> None:
     """TODO: Add docstring."""
     config = _make_config()
     commit_id = store.commit_config("STUDY-01", config, user="bob", desc="Test commit")
@@ -327,9 +323,7 @@ def test_commit_content_hash_matches(store: ConfigVersionStore) -> None:
     config = _make_config()
     commit_id = store.commit_config("STUDY-01", config, user="alice", desc="integrity")
 
-    config_json = json.dumps(
-        config.model_dump(mode="json", by_alias=True), sort_keys=True
-    )
+    config_json = json.dumps(config.model_dump(mode="json", by_alias=True), sort_keys=True)
     expected_id = _sha256_of(config_json)
     assert commit_id == expected_id
 

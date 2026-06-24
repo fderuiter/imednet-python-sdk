@@ -232,9 +232,7 @@ def _scan_schema(sdk: ImednetFacade, study_key: str) -> dict[str, Any]:
                 "record_id": record.record_id,
                 "form_key": record.form_key,
                 "subject_key": record.subject_key,
-                "record_data": (
-                    record.record_data if isinstance(record.record_data, dict) else {}
-                ),
+                "record_data": record.record_data if isinstance(record.record_data, dict) else {},
             }
         )
 
@@ -256,9 +254,7 @@ def _selected_forms(schema: dict[str, Any]) -> list[str]:
         st.session_state.get("wizard_target_form_pd"),
         st.session_state.get("wizard_target_form_dd"),
     ]
-    selected_forms = [
-        cast(str, value) for value in selected if isinstance(value, str) and value
-    ]
+    selected_forms = [cast(str, value) for value in selected if isinstance(value, str) and value]
     if selected_forms:
         return sorted(set(selected_forms))
     return [cast(str, form["form_key"]) for form in schema.get("forms", [])]
@@ -354,25 +350,23 @@ def _step_field_mapping() -> None:
 
     for domain, target_field, label in _CANONICAL_FIELDS:
         mapping_key = f"{domain}.{target_field}"
-        existing = _existing_mapping_index(
-            config, domain=domain, target_field=target_field
-        )
+        existing = _existing_mapping_index(config, domain=domain, target_field=target_field)
 
         st.markdown(f"**{mapping_key}** — {label}")
         col_form, col_field, col_fallback = st.columns([2, 2, 1.5])
 
         form_options = ["", *selected_forms]
         auto_form = (
-            cast(
-                str, st.session_state.get(f"wizard_target_form_{domain.lower()}") or ""
-            )
+            cast(str, st.session_state.get(f"wizard_target_form_{domain.lower()}") or "")
             if target_field == "subject_key"
             else ""
         )
         default_form = (
             existing.source_form_key
             if existing and existing.source_form_key in form_options
-            else auto_form if auto_form in form_options else ""
+            else auto_form
+            if auto_form in form_options
+            else ""
         )
         selected_form = col_form.selectbox(
             "Source form",
@@ -456,18 +450,14 @@ def _lookup_unique_values(
 def _step_terminology() -> None:
     """TODO: Add docstring."""
     st.subheader("3. Categorical Terminology Normalization")
-    st.markdown(
-        "Teach the system how raw categorical values should normalize to canonical values."
-    )
+    st.markdown("Teach the system how raw categorical values should normalize to canonical values.")
 
     config = _get_mapping_config()
     if not config.mappings:
         st.info("Add field mappings first in Step 2.")
         return
 
-    mapping_options = [
-        f"{mapping.domain}.{mapping.target_field}" for mapping in config.mappings
-    ]
+    mapping_options = [f"{mapping.domain}.{mapping.target_field}" for mapping in config.mappings]
     selected_mapping = st.selectbox(
         "Mapped target field",
         options=mapping_options,
@@ -502,9 +492,7 @@ def _step_terminology() -> None:
     if col_undo.button("Undo last snapshot", key="wizard_undo_snapshot"):
         snapshots = cast(list[dict[str, Any]], st.session_state[_KEY_HISTORY])
         if snapshots:
-            st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration.from_json(
-                snapshots.pop()
-            )
+            st.session_state[_KEY_MAPPING_CONFIG] = StudyConfiguration.from_json(snapshots.pop())
             st.success("Reverted to previous configuration snapshot.")
         else:
             st.warning("No snapshots available to undo.")
@@ -534,18 +522,14 @@ def _build_preview_rows(
             "subject_key": record.get("subject_key"),
         }
         record_data = (
-            record.get("record_data")
-            if isinstance(record.get("record_data"), dict)
-            else {}
+            record.get("record_data") if isinstance(record.get("record_data"), dict) else {}
         )
         for mapping in config.mappings:
             if mapping.source_form_key != record.get("form_key"):
                 continue
             source_value = mapping.fallback_value
             if isinstance(record_data, dict):
-                source_value = record_data.get(
-                    mapping.source_variable_name, mapping.fallback_value
-                )
+                source_value = record_data.get(mapping.source_variable_name, mapping.fallback_value)
             lookup_key = f"{mapping.domain}.{mapping.target_field}"
             row[lookup_key] = _apply_lookup(config, lookup_key, source_value)
         rows.append(row)
@@ -555,18 +539,14 @@ def _build_preview_rows(
 def _step_preview_and_layout() -> None:
     """TODO: Add docstring."""
     st.subheader("4. Layout & Visual Configuration")
-    st.markdown(
-        "Configure dashboard widgets and preview mapped values for the first five records."
-    )
+    st.markdown("Configure dashboard widgets and preview mapped values for the first five records.")
 
     config = _get_mapping_config()
     if not config.mappings:
         st.info("Create mappings in Step 2 before previewing.")
         return
 
-    default_types = [
-        widget.type for widget in config.widgets if widget.type in _WIDGET_TYPES
-    ] or [
+    default_types = [widget.type for widget in config.widgets if widget.type in _WIDGET_TYPES] or [
         "kpi_card",
         "bar_chart",
     ]
@@ -576,9 +556,7 @@ def _step_preview_and_layout() -> None:
         default=default_types,
         key="wizard_widget_types",
     )
-    layout_cols = st.slider(
-        "Widget column width", min_value=3, max_value=12, value=6, step=1
-    )
+    layout_cols = st.slider("Widget column width", min_value=3, max_value=12, value=6, step=1)
     config.widgets = [
         WidgetConfig(
             widgetId=f"widget-{index + 1}",
@@ -597,9 +575,7 @@ def _step_preview_and_layout() -> None:
     preview_rows = _build_preview_rows(config, sample_records)
     report = {
         "mapped_fields": len(config.mappings),
-        "terminology_rules": sum(
-            len(mapping) for mapping in config.terminology_lookups.values()
-        ),
+        "terminology_rules": sum(len(mapping) for mapping in config.terminology_lookups.values()),
         "preview_rows": len(preview_rows),
         "unmapped_canonical_fields": len(_CANONICAL_FIELDS) - len(config.mappings),
     }
@@ -657,9 +633,7 @@ def _step_export(study_key: str) -> None:
         except Exception as e:
             st.error(f"Unable to save configuration: {e}")
             return
-        st.success(
-            "Successfully saved to managed database, serving as the single source of truth."
-        )
+        st.success("Successfully saved to managed database, serving as the single source of truth.")
 
 
 def render_page() -> None:
@@ -669,9 +643,7 @@ def render_page() -> None:
         _render_design_specification()
 
     if not st.session_state.get("_imednet_connected"):
-        st.info(
-            "Please connect from the sidebar to configure and publish a study mapping."
-        )
+        st.info("Please connect from the sidebar to configure and publish a study mapping.")
         return
 
     try:
@@ -684,9 +656,7 @@ def render_page() -> None:
     _initialise_state(study_key)
     current_step = int(st.session_state[_KEY_WIZARD_STEP])
 
-    st.caption(
-        f"Step {current_step} of {len(_WIZARD_STEPS)} — {_WIZARD_STEPS[current_step - 1]}"
-    )
+    st.caption(f"Step {current_step} of {len(_WIZARD_STEPS)} — {_WIZARD_STEPS[current_step - 1]}")
     st.progress(current_step / len(_WIZARD_STEPS))
 
     nav_columns = st.columns(len(_WIZARD_STEPS))

@@ -74,9 +74,7 @@ class CachedRecordsLoader:
             retry_attempts: Number of API retry attempts.
         """
         self._sdk = sdk
-        base_dir = (
-            DEFAULT_CACHE_DIR if cache_dir is None else Path(cache_dir).expanduser()
-        )
+        base_dir = DEFAULT_CACHE_DIR if cache_dir is None else Path(cache_dir).expanduser()
         self.db_path = base_dir / database_name
         self._retry_attempts = retry_attempts
         self._initialise_cache()
@@ -181,9 +179,7 @@ class CachedRecordsLoader:
             finally:
                 conn.close()
 
-    def _get_high_water_mark(
-        self, conn: sqlite3.Connection, study_key: str
-    ) -> str | None:
+    def _get_high_water_mark(self, conn: sqlite3.Connection, study_key: str) -> str | None:
         """Get the latest modification timestamp from the local cache for a study."""
         row = conn.execute(
             "SELECT MAX(date_modified) AS max_date_modified FROM record_cache WHERE study_key = ?",
@@ -193,9 +189,7 @@ class CachedRecordsLoader:
             return None
         return cast(str | None, row["max_date_modified"])
 
-    def _fetch_delta_records(
-        self, study_key: str, high_water_mark: str | None
-    ) -> list[Record]:
+    def _fetch_delta_records(self, study_key: str, high_water_mark: str | None) -> list[Record]:
         """Fetch records from the API that have been modified since the high water mark."""
         if not high_water_mark:
             return self._list_records(study_key=study_key, record_data_filter=None)
@@ -210,9 +204,7 @@ class CachedRecordsLoader:
 
     def _fetch_active_record_ids(self, study_key: str) -> set[int]:
         """Fetch the set of all non-deleted record IDs for a study from the API."""
-        records = self._list_records(
-            study_key=study_key, record_data_filter=None, deleted=False
-        )
+        records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
         return {record.record_id for record in records}  # type: ignore
 
     def _list_records(self, **filters: Any) -> list[Record]:
@@ -251,9 +243,7 @@ class CachedRecordsLoader:
             ),
         )
 
-    def _upsert_records(
-        self, conn: sqlite3.Connection, records: Iterable[Record]
-    ) -> None:
+    def _upsert_records(self, conn: sqlite3.Connection, records: Iterable[Record]) -> None:
         """Insert or update records in the local SQLite cache."""
         payloads = [
             (
@@ -265,9 +255,7 @@ class CachedRecordsLoader:
                     if hasattr(record.date_modified, "isoformat")
                     else str(record.date_modified)
                 ),
-                json.dumps(
-                    record.model_dump(mode="json", by_alias=True), sort_keys=True
-                ),
+                json.dumps(record.model_dump(mode="json", by_alias=True), sort_keys=True),
             )
             for record in records
         ]

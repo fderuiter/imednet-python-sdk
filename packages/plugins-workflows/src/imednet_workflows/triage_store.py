@@ -17,13 +17,7 @@ from imednet.spi.models import TriageAnnotation, TriageHistoryEntry, TriageItem,
 
 _SAFE_SQL_IDENTIFIER = re.compile(r"^[A-Za-z0-9._:-]+$")
 _SENSITIVE_QUERY_KEYS = {"api_key", "password", "secret", "security_key", "token"}
-_SENSITIVE_PATTERN_KEYS = (
-    "api[_-]?key",
-    "password",
-    "secret",
-    "security[_-]?key",
-    "token",
-)
+_SENSITIVE_PATTERN_KEYS = ("api[_-]?key", "password", "secret", "security[_-]?key", "token")
 _SENSITIVE_QUOTED_PATTERN = re.compile(
     rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"'])(.*?)\3"
 )
@@ -190,9 +184,7 @@ class TriageStore:
                 ),
             )
 
-            conn.execute(
-                "DELETE FROM triage_annotations WHERE item_id = ?", (item.item_id,)
-            )
+            conn.execute("DELETE FROM triage_annotations WHERE item_id = ?", (item.item_id,))
             conn.executemany(
                 """
                 INSERT INTO triage_annotations (annotation_id, item_id, user_id, comment, timestamp)
@@ -210,9 +202,7 @@ class TriageStore:
                 ],
             )
 
-            conn.execute(
-                "DELETE FROM triage_history WHERE item_id = ?", (item.item_id,)
-            )
+            conn.execute("DELETE FROM triage_history WHERE item_id = ?", (item.item_id,))
             conn.executemany(
                 """
                 INSERT INTO triage_history (
@@ -262,9 +252,7 @@ class TriageStore:
                 history=history,
             )
 
-    def get_queue(
-        self, study_key: str, status: Optional[TriageStatus] = None
-    ) -> list[TriageItem]:
+    def get_queue(self, study_key: str, status: Optional[TriageStatus] = None) -> list[TriageItem]:
         """Fetch the triage queue for a study, optionally filtered by status."""
         with self._connection() as conn:
             if status is None:
@@ -292,11 +280,7 @@ class TriageStore:
             if not item_ids:
                 return []
             invalid_item_id = next(
-                (
-                    item_id
-                    for item_id in item_ids
-                    if not _SAFE_SQL_IDENTIFIER.fullmatch(item_id)
-                ),
+                (item_id for item_id in item_ids if not _SAFE_SQL_IDENTIFIER.fullmatch(item_id)),
                 None,
             )
             if invalid_item_id is not None:
@@ -339,9 +323,7 @@ class TriageStore:
                         annotation_id=str(annotation_row["annotation_id"]),
                         user_id=str(annotation_row["user_id"]),
                         comment=str(annotation_row["comment"]),
-                        timestamp=datetime.fromisoformat(
-                            str(annotation_row["timestamp"])
-                        ),
+                        timestamp=datetime.fromisoformat(str(annotation_row["timestamp"])),
                     )
                 )
 
@@ -357,9 +339,7 @@ class TriageStore:
                         to_status=TriageStatus(str(history_row["to_status"])),
                         user_id=str(history_row["user_id"]),
                         comment=(
-                            str(history_row["comment"]).strip()
-                            if history_row["comment"]
-                            else None
+                            str(history_row["comment"]).strip() if history_row["comment"] else None
                         ),
                         timestamp=datetime.fromisoformat(str(history_row["timestamp"])),
                     )
@@ -487,9 +467,7 @@ class TriageStore:
             return None
         return datetime.fromisoformat(str(row["updated_at"]))
 
-    def _get_annotations(
-        self, conn: sqlite3.Connection, item_id: str
-    ) -> list[TriageAnnotation]:
+    def _get_annotations(self, conn: sqlite3.Connection, item_id: str) -> list[TriageAnnotation]:
         """Internal helper to fetch annotations for an item."""
         rows = conn.execute(
             """
@@ -510,9 +488,7 @@ class TriageStore:
             for row in rows
         ]
 
-    def _get_history(
-        self, conn: sqlite3.Connection, item_id: str
-    ) -> list[TriageHistoryEntry]:
+    def _get_history(self, conn: sqlite3.Connection, item_id: str) -> list[TriageHistoryEntry]:
         """Internal helper to fetch history entries for an item."""
         rows = conn.execute(
             """
@@ -538,8 +514,7 @@ class TriageStore:
     def _migrate_schema(self, conn: sqlite3.Connection) -> None:
         """Perform schema migrations to reach the latest version."""
         columns = {
-            str(row["name"])
-            for row in conn.execute("PRAGMA table_info(triage_items)").fetchall()
+            str(row["name"]) for row in conn.execute("PRAGMA table_info(triage_items)").fetchall()
         }
         now = datetime.now(timezone.utc).isoformat()
         if "created_at" not in columns:
@@ -582,9 +557,7 @@ class TriageStore:
             ],
             doseq=True,
         )
-        return urlunsplit(
-            (split.scheme, netloc, split.path, redacted_query, split.fragment)
-        )
+        return urlunsplit((split.scheme, netloc, split.path, redacted_query, split.fragment))
 
     def _redact_error_text(self, message: str) -> str:
         """Redact sensitive information from an error message."""

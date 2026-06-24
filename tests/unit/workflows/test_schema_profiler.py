@@ -14,9 +14,7 @@ from imednet_workflows.schema_profiler import SchemaProfiler
 def test_schema_profiler_builds_form_and_field_profiles() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.get_forms.return_value = [
-        Form(form_key="AE", form_name="Adverse Events", form_id=10)
-    ]
+    sdk.get_forms.return_value = [Form(form_key="AE", form_name="Adverse Events", form_id=10)]
     sdk.get_variables.return_value = [
         Variable(
             form_id=10,

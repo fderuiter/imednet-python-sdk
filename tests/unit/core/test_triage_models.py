@@ -7,7 +7,12 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from imednet.models.triage import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
+from imednet.models.triage import (
+    TriageAnnotation,
+    TriageHistoryEntry,
+    TriageItem,
+    TriageStatus,
+)
 
 
 def test_triage_models_parse_and_strip_whitespace() -> None:

@@ -27,9 +27,7 @@ def main():
         study_name="Demo Study",
         global_date_value=date.today(),
         subject_specs=[
-            UATSubjectSpec(
-                site_name="North Site", subject_count=5, subject_key_prefix="UAT-"
-            )
+            UATSubjectSpec(site_name="North Site", subject_count=5, subject_key_prefix="UAT-")
         ],
         form_specs=[
             UATFormSpec(

@@ -10,14 +10,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-APP_PATH = (
-    REPO_ROOT
-    / "packages"
-    / "plugins-streamlit"
-    / "src"
-    / "imednet_streamlit"
-    / "app.py"
-)
+APP_PATH = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit" / "app.py"
 
 
 @pytest.fixture
@@ -25,8 +18,7 @@ def mock_auth_env():
     """Set up mocks for authentication and studies."""
     with (
         patch(
-            "imednet_streamlit.auth.get_provisioned_studies",
-            return_value=["STUDY-A", "STUDY-B"],
+            "imednet_streamlit.auth.get_provisioned_studies", return_value=["STUDY-A", "STUDY-B"]
         ),
         patch(
             "imednet_streamlit.auth.get_tenant_credentials",
@@ -106,18 +98,13 @@ def test_scenario_3_study_switch_disconnects(mock_auth_env) -> None:
 
 def test_scenario_4_cache_isolation(mock_auth_env) -> None:
     """Scenario 4: cache results are isolated (implicitly via SDK/study parameters)."""
-    with (
-        patch("imednet_streamlit.auth.get_sdk"),
-        patch("imednet_streamlit.auth.get_study_key"),
-    ):
+    with patch("imednet_streamlit.auth.get_sdk"), patch("imednet_streamlit.auth.get_study_key"):
         from imednet_streamlit.pages.queries import _fetch_queries
 
     mock_sdk_a = MagicMock()
     mock_sdk_b = MagicMock()
 
-    with patch(
-        "imednet_workflows.query_management.QueryManagementWorkflow"
-    ) as mock_workflow_cls:
+    with patch("imednet_workflows.query_management.QueryManagementWorkflow") as mock_workflow_cls:
         _fetch_queries(mock_sdk_a, "STUDY-A")
         assert mock_workflow_cls.call_count == 1
 
@@ -163,9 +150,7 @@ def test_scenario_5_error_recovery(mock_auth_env) -> None:
 
     # Should now be connected
     assert at.session_state["_imednet_connected"] is True
-    all_success_values = [s.value for s in at.success] + [
-        s.value for s in at.sidebar.success
-    ]
+    all_success_values = [s.value for s in at.success] + [s.value for s in at.sidebar.success]
     assert any("Connected ✓" in v for v in all_success_values)
 
 

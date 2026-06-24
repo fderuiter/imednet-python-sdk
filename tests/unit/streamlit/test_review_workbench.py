@@ -80,9 +80,7 @@ class _FakeStreamlit:
         """TODO: Add docstring."""
         pass
 
-    def columns(
-        self, spec: int | list[Any], **kwargs: Any
-    ) -> list[_FakeContextManager]:
+    def columns(self, spec: int | list[Any], **kwargs: Any) -> list[_FakeContextManager]:
         """TODO: Add docstring."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager(self) for _ in range(count)]
@@ -103,9 +101,7 @@ class _FakeStreamlit:
         """TODO: Add docstring."""
         self.frames.append(df)
 
-    def selectbox(
-        self, label: str, options: list[str], index: int = 0, **kwargs: Any
-    ) -> str:
+    def selectbox(self, label: str, options: list[str], index: int = 0, **kwargs: Any) -> str:
         """TODO: Add docstring."""
         return self.selectbox_values.get(label, options[index])
 
@@ -124,9 +120,7 @@ class _FakeStreamlit:
     def button(self, label: str, **kwargs: Any) -> bool:
         """TODO: Add docstring."""
         key = kwargs.get("key")
-        return label in self.button_presses or (
-            isinstance(key, str) and key in self.button_presses
-        )
+        return label in self.button_presses or (isinstance(key, str) and key in self.button_presses)
 
     def text_area(self, label: str, **kwargs: Any) -> str:
         """TODO: Add docstring."""

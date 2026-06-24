@@ -91,9 +91,7 @@ def test_default_retry_policy_with_no_result_or_exception():
 
 
 @pytest.mark.parametrize("method", ["POST", "PATCH"])
-def test_default_retry_policy_does_not_retry_non_idempotent_on_network_error(
-    method: str,
-):
+def test_default_retry_policy_does_not_retry_non_idempotent_on_network_error(method: str):
     """TODO: Add docstring."""
     policy = DefaultRetryPolicy()
 
@@ -106,9 +104,7 @@ def test_default_retry_policy_does_not_retry_non_idempotent_on_network_error(
 
 
 @pytest.mark.parametrize("method", ["POST", "PATCH"])
-def test_default_retry_policy_does_not_retry_non_idempotent_on_server_error(
-    method: str,
-):
+def test_default_retry_policy_does_not_retry_non_idempotent_on_server_error(method: str):
     """TODO: Add docstring."""
     policy = DefaultRetryPolicy()
 

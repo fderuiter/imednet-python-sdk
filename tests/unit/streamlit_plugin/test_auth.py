@@ -49,11 +49,7 @@ class _FakeStreamlit:
         self.info_messages: list[str] = []
         self.cache_data = _FakeCacheData()
 
-        self.user = (
-            {"email": "test@enterprise.com", "is_logged_in": logged_in}
-            if logged_in
-            else {}
-        )
+        self.user = {"email": "test@enterprise.com", "is_logged_in": logged_in} if logged_in else {}
         self.login_called = False
         self._selected_study = selected_study
 
@@ -67,9 +63,7 @@ class _FakeStreamlit:
         self.session_state[key] = ""
         return ""
 
-    def selectbox(
-        self, label: str, options: list[str], key: str, **kwargs: object
-    ) -> str:
+    def selectbox(self, label: str, options: list[str], key: str, **kwargs: object) -> str:
         """TODO: Add docstring."""
         self.session_state[key] = self._selected_study
         return self._selected_study
@@ -103,9 +97,7 @@ class _FakeStreamlit:
         self.login_called = True
 
 
-def test_render_auth_sidebar_not_connected_returns_false(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_render_auth_sidebar_not_connected_returns_false(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
@@ -118,9 +110,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """TODO: Add docstring."""
-    fake_st = _FakeStreamlit(
-        logged_in=True, connect_clicked=True, selected_study="STUDY"
-    )
+    fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True, selected_study="STUDY")
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
     monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec"))
@@ -141,9 +131,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     assert auth.get_study_key() == "STUDY"
 
 
-def test_get_sdk_before_connect_raises_runtime_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
@@ -152,9 +140,7 @@ def test_get_sdk_before_connect_raises_runtime_error(
         auth.get_sdk()
 
 
-def test_clear_credentials_removes_all_session_keys(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     fake_st.session_state.update(

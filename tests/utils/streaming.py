@@ -3,7 +3,7 @@
 import asyncio
 from typing import Any, AsyncIterator, Generic, Iterable, Iterator, List, TypeVar, Union, overload
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class StreamingMockWrapper(Generic[T]):
@@ -132,8 +132,6 @@ def unified_paginator_factory(monkeypatch, module, items, is_async=False):
             if issubclass(obj, SyncListGetEndpoint):
                 monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
             if issubclass(obj, AsyncListGetEndpoint):
-                monkeypatch.setattr(
-                    obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False
-                )
+                monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
 
     return captured

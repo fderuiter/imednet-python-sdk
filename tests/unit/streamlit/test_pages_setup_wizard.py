@@ -11,9 +11,7 @@ from typing import Any
 from imednet.models.study_config import StudyConfiguration
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PACKAGE_ROOT = (
-    REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
-)
+PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
 
 
 class _FakeColumn:
@@ -155,9 +153,7 @@ class _FakeStreamlit:
         if key in self.multiselect_values:
             return self.multiselect_values[key]
         default = kwargs.get("default", [])
-        invalid_defaults = [
-            str(value) for value in default if str(value) not in options
-        ]
+        invalid_defaults = [str(value) for value in default if str(value) not in options]
         if invalid_defaults:
             raise ValueError(f"Invalid default values: {invalid_defaults}")
         return [str(value) for value in default]
@@ -510,12 +506,7 @@ def test_setup_wizard_preview_filters_invalid_saved_widget_types() -> None:
                 }
             ],
             "widgets": [
-                {
-                    "widgetId": "widget-1",
-                    "type": "pie_chart",
-                    "title": "Pie",
-                    "domain": "AE",
-                }
+                {"widgetId": "widget-1", "type": "pie_chart", "title": "Pie", "domain": "AE"}
             ],
         }
     )
@@ -534,9 +525,7 @@ def test_setup_wizard_preview_filters_invalid_saved_widget_types() -> None:
     _run_setup_wizard(fake_st)
 
     assert fake_st.session_state["validation_report"]["preview_rows"] == 1
-    assert [
-        widget.type for widget in fake_st.session_state["mapping_config"].widgets
-    ] == [
+    assert [widget.type for widget in fake_st.session_state["mapping_config"].widgets] == [
         "kpi_card",
         "bar_chart",
     ]
@@ -560,8 +549,7 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
 
     mock_store = MockStore()
     monkeypatch.setattr(
-        "imednet_workflows.config_version_control.ConfigVersionStore",
-        lambda: mock_store,
+        "imednet_workflows.config_version_control.ConfigVersionStore", lambda: mock_store
     )
 
     _run_setup_wizard(fake_st)
@@ -585,8 +573,7 @@ def test_setup_wizard_save_managed_reports_error(monkeypatch: Any) -> None:
             raise OSError("boom")
 
     monkeypatch.setattr(
-        "imednet_workflows.config_version_control.ConfigVersionStore",
-        lambda: MockStore(),
+        "imednet_workflows.config_version_control.ConfigVersionStore", lambda: MockStore()
     )
 
     _run_setup_wizard(fake_st)
@@ -604,10 +591,7 @@ def test_setup_wizard_shows_prerequisite_info_messages() -> None:
     step_two.session_state["wizard_step"] = 2
     step_two.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
     _run_setup_wizard(step_two)
-    assert (
-        step_two.info_calls[-1]
-        == "No profiled forms available yet. Complete Step 1 first."
-    )
+    assert step_two.info_calls[-1] == "No profiled forms available yet. Complete Step 1 first."
 
     step_three = _FakeStreamlit()
     step_three.session_state["wizard_step"] = 3

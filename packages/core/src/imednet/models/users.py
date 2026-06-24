@@ -25,7 +25,7 @@ class Role(JsonModel):
     date_modified: str | None = Field(default=None, alias="dateModified")
 
 
-Role = ModelEngine.get_model("Role", Role)
+Role = ModelEngine.get_model('Role', Role)
 
 
 class User(JsonModel):
@@ -41,4 +41,4 @@ class User(JsonModel):
         return " ".join(filter(None, (self.first_name, self.last_name)))
 
 
-User = ModelEngine.get_model("User", User)
+User = ModelEngine.get_model('User', User)

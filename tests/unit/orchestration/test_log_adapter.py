@@ -12,9 +12,7 @@ from imednet.orchestration import StudyContextLogAdapter, make_study_logger
 
 def test_process_injects_study_key() -> None:
     """TODO: Add docstring."""
-    adapter = StudyContextLogAdapter(
-        logging.getLogger("tests.orchestration"), "PROT-01"
-    )
+    adapter = StudyContextLogAdapter(logging.getLogger("tests.orchestration"), "PROT-01")
 
     _, kwargs = adapter.process("msg", {})
 
@@ -24,9 +22,7 @@ def test_process_injects_study_key() -> None:
 
 def test_process_preserves_caller_extra() -> None:
     """TODO: Add docstring."""
-    adapter = StudyContextLogAdapter(
-        logging.getLogger("tests.orchestration"), "PROT-01"
-    )
+    adapter = StudyContextLogAdapter(logging.getLogger("tests.orchestration"), "PROT-01")
     input_kwargs: dict[str, Any] = {"extra": {"custom": "value"}}
 
     _, kwargs = adapter.process("msg", input_kwargs)
@@ -38,9 +34,7 @@ def test_process_preserves_caller_extra() -> None:
 
 def test_study_key_property() -> None:
     """TODO: Add docstring."""
-    adapter = StudyContextLogAdapter(
-        logging.getLogger("tests.orchestration"), "PROT-01"
-    )
+    adapter = StudyContextLogAdapter(logging.getLogger("tests.orchestration"), "PROT-01")
 
     assert adapter.study_key == "PROT-01"
 
@@ -57,9 +51,5 @@ def test_log_emission_includes_study_key(caplog: pytest.LogCaptureFixture) -> No
     with caplog.at_level(logging.INFO, logger="imednet.orchestration"):
         adapter.info("adapter-log")
 
-    assert any(
-        getattr(record, "study_key", None) == "PROT-01" for record in caplog.records
-    )
-    assert any(
-        getattr(record, "studyKey", None) == "PROT-01" for record in caplog.records
-    )
+    assert any(getattr(record, "study_key", None) == "PROT-01" for record in caplog.records)
+    assert any(getattr(record, "studyKey", None) == "PROT-01" for record in caplog.records)

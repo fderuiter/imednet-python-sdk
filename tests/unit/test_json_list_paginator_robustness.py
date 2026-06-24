@@ -41,9 +41,7 @@ def test_json_list_paginator_raises_on_dict():
     instead of the expected list.
     """
     # Simulate an error response or unexpected object structure
-    client = MockClient(
-        {"error": "Something went wrong", "details": "Unexpected format"}
-    )
+    client = MockClient({"error": "Something went wrong", "details": "Unexpected format"})
     paginator = JsonListPaginator(client, "/path")
 
     # Currently this fails (returns empty list), we want it to raise TypeError

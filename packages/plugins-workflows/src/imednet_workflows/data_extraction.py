@@ -22,15 +22,9 @@ class DataExtractionWorkflow:
     def extract_records_by_criteria(
         self,
         study_key: str,
-        record_filter: Optional[
-            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
-        ] = None,
-        subject_filter: Optional[
-            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
-        ] = None,
-        visit_filter: Optional[
-            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
-        ] = None,
+        record_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        subject_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        visit_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
         **other_filters: Any,
     ) -> List[Record]:
         """Extracts records based on criteria spanning subjects, visits, and records.

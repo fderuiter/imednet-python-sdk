@@ -36,9 +36,7 @@ class GeneratedRecordSet(ImednetBaseModel):
     test_type: RecordTestType
     payloads: List[Dict[str, Any]]  # ready to pass to records.create()
     subject_keys: List[str]  # subject keys that were used/will be used
-    warnings: List[str] = Field(
-        default_factory=list
-    )  # non-fatal issues (skipped vars, etc.)
+    warnings: List[str] = Field(default_factory=list)  # non-fatal issues (skipped vars, etc.)
 
 
 class SyntheticRecordGenerator:
@@ -95,21 +93,15 @@ class SyntheticRecordGenerator:
 
         # Phase 1: Enrollment/registration forms
         for form_spec in spec.forms_by_type(RecordTestType.REGISTER_SUBJECT):
-            results.append(
-                self._generate_registration_set(spec, form_spec, snapshot, subject_pool)
-            )
+            results.append(self._generate_registration_set(spec, form_spec, snapshot, subject_pool))
 
         # Phase 2: Scheduled forms
         for form_spec in spec.forms_by_type(RecordTestType.UPDATE_SCHEDULED_RECORD):
-            results.append(
-                self._generate_scheduled_set(spec, form_spec, snapshot, subject_pool)
-            )
+            results.append(self._generate_scheduled_set(spec, form_spec, snapshot, subject_pool))
 
         # Phase 3: Unscheduled forms
         for form_spec in spec.forms_by_type(RecordTestType.CREATE_NEW_RECORD):
-            results.append(
-                self._generate_unscheduled_set(spec, form_spec, snapshot, subject_pool)
-            )
+            results.append(self._generate_unscheduled_set(spec, form_spec, snapshot, subject_pool))
 
         return results
 
@@ -122,9 +114,7 @@ class SyntheticRecordGenerator:
             pool = ["UAT-TEST-001"]
         return pool
 
-    def _generate_value(
-        self, var_spec: UATVariableSpec, spec: UATSpecification
-    ) -> Optional[str]:
+    def _generate_value(self, var_spec: UATVariableSpec, spec: UATSpecification) -> Optional[str]:
         """Generate a single value for a variable according to its strategy."""
         if var_spec.strategy == VariableTestStrategy.SKIP:
             return None
@@ -133,9 +123,7 @@ class SyntheticRecordGenerator:
 
         return self._synthesize_value(var_spec, spec)
 
-    def _synthesize_value(
-        self, var_spec: UATVariableSpec, spec: UATSpecification
-    ) -> str:
+    def _synthesize_value(self, var_spec: UATVariableSpec, spec: UATSpecification) -> str:
         v_type = var_spec.variable_type
 
         if v_type == "Text":
@@ -193,9 +181,7 @@ class SyntheticRecordGenerator:
     ) -> tuple[List[Dict[str, Any]], List[str], List[str]]:
         warnings = []
         coded_all_vars = [
-            v
-            for v in form_spec.variables
-            if v.strategy == VariableTestStrategy.CODED_ALL
+            v for v in form_spec.variables if v.strategy == VariableTestStrategy.CODED_ALL
         ]
 
         if len(coded_all_vars) > 1:
@@ -223,9 +209,7 @@ class SyntheticRecordGenerator:
                 payloads.append(data)
             return payloads, warnings, used_subjects
 
-        if any(
-            v.strategy == VariableTestStrategy.BOUNDARY for v in form_spec.variables
-        ):
+        if any(v.strategy == VariableTestStrategy.BOUNDARY for v in form_spec.variables):
             payloads = []
             used_subjects = []
             # Min boundary
@@ -237,9 +221,7 @@ class SyntheticRecordGenerator:
                     "Float",
                     "Decimal",
                 ):
-                    data_min[v.variable_name] = (
-                        str(v.min_value) if v.min_value is not None else "1"
-                    )
+                    data_min[v.variable_name] = str(v.min_value) if v.min_value is not None else "1"
                 else:
                     val = self._generate_value(v, spec)
                     if val is not None:
@@ -296,9 +278,7 @@ class SyntheticRecordGenerator:
             subj_spec.site_name
             if subj_spec
             else (
-                snapshot.active_sites()[0].site_name
-                if snapshot.active_sites()
-                else "Default Site"
+                snapshot.active_sites()[0].site_name if snapshot.active_sites() else "Default Site"
             )
         )
 
@@ -362,11 +342,7 @@ class SyntheticRecordGenerator:
         final_payloads = []
         for i, data in enumerate(data_payloads):
             final_payloads.append(
-                {
-                    "formKey": form_spec.form_key,
-                    "subjectKey": subject_keys[i],
-                    "data": data,
-                }
+                {"formKey": form_spec.form_key, "subjectKey": subject_keys[i], "data": data}
             )
 
         return GeneratedRecordSet(

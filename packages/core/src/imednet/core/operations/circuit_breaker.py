@@ -79,9 +79,7 @@ class CircuitBreaker:
                 raise CircuitBreakerError("fail-fast is active: circuit is open")
             elif state == CircuitState.HALF_OPEN:
                 if self._half_open_probes >= self.half_open_max_probes:
-                    raise CircuitBreakerError(
-                        "fail-fast is active: probe limit reached"
-                    )
+                    raise CircuitBreakerError("fail-fast is active: probe limit reached")
                 self._half_open_probes += 1
 
     def record_success(self) -> None:
@@ -101,9 +99,7 @@ class CircuitBreaker:
             self._last_failure_time = time.monotonic()
             if self._state == CircuitState.HALF_OPEN:
                 self._state = CircuitState.OPEN
-                logger.warning(
-                    "Circuit breaker transitioned to OPEN state (probe failed)."
-                )
+                logger.warning("Circuit breaker transitioned to OPEN state (probe failed).")
             elif self._state == CircuitState.CLOSED:
                 self._consecutive_failures += 1
                 if self._consecutive_failures >= self.failure_threshold:

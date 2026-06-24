@@ -104,9 +104,7 @@ def validate_header_value(value: str) -> None:
 def validate_partition_key(key: str) -> None:
     """Reject partition keys that could escape or reshape the target directory."""
     if "\x00" in key:
-        raise PathTraversalValidationError(
-            f"Partition key must not contain null bytes: {key!r}"
-        )
+        raise PathTraversalValidationError(f"Partition key must not contain null bytes: {key!r}")
     if key.startswith(("/", "\\")) or _WINDOWS_ABSOLUTE_PATH_RE.match(key):
         raise PathTraversalValidationError(
             f"Partition key must not use absolute path modifiers: {key!r}"

@@ -141,22 +141,12 @@ class DrugSafetyProfile(StandardsProfile):
         super().__init__(
             profile_name="drug",
             required_fields={
-                "AE": [
-                    "subjectKey",
-                    "aeTerm",
-                    "aeSeverity",
-                    "aeDecod",
-                    "aeRelationship",
-                ],
+                "AE": ["subjectKey", "aeTerm", "aeSeverity", "aeDecod", "aeRelationship"],
                 "PD": ["subjectKey", "dvTerm", "dvCategory", "dvSeverity", "dvDate"],
             },
             recommended_fields={"AE": ["aeActionTaken", "aeOutcome"]},
-            optional_fields={
-                "DD": ["subjectKey", "ddTerm", "ddCategory", "ddDate", "ddSerious"]
-            },
-            value_constraints={
-                "AE.aeSeverity": [1, 2, 3, 4, 5, "1", "2", "3", "4", "5"]
-            },
+            optional_fields={"DD": ["subjectKey", "ddTerm", "ddCategory", "ddDate", "ddSerious"]},
+            value_constraints={"AE.aeSeverity": [1, 2, 3, 4, 5, "1", "2", "3", "4", "5"]},
         )
 
 

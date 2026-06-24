@@ -93,9 +93,7 @@ def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
     assert sdk.workflows.sdk_instance is sdk
 
 
-@pytest.mark.parametrize(
-    "exception_class", [AttributeError, ImportError, ModuleNotFoundError]
-)
+@pytest.mark.parametrize("exception_class", [AttributeError, ImportError, ModuleNotFoundError])
 def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
     monkeypatch, exception_class
 ) -> None:
@@ -115,9 +113,7 @@ def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
         ),
     )
 
-    with pytest.raises(
-        PluginLoadError, match="Failed to load workflows plugin from entry point"
-    ):
+    with pytest.raises(PluginLoadError, match="Failed to load workflows plugin from entry point"):
         _create_sdk()
 
 
@@ -149,9 +145,7 @@ def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None
         ),
     )
 
-    with pytest.raises(
-        PluginLoadError, match="Multiple 'workflows' plugins were found"
-    ):
+    with pytest.raises(PluginLoadError, match="Multiple 'workflows' plugins were found"):
         _create_sdk()
 
 

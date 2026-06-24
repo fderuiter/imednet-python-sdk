@@ -60,9 +60,7 @@ def test_fake_record_parses() -> None:
 def test_fake_record_with_schema() -> None:
     """TODO: Add docstring."""
     cache = SchemaCache()
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     object.__setattr__(var, "required", True)
     cache._form_variables = {"F1": {"age": var}}
     cache._form_id_to_key = {1: "F1"}

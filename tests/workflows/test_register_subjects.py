@@ -41,9 +41,7 @@ def test_register_subjects_validation_errors() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     sdk.get_sites.return_value = [
-        Site(
-            studyKey="S", siteId=1, siteName="VALID_SITE", siteEnrollmentStatus="Active"
-        )
+        Site(studyKey="S", siteId=1, siteName="VALID_SITE", siteEnrollmentStatus="Active")
     ]
     wf = RegisterSubjectsWorkflow(sdk)
 

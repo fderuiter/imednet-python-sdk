@@ -136,9 +136,7 @@ def setup(app: Any) -> None:  # pragma: no cover
 
 
 # Ignore noisy pydantic schema generation warnings.
-warnings.filterwarnings(
-    "ignore", message="Failed guarded type import", category=UserWarning
-)
+warnings.filterwarnings("ignore", message="Failed guarded type import", category=UserWarning)
 
 # Display type hints in the description instead of the signature to keep
 # function signatures concise in the rendered documentation.

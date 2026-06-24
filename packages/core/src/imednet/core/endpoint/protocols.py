@@ -50,9 +50,7 @@ class EndpointProtocol(Protocol):
         """Build the API path with optional study key and extra segments."""
         ...
 
-    def _raise_not_found(
-        self, study_key: Optional[str], item_id: Optional[ItemId] = None
-    ) -> None:
+    def _raise_not_found(self, study_key: Optional[str], item_id: Optional[ItemId] = None) -> None:
         """Raise a standardized NotFoundError."""
         ...
 
@@ -101,9 +99,7 @@ class SupportsGet(Protocol[T_co]):
 class SupportsList(Protocol[T_co]):
     """Protocol for resources that support ``list`` operations."""
 
-    def list(
-        self, study_key: Optional[str] = None, **filters: FilterValue
-    ) -> Iterator[T_co]:
+    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T_co]:
         """List items synchronously."""
         ...
 
@@ -134,9 +130,7 @@ class SyncOperationProtocol(Protocol, Generic[T_co]):
         future endpoint operation bindings.
     """
 
-    def __init__(
-        self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any
-    ) -> None:
+    def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
         """Initialize the synchronous operation."""
         ...
 

@@ -12,9 +12,7 @@ from imednet.validation.cache import AsyncSchemaValidator
 
 def _make_var(name: str, form_id: int = 1, form_key: str = "F1") -> Variable:
     """TODO: Add docstring."""
-    return Variable(
-        variable_name=name, variable_type="integer", form_id=form_id, form_key=form_key
-    )
+    return Variable(variable_name=name, variable_type="integer", form_id=form_id, form_key=form_key)
 
 
 @pytest.mark.asyncio

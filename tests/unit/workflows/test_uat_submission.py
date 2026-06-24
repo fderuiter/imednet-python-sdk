@@ -31,9 +31,7 @@ def test_submission_result_properties():
     result = SubmissionResult(
         study_key="test_study",
         started_at=datetime.now(timezone.utc),
-        registration_batches=[
-            BatchSubmission(phase="registration", record_count=2, job=job1)
-        ],
+        registration_batches=[BatchSubmission(phase="registration", record_count=2, job=job1)],
         data_batches=[BatchSubmission(phase="data", record_count=3, job=job2)],
     )
 

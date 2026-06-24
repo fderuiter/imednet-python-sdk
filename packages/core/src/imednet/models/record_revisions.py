@@ -16,4 +16,4 @@ class RecordRevision(JsonModel):
     pass
 
 
-RecordRevision = ModelEngine.get_model("RecordRevision", RecordRevision)
+RecordRevision = ModelEngine.get_model('RecordRevision', RecordRevision)

@@ -33,9 +33,7 @@ class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  
 class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Subjects."""
 
-    async def async_list_by_site(
-        self, study_key: str, site_id: str | int
-    ) -> List[Subject]:
+    async def async_list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
         """List subjects by site ID asynchronously.
 
         Args:
@@ -45,6 +43,4 @@ class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subjec
         Returns:
             A list of subjects for the specified site.
         """
-        return [
-            item async for item in self.async_list(study_key=study_key, site_id=site_id)
-        ]
+        return [item async for item in self.async_list(study_key=study_key, site_id=site_id)]

@@ -111,9 +111,7 @@ class RecordMapper:
         self,
         study_key: str,
         visit_key: Optional[str] = None,
-        extra_filters: Optional[
-            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
-        ] = None,
+        extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
     ) -> List[RecordModel]:
         """Fetch records for a study applying optional filters."""
         filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]] = (
@@ -143,9 +141,7 @@ class RecordMapper:
         self,
         study_key: str,
         visit_key: Optional[str] = None,
-        extra_filters: Optional[
-            Dict[str, Union[Any, Tuple[str, Any], List[Any]]]
-        ] = None,
+        extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
     ) -> Iterable[RecordModel]:
         """TODO: Add docstring."""
         form_ids: set[Any] | None = None
@@ -162,9 +158,7 @@ class RecordMapper:
             if callable(sync_method) and callable(iter_method):
                 sync_method(study_key)
                 return self._filter_records(
-                    iter_method(
-                        loader, study_key, chunk_size=self._pipeline.chunk_size
-                    ),
+                    iter_method(loader, study_key, chunk_size=self._pipeline.chunk_size),
                     visit_key=visit_key,
                     form_ids=form_ids,
                 )
@@ -214,8 +208,10 @@ class RecordMapper:
             "recordStatus": rec.record_status,
             "dateCreated": (
                 rec.date_created.isoformat()  # type: ignore[union-attr]
-                if hasattr(rec.date_created, "isoformat")
-                else str(rec.date_created) if rec.date_created else None
+                if hasattr(rec.date_created, 'isoformat')
+                else str(rec.date_created)
+                if rec.date_created
+                else None
             ),
         }
         data = rec.record_data if isinstance(rec.record_data, dict) else {}
@@ -254,11 +250,7 @@ class RecordMapper:
                     )
                 except Exception as exc:  # pragma: no cover - unexpected
                     errors += 1
-                    logger.error(
-                        "Unexpected error processing recordId %s: %s",
-                        rec.record_id,
-                        exc,
-                    )
+                    logger.error("Unexpected error processing recordId %s: %s", rec.record_id, exc)
             yield rows, errors
 
     def _build_dataframe(
@@ -340,9 +332,7 @@ class RecordMapper:
             record_model,
         ):
             errors += chunk_errors
-            df = self._build_dataframe(
-                rows, variable_keys, label_map, use_labels_as_columns
-            )
+            df = self._build_dataframe(rows, variable_keys, label_map, use_labels_as_columns)
             if df.empty:
                 continue
             yielded = True
@@ -424,9 +414,7 @@ class RecordMapper:
                 )
                 continue
             except Exception as exc:  # pragma: no cover - unexpected
-                logger.error(
-                    "Unexpected error processing recordId %s: %s", rec.record_id, exc
-                )
+                logger.error("Unexpected error processing recordId %s: %s", rec.record_id, exc)
                 continue
 
             if use_labels_as_keys:
@@ -441,10 +429,7 @@ class RecordMapper:
             if not resolved_parent_id:
                 resolved_parent_id = f"{rec.visit_id}_{rec.form_id}"
 
-            if (
-                "parent_record_id" not in parsed_data
-                or parsed_data.get("parent_record_id") is None
-            ):
+            if "parent_record_id" not in parsed_data or parsed_data.get("parent_record_id") is None:
                 parsed_data["parent_record_id"] = resolved_parent_id
                 # If we mapped to a label or alias, also try to set it there
                 if use_labels_as_keys and "parentRecordId" in parsed_data:

@@ -11,9 +11,7 @@ import httpx
 #: POST and PATCH are intentionally excluded because a server may have already
 #: processed the request before the connection dropped, and retrying would risk
 #: creating duplicate records or corrupting state.
-IDEMPOTENT_METHODS: frozenset[str] = frozenset(
-    {"GET", "PUT", "DELETE", "HEAD", "OPTIONS"}
-)
+IDEMPOTENT_METHODS: frozenset[str] = frozenset({"GET", "PUT", "DELETE", "HEAD", "OPTIONS"})
 
 
 @dataclass

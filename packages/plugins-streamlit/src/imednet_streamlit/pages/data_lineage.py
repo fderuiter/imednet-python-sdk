@@ -158,9 +158,7 @@ def _find_raw_record(
     subject_key = getattr(canonical_model, "subject_key", None)
 
     # Find the first raw record for this subject that matches a form mapped in config
-    mapped_forms = {
-        rule.source_form_key for rule in config.mappings if rule.domain == domain
-    }
+    mapped_forms = {rule.source_form_key for rule in config.mappings if rule.domain == domain}
     for raw in raw_records:
         raw_form = getattr(raw, "form_key", None)
         raw_subject = getattr(raw, "subject_key", None)
@@ -204,9 +202,7 @@ def _render_lineage_trace(
     study_key: str,
 ) -> None:
     """Render the side-by-side three-pane lineage trace for a single record."""
-    st.subheader(
-        f"🔎 Lineage Trace — {_DOMAIN_LABELS.get(domain, domain)} record [{model_idx}]"
-    )
+    st.subheader(f"🔎 Lineage Trace — {_DOMAIN_LABELS.get(domain, domain)} record [{model_idx}]")
 
     models = _get_domain_models(extraction, domain)
     if model_idx >= len(models):
@@ -243,12 +239,8 @@ def _render_config_input() -> None:
                     config = StudyConfiguration.model_validate_json(raw_json)
                     st.session_state[_KEY_CONFIG] = config
                     st.success("Configuration loaded.")
-                except (
-                    Exception
-                ) as exc:  # pragma: no cover - defensive runtime UI handling
-                    st.error(
-                        f"Invalid StudyConfiguration JSON ({type(exc).__name__}): {exc}"
-                    )
+                except Exception as exc:  # pragma: no cover - defensive runtime UI handling
+                    st.error(f"Invalid StudyConfiguration JSON ({type(exc).__name__}): {exc}")
             else:
                 st.session_state.pop(_KEY_CONFIG, None)
                 st.success("Configuration cleared.")

@@ -60,9 +60,7 @@ def test_study_configuration_accepts_snake_case_field_names() -> None:
                 source_variable_name="DV_SEV",
             )
         ],
-        widgets=[
-            WidgetConfig(widget_id="kpi-1", type="kpi_card", title="PD", domain="PD")
-        ],
+        widgets=[WidgetConfig(widget_id="kpi-1", type="kpi_card", title="PD", domain="PD")],
     )
 
     dumped = config.model_dump(by_alias=True)

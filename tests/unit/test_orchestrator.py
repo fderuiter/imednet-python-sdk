@@ -89,9 +89,7 @@ def test_resolve_active_studies_applies_blacklist() -> None:
     assert result == ["B"]
 
 
-def test_resolve_active_studies_raises_on_conflicting_filters_before_network_call() -> (
-    None
-):
+def test_resolve_active_studies_raises_on_conflicting_filters_before_network_call() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -152,11 +150,7 @@ def test_execute_pipeline_isolates_per_study_failures(
 ) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.studies.list.return_value = [
-        _make_study("A"),
-        _make_study("B"),
-        _make_study("C"),
-    ]
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=3)
     _mock_monotonic(monkeypatch, [0.0, 0.01, 0.02, 0.03, 0.04, 0.05])
 
@@ -243,11 +237,7 @@ def test_resolve_active_studies_logs_whitelist_selection(
 ) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.studies.list.return_value = [
-        _make_study("A"),
-        _make_study("B"),
-        _make_study("C"),
-    ]
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk)
 
     with caplog.at_level("INFO", logger="imednet.orchestration.orchestrator"):
@@ -262,11 +252,7 @@ def test_resolve_active_studies_logs_blacklist_selection(
 ) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.studies.list.return_value = [
-        _make_study("A"),
-        _make_study("B"),
-        _make_study("C"),
-    ]
+    sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk)
 
     with caplog.at_level("INFO", logger="imednet.orchestration.orchestrator"):

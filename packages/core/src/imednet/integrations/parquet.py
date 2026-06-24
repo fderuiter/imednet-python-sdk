@@ -99,8 +99,7 @@ def export_to_hive_parquet(
         variable_keys = [
             variable.variable_name
             for variable in variables
-            if variable_whitelist is None
-            or variable.variable_name in variable_whitelist
+            if variable_whitelist is None or variable.variable_name in variable_whitelist
         ]
         label_map = {
             variable.variable_name: variable.label
@@ -116,11 +115,7 @@ def export_to_hive_parquet(
                 study_key,
                 extra_filters={
                     "formIds": [form.form_id],
-                    **(
-                        {"variableNames": variable_whitelist}
-                        if variable_whitelist
-                        else {}
-                    ),
+                    **({"variableNames": variable_whitelist} if variable_whitelist else {}),
                 },
             )
             for rows, _ in iter_parsed_rows(records, record_model):

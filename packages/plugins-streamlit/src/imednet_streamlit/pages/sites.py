@@ -44,9 +44,7 @@ def _fetch_site_metrics(
     else:
         df_subjects = df_subjects[~df_subjects["deleted"]]
 
-    site_enrollment = (
-        df_subjects.groupby("site_name").size().reset_index(name="enrolled_count")
-    )
+    site_enrollment = df_subjects.groupby("site_name").size().reset_index(name="enrolled_count")
 
     # --- Open Queries ---
     workflow = QueryManagementWorkflow(sdk=_sdk)
@@ -72,9 +70,7 @@ def _fetch_site_metrics(
     )
 
     if df_q_with_site.empty:
-        site_queries = pd.DataFrame(
-            columns=["site_name", "open_queries", "avg_days_open"]
-        )
+        site_queries = pd.DataFrame(columns=["site_name", "open_queries", "avg_days_open"])
     else:
         timestamp_now = now_utc or pd.Timestamp.now(tz="UTC")
         site_queries = (
@@ -83,18 +79,14 @@ def _fetch_site_metrics(
                 open_queries=("annotation_id", "count"),
                 avg_days_open=(
                     "date_created",
-                    lambda x: (
-                        timestamp_now - pd.to_datetime(x, utc=True)
-                    ).dt.days.mean(),
+                    lambda x: (timestamp_now - pd.to_datetime(x, utc=True)).dt.days.mean(),
                 ),
             )
             .reset_index()
         )
 
     # Merge enrollment + queries
-    df_metrics = site_enrollment.merge(site_queries, on="site_name", how="left").fillna(
-        0
-    )
+    df_metrics = site_enrollment.merge(site_queries, on="site_name", how="left").fillna(0)
     for col in ("enrolled_count", "open_queries", "avg_days_open"):
         df_metrics[col] = pd.to_numeric(df_metrics[col], errors="coerce").fillna(0)
     df_metrics["query_rate"] = (
@@ -105,11 +97,7 @@ def _fetch_site_metrics(
 
 def _highlight_high_rate(val: float) -> str:
     """TODO: Add docstring."""
-    return (
-        f"background-color: {_HIGH_RATE_COLOR}"
-        if val > _HIGH_QUERY_RATE_THRESHOLD
-        else ""
-    )
+    return f"background-color: {_HIGH_RATE_COLOR}" if val > _HIGH_QUERY_RATE_THRESHOLD else ""
 
 
 def _top_sites_with_other(
@@ -128,8 +116,7 @@ def _top_sites_with_other(
     enrolled_sum = remainder["enrolled_count"].sum()
     open_queries_sum = remainder["open_queries"].sum()
     weighted_days_open = (
-        (remainder["avg_days_open"] * remainder["open_queries"]).sum()
-        / open_queries_sum
+        (remainder["avg_days_open"] * remainder["open_queries"]).sum() / open_queries_sum
         if open_queries_sum > 0
         else remainder["avg_days_open"].mean()
     )
@@ -160,13 +147,9 @@ df_metrics = _fetch_site_metrics(sdk, study_key)
 # ── KPI Row ───────────────────────────────────────────────────────────────
 total_sites = int(df_metrics["site_name"].nunique()) if not df_metrics.empty else 0
 total_enrolled = int(df_metrics["enrolled_count"].sum()) if not df_metrics.empty else 0
-total_open_queries = (
-    int(df_metrics["open_queries"].sum()) if not df_metrics.empty else 0
-)
+total_open_queries = int(df_metrics["open_queries"].sum()) if not df_metrics.empty else 0
 avg_query_rate = (
-    round(float(total_open_queries / total_enrolled * 100), 1)
-    if total_enrolled
-    else 0.0
+    round(float(total_open_queries / total_enrolled * 100), 1) if total_enrolled else 0.0
 )
 
 components.kpi_row(
@@ -219,13 +202,7 @@ with col_right:
 
 # ── Per-site metrics table ────────────────────────────────────────────────
 st.subheader("Per-Site Metrics")
-display_cols = [
-    "site_name",
-    "enrolled_count",
-    "open_queries",
-    "query_rate",
-    "avg_days_open",
-]
+display_cols = ["site_name", "enrolled_count", "open_queries", "query_rate", "avg_days_open"]
 if not df_metrics.empty:
     df_display = df_metrics[display_cols].copy()
 else:

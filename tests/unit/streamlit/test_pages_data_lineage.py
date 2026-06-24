@@ -14,9 +14,7 @@ from imednet.models.study_config import MappingRule, StudyConfiguration
 from imednet_workflows.extraction_engine import ExtractionResult
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PACKAGE_ROOT = (
-    REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
-)
+PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit"
 PAGE_PATH = PACKAGE_ROOT / "pages" / "data_lineage.py"
 MODULE_NAME = "imednet_streamlit.pages.data_lineage"
 
@@ -45,9 +43,7 @@ class _FakeContextManager:
         """TODO: Add docstring."""
         return str(kwargs.get("value", ""))
 
-    def selectbox(
-        self, label: str, options: list[Any], index: int = 0, **kwargs: Any
-    ) -> Any:
+    def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
         """TODO: Add docstring."""
         return options[index]
 
@@ -137,9 +133,7 @@ class _FakeStreamlit:
             cols.append(col)
         return cols
 
-    def selectbox(
-        self, label: str, options: list[Any], index: int = 0, **kwargs: Any
-    ) -> Any:
+    def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
         """TODO: Add docstring."""
         return options[index]
 
@@ -304,9 +298,7 @@ def test_data_lineage_no_records_prompt() -> None:
     """Before loading records, user is prompted to click the load button."""
     fake_st = _FakeStreamlit()
     _run_data_lineage(fake_st)
-    assert any(
-        "load" in msg.lower() or "click" in msg.lower() for msg in fake_st.info_calls
-    )
+    assert any("load" in msg.lower() or "click" in msg.lower() for msg in fake_st.info_calls)
 
 
 def test_data_lineage_load_records() -> None:
@@ -316,9 +308,7 @@ def test_data_lineage_load_records() -> None:
     _run_data_lineage(fake_st)
 
     assert isinstance(fake_st.session_state.get("_lineage_records"), list)
-    assert isinstance(
-        fake_st.session_state.get("_lineage_extraction"), ExtractionResult
-    )
+    assert isinstance(fake_st.session_state.get("_lineage_extraction"), ExtractionResult)
     assert any("loaded" in msg.lower() for msg in fake_st.success_calls)
 
 
@@ -392,8 +382,7 @@ def test_data_lineage_no_records_in_domain() -> None:
     _run_data_lineage(fake_st)
 
     assert any(
-        "no pd records" in msg.lower() or "no protocol" in msg.lower()
-        for msg in fake_st.info_calls
+        "no pd records" in msg.lower() or "no protocol" in msg.lower() for msg in fake_st.info_calls
     )
 
 

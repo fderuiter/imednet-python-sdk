@@ -10,9 +10,7 @@ def check_readme_drift() -> bool:
     """Validate that the README.md is in sync with code snippets."""
     print("Checking README drift...")
     result = subprocess.run(
-        ["python3", "scripts/sync_readme.py", "--dry-run"],
-        capture_output=True,
-        text=True,
+        ["python3", "scripts/sync_readme.py", "--dry-run"], capture_output=True, text=True
     )
     if result.returncode != 0:
         print(

@@ -1,15 +1,15 @@
 """Exception hierarchy."""
 
 from .api import (
-                  ApiError,
-                  AuthenticationError,
-                  AuthorizationError,
-                  ConflictError,
-                  ForbiddenError,
-                  NotFoundError,
-                  RateLimitError,
-                  ServerError,
-                  UnauthorizedError,
+    ApiError,
+    AuthenticationError,
+    AuthorizationError,
+    ConflictError,
+    ForbiddenError,
+    NotFoundError,
+    RateLimitError,
+    ServerError,
+    UnauthorizedError,
 )
 from .base import ImednetError
 from .client import ClientError, PaginationError
@@ -19,11 +19,11 @@ from .orchestration import FilterConflictError, OrchestratorError
 from .plugin import PluginLoadError
 from .registry import get_error_class
 from .validation import (
-                  BadRequestError,
-                  ConfigurationError,
-                  PathTraversalValidationError,
-                  UnknownVariableTypeError,
-                  ValidationError,
+    BadRequestError,
+    ConfigurationError,
+    PathTraversalValidationError,
+    UnknownVariableTypeError,
+    ValidationError,
 )
 
 __all__ = [

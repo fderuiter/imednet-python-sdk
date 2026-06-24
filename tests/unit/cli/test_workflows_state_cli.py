@@ -62,9 +62,7 @@ class TestShowState:
 
         assert result.exit_code == 0
 
-    def test_show_no_matching_entries_prints_warning(
-        self, runner: CliRunner, tmp_path
-    ) -> None:
+    def test_show_no_matching_entries_prints_warning(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
         with patch("imednet_workflows.cli.ExtractionStateLedger") as mock_ledger:
@@ -137,9 +135,7 @@ class TestSetState:
 
         assert result.exit_code == 0
 
-    def test_set_invalid_timestamp_exits_with_error(
-        self, runner: CliRunner, tmp_path
-    ) -> None:
+    def test_set_invalid_timestamp_exits_with_error(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
         result = runner.invoke(
@@ -159,15 +155,11 @@ class TestSetState:
         assert result.exit_code == 1
         assert "Invalid ISO timestamp" in result.output
 
-    def test_set_write_failure_exits_with_error(
-        self, runner: CliRunner, tmp_path
-    ) -> None:
+    def test_set_write_failure_exits_with_error(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
         with patch("imednet_workflows.cli.ExtractionStateLedger") as mock_ledger:
-            mock_ledger.return_value.set_last_timestamp.side_effect = OSError(
-                "disk full"
-            )
+            mock_ledger.return_value.set_last_timestamp.side_effect = OSError("disk full")
             result = runner.invoke(
                 state_app,
                 [
@@ -204,9 +196,7 @@ class TestResetState:
         assert result.exit_code == 0
         assert "Successfully reset all streams" in result.output
 
-    def test_reset_specific_stream_when_found(
-        self, runner: CliRunner, tmp_path
-    ) -> None:
+    def test_reset_specific_stream_when_found(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
         with patch("imednet_workflows.cli.ExtractionStateLedger") as mock_ledger:
@@ -223,16 +213,12 @@ class TestResetState:
                     ledger_path,
                 ],
             )
-            mock_ledger.return_value.delete_entry.assert_called_once_with(
-                "STUDY-01", "records"
-            )
+            mock_ledger.return_value.delete_entry.assert_called_once_with("STUDY-01", "records")
 
         assert result.exit_code == 0
         assert "Successfully reset stream" in result.output
 
-    def test_reset_study_not_found_prints_warning(
-        self, runner: CliRunner, tmp_path
-    ) -> None:
+    def test_reset_study_not_found_prints_warning(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
         with patch("imednet_workflows.cli.ExtractionStateLedger") as mock_ledger:
@@ -245,9 +231,7 @@ class TestResetState:
         assert result.exit_code == 0
         assert "No state found" in result.output
 
-    def test_reset_stream_not_found_prints_warning(
-        self, runner: CliRunner, tmp_path
-    ) -> None:
+    def test_reset_stream_not_found_prints_warning(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
         with patch("imednet_workflows.cli.ExtractionStateLedger") as mock_ledger:
@@ -268,9 +252,7 @@ class TestResetState:
         assert result.exit_code == 0
         assert "No stream" in result.output
 
-    def test_reset_exception_exits_with_error(
-        self, runner: CliRunner, tmp_path
-    ) -> None:
+    def test_reset_exception_exits_with_error(self, runner: CliRunner, tmp_path) -> None:
         """TODO: Add docstring."""
         ledger_path = str(tmp_path / "ledger.json")
         with patch("imednet_workflows.cli.ExtractionStateLedger") as mock_ledger:

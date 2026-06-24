@@ -7,18 +7,19 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from imednet.models.jobs import JobStatus
-from imednet_workflows.job_poller import AsyncJobPoller, JobPoller, JobStatusEvent, JobTimeoutError
+from imednet_workflows.job_poller import (
+    AsyncJobPoller,
+    JobPoller,
+    JobStatusEvent,
+    JobTimeoutError,
+)
 
 
 def test_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test successful synchronous job polling."""
     states = [
-        JobStatus(
-            batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-        ),
-        JobStatus(
-            batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-        ),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
     ]
     get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
     monkeypatch.setattr("time.sleep", lambda *_: None)
@@ -31,12 +32,8 @@ def test_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None:
 async def test_async_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test successful asynchronous job polling."""
     states = [
-        JobStatus(
-            batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-        ),
-        JobStatus(
-            batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-        ),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
     ]
     get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
     monkeypatch.setattr(asyncio, "sleep", AsyncMock())
@@ -47,9 +44,7 @@ async def test_async_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None
 
 def test_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test synchronous job polling timeout."""
-    job = JobStatus(
-        batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-    )
+    job = JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl="")
     get_job = MagicMock(return_value=job)
     monkeypatch.setattr("time.sleep", lambda *_: None)
     poller = JobPoller(get_job)
@@ -68,9 +63,7 @@ def test_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.mark.asyncio
 async def test_async_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test asynchronous job polling timeout."""
-    job = JobStatus(
-        batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-    )
+    job = JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl="")
     get_job = AsyncMock(return_value=job)
     monkeypatch.setattr(asyncio, "sleep", AsyncMock())
     poller = AsyncJobPoller(get_job)
@@ -89,9 +82,7 @@ async def test_async_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None
 def test_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test synchronous job polling failure."""
     states = [
-        JobStatus(
-            batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-        ),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
         JobStatus(batchId="1", state="FAILED", progress=10, jobId="1", resultUrl=""),
     ]
     get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
@@ -106,9 +97,7 @@ def test_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
 async def test_async_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test asynchronous job polling failure."""
     states = [
-        JobStatus(
-            batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-        ),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
         JobStatus(batchId="1", state="FAILED", progress=10, jobId="1", resultUrl=""),
     ]
     get_job = AsyncMock(side_effect=lambda s, b: states.pop(0))
@@ -122,12 +111,8 @@ async def test_async_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_run_on_progress_new_signature(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test on_progress callback with JobStatusEvent signature."""
     states = [
-        JobStatus(
-            batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-        ),
-        JobStatus(
-            batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-        ),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
     ]
     get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
     monkeypatch.setattr("time.sleep", lambda *_: None)
@@ -155,12 +140,8 @@ def test_run_on_progress_new_signature(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_run_on_progress_deprecated_signature(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test on_progress callback with deprecated (batch_id, status, elapsed) signature."""
     states = [
-        JobStatus(
-            batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-        ),
-        JobStatus(
-            batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-        ),
+        JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
     ]
     get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
     monkeypatch.setattr("time.sleep", lambda *_: None)
@@ -183,17 +164,11 @@ def test_poll_many_success(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test poll_many with multiple successful jobs."""
     jobs_states = {
         "1": [
-            JobStatus(
-                batchId="1", state="PROCESSING", progress=50, jobId="1", resultUrl=""
-            ),
-            JobStatus(
-                batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-            ),
+            JobStatus(batchId="1", state="PROCESSING", progress=50, jobId="1", resultUrl=""),
+            JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
         ],
         "2": [
-            JobStatus(
-                batchId="2", state="COMPLETED", progress=100, jobId="2", resultUrl=""
-            ),
+            JobStatus(batchId="2", state="COMPLETED", progress=100, jobId="2", resultUrl=""),
         ],
     }
 
@@ -215,14 +190,8 @@ def test_poll_many_success(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_poll_many_with_failures(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test poll_many where some jobs fail."""
     jobs_states = {
-        "1": [
-            JobStatus(
-                batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-            )
-        ],
-        "2": [
-            JobStatus(batchId="2", state="FAILED", progress=0, jobId="2", resultUrl="")
-        ],
+        "1": [JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="")],
+        "2": [JobStatus(batchId="2", state="FAILED", progress=0, jobId="2", resultUrl="")],
     }
 
     def get_job(study_key, batch_id):
@@ -245,9 +214,7 @@ def test_poll_many_fail_fast(monkeypatch: pytest.MonkeyPatch) -> None:
     def get_job(study_key, batch_id):
         if batch_id == "FAIL":
             raise ValueError("Immediate failure")
-        return JobStatus(
-            batchId="OK", state="COMPLETED", progress=100, jobId="2", resultUrl=""
-        )
+        return JobStatus(batchId="OK", state="COMPLETED", progress=100, jobId="2", resultUrl="")
 
     monkeypatch.setattr("time.sleep", lambda *_: None)
     poller = JobPoller(get_job)
@@ -261,17 +228,11 @@ async def test_async_poll_many_success(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test async_poll_many with multiple successful jobs."""
     jobs_states = {
         "1": [
-            JobStatus(
-                batchId="1", state="PROCESSING", progress=50, jobId="1", resultUrl=""
-            ),
-            JobStatus(
-                batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-            ),
+            JobStatus(batchId="1", state="PROCESSING", progress=50, jobId="1", resultUrl=""),
+            JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
         ],
         "2": [
-            JobStatus(
-                batchId="2", state="COMPLETED", progress=100, jobId="2", resultUrl=""
-            ),
+            JobStatus(batchId="2", state="COMPLETED", progress=100, jobId="2", resultUrl=""),
         ],
     }
 
@@ -288,17 +249,11 @@ async def test_async_poll_many_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert summary.results["2"].state == "COMPLETED"
 
 
-def test_logging_output(
-    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_logging_output(monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture) -> None:
     """Test structured logging output."""
     states = [
-        JobStatus(
-            batchId="LOG", state="PROCESSING", progress=10, jobId="1", resultUrl=""
-        ),
-        JobStatus(
-            batchId="LOG", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-        ),
+        JobStatus(batchId="LOG", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
+        JobStatus(batchId="LOG", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
     ]
     get_job = MagicMock(side_effect=lambda s, b: states.pop(0))
     monkeypatch.setattr("time.sleep", lambda *_: None)
@@ -307,15 +262,11 @@ def test_logging_output(
     with caplog.at_level(logging.DEBUG):
         poller.run("ST", "LOG", interval=0)
 
-    assert (
-        "[JobPoller] batch_id=LOG state=PROCESSING progress=10% elapsed=" in caplog.text
-    )
+    assert "[JobPoller] batch_id=LOG state=PROCESSING progress=10% elapsed=" in caplog.text
     assert "[JobPoller] batch_id=LOG COMPLETED after 2 polls" in caplog.text
 
 
-def test_logging_error(
-    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_logging_error(monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture) -> None:
     """Test logging output on failure."""
     states = [
         JobStatus(batchId="ERR", state="FAILED", progress=0, jobId="1", resultUrl=""),
@@ -332,9 +283,7 @@ def test_logging_error(
 
 def test_job_status_event_immutable() -> None:
     """Test that JobStatusEvent is frozen."""
-    status = JobStatus(
-        batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""
-    )
+    status = JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="")
     event = JobStatusEvent(
         batch_id="1", status=status, poll_number=1, elapsed=1.0, is_terminal=True
     )

@@ -24,9 +24,7 @@ def list_subjects(
         None,
         "--filter",
         "-f",
-        help=(
-            "Filter criteria (e.g., 'subject_status=Screened'). Repeat for multiple filters."
-        ),
+        help=("Filter criteria (e.g., 'subject_status=Screened'). Repeat for multiple filters."),
     ),
 ) -> None:
     """List subjects for a specific study."""

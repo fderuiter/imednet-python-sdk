@@ -144,9 +144,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         """
         filters = self._auto_filter(filters.copy())
 
-        processed_filters, special_params = self.param_processor.process_filters(
-            filters
-        )
+        processed_filters, special_params = self.param_processor.process_filters(filters)
         if special_params:
             if extra_params is None:
                 extra_params = {}
@@ -197,9 +195,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             study=study,
         )
 
-    def _validate_get_result(
-        self, items: List[T], study_key: Optional[str], item_id: ItemId
-    ) -> T:
+    def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: ItemId) -> T:
         """Validate that a get operation returned exactly one item.
 
         Args:
@@ -269,9 +265,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_sync(client, paginator_cls)
 
-    def list(
-        self, study_key: Optional[str] = None, **filters: FilterValue
-    ) -> Iterator[T]:
+    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T]:
         """List resources matching the given filters.
 
         Args:

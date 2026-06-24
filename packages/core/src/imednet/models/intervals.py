@@ -27,4 +27,4 @@ class Interval(JsonModel):
     forms: list[FormSummary] | None = Field(default=None, alias="forms")
 
 
-Interval = ModelEngine.get_model("Interval", Interval)
+Interval = ModelEngine.get_model('Interval', Interval)

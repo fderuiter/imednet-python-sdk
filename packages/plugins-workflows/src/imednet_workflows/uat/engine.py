@@ -67,9 +67,7 @@ class UATExecutionEngine:
                 "dependency_variable": row.get(
                     "DependencyVariable", row.get("dependency_variable")
                 ),
-                "dependency_value": row.get(
-                    "DependencyValue", row.get("dependency_value")
-                ),
+                "dependency_value": row.get("DependencyValue", row.get("dependency_value")),
                 "raw": row,
             }
             rules.append(rule)
@@ -119,10 +117,7 @@ class UATExecutionEngine:
         return data
 
     def run_verification(
-        self,
-        study_key: str,
-        form_scope: Optional[str] = None,
-        site_name: str = "TestSite",
+        self, study_key: str, form_scope: Optional[str] = None, site_name: str = "TestSite"
     ) -> EditCheckVerificationReport:
         """Run the end-to-end UAT verification against the EDC API."""
         report = EditCheckVerificationReport(study_key=study_key)
@@ -149,11 +144,7 @@ class UATExecutionEngine:
 
             # Use CreateNewRecordRequest format
             subject_key = f"UAT-SUBJ-{idx}"
-            payload = {
-                "formKey": form_key,
-                "subjectKey": subject_key,
-                "data": test_data,
-            }
+            payload = {"formKey": form_key, "subjectKey": subject_key, "data": test_data}
 
             result = {
                 "rule_name": rule.get("rule_name"),

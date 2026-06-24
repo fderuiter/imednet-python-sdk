@@ -49,9 +49,7 @@ class BaseSchemaCache(Generic[_TClient]):
             if var.form_id is not None and var.form_key is not None:
                 self._form_id_to_key[var.form_id] = var.form_key
                 if var.variable_name is not None:
-                    self._form_variables.setdefault(var.form_key, {})[
-                        var.variable_name
-                    ] = var
+                    self._form_variables.setdefault(var.form_key, {})[var.variable_name] = var
 
     async def _refresh_async(
         self,
@@ -275,9 +273,7 @@ def validate_record_data(
         raise ValidationError(f"Unknown form {form_key}")
     unknown = [k for k in data if k not in variables]
     if unknown:
-        raise ValidationError(
-            f"Unknown variables for form {form_key}: {', '.join(unknown)}"
-        )
+        raise ValidationError(f"Unknown variables for form {form_key}: {', '.join(unknown)}")
     # Bolt Optimization: Removed dead code iterating over all variables for 'required' check.
     # The Variable model does not have a 'required' field, so this loop was O(N) for no-op.
     for name, value in data.items():
@@ -346,9 +342,7 @@ def validate_record_entry(
         fid = record.get("formId") or record.get("form_id") or 0
         fk = schema.form_key_from_id(fid)
     if fk:
-        validate_record_data(
-            schema, fk, record.get("recordData", record.get("data", {}))
-        )
+        validate_record_data(schema, fk, record.get("recordData", record.get("data", {})))
 
 
 class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
@@ -420,9 +414,7 @@ class SchemaValidator(BaseSchemaValidator["ImednetFacade"]):
         form_key, needs_refresh = self._needs_refresh(record)
         if needs_refresh:
             self.refresh(study_key)
-        self._validate_cached(
-            form_key, record.get("recordData", record.get("data", {}))
-        )
+        self._validate_cached(form_key, record.get("recordData", record.get("data", {})))
 
     def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
         """Validate a batch of record payloads."""
@@ -452,13 +444,9 @@ class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetFacade"]):
         form_key, needs_refresh = self._needs_refresh(record)
         if needs_refresh:
             await self.refresh(study_key)
-        self._validate_cached(
-            form_key, record.get("recordData", record.get("data", {}))
-        )
+        self._validate_cached(form_key, record.get("recordData", record.get("data", {})))
 
-    async def validate_batch(
-        self, study_key: str, records: list[Dict[str, Any]]
-    ) -> None:
+    async def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
         """Validate a batch of record payloads asynchronously."""
         for rec in records:
             await self.validate_record(study_key, rec)

@@ -308,9 +308,7 @@ def apply_quality_gate(
             fk = validator.schema.form_key_from_id(fid)
 
         if not fk:
-            logger.info(
-                "Dropped record %s: Unknown form", rec_dict.get("record_id", "Unknown")
-            )
+            logger.info("Dropped record %s: Unknown form", rec_dict.get("record_id", "Unknown"))
             dropped_count += 1
             continue
 

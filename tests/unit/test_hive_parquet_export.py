@@ -26,9 +26,7 @@ def test_export_to_hive_parquet_directory_structure(
 
     sdk = MagicMock()
     sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="DEMOGRAPHICS")]
-    sdk.variables.list.return_value = [
-        SimpleNamespace(form_id=1, variable_name="age", label="Age")
-    ]
+    sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
 
     class FakeMapper:
         """TODO: Add docstring."""
@@ -43,9 +41,7 @@ def test_export_to_hive_parquet_directory_structure(
             """TODO: Add docstring."""
             return (variable_keys, label_map)
 
-        def _fetch_records(
-            self, _study_key: str, extra_filters: dict[str, Any]
-        ) -> list[int]:
+        def _fetch_records(self, _study_key: str, extra_filters: dict[str, Any]) -> list[int]:
             """TODO: Add docstring."""
             return [extra_filters["formId"]]
 
@@ -130,12 +126,8 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_A", str(tmp_path))
     parquet_mod.export_to_hive_parquet(sdk, "STUDY_B", str(tmp_path))
 
-    study_a = _read_partition_dataframe(
-        tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS"
-    )
-    study_b = _read_partition_dataframe(
-        tmp_path / "study_key=STUDY_B" / "form_key=DEMOGRAPHICS"
-    )
+    study_a = _read_partition_dataframe(tmp_path / "study_key=STUDY_A" / "form_key=DEMOGRAPHICS")
+    study_b = _read_partition_dataframe(tmp_path / "study_key=STUDY_B" / "form_key=DEMOGRAPHICS")
 
     assert study_a.to_dict("records") == [{"study": "STUDY_A"}]
     assert study_b.to_dict("records") == [{"study": "STUDY_B"}]

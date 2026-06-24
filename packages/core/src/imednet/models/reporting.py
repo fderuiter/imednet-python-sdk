@@ -13,9 +13,7 @@ from imednet.models.json_base import JsonModel
 class AdverseEvent(JsonModel):
     """Canonical CDISC-aligned Adverse Event (AE) reporting model."""
 
-    subject_key: str = Field(
-        ..., alias="subjectKey", description="Unique subject identifier"
-    )
+    subject_key: str = Field(..., alias="subjectKey", description="Unique subject identifier")
     ae_term: str = Field(
         ..., alias="aeTerm", description="Reported term for the adverse event (AETERM)"
     )
@@ -23,9 +21,7 @@ class AdverseEvent(JsonModel):
         None, alias="aeDecod", description="Dictionary-derived preferred term (AEDECOD)"
     )
     ae_severity: str = Field(
-        ...,
-        alias="aeSeverity",
-        description="Severity/intensity: MILD, MODERATE, SEVERE (AESEV)",
+        ..., alias="aeSeverity", description="Severity/intensity: MILD, MODERATE, SEVERE (AESEV)"
     )
     ae_serious: bool = Field(
         False, alias="aeSerious", description="Serious Adverse Event flag (AESER)"
@@ -54,12 +50,8 @@ class AdverseEvent(JsonModel):
 class ProtocolDeviation(JsonModel):
     """Canonical CDISC-aligned Protocol Deviation (PD) reporting model."""
 
-    subject_key: str = Field(
-        ..., alias="subjectKey", description="Unique subject identifier"
-    )
-    dv_term: str = Field(
-        ..., alias="dvTerm", description="Description of the deviation (DVTERM)"
-    )
+    subject_key: str = Field(..., alias="subjectKey", description="Unique subject identifier")
+    dv_term: str = Field(..., alias="dvTerm", description="Description of the deviation (DVTERM)")
     dv_category: str = Field(
         ...,
         alias="dvCategory",
@@ -70,9 +62,7 @@ class ProtocolDeviation(JsonModel):
         alias="dvSeverity",
         description="Deviation classification: MAJOR, MINOR, CRITICAL",
     )
-    dv_date: datetime = Field(
-        ..., alias="dvDate", description="Date/time of deviation (DVSTDTC)"
-    )
+    dv_date: datetime = Field(..., alias="dvDate", description="Date/time of deviation (DVSTDTC)")
     dv_status: str = Field(
         "Unreviewed",
         alias="dvStatus",
@@ -83,13 +73,9 @@ class ProtocolDeviation(JsonModel):
 class DeviceDeficiency(JsonModel):
     """Canonical CDISC-aligned Device Deficiency (DD) reporting model."""
 
-    subject_key: str = Field(
-        ..., alias="subjectKey", description="Unique subject identifier"
-    )
+    subject_key: str = Field(..., alias="subjectKey", description="Unique subject identifier")
     dd_term: str = Field(..., alias="ddTerm", description="Deficiency term (DDTERM)")
-    dd_category: str = Field(
-        ..., alias="ddCategory", description="Category of deficiency (DDCAT)"
-    )
+    dd_category: str = Field(..., alias="ddCategory", description="Category of deficiency (DDCAT)")
     dd_serious: bool = Field(
         False,
         alias="ddSerious",

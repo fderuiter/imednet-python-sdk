@@ -28,9 +28,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
             os.path.dirname(
                 os.path.dirname(
                     os.path.dirname(
-                        os.path.dirname(
-                            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                        )
+                        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
                     )
                 )
             ),
@@ -44,7 +42,7 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
     if not os.path.exists(postman_path):
         return {}
 
-    with open(postman_path, "r") as f:
+    with open(postman_path, 'r') as f:
         data = json.load(f)
 
     schemas: Dict[str, Dict[str, Any]] = {}
@@ -76,34 +74,34 @@ def load_schemas() -> Dict[str, Dict[str, Any]]:
         for item in items:
             if not isinstance(item, dict):
                 continue
-            if "item" in item:
-                extract_schemas(item["item"])
-            elif "response" in item:
-                if not isinstance(item["response"], list):
+            if 'item' in item:
+                extract_schemas(item['item'])
+            elif 'response' in item:
+                if not isinstance(item['response'], list):
                     continue
-                for resp in item["response"]:
+                for resp in item['response']:
                     if not isinstance(resp, dict):
                         continue
-                    if resp.get("name") in name_mapping and "body" in resp:
-                        body = resp["body"]
+                    if resp.get('name') in name_mapping and 'body' in resp:
+                        body = resp['body']
                         if body and isinstance(body, str):
                             try:
                                 parsed = json.loads(body)
                                 if not isinstance(parsed, dict):
                                     continue
-                                model_name = name_mapping[resp["name"]]
+                                model_name = name_mapping[resp['name']]
                                 if (
-                                    "data" in parsed
-                                    and isinstance(parsed["data"], list)
-                                    and len(parsed["data"]) > 0
+                                    'data' in parsed
+                                    and isinstance(parsed['data'], list)
+                                    and len(parsed['data']) > 0
                                 ):
-                                    schemas[model_name] = parsed["data"][0]
-                                elif not "data" in parsed and not "metadata" in parsed:
+                                    schemas[model_name] = parsed['data'][0]
+                                elif not 'data' in parsed and not 'metadata' in parsed:
                                     schemas[model_name] = parsed
                             except Exception:
                                 pass
 
-    extract_schemas(data.get("item", []))
+    extract_schemas(data.get('item', []))
     _CACHE.update(schemas)
     return schemas
 
@@ -121,8 +119,8 @@ def get_type_for_value(val: str) -> Any:
 
 def to_snake(name: str) -> str:
     """Convert camelCase or PascalCase strings to snake_case."""
-    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
 try:

@@ -38,9 +38,7 @@ def test_cli_records_list(runner: CliRunner, study_key: str) -> None:
     assert result.exit_code == 0
 
 
-def test_cli_jobs_status(
-    runner: CliRunner, study_key: str, generated_batch_id: str
-) -> None:
+def test_cli_jobs_status(runner: CliRunner, study_key: str, generated_batch_id: str) -> None:
     """TODO: Add docstring."""
     result = runner.invoke(
         cli.app,
@@ -49,22 +47,11 @@ def test_cli_jobs_status(
     assert result.exit_code == 0
 
 
-def test_cli_jobs_wait(
-    runner: CliRunner, study_key: str, generated_batch_id: str
-) -> None:
+def test_cli_jobs_wait(runner: CliRunner, study_key: str, generated_batch_id: str) -> None:
     """TODO: Add docstring."""
     result = runner.invoke(
         cli.app,
-        [
-            "jobs",
-            "wait",
-            study_key,
-            generated_batch_id,
-            "--interval",
-            "1",
-            "--timeout",
-            "60",
-        ],
+        ["jobs", "wait", study_key, generated_batch_id, "--interval", "1", "--timeout", "60"],
     )
     assert result.exit_code == 0
 

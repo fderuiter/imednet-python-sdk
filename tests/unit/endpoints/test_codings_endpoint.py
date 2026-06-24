@@ -8,9 +8,7 @@ from imednet.errors.validation import ConfigurationError
 from imednet.models.codings import Coding
 
 
-def test_list_requires_study_key(
-    dummy_client, context, paginator_factory, patch_build_filter
-):
+def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
     """TODO: Add docstring."""
     ep = codings.CodingsEndpoint(dummy_client, context)
     capture = paginator_factory(codings, [{"codingId": 1}])

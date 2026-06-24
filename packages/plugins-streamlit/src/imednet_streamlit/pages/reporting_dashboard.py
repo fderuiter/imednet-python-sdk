@@ -134,18 +134,12 @@ def _fallback_direct_models(
     return aes, pds, dds
 
 
-def _models_to_frame(
-    models: Sequence[object], *, date_column: str | None = None
-) -> pd.DataFrame:
+def _models_to_frame(models: Sequence[object], *, date_column: str | None = None) -> pd.DataFrame:
     """TODO: Add docstring."""
     if not models:
         return pd.DataFrame()
     rows = [
-        (
-            model.model_dump(by_alias=False)
-            if hasattr(model, "model_dump")
-            else dict(vars(model))
-        )
+        model.model_dump(by_alias=False) if hasattr(model, "model_dump") else dict(vars(model))
         for model in models
     ]
     df = pd.DataFrame(rows)
@@ -165,9 +159,7 @@ def _extract_domain_frames(
     protocol_deviations = extracted.protocol_deviations
     device_deficiencies = extracted.device_deficiencies
     if not adverse_events and not protocol_deviations and not device_deficiencies:
-        adverse_events, protocol_deviations, device_deficiencies = (
-            _fallback_direct_models(records)
-        )
+        adverse_events, protocol_deviations, device_deficiencies = _fallback_direct_models(records)
     return (
         _models_to_frame(adverse_events, date_column="ae_start_date"),
         _models_to_frame(protocol_deviations, date_column="dv_date"),
@@ -220,9 +212,7 @@ def _records_frame(
     df = df.merge(form_lookup, on="form_key", how="left")
     df["form_name"] = df["form_name"].fillna(df["form_key"])
     if not subjects_df.empty:
-        df = df.merge(
-            subjects_df[["subject_key", "site_name"]], on="subject_key", how="left"
-        )
+        df = df.merge(subjects_df[["subject_key", "site_name"]], on="subject_key", how="left")
     else:
         df["site_name"] = ""
     return df
@@ -237,14 +227,10 @@ def _attach_site_name(df: pd.DataFrame, subjects_df: pd.DataFrame) -> pd.DataFra
     if subjects_df.empty:
         out["site_name"] = ""
         return out
-    return out.merge(
-        subjects_df[["subject_key", "site_name"]], on="subject_key", how="left"
-    )
+    return out.merge(subjects_df[["subject_key", "site_name"]], on="subject_key", how="left")
 
 
-def _build_site_metrics(
-    _sdk: object, study_key: str, subjects_df: pd.DataFrame
-) -> pd.DataFrame:
+def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame) -> pd.DataFrame:
     """TODO: Add docstring."""
     from imednet_workflows.query_management import QueryManagementWorkflow
 
@@ -276,17 +262,13 @@ def _build_site_metrics(
                 open_queries=("annotation_id", "count"),
                 avg_days_open=(
                     "date_created",
-                    lambda values: (
-                        now_utc - pd.to_datetime(values, utc=True)
-                    ).dt.days.mean(),
+                    lambda values: (now_utc - pd.to_datetime(values, utc=True)).dt.days.mean(),
                 ),
             )
             .reset_index()
         )
     else:
-        site_queries = pd.DataFrame(
-            columns=["site_name", "open_queries", "avg_days_open"]
-        )
+        site_queries = pd.DataFrame(columns=["site_name", "open_queries", "avg_days_open"])
 
     merged = site_enrollment.merge(site_queries, on="site_name", how="left").fillna(0)
     for col in ("enrolled_count", "open_queries", "avg_days_open"):
@@ -299,11 +281,7 @@ def _build_site_metrics(
 
 def _highlight_high_rate(value: float) -> str:
     """TODO: Add docstring."""
-    return (
-        f"background-color: {_HIGH_RATE_COLOR}"
-        if value > _HIGH_QUERY_RATE_THRESHOLD
-        else ""
-    )
+    return f"background-color: {_HIGH_RATE_COLOR}" if value > _HIGH_QUERY_RATE_THRESHOLD else ""
 
 
 def _apply_filters(
@@ -320,13 +298,9 @@ def _apply_filters(
     if filters.site_filter and "site_name" in filtered:
         filtered = filtered[filtered["site_name"].astype(str).isin(filters.site_filter)]
     if filters.subject_filter and "subject_key" in filtered:
-        filtered = filtered[
-            filtered["subject_key"].astype(str).isin(filters.subject_filter)
-        ]
+        filtered = filtered[filtered["subject_key"].astype(str).isin(filters.subject_filter)]
     if filters.severity_filter and severity_col and severity_col in filtered:
-        filtered = filtered[
-            filtered[severity_col].astype(str).isin(filters.severity_filter)
-        ]
+        filtered = filtered[filtered[severity_col].astype(str).isin(filters.severity_filter)]
     if date_col and date_col in filtered:
         start, end = filters.date_range
         dt = pd.to_datetime(filtered[date_col], utc=True, errors="coerce")
@@ -347,11 +321,7 @@ def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
         aggfunc=lambda values: int(values.isin(_COMPLETE_RECORD_STATUSES).any()),
         fill_value=0,
     )
-    pivot = (
-        pivot.sort_index()
-        .sort_index(axis=1)
-        .iloc[:_MAX_HEATMAP_SUBJECTS, :_MAX_HEATMAP_FORMS]
-    )
+    pivot = pivot.sort_index().sort_index(axis=1).iloc[:_MAX_HEATMAP_SUBJECTS, :_MAX_HEATMAP_FORMS]
     if pivot.empty:
         return pd.DataFrame(
             columns=["subject_key", "form_name", "completion_flag", "completion_status"]
@@ -360,9 +330,7 @@ def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
         id_vars="subject_key", var_name="form_name", value_name="completion_flag"
     )
     heatmap["completion_flag"] = heatmap["completion_flag"].astype(int)
-    heatmap["completion_status"] = heatmap["completion_flag"].map(
-        {1: "Complete", 0: "Incomplete"}
-    )
+    heatmap["completion_status"] = heatmap["completion_flag"].map({1: "Complete", 0: "Incomplete"})
     return heatmap
 
 
@@ -390,15 +358,9 @@ def _render_view_controls(
         st.markdown("---")
         st.subheader("Dashboard Views")
         view_names = ["Default Study View", *sorted(saved_views)]
-        active_view_index = (
-            view_names.index(active_view) if active_view in view_names else 0
-        )
+        active_view_index = view_names.index(active_view) if active_view in view_names else 0
         active_view = st.selectbox("Saved View", view_names, index=active_view_index)
-        loaded = (
-            saved_views.get(active_view, {})
-            if active_view != "Default Study View"
-            else {}
-        )
+        loaded = saved_views.get(active_view, {}) if active_view != "Default Study View" else {}
 
         template_default = str(loaded.get("template", default_template))
         template_names = list(_TEMPLATES)
@@ -406,9 +368,7 @@ def _render_view_controls(
             "Template",
             template_names,
             index=(
-                template_names.index(template_default)
-                if template_default in template_names
-                else 0
+                template_names.index(template_default) if template_default in template_names else 0
             ),
         )
 
@@ -421,16 +381,12 @@ def _render_view_controls(
         else:
             selected_date_range = default_dates
 
-        site_filter = st.multiselect(
-            "Site", site_options, default=loaded.get("site_filter", [])
-        )
+        site_filter = st.multiselect("Site", site_options, default=loaded.get("site_filter", []))
         subject_filter = st.multiselect(
             "Subject", subject_options, default=loaded.get("subject_filter", [])
         )
         severity_filter = st.multiselect(
-            "Severity",
-            severity_options,
-            default=loaded.get("severity_filter", severity_options),
+            "Severity", severity_options, default=loaded.get("severity_filter", severity_options)
         )
 
         view_name = st.text_input("Save Current View As")
@@ -485,9 +441,7 @@ def _render_adverse_events_tab(df: pd.DataFrame, enrolled_subjects: int) -> None
         use_container_width=True,
     )
     timeline = (
-        df.assign(
-            ae_start_date=pd.to_datetime(df["ae_start_date"], utc=True, errors="coerce")
-        )
+        df.assign(ae_start_date=pd.to_datetime(df["ae_start_date"], utc=True, errors="coerce"))
         .dropna(subset=["ae_start_date"])
         .assign(date=lambda frame: frame["ae_start_date"].dt.normalize())
         .groupby("date")
@@ -552,9 +506,7 @@ def _render_protocol_deviations_tab(df: pd.DataFrame, enrolled_subjects: int) ->
     )
     if not trends.empty:
         st.altair_chart(
-            components.line_chart(
-                trends, x="date", y="count", title="Deviation Trends"
-            ),
+            components.line_chart(trends, x="date", y="count", title="Deviation Trends"),
             use_container_width=True,
         )
     components.filterable_dataframe(
@@ -589,23 +541,13 @@ def _render_device_deficiencies_tab(df: pd.DataFrame) -> None:
     by_category = df.groupby("dd_category").size().reset_index(name="count")
     st.altair_chart(
         components.bar_chart(
-            by_category,
-            x="count",
-            y="dd_category",
-            title="Deficiency Category Distribution",
+            by_category, x="count", y="dd_category", title="Deficiency Category Distribution"
         ),
         use_container_width=True,
     )
     components.filterable_dataframe(
         df.reindex(
-            columns=[
-                "subject_key",
-                "site_name",
-                "dd_term",
-                "dd_category",
-                "dd_serious",
-                "dd_date",
-            ]
+            columns=["subject_key", "site_name", "dd_term", "dd_category", "dd_serious", "dd_date"]
         ),
         key="dd_table",
     )
@@ -618,40 +560,27 @@ def _render_site_performance_tab(df_site_metrics: pd.DataFrame) -> None:
             {
                 "label": "Total Sites",
                 "value": (
-                    int(df_site_metrics["site_name"].nunique())
-                    if not df_site_metrics.empty
-                    else 0
+                    int(df_site_metrics["site_name"].nunique()) if not df_site_metrics.empty else 0
                 ),
             },
             {
                 "label": "Total Enrolled",
                 "value": (
-                    int(df_site_metrics["enrolled_count"].sum())
-                    if not df_site_metrics.empty
-                    else 0
+                    int(df_site_metrics["enrolled_count"].sum()) if not df_site_metrics.empty else 0
                 ),
             },
             {
                 "label": "Total Open Queries",
                 "value": (
-                    int(df_site_metrics["open_queries"].sum())
-                    if not df_site_metrics.empty
-                    else 0
+                    int(df_site_metrics["open_queries"].sum()) if not df_site_metrics.empty else 0
                 ),
             },
         ]
     )
-    display_cols = [
-        "site_name",
-        "enrolled_count",
-        "open_queries",
-        "query_rate",
-        "avg_days_open",
-    ]
+    display_cols = ["site_name", "enrolled_count", "open_queries", "query_rate", "avg_days_open"]
     display = df_site_metrics.reindex(columns=display_cols)
     st.dataframe(
-        display.style.map(_highlight_high_rate, subset=["query_rate"]),
-        use_container_width=True,
+        display.style.map(_highlight_high_rate, subset=["query_rate"]), use_container_width=True
     )
 
 
@@ -663,9 +592,7 @@ def _render_data_completeness_tab(df_records: pd.DataFrame) -> None:
     else:
         st.altair_chart(
             components.bar_chart(
-                heatmap_df.groupby("completion_status")
-                .size()
-                .reset_index(name="count"),
+                heatmap_df.groupby("completion_status").size().reset_index(name="count"),
                 x="count",
                 y="completion_status",
                 title="Completion Status",
@@ -702,9 +629,7 @@ def render_page() -> None:
     forms_df = _fetch_forms_df(sdk, study_key)
     records = _fetch_records(sdk, study_key)
 
-    ae_df, pd_df, dd_df = _extract_domain_frames(
-        records, _default_configuration(_DEFAULT_TEMPLATE)
-    )
+    ae_df, pd_df, dd_df = _extract_domain_frames(records, _default_configuration(_DEFAULT_TEMPLATE))
     ae_df = _attach_site_name(ae_df, subjects_df)
     pd_df = _attach_site_name(pd_df, subjects_df)
     dd_df = _attach_site_name(dd_df, subjects_df)
@@ -760,9 +685,7 @@ def render_page() -> None:
         filters=filters,
         date_col="dd_date",
     )
-    records_filtered = _apply_filters(
-        records_df, filters=filters, date_col="date_created"
-    )
+    records_filtered = _apply_filters(records_df, filters=filters, date_col="date_created")
     site_metrics_filtered = _build_site_metrics(sdk, study_key, subjects_df)
     if filters.site_filter:
         site_metrics_filtered = site_metrics_filtered[

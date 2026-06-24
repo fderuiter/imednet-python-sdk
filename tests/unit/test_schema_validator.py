@@ -23,9 +23,7 @@ def _build_sdk(variable: Variable, async_mode: bool) -> MagicMock:
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_unknown_variable(async_mode: bool) -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
         validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
@@ -34,11 +32,7 @@ def test_validate_record_unknown_variable(async_mode: bool) -> None:
 
     with pytest.raises(ValidationError):
         if async_mode:
-            asyncio.run(
-                validator.validate_record(
-                    "STUDY", {"formKey": "F1", "data": {"bad": 1}}
-                )
-            )
+            asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"bad": 1}}))
         else:
             validator.validate_record("STUDY", {"formKey": "F1", "data": {"bad": 1}})
 
@@ -51,9 +45,7 @@ def test_validate_record_unknown_variable(async_mode: bool) -> None:
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_wrong_type(async_mode: bool) -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
         validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
@@ -62,11 +54,7 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
 
     with pytest.raises(ValidationError):
         if async_mode:
-            asyncio.run(
-                validator.validate_record(
-                    "STUDY", {"formKey": "F1", "data": {"age": "x"}}
-                )
-            )
+            asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": "x"}}))
         else:
             validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": "x"}})
 
@@ -79,9 +67,7 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_unknown_form(async_mode: bool) -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
         validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
@@ -90,9 +76,7 @@ def test_validate_record_unknown_form(async_mode: bool) -> None:
 
     with pytest.raises(ValidationError, match="Unknown form BAD"):
         if async_mode:
-            asyncio.run(
-                validator.validate_record("STUDY", {"formKey": "BAD", "data": {}})
-            )
+            asyncio.run(validator.validate_record("STUDY", {"formKey": "BAD", "data": {}}))
         else:
             validator.validate_record("STUDY", {"formKey": "BAD", "data": {}})
 
@@ -105,16 +89,12 @@ def test_validate_record_unknown_form(async_mode: bool) -> None:
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
         validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
         validator.refresh = AsyncMock(wraps=validator.refresh)  # type: ignore[assignment]
-        asyncio.run(
-            validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
-        )
+        asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}}))
         validator.refresh.assert_awaited_once_with("STUDY")
         sdk.async_get_variables.assert_awaited_once_with(study_key="STUDY")
     else:
@@ -128,9 +108,7 @@ def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_cached(async_mode: bool) -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
         validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
@@ -140,9 +118,7 @@ def test_validate_record_cached(async_mode: bool) -> None:
     validator.schema._form_variables["F1"] = {"age": var}
 
     if async_mode:
-        asyncio.run(
-            validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
-        )
+        asyncio.run(validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}}))
         sdk.async_get_variables.assert_not_awaited()
     else:
         validator.validate_record("STUDY", {"formKey": "F1", "data": {"age": 1}})
@@ -152,9 +128,7 @@ def test_validate_record_cached(async_mode: bool) -> None:
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_with_form_id_fallback(async_mode: bool) -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=123, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=123, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
         validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
@@ -165,9 +139,7 @@ def test_validate_record_with_form_id_fallback(async_mode: bool) -> None:
     validator.schema._form_id_to_key[123] = "F1"
 
     if async_mode:
-        asyncio.run(
-            validator.validate_record("STUDY", {"formId": 123, "data": {"age": 1}})
-        )
+        asyncio.run(validator.validate_record("STUDY", {"formId": 123, "data": {"age": 1}}))
         sdk.async_get_variables.assert_not_awaited()
     else:
         validator.validate_record("STUDY", {"formId": 123, "data": {"age": 1}})
@@ -177,9 +149,7 @@ def test_validate_record_with_form_id_fallback(async_mode: bool) -> None:
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_missing_form_identifier(async_mode: bool) -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
         validator = AsyncSchemaValidator(sdk)  # type: ignore[assignment]
@@ -201,8 +171,7 @@ def test_schema_validator_is_async_deprecation_warning() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     with pytest.warns(
-        DeprecationWarning,
-        match="Passing `is_async=True` to SchemaValidator is deprecated",
+        DeprecationWarning, match="Passing `is_async=True` to SchemaValidator is deprecated"
     ):
         validator = SchemaValidator(sdk, is_async=True)
 
@@ -213,8 +182,7 @@ def test_schema_validator_is_async_positional_deprecation_warning() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     with pytest.warns(
-        DeprecationWarning,
-        match="Passing `is_async=True` to SchemaValidator is deprecated",
+        DeprecationWarning, match="Passing `is_async=True` to SchemaValidator is deprecated"
     ):
         validator = SchemaValidator(sdk, True)
 
@@ -223,9 +191,7 @@ def test_schema_validator_is_async_positional_deprecation_warning() -> None:
 
 def test_validate_record_with_none_value_does_not_raise() -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
     validator.schema._form_variables["F1"] = {"age": var}
@@ -236,9 +202,7 @@ def test_validate_record_with_none_value_does_not_raise() -> None:
 
 def test_check_type_unknown_variable_type() -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="unknown_type", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="unknown_type", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
     validator.schema._form_variables["F1"] = {"age": var}
@@ -251,9 +215,7 @@ def test_check_type_unknown_variable_type() -> None:
 
 def test_check_type_case_insensitive_type() -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="InTeGeR", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="InTeGeR", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
     validator.schema._form_variables["F1"] = {"age": var}
@@ -266,9 +228,7 @@ def test_validate_record_entry_with_form_key() -> None:
     """TODO: Add docstring."""
     from imednet.validation.cache import SchemaCache, validate_record_entry
 
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     schema = SchemaCache()
     schema.populate([var])
 
@@ -280,9 +240,7 @@ def test_validate_record_entry_with_form_id() -> None:
     """TODO: Add docstring."""
     from imednet.validation.cache import SchemaCache, validate_record_entry
 
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     schema = SchemaCache()
     schema.populate([var])
 
@@ -294,9 +252,7 @@ def test_validate_record_entry_missing_both() -> None:
     """TODO: Add docstring."""
     from imednet.validation.cache import SchemaCache, validate_record_entry
 
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     schema = SchemaCache()
     schema.populate([var])
 
@@ -326,25 +282,20 @@ def test_type_validators_coverage() -> None:
 
 def test_validate_batch_coverage() -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
     validator.schema._form_variables["F1"] = {"age": var}
 
     # Should not raise
     validator.validate_batch(
-        "STUDY",
-        [{"formKey": "F1", "data": {"age": 1}}, {"formKey": "F1", "data": {"age": 2}}],
+        "STUDY", [{"formKey": "F1", "data": {"age": 1}}, {"formKey": "F1", "data": {"age": 2}}]
     )
 
 
 def test_async_validate_batch_coverage() -> None:
     """TODO: Add docstring."""
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=True)
     validator = AsyncSchemaValidator(sdk)
     validator.schema._form_variables["F1"] = {"age": var}
@@ -352,11 +303,7 @@ def test_async_validate_batch_coverage() -> None:
     # Should not raise
     asyncio.run(
         validator.validate_batch(
-            "STUDY",
-            [
-                {"formKey": "F1", "data": {"age": 1}},
-                {"formKey": "F1", "data": {"age": 2}},
-            ],
+            "STUDY", [{"formKey": "F1", "data": {"age": 1}}, {"formKey": "F1", "data": {"age": 2}}]
         )
     )
 
@@ -365,9 +312,7 @@ def test_schema_cache_forms_property() -> None:
     """TODO: Add docstring."""
     from imednet.validation.cache import SchemaCache
 
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     cache = SchemaCache()
     cache.populate([var])
 
@@ -381,9 +326,7 @@ def test_base_schema_cache_refresh() -> None:
 
     from imednet.validation.cache import SchemaCache
 
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
 
     cache = SchemaCache()
     forms = MagicMock()
@@ -402,9 +345,7 @@ async def test_base_schema_cache_async_refresh() -> None:
 
     from imednet.validation.cache import AsyncSchemaCache
 
-    var = Variable(
-        variable_name="age", variable_type="integer", form_id=1, form_key="F1"
-    )
+    var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
 
     cache = AsyncSchemaCache()
     forms = MagicMock()

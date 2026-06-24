@@ -12,9 +12,7 @@ security_key = "XXXXXXXXXX"
 base_url = None
 study_key = "XXXXXXXXXX"
 
-output_path = os.path.join(
-    os.path.dirname(__file__), "record_mapping_output", "records.csv"
-)
+output_path = os.path.join(os.path.dirname(__file__), "record_mapping_output", "records.csv")
 
 try:
     sdk = ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)

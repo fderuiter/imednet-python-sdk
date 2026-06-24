@@ -102,9 +102,7 @@ def test_get_workflow_entry_point_returns_none_when_no_plugins_installed() -> No
     assert result is None
 
 
-def test_get_workflow_entry_point_raises_plugin_load_error_on_multiple_plugins() -> (
-    None
-):
+def test_get_workflow_entry_point_raises_plugin_load_error_on_multiple_plugins() -> None:
     """TODO: Add docstring."""
     ep1 = MagicMock(spec=EntryPoint)
     ep1.value = "plugin_a.ns:factory"
@@ -166,9 +164,7 @@ def test_init_workflows_raises_plugin_load_error_on_broken_entry_point() -> None
 # ---------------------------------------------------------------------------
 
 
-def test_init_workflows_raises_plugin_load_error_when_entry_point_not_callable() -> (
-    None
-):
+def test_init_workflows_raises_plugin_load_error_when_entry_point_not_callable() -> None:
     """TODO: Add docstring."""
     ep = MagicMock(spec=EntryPoint)
     ep.value = "myplugin.ns:NOT_A_CALLABLE"
@@ -203,9 +199,7 @@ def test_init_workflows_returns_namespace_from_valid_plugin() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_init_workflows_raises_plugin_load_error_when_factory_raises_type_error() -> (
-    None
-):
+def test_init_workflows_raises_plugin_load_error_when_factory_raises_type_error() -> None:
     """TODO: Add docstring."""
 
     def _bad_factory(*args: Any, **kwargs: Any) -> None:

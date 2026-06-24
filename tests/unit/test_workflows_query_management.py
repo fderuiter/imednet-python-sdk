@@ -9,9 +9,7 @@ from imednet_workflows.query_management import QueryManagementWorkflow
 
 def make_query(sequence_closed: list[tuple[int, bool]]) -> Query:
     """TODO: Add docstring."""
-    comments = [
-        QueryComment(sequence=seq, closed=closed) for seq, closed in sequence_closed
-    ]
+    comments = [QueryComment(sequence=seq, closed=closed) for seq, closed in sequence_closed]
     return Query(query_comments=comments)
 
 
@@ -60,22 +58,14 @@ def test_get_query_state_counts_aggregates_states() -> None:
 def test_get_queries_by_site_filters_using_subjects() -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
-    sdk.get_subjects.return_value = [
-        Subject(subject_key="S1"),
-        Subject(subject_key="S2"),
-    ]
+    sdk.get_subjects.return_value = [Subject(subject_key="S1"), Subject(subject_key="S2")]
     wf = QueryManagementWorkflow(sdk)
 
     wf.get_queries_by_site("STUDY", "SITE", additional_filter={"state": "open"})
 
     sdk.get_subjects.assert_called_once_with("STUDY", site_name="SITE")
-    sdk.get_queries.assert_called_once_with(
-        "STUDY", subject_key=["S1", "S2"], state="open"
-    )
-    assert sdk.get_queries.call_args.kwargs == {
-        "subject_key": ["S1", "S2"],
-        "state": "open",
-    }
+    sdk.get_queries.assert_called_once_with("STUDY", subject_key=["S1", "S2"], state="open")
+    assert sdk.get_queries.call_args.kwargs == {"subject_key": ["S1", "S2"], "state": "open"}
 
 
 def test_get_queries_by_site_returns_empty_if_no_subjects() -> None:

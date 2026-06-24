@@ -45,9 +45,7 @@ class SampleOptionalModel(JsonModel):
 def test_json_model_normalization_optional_fields() -> None:
     """TODO: Add docstring."""
     # Test with None values
-    model_none = SampleOptionalModel(
-        opt_str=None, opt_int=None, opt_bool=None, opt_datetime=None
-    )
+    model_none = SampleOptionalModel(opt_str=None, opt_int=None, opt_bool=None, opt_datetime=None)
     assert model_none.opt_str is None
     assert model_none.opt_int is None
     assert model_none.opt_bool is None
@@ -55,10 +53,7 @@ def test_json_model_normalization_optional_fields() -> None:
 
     # Test with string values
     model_str = SampleOptionalModel(
-        opt_str="hello",
-        opt_int="5",
-        opt_bool="true",
-        opt_datetime="2024-01-02T03:04:05Z",
+        opt_str="hello", opt_int="5", opt_bool="true", opt_datetime="2024-01-02T03:04:05Z"
     )
     assert model_str.opt_str == "hello"
     assert model_str.opt_int == 5

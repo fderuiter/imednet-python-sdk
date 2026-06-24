@@ -18,9 +18,7 @@ def filterable_dataframe(df: pd.DataFrame, key: str, height: int = 400) -> None:
     """
     query = st.text_input("🔍 Filter rows", key=f"filter_{key}")
     if query:
-        mask = df.apply(
-            lambda col: col.astype(str).str.contains(query, case=False, na=False)
-        )
+        mask = df.apply(lambda col: col.astype(str).str.contains(query, case=False, na=False))
         df = df[mask.any(axis=1)]
     page_df = paginated_slice(df, key=key)
     st.dataframe(page_df, use_container_width=True, height=height)

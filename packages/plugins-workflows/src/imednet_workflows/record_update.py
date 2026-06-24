@@ -33,9 +33,7 @@ class RecordUpdateWorkflow:
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
-    def _validate_form_key(
-        self, study_key: str, records_data: List[Dict[str, Any]]
-    ) -> None:
+    def _validate_form_key(self, study_key: str, records_data: List[Dict[str, Any]]) -> None:
         """Refresh schema if the form key is missing from cache."""
         if not records_data:
             return
@@ -82,10 +80,7 @@ class RecordUpdateWorkflow:
             raise ValueError("Submission successful but no batch_id received.")
 
         return cast(
-            "Job",
-            sdk.poll_job(
-                study_key, job.batch_id, timeout=timeout, interval=poll_interval
-            ),
+            'Job', sdk.poll_job(study_key, job.batch_id, timeout=timeout, interval=poll_interval)
         )
 
     async def async_create_or_update_records(
@@ -99,13 +94,9 @@ class RecordUpdateWorkflow:
         """Asynchronous variant of :meth:`create_or_update_records`."""
         await self._async_validate_form_key(study_key, records_data)
 
-        await cast(AsyncSchemaValidator, self._validator).validate_batch(
-            study_key, records_data
-        )
+        await cast(AsyncSchemaValidator, self._validator).validate_batch(study_key, records_data)
         sdk = cast("AsyncImednetFacade", self._sdk)
-        job = await sdk.async_create_record(
-            study_key, records_data, schema=self._schema
-        )
+        job = await sdk.async_create_record(study_key, records_data, schema=self._schema)
 
         if not wait_for_completion:
             return job
@@ -113,7 +104,7 @@ class RecordUpdateWorkflow:
             raise ValueError("Submission successful but no batch_id received.")
 
         return cast(
-            "Job",
+            'Job',
             await sdk.async_poll_job(
                 study_key, job.batch_id, timeout=timeout, interval=poll_interval
             ),
@@ -167,9 +158,7 @@ class RecordUpdateWorkflow:
                 "name": "intervalName",
                 "id": "intervalId",
             }
-            record[interval_id_field_map[interval_identifier_type]] = (
-                interval_identifier
-            )
+            record[interval_id_field_map[interval_identifier_type]] = interval_identifier
 
         return record
 

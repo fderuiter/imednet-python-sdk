@@ -52,16 +52,7 @@ def test_form_builder_add_field_invalid_type():
 def test_form_builder_add_all_field_types():
     """TODO: Add docstring."""
     builder = FormBuilder()
-    types = [
-        "text",
-        "number",
-        "radio",
-        "dropdown",
-        "datetime",
-        "upload",
-        "checkbox",
-        "memo",
-    ]
+    types = ["text", "number", "radio", "dropdown", "datetime", "upload", "checkbox", "memo"]
 
     for idx, t in enumerate(types):
         if t in ["radio", "dropdown", "checkbox"]:
@@ -69,9 +60,7 @@ def test_form_builder_add_all_field_types():
         else:
             choices = None
 
-        builder.add_field(
-            type=t, label=f"Label {t}", question_name=f"qn_{t}", choices=choices
-        )
+        builder.add_field(type=t, label=f"Label {t}", question_name=f"qn_{t}", choices=choices)
 
     page = builder.current_page
     # It adds everything into the same table if it exists

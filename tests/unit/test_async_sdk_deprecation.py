@@ -11,8 +11,7 @@ def test_async_sdk_deprecation_warning():
         del sys.modules["imednet.async_sdk"]
 
     with pytest.warns(
-        DeprecationWarning,
-        match="imednet.async_sdk is deprecated; use imednet.sdk instead",
+        DeprecationWarning, match="imednet.async_sdk is deprecated; use imednet.sdk instead"
     ):
         import imednet.async_sdk
 

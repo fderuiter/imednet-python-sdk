@@ -9,7 +9,7 @@ import pytest
 from playwright.sync_api import sync_playwright
 
 
-def wait_for_port(port, host="localhost", timeout=10.0):
+def wait_for_port(port, host='localhost', timeout=10.0):
     """Wait until a port starts accepting TCP connections."""
     start_time = time.time()
     while True:
@@ -26,9 +26,7 @@ def wait_for_port(port, host="localhost", timeout=10.0):
 def dashboard_server():
     """Start the Streamlit dashboard as a background process."""
     port = 8502  # Use a different port than default
-    app_path = os.path.abspath(
-        "packages/plugins-streamlit/src/imednet_streamlit/app.py"
-    )
+    app_path = os.path.abspath("packages/plugins-streamlit/src/imednet_streamlit/app.py")
 
     # Set environment variables for the test environment
     env = os.environ.copy()
@@ -57,9 +55,7 @@ def dashboard_server():
         "false",
     ]
 
-    proc = subprocess.Popen(
-        cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if not wait_for_port(port):
         stdout, stderr = proc.communicate(timeout=1)

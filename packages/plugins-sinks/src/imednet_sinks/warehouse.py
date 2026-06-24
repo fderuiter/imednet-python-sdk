@@ -171,9 +171,7 @@ class SnowflakeExportSink(ExportSink):
 
     def __init__(self, config: Optional[SinkConfig] = None) -> None:
         """TODO: Add docstring."""
-        cfg = (
-            config if isinstance(config, SnowflakeSinkConfig) else SnowflakeSinkConfig()
-        )
+        cfg = config if isinstance(config, SnowflakeSinkConfig) else SnowflakeSinkConfig()
         super().__init__(cfg)
         self._cfg: SnowflakeSinkConfig = cfg
         self._conn: Any = None
@@ -206,9 +204,7 @@ class SnowflakeExportSink(ExportSink):
             )
 
         snowflake = _require_optional_dep("snowflake.connector", "snowflake")
-        logger.debug(
-            "Connecting to Snowflake account=%s database=%s", cfg.account, cfg.database
-        )
+        logger.debug("Connecting to Snowflake account=%s database=%s", cfg.account, cfg.database)
         try:
             self._conn = snowflake.connect(
                 account=cfg.account,
@@ -256,12 +252,8 @@ class SnowflakeExportSink(ExportSink):
             """TODO: Add docstring."""
             cur = self._conn.cursor()
             try:
-                cur.execute(
-                    f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/"
-                )  # nosem
-                force_clause = (
-                    "FORCE = FALSE" if self.config.idempotent else "FORCE = TRUE"
-                )
+                cur.execute(f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/")  # nosem
+                force_clause = "FORCE = FALSE" if self.config.idempotent else "FORCE = TRUE"
                 cur.execute(
                     f"COPY INTO {cfg.database}.{cfg.schema}.{cfg.table} "
                     f"FROM @{cfg.stage}/{cfg.stage_prefix}/{safe_batch}.parquet "
@@ -346,12 +338,8 @@ def export_to_snowflake(
 
     total_written = 0
     with SnowflakeExportSink(config=config) as sink:
-        for index, batch in enumerate(
-            iter_batches(filtered_records, config.batch_size)
-        ):
-            total_written += sink.write_batch(
-                batch, batch_id=f"{study_key}/records/{index}"
-            )
+        for index, batch in enumerate(iter_batches(filtered_records, config.batch_size)):
+            total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
     return total_written
 
 

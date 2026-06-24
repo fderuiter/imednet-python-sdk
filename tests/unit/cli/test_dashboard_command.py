@@ -77,9 +77,7 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
     assert "Port to run the dashboard on." in help_result.stdout
     assert "Suppress automatic browser launch." in help_result.stdout
 
-    result = runner.invoke(
-        reloaded_cli.app, ["dashboard", "--port", "9999", "--no-browser"]
-    )
+    result = runner.invoke(reloaded_cli.app, ["dashboard", "--port", "9999", "--no-browser"])
     assert result.exit_code == 0
     assert "Launching iMednet Dashboard on port 9999..." in result.stdout
     subprocess_run.assert_called_once_with(

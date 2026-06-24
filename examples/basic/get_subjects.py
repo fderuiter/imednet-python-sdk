@@ -46,9 +46,7 @@ def main():
             subjects = client.subjects.list(study_key=study_key)
             print(f"Subjects for study '{study_key}': {len(subjects)}")
             for subject in subjects[:5]:
-                print(
-                    f"- Subject Key: {subject.subject_key}, Status: {subject.subject_status}"
-                )
+                print(f"- Subject Key: {subject.subject_key}, Status: {subject.subject_status}")
 
     except Exception as e:
         print(f"Error: {e}")

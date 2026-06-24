@@ -183,9 +183,7 @@ def async_paginator_factory(monkeypatch):
 
         for obj in module.__dict__.values():
             if isinstance(obj, type) and issubclass(obj, AsyncListGetEndpoint):
-                monkeypatch.setattr(
-                    obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False
-                )
+                monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_async(self, client, paginator_cls):
             """TODO: Add docstring."""

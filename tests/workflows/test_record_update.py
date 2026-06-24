@@ -17,9 +17,7 @@ from imednet_workflows.record_update import RecordUpdateWorkflow
 def _build_schema() -> tuple[SchemaCache, Variable]:
     """TODO: Add docstring."""
     forms = fake_data.fake_forms_for_cache(1, study_key="S")
-    variables = fake_data.fake_variables_for_cache(
-        forms, vars_per_form=1, study_key="S"
-    )
+    variables = fake_data.fake_variables_for_cache(forms, vars_per_form=1, study_key="S")
     var = variables[0]
     # Bolt: Removed 'required' attribute injection as support was removed
     var.variable_type = "integer"
@@ -38,9 +36,7 @@ def _build_schema() -> tuple[SchemaCache, Variable]:
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
-def test_create_or_update_records_no_wait(
-    schema: SchemaCache, async_mode: bool
-) -> None:
+def test_create_or_update_records_no_wait(schema: SchemaCache, async_mode: bool) -> None:
     """TODO: Add docstring."""
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
@@ -73,14 +69,10 @@ def test_create_or_update_records_validation(async_mode: bool) -> None:
     sdk = MagicMock()
     if async_mode:
         sdk._async_client = object()
-        sdk.async_create_record = AsyncMock(
-            return_value=Job(batch_id="1", state="PROCESSING")
-        )
+        sdk.async_create_record = AsyncMock(return_value=Job(batch_id="1", state="PROCESSING"))
     else:
         del sdk.async_create_record
-        sdk.create_record = MagicMock(
-            return_value=Job(batch_id="1", state="PROCESSING")
-        )
+        sdk.create_record = MagicMock(return_value=Job(batch_id="1", state="PROCESSING"))
 
     wf = RecordUpdateWorkflow(sdk)
     wf._validator.schema = schema
@@ -96,9 +88,7 @@ def test_create_or_update_records_validation(async_mode: bool) -> None:
 
     # Bolt: Changed to type error test since required field check was removed
     with pytest.raises(ValidationError):
-        bad_payload = [
-            {"formKey": var.form_key, "data": {var.variable_name: "bad_type"}}
-        ]
+        bad_payload = [{"formKey": var.form_key, "data": {var.variable_name: "bad_type"}}]
         if async_mode:
             asyncio.run(wf.async_create_or_update_records("S", bad_payload))
         else:
@@ -151,9 +141,7 @@ def test_create_or_update_records_unknown_form_key(async_mode: bool) -> None:
         wf._validator.refresh = AsyncMock()  # type: ignore[method-assign]
         wf._validator.validate_batch = AsyncMock()  # type: ignore[method-assign]
         with pytest.raises(ValueError, match="Form key 'F1' not found"):
-            asyncio.run(
-                wf.async_create_or_update_records("S", [{"formKey": "F1", "data": {}}])
-            )
+            asyncio.run(wf.async_create_or_update_records("S", [{"formKey": "F1", "data": {}}]))
         wf._validator.refresh.assert_awaited_once_with("S")
         wf._validator.validate_batch.assert_not_called()
         sdk.async_create_record.assert_not_awaited()
@@ -207,9 +195,7 @@ def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None
     if async_mode:
         wf._validator.validate_batch = AsyncMock()  # type: ignore[method-assign]
         asyncio.run(
-            wf.async_create_or_update_records(
-                "STUDY", [{"formKey": "F1", "data": {"age": 5}}]
-            )
+            wf.async_create_or_update_records("STUDY", [{"formKey": "F1", "data": {"age": 5}}])
         )
         sdk.async_get_variables.assert_awaited_once_with(study_key="STUDY")
         wf._validator.validate_batch.assert_awaited_once_with(

@@ -48,9 +48,7 @@ class OIDCAuth:
         Returns:
             The user ID (sub or preferred_username) if found, otherwise None.
         """
-        return self._decoded_claims.get("sub") or self._decoded_claims.get(
-            "preferred_username"
-        )
+        return self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
 
     def get_user_roles(self) -> List[str]:
         """Extract and map user roles from the token claims.
@@ -60,11 +58,7 @@ class OIDCAuth:
         """
         # Assume groups or roles claim maps to our roles
         # In a real environment, role mapping config would be applied here
-        roles = (
-            self._decoded_claims.get("roles")
-            or self._decoded_claims.get("groups")
-            or []
-        )
+        roles = self._decoded_claims.get("roles") or self._decoded_claims.get("groups") or []
         if isinstance(roles, str):
             roles = [roles]
 

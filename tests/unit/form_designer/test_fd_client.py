@@ -91,9 +91,7 @@ def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
         ("csrf", 1, 1, -1, "Invalid revision: -1. Must be non-negative."),
     ],
 )
-def test_save_form_validation_sad_paths(
-    mock_layout, csrf, form_id, comm_id, rev, expected_error
-):
+def test_save_form_validation_sad_paths(mock_layout, csrf, form_id, comm_id, rev, expected_error):
     """TODO: Add docstring."""
     base_url = "https://test.imednet.com"
     client = FormDesignerClient(base_url, "fake_sessid")

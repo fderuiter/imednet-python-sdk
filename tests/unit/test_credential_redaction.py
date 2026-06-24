@@ -64,9 +64,7 @@ def test_http_client_never_logs_authorization_header(
 
     with respx.mock(assert_all_mocked=True, assert_all_called=True) as router:
         router.get("https://api.test/secure").respond(200, json={"ok": True})
-        client = Client(
-            api_key="api", security_key="security", base_url="https://api.test"
-        )
+        client = Client(api_key="api", security_key="security", base_url="https://api.test")
         client.get("/secure", headers={"Authorization": "Bearer leaked-token"})
 
     messages = "\n".join(record.getMessage() for record in caplog.records)
@@ -76,9 +74,7 @@ def test_http_client_never_logs_authorization_header(
     assert httpcore_logger.level == original_httpcore_level
 
 
-def test_cli_surfaces_redacted_authentication_errors(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_cli_surfaces_redacted_authentication_errors(monkeypatch: pytest.MonkeyPatch) -> None:
     """TODO: Add docstring."""
     from importlib import import_module
 
