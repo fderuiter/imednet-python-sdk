@@ -14,18 +14,41 @@ from .state_ledger import ExtractionStateLedger
 from .subject_data import SubjectDataWorkflow
 from .sync_worker import SyncWorker, SyncWorkerConfig
 
+
 def setup_parser(subparsers):
+    """Set up the workflows argparse subparsers."""
     wf_parser = subparsers.add_parser("workflows", help="Execute common data workflows.")
     sub = wf_parser.add_subparsers(dest="wf_command")
 
-    extract_parser = sub.add_parser("extract-records", help="Extract records based on criteria spanning subjects, visits, and records.")
+    extract_parser = sub.add_parser(
+        "extract-records",
+        help="Extract records based on criteria spanning subjects, visits, and records.",
+    )
     extract_parser.add_argument("study_key", help=STUDY_KEY_ARG)
-    extract_parser.add_argument("--record-filter", action="append", help="Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters.")
-    extract_parser.add_argument("--subject-filter", action="append", help="Subject filter criteria (e.g., 'subject_status=Screened'). Repeat for multiple filters.")
-    extract_parser.add_argument("--visit-filter", action="append", help="Visit filter criteria (e.g., 'visit_key=SCREENING'). Repeat for multiple filters.")
-    
+    extract_parser.add_argument(
+        "--record-filter",
+        action="append",
+        help="Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters.",
+    )
+    extract_parser.add_argument(
+        "--subject-filter",
+        action="append",
+        help="Subject filter criteria (e.g., 'subject_status=Screened'). Repeat for multiple filters.",
+    )
+    extract_parser.add_argument(
+        "--visit-filter",
+        action="append",
+        help="Visit filter criteria (e.g., 'visit_key=SCREENING'). Repeat for multiple filters.",
+    )
+
     @with_sdk
-    def extract_records(sdk: ImednetFacade, study_key: str, record_filter: list[str] | None = None, subject_filter: list[str] | None = None, visit_filter: list[str] | None = None) -> None:
+    def extract_records(
+        sdk: ImednetFacade,
+        study_key: str,
+        record_filter: list[str] | None = None,
+        subject_filter: list[str] | None = None,
+        visit_filter: list[str] | None = None,
+    ) -> None:
         workflow = DataExtractionWorkflow(sdk)
         parsed_record_filter = parse_filter_args(record_filter)
         parsed_subject_filter = parse_filter_args(subject_filter)
@@ -44,16 +67,31 @@ def setup_parser(subparsers):
             print(records)
         else:
             print("No records found matching the criteria.")
-            
-    extract_parser.set_defaults(func=lambda args: extract_records(study_key=args.study_key, record_filter=args.record_filter, subject_filter=args.subject_filter, visit_filter=args.visit_filter))
 
-    sync_parser = sub.add_parser("sync-worker", help="Run an idempotent background cache refresh worker.")
+    extract_parser.set_defaults(
+        func=lambda args: extract_records(
+            study_key=args.study_key,
+            record_filter=args.record_filter,
+            subject_filter=args.subject_filter,
+            visit_filter=args.visit_filter,
+        )
+    )
+
+    sync_parser = sub.add_parser(
+        "sync-worker", help="Run an idempotent background cache refresh worker."
+    )
     sync_parser.add_argument("study_key", help=STUDY_KEY_ARG)
-    sync_parser.add_argument("--interval", type=int, default=900, help="Polling interval in seconds.")
-    sync_parser.add_argument("--once", action="store_true", help="Run a single sync cycle and exit.")
-    
+    sync_parser.add_argument(
+        "--interval", type=int, default=900, help="Polling interval in seconds."
+    )
+    sync_parser.add_argument(
+        "--once", action="store_true", help="Run a single sync cycle and exit."
+    )
+
     @with_sdk
-    def sync_worker(sdk: ImednetFacade, study_key: str, interval: int = 900, once: bool = False) -> None:
+    def sync_worker(
+        sdk: ImednetFacade, study_key: str, interval: int = 900, once: bool = False
+    ) -> None:
         from .cached_loader import CachedRecordsLoader
 
         worker = SyncWorker(
@@ -75,16 +113,27 @@ def setup_parser(subparsers):
         except KeyboardInterrupt:
             worker.stop()
             print("Sync worker termination requested. Exiting cleanly.")
-            
-    sync_parser.set_defaults(func=lambda args: sync_worker(study_key=args.study_key, interval=args.interval, once=args.once))
+
+    sync_parser.set_defaults(
+        func=lambda args: sync_worker(
+            study_key=args.study_key, interval=args.interval, once=args.once
+        )
+    )
 
     state_parser = sub.add_parser("state", help="Manage high-water mark execution ledger state.")
     state_sub = state_parser.add_subparsers(dest="state_command")
-    
-    show_parser = state_sub.add_parser("show", help="Show the current high-water mark records and stream metadata.")
-    show_parser.add_argument("-l", "--ledger-path", default="/var/lib/imednet/pipeline_ledger.json", help="Path to the pipeline ledger JSON file.")
+
+    show_parser = state_sub.add_parser(
+        "show", help="Show the current high-water mark records and stream metadata."
+    )
+    show_parser.add_argument(
+        "-l",
+        "--ledger-path",
+        default="/var/lib/imednet/pipeline_ledger.json",
+        help="Path to the pipeline ledger JSON file.",
+    )
     show_parser.add_argument("-s", "--study-key", help="Filter the ledger by a specific study key.")
-    
+
     def show_state(ledger_path: str, study_key: str | None = None) -> None:
         ledger = ExtractionStateLedger(ledger_path)
         try:
@@ -95,27 +144,46 @@ def setup_parser(subparsers):
 
         has_data = False
         print(f"iMednet Extraction Ledger ({ledger_path})")
-        print("Study Key | Stream Name | Last Timestamp (UTC) | Records Processed | Status | Error Message")
+        print(
+            "Study Key | Stream Name | Last Timestamp (UTC) | Records Processed | Status | Error Message"
+        )
         for s_key, study_state in state.studies.items():
             if study_key and s_key != study_key:
                 continue
             for stream_name, stream_state in study_state.streams.items():
                 has_data = True
-                print(f"{s_key} | {stream_name} | {stream_state.last_timestamp.isoformat()} | {stream_state.records_processed} | {stream_state.last_run_status} | {stream_state.error_message or ''}")
+                print(
+                    f"{s_key} | {stream_name} | {stream_state.last_timestamp.isoformat()} | {stream_state.records_processed} | {stream_state.last_run_status} | {stream_state.error_message or ''}"
+                )
 
         if not has_data:
             print("No ledger entries found matching filters.")
-            
-    show_parser.set_defaults(func=lambda args: show_state(ledger_path=args.ledger_path, study_key=args.study_key))
-    
-    set_parser = state_sub.add_parser("set", help="Manually set a high-water mark timestamp for a study and stream.")
+
+    show_parser.set_defaults(
+        func=lambda args: show_state(ledger_path=args.ledger_path, study_key=args.study_key)
+    )
+
+    set_parser = state_sub.add_parser(
+        "set", help="Manually set a high-water mark timestamp for a study and stream."
+    )
     set_parser.add_argument("-s", "--study-key", required=True, help="The study key.")
     set_parser.add_argument("-m", "--stream", required=True, help="The stream name.")
-    set_parser.add_argument("-t", "--timestamp", required=True, help="The ISO-8601 timestamp (UTC).")
-    set_parser.add_argument("-r", "--records-processed", type=int, default=0, help="Number of records processed.")
-    set_parser.add_argument("-l", "--ledger-path", default="/var/lib/imednet/pipeline_ledger.json", help="Path to the pipeline ledger JSON file.")
-    
-    def set_state(study_key: str, stream: str, timestamp: str, records_processed: int, ledger_path: str) -> None:
+    set_parser.add_argument(
+        "-t", "--timestamp", required=True, help="The ISO-8601 timestamp (UTC)."
+    )
+    set_parser.add_argument(
+        "-r", "--records-processed", type=int, default=0, help="Number of records processed."
+    )
+    set_parser.add_argument(
+        "-l",
+        "--ledger-path",
+        default="/var/lib/imednet/pipeline_ledger.json",
+        help="Path to the pipeline ledger JSON file.",
+    )
+
+    def set_state(
+        study_key: str, stream: str, timestamp: str, records_processed: int, ledger_path: str
+    ) -> None:
         try:
             normalized = timestamp.replace("Z", "+00:00")
             dt = datetime.fromisoformat(normalized)
@@ -136,18 +204,39 @@ def setup_parser(subparsers):
                 records_processed=records_processed,
                 status="success",
             )
-            print(f"Successfully set high-water mark for '{study_key}' -> '{stream}' to {dt.isoformat()}")
+            print(
+                f"Successfully set high-water mark for '{study_key}' -> '{stream}' to {dt.isoformat()}"
+            )
         except Exception as err:
             print(f"Failed to write ledger: {err}")
             sys.exit(1)
-            
-    set_parser.set_defaults(func=lambda args: set_state(study_key=args.study_key, stream=args.stream, timestamp=args.timestamp, records_processed=args.records_processed, ledger_path=args.ledger_path))
 
-    reset_parser = state_sub.add_parser("reset", help="Reset (clear) high-water mark state for a study/stream.")
+    set_parser.set_defaults(
+        func=lambda args: set_state(
+            study_key=args.study_key,
+            stream=args.stream,
+            timestamp=args.timestamp,
+            records_processed=args.records_processed,
+            ledger_path=args.ledger_path,
+        )
+    )
+
+    reset_parser = state_sub.add_parser(
+        "reset", help="Reset (clear) high-water mark state for a study/stream."
+    )
     reset_parser.add_argument("-s", "--study-key", required=True, help="The study key.")
-    reset_parser.add_argument("-m", "--stream", help="The stream name. If omitted, all streams for the study will be reset.")
-    reset_parser.add_argument("-l", "--ledger-path", default="/var/lib/imednet/pipeline_ledger.json", help="Path to the pipeline ledger JSON file.")
-    
+    reset_parser.add_argument(
+        "-m",
+        "--stream",
+        help="The stream name. If omitted, all streams for the study will be reset.",
+    )
+    reset_parser.add_argument(
+        "-l",
+        "--ledger-path",
+        default="/var/lib/imednet/pipeline_ledger.json",
+        help="Path to the pipeline ledger JSON file.",
+    )
+
     def reset_state(study_key: str, stream: str | None, ledger_path: str) -> None:
         ledger = ExtractionStateLedger(ledger_path)
         try:
@@ -168,33 +257,45 @@ def setup_parser(subparsers):
         except Exception as err:
             print(f"Failed to reset ledger state: {err}")
             sys.exit(1)
-            
-    reset_parser.set_defaults(func=lambda args: reset_state(study_key=args.study_key, stream=args.stream, ledger_path=args.ledger_path))
+
+    reset_parser.set_defaults(
+        func=lambda args: reset_state(
+            study_key=args.study_key, stream=args.stream, ledger_path=args.ledger_path
+        )
+    )
+
 
 def setup_subject_parser(subparsers):
-    subj_parser = subparsers.add_parser("subject-data", help="Retrieve all data for a single subject.")
+    """Set up the subject-data argparse subparsers."""
+    subj_parser = subparsers.add_parser(
+        "subject-data", help="Retrieve all data for a single subject."
+    )
     subj_parser.add_argument("study_key", help=STUDY_KEY_ARG)
     subj_parser.add_argument("subject_key", help="The key identifying the subject.")
-    
+
     @with_sdk
     def subject_data(sdk: ImednetFacade, study_key: str, subject_key: str) -> None:
         workflow = SubjectDataWorkflow(sdk)
         data = workflow.get_all_subject_data(study_key, subject_key)
         print(data.model_dump())
-        
-    subj_parser.set_defaults(func=lambda args: subject_data(study_key=args.study_key, subject_key=args.subject_key))
-    
+
+    subj_parser.set_defaults(
+        func=lambda args: subject_data(study_key=args.study_key, subject_key=args.subject_key)
+    )
+
+
 def state_app(args=None):
+    """Execute the state app logic directly for tests."""
     if args is None:
         args = sys.argv[1:]
     parser = argparse.ArgumentParser(description="Manage high-water mark execution ledger state.")
     state_sub = parser.add_subparsers(dest="state_command")
-    
+
     # We duplicate the state logic here for tests
     show_parser = state_sub.add_parser("show")
     show_parser.add_argument("-l", "--ledger-path", default="/var/lib/imednet/pipeline_ledger.json")
     show_parser.add_argument("-s", "--study-key")
-    
+
     def show_state(ledger_path: str, study_key: str | None = None) -> None:
         ledger = ExtractionStateLedger(ledger_path)
         try:
@@ -204,25 +305,34 @@ def state_app(args=None):
             sys.exit(1)
         has_data = False
         print(f"iMednet Extraction Ledger ({ledger_path})")
-        print("Study Key | Stream Name | Last Timestamp (UTC) | Records Processed | Status | Error Message")
+        print(
+            "Study Key | Stream Name | Last Timestamp (UTC) | Records Processed | Status | Error Message"
+        )
         for s_key, study_state in state.studies.items():
             if study_key and s_key != study_key:
                 continue
             for stream_name, stream_state in study_state.streams.items():
                 has_data = True
-                print(f"{s_key} | {stream_name} | {stream_state.last_timestamp.isoformat()} | {stream_state.records_processed} | {stream_state.last_run_status} | {stream_state.error_message or ''}")
+                print(
+                    f"{s_key} | {stream_name} | {stream_state.last_timestamp.isoformat()} | {stream_state.records_processed} | {stream_state.last_run_status} | {stream_state.error_message or ''}"
+                )
         if not has_data:
             print("No ledger entries found matching filters.")
-    show_parser.set_defaults(func=lambda args: show_state(ledger_path=args.ledger_path, study_key=args.study_key))
-    
+
+    show_parser.set_defaults(
+        func=lambda args: show_state(ledger_path=args.ledger_path, study_key=args.study_key)
+    )
+
     set_parser = state_sub.add_parser("set")
     set_parser.add_argument("-s", "--study-key", required=True)
     set_parser.add_argument("-m", "--stream", required=True)
     set_parser.add_argument("-t", "--timestamp", required=True)
     set_parser.add_argument("-r", "--records-processed", type=int, default=0)
     set_parser.add_argument("-l", "--ledger-path", default="/var/lib/imednet/pipeline_ledger.json")
-    
-    def set_state(study_key: str, stream: str, timestamp: str, records_processed: int, ledger_path: str) -> None:
+
+    def set_state(
+        study_key: str, stream: str, timestamp: str, records_processed: int, ledger_path: str
+    ) -> None:
         try:
             normalized = timestamp.replace("Z", "+00:00")
             dt = datetime.fromisoformat(normalized)
@@ -242,17 +352,30 @@ def state_app(args=None):
                 records_processed=records_processed,
                 status="success",
             )
-            print(f"Successfully set high-water mark for '{study_key}' -> '{stream}' to {dt.isoformat()}")
+            print(
+                f"Successfully set high-water mark for '{study_key}' -> '{stream}' to {dt.isoformat()}"
+            )
         except Exception as err:
             print(f"Failed to write ledger: {err}")
             sys.exit(1)
-    set_parser.set_defaults(func=lambda args: set_state(study_key=args.study_key, stream=args.stream, timestamp=args.timestamp, records_processed=args.records_processed, ledger_path=args.ledger_path))
+
+    set_parser.set_defaults(
+        func=lambda args: set_state(
+            study_key=args.study_key,
+            stream=args.stream,
+            timestamp=args.timestamp,
+            records_processed=args.records_processed,
+            ledger_path=args.ledger_path,
+        )
+    )
 
     reset_parser = state_sub.add_parser("reset")
     reset_parser.add_argument("-s", "--study-key", required=True)
     reset_parser.add_argument("-m", "--stream")
-    reset_parser.add_argument("-l", "--ledger-path", default="/var/lib/imednet/pipeline_ledger.json")
-    
+    reset_parser.add_argument(
+        "-l", "--ledger-path", default="/var/lib/imednet/pipeline_ledger.json"
+    )
+
     def reset_state(study_key: str, stream: str | None, ledger_path: str) -> None:
         ledger = ExtractionStateLedger(ledger_path)
         try:
@@ -273,7 +396,12 @@ def state_app(args=None):
         except Exception as err:
             print(f"Failed to reset ledger state: {err}")
             sys.exit(1)
-    reset_parser.set_defaults(func=lambda args: reset_state(study_key=args.study_key, stream=args.stream, ledger_path=args.ledger_path))
+
+    reset_parser.set_defaults(
+        func=lambda args: reset_state(
+            study_key=args.study_key, stream=args.stream, ledger_path=args.ledger_path
+        )
+    )
 
     parsed = parser.parse_args(args)
     if hasattr(parsed, "func"):
