@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for subjects filtering."""
 
 from unittest.mock import AsyncMock, Mock
 
@@ -8,7 +8,7 @@ from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
 
 
 def test_list_by_site_filtering():
-    """TODO: Add docstring."""
+    """Test that list by site filtering."""
     mock_client = Mock()
     mock_ctx = Mock()
 
@@ -24,14 +24,14 @@ def test_list_by_site_filtering():
 
 @pytest.mark.asyncio
 async def test_async_list_by_site_filtering():
-    """TODO: Add docstring."""
+    """Test that async list by site filtering asynchronously."""
     mock_client = Mock()
     mock_ctx = Mock()
 
     endpoint = AsyncSubjectsEndpoint(mock_client, mock_ctx)
 
     async def fake_async_list(*args, **kwargs):
-        """TODO: Add docstring."""
+        """Helper function to fake async list."""
         if False:
             yield
 

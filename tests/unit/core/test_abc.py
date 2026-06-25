@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for abc."""
 
 from typing import Any, Dict, Type
 
@@ -9,41 +9,41 @@ from imednet.models.json_base import JsonModel
 
 
 class MockModel(JsonModel):
-    """TODO: Add docstring."""
+    """Test suite for MockModel."""
 
     id: int
 
 
 class ConcreteEndpoint(EndpointABC[MockModel]):
-    """TODO: Add docstring."""
+    """Test suite for ConcreteEndpoint."""
 
     @property
     def PATH(self) -> str:  # noqa: N802
-        """TODO: Add docstring."""
+        """Helper function to PATH."""
         return "mock"
 
     @property
     def MODEL(self) -> Type[MockModel]:  # noqa: N802
-        """TODO: Add docstring."""
+        """Helper function to MODEL."""
         return MockModel
 
     def _build_path(self, *segments: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to  build path."""
         return "/".join(["mock", *(str(s) for s in segments)])
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """TODO: Add docstring."""
+        """Helper function to  auto filter."""
         return {"auto": True, **filters}
 
 
 class UnimplementedEndpoint(EndpointABC[MockModel]):
-    """TODO: Add docstring."""
+    """Test suite for UnimplementedEndpoint."""
 
     pass
 
 
 def test_endpoint_abc_properties():
-    """TODO: Add docstring."""
+    """Test that endpoint abc properties."""
     endpoint = ConcreteEndpoint()
     assert endpoint.PATH == "mock"
     assert endpoint.MODEL == MockModel
@@ -52,21 +52,21 @@ def test_endpoint_abc_properties():
 
 
 def test_endpoint_abc_methods():
-    """TODO: Add docstring."""
+    """Test that endpoint abc methods."""
     endpoint = ConcreteEndpoint()
     assert endpoint._build_path(1, "test") == "mock/1/test"
     assert endpoint._auto_filter({"test": "value"}) == {"auto": True, "test": "value"}
 
 
 def test_endpoint_abc_abstract_instantiation_fails():
-    """TODO: Add docstring."""
+    """Test that endpoint abc abstract instantiation fails."""
     with pytest.raises(TypeError) as exc_info:
         UnimplementedEndpoint()  # type: ignore[abstract]
     assert "Can't instantiate abstract class" in str(exc_info.value)
 
 
 def test_endpoint_abc_pass_coverage():
-    """TODO: Add docstring."""
+    """Test that endpoint abc pass coverage."""
     # Hit the `pass` statements in abstract properties/methods to ensure 100% coverage
     assert EndpointABC.PATH.fget(None) is None
     assert EndpointABC.MODEL.fget(None) is None

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for jobs async."""
 
 from unittest.mock import AsyncMock
 
@@ -11,7 +11,7 @@ from imednet.models.jobs import JobStatus
 
 @pytest.mark.asyncio
 async def test_async_get_success(dummy_client, context, response_factory):
-    """TODO: Add docstring."""
+    """Test that async get success asynchronously."""
     # Setup async mock
     async_client = AsyncMock()
     async_client.get.return_value = response_factory({"jobId": "1"})
@@ -26,7 +26,7 @@ async def test_async_get_success(dummy_client, context, response_factory):
 
 @pytest.mark.asyncio
 async def test_async_get_not_found(dummy_client, context, response_factory):
-    """TODO: Add docstring."""
+    """Test that async get not found asynchronously."""
     async_client = AsyncMock()
     async_client.get.return_value = response_factory({})
 

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for record update."""
 
 import asyncio
 import types
@@ -15,7 +15,7 @@ from imednet_workflows.record_update import RecordUpdateWorkflow
 
 
 def _build_schema() -> tuple[SchemaCache, Variable]:
-    """TODO: Add docstring."""
+    """Helper function to  build schema."""
     forms = fake_data.fake_forms_for_cache(1, study_key="S")
     variables = fake_data.fake_variables_for_cache(forms, vars_per_form=1, study_key="S")
     var = variables[0]
@@ -24,7 +24,7 @@ def _build_schema() -> tuple[SchemaCache, Variable]:
     forms_ep = types.SimpleNamespace(list=lambda **_: forms)
 
     def list_vars(*_, form_id=None, **__):
-        """TODO: Add docstring."""
+        """Helper function to list vars."""
         return [v for v in variables if form_id is None or v.form_id == form_id]
 
     vars_ep = types.SimpleNamespace(list=list_vars)
@@ -37,7 +37,7 @@ def _build_schema() -> tuple[SchemaCache, Variable]:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_create_or_update_records_no_wait(schema: SchemaCache, async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records no wait."""
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
     if not async_mode:
@@ -64,7 +64,7 @@ def test_create_or_update_records_no_wait(schema: SchemaCache, async_mode: bool)
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_create_or_update_records_validation(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records validation."""
     schema, var = _build_schema()
     sdk = MagicMock()
     if async_mode:
@@ -122,7 +122,7 @@ def test_create_or_update_records_validation(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_create_or_update_records_unknown_form_key(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records unknown form key."""
     sdk = MagicMock()
     if async_mode:
         sdk._async_client = object()
@@ -160,7 +160,7 @@ def test_create_or_update_records_unknown_form_key(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records refresh and validate."""
     sdk = MagicMock()
     job = Job(batch_id="1", state="PROCESSING")
     if not async_mode:
@@ -226,7 +226,7 @@ def test_create_or_update_records_refresh_and_validate(async_mode: bool) -> None
 def test_create_or_update_records_wait_for_completion(
     async_mode: bool, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records wait for completion."""
     sdk = MagicMock()
     initial_job = Job(batch_id="1", state="PROCESSING")
     completed_job = Job(batch_id="1", state="COMPLETED")

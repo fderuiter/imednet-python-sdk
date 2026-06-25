@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for pages admin."""
 
 import importlib.util
 import sys
@@ -12,7 +12,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 def test_admin_page_renders():
-    """TODO: Add docstring."""
+    """Test that admin page renders."""
     page_path = PACKAGE_ROOT / "pages" / "admin.py"
 
     fake_st = MagicMock()

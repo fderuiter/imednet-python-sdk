@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for schema validator."""
 
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
@@ -11,7 +11,7 @@ from imednet.validation.cache import AsyncSchemaValidator, SchemaValidator
 
 
 def _build_sdk(variable: Variable, async_mode: bool) -> MagicMock:
-    """TODO: Add docstring."""
+    """Helper function to  build sdk."""
     sdk = MagicMock()
     if async_mode:
         sdk.async_get_variables = AsyncMock(return_value=[variable])
@@ -22,7 +22,7 @@ def _build_sdk(variable: Variable, async_mode: bool) -> MagicMock:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_unknown_variable(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that validate record unknown variable."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
@@ -44,7 +44,7 @@ def test_validate_record_unknown_variable(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_wrong_type(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that validate record wrong type."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
@@ -66,7 +66,7 @@ def test_validate_record_wrong_type(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_unknown_form(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that validate record unknown form."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
@@ -88,7 +88,7 @@ def test_validate_record_unknown_form(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that refresh called when form not cached."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
@@ -107,7 +107,7 @@ def test_refresh_called_when_form_not_cached(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_cached(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that validate record cached."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
@@ -127,7 +127,7 @@ def test_validate_record_cached(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_with_form_id_fallback(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that validate record with form id fallback."""
     var = Variable(variable_name="age", variable_type="integer", form_id=123, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
@@ -148,7 +148,7 @@ def test_validate_record_with_form_id_fallback(async_mode: bool) -> None:
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_validate_record_missing_form_identifier(async_mode: bool) -> None:
-    """TODO: Add docstring."""
+    """Test that validate record missing form identifier."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode)
     if async_mode:
@@ -168,7 +168,7 @@ def test_validate_record_missing_form_identifier(async_mode: bool) -> None:
 
 
 def test_schema_validator_is_async_deprecation_warning() -> None:
-    """TODO: Add docstring."""
+    """Test that schema validator is async deprecation warning."""
     sdk = MagicMock()
     with pytest.warns(
         DeprecationWarning, match="Passing `is_async=True` to SchemaValidator is deprecated"
@@ -179,7 +179,7 @@ def test_schema_validator_is_async_deprecation_warning() -> None:
 
 
 def test_schema_validator_is_async_positional_deprecation_warning() -> None:
-    """TODO: Add docstring."""
+    """Test that schema validator is async positional deprecation warning."""
     sdk = MagicMock()
     with pytest.warns(
         DeprecationWarning, match="Passing `is_async=True` to SchemaValidator is deprecated"
@@ -190,7 +190,7 @@ def test_schema_validator_is_async_positional_deprecation_warning() -> None:
 
 
 def test_validate_record_with_none_value_does_not_raise() -> None:
-    """TODO: Add docstring."""
+    """Test that validate record with none value does not raise."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
@@ -201,7 +201,7 @@ def test_validate_record_with_none_value_does_not_raise() -> None:
 
 
 def test_check_type_unknown_variable_type() -> None:
-    """TODO: Add docstring."""
+    """Test that check type unknown variable type."""
     var = Variable(variable_name="age", variable_type="unknown_type", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
@@ -214,7 +214,7 @@ def test_check_type_unknown_variable_type() -> None:
 
 
 def test_check_type_case_insensitive_type() -> None:
-    """TODO: Add docstring."""
+    """Test that check type case insensitive type."""
     var = Variable(variable_name="age", variable_type="InTeGeR", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
@@ -225,7 +225,7 @@ def test_check_type_case_insensitive_type() -> None:
 
 
 def test_validate_record_entry_with_form_key() -> None:
-    """TODO: Add docstring."""
+    """Test that validate record entry with form key."""
     from imednet.validation.cache import SchemaCache, validate_record_entry
 
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -237,7 +237,7 @@ def test_validate_record_entry_with_form_key() -> None:
 
 
 def test_validate_record_entry_with_form_id() -> None:
-    """TODO: Add docstring."""
+    """Test that validate record entry with form id."""
     from imednet.validation.cache import SchemaCache, validate_record_entry
 
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -249,7 +249,7 @@ def test_validate_record_entry_with_form_id() -> None:
 
 
 def test_validate_record_entry_missing_both() -> None:
-    """TODO: Add docstring."""
+    """Test that validate record entry missing both."""
     from imednet.validation.cache import SchemaCache, validate_record_entry
 
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -261,7 +261,7 @@ def test_validate_record_entry_missing_both() -> None:
 
 
 def test_type_validators_coverage() -> None:
-    """TODO: Add docstring."""
+    """Test that type validators coverage."""
     from imednet.validation.cache import (
         ValidationError,
         _validate_bool,
@@ -281,7 +281,7 @@ def test_type_validators_coverage() -> None:
 
 
 def test_validate_batch_coverage() -> None:
-    """TODO: Add docstring."""
+    """Test that validate batch coverage."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=False)
     validator = SchemaValidator(sdk)
@@ -294,7 +294,7 @@ def test_validate_batch_coverage() -> None:
 
 
 def test_async_validate_batch_coverage() -> None:
-    """TODO: Add docstring."""
+    """Test that async validate batch coverage."""
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     sdk = _build_sdk(var, async_mode=True)
     validator = AsyncSchemaValidator(sdk)
@@ -309,7 +309,7 @@ def test_async_validate_batch_coverage() -> None:
 
 
 def test_schema_cache_forms_property() -> None:
-    """TODO: Add docstring."""
+    """Test that schema cache forms property."""
     from imednet.validation.cache import SchemaCache
 
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -321,7 +321,7 @@ def test_schema_cache_forms_property() -> None:
 
 
 def test_base_schema_cache_refresh() -> None:
-    """TODO: Add docstring."""
+    """Test that base schema cache refresh."""
     from unittest.mock import MagicMock
 
     from imednet.validation.cache import SchemaCache
@@ -340,7 +340,7 @@ def test_base_schema_cache_refresh() -> None:
 
 @pytest.mark.asyncio
 async def test_base_schema_cache_async_refresh() -> None:
-    """TODO: Add docstring."""
+    """Test that base schema cache async refresh asynchronously."""
     from unittest.mock import AsyncMock, MagicMock
 
     from imednet.validation.cache import AsyncSchemaCache
@@ -352,7 +352,7 @@ async def test_base_schema_cache_async_refresh() -> None:
     variables = MagicMock()
 
     async def mock_async_list(*args, **kwargs):
-        """TODO: Add docstring."""
+        """Helper function to mock async list."""
         yield var
 
     variables.async_list = MagicMock(side_effect=mock_async_list)

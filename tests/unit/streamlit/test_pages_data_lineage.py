@@ -20,43 +20,43 @@ MODULE_NAME = "imednet_streamlit.pages.data_lineage"
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for  FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Helper function to   enter  ."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to   exit  ."""
         pass
 
     # Make it usable as a column mock with common widget methods
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to metric."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         return False
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text input."""
         return str(kwargs.get("value", ""))
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to selectbox."""
         return options[index]
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         pass
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.success_calls: list[str] = []
         self.warning_calls: list[str] = []
@@ -69,58 +69,58 @@ class _FakeStreamlit:
         self.text_input_values: dict[str, str] = {}
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to title."""
         pass
 
     def subheader(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to subheader."""
         pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to markdown."""
         pass
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to info."""
         self.info_calls.append(value)
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to success."""
         self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to warning."""
         self.warning_calls.append(value)
 
     def error(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to error."""
         self.error_calls.append(value)
 
     def divider(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to divider."""
         pass
 
     def json(self, value: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to json."""
         self.json_calls.append(value)
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         self.dataframe_calls.append(df)
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to metric."""
         self.metric_calls.append({"label": label, "value": value})
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         key = str(kwargs.get("key") or label)
         if kwargs.get("disabled", False):
             return False
         return key in self.button_presses
 
     def columns(self, spec: Any) -> list[_FakeContextManager]:
-        """TODO: Add docstring."""
+        """Helper function to columns."""
         count = spec if isinstance(spec, int) else len(spec)
         cols = []
         for _ in range(count):
@@ -134,35 +134,35 @@ class _FakeStreamlit:
         return cols
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to selectbox."""
         return options[index]
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text input."""
         key = str(kwargs.get("key") or label)
         if key in self.text_input_values:
             return self.text_input_values[key]
         return str(kwargs.get("value", ""))
 
     def text_area(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text area."""
         return str(kwargs.get("value", ""))
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
-        """TODO: Add docstring."""
+        """Helper function to expander."""
         return _FakeContextManager()
 
     def caption(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to caption."""
         pass
 
     def progress(self, value: float) -> None:
-        """TODO: Add docstring."""
+        """Helper function to progress."""
         pass
 
 
 def _make_fake_records() -> list[Any]:
-    """TODO: Add docstring."""
+    """Helper function to  make fake records."""
     return [
         SimpleNamespace(
             record_id=1,
@@ -180,7 +180,7 @@ def _make_fake_records() -> list[Any]:
 
 
 def _make_extraction() -> ExtractionResult:
-    """TODO: Add docstring."""
+    """Helper function to  make extraction."""
     ae1 = AdverseEvent(
         subjectKey="SUBJ-001",
         aeTerm="headache",
@@ -199,7 +199,7 @@ def _run_data_lineage(
     *,
     study_key: str = "STUDY-01",
 ) -> None:
-    """TODO: Add docstring."""
+    """Helper function to  run data lineage."""
     fake_streamlit_module = ModuleType("streamlit")
     fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
     for attr in (
@@ -234,14 +234,14 @@ def _run_data_lineage(
     fake_extraction = _make_extraction()
 
     class _FakeLoader:
-        """TODO: Add docstring."""
+        """Test suite for  FakeLoader."""
 
         def __init__(self, sdk: object) -> None:
-            """TODO: Add docstring."""
+            """Initialize the test object."""
             pass
 
         def load_records(self, sk: str) -> list[Any]:
-            """TODO: Add docstring."""
+            """Helper function to load records."""
             return fake_records
 
     fake_workflows_module = ModuleType("imednet_workflows")

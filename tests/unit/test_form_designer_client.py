@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for form designer client."""
 
 import json
 
@@ -12,13 +12,13 @@ from imednet.form_designer.models import Layout
 
 @pytest.fixture
 def form_designer_client():
-    """TODO: Add docstring."""
+    """Helper function to form designer client."""
     return FormDesignerClient(base_url="https://test.imednet.com", phpsessid="test_session")
 
 
 @pytest.fixture
 def empty_layout():
-    """TODO: Add docstring."""
+    """Helper function to empty layout."""
     return Layout(pages=[])
 
 

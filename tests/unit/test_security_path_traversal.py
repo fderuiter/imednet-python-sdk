@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for security path traversal."""
 
 from unittest.mock import MagicMock
 
@@ -10,20 +10,20 @@ from imednet.models.json_base import JsonModel
 
 
 class MockModel(JsonModel):
-    """TODO: Add docstring."""
+    """Test suite for MockModel."""
 
     pass
 
 
 class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
-    """TODO: Add docstring."""
+    """Test suite for MockEndpoint."""
 
     MODEL = MockModel
     PATH = "/test"
 
 
 def test_build_path_security():
-    """TODO: Add docstring."""
+    """Test that build path security."""
     client = MagicMock(spec=Client)
     ctx = Context()
     endpoint = MockEndpoint(client, ctx)

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for triage models."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from imednet.models.triage import (
 
 
 def test_triage_models_parse_and_strip_whitespace() -> None:
-    """TODO: Add docstring."""
+    """Test that triage models parse and strip whitespace."""
     item = TriageItem.model_validate(
         {
             "item_id": "  AE-1001  ",
@@ -55,7 +55,7 @@ def test_triage_models_parse_and_strip_whitespace() -> None:
 
 
 def test_triage_history_blank_comment_normalizes_to_none() -> None:
-    """TODO: Add docstring."""
+    """Test that triage history blank comment normalizes to none."""
     entry = TriageHistoryEntry.model_validate(
         {
             "transition_id": "h-2",
@@ -71,7 +71,7 @@ def test_triage_history_blank_comment_normalizes_to_none() -> None:
 
 
 def test_triage_json_roundtrip_keeps_enum_values() -> None:
-    """TODO: Add docstring."""
+    """Test that triage json roundtrip keeps enum values."""
     annotation = TriageAnnotation(
         annotation_id="a-2",
         user_id="reviewer",
@@ -95,7 +95,7 @@ def test_triage_json_roundtrip_keeps_enum_values() -> None:
 
 
 def test_triage_models_enforce_schema_constraints() -> None:
-    """TODO: Add docstring."""
+    """Test that triage models enforce schema constraints."""
     with pytest.raises(ValidationError) as blank_id_error:
         TriageAnnotation.model_validate(
             {

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for records async."""
 
 from unittest.mock import AsyncMock
 
@@ -12,7 +12,7 @@ from imednet.validation.cache import SchemaCache
 
 @pytest.fixture
 def schema():
-    """TODO: Add docstring."""
+    """Helper function to schema."""
     s = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     s._form_variables = {"F1": {"age": var}}
@@ -22,7 +22,7 @@ def schema():
 
 @pytest.mark.asyncio
 async def test_async_create_validates_data(dummy_client, context, response_factory, schema):
-    """TODO: Add docstring."""
+    """Test that async create validates data asynchronously."""
     ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
@@ -45,7 +45,7 @@ async def test_async_create_validates_data(dummy_client, context, response_facto
 async def test_async_create_validates_data_with_snake_case_keys(
     dummy_client, context, response_factory, schema
 ):
-    """TODO: Add docstring."""
+    """Test that async create validates data with snake case keys asynchronously."""
     ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
@@ -57,7 +57,7 @@ async def test_async_create_validates_data_with_snake_case_keys(
 
 @pytest.mark.asyncio
 async def test_async_create_resolves_form_id(dummy_client, context, response_factory, schema):
-    """TODO: Add docstring."""
+    """Test that async create resolves form id asynchronously."""
     ep = records.AsyncRecordsEndpoint(dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 

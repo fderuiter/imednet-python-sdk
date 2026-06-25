@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for workflows record update."""
 
 import sys
 from unittest.mock import AsyncMock, MagicMock
@@ -13,7 +13,7 @@ from imednet_workflows.record_update import RecordUpdateWorkflow
 
 
 def test_create_or_update_records_no_wait() -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records no wait."""
     sdk = MagicMock()
     del sdk.async_create_record
     job = Job(jobId="1", batchId="1", state="PROCESSING")
@@ -27,7 +27,7 @@ def test_create_or_update_records_no_wait() -> None:
 
 
 def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records wait for completion."""
     sdk = MagicMock()
     del sdk.async_create_record
     initial_job = Job(jobId="1", batchId="1", state="PROCESSING")
@@ -52,7 +52,7 @@ def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
 
 
 def test_update_scheduled_record_builds_payload() -> None:
-    """TODO: Add docstring."""
+    """Test that update scheduled record builds payload."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -81,7 +81,7 @@ def test_update_scheduled_record_builds_payload() -> None:
 
 
 def test_create_or_update_records_validation() -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records validation."""
     sdk = MagicMock()
     del sdk.async_create_record
     var = Variable(
@@ -116,7 +116,7 @@ def test_create_or_update_records_validation() -> None:
 
 
 def test_register_subject_builds_payload() -> None:
-    """TODO: Add docstring."""
+    """Test that register subject builds payload."""
     sdk = MagicMock()
     # Mock _async_client to prevent SchemaValidator from being async if not intended
     del sdk.async_create_record
@@ -145,7 +145,7 @@ def test_register_subject_builds_payload() -> None:
 
 
 def test_register_subject_with_site_id() -> None:
-    """TODO: Add docstring."""
+    """Test that register subject with site id."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -172,7 +172,7 @@ def test_register_subject_with_site_id() -> None:
 
 
 def test_create_new_record_builds_payload() -> None:
-    """TODO: Add docstring."""
+    """Test that create new record builds payload."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -199,7 +199,7 @@ def test_create_new_record_builds_payload() -> None:
 
 
 def test_create_new_record_with_subject_oid() -> None:
-    """TODO: Add docstring."""
+    """Test that create new record with subject oid."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -226,7 +226,7 @@ def test_create_new_record_with_subject_oid() -> None:
 
 
 def test_invalid_subject_identifier_type_raises_keyerror() -> None:
-    """TODO: Add docstring."""
+    """Test that invalid subject identifier type raises keyerror."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -242,7 +242,7 @@ def test_invalid_subject_identifier_type_raises_keyerror() -> None:
 
 
 def test_invalid_site_identifier_type_raises_keyerror() -> None:
-    """TODO: Add docstring."""
+    """Test that invalid site identifier type raises keyerror."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -258,7 +258,7 @@ def test_invalid_site_identifier_type_raises_keyerror() -> None:
 
 
 def test_update_scheduled_record_invalid_interval_identifier_type() -> None:
-    """TODO: Add docstring."""
+    """Test that update scheduled record invalid interval identifier type."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -275,7 +275,7 @@ def test_update_scheduled_record_invalid_interval_identifier_type() -> None:
 
 
 def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records wait for completion no batch id."""
     sdk = MagicMock()
     del sdk.async_create_record
 
@@ -313,7 +313,7 @@ def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
 
 
 def test_create_or_update_records_form_key_not_found() -> None:
-    """TODO: Add docstring."""
+    """Test that create or update records form key not found."""
     sdk = MagicMock()
     del sdk.async_create_record
 
@@ -331,7 +331,7 @@ def test_create_or_update_records_form_key_not_found() -> None:
 
 @pytest.mark.asyncio
 async def test_async_create_or_update_records_no_wait() -> None:
-    """TODO: Add docstring."""
+    """Test that async create or update records no wait asynchronously."""
     sdk = MagicMock()
     sdk._async_client = True
     job = Job(jobId="1", batchId="1", state="PROCESSING")
@@ -346,7 +346,7 @@ async def test_async_create_or_update_records_no_wait() -> None:
 
 @pytest.mark.asyncio
 async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that async create or update records wait for completion asynchronously."""
     sdk = MagicMock()
     sdk._async_client = True
     initial_job = Job(jobId="1", batchId="1", state="PROCESSING")
@@ -373,7 +373,7 @@ async def test_async_create_or_update_records_wait_for_completion(monkeypatch) -
 
 @pytest.mark.asyncio
 async def test_async_create_or_update_records_validation() -> None:
-    """TODO: Add docstring."""
+    """Test that async create or update records validation asynchronously."""
     sdk = MagicMock()
     sdk._async_client = True
     var = Variable(
@@ -413,7 +413,7 @@ async def test_async_create_or_update_records_validation() -> None:
 
 @pytest.mark.asyncio
 async def test_async_create_or_update_records_wait_for_completion_no_batch_id() -> None:
-    """TODO: Add docstring."""
+    """Test that async create or update records wait for completion no batch id asynchronously."""
     sdk = MagicMock()
     sdk._async_client = True
     job = Job(jobId="1", batchId="", state="PROCESSING")
@@ -448,7 +448,7 @@ async def test_async_create_or_update_records_wait_for_completion_no_batch_id() 
 
 @pytest.mark.asyncio
 async def test_async_create_or_update_records_form_key_not_found() -> None:
-    """TODO: Add docstring."""
+    """Test that async create or update records form key not found asynchronously."""
     sdk = MagicMock()
     sdk._async_client = True
     sdk.async_get_variables = AsyncMock(return_value=[])

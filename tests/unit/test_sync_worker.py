@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for sync worker."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from imednet_workflows.sync_worker import SyncWorker, SyncWorkerConfig
 
 
 def test_sync_worker_run_once_syncs_with_lock(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that sync worker run once syncs with lock."""
     loader = MagicMock()
     loader.db_path = tmp_path / "records_cache.sqlite3"
     loader.load_records.return_value = [MagicMock(), MagicMock()]
@@ -23,7 +23,7 @@ def test_sync_worker_run_once_syncs_with_lock(tmp_path) -> None:
 
 
 def test_sync_worker_run_forever_stops_gracefully(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that sync worker run forever stops gracefully."""
     loader = MagicMock()
     loader.db_path = tmp_path / "records_cache.sqlite3"
     stop_event = Event()
@@ -34,7 +34,7 @@ def test_sync_worker_run_forever_stops_gracefully(tmp_path) -> None:
     )
 
     def _stop_after_first_cycle(*args, **kwargs) -> list[MagicMock]:
-        """TODO: Add docstring."""
+        """Helper function to  stop after first cycle."""
         stop_event.set()
         return []
 

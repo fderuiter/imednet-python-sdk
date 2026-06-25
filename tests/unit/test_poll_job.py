@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for poll job."""
 
 import asyncio
 from unittest.mock import AsyncMock
@@ -10,14 +10,14 @@ from imednet.models.jobs import JobStatus
 
 
 def _create_sdk(async_mode: bool) -> sdk_mod.ImednetSDK:
-    """TODO: Add docstring."""
+    """Helper function to  create sdk."""
     cls = sdk_mod.AsyncImednetSDK if async_mode else sdk_mod.ImednetSDK
     return cls(api_key="key", security_key="secret", base_url="https://example.com")
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_poll_job_success(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that poll job success."""
     sdk = _create_sdk(async_mode)
     states = [
         JobStatus(batch_id="1", state="PROCESSING", progress=10),
@@ -40,7 +40,7 @@ def test_poll_job_success(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> 
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_poll_job_timeout(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that poll job timeout."""
     sdk = _create_sdk(async_mode)
     job = JobStatus(batch_id="1", state="PROCESSING")
     if async_mode:
@@ -56,7 +56,7 @@ def test_poll_job_timeout(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> 
     tick = {"v": 0}
 
     def monotonic() -> int:
-        """TODO: Add docstring."""
+        """Helper function to monotonic."""
         tick["v"] += 1
         return tick["v"]
 
@@ -70,7 +70,7 @@ def test_poll_job_timeout(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> 
 
 @pytest.mark.parametrize("async_mode", [False, True])
 def test_poll_job_failed(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that poll job failed."""
     sdk = _create_sdk(async_mode)
     states = [
         JobStatus(batch_id="1", state="PROCESSING"),
