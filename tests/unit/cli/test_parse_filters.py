@@ -19,16 +19,16 @@ def test_parse_filter_args_types():
 
 def test_parse_filter_args_invalid():
     """TODO: Add docstring."""
-    with pytest.raises(typer.Exit) as exc_info:
+    with pytest.raises(SystemExit) as exc_info:
         parse_filter_args(["bad"])
-    assert exc_info.value.exit_code == 1
+    assert exc_info.value.code == 1
 
 
 def test_parse_filter_args_invalid_escaped(capfd: pytest.CaptureFixture[str]):
     """TODO: Add docstring."""
-    with pytest.raises(typer.Exit) as exc_info:
+    with pytest.raises(SystemExit) as exc_info:
         parse_filter_args(["[red]bad[/red]"])
-    assert exc_info.value.exit_code == 1
+    assert exc_info.value.code == 1
 
     captured = capfd.readouterr()
     # Rich renders escaped markup as literal text.

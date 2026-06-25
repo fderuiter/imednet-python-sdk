@@ -1,18 +1,16 @@
-"""CLI commands for managing study intervals."""
+"""CLI commands for managing intervals."""
 
 from __future__ import annotations
-
-import typer
+import argparse
 
 from ..utils import register_list_command
 
-app = typer.Typer(name="intervals", help="Manage intervals within a study.")
-
-__all__ = ["app"]
-
-register_list_command(
-    app,
-    "intervals",
-    "intervals",
-    summary_fields=["interval_id", "interval_name", "interval_sequence"],
-)
+def setup_parser(subparsers):
+    parser = subparsers.add_parser("intervals", help="Manage intervals.")
+    register_list_command(
+        parser,
+        "intervals",
+        "intervals",
+        requires_study_key=True,
+        summary_fields=["interval_id", "interval_name", "interval_sequence"]
+    )

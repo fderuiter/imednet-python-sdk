@@ -1,19 +1,16 @@
-"""CLI commands for managing study sites."""
+"""CLI commands for managing sites."""
 
 from __future__ import annotations
-
-import typer
+import argparse
 
 from ..utils import register_list_command
 
-app = typer.Typer(name="sites", help="Manage sites within a study.")
-
-__all__ = ["app"]
-
-register_list_command(
-    app,
-    "sites",
-    "sites",
-    empty_msg="No sites found for this study.",
-    summary_fields=["site_id", "site_name", "site_enrollment_status"],
-)
+def setup_parser(subparsers):
+    parser = subparsers.add_parser("sites", help="Manage sites.")
+    register_list_command(
+        parser,
+        "sites",
+        "sites",
+        requires_study_key=True,
+        empty_msg="No sites found for this study.", summary_fields=["site_id", "site_name", "site_enrollment_status"]
+    )
