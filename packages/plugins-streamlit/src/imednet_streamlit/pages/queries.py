@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Query status and management dashboard.
+
+Provides visibility into open and resolved queries across the study,
+including query age, site-level distribution, and aging trends.
+"""
 
 from __future__ import annotations
 

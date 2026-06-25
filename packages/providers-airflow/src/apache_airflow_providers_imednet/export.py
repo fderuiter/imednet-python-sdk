@@ -8,32 +8,32 @@ from imednet.spi import export as _base_export
 
 
 def export_to_csv(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Wrap :func:`imednet.spi.export.export_to_csv` for Airflow compatibility."""
     return _base_export.export_to_csv(*args, **kwargs)
 
 
 def export_to_parquet(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Wrap :func:`imednet.spi.export.export_to_parquet` for Airflow compatibility."""
     return _base_export.export_to_parquet(*args, **kwargs)
 
 
 def export_to_excel(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Wrap :func:`imednet.spi.export.export_to_excel` for Airflow compatibility."""
     return _base_export.export_to_excel(*args, **kwargs)
 
 
 def export_to_json(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Wrap :func:`imednet.spi.export.export_to_json` for Airflow compatibility."""
     return _base_export.export_to_json(*args, **kwargs)
 
 
 def export_to_sql(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Wrap :func:`imednet.spi.export.export_to_sql` for Airflow compatibility."""
     return _base_export.export_to_sql(*args, **kwargs)
 
 
 def export_to_sql_by_form(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Wrap :func:`imednet.spi.export.export_to_sql_by_form` for Airflow compatibility."""
     return _base_export.export_to_sql_by_form(*args, **kwargs)
 
 

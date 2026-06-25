@@ -1,4 +1,8 @@
-"""Documentation placeholder."""
+"""Airflow provider for iMednet.
+
+This package provides hooks, operators, and sensors for integrating iMednet
+EDC data workflows into Apache Airflow pipelines.
+"""
 
 from __future__ import annotations
 

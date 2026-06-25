@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Study setup and configuration wizard.
+
+Guided multi-step workflow for initializing study mappings, profiling EDC
+schemas, and configuring data standards normalization.
+"""
 
 from __future__ import annotations
 

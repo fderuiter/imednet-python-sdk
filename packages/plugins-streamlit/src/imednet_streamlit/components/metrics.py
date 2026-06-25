@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""KPI and metric display components for Streamlit.
+
+Provides card-based layouts for displaying key performance indicators and
+high-level study statistics.
+"""
 
 from __future__ import annotations
 

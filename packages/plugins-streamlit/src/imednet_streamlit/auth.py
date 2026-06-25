@@ -1,4 +1,9 @@
-"""TODO: Add docstring."""
+"""Authentication and multi-tenant session management for Streamlit.
+
+This module provides integration with corporate SSO, study-based credential
+discovery from an enterprise tenant database, and SDK lifecycle management
+within the Streamlit session state.
+"""
 
 from __future__ import annotations
 
@@ -41,7 +46,14 @@ import sqlite3
 
 
 def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
-    """TODO: Add docstring."""
+    """Fetch API and Security keys for a specific study from the tenant database.
+
+    Args:
+        study_key: The study identifier.
+
+    Returns:
+        A tuple of (api_key, security_key), or (None, None) if not found.
+    """
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )
@@ -60,7 +72,7 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
 
 
 def get_provisioned_studies() -> list[str]:
-    """TODO: Add docstring."""
+    """Return a list of all study keys available in the tenant database."""
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )

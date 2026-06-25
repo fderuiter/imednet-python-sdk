@@ -111,7 +111,11 @@ class RecordUpdateWorkflow:
         )
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
-        """TODO: Add docstring."""
+        """Submit a batch of records.
+
+        .. deprecated:: 0.2.0
+           Use :meth:`create_or_update_records` instead.
+        """
         warnings.warn(
             "submit_record_batch is deprecated; use create_or_update_records",
             DeprecationWarning,

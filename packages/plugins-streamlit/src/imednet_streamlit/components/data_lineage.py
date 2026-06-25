@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Lineage tracking components for Streamlit.
+
+Provides utilities for redacting sensitive fields and rendering multi-pane
+views that trace the transformation of raw EDC records into canonical models.
+"""
 
 from __future__ import annotations
 

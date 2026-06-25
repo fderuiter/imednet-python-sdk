@@ -1,4 +1,9 @@
-"""TODO: Add docstring."""
+"""Record-to-DataFrame mapping workflow for iMednet.
+
+This module provides the :class:`RecordMapper` which handles fetching,
+filtering, and parsing EDC records into tabular formats like pandas
+DataFrames, including support for dynamic Pydantic model validation.
+"""
 
 from __future__ import annotations
 
@@ -143,7 +148,16 @@ class RecordMapper:
         visit_key: Optional[str] = None,
         extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
     ) -> Iterable[RecordModel]:
-        """TODO: Add docstring."""
+        """Iterate over records for a study, using cache if available.
+
+        Args:
+            study_key: The study identifier.
+            visit_key: Optional visit filter.
+            extra_filters: Optional additional filter criteria.
+
+        Returns:
+            An iterable of Record models.
+        """
         form_ids: set[Any] | None = None
         filters = dict(extra_filters) if extra_filters else {}
         if "formIds" in filters and isinstance(filters["formIds"], list):
@@ -176,7 +190,16 @@ class RecordMapper:
         visit_key: Optional[str],
         form_ids: set[Any] | None,
     ) -> Iterator[RecordModel]:
-        """TODO: Add docstring."""
+        """Apply visit and form filters to an iterable of records.
+
+        Args:
+            records: Source records.
+            visit_key: Visit identifier to filter by.
+            form_ids: Set of form IDs to filter by.
+
+        Returns:
+            An iterator of filtered Record models.
+        """
         visit_id: int | None = None
         if visit_key is not None:
             try:
@@ -199,7 +222,15 @@ class RecordMapper:
         rec: RecordModel,
         record_model: Type[BaseModel],
     ) -> Dict[str, Any]:
-        """TODO: Add docstring."""
+        """Parse a single record using the dynamic Pydantic model.
+
+        Args:
+            rec: The Record model to parse.
+            record_model: The dynamic Pydantic model for record data.
+
+        Returns:
+            A dictionary containing both metadata and parsed record data.
+        """
         meta = {
             "recordId": rec.record_id,
             "subjectKey": rec.subject_key,
@@ -234,7 +265,11 @@ class RecordMapper:
         records: Iterable[RecordModel],
         record_model: Type[BaseModel],
     ) -> Iterator[Tuple[List[Dict[str, Any]], int]]:
-        """TODO: Add docstring."""
+        """Iterate over records and parse them in chunks.
+
+        Yields:
+            Tuples of (parsed_rows_list, error_count) for each chunk.
+        """
         for chunk in iter_chunks(records, chunk_size=self._pipeline.chunk_size):
             rows: List[Dict[str, Any]] = []
             errors = 0
