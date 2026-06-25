@@ -2,12 +2,38 @@
 
 from __future__ import annotations
 
+import io
 import sys
+from contextlib import redirect_stdout, redirect_stderr
 from importlib.machinery import ModuleSpec
 from types import ModuleType
 from typing import Any
 from unittest.mock import MagicMock, patch
 
+class Result:
+    def __init__(self, exit_code, stdout, stderr=""):
+        self.exit_code = exit_code
+        self.stdout = stdout
+        self.stderr = stderr
+        self.output = stdout + stderr
+
+class CliRunner:
+    def invoke(self, app, args):
+        out = io.StringIO()
+        err = io.StringIO()
+        exit_code = 0
+        try:
+            with redirect_stdout(out), redirect_stderr(err):
+                try:
+                    app(args)
+                except SystemExit as e:
+                    exit_code = e.code or 0
+        except Exception as e:
+            import traceback
+            err.write(traceback.format_exc())
+            exit_code = 1
+        
+        return Result(exit_code, out.getvalue(), err.getvalue())
 
 def test_dashboard_missing_plugin() -> None:
     """When imednet_streamlit is not installed, exit code 1 with helpful message."""
@@ -27,41 +53,7 @@ def test_dashboard_missing_plugin() -> None:
                 sys.modules.pop(key, None)
 
         with patch("importlib.util.find_spec", side_effect=mock_find_spec):
-            
-
-class Result:
-    def __init__(self, exit_code, stdout, stderr=""):
-        self.exit_code = exit_code
-        self.stdout = stdout
-        self.stderr = stderr
-        self.output = stdout + stderr
-
-class CliRunner:
-    def invoke(self, app, args):
-        import io, sys
-        from contextlib import redirect_stdout, redirect_stderr
-        out = io.StringIO()
-        err = io.StringIO()
-        exit_code = 0
-        try:
-            with redirect_stdout(out), redirect_stderr(err):
-                if hasattr(app, "parse_args"):
-                    pass
-                app(args)
-        except SystemExit as e:
-            exit_code = e.code or 0
-        except Exception as e:
-            import traceback
-            err.write(traceback.format_exc())
-            exit_code = 1
-        
-        # We also need to catch argparse sys.exit(2)
-        return Result(exit_code, out.getvalue(), err.getvalue())
-
-
-
             from imednet.cli import app
-
             runner = CliRunner()
             result = runner.invoke(app, ["dashboard"])
 
@@ -91,41 +83,7 @@ def test_dashboard_launches_subprocess() -> None:
         sys.modules["streamlit"] = streamlit_mock
 
         with patch("importlib.util.find_spec", side_effect=mock_find_spec):
-            
-
-class Result:
-    def __init__(self, exit_code, stdout, stderr=""):
-        self.exit_code = exit_code
-        self.stdout = stdout
-        self.stderr = stderr
-        self.output = stdout + stderr
-
-class CliRunner:
-    def invoke(self, app, args):
-        import io, sys
-        from contextlib import redirect_stdout, redirect_stderr
-        out = io.StringIO()
-        err = io.StringIO()
-        exit_code = 0
-        try:
-            with redirect_stdout(out), redirect_stderr(err):
-                if hasattr(app, "parse_args"):
-                    pass
-                app(args)
-        except SystemExit as e:
-            exit_code = e.code or 0
-        except Exception as e:
-            import traceback
-            err.write(traceback.format_exc())
-            exit_code = 1
-        
-        # We also need to catch argparse sys.exit(2)
-        return Result(exit_code, out.getvalue(), err.getvalue())
-
-
-
             from imednet.cli import app
-
             runner = CliRunner()
             with patch("subprocess.run") as mock_run:
                 mock_run.return_value = MagicMock(returncode=0)
