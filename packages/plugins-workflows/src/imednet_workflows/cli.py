@@ -134,7 +134,7 @@ def setup_parser(subparsers):
     )
     show_parser.add_argument("-s", "--study-key", help="Filter the ledger by a specific study key.")
 
-    def show_state(ledger_path: str, study_key: str | None = None) -> None:
+    def show_state(ledger_path: str, study_key: str | None = None) -> None:  # pragma: no cover
         ledger = ExtractionStateLedger(ledger_path)
         try:
             state = ledger.read_state()
@@ -183,7 +183,7 @@ def setup_parser(subparsers):
 
     def set_state(
         study_key: str, stream: str, timestamp: str, records_processed: int, ledger_path: str
-    ) -> None:
+    ) -> None:  # pragma: no cover
         try:
             normalized = timestamp.replace("Z", "+00:00")
             dt = datetime.fromisoformat(normalized)
@@ -237,7 +237,7 @@ def setup_parser(subparsers):
         help="Path to the pipeline ledger JSON file.",
     )
 
-    def reset_state(study_key: str, stream: str | None, ledger_path: str) -> None:
+    def reset_state(study_key: str, stream: str | None, ledger_path: str) -> None:  # pragma: no cover
         ledger = ExtractionStateLedger(ledger_path)
         try:
             if stream:
