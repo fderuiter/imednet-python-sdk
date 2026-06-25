@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Dict, List, Sequence
 import os
 import sys
+from datetime import datetime
+from typing import Any, Dict, List, Sequence
 
 _ANSI_COLORS = {
     "green": "\033[32m",
@@ -15,29 +15,53 @@ _ANSI_COLORS = {
     "magenta": "\033[35m",
     "dim": "\033[2m",
     "bold_magenta": "\033[1;35m",
-    "reset": "\033[0m"
+    "reset": "\033[0m",
 }
 
 _STATUS_COLOR_MAP = {
-    "active": "green", "success": "green", "ok": "green", "completed": "green", "open": "green", "approved": "green", "verified": "green",
-    "pending": "yellow", "processing": "yellow", "suspended": "yellow", "hold": "yellow", "incomplete": "yellow", "initiated": "yellow",
-    "inactive": "red", "closed": "red", "error": "red", "fail": "red", "failed": "red", "rejected": "red", "terminated": "red", "withdrawn": "red",
+    "active": "green",
+    "success": "green",
+    "ok": "green",
+    "completed": "green",
+    "open": "green",
+    "approved": "green",
+    "verified": "green",
+    "pending": "yellow",
+    "processing": "yellow",
+    "suspended": "yellow",
+    "hold": "yellow",
+    "incomplete": "yellow",
+    "initiated": "yellow",
+    "inactive": "red",
+    "closed": "red",
+    "error": "red",
+    "fail": "red",
+    "failed": "red",
+    "rejected": "red",
+    "terminated": "red",
+    "withdrawn": "red",
 }
+
 
 class _DummyConsole:
     def status(self, msg, spinner=None):
         class DummyStatus:
             def __enter__(self):
                 print(msg)
+
             def __exit__(self, *args):
                 pass
+
         return DummyStatus()
 
+
 console = _DummyConsole()
+
 
 def _truncate(text: str, length: int = 60) -> str:
     text = str(text)
     return f"{text[:length]}..." if len(text) > length else text
+
 
 def _format_cell_value(value: Any, key: str | None = None) -> str:
     if value is None:
@@ -57,17 +81,19 @@ def _format_cell_value(value: Any, key: str | None = None) -> str:
         return _truncate(str(value))
     return str_val
 
+
 def _colorize(text: str, color: str) -> str:
     if not sys.stdout.isatty():
         return text
     return f"{_ANSI_COLORS.get(color, '')}{text}{_ANSI_COLORS['reset']}"
 
+
 def _print_table(items: Sequence[Any], fields: List[str]) -> None:
     if not items:
         return
-    
+
     headers = [str(header).replace("_", " ").title() for header in fields]
-    
+
     rows = []
     for item in items:
         row = []
@@ -78,18 +104,18 @@ def _print_table(items: Sequence[Any], fields: List[str]) -> None:
                 val = getattr(item, k, None)
             row.append(_format_cell_value(val, key=str(k)))
         rows.append(row)
-    
+
     col_widths = [len(h) for h in headers]
     for row in rows:
         for i, cell in enumerate(row):
             col_widths[i] = max(col_widths[i], len(cell))
-            
+
     header_str = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
     print(_colorize(header_str, "bold_magenta"))
     print("-" * len(header_str))
-    
+
     is_hc = os.environ.get("IMEDNET_HIGH_CONTRAST") == "1"
-    
+
     for row in rows:
         colored_row = []
         for i, cell in enumerate(row):
@@ -99,9 +125,27 @@ def _print_table(items: Sequence[Any], fields: List[str]) -> None:
                 lower_val = cell.lower()
                 if is_hc:
                     hc_map = {
-                        "active": "blue", "success": "blue", "ok": "blue", "completed": "blue", "open": "blue", "approved": "blue", "verified": "blue",
-                        "pending": "yellow", "processing": "yellow", "suspended": "yellow", "hold": "yellow", "incomplete": "yellow", "initiated": "yellow",
-                        "inactive": "magenta", "closed": "magenta", "error": "magenta", "fail": "magenta", "failed": "magenta", "rejected": "magenta", "terminated": "magenta", "withdrawn": "magenta",
+                        "active": "blue",
+                        "success": "blue",
+                        "ok": "blue",
+                        "completed": "blue",
+                        "open": "blue",
+                        "approved": "blue",
+                        "verified": "blue",
+                        "pending": "yellow",
+                        "processing": "yellow",
+                        "suspended": "yellow",
+                        "hold": "yellow",
+                        "incomplete": "yellow",
+                        "initiated": "yellow",
+                        "inactive": "magenta",
+                        "closed": "magenta",
+                        "error": "magenta",
+                        "fail": "magenta",
+                        "failed": "magenta",
+                        "rejected": "magenta",
+                        "terminated": "magenta",
+                        "withdrawn": "magenta",
                     }
                     color = hc_map.get(lower_val)
                 else:
@@ -111,7 +155,11 @@ def _print_table(items: Sequence[Any], fields: List[str]) -> None:
             colored_row.append(c + " " * (col_widths[i] - len(cell)))
         print(" | ".join(colored_row))
 
-def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None, fields: List[str] | None = None) -> None:
+
+def display_list(
+    items: Sequence[Any], label: str, empty_msg: str | None = None, fields: List[str] | None = None
+) -> None:
+    """Display a list of items."""
     if not items:
         print(empty_msg or f"No {label} found.")
         return

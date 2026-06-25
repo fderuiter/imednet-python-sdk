@@ -11,6 +11,7 @@ from imednet.sdk import ImednetSDK
 
 from .output import console
 
+
 def get_sdk() -> ImednetSDK:
     """Initialize and return the SDK instance using :func:`load_config`."""
     try:

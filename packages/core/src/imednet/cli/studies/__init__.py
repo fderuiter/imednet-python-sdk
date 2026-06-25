@@ -1,11 +1,14 @@
 """CLI commands for managing studies."""
 
 from __future__ import annotations
+
 import argparse
 
 from ..utils import register_list_command
 
+
 def setup_parser(subparsers):
+    """Setup the parser for this module."""
     parser = subparsers.add_parser("studies", help="Manage studies.")
     register_list_command(
         parser,
