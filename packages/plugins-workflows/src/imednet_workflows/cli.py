@@ -237,7 +237,9 @@ def setup_parser(subparsers):
         help="Path to the pipeline ledger JSON file.",
     )
 
-    def reset_state(study_key: str, stream: str | None, ledger_path: str) -> None:  # pragma: no cover
+    def reset_state(
+        study_key: str, stream: str | None, ledger_path: str
+    ) -> None:  # pragma: no cover
         ledger = ExtractionStateLedger(ledger_path)
         try:
             if stream:
