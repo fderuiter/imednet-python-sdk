@@ -173,9 +173,9 @@ def test_help_text_completeness(runner):
     for cmd in commands:
         result = runner.invoke(app, cmd + ["--help"])
         assert result.exit_code == 0
-        assert "Usage:" in result.stdout
-        # Rich might use "Options" with fancy boxes instead of plain "Options:"
-        assert "Options" in result.stdout
+        assert "usage:" in result.stdout.lower()
+        # Argparse uses "options:" or "positional arguments:"
+        assert "options" in result.stdout.lower()
 
 
 def test_keyboard_interrupt_handling(runner, mock_sdk):

@@ -157,11 +157,9 @@ def app(args=None):
 
     # workflows
     try:
-        from imednet_workflows.cli import setup_parser as wf_setup
-        from imednet_workflows.cli import setup_subject_parser as subj_setup
-
-        wf_setup(subparsers)
-        subj_setup(subparsers)
+        wf_cli = import_module("imednet_workflows.cli")
+        wf_cli.setup_parser(subparsers)
+        wf_cli.setup_subject_parser(subparsers)
     except ImportError:
         # Fallbacks when plugin not installed
         wf_parser = subparsers.add_parser(
