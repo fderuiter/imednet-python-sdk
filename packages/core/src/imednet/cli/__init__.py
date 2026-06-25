@@ -27,6 +27,7 @@ from .utils import get_sdk, parse_filter_args
 
 __all__ = [
     "app",
+    "get_parser",
     "with_sdk",
     "get_sdk",
     "parse_filter_args",
@@ -108,11 +109,8 @@ def _setup_standalone_scripts(subparsers):
         parser.set_defaults(func=run_script)
 
 
-def app(args=None):
-    """Main entrypoint for the CLI."""
-    if args is None:
-        args = sys.argv[1:]
-
+def get_parser() -> argparse.ArgumentParser:
+    """Return the main argparse.ArgumentParser for the CLI."""
     parser = argparse.ArgumentParser(description="iMednet SDK Command Line Interface")
     parser.add_argument(
         "--high-contrast", action="store_true", help="Enable high-contrast mode for accessibility."
@@ -180,8 +178,15 @@ def app(args=None):
         )
         sync_parser.set_defaults(func=lambda a: _exit_missing_plugin("workflows"))
 
-    # allow intercept workflows if imednet_workflows is installed and changes this
-    # Wait, imednet_workflows tries to do `app.add_typer(...)`. We need to provide a mock add_typer for backwards compat.
+    return parser
+
+
+def app(args=None):
+    """Main entrypoint for the CLI."""
+    if args is None:
+        args = sys.argv[1:]
+
+    parser = get_parser()
 
     parsed = parser.parse_args(args)
 

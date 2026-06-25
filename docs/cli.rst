@@ -5,6 +5,7 @@ The package installs an ``imednet`` command that wraps common SDK features. The 
 reads authentication details from environment variables. See :doc:`configuration`
 for the full list and details on using an ``.env`` file.
 
-.. click:: imednet.cli:click_app
+.. argparse::
+   :module: imednet.cli
+   :func: get_parser
    :prog: imednet
-   :nested: full

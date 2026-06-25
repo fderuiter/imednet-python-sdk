@@ -75,7 +75,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",
     "sphinxcontrib.mermaid",
-    "sphinx_click",
+    "sphinxarg.ext",
     "sphinx.ext.doctest",
 ]
 
