@@ -22,7 +22,7 @@ class RecordUpdateWorkflow:
     """
 
     def __init__(self, sdk: "FacadeLike"):
-        """TODO: Add docstring."""
+        """Initialize the record update workflow with an SDK instance."""
         self._sdk = sdk
         self._is_async = hasattr(sdk, "async_create_record")
         self._validator: SchemaValidator | AsyncSchemaValidator

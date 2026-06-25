@@ -137,7 +137,7 @@ _WIDGET_TYPES = ("kpi_card", "bar_chart", "line_chart", "data_table")
 
 
 def _render_design_specification() -> None:
-    """TODO: Add docstring."""
+    """Render the wizard UX design specification in an expander."""
     st.markdown("### Wizard UX design specification")
     st.markdown("#### Flowchart / state transitions")
     st.code(_STATE_TRANSITION_DIAGRAM, language="text")
@@ -148,7 +148,7 @@ def _render_design_specification() -> None:
 
 
 def _initialise_state(study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Initialize the wizard session state and load existing configuration."""
     st.session_state.setdefault(_KEY_WIZARD_STEP, 1)
     st.session_state.setdefault(_KEY_DISCOVERED_SCHEMA, None)
     st.session_state.setdefault(_KEY_VALIDATION_REPORT, None)
@@ -183,23 +183,23 @@ def _initialise_state(study_key: str) -> None:
 
 
 def _go_to_step(step: int) -> None:
-    """TODO: Add docstring."""
+    """Navigate to a specific wizard step."""
     st.session_state[_KEY_WIZARD_STEP] = max(1, min(len(_WIZARD_STEPS), step))
 
 
 def _get_mapping_config() -> StudyConfiguration:
-    """TODO: Add docstring."""
+    """Return the current active study configuration from session state."""
     return cast(StudyConfiguration, st.session_state[_KEY_MAPPING_CONFIG])
 
 
 def _sanitise_study_key(study_key: str) -> str:
-    """TODO: Add docstring."""
+    """Sanitize the study key for use in file names."""
     safe_study_key = re.sub(r"[^a-z0-9_-]+", "_", study_key.lower()).strip("_")
     return safe_study_key or "study"
 
 
 def _scan_schema(sdk: ImednetFacade, study_key: str) -> dict[str, Any]:
-    """TODO: Add docstring."""
+    """Scan the study schema and profile field populations."""
     loader = CachedRecordsLoader(sdk=sdk)
     records = loader.load_records(study_key)
     profiler = SchemaProfiler(sdk=sdk, loader=loader)
@@ -244,7 +244,7 @@ def _scan_schema(sdk: ImednetFacade, study_key: str) -> dict[str, Any]:
 
 
 def _schema() -> dict[str, Any]:
-    """TODO: Add docstring."""
+    """Return the discovered schema or an empty template."""
     discovered_schema = st.session_state.get(_KEY_DISCOVERED_SCHEMA)
     if isinstance(discovered_schema, dict):
         return discovered_schema
@@ -252,7 +252,7 @@ def _schema() -> dict[str, Any]:
 
 
 def _selected_forms(schema: dict[str, Any]) -> list[str]:
-    """TODO: Add docstring."""
+    """Return a list of form keys currently selected in the wizard."""
     selected = [
         st.session_state.get("wizard_target_form_ae"),
         st.session_state.get("wizard_target_form_pd"),
@@ -265,7 +265,7 @@ def _selected_forms(schema: dict[str, Any]) -> list[str]:
 
 
 def _field_candidates(schema: dict[str, Any], forms: list[str]) -> dict[str, list[str]]:
-    """TODO: Add docstring."""
+    """Return variable candidates for the selected forms."""
     by_form: dict[str, list[str]] = {}
     allowed_forms = set(forms)
     for form in schema.get("forms", []):
@@ -284,7 +284,7 @@ def _field_candidates(schema: dict[str, Any], forms: list[str]) -> dict[str, lis
 def _existing_mapping_index(
     config: StudyConfiguration, domain: str, target_field: str
 ) -> MappingRule | None:
-    """TODO: Add docstring."""
+    """Find an existing mapping rule for a domain and target field."""
     for rule in config.mappings:
         if rule.domain == domain and rule.target_field == target_field:
             return rule
@@ -292,7 +292,7 @@ def _existing_mapping_index(
 
 
 def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Render Step 1: Scan """Render Step 2: Field Mapping.""" Profile Study Structure."""
     st.subheader("1. Scan & Profile Study Structure")
     st.markdown(
         "Discover forms, profile field populations, and choose source forms "
@@ -336,7 +336,7 @@ def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
 
 
 def _step_field_mapping() -> None:
-    """TODO: Add docstring."""
+    """Return unique values for a source field from the schema."""
     st.subheader("2. Field Mapping")
     st.markdown(
         "Map canonical CDISC targets to discovered source variables using card-style mapping rows."
@@ -441,7 +441,7 @@ def _step_field_mapping() -> None:
 def _lookup_unique_values(
     schema: dict[str, Any], source_form_key: str, source_field: str
 ) -> list[str]:
-    """TODO: Add docstring."""
+    """Render Step 3: Categorical Terminology Normalization."""
     for form in schema.get("forms", []):
         if form.get("form_key") != source_form_key:
             continue
@@ -452,7 +452,7 @@ def _lookup_unique_values(
 
 
 def _step_terminology() -> None:
-    """TODO: Add docstring."""
+    """Apply terminology normalization to a value."""
     st.subheader("3. Categorical Terminology Normalization")
     st.markdown("Teach the system how raw categorical values should normalize to canonical values.")
 
@@ -508,7 +508,7 @@ def _step_terminology() -> None:
 
 
 def _apply_lookup(config: StudyConfiguration, lookup_key: str, value: Any) -> Any:
-    """TODO: Add docstring."""
+    """Construct preview rows for the mapped sample records."""
     if isinstance(value, str):
         return config.terminology_lookups.get(lookup_key, {}).get(value, value)
     return value
@@ -517,7 +517,7 @@ def _apply_lookup(config: StudyConfiguration, lookup_key: str, value: Any) -> An
 def _build_preview_rows(
     config: StudyConfiguration, sample_records: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """TODO: Add docstring."""
+    """Render Step 4: Layout """Render Step 5: Export / Save.""" Visual Configuration."""
     rows: list[dict[str, Any]] = []
     for record in sample_records:
         row: dict[str, Any] = {
@@ -541,7 +541,7 @@ def _build_preview_rows(
 
 
 def _step_preview_and_layout() -> None:
-    """TODO: Add docstring."""
+    """Render the main setup wizard page."""
     st.subheader("4. Layout & Visual Configuration")
     st.markdown("Configure dashboard widgets and preview mapped values for the first five records.")
 
@@ -598,7 +598,7 @@ def _step_preview_and_layout() -> None:
 
 
 def _step_export(study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Guided step for study field mapping."""
     st.subheader("5. Export / Save")
     st.markdown("Download or persist the finalized StudyConfiguration JSON.")
 
@@ -641,7 +641,7 @@ def _step_export(study_key: str) -> None:
 
 
 def render_page() -> None:
-    """TODO: Add docstring."""
+    """Guided step for study field mapping."""
     st.title("🧭 Study Setup Wizard")
     with st.expander("UX Design Specification", expanded=False):
         _render_design_specification()
