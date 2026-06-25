@@ -10,11 +10,14 @@ from typing import Any, Dict, Protocol, Sequence
 
 from imednet.utils import sanitize_csv_formula
 
+
 class Model(Protocol):
     """Protocol for objects that can be dumped to a dictionary."""
+
     def model_dump(self, *, by_alias: bool = False) -> Dict[str, Any]:
         """Dump the model to a dictionary."""
         ...
+
 
 def export_list_to_file(
     items: Sequence[Model],

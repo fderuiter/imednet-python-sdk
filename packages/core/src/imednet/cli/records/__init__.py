@@ -10,13 +10,17 @@ from ..decorators import with_sdk
 from ..utils import STUDY_KEY_ARG, display_list, fetching_status
 from ..utils.export import export_list_to_file
 
+
 def setup_parser(subparsers):
+    """Setup the parser for this module."""
     parser = subparsers.add_parser("records", help="Manage records within a study.")
     sub = parser.add_subparsers(dest="command")
     list_parser = sub.add_parser("list", help="List records for a study.")
     list_parser.add_argument("study_key", help=STUDY_KEY_ARG)
-    list_parser.add_argument("-o", "--output", help="Save records to the given format (json or csv)")
-    
+    list_parser.add_argument(
+        "-o", "--output", help="Save records to the given format (json or csv)"
+    )
+
     @with_sdk
     def list_records(sdk: ImednetSDK, study_key: str, output: str | None = None) -> None:
         if output and output.lower() not in {"json", "csv"}:
@@ -41,5 +45,7 @@ def setup_parser(subparsers):
                     }
                 )
             display_list(view_models, "records", "No records found.")
-            
-    list_parser.set_defaults(func=lambda args: list_records(study_key=args.study_key, output=args.output))
+
+    list_parser.set_defaults(
+        func=lambda args: list_records(study_key=args.study_key, output=args.output)
+    )

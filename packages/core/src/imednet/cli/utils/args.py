@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Union
 
 STUDY_KEY_ARG = "The key identifying the study."
 
+
 def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, Any]]:
     """Parse a list of ``key=value`` strings into a dictionary."""
     if not filter_args:
@@ -14,7 +15,9 @@ def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, An
     filter_dict: Dict[str, Union[str, bool, int]] = {}
     for arg in filter_args:
         if "=" not in arg or arg.startswith("=") or arg.endswith("="):
-            print(f"Error: Invalid filter format: '{arg}'. Use 'key=value' with non-empty key and value.")
+            print(
+                f"Error: Invalid filter format: '{arg}'. Use 'key=value' with non-empty key and value."
+            )
             sys.exit(1)
         key, value = arg.split("=", 1)
         if not key.strip() or not value.strip():
