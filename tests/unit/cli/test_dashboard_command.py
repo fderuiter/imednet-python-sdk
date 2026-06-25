@@ -1,4 +1,4 @@
-"""Tests for test_dashboard_command."""
+"""Test Dashboard Command module."""
 
 from __future__ import annotations
 
@@ -15,13 +15,13 @@ FAKE_DASHBOARD_PATH = "/tmp/fake_dashboard.py"
 
 @pytest.fixture()
 def runner() -> CliRunner:
-    """Test runner behavior."""
+    """Test the runner functionality."""
     return CliRunner()
 
 
 @pytest.fixture()
 def cli_module() -> ModuleType:
-    """Test cli_module behavior."""
+    """Test the cli module functionality."""
     import imednet.cli as cli
 
     importlib.reload(cli)
@@ -32,11 +32,11 @@ def cli_module() -> ModuleType:
 def test_dashboard_command_falls_back_when_plugin_missing(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_dashboard_command_falls_back_when_plugin_missing behavior."""
+    """Test the test dashboard command falls back when plugin missing functionality."""
     real_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return None
         return real_find_spec(name, package)
@@ -56,12 +56,12 @@ def test_dashboard_command_falls_back_when_plugin_missing(
 def test_dashboard_command_runs_streamlit_when_plugin_present(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_dashboard_command_runs_streamlit_when_plugin_present behavior."""
+    """Test the test dashboard command runs streamlit when plugin present functionality."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -99,12 +99,12 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
 def test_dashboard_command_uses_default_options(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_dashboard_command_uses_default_options behavior."""
+    """Test the test dashboard command uses default options functionality."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -134,12 +134,12 @@ def test_dashboard_command_uses_default_options(
 def test_dashboard_command_fails_when_app_path_missing(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_dashboard_command_fails_when_app_path_missing behavior."""
+    """Test the test dashboard command fails when app path missing functionality."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=None)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -155,12 +155,12 @@ def test_dashboard_command_fails_when_app_path_missing(
 def test_dashboard_command_propagates_streamlit_failure(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_dashboard_command_propagates_streamlit_failure behavior."""
+    """Test the test dashboard command propagates streamlit failure functionality."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -179,12 +179,12 @@ def test_dashboard_command_propagates_streamlit_failure(
 def test_dashboard_command_handles_subprocess_oserror(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_dashboard_command_handles_subprocess_oserror behavior."""
+    """Test the test dashboard command handles subprocess oserror functionality."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)

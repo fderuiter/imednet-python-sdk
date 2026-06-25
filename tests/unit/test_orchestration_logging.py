@@ -9,13 +9,13 @@ from imednet.orchestration import StudyContextLogAdapter, make_study_logger
 
 
 def test_study_context_log_adapter_exposes_study_key() -> None:
-    """Test test_study_context_log_adapter_exposes_study_key behavior."""
+    """Test the test study context log adapter exposes study key functionality."""
     adapter = StudyContextLogAdapter(logging.getLogger("tests"), study_key="PROT-01")
     assert adapter.study_key == "PROT-01"
 
 
 def test_study_context_log_adapter_process_injects_study_key() -> None:
-    """Test test_study_context_log_adapter_process_injects_study_key behavior."""
+    """Test the test study context log adapter process injects study key functionality."""
     adapter = StudyContextLogAdapter(logging.getLogger("tests"), study_key="PROT-01")
 
     msg, kwargs = adapter.process("msg", {})
@@ -25,7 +25,7 @@ def test_study_context_log_adapter_process_injects_study_key() -> None:
 
 
 def test_study_context_log_adapter_process_overrides_extra_study_key() -> None:
-    """Test test_study_context_log_adapter_process_overrides_extra_study_key behavior."""
+    """Test the test study context log adapter process overrides extra study key functionality."""
     adapter = StudyContextLogAdapter(logging.getLogger("tests"), study_key="PROT-01")
     kwargs: dict[str, Any] = {"extra": {"study_key": "OTHER", "x": 1}}
 
@@ -37,7 +37,7 @@ def test_study_context_log_adapter_process_overrides_extra_study_key() -> None:
 
 
 def test_make_study_logger_uses_orchestration_logger() -> None:
-    """Test test_make_study_logger_uses_orchestration_logger behavior."""
+    """Test the test make study logger uses orchestration logger functionality."""
     adapter = make_study_logger("PROT-01")
     assert isinstance(adapter, StudyContextLogAdapter)
     assert adapter.study_key == "PROT-01"

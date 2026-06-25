@@ -1,4 +1,4 @@
-"""Tests for test_extraction_engine."""
+"""Test Extraction Engine module."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from imednet_workflows.extraction_engine import extract_canonical_records
 
 
 def test_extract_canonical_records_maps_ae_pd_dd_and_collects_row_errors() -> None:
-    """Test test_extract_canonical_records_maps_ae_pd_dd_and_collects_row_errors behavior."""
+    """Test the test extract canonical records maps ae pd dd and collects row errors functionality."""
     config = StudyConfiguration(
         study_key="STUDY-1",
         mappings=[
@@ -154,7 +154,7 @@ def test_extract_canonical_records_maps_ae_pd_dd_and_collects_row_errors() -> No
 
 
 def test_extract_canonical_records_uses_fallback_values() -> None:
-    """Test test_extract_canonical_records_uses_fallback_values behavior."""
+    """Test the test extract canonical records uses fallback values functionality."""
     config = StudyConfiguration(
         study_key="STUDY-1",
         mappings=[
@@ -198,7 +198,7 @@ def test_extract_canonical_records_uses_fallback_values() -> None:
 
 
 def test_extract_subject_centric_analysis_datasets() -> None:
-    """Test test_extract_subject_centric_analysis_datasets behavior."""
+    """Test the test extract subject centric analysis datasets functionality."""
     config = StudyConfiguration(
         study_key="STUDY-2",
         mappings=[

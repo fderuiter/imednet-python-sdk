@@ -1,4 +1,4 @@
-"""Tests for test_workflows_register_subjects."""
+"""Test Workflows Register Subjects module."""
 
 from unittest.mock import MagicMock
 
@@ -11,7 +11,7 @@ from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
 
 
 def test_register_subjects_passes_records_correctly() -> None:
-    """Test test_register_subjects_passes_records_correctly behavior."""
+    """Test the test register subjects passes records correctly functionality."""
     sdk = MagicMock()
     job = Job(jobId="1", batchId="1", state="PROCESSING")
     sdk.create_record.return_value = job
@@ -34,7 +34,7 @@ def test_register_subjects_passes_records_correctly() -> None:
 
 
 def test_register_subjects_with_polling() -> None:
-    """Test test_register_subjects_with_polling behavior."""
+    """Test the test register subjects with polling functionality."""
     sdk = MagicMock()
     job = Job(jobId="1", batchId="BATCH", state="PROCESSING")
     completed_job = Job(jobId="1", batchId="BATCH", state="COMPLETED")
@@ -56,7 +56,7 @@ def test_register_subjects_with_polling() -> None:
 
 
 def test_register_subjects_missing_site() -> None:
-    """Test test_register_subjects_missing_site behavior."""
+    """Test the test register subjects missing site functionality."""
     sdk = MagicMock()
     sdk.get_sites.return_value = []
     wf = RegisterSubjectsWorkflow(sdk)
@@ -67,7 +67,7 @@ def test_register_subjects_missing_site() -> None:
 
 
 def test_register_subjects_missing_site_name() -> None:
-    """Test test_register_subjects_missing_site_name behavior."""
+    """Test the test register subjects missing site name functionality."""
     sdk = MagicMock()
     sdk.get_sites.return_value = [
         Site(studyKey="S", siteId=1, siteName="SITE", siteEnrollmentStatus="Active")

@@ -1,4 +1,4 @@
-"""Tests for test_security_path_traversal."""
+"""Test Security Path Traversal module."""
 
 from unittest.mock import MagicMock
 
@@ -23,7 +23,7 @@ class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
 
 
 def test_build_path_security():
-    """Test test_build_path_security behavior."""
+    """Test the test build path security functionality."""
     client = MagicMock(spec=Client)
     ctx = Context()
     endpoint = MockEndpoint(client, ctx)

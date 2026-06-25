@@ -63,7 +63,7 @@ def run_headless(
 
 
 def main() -> None:
-    """Perform main operation."""
+    """Handle the main process."""
     parser = argparse.ArgumentParser(description="iMedNet Form Builder")
 
     # Optional arguments for headless mode

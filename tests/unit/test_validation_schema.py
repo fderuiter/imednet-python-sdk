@@ -1,4 +1,4 @@
-"""Tests for test_validation_schema."""
+"""Test Validation Schema module."""
 
 import importlib
 
@@ -6,7 +6,7 @@ import pytest
 
 
 def test_schema_module_exports_and_deprecation_warning() -> None:
-    """Test test_schema_module_exports_and_deprecation_warning behavior."""
+    """Test the test schema module exports and deprecation warning functionality."""
     # First ensure we import it, and catch the warning so it doesn't fail strict CI
     with pytest.warns(
         DeprecationWarning,

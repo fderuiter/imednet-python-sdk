@@ -1,4 +1,4 @@
-"""Tests for test_cli_dashboard."""
+"""Test Cli Dashboard module."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ def test_dashboard_missing_plugin() -> None:
     original_find_spec = find_spec
 
     def mock_find_spec(name: str, package: str | None = None) -> Any:
-        """Test mock_find_spec behavior."""
+        """Test the mock find spec functionality."""
         if name == "imednet_streamlit.app":
             return None
         return original_find_spec(name, package)
@@ -48,7 +48,7 @@ def test_dashboard_launches_subprocess() -> None:
     original_find_spec = find_spec
 
     def mock_find_spec(name: str, package: str | None = None) -> Any:
-        """Test mock_find_spec behavior."""
+        """Test the mock find spec functionality."""
         if name == "imednet_streamlit.app":
             return dashboard_spec
         return original_find_spec(name, package)

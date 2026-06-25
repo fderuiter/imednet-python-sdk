@@ -1,4 +1,4 @@
-"""Tests for test_variables_endpoint."""
+"""Test Variables Endpoint module."""
 
 import pytest
 
@@ -11,7 +11,7 @@ from imednet.models.variables import Variable
 def test_list_requires_study_key_page_size(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
-    """Test test_list_requires_study_key_page_size behavior."""
+    """Test the test list requires study key page size functionality."""
     ep = variables.VariablesEndpoint(dummy_client, context)
     capture = paginator_factory(variables, [{"variableId": 1}])
     patch = patch_build_filter(variables)
@@ -29,11 +29,11 @@ def test_list_requires_study_key_page_size(
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """Test test_get_not_found behavior."""
+    """Test the test get not found functionality."""
     ep = variables.VariablesEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        """Test fake_impl behavior."""
+        """Test the fake impl functionality."""
         return []
 
     monkeypatch.setattr(variables.VariablesEndpoint, "_list_sync", fake_impl)
@@ -43,7 +43,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 
 def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
-    """Test test_list_makes_request_per_call behavior."""
+    """Test the test list makes request per call functionality."""
     ep = variables.VariablesEndpoint(dummy_client, context)
     capture = paginator_factory(variables, [{"variableId": 1}])
 
@@ -54,7 +54,7 @@ def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
 
 
 def test_list_different_study_keys_make_separate_requests(dummy_client, context, paginator_factory):
-    """Test test_list_different_study_keys_make_separate_requests behavior."""
+    """Test the test list different study keys make separate requests functionality."""
     ep = variables.VariablesEndpoint(dummy_client, context)
     capture = paginator_factory(variables, [{"variableId": 1}])
 

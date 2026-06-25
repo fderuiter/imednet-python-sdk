@@ -1,4 +1,4 @@
-"""Tests for test_uat_engine."""
+"""Test Uat Engine module."""
 
 from unittest.mock import Mock
 
@@ -10,7 +10,7 @@ from imednet_workflows.uat.engine import EditCheckResultStatus, UATExecutionEngi
 
 
 def test_uat_engine_parses_rules():
-    """Test test_uat_engine_parses_rules behavior."""
+    """Test the test uat engine parses rules functionality."""
     dd = DataDictionary(
         business_logic=[
             {
@@ -33,7 +33,7 @@ def test_uat_engine_parses_rules():
 
 
 def test_uat_engine_negative_generation():
-    """Test test_uat_engine_negative_generation behavior."""
+    """Test the test uat engine negative generation functionality."""
     dd = DataDictionary(
         business_logic=[
             {
@@ -55,7 +55,7 @@ def test_uat_engine_negative_generation():
 
 
 def test_uat_engine_run_verification():
-    """Test test_uat_engine_run_verification behavior."""
+    """Test the test uat engine run verification functionality."""
     sdk = Mock()
     sdk.create_record.side_effect = ValidationError("Invalid value")
 
@@ -83,7 +83,7 @@ def test_uat_engine_run_verification():
 
 
 def test_uat_engine_subject_limit():
-    """Test test_uat_engine_subject_limit behavior."""
+    """Test the test uat engine subject limit functionality."""
     sdk = Mock()
     sdk.create_record.side_effect = ValidationError("Invalid value")
 

@@ -1,4 +1,4 @@
-"""Tests for test_integrations_live."""
+"""Test Integrations Live module."""
 
 import pandas as pd
 import pytest
@@ -8,14 +8,14 @@ from imednet.sdk import ImednetSDK
 
 
 def test_export_to_csv(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
-    """Test test_export_to_csv behavior."""
+    """Test the test export to csv functionality."""
     p = tmp_path / "out.csv"
     export.export_to_csv(sdk, study_key, str(p))
     assert p.exists()
 
 
 def test_export_to_excel(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
-    """Test test_export_to_excel behavior."""
+    """Test the test export to excel functionality."""
     pytest.importorskip("openpyxl")
     p = tmp_path / "out.xlsx"
     export.export_to_excel(sdk, study_key, str(p))
@@ -23,14 +23,14 @@ def test_export_to_excel(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
 
 
 def test_export_to_json(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
-    """Test test_export_to_json behavior."""
+    """Test the test export to json functionality."""
     p = tmp_path / "out.json"
     export.export_to_json(sdk, study_key, str(p))
     assert p.exists()
 
 
 def test_export_to_parquet(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
-    """Test test_export_to_parquet behavior."""
+    """Test the test export to parquet functionality."""
     pytest.importorskip("pyarrow")
     p = tmp_path / "out.parquet"
     export.export_to_parquet(sdk, study_key, str(p))
@@ -40,7 +40,7 @@ def test_export_to_parquet(sdk: ImednetSDK, study_key: str, tmp_path) -> None:
 def test_export_to_sql_handles_column_limit(
     sdk: ImednetSDK, study_key: str, tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_export_to_sql_handles_column_limit behavior."""
+    """Test the test export to sql handles column limit functionality."""
     pytest.importorskip("sqlalchemy")
     from sqlalchemy import create_engine, inspect, text
 
@@ -62,7 +62,7 @@ def test_export_to_sql_handles_column_limit(
 
 
 def test_imednet_hook() -> None:
-    """Test test_imednet_hook behavior."""
+    """Test the test imednet hook functionality."""
     pytest.importorskip("airflow")
     from apache_airflow_providers_imednet import ImednetHook
 
@@ -72,7 +72,7 @@ def test_imednet_hook() -> None:
 
 
 def test_imednet_export_operator(study_key: str, tmp_path) -> None:
-    """Test test_imednet_export_operator behavior."""
+    """Test the test imednet export operator functionality."""
     pytest.importorskip("airflow")
     from apache_airflow_providers_imednet import ImednetExportOperator  # type: ignore[attr-defined]
 
@@ -81,7 +81,7 @@ def test_imednet_export_operator(study_key: str, tmp_path) -> None:
 
 
 def test_imednet_job_sensor(study_key: str) -> None:
-    """Test test_imednet_job_sensor behavior."""
+    """Test the test imednet job sensor functionality."""
     pytest.importorskip("airflow")
     from apache_airflow_providers_imednet import ImednetJobSensor  # type: ignore[attr-defined]
 

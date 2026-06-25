@@ -1,4 +1,4 @@
-"""Tests for test_jobs_endpoint."""
+"""Test Jobs Endpoint module."""
 
 import pytest
 
@@ -8,7 +8,7 @@ from imednet.models.jobs import JobStatus
 
 
 def test_get_success(dummy_client, context, response_factory):
-    """Test test_get_success behavior."""
+    """Test the test get success functionality."""
     ep = jobs.JobsEndpoint(dummy_client, context)
     dummy_client.get.return_value = response_factory({"jobId": "1"})
 
@@ -19,7 +19,7 @@ def test_get_success(dummy_client, context, response_factory):
 
 
 def test_get_not_found(dummy_client, context, response_factory):
-    """Test test_get_not_found behavior."""
+    """Test the test get not found functionality."""
     ep = jobs.JobsEndpoint(dummy_client, context)
     dummy_client.get.return_value = response_factory({})
     with pytest.raises(NotFoundError):

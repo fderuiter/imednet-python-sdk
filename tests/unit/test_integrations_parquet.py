@@ -1,4 +1,4 @@
-"""Tests for test_integrations_parquet."""
+"""Test Integrations Parquet module."""
 
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,14 +12,14 @@ from imednet.errors import PathTraversalValidationError
 
 
 def _read_partition_dataframe(path: Path) -> pd.DataFrame:
-    """Test _read_partition_dataframe behavior."""
+    """Test the read partition dataframe functionality."""
     parquet_files = sorted(path.glob("**/*.parquet"))
     assert parquet_files
     return pd.read_parquet(parquet_files[0], engine="pyarrow")
 
 
 def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
-    """Test test_export_creates_hive_layout_and_contents behavior."""
+    """Test the test export creates hive layout and contents functionality."""
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
@@ -36,23 +36,23 @@ def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
         """Test suite for FakeMapper."""
 
         def __init__(self, _sdk) -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             self._sdk = _sdk
 
         def _build_record_model(self, variable_keys, label_map):
-            """Test _build_record_model behavior."""
+            """Test the build record model functionality."""
             return (variable_keys, label_map)
 
         def _fetch_records(self, _study_key, extra_filters):
-            """Test _fetch_records behavior."""
+            """Test the fetch records functionality."""
             return [extra_filters["formId"]]
 
         def _parse_records(self, records, _record_model):
-            """Test _parse_records behavior."""
+            """Test the parse records functionality."""
             return records, len(records)
 
         def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
-            """Test _build_dataframe behavior."""
+            """Test the build dataframe functionality."""
             form_id = rows[0]
             if form_id == 1:
                 return pd.DataFrame([{"age": 42}])
@@ -74,7 +74,7 @@ def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
 
 
 def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
-    """Test test_export_isolates_studies behavior."""
+    """Test the test export isolates studies functionality."""
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
@@ -85,23 +85,23 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
         """Test suite for FakeMapper."""
 
         def __init__(self, _sdk) -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             self._sdk = _sdk
 
         def _build_record_model(self, variable_keys, label_map):
-            """Test _build_record_model behavior."""
+            """Test the build record model functionality."""
             return (variable_keys, label_map)
 
         def _fetch_records(self, study_key, extra_filters):
-            """Test _fetch_records behavior."""
+            """Test the fetch records functionality."""
             return [(study_key, extra_filters["formId"])]
 
         def _parse_records(self, records, _record_model):
-            """Test _parse_records behavior."""
+            """Test the parse records functionality."""
             return records, len(records)
 
         def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
-            """Test _build_dataframe behavior."""
+            """Test the build dataframe functionality."""
             study_key, _form_id = rows[0]
             return pd.DataFrame([{"study": study_key}])
 
@@ -120,7 +120,7 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
 
 
 def test_hive_parquet_query() -> None:
-    """Test test_hive_parquet_query behavior."""
+    """Test the test hive parquet query functionality."""
     assert (
         parquet_mod.hive_parquet_query("/tmp/lake")
         == "SELECT * FROM read_parquet('/tmp/lake/**/*.parquet', "
@@ -129,10 +129,10 @@ def test_hive_parquet_query() -> None:
 
 
 def test_export_to_hive_parquet_missing_pyarrow(monkeypatch) -> None:
-    """Test test_export_to_hive_parquet_missing_pyarrow behavior."""
+    """Test the test export to hive parquet missing pyarrow functionality."""
 
     def _raise_import_error(module_name: str):
-        """Test _raise_import_error behavior."""
+        """Test the raise import error functionality."""
         if module_name == "pyarrow":
             raise ImportError("missing pyarrow")
         return __import__(module_name)
@@ -144,7 +144,7 @@ def test_export_to_hive_parquet_missing_pyarrow(monkeypatch) -> None:
 
 
 def test_export_to_hive_parquet_rejects_malicious_study_key(monkeypatch) -> None:
-    """Test test_export_to_hive_parquet_rejects_malicious_study_key behavior."""
+    """Test the test export to hive parquet rejects malicious study key functionality."""
     monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: None)
 
     sdk = MagicMock()
@@ -156,7 +156,7 @@ def test_export_to_hive_parquet_rejects_malicious_study_key(monkeypatch) -> None
 
 
 def test_export_to_hive_parquet_rejects_malicious_form_key(monkeypatch) -> None:
-    """Test test_export_to_hive_parquet_rejects_malicious_form_key behavior."""
+    """Test the test export to hive parquet rejects malicious form key functionality."""
     monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: None)
 
     sdk = MagicMock()
@@ -173,7 +173,7 @@ def test_export_to_hive_parquet_rejects_malicious_form_key(monkeypatch) -> None:
 
 
 def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> None:
-    """Test test_export_to_hive_parquet_flushes_form_batches behavior."""
+    """Test the test export to hive parquet flushes form batches functionality."""
     sdk = MagicMock()
     sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="DEMOGRAPHICS")]
     sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
@@ -182,26 +182,26 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
         """Test suite for FakeMapper."""
 
         def __init__(self, _sdk) -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             self._sdk = _sdk
 
         def _build_record_model(self, variable_keys, label_map):
-            """Test _build_record_model behavior."""
+            """Test the build record model functionality."""
             return (variable_keys, label_map)
 
         def _iter_records(self, _study_key, extra_filters):
-            """Test _iter_records behavior."""
+            """Test the iter records functionality."""
             assert extra_filters == {"formIds": [1]}
             return iter([1, 2, 3])
 
         def _iter_parsed_rows(self, records, _record_model):
-            """Test _iter_parsed_rows behavior."""
+            """Test the iter parsed rows functionality."""
             values = list(records)
             yield values[:2], 0
             yield values[2:], 0
 
         def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
-            """Test _build_dataframe behavior."""
+            """Test the build dataframe functionality."""
             return pd.DataFrame([{"age": value} for value in rows])
 
     writes: list[list[dict[str, int]]] = []
@@ -210,7 +210,7 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
         """Test suite for FakeEngine."""
 
         def write_form_table(self, table, **kwargs) -> None:
-            """Test write_form_table behavior."""
+            """Test the write form table functionality."""
             assert kwargs == {
                 "base_dir": str(tmp_path),
                 "study_key": "STUDY_A",
@@ -223,7 +223,7 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
 
         @staticmethod
         def from_pandas(df: pd.DataFrame, preserve_index: bool = False) -> pd.DataFrame:
-            """Test from_pandas behavior."""
+            """Test the from pandas functionality."""
             assert preserve_index is False
             return df
 

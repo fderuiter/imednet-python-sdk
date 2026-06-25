@@ -1,4 +1,4 @@
-"""Tests for test_workflows_duckdb_centralizer."""
+"""Test Workflows Duckdb Centralizer module."""
 
 from __future__ import annotations
 
@@ -14,11 +14,11 @@ from imednet_workflows.duckdb_centralizer import DuckDBIngestionWorkflow
 
 
 def test_duckdb_ingestion_import_error(monkeypatch) -> None:
-    """Test test_duckdb_ingestion_import_error behavior."""
+    """Test the test duckdb ingestion import error functionality."""
     builtin_import = __import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):  # type: ignore[no-untyped-def]
-        """Test fake_import behavior."""
+        """Test the fake import functionality."""
         if name == "duckdb":
             raise ImportError("No module named duckdb")
         return builtin_import(name, globals, locals, fromlist, level)
@@ -37,7 +37,7 @@ def test_duckdb_ingestion_import_error(monkeypatch) -> None:
 
 
 def test_ingest_revisions_and_build_silver_view() -> None:
-    """Test test_ingest_revisions_and_build_silver_view behavior."""
+    """Test the test ingest revisions and build silver view functionality."""
     pytest.importorskip("duckdb")
     sdk = MagicMock()
     workflow = DuckDBIngestionWorkflow(sdk, ":memory:")
@@ -129,7 +129,7 @@ def test_ingest_revisions_and_build_silver_view() -> None:
 
 
 def test_ingest_revisions_invalid_mode() -> None:
-    """Test test_ingest_revisions_invalid_mode behavior."""
+    """Test the test ingest revisions invalid mode functionality."""
     pytest.importorskip("duckdb")
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
 

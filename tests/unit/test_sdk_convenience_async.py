@@ -1,4 +1,4 @@
-"""Tests for test_sdk_convenience_async."""
+"""Test Sdk Convenience Async module."""
 
 import pytest
 
@@ -7,7 +7,7 @@ import imednet.sdk as sdk_mod
 
 @pytest.mark.asyncio
 async def test_async_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
-    """Implementation detail."""
+    """Test Sdk Convenience Async module."""
     sdk = sdk_mod.AsyncImednetSDK(
         api_key="key", security_key="secret", base_url="https://example.com"
     )
@@ -133,11 +133,11 @@ async def test_async_poll_job_convenience(monkeypatch) -> None:
         """Test suite for FakePoller."""
 
         def __init__(self, get_func, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             calls["init"] = get_func
 
         async def run(self, study_key, batch_id, interval, timeout):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             calls["run"] = (study_key, batch_id, interval, timeout)
             return "JOBOBJ"
 

@@ -1,4 +1,4 @@
-"""Tests for test_data_extraction."""
+"""Test Data Extraction module."""
 
 from unittest.mock import MagicMock
 
@@ -11,7 +11,7 @@ from imednet_workflows.data_extraction import DataExtractionWorkflow
 
 
 def test_extract_records_by_criteria_filters_subject_and_visit(schema) -> None:
-    """Test test_extract_records_by_criteria_filters_subject_and_visit behavior."""
+    """Test the test extract records by criteria filters subject and visit functionality."""
     sdk = MagicMock()
     s1 = Subject.from_json(fake_data.fake_subject())
     s2 = Subject.from_json(fake_data.fake_subject())
@@ -59,7 +59,7 @@ def test_extract_records_by_criteria_filters_subject_and_visit(schema) -> None:
 
 
 def test_extract_audit_trail_builds_filters_and_dates() -> None:
-    """Test test_extract_audit_trail_builds_filters_and_dates behavior."""
+    """Test the test extract audit trail builds filters and dates functionality."""
     sdk = MagicMock()
     revision = RecordRevision.from_json(fake_data.fake_record_revision())
     sdk.get_record_revisions.return_value = [revision]

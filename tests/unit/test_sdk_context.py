@@ -1,4 +1,4 @@
-"""Tests for test_sdk_context."""
+"""Test Sdk Context module."""
 
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -15,13 +15,13 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 # Mock environment variables to avoid API key requirement issues
 @pytest.fixture(autouse=True)
 def mock_env(monkeypatch):
-    """Test mock_env behavior."""
+    """Test the mock env functionality."""
     monkeypatch.setenv("IMEDNET_API_KEY", "test_api_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "test_sec_key")
 
 
 def test_sync_context_manager():
-    """Test test_sync_context_manager behavior."""
+    """Test the test sync context manager functionality."""
     client_mock = MagicMock(spec=Client)
 
     with ImednetSDK(client=client_mock) as sdk:
@@ -44,7 +44,7 @@ async def test_async_context_manager():
 
 
 def test_close_without_async_client():
-    """Test test_close_without_async_client behavior."""
+    """Test the test close without async client functionality."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
     sdk.close()
@@ -52,7 +52,7 @@ def test_close_without_async_client():
 
 
 def test_sync_sdk_does_not_create_async_client():
-    """Test test_sync_sdk_does_not_create_async_client behavior."""
+    """Test the test sync sdk does not create async client functionality."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
     assert not hasattr(sdk, "_async_client")
@@ -72,7 +72,7 @@ def test_async_sdk_close_raises_type_error():
 
 
 def test_async_sdk_sync_context_manager_raises_type_error():
-    """Test test_async_sdk_sync_context_manager_raises_type_error behavior."""
+    """Test the test async sdk sync context manager raises type error functionality."""
     with patch("imednet.sdk.load_config"):
         with patch("imednet.sdk.ClientFactory.create_client", return_value=MagicMock(spec=Client)):
             with patch(
@@ -125,7 +125,7 @@ async def test_aclose_without_async_client():
 
 
 def test_study_context_manager_sets_and_resets_context():
-    """Test test_study_context_manager_sets_and_resets_context behavior."""
+    """Test the test study context manager sets and resets context functionality."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
@@ -137,7 +137,7 @@ def test_study_context_manager_sets_and_resets_context():
 
 
 def test_study_context_manager_resets_on_exception():
-    """Test test_study_context_manager_resets_on_exception behavior."""
+    """Test the test study context manager resets on exception functionality."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
@@ -150,7 +150,7 @@ def test_study_context_manager_resets_on_exception():
 
 
 def test_default_study_mutation_methods_removed():
-    """Test test_default_study_mutation_methods_removed behavior."""
+    """Test the test default study mutation methods removed functionality."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
     assert not hasattr(sdk, "set_default_study")
@@ -158,7 +158,7 @@ def test_default_study_mutation_methods_removed():
 
 
 def test_retry_policy_property():
-    """Test test_retry_policy_property behavior."""
+    """Test the test retry policy property functionality."""
     async_client_mock = MagicMock(spec=AsyncClient)
 
     sdk = AsyncImednetSDK(async_client=async_client_mock)
@@ -175,7 +175,7 @@ def test_retry_policy_property():
 
 
 def test_retry_policy_property_without_async_client():
-    """Test test_retry_policy_property_without_async_client behavior."""
+    """Test the test retry policy property without async client functionality."""
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
@@ -221,7 +221,7 @@ async def test_async_sdk_aenter_aexit():
 
 
 def test_async_sdk_sync_init():
-    """Test test_async_sdk_sync_init behavior."""
+    """Test the test async sdk sync init functionality."""
     async_client_mock = MagicMock(spec=AsyncClient)
 
     with patch("imednet.sdk.load_config"):

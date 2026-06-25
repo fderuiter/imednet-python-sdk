@@ -1,4 +1,4 @@
-"""Tests for test_app_redaction."""
+"""Test App Redaction module."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import streamlit as st
 
 
 def test_sanitize_body_string():
-    """Test test_sanitize_body_string behavior."""
+    """Test the test sanitize body string functionality."""
     from imednet_streamlit.app import _sanitize_body
 
     res = _sanitize_body("mongodb://user:password123@host:27017")
@@ -15,7 +15,7 @@ def test_sanitize_body_string():
 
 
 def test_sanitize_body_exception():
-    """Test test_sanitize_body_exception behavior."""
+    """Test the test sanitize body exception functionality."""
     from imednet_streamlit.app import _sanitize_body
 
     ex = ValueError("mongodb://user:password123@host:27017")
@@ -25,18 +25,18 @@ def test_sanitize_body_exception():
 
 
 def test_sanitize_body_unprintable_exception():
-    """Test test_sanitize_body_unprintable_exception behavior."""
+    """Test the test sanitize body unprintable exception functionality."""
     from imednet_streamlit.app import _sanitize_body
 
     class BadError(Exception):
         """Test suite for BadError."""
 
         def __str__(self):
-            """Test __str__ behavior."""
+            """Test the str functionality."""
             raise RuntimeError("Cannot print")
 
         def __init__(self, msg=None):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             if msg == "<unprintable exception>":
                 raise RuntimeError("Failed init")
             super().__init__(msg)
@@ -49,7 +49,7 @@ def test_sanitize_body_unprintable_exception():
 
 
 def test_sanitize_body_non_string():
-    """Test test_sanitize_body_non_string behavior."""
+    """Test the test sanitize body non string functionality."""
     from imednet_streamlit.app import _sanitize_body
 
     res = _sanitize_body(123)
@@ -57,7 +57,7 @@ def test_sanitize_body_non_string():
 
 
 def test_secure_st_methods(monkeypatch):
-    """Test test_secure_st_methods behavior."""
+    """Test the test secure st methods functionality."""
     from imednet_streamlit.app import (
         secure_st_error,
         secure_st_exception,
@@ -68,19 +68,19 @@ def test_secure_st_methods(monkeypatch):
     calls = {}
 
     def mock_error(msg, *args, **kwargs):
-        """Test mock_error behavior."""
+        """Test the mock error functionality."""
         calls["error"] = msg
 
     def mock_exception(msg, *args, **kwargs):
-        """Test mock_exception behavior."""
+        """Test the mock exception functionality."""
         calls["exception"] = msg
 
     def mock_warning(msg, *args, **kwargs):
-        """Test mock_warning behavior."""
+        """Test the mock warning functionality."""
         calls["warning"] = msg
 
     def mock_info(msg, *args, **kwargs):
-        """Test mock_info behavior."""
+        """Test the mock info functionality."""
         calls["info"] = msg
 
     import imednet_streamlit.app as app
@@ -108,25 +108,25 @@ class _FakeChart:
     """Test suite for _FakeChart."""
 
     def __init__(self, title="Test Chart"):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.title = title
         self.data = "dummy_data"
 
     def properties(self, description=None):
-        """Test properties behavior."""
+        """Test the properties functionality."""
         self.description = description
         return self
 
 
 def test_accessible_altair_chart(monkeypatch):
-    """Test test_accessible_altair_chart behavior."""
+    """Test the test accessible altair chart functionality."""
     import imednet_streamlit.app as app
     from imednet_streamlit.app import accessible_altair_chart
 
     calls = []
 
     def mock_original_altair_chart(chart, use_container_width, theme, **kwargs):
-        """Test mock_original_altair_chart behavior."""
+        """Test the mock original altair chart functionality."""
         calls.append((chart, use_container_width, theme))
 
     monkeypatch.setattr(app, "original_altair_chart", mock_original_altair_chart)
@@ -141,14 +141,14 @@ def test_accessible_altair_chart(monkeypatch):
 
 
 def test_accessible_altair_chart_dict_title(monkeypatch):
-    """Test test_accessible_altair_chart_dict_title behavior."""
+    """Test the test accessible altair chart dict title functionality."""
     import imednet_streamlit.app as app
     from imednet_streamlit.app import accessible_altair_chart
 
     calls = []
 
     def mock_original_altair_chart(chart, use_container_width, theme, **kwargs):
-        """Test mock_original_altair_chart behavior."""
+        """Test the mock original altair chart functionality."""
         calls.append(chart)
 
     monkeypatch.setattr(app, "original_altair_chart", mock_original_altair_chart)
@@ -161,7 +161,7 @@ def test_accessible_altair_chart_dict_title(monkeypatch):
 
 
 def test_accessible_altair_chart_non_str_title(monkeypatch):
-    """Test test_accessible_altair_chart_non_str_title behavior."""
+    """Test the test accessible altair chart non str title functionality."""
     import imednet_streamlit.app as app
     from imednet_streamlit.app import accessible_altair_chart
 
@@ -171,7 +171,7 @@ def test_accessible_altair_chart_non_str_title(monkeypatch):
 
 
 def test_accessible_altair_chart_with_dataframe(monkeypatch):
-    """Test test_accessible_altair_chart_with_dataframe behavior."""
+    """Test the test accessible altair chart with dataframe functionality."""
     import pandas as pd
 
     import imednet_streamlit.app as app
@@ -180,7 +180,7 @@ def test_accessible_altair_chart_with_dataframe(monkeypatch):
     calls = []
 
     def mock_original_altair_chart(*args, **kwargs):
-        """Test mock_original_altair_chart behavior."""
+        """Test the mock original altair chart functionality."""
         pass
 
     monkeypatch.setattr(app, "original_altair_chart", mock_original_altair_chart)
@@ -189,19 +189,19 @@ def test_accessible_altair_chart_with_dataframe(monkeypatch):
         """Test suite for FakeExpander."""
 
         def __init__(self, label, expanded):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             calls.append(("expander", label, expanded))
 
         def __enter__(self):
-            """Test __enter__ behavior."""
+            """Test the enter functionality."""
             return self
 
         def __exit__(self, *args):
-            """Test __exit__ behavior."""
+            """Test the exit functionality."""
             pass
 
     def mock_dataframe(df, use_container_width):
-        """Test mock_dataframe behavior."""
+        """Test the mock dataframe functionality."""
         calls.append(("dataframe", df, use_container_width))
 
     monkeypatch.setattr(st, "expander", FakeExpander)
@@ -216,7 +216,7 @@ def test_accessible_altair_chart_with_dataframe(monkeypatch):
 
 
 def test_toggle_high_contrast():
-    """Test test_toggle_high_contrast behavior."""
+    """Test the test toggle high contrast functionality."""
     import imednet_streamlit.app as app
 
     # Set up session state and query params

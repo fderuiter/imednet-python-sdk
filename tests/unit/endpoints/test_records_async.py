@@ -1,4 +1,4 @@
-"""Tests for test_records_async."""
+"""Test Records Async module."""
 
 from unittest.mock import AsyncMock
 
@@ -12,7 +12,7 @@ from imednet.validation.cache import SchemaCache
 
 @pytest.fixture
 def schema():
-    """Test schema behavior."""
+    """Test the schema functionality."""
     s = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     s._form_variables = {"F1": {"age": var}}

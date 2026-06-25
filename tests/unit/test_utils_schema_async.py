@@ -1,4 +1,4 @@
-"""Tests for test_utils_schema_async."""
+"""Test Utils Schema Async module."""
 
 from unittest.mock import AsyncMock, MagicMock
 
@@ -11,7 +11,7 @@ from imednet.validation.cache import AsyncSchemaValidator
 
 
 def _make_var(name: str, form_id: int = 1, form_key: str = "F1") -> Variable:
-    """Test _make_var behavior."""
+    """Test the make var functionality."""
     return Variable(variable_name=name, variable_type="integer", form_id=form_id, form_key=form_key)
 
 

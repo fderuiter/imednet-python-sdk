@@ -1,4 +1,4 @@
-"""Tests for test_async_client."""
+"""Test Async Client module."""
 
 import httpx
 import pytest

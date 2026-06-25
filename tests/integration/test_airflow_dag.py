@@ -1,4 +1,4 @@
-"""Tests for test_airflow_dag."""
+"""Test Airflow Dag module."""
 
 from datetime import datetime
 from types import SimpleNamespace
@@ -8,7 +8,7 @@ import pytest
 
 
 def test_dag_runs(monkeypatch, tmp_path):
-    """Test test_dag_runs behavior."""
+    """Test the test dag runs functionality."""
     pytest.importorskip("airflow")
     out_csv = tmp_path / "out.csv"
     from airflow.models import DAG, TaskInstance  # noqa: E402, I001

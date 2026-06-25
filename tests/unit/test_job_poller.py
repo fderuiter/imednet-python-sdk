@@ -1,4 +1,4 @@
-"""Tests for test_job_poller."""
+"""Test Job Poller module."""
 
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
@@ -10,7 +10,7 @@ from imednet_workflows.job_poller import AsyncJobPoller, JobPoller, JobTimeoutEr
 
 
 def test_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_job_poller_success behavior."""
+    """Test the test job poller success functionality."""
     states = [
         JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
         JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl=""),
@@ -37,7 +37,7 @@ async def test_async_job_poller_success(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_job_poller_timeout behavior."""
+    """Test the test job poller timeout functionality."""
     job = JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl="")
     get_job = MagicMock(return_value=job)
     monkeypatch.setattr("time.sleep", lambda *_: None)
@@ -46,7 +46,7 @@ def test_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     tick = {"v": 0}
 
     def monotonic() -> int:
-        """Test monotonic behavior."""
+        """Test the monotonic functionality."""
         tick["v"] += 1
         return tick["v"]
 
@@ -66,7 +66,7 @@ async def test_async_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None
     tick = {"v": 0}
 
     def monotonic() -> int:
-        """Test monotonic behavior."""
+        """Test the monotonic functionality."""
         tick["v"] += 1
         return tick["v"]
 
@@ -76,7 +76,7 @@ async def test_async_job_poller_timeout(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_job_poller_failed behavior."""
+    """Test the test job poller failed functionality."""
     states = [
         JobStatus(batchId="1", state="PROCESSING", progress=10, jobId="1", resultUrl=""),
         JobStatus(batchId="1", state="FAILED", progress=10, jobId="1", resultUrl=""),
@@ -105,7 +105,7 @@ async def test_async_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_job_poller_cancelled(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_job_poller_cancelled behavior."""
+    """Test the test job poller cancelled functionality."""
     states = [
         JobStatus(batchId="1", state="PROCESSING", progress=50, jobId="1", resultUrl=""),
         JobStatus(batchId="1", state="CANCELLED", progress=50, jobId="1", resultUrl=""),

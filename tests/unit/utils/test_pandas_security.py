@@ -1,4 +1,4 @@
-"""Tests for test_pandas_security."""
+"""Test Pandas Security module."""
 
 from unittest.mock import MagicMock
 
@@ -10,7 +10,7 @@ from imednet.utils.pandas import export_records_csv
 
 @pytest.fixture
 def mock_sdk():
-    """Test mock_sdk behavior."""
+    """Test the mock sdk functionality."""
     sdk = MagicMock()
     # Create a record with malicious data
     record_data = {

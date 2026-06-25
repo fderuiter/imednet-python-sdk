@@ -1,4 +1,4 @@
-"""Tests for test_base_url_normalization."""
+"""Test Base Url Normalization module."""
 
 from unittest.mock import MagicMock
 
@@ -26,7 +26,7 @@ class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
 
 
 def test_client_strips_api_suffix() -> None:
-    """Test test_client_strips_api_suffix behavior."""
+    """Test the test client strips api suffix functionality."""
     client = Client(api_key="k", security_key="s", base_url="https://x/api")
     assert client.base_url == "https://x"
     assert client._client.base_url == httpx.URL("https://x")
@@ -45,7 +45,7 @@ async def test_async_client_strips_api_suffix() -> None:
 
 
 def test_build_safe_path_handles_special_characters() -> None:
-    """Test test_build_safe_path_handles_special_characters behavior."""
+    """Test the test build safe path handles special characters functionality."""
     client = MagicMock(spec=Client)
     endpoint = MockEndpoint(client)
 
@@ -56,7 +56,7 @@ def test_build_safe_path_handles_special_characters() -> None:
 
 
 def test_build_safe_path_prevents_double_slashes() -> None:
-    """Test test_build_safe_path_prevents_double_slashes behavior."""
+    """Test the test build safe path prevents double slashes functionality."""
     client = MagicMock(spec=Client)
     endpoint = MockEndpoint(client)
 

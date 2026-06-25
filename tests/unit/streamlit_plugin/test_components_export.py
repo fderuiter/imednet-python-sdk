@@ -1,4 +1,4 @@
-"""Tests for test_components_export."""
+"""Test Components Export module."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ class _FakeExportStreamlit:
     """Test suite for _FakeExportStreamlit."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.download_calls: list[dict[str, object]] = []
 
     def download_button(
@@ -33,7 +33,7 @@ class _FakeExportStreamlit:
 
 
 def test_csv_download_button_exports_utf8_csv(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_csv_download_button_exports_utf8_csv behavior."""
+    """Test the test csv download button exports utf8 csv functionality."""
     fake_st = _FakeExportStreamlit()
     monkeypatch.setattr(export_components, "st", fake_st)
     df = pd.DataFrame({"name": ["José"], "count": [1]})
@@ -52,7 +52,7 @@ def test_csv_download_button_exports_utf8_csv(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_excel_download_button_exports_valid_xlsx(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_excel_download_button_exports_valid_xlsx behavior."""
+    """Test the test excel download button exports valid xlsx functionality."""
     fake_st = _FakeExportStreamlit()
     monkeypatch.setattr(export_components, "st", fake_st)
     df = pd.DataFrame({"name": ["Site A"], "count": [3]})

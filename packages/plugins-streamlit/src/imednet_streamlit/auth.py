@@ -41,7 +41,7 @@ import sqlite3
 
 
 def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
-    """Perform get tenant credentials operation."""
+    """Handle the get tenant credentials process."""
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )
@@ -60,7 +60,7 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
 
 
 def get_provisioned_studies() -> list[str]:
-    """Perform get provisioned studies operation."""
+    """Handle the get provisioned studies process."""
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )

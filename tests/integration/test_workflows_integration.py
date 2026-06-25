@@ -1,4 +1,4 @@
-"""Tests for test_workflows_integration."""
+"""Test Workflows Integration module."""
 
 import re
 import time
@@ -16,7 +16,7 @@ from imednet_workflows.subject_data import SubjectDataWorkflow
 
 @respx.mock
 def test_data_extraction_filters():
-    """Test test_data_extraction_filters behavior."""
+    """Test the test data extraction filters functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get("https://api.test/api/v1/edc/studies/ST/variables").respond(json={"data": []})
     respx.get("https://api.test/api/v1/edc/studies/ST/subjects").respond(
@@ -47,7 +47,7 @@ def test_data_extraction_filters():
 
 @respx.mock
 def test_record_update_submit_and_wait(monkeypatch: pytest.MonkeyPatch):
-    """Test test_record_update_submit_and_wait behavior."""
+    """Test the test record update submit and wait functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get(re.compile("https://api.test/api/v1/edc/studies/ST/variables.*")).respond(
         json={
@@ -76,7 +76,7 @@ def test_record_update_submit_and_wait(monkeypatch: pytest.MonkeyPatch):
 
 @respx.mock
 def test_subject_data_aggregation():
-    """Test test_subject_data_aggregation behavior."""
+    """Test the test subject data aggregation functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get("https://api.test/api/v1/edc/studies/ST/subjects").respond(
         json={"data": [{"subjectKey": "SUB1"}]}
@@ -102,7 +102,7 @@ def test_subject_data_aggregation():
 
 @respx.mock
 def test_query_management_counts():
-    """Test test_query_management_counts behavior."""
+    """Test the test query management counts functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get("https://api.test/api/v1/edc/studies/ST/queries").respond(
         json={
@@ -122,7 +122,7 @@ def test_query_management_counts():
 
 @respx.mock
 def test_data_extraction_no_matching_subjects() -> None:
-    """Test test_data_extraction_no_matching_subjects behavior."""
+    """Test the test data extraction no matching subjects functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     subjects_route = respx.get("https://api.test/api/v1/edc/studies/ST/subjects").respond(
         json={"data": []}
@@ -145,7 +145,7 @@ def test_data_extraction_no_matching_subjects() -> None:
 
 @respx.mock
 def test_record_update_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_record_update_timeout behavior."""
+    """Test the test record update timeout functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get(re.compile("https://api.test/api/v1/edc/studies/ST/variables.*")).respond(
         json={
@@ -162,7 +162,7 @@ def test_record_update_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     counter = {"v": 0}
 
     def monotonic() -> int:
-        """Test monotonic behavior."""
+        """Test the monotonic functionality."""
         counter["v"] += 1
         return counter["v"]
 
@@ -182,7 +182,7 @@ def test_record_update_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @respx.mock
 def test_get_open_queries() -> None:
-    """Test test_get_open_queries behavior."""
+    """Test the test get open queries functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     respx.get("https://api.test/api/v1/edc/studies/ST/queries").respond(
         json={

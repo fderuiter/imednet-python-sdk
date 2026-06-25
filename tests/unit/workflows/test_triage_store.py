@@ -1,4 +1,4 @@
-"""Tests for test_triage_store."""
+"""Test Triage Store module."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from imednet_workflows.triage_store import TriageStore
 
 
 def _seed_item(item_id: str = "AE-1") -> TriageItem:
-    """Test _seed_item behavior."""
+    """Test the seed item functionality."""
     return TriageItem(
         item_id=item_id,
         study_key="STUDY-A",
@@ -45,13 +45,13 @@ def _seed_item(item_id: str = "AE-1") -> TriageItem:
 
 
 def test_triage_store_enables_wal_mode(tmp_path: Path) -> None:
-    """Test test_triage_store_enables_wal_mode behavior."""
+    """Test the test triage store enables wal mode functionality."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     assert store.get_journal_mode().lower() == "wal"
 
 
 def test_triage_store_crud_and_queue_filters(tmp_path: Path) -> None:
-    """Test test_triage_store_crud_and_queue_filters behavior."""
+    """Test the test triage store crud and queue filters functionality."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     store.upsert_item(_seed_item("AE-1"))
     store.upsert_item(_seed_item("PD-2"))
@@ -75,16 +75,16 @@ def test_triage_store_crud_and_queue_filters(tmp_path: Path) -> None:
 
 
 def test_triage_store_handles_parallel_reads_and_writes(tmp_path: Path) -> None:
-    """Test test_triage_store_handles_parallel_reads_and_writes behavior."""
+    """Test the test triage store handles parallel reads and writes functionality."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     store.upsert_item(_seed_item("AE-99"))
 
     def _writer(idx: int) -> None:
-        """Test _writer behavior."""
+        """Test the writer functionality."""
         store.add_annotation("AE-99", f"user-{idx}", f"comment {idx}")
 
     def _reader() -> int:
-        """Test _reader behavior."""
+        """Test the reader functionality."""
         item = store.get_triage_item("AE-99")
         assert item is not None
         return len(item.annotations)
@@ -103,7 +103,7 @@ def test_triage_store_handles_parallel_reads_and_writes(tmp_path: Path) -> None:
 
 
 def test_triage_store_rejects_empty_annotation_comment(tmp_path: Path) -> None:
-    """Test test_triage_store_rejects_empty_annotation_comment behavior."""
+    """Test the test triage store rejects empty annotation comment functionality."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     store.upsert_item(_seed_item("DD-4"))
 
@@ -112,7 +112,7 @@ def test_triage_store_rejects_empty_annotation_comment(tmp_path: Path) -> None:
 
 
 def test_triage_store_migrates_legacy_schema(tmp_path: Path) -> None:
-    """Test test_triage_store_migrates_legacy_schema behavior."""
+    """Test the test triage store migrates legacy schema functionality."""
     db_path = tmp_path / "triage.sqlite3"
     with sqlite3.connect(db_path) as conn:
         conn.execute("""
@@ -151,12 +151,12 @@ def test_triage_store_migrates_legacy_schema(tmp_path: Path) -> None:
 def test_triage_store_masks_sensitive_operational_errors(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_triage_store_masks_sensitive_operational_errors behavior."""
+    """Test the test triage store masks sensitive operational errors functionality."""
     store = TriageStore(tmp_path / "triage.sqlite3", retry_attempts=1)
 
     @contextmanager
     def _memory_connection() -> Iterator[sqlite3.Connection]:
-        """Test _memory_connection behavior."""
+        """Test the memory connection functionality."""
         conn = sqlite3.connect(":memory:")
         try:
             yield conn
@@ -166,7 +166,7 @@ def test_triage_store_masks_sensitive_operational_errors(
     monkeypatch.setattr(store, "_connection", _memory_connection)
 
     def _failing_write(_conn: sqlite3.Connection) -> None:
-        """Test _failing_write behavior."""
+        """Test the failing write functionality."""
         raise sqlite3.OperationalError("unable to open database file: token=supersecret")
 
     with pytest.raises(sqlite3.OperationalError) as exc_info:

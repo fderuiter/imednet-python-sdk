@@ -1,4 +1,4 @@
-"""Tests for test_json_logging."""
+"""Test Json Logging module."""
 
 import importlib
 import json
@@ -30,7 +30,7 @@ def _install_formatter(monkeypatch: pytest.MonkeyPatch, submodule: str) -> type[
         """Test suite for DummyFormatter."""
 
         def format(self, record: logging.LogRecord) -> str:  # type: ignore[override]
-            """Test format behavior."""
+            """Test the format functionality."""
             return json.dumps({"message": record.getMessage(), "levelname": record.levelname})
 
     module.JsonFormatter = DummyFormatter  # type: ignore[attr-defined]
@@ -39,7 +39,7 @@ def _install_formatter(monkeypatch: pytest.MonkeyPatch, submodule: str) -> type[
 
 
 def _configure_and_log(json_logging, caplog: pytest.LogCaptureFixture) -> logging.Handler:
-    """Test _configure_and_log behavior."""
+    """Test the configure and log functionality."""
     root = logging.getLogger()
     old_handlers, old_level = root.handlers[:], root.level
     with caplog.at_level(logging.INFO, logger=""):
@@ -57,7 +57,7 @@ def _configure_and_log(json_logging, caplog: pytest.LogCaptureFixture) -> loggin
 
 
 def test_configure_json_logging_uses_json_import(monkeypatch, caplog):
-    """Test test_configure_json_logging_uses_json_import behavior."""
+    """Test the test configure json logging uses json import functionality."""
     formatter_cls = _install_formatter(monkeypatch, "json")
     monkeypatch.delitem(sys.modules, MODULE_PATH, raising=False)
     json_logging = importlib.import_module(MODULE_PATH)
@@ -66,7 +66,7 @@ def test_configure_json_logging_uses_json_import(monkeypatch, caplog):
 
 
 def test_configure_json_logging_uses_jsonlogger_import(monkeypatch, caplog):
-    """Test test_configure_json_logging_uses_jsonlogger_import behavior."""
+    """Test the test configure json logging uses jsonlogger import functionality."""
     formatter_cls = _install_formatter(monkeypatch, "jsonlogger")
     monkeypatch.delitem(sys.modules, MODULE_PATH, raising=False)
     json_logging = importlib.import_module(MODULE_PATH)

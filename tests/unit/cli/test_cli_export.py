@@ -1,4 +1,4 @@
-"""Tests for test_cli_export."""
+"""Test Cli Export module."""
 
 import importlib.util
 from unittest.mock import ANY, MagicMock
@@ -15,20 +15,20 @@ from imednet.integrations import export as export_mod
 
 @pytest.fixture(autouse=True)
 def env(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test env behavior."""
+    """Test the env functionality."""
     monkeypatch.setenv("IMEDNET_API_KEY", "key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "secret")
 
 
 @pytest.fixture()
 def runner() -> CliRunner:
-    """Test runner behavior."""
+    """Test the runner functionality."""
     return CliRunner()
 
 
 @pytest.fixture()
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
-    """Test sdk behavior."""
+    """Test the sdk functionality."""
     mock_sdk = MagicMock()
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=mock_sdk))
     return mock_sdk
@@ -37,7 +37,7 @@ def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
 def test_cli_export_duckdb_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_duckdb_happy_path behavior."""
+    """Test the test cli export duckdb happy path functionality."""
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_duckdb", func)
     monkeypatch.setattr(cli, "export_to_duckdb", export_mod.export_to_duckdb)
@@ -63,11 +63,11 @@ def test_cli_export_duckdb_happy_path(
 def test_cli_export_duckdb_missing_dependency(
     runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_duckdb_missing_dependency behavior."""
+    """Test the test cli export duckdb missing dependency functionality."""
     original_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name == "duckdb":
             return None
         return original_find_spec(name)
@@ -86,7 +86,7 @@ def test_cli_export_duckdb_missing_dependency(
 def test_cli_export_duckdb_vars_forms_passthrough(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_duckdb_vars_forms_passthrough behavior."""
+    """Test the test cli export duckdb vars forms passthrough functionality."""
     func = MagicMock()
     monkeypatch.setattr(export_mod, "export_to_duckdb", func)
     monkeypatch.setattr(cli, "export_to_duckdb", export_mod.export_to_duckdb)
@@ -122,7 +122,7 @@ def test_cli_export_duckdb_vars_forms_passthrough(
 def test_cli_export_mongodb_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_mongodb_happy_path behavior."""
+    """Test the test cli export mongodb happy path functionality."""
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(
@@ -154,11 +154,11 @@ def test_cli_export_mongodb_happy_path(
 def test_cli_export_mongodb_missing_dependency(
     runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_mongodb_missing_dependency behavior."""
+    """Test the test cli export mongodb missing dependency functionality."""
     original_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name == "pymongo":
             return None
         return original_find_spec(name)
@@ -176,7 +176,7 @@ def test_cli_export_mongodb_missing_dependency(
 def test_cli_export_neo4j_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_neo4j_happy_path behavior."""
+    """Test the test cli export neo4j happy path functionality."""
     sdk.sinks.Neo4jSinkConfig = Neo4jSinkConfig
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
@@ -210,11 +210,11 @@ def test_cli_export_neo4j_happy_path(
 def test_cli_export_neo4j_missing_dependency(
     runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_neo4j_missing_dependency behavior."""
+    """Test the test cli export neo4j missing dependency functionality."""
     original_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name == "neo4j":
             return None
         return original_find_spec(name)
@@ -232,7 +232,7 @@ def test_cli_export_neo4j_missing_dependency(
 def test_cli_export_snowflake_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_snowflake_happy_path behavior."""
+    """Test the test cli export snowflake happy path functionality."""
     sdk.sinks.SnowflakeSinkConfig = SnowflakeSinkConfig
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
@@ -281,11 +281,11 @@ def test_cli_export_snowflake_happy_path(
 def test_cli_export_snowflake_missing_dependency(
     runner: CliRunner, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_cli_export_snowflake_missing_dependency behavior."""
+    """Test the test cli export snowflake missing dependency functionality."""
     original_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str) -> object | None:
-        """Test fake_find_spec behavior."""
+        """Test the fake find spec functionality."""
         if name == "snowflake.connector":
             return None
         return original_find_spec(name)

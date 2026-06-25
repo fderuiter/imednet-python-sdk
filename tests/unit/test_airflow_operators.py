@@ -1,4 +1,4 @@
-"""Tests for test_airflow_operators."""
+"""Test Airflow Operators module."""
 
 import importlib
 import sys
@@ -9,7 +9,7 @@ import pytest
 
 
 def _setup_airflow(monkeypatch):
-    """Test _setup_airflow behavior."""
+    """Test the setup airflow functionality."""
     airflow = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_base = ModuleType("airflow.sdk.bases.hook")
@@ -27,7 +27,7 @@ def _setup_airflow(monkeypatch):
 
         @classmethod
         def get_connection(cls, conn_id):
-            """Test get_connection behavior."""
+            """Test the get connection functionality."""
             raise NotImplementedError
 
     class DummyBaseOperator:
@@ -36,7 +36,7 @@ def _setup_airflow(monkeypatch):
         template_fields = ()
 
         def __init__(self, *a, **kw):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
     class DummySensorOperator:
@@ -45,7 +45,7 @@ def _setup_airflow(monkeypatch):
         template_fields = ()
 
         def __init__(self, *a, **kw):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
     hooks_base.BaseHook = DummyBaseHook
@@ -98,7 +98,7 @@ def _setup_airflow(monkeypatch):
 
 
 def _import_operators(monkeypatch):
-    """Test _import_operators behavior."""
+    """Test the import operators functionality."""
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.operators as ops
 
@@ -106,7 +106,7 @@ def _import_operators(monkeypatch):
 
 
 def _import_sensors(monkeypatch):
-    """Test _import_sensors behavior."""
+    """Test the import sensors functionality."""
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.sensors as sensors
 
@@ -114,7 +114,7 @@ def _import_sensors(monkeypatch):
 
 
 def _patch_basehook(monkeypatch, extras=None):
-    """Test _patch_basehook behavior."""
+    """Test the patch basehook functionality."""
     conn = SimpleNamespace(login=None, password=None, extra_dejson=extras or {})
     import apache_airflow_providers_imednet.hooks as hook_mod
 
@@ -127,7 +127,7 @@ def _patch_basehook(monkeypatch, extras=None):
 
 
 def test_job_sensor(monkeypatch):
-    """Test test_job_sensor behavior."""
+    """Test the test job sensor functionality."""
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.operators as ops
     import apache_airflow_providers_imednet.sensors as sensors

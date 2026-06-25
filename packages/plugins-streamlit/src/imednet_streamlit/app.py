@@ -21,7 +21,7 @@ if "high_contrast" not in st.session_state:
 
 
 def toggle_high_contrast():
-    """Perform toggle high contrast operation."""
+    """Handle the toggle high contrast process."""
     st.session_state["high_contrast"] = not st.session_state["high_contrast"]
     if st.session_state["high_contrast"]:
         st.query_params["high_contrast"] = "true"
@@ -78,7 +78,7 @@ original_altair_chart = st.altair_chart
 
 
 def accessible_altair_chart(altair_chart, use_container_width=False, theme="streamlit", **kwargs):
-    """Perform accessible altair chart operation."""
+    """Handle the accessible altair chart process."""
     title = getattr(altair_chart, "title", "Chart")
     if isinstance(title, dict) and "text" in title:
         title = title["text"]
@@ -108,7 +108,7 @@ original_st_info = st.info
 
 
 def _sanitize_body(body):
-    """Perform  sanitize body operation."""
+    """Handle the sanitize body process."""
     if isinstance(body, Exception):
         try:
             body_str = str(body)
@@ -129,22 +129,22 @@ def _sanitize_body(body):
 
 
 def secure_st_error(body, *args, **kwargs):
-    """Perform secure st error operation."""
+    """Handle the secure st error process."""
     return original_st_error(_sanitize_body(body), *args, **kwargs)
 
 
 def secure_st_exception(exception, *args, **kwargs):
-    """Perform secure st exception operation."""
+    """Handle the secure st exception process."""
     return original_st_exception(_sanitize_body(exception), *args, **kwargs)
 
 
 def secure_st_warning(body, *args, **kwargs):
-    """Perform secure st warning operation."""
+    """Handle the secure st warning process."""
     return original_st_warning(_sanitize_body(body), *args, **kwargs)
 
 
 def secure_st_info(body, *args, **kwargs):
-    """Perform secure st info operation."""
+    """Handle the secure st info process."""
     return original_st_info(_sanitize_body(body), *args, **kwargs)
 
 

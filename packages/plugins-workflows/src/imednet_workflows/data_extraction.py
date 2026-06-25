@@ -16,7 +16,7 @@ class DataExtractionWorkflow:
     """
 
     def __init__(self, sdk: "ImednetFacade"):
-        """Perform   init   operation."""
+        """Initialize a new instance."""
         self._sdk = sdk
 
     def extract_records_by_criteria(

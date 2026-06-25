@@ -1,4 +1,4 @@
-"""Tests for test_app."""
+"""Test App module."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ APP_PATH = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_strea
 
 
 def test_dashboard_login_requires_all_fields() -> None:
-    """Test test_dashboard_login_requires_all_fields behavior."""
+    """Test the test dashboard login requires all fields functionality."""
     # We mock studies so the form renders, but mock credentials so it fails.
     with (
         patch("imednet_streamlit.auth.get_provisioned_studies", return_value=["PROT-100"]),
@@ -30,7 +30,7 @@ def test_dashboard_login_requires_all_fields() -> None:
 
 
 def test_dashboard_shows_auth_prompt_when_not_connected() -> None:
-    """Test test_dashboard_shows_auth_prompt_when_not_connected behavior."""
+    """Test the test dashboard shows auth prompt when not connected functionality."""
     at = AppTest.from_file(str(APP_PATH))
     at.run()
 

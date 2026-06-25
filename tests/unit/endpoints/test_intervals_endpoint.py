@@ -1,4 +1,4 @@
-"""Tests for test_intervals_endpoint."""
+"""Test Intervals Endpoint module."""
 
 import pytest
 
@@ -10,7 +10,7 @@ from imednet.models.intervals import Interval
 def test_list_uses_default_study_and_page_size(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
-    """Test test_list_uses_default_study_and_page_size behavior."""
+    """Test the test list uses default study and page size functionality."""
     context.set_default_study_key("S1")
     ep = intervals.IntervalsEndpoint(dummy_client, context)
     captured = paginator_factory(intervals, [{"intervalId": 1}])
@@ -26,11 +26,11 @@ def test_list_uses_default_study_and_page_size(
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """Test test_get_not_found behavior."""
+    """Test the test get not found functionality."""
     ep = intervals.IntervalsEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        """Test fake_impl behavior."""
+        """Test the fake impl functionality."""
         return []
 
     monkeypatch.setattr(intervals.IntervalsEndpoint, "_list_sync", fake_impl)
@@ -40,7 +40,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 
 def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
-    """Test test_list_makes_request_per_call behavior."""
+    """Test the test list makes request per call functionality."""
     ep = intervals.IntervalsEndpoint(dummy_client, context)
     capture = paginator_factory(intervals, [{"intervalId": 1}])
 
@@ -51,7 +51,7 @@ def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
 
 
 def test_list_different_study_keys_make_separate_requests(dummy_client, context, paginator_factory):
-    """Test test_list_different_study_keys_make_separate_requests behavior."""
+    """Test the test list different study keys make separate requests functionality."""
     ep = intervals.IntervalsEndpoint(dummy_client, context)
     capture = paginator_factory(intervals, [{"intervalId": 1}])
 

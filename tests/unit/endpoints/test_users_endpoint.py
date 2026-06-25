@@ -1,4 +1,4 @@
-"""Tests for test_users_endpoint."""
+"""Test Users Endpoint module."""
 
 import pytest
 
@@ -9,7 +9,7 @@ from imednet.models.users import User
 
 
 def test_list_requires_study_key_and_include_inactive(dummy_client, context, paginator_factory):
-    """Test test_list_requires_study_key_and_include_inactive behavior."""
+    """Test the test list requires study key and include inactive functionality."""
     ep = users.UsersEndpoint(dummy_client, context)
     capture = paginator_factory(users, [{"userId": 1}])
 
@@ -24,11 +24,11 @@ def test_list_requires_study_key_and_include_inactive(dummy_client, context, pag
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """Test test_get_not_found behavior."""
+    """Test the test get not found functionality."""
     ep = users.UsersEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        """Test fake_impl behavior."""
+        """Test the fake impl functionality."""
         return []
 
     monkeypatch.setattr(users.UsersEndpoint, "_list_sync", fake_impl)

@@ -1,4 +1,4 @@
-"""Tests for test_tui_migration."""
+"""Test Tui Migration module."""
 
 import pytest
 

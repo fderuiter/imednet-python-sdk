@@ -1,11 +1,11 @@
-"""Tests for test_mermaid_diagrams."""
+"""Test Mermaid Diagrams module."""
 
 import re
 from pathlib import Path
 
 
 def get_mermaid_lines(path: Path):
-    """Test get_mermaid_lines behavior."""
+    """Test the get mermaid lines functionality."""
     lines = []
     inside = False
     skip_blank = False
@@ -30,7 +30,7 @@ PATTERN = re.compile(r"\[[^\]]*\([^\)]*\)\]")
 
 
 def test_no_unquoted_parentheses_in_mermaid_blocks():
-    """Test test_no_unquoted_parentheses_in_mermaid_blocks behavior."""
+    """Test the test no unquoted parentheses in mermaid blocks functionality."""
     errors = []
     for path in Path("docs").rglob("*.rst"):
         if "_build" in path.parts:

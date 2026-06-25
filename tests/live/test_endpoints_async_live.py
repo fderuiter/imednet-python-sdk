@@ -1,4 +1,4 @@
-"""Tests for test_endpoints_async_live."""
+"""Test Endpoints Async Live module."""
 
 from typing import Any
 

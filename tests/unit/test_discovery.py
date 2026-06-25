@@ -1,4 +1,4 @@
-"""Tests for test_discovery."""
+"""Test Discovery module."""
 
 from unittest.mock import Mock
 
@@ -26,28 +26,28 @@ from imednet.models.subjects import Subject
 
 
 def test_is_site_eligible_accepts_enrollment_open() -> None:
-    """Test test_is_site_eligible_accepts_enrollment_open behavior."""
+    """Test the test is site eligible accepts enrollment open functionality."""
     assert is_site_eligible("ENROLLMENT_OPEN") is True
 
 
 def test_is_site_eligible_accepts_active_case_insensitive() -> None:
-    """Test test_is_site_eligible_accepts_active_case_insensitive behavior."""
+    """Test the test is site eligible accepts active case insensitive functionality."""
     assert is_site_eligible("Active") is True
     assert is_site_eligible("ACTIVE") is True
 
 
 def test_is_site_eligible_rejects_read_only() -> None:
-    """Test test_is_site_eligible_rejects_read_only behavior."""
+    """Test the test is site eligible rejects read only functionality."""
     assert is_site_eligible("READ_ONLY") is False
 
 
 def test_is_site_eligible_rejects_closed() -> None:
-    """Test test_is_site_eligible_rejects_closed behavior."""
+    """Test the test is site eligible rejects closed functionality."""
     assert is_site_eligible("Closed") is False
 
 
 def test_eligible_site_statuses_contains_expected_values() -> None:
-    """Test test_eligible_site_statuses_contains_expected_values behavior."""
+    """Test the test eligible site statuses contains expected values functionality."""
     assert "enrollment_open" in ELIGIBLE_SITE_STATUSES
     assert "active" in ELIGIBLE_SITE_STATUSES
 
@@ -58,33 +58,33 @@ def test_eligible_site_statuses_contains_expected_values() -> None:
 
 
 def test_is_subject_eligible_accepts_registered() -> None:
-    """Test test_is_subject_eligible_accepts_registered behavior."""
+    """Test the test is subject eligible accepts registered functionality."""
     assert is_subject_eligible("Registered") is True
 
 
 def test_is_subject_eligible_accepts_baseline() -> None:
-    """Test test_is_subject_eligible_accepts_baseline behavior."""
+    """Test the test is subject eligible accepts baseline functionality."""
     assert is_subject_eligible("Baseline") is True
 
 
 def test_is_subject_eligible_accepts_enrolled() -> None:
-    """Test test_is_subject_eligible_accepts_enrolled behavior."""
+    """Test the test is subject eligible accepts enrolled functionality."""
     assert is_subject_eligible("Enrolled") is True
 
 
 def test_is_subject_eligible_accepts_active_case_insensitive() -> None:
-    """Test test_is_subject_eligible_accepts_active_case_insensitive behavior."""
+    """Test the test is subject eligible accepts active case insensitive functionality."""
     assert is_subject_eligible("Active") is True
     assert is_subject_eligible("ACTIVE") is True
 
 
 def test_is_subject_eligible_rejects_closed() -> None:
-    """Test test_is_subject_eligible_rejects_closed behavior."""
+    """Test the test is subject eligible rejects closed functionality."""
     assert is_subject_eligible("Closed") is False
 
 
 def test_eligible_subject_statuses_contains_expected_values() -> None:
-    """Test test_eligible_subject_statuses_contains_expected_values behavior."""
+    """Test the test eligible subject statuses contains expected values functionality."""
     assert "registered" in ELIGIBLE_SUBJECT_STATUSES
     assert "baseline" in ELIGIBLE_SUBJECT_STATUSES
     assert "enrolled" in ELIGIBLE_SUBJECT_STATUSES
@@ -97,7 +97,7 @@ def test_eligible_subject_statuses_contains_expected_values() -> None:
 
 
 def test_discover_form_key_chooses_subject_form() -> None:
-    """Test test_discover_form_key_chooses_subject_form behavior."""
+    """Test the test discover form key chooses subject form functionality."""
     sdk = Mock()
     sdk.forms.list.return_value = [
         Form(study_key="S", form_key="SS", subject_record_report=False),
@@ -110,7 +110,7 @@ def test_discover_form_key_chooses_subject_form() -> None:
 
 
 def test_discover_form_key_raises_when_no_valid_forms() -> None:
-    """Test test_discover_form_key_raises_when_no_valid_forms behavior."""
+    """Test the test discover form key raises when no valid forms functionality."""
     sdk = Mock()
     sdk.forms.list.return_value = [Form(study_key="S", form_key="SS", subject_record_report=False)]
     sdk.variables.list.return_value = [Mock()]
@@ -125,7 +125,7 @@ def test_discover_form_key_raises_when_no_valid_forms() -> None:
 
 
 def test_discover_site_name_returns_active_site() -> None:
-    """Test test_discover_site_name_returns_active_site behavior."""
+    """Test the test discover site name returns active site functionality."""
     sdk = Mock()
     sdk.sites.list.return_value = [
         Site(study_key="S", site_name="Closed", site_enrollment_status="Closed"),
@@ -148,7 +148,7 @@ def test_discover_site_name_returns_enrollment_open_site() -> None:
 
 
 def test_discover_site_name_raises_when_no_active() -> None:
-    """Test test_discover_site_name_raises_when_no_active behavior."""
+    """Test the test discover site name raises when no active functionality."""
     sdk = Mock()
     sdk.sites.list.return_value = [
         Site(study_key="S", site_name="X", site_enrollment_status="Closed")
@@ -171,7 +171,7 @@ def test_discover_site_name_error_includes_encountered_statuses() -> None:
 
 
 def test_discover_site_name_raises_when_no_sites() -> None:
-    """Test test_discover_site_name_raises_when_no_sites behavior."""
+    """Test the test discover site name raises when no sites functionality."""
     sdk = Mock()
     sdk.sites.list.return_value = []
 
@@ -185,7 +185,7 @@ def test_discover_site_name_raises_when_no_sites() -> None:
 
 
 def test_discover_subject_key_returns_active_subject() -> None:
-    """Test test_discover_subject_key_returns_active_subject behavior."""
+    """Test the test discover subject key returns active subject functionality."""
     sdk = Mock()
     sdk.subjects.list.return_value = [
         Subject(study_key="S", subject_key="S1", subject_status="Closed"),
@@ -227,7 +227,7 @@ def test_discover_subject_key_returns_enrolled_subject() -> None:
 
 
 def test_discover_subject_key_raises_when_no_active() -> None:
-    """Test test_discover_subject_key_raises_when_no_active behavior."""
+    """Test the test discover subject key raises when no active functionality."""
     sdk = Mock()
     sdk.subjects.list.return_value = [
         Subject(study_key="S", subject_key="S1", subject_status="Closed")
@@ -250,7 +250,7 @@ def test_discover_subject_key_error_includes_encountered_statuses() -> None:
 
 
 def test_discover_subject_key_raises_when_no_subjects() -> None:
-    """Test test_discover_subject_key_raises_when_no_subjects behavior."""
+    """Test the test discover subject key raises when no subjects functionality."""
     sdk = Mock()
     sdk.subjects.list.return_value = []
 
@@ -264,7 +264,7 @@ def test_discover_subject_key_raises_when_no_subjects() -> None:
 
 
 def test_discover_interval_name_returns_active_interval() -> None:
-    """Test test_discover_interval_name_returns_active_interval behavior."""
+    """Test the test discover interval name returns active interval functionality."""
     sdk = Mock()
     sdk.intervals.list.return_value = [
         Interval(study_key="S", interval_name="I1", disabled=True),
@@ -276,7 +276,7 @@ def test_discover_interval_name_returns_active_interval() -> None:
 
 
 def test_discover_interval_name_raises_when_all_disabled() -> None:
-    """Test test_discover_interval_name_raises_when_all_disabled behavior."""
+    """Test the test discover interval name raises when all disabled functionality."""
     sdk = Mock()
     sdk.intervals.list.return_value = [Interval(study_key="S", interval_name="I1", disabled=True)]
 

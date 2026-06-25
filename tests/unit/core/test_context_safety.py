@@ -1,4 +1,4 @@
-"""Tests for test_context_safety."""
+"""Test Context Safety module."""
 
 import asyncio
 import threading
@@ -41,7 +41,7 @@ def test_study_context_is_visible_inside_worker_thread() -> None:
     result: list[str | None] = []
 
     def worker() -> None:
-        """Test worker behavior."""
+        """Test the worker functionality."""
         with study_context("THREAD-A"):
             result.append(get_current_study())
 
@@ -57,7 +57,7 @@ def test_study_context_is_isolated_between_threads() -> None:
     results: dict[str, str] = {}
 
     def worker(key: str) -> None:
-        """Test worker behavior."""
+        """Test the worker functionality."""
         with study_context(key):
             time.sleep(0.05)
             results[key] = get_current_study()
@@ -76,7 +76,7 @@ def test_study_context_is_reset_after_worker_thread_completes() -> None:
     sentinel: list[str | Exception] = []
 
     def worker() -> None:
-        """Test worker behavior."""
+        """Test the worker functionality."""
         with study_context("TRANSIENT"):
             pass  # context manager exits before thread ends
 

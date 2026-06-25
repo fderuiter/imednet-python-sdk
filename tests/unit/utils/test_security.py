@@ -1,4 +1,4 @@
-"""Tests for test_security."""
+"""Test Security module."""
 
 import pytest
 
@@ -36,7 +36,7 @@ from imednet.utils.security import (
     ],
 )
 def test_sanitize_csv_formula(input_val, expected):
-    """Test test_sanitize_csv_formula behavior."""
+    """Test the test sanitize csv formula functionality."""
     assert sanitize_csv_formula(input_val) == expected
 
 
@@ -52,7 +52,7 @@ def test_sanitize_csv_formula(input_val, expected):
     ],
 )
 def test_validate_header_value_valid(input_val):
-    """Test test_validate_header_value_valid behavior."""
+    """Test the test validate header value valid functionality."""
     validate_header_value(input_val)
 
 
@@ -69,7 +69,7 @@ def test_validate_header_value_valid(input_val):
     ],
 )
 def test_validate_header_value_invalid(input_val):
-    """Test test_validate_header_value_invalid behavior."""
+    """Test the test validate header value invalid functionality."""
     with pytest.raises(ClientError, match="Header value must not contain newlines"):
         validate_header_value(input_val)
 
@@ -83,13 +83,13 @@ def test_validate_header_value_invalid(input_val):
     ],
 )
 def test_sanitize_csv_formula_collections(input_val, expected):
-    """Test test_sanitize_csv_formula_collections behavior."""
+    """Test the test sanitize csv formula collections functionality."""
     assert sanitize_csv_formula(input_val) == expected
 
 
 @pytest.mark.parametrize("key", ["STUDY_A", "study-001", "visit 1"])
 def test_validate_partition_key_valid(key: str) -> None:
-    """Test test_validate_partition_key_valid behavior."""
+    """Test the test validate partition key valid functionality."""
     validate_partition_key(key)
 
 
@@ -109,6 +109,6 @@ def test_validate_partition_key_valid(key: str) -> None:
     ],
 )
 def test_validate_partition_key_invalid(key: str) -> None:
-    """Test test_validate_partition_key_invalid behavior."""
+    """Test the test validate partition key invalid functionality."""
     with pytest.raises(PathTraversalValidationError):
         validate_partition_key(key)

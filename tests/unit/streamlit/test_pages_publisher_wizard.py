@@ -18,7 +18,7 @@ MODULE_NAME = "imednet_streamlit.pages.publisher_wizard"
 
 
 def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> ConfigVersionStore:
-    """Test _make_committed_store behavior."""
+    """Test the make committed store functionality."""
     store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
     config = StudyConfiguration(
         version="1.0.0",
@@ -44,11 +44,11 @@ class _FakeContextManager:
     """Test suite for _FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """Test __enter__ behavior."""
+        """Test the enter functionality."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """Test __exit__ behavior."""
+        """Test the exit functionality."""
         pass
 
 
@@ -56,7 +56,7 @@ class _FakeStreamlit:
     """Test suite for _FakeStreamlit."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.success_calls: list[str] = []
         self.warning_calls: list[str] = []
@@ -67,54 +67,54 @@ class _FakeStreamlit:
         self.text_input_values: dict[str, str] = {}
 
     def title(self, value: str) -> None:
-        """Test title behavior."""
+        """Test the title functionality."""
         pass
 
     def subheader(self, value: str) -> None:
-        """Test subheader behavior."""
+        """Test the subheader functionality."""
         pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
-        """Test markdown behavior."""
+        """Test the markdown functionality."""
         pass
 
     def info(self, value: str) -> None:
-        """Test info behavior."""
+        """Test the info functionality."""
         self.info_calls.append(value)
 
     def success(self, value: str) -> None:
-        """Test success behavior."""
+        """Test the success functionality."""
         self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
-        """Test warning behavior."""
+        """Test the warning functionality."""
         self.warning_calls.append(value)
 
     def error(self, value: str) -> None:
-        """Test error behavior."""
+        """Test the error functionality."""
         self.error_calls.append(value)
 
     def divider(self) -> None:
-        """Test divider behavior."""
+        """Test the divider functionality."""
         pass
 
     def json(self, value: Any) -> None:
-        """Test json behavior."""
+        """Test the json functionality."""
         pass
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """Test dataframe behavior."""
+        """Test the dataframe functionality."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """Test button behavior."""
+        """Test the button functionality."""
         key = str(kwargs.get("key") or label)
         if kwargs.get("disabled", False):
             return False
         return key in self.button_presses
 
     def columns(self, spec: Any) -> list[_FakeContextManager]:
-        """Test columns behavior."""
+        """Test the columns functionality."""
         count = spec if isinstance(spec, int) else len(spec)
         cols = [_FakeContextManager() for _ in range(count)]
         # Attach button and other widget methods to each column
@@ -126,37 +126,37 @@ class _FakeStreamlit:
         return cols
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
-        """Test selectbox behavior."""
+        """Test the selectbox functionality."""
         key = str(kwargs.get("key") or label)
         if key in self.selectbox_values and self.selectbox_values[key] in options:
             return self.selectbox_values[key]
         return options[index]
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """Test text_input behavior."""
+        """Test the text input functionality."""
         key = str(kwargs.get("key") or label)
         if key in self.text_input_values:
             return self.text_input_values[key]
         return str(kwargs.get("value", ""))
 
     def text_area(self, label: str, **kwargs: Any) -> str:
-        """Test text_area behavior."""
+        """Test the text area functionality."""
         return str(kwargs.get("value", ""))
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
-        """Test expander behavior."""
+        """Test the expander functionality."""
         return _FakeContextManager()
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """Test metric behavior."""
+        """Test the metric functionality."""
         pass
 
     def caption(self, value: str) -> None:
-        """Test caption behavior."""
+        """Test the caption functionality."""
         pass
 
     def progress(self, value: float) -> None:
-        """Test progress behavior."""
+        """Test the progress functionality."""
         pass
 
 
@@ -199,12 +199,12 @@ def _run_publisher_wizard(
         """Test suite for FakeAuth."""
 
         def get_user_roles(self):
-            """Test get_user_roles behavior."""
+            """Test the get user roles functionality."""
             # Read from session state simulator instead of UI
             return [fake_st.selectbox_values.get("_publisher_role", "viewer")]
 
         def get_user_id(self):
-            """Test get_user_id behavior."""
+            """Test the get user id functionality."""
             return fake_st.text_input_values.get("_publisher_user", "")
 
     class FakeSDK:

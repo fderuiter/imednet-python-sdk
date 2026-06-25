@@ -1,4 +1,4 @@
-"""Tests for test_transport_contract."""
+"""Test Transport Contract module."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 @respx.mock(base_url="https://example.com")
 def test_retry_contract_by_method_class() -> None:
-    """Test test_retry_contract_by_method_class behavior."""
+    """Test the test retry contract by method class functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
 
     get_route = respx.get("/retry-get").mock(return_value=httpx.Response(503))
@@ -85,14 +85,14 @@ async def test_transport_clients_use_base_url_for_relative_paths() -> None:
 
 @respx.mock(base_url="https://example.com")
 def test_retry_after_header_is_respected(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_retry_after_header_is_respected behavior."""
+    """Test the test retry after header is respected functionality."""
     import imednet.core.http.executor as executor_module
 
     sleeps: list[float] = []
     original_retrying = executor_module.Retrying
 
     def retrying_with_captured_sleep(*args, **kwargs):
-        """Test retrying_with_captured_sleep behavior."""
+        """Test the retrying with captured sleep functionality."""
         kwargs["sleep"] = lambda seconds: sleeps.append(seconds)
         return original_retrying(*args, **kwargs)
 
@@ -168,7 +168,7 @@ async def test_timeout_propagates_to_httpx_clients() -> None:
 def test_status_code_error_mapping_contract(
     status_code: int, exception_type: type[Exception]
 ) -> None:
-    """Test test_status_code_error_mapping_contract behavior."""
+    """Test the test status code error mapping contract functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com")
     respx.get("/error-map").mock(return_value=httpx.Response(status_code, json={"error": "x"}))
 
@@ -180,7 +180,7 @@ def test_status_code_error_mapping_contract(
 def test_credentials_are_redacted_from_transport_logs_and_exceptions(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test test_credentials_are_redacted_from_transport_logs_and_exceptions behavior."""
+    """Test the test credentials are redacted from transport logs and exceptions functionality."""
     api_key = "very-secret-api-key"
     security_key = "very-secret-security-key"
     token = "very-secret-token"
@@ -207,7 +207,7 @@ def test_credentials_are_redacted_from_transport_logs_and_exceptions(
     assert "token=***" in success_record.url
 
     def connect_error(request: httpx.Request) -> httpx.Response:
-        """Test connect_error behavior."""
+        """Test the connect error functionality."""
         raise httpx.ConnectError("connection failed", request=request)
 
     respx.get("/network-failure").mock(side_effect=connect_error)

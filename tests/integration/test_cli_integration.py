@@ -1,4 +1,4 @@
-"""Tests for test_cli_integration."""
+"""Test Cli Integration module."""
 
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -10,7 +10,7 @@ import imednet.cli as cli
 
 
 def test_cli_rejects_missing_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_cli_rejects_missing_credentials behavior."""
+    """Test the test cli rejects missing credentials functionality."""
     runner = CliRunner()
     monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
     monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
@@ -22,7 +22,7 @@ def test_cli_rejects_missing_credentials(monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_studies_list_success behavior."""
+    """Test the test studies list success functionality."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
@@ -44,7 +44,7 @@ def test_studies_list_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """Test test_records_list_output_csv behavior."""
+    """Test the test records list output csv functionality."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
@@ -63,7 +63,7 @@ def test_records_list_output_csv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 
 
 def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_extract_records_cli_parses_filters behavior."""
+    """Test the test extract records cli parses filters functionality."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
@@ -100,7 +100,7 @@ def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_invalid_filter_string(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_invalid_filter_string behavior."""
+    """Test the test invalid filter string functionality."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")

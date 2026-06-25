@@ -29,10 +29,10 @@ Example:
 
 
 class RateLimitServerRetry(RetryPolicy):
-    """RateLimitServerRetry implementation."""
+    """Implementation of the RateLimitServerRetry class."""
 
     def should_retry(self, state: RetryState) -> bool:
-        """Perform should retry operation."""
+        """Handle the should retry process."""
         if isinstance(state.exception, (RateLimitError, ServerError)):
             return True
         if isinstance(state.result, httpx.Response):
@@ -51,15 +51,15 @@ responses: Iterator[httpx.Response] = iter(
 
 
 def responder(_: httpx.Request) -> httpx.Response:
-    """Perform responder operation."""
+    """Handle the responder process."""
     return next(responses)
 
 
 class MockClient(Client):
-    """MockClient implementation."""
+    """Implementation of the MockClient class."""
 
     def _create_client(self, auth: AuthStrategy) -> httpx.Client:
-        """Perform  create client operation."""
+        """Handle the create client process."""
         return httpx.Client(
             base_url=self.base_url,
             headers={

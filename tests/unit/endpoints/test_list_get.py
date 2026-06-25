@@ -1,4 +1,4 @@
-"""Tests for test_list_get."""
+"""Test List Get module."""
 
 import pytest
 
@@ -60,7 +60,7 @@ ASYNC_CASES = [
 
 @pytest.mark.parametrize("cls,module,model,item_id", CASES)
 def test_list_and_get(dummy_client, context, paginator_factory, cls, module, model, item_id):
-    """Test test_list_and_get behavior."""
+    """Test the test list and get functionality."""
     ep = cls(dummy_client, context)
     capture = paginator_factory(module, [{cls._id_param: item_id}])
 

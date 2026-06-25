@@ -36,14 +36,14 @@ with atheris.instrument_imports():
 
 # Dummy config for Snowflake
 class DummyConfig:
-    """DummyConfig implementation."""
+    """Implementation of the DummyConfig class."""
 
     batch_size = 100
     idempotent = True
 
 
 def fuzz_dynamic_model(data: bytes):
-    """Perform fuzz dynamic model operation."""
+    """Handle the fuzz dynamic model process."""
     # Fuzzing the dynamic model loading by writing random JSON/data to a fake postman file
     postman_path = "/tmp/fuzz_postman.json"
     os.environ["IMEDNET_POSTMAN_PATH"] = postman_path
@@ -65,7 +65,7 @@ def fuzz_dynamic_model(data: bytes):
 
 
 def fuzz_data_dictionary(data: bytes):
-    """Perform fuzz data dictionary operation."""
+    """Handle the fuzz data dictionary process."""
     try:
         DataDictionaryLoader.from_zip(BytesIO(data))
     except (zipfile.BadZipFile, UnicodeDecodeError, csv.Error, KeyError, Exception):
@@ -74,7 +74,7 @@ def fuzz_data_dictionary(data: bytes):
 
 
 def fuzz_warehouse_transformation(data: bytes):
-    """Perform fuzz warehouse transformation operation."""
+    """Handle the fuzz warehouse transformation process."""
     import pyarrow as pa
     from imednet_sinks.warehouse import _records_to_arrow_table
 
@@ -96,10 +96,10 @@ def fuzz_warehouse_transformation(data: bytes):
 
         # Mock class for records
         class DummyRecord:
-            """DummyRecord implementation."""
+            """Implementation of the DummyRecord class."""
 
             def __init__(self, d):
-                """Perform   init   operation."""
+                """Initialize a new instance."""
                 self.record_id = str(d.get("id", "1"))
                 self.form_id = str(d.get("form_id", "1"))
                 self.visit_id = str(d.get("visit_id", "1"))
@@ -119,7 +119,7 @@ def fuzz_warehouse_transformation(data: bytes):
 
 
 def TestOneInput(data):
-    """Perform TestOneInput operation."""
+    """Handle the TestOneInput process."""
     if len(data) < 1:
         return
 

@@ -15,7 +15,7 @@ _FORM_KEY_OVERRIDE = os.getenv("IMEDNET_FORM_KEY")
 
 
 def _skip(msg: str) -> NoReturn:
-    """Test _skip behavior."""
+    """Test the skip functionality."""
     pytest.skip(msg)
     raise AssertionError("unreachable")
 

@@ -18,7 +18,7 @@ Note: Ensure your environment variables (IMEDNET_API_KEY, IMEDNET_SECURITY_KEY) 
 
 
 def main():
-    """Perform main operation."""
+    """Handle the main process."""
     configure_json_logging()
 
     try:

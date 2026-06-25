@@ -1,4 +1,4 @@
-"""Tests for test_cached_records_loader."""
+"""Test Cached Records Loader module."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from imednet_workflows.cached_loader import CachedRecordsLoader, get_cache_conne
 
 
 def _record(record_id: int, modified_at: str) -> Record:
-    """Test _record behavior."""
+    """Test the record functionality."""
     return Record(
         study_key="STUDY",
         form_id=10,
@@ -26,7 +26,7 @@ def _record(record_id: int, modified_at: str) -> Record:
 
 
 def test_get_cache_connection_enables_wal_mode(tmp_path: Path) -> None:
-    """Test test_get_cache_connection_enables_wal_mode behavior."""
+    """Test the test get cache connection enables wal mode functionality."""
     conn = get_cache_connection(tmp_path / "cache" / "records.sqlite3")
     try:
         journal_mode = conn.execute("PRAGMA journal_mode").fetchone()[0]
@@ -36,7 +36,7 @@ def test_get_cache_connection_enables_wal_mode(tmp_path: Path) -> None:
 
 
 def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> None:
-    """Test test_cached_loader_applies_delta_sync_and_reconciliation behavior."""
+    """Test the test cached loader applies delta sync and reconciliation functionality."""
     sdk = MagicMock()
     first_batch = [
         _record(1, "2024-01-01 00:00:00+00:00"),
@@ -76,7 +76,7 @@ def test_cached_loader_applies_delta_sync_and_reconciliation(tmp_path: Path) -> 
 
 
 def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
-    """Test test_cached_loader_retries_record_fetches behavior."""
+    """Test the test cached loader retries record fetches functionality."""
     sdk = MagicMock()
     record = _record(1, "2024-01-01 00:00:00+00:00")
     sdk.get_records.side_effect = [RuntimeError("temporary"), [record], [record]]
@@ -90,7 +90,7 @@ def test_cached_loader_retries_record_fetches(tmp_path: Path) -> None:
 
 
 def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
-    """Test test_iter_cached_records_yields_chunked_rows behavior."""
+    """Test the test iter cached records yields chunked rows functionality."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [
         [_record(1, "2024-01-01 00:00:00+00:00"), _record(2, "2024-01-02 00:00:00+00:00")],
@@ -105,7 +105,7 @@ def test_iter_cached_records_yields_chunked_rows(tmp_path: Path) -> None:
 
 
 def test_iter_cached_records_rejects_non_positive_chunk_size(tmp_path: Path) -> None:
-    """Test test_iter_cached_records_rejects_non_positive_chunk_size behavior."""
+    """Test the test iter cached records rejects non positive chunk size functionality."""
     loader = CachedRecordsLoader(MagicMock(), cache_dir=tmp_path)
 
     with pytest.raises(ValueError, match="chunk_size must be greater than zero"):
@@ -113,7 +113,7 @@ def test_iter_cached_records_rejects_non_positive_chunk_size(tmp_path: Path) -> 
 
 
 def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None:
-    """Test test_sync_records_updates_cache_without_loading_rows behavior."""
+    """Test the test sync records updates cache without loading rows functionality."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [
         [_record(1, "2024-01-01 00:00:00+00:00")],
@@ -134,7 +134,7 @@ def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None
 
 
 def test_sync_records_handles_empty_delta_without_reconciliation(tmp_path: Path) -> None:
-    """Test test_sync_records_handles_empty_delta_without_reconciliation behavior."""
+    """Test the test sync records handles empty delta without reconciliation functionality."""
     sdk = MagicMock()
     sdk.get_records.side_effect = [
         [_record(1, "2024-01-01 00:00:00+00:00")],

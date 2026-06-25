@@ -1,4 +1,4 @@
-"""Tests for test_study_config."""
+"""Test Study Config module."""
 
 import pytest
 from pydantic import ValidationError
@@ -7,7 +7,7 @@ from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetC
 
 
 def test_study_configuration_roundtrip_json_with_aliases() -> None:
-    """Test test_study_configuration_roundtrip_json_with_aliases behavior."""
+    """Test the test study configuration roundtrip json with aliases functionality."""
     config = StudyConfiguration.model_validate(
         {
             "studyKey": " STUDY-001 ",
@@ -49,7 +49,7 @@ def test_study_configuration_roundtrip_json_with_aliases() -> None:
 
 
 def test_study_configuration_accepts_snake_case_field_names() -> None:
-    """Test test_study_configuration_accepts_snake_case_field_names behavior."""
+    """Test the test study configuration accepts snake case field names functionality."""
     config = StudyConfiguration(
         study_key="STUDY-002",
         mappings=[
@@ -73,7 +73,7 @@ def test_study_configuration_accepts_snake_case_field_names() -> None:
 
 
 def test_study_configuration_rejects_unknown_reporting_profile() -> None:
-    """Test test_study_configuration_rejects_unknown_reporting_profile behavior."""
+    """Test the test study configuration rejects unknown reporting profile functionality."""
     with pytest.raises(ValidationError, match="reportingProfile must be one of"):
         StudyConfiguration.model_validate(
             {

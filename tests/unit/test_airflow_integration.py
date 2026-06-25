@@ -1,4 +1,4 @@
-"""Tests for test_airflow_integration."""
+"""Test Airflow Integration module."""
 
 import importlib.util
 import sys
@@ -13,7 +13,7 @@ import imednet.sdk as sdk_mod
 
 
 def _setup_airflow(monkeypatch):
-    """Test _setup_airflow behavior."""
+    """Test the setup airflow functionality."""
     airflow_mod = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_mod = ModuleType("airflow.sdk.bases.hook")
@@ -28,7 +28,7 @@ def _setup_airflow(monkeypatch):
 
         @classmethod
         def get_connection(cls, conn_id):
-            """Test get_connection behavior."""
+            """Test the get connection functionality."""
             raise NotImplementedError
 
     class DummyBaseOperator:
@@ -37,7 +37,7 @@ def _setup_airflow(monkeypatch):
         template_fields = ()
 
         def __init__(self, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
     hooks_mod.BaseHook = DummyBaseHook
@@ -62,7 +62,7 @@ def _setup_airflow(monkeypatch):
 
 
 def test_imednet_hook_returns_sdk(monkeypatch):
-    """Test test_imednet_hook_returns_sdk behavior."""
+    """Test the test imednet hook returns sdk functionality."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -90,7 +90,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
 
 
 def test_export_operator_calls_helper(monkeypatch):
-    """Test test_export_operator_calls_helper behavior."""
+    """Test the test export operator calls helper functionality."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -129,7 +129,7 @@ def test_export_operator_calls_helper(monkeypatch):
 
 
 def test_export_operator_exposes_mapped_runtime_fields(monkeypatch):
-    """Test test_export_operator_exposes_mapped_runtime_fields behavior."""
+    """Test the test export operator exposes mapped runtime fields functionality."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -147,7 +147,7 @@ def test_export_operator_exposes_mapped_runtime_fields(monkeypatch):
 
 
 def test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute(monkeypatch):
-    """Test test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute behavior."""
+    """Test the test export operator copies runtime kwargs and resolves sdk at execute functionality."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -192,7 +192,7 @@ def test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute(monke
 
 
 def test_export_operator_rejects_unknown_export_callable(monkeypatch):
-    """Test test_export_operator_rejects_unknown_export_callable behavior."""
+    """Test the test export operator rejects unknown export callable functionality."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -222,7 +222,7 @@ def test_export_operator_rejects_unknown_export_callable(monkeypatch):
 
 
 def test_imednet_hook_non_dict_extras(monkeypatch):
-    """Test test_imednet_hook_non_dict_extras behavior."""
+    """Test the test imednet hook non dict extras functionality."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -248,7 +248,7 @@ def test_imednet_hook_non_dict_extras(monkeypatch):
 
 
 def test_imednet_hook_get_extra_json_fallback(monkeypatch):
-    """Test test_imednet_hook_get_extra_json_fallback behavior."""
+    """Test the test imednet hook get extra json fallback functionality."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -281,7 +281,7 @@ def test_imednet_hook_get_extra_json_fallback(monkeypatch):
 
 
 def test_imednet_hook_extra_json_string_fallback(monkeypatch):
-    """Test test_imednet_hook_extra_json_string_fallback behavior."""
+    """Test the test imednet hook extra json string fallback functionality."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -313,7 +313,7 @@ def test_imednet_hook_extra_json_string_fallback(monkeypatch):
 
 
 def test_imednet_hook_non_string_login(monkeypatch):
-    """Test test_imednet_hook_non_string_login behavior."""
+    """Test the test imednet hook non string login functionality."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -338,7 +338,7 @@ def test_imednet_hook_non_string_login(monkeypatch):
 
 
 def test_imednet_hook_non_string_password(monkeypatch):
-    """Test test_imednet_hook_non_string_password behavior."""
+    """Test the test imednet hook non string password functionality."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -366,7 +366,7 @@ def test_imednet_hook_non_string_password(monkeypatch):
 
 
 def test_imednet_hook_environment_fallback(monkeypatch):
-    """Test test_imednet_hook_environment_fallback behavior."""
+    """Test the test imednet hook environment fallback functionality."""
     _setup_airflow(monkeypatch)
     monkeypatch.setenv("IMEDNET_API_KEY", "ENV_KEY")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "ENV_SEC")
@@ -395,7 +395,7 @@ def test_imednet_hook_environment_fallback(monkeypatch):
 
 
 def test_imednet_hook_describe_connection_redacts_credentials(monkeypatch):
-    """Test test_imednet_hook_describe_connection_redacts_credentials behavior."""
+    """Test the test imednet hook describe connection redacts credentials functionality."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -427,7 +427,7 @@ def test_imednet_hook_describe_connection_redacts_credentials(monkeypatch):
 
 
 def test_imednet_hook_prefers_extras_over_environment(monkeypatch):
-    """Test test_imednet_hook_prefers_extras_over_environment behavior."""
+    """Test the test imednet hook prefers extras over environment functionality."""
     _setup_airflow(monkeypatch)
     monkeypatch.setenv("IMEDNET_API_KEY", "ENV_KEY")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "ENV_SEC")
@@ -454,7 +454,7 @@ def test_imednet_hook_prefers_extras_over_environment(monkeypatch):
 
 
 def test_imednet_hook_study_discovery_serialization_safe(monkeypatch):
-    """Test test_imednet_hook_study_discovery_serialization_safe behavior."""
+    """Test the test imednet hook study discovery serialization safe functionality."""
     _setup_airflow(monkeypatch)
 
     from apache_airflow_providers_imednet.hooks import ImednetHook
@@ -463,7 +463,7 @@ def test_imednet_hook_study_discovery_serialization_safe(monkeypatch):
         """Test suite for _StudyModel."""
 
         def model_dump(self, mode="json", by_alias=True):
-            """Test model_dump behavior."""
+            """Test the model dump functionality."""
             assert mode == "json"
             assert by_alias is True
             return {
@@ -511,29 +511,29 @@ def _setup_airflow_for_dag(monkeypatch):
         """Test suite for _DummyDAG."""
 
         def __init__(self, *args, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
         def __enter__(self):
-            """Test __enter__ behavior."""
+            """Test the enter functionality."""
             return self
 
         def __exit__(self, *args):
-            """Test __exit__ behavior."""
+            """Test the exit functionality."""
             pass
 
     class _DummyTaskDecorator:
         """Thin shim for ``@task`` and ``@task(...)``."""
 
         def __call__(self, *args, **kwargs):
-            """Test __call__ behavior."""
+            """Test the call functionality."""
             if len(args) == 1 and callable(args[0]):
                 # bare @task usage
                 return args[0]
 
             # @task(...) — return a no-op decorator
             def _decorator(fn):
-                """Test _decorator behavior."""
+                """Test the decorator functionality."""
                 return fn
 
             return _decorator
@@ -554,18 +554,18 @@ def _setup_airflow_for_dag(monkeypatch):
         mapped_runtime_fields = ("study_key", "output_path", "export_kwargs")
 
         def __init__(self, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
         @classmethod
         def partial(cls, **kwargs):
-            """Test partial behavior."""
+            """Test the partial functionality."""
 
             class _PartialOp:
                 """Test suite for _PartialOp."""
 
                 def expand_kwargs(self, targets):
-                    """Test expand_kwargs behavior."""
+                    """Test the expand kwargs functionality."""
                     pass
 
             return _PartialOp()
@@ -574,11 +574,11 @@ def _setup_airflow_for_dag(monkeypatch):
         """Test suite for _DummyHook."""
 
         def __init__(self, conn_id: str = "imednet_default") -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
         def list_study_keys(self):
-            """Test list_study_keys behavior."""
+            """Test the list study keys functionality."""
             return []
 
     provider_mod = ModuleType("apache_airflow_providers_imednet")
@@ -596,7 +596,7 @@ def test_to_primitive_unknown_object_type_falls_back_to_str(monkeypatch):
         """Test suite for _Opaque."""
 
         def __str__(self):
-            """Test __str__ behavior."""
+            """Test the str functionality."""
             return "opaque-repr"
 
     result = ImednetHook._to_primitive(_Opaque())
@@ -721,7 +721,7 @@ def test_list_study_keys_skips_entries_without_recognized_key(monkeypatch):
 
 
 def test_export_operator_resolves_snowflake_sink(monkeypatch):
-    """Test test_export_operator_resolves_snowflake_sink behavior."""
+    """Test the test export operator resolves snowflake sink functionality."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 

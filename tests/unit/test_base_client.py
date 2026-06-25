@@ -1,4 +1,4 @@
-"""Tests for test_base_client."""
+"""Test Base Client module."""
 
 from unittest.mock import MagicMock
 
@@ -14,13 +14,13 @@ class DummyClient(BaseClient):
     """Test suite for DummyClient."""
 
     def _create_client(self, auth: AuthStrategy) -> httpx.Client:
-        """Test _create_client behavior."""
+        """Test the create client functionality."""
         headers = auth.get_headers()
         return httpx.Client(headers=headers)
 
 
 def test_initialization_from_env(monkeypatch) -> None:
-    """Test test_initialization_from_env behavior."""
+    """Test the test initialization from env functionality."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
     monkeypatch.setenv("IMEDNET_BASE_URL", "https://env.example.com")

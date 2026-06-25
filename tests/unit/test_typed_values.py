@@ -1,10 +1,10 @@
-"""Tests for test_typed_values."""
+"""Test Typed Values module."""
 
 from imednet.testing import typed_values
 
 
 def test_value_for_each_type() -> None:
-    """Test test_value_for_each_type behavior."""
+    """Test the test value for each type functionality."""
     assert typed_values.value_for("text") == "example"
     assert typed_values.value_for("date") == "2024-01-01"
     assert typed_values.value_for("integer") == 1
@@ -15,6 +15,6 @@ def test_value_for_each_type() -> None:
 
 
 def test_canonical_type_synonyms() -> None:
-    """Test test_canonical_type_synonyms behavior."""
+    """Test the test canonical type synonyms functionality."""
     assert typed_values.canonical_type("Text") == "string"
     assert typed_values.canonical_type("int") == "number"

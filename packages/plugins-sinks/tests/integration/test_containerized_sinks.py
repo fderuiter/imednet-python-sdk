@@ -1,4 +1,4 @@
-"""Tests for test_containerized_sinks."""
+"""Test Containerized Sinks module."""
 
 import logging
 import os
@@ -28,14 +28,14 @@ class DriftFailingHandler(logging.Handler):
     """Test suite for DriftFailingHandler."""
 
     def emit(self, record):
-        """Test emit behavior."""
+        """Test the emit functionality."""
         if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
             raise DriftError(record.getMessage())
 
 
 @pytest.fixture(autouse=True)
 def fail_on_drift():
-    """Test fail_on_drift behavior."""
+    """Test the fail on drift functionality."""
     logger = logging.getLogger("imednet.drift")
     handler = DriftFailingHandler()
     logger.addHandler(handler)
@@ -62,7 +62,7 @@ class FakeRecord:
 
 @pytest.fixture
 def fake_records() -> List[FakeRecord]:
-    """Test fake_records behavior."""
+    """Test the fake records functionality."""
     return [
         FakeRecord(
             record_id=1,
@@ -89,7 +89,7 @@ def fake_records() -> List[FakeRecord]:
 
 @pytest.fixture
 def mock_record_mapper(monkeypatch, fake_records):
-    """Test mock_record_mapper behavior."""
+    """Test the mock record mapper functionality."""
     from unittest.mock import MagicMock
 
     from imednet.integrations import export as export_mod
@@ -98,18 +98,18 @@ def mock_record_mapper(monkeypatch, fake_records):
         """Test suite for FakeMapper."""
 
         def __init__(self, *args, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
         def __iter__(self):
-            """Test __iter__ behavior."""
+            """Test the iter functionality."""
             return iter(fake_records)
 
     monkeypatch.setattr(export_mod, "_record_mapper", lambda *a, **kw: FakeMapper)
 
 
 def test_mongodb_containerized_upserts(fake_records, monkeypatch):
-    """Test test_mongodb_containerized_upserts behavior."""
+    """Test the test mongodb containerized upserts functionality."""
     import pymongo
 
     uri = "mongodb://root:password@localhost:27017"
@@ -137,7 +137,7 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
 
 
 def test_neo4j_containerized_merges(fake_records, monkeypatch):
-    """Test test_neo4j_containerized_merges behavior."""
+    """Test the test neo4j containerized merges functionality."""
     import neo4j
 
     uri = "bolt://localhost:7687"

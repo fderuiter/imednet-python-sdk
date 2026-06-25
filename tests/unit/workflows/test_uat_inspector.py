@@ -1,4 +1,4 @@
-"""Tests for test_uat_inspector."""
+"""Test Uat Inspector module."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from imednet_workflows.uat import StudySchemaInspector, StudySnapshot
 
 
 def test_study_snapshot_builds_indexes_and_filters() -> None:
-    """Test test_study_snapshot_builds_indexes_and_filters behavior."""
+    """Test the test study snapshot builds indexes and filters functionality."""
     enrollment = Form(form_key="ENR", form_type="Enrollment", form_name="Enroll")
     scheduled = Form(form_key="LABS", form_type="CRF", form_name="Labs")
     unscheduled = Form(
@@ -52,7 +52,7 @@ def test_study_snapshot_builds_indexes_and_filters() -> None:
 
 
 def test_inspect_uses_cache_and_force_refresh() -> None:
-    """Test test_inspect_uses_cache_and_force_refresh behavior."""
+    """Test the test inspect uses cache and force refresh functionality."""
     sdk = MagicMock()
     sdk.get_forms.return_value = [Form(form_key="F1", form_name="Form 1")]
     sdk.get_variables.return_value = [Variable(variable_name="V1", form_key="F1")]
@@ -78,7 +78,7 @@ def test_inspect_uses_cache_and_force_refresh() -> None:
 
 
 def test_clear_cache_for_single_key_and_all_keys() -> None:
-    """Test test_clear_cache_for_single_key_and_all_keys behavior."""
+    """Test the test clear cache for single key and all keys functionality."""
     sdk = MagicMock()
     sdk.get_forms.return_value = []
     sdk.get_variables.return_value = []
@@ -161,7 +161,7 @@ async def test_async_inspect_force_refresh_bypasses_cache() -> None:
 
 
 def test_inspect_with_async_sdk_raises_type_error() -> None:
-    """Test test_inspect_with_async_sdk_raises_type_error behavior."""
+    """Test the test inspect with async sdk raises type error functionality."""
     sdk = AsyncImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     inspector = StudySchemaInspector(sdk)
     try:
@@ -181,7 +181,7 @@ async def test_async_inspect_with_sync_sdk_raises_type_error() -> None:
 
 
 def _form_payload(form_id: int) -> dict[str, object]:
-    """Test _form_payload behavior."""
+    """Test the form payload functionality."""
     return {
         "studyKey": "ST",
         "formId": form_id,
@@ -192,7 +192,7 @@ def _form_payload(form_id: int) -> dict[str, object]:
 
 
 def _variable_payload(variable_id: int) -> dict[str, object]:
-    """Test _variable_payload behavior."""
+    """Test the variable payload functionality."""
     return {
         "studyKey": "ST",
         "variableId": variable_id,
@@ -207,7 +207,7 @@ def _variable_payload(variable_id: int) -> dict[str, object]:
 
 @respx.mock
 def test_inspect_consumes_paginated_forms_and_variables() -> None:
-    """Test test_inspect_consumes_paginated_forms_and_variables behavior."""
+    """Test the test inspect consumes paginated forms and variables functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     forms_route = respx.get("https://api.test/api/v1/edc/studies/ST/forms").mock(
         side_effect=[

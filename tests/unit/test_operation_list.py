@@ -1,4 +1,4 @@
-"""Tests for test_operation_list."""
+"""Test Operation List module."""
 
 from unittest.mock import AsyncMock, MagicMock
 
@@ -8,7 +8,7 @@ from imednet.core.endpoint.operations.list import ListOperation
 
 
 def test_list_operation_sync_uses_paginator():
-    """Test test_list_operation_sync_uses_paginator behavior."""
+    """Test the test list operation sync uses paginator functionality."""
     client = MagicMock()
     paginator_cls = MagicMock(return_value=[{"id": 1}, {"id": 2}])
 
@@ -29,11 +29,11 @@ async def test_list_operation_async_uses_paginator():
         """Test suite for _AsyncPaginator."""
 
         def __init__(self, *_args, **_kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
         async def __aiter__(self):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             for item in [{"id": 1}, {"id": 2}]:
                 yield item
 

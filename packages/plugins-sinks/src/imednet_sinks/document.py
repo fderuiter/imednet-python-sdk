@@ -161,7 +161,7 @@ class MongoDbExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def _connect(self) -> None:
-        """Perform  connect operation."""
+        """Handle the connect process."""
         pymongo = _require_optional_dep("pymongo", "mongodb")
         redacted = _redact_uri(self._uri)
         logger.debug("Connecting to MongoDB at %s", redacted)
@@ -189,7 +189,7 @@ class MongoDbExportSink(ExportSink):
         from imednet.core.operations.executor import UniversalExecutor
 
         def execute_export() -> int:
-            """Perform execute export operation."""
+            """Handle the execute export process."""
             if self.config.idempotent:
                 pymongo = _require_optional_dep("pymongo", "mongodb")
                 ops = [

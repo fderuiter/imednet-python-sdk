@@ -1,4 +1,4 @@
-"""Tests for conftest."""
+"""Conftest module."""
 
 import asyncio
 import logging
@@ -52,7 +52,7 @@ def _print_startup_context() -> None:
 
 @pytest.fixture(scope="session", autouse=True)
 def _check_live_env() -> None:
-    """Test _check_live_env behavior."""
+    """Test the check live env functionality."""
     _print_startup_context()
     if not RUN_E2E or not (API_KEY and SECURITY_KEY):
         pytest.skip(
@@ -70,7 +70,7 @@ def allow_mutation() -> bool:
 
 @pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
-    """Test sdk behavior."""
+    """Test the sdk functionality."""
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
@@ -91,19 +91,19 @@ async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[Asyn
 
 @pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
-    """Test study_key behavior."""
+    """Test the study key functionality."""
     return get_study_key(sdk)
 
 
 @pytest.fixture(scope="session")
 def first_form_key(sdk: ImednetSDK, study_key: str) -> str:
-    """Test first_form_key behavior."""
+    """Test the first form key functionality."""
     return get_form_key(sdk, study_key)
 
 
 @pytest.fixture(scope="session")
 def first_site_name(sdk: ImednetSDK, study_key: str) -> str:
-    """Test first_site_name behavior."""
+    """Test the first site name functionality."""
     try:
         return discover_site_name(sdk, study_key)
     except NoLiveDataError as exc:
@@ -112,7 +112,7 @@ def first_site_name(sdk: ImednetSDK, study_key: str) -> str:
 
 @pytest.fixture(scope="session")
 def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
-    """Test first_subject_key behavior."""
+    """Test the first subject key functionality."""
     try:
         return discover_subject_key(sdk, study_key)
     except NoLiveDataError as exc:
@@ -121,7 +121,7 @@ def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
 
 @pytest.fixture(scope="session")
 def first_interval_name(sdk: ImednetSDK, study_key: str) -> str:
-    """Test first_interval_name behavior."""
+    """Test the first interval name functionality."""
     try:
         return discover_interval_name(sdk, study_key)
     except NoLiveDataError as exc:
@@ -168,7 +168,7 @@ def typed_record(
     study_key: str,
     first_form_key: str,
 ) -> Callable[..., dict[str, Any]]:
-    """Test typed_record behavior."""
+    """Test the typed record functionality."""
     variables = list(sdk.variables.list(study_key=study_key, formKey=first_form_key))
     if not variables:
         pytest.skip(f"No variables available for form {first_form_key}")

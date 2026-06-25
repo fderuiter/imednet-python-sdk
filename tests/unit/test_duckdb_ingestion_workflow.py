@@ -1,4 +1,4 @@
-"""Tests for test_duckdb_ingestion_workflow."""
+"""Test Duckdb Ingestion Workflow module."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from imednet_workflows.duckdb_centralizer import DuckDBIngestionWorkflow
 
 
 def test_ingest_revisions_append_mode() -> None:
-    """Test test_ingest_revisions_append_mode behavior."""
+    """Test the test ingest revisions append mode functionality."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -52,7 +52,7 @@ def test_ingest_revisions_append_mode() -> None:
 
 
 def test_ingest_revisions_replace_mode() -> None:
-    """Test test_ingest_revisions_replace_mode behavior."""
+    """Test the test ingest revisions replace mode functionality."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -94,7 +94,7 @@ def test_ingest_revisions_replace_mode() -> None:
 
 
 def test_build_silver_view_deduplication() -> None:
-    """Test test_build_silver_view_deduplication behavior."""
+    """Test the test build silver view deduplication functionality."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -131,7 +131,7 @@ def test_build_silver_view_deduplication() -> None:
 
 
 def test_ingest_revisions_returns_row_count() -> None:
-    """Test test_ingest_revisions_returns_row_count behavior."""
+    """Test the test ingest revisions returns row count functionality."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -170,7 +170,7 @@ def test_ingest_revisions_returns_row_count() -> None:
 
 
 def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_duckdb_workflow_import_error behavior."""
+    """Test the test duckdb workflow import error functionality."""
 
     def fake_import(
         name: str,

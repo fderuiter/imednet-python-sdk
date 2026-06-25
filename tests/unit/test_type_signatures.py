@@ -7,7 +7,7 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
 def sync_record_signature() -> None:
-    """Test sync_record_signature behavior."""
+    """Test the sync record signature functionality."""
     sdk = cast(ImednetSDK, object())
     record: Record = sdk.records.get(study_key="STUDY", item_id="123")
     _ = record

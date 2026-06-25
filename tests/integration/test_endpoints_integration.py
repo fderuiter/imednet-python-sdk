@@ -1,4 +1,4 @@
-"""Tests for test_endpoints_integration."""
+"""Test Endpoints Integration module."""
 
 import httpx
 import pytest
@@ -9,12 +9,12 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 @respx.mock
 def test_studies_list_pagination():
-    """Test test_studies_list_pagination behavior."""
+    """Test the test studies list pagination functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     calls = []
 
     def responder(request):
-        """Test responder behavior."""
+        """Test the responder functionality."""
         calls.append(dict(request.url.params))
         if len(calls) == 1:
             return httpx.Response(
@@ -43,7 +43,7 @@ def test_studies_list_pagination():
 
 @respx.mock
 def test_records_list_filter_param():
-    """Test test_records_list_filter_param behavior."""
+    """Test the test records list filter param functionality."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
 
     route = respx.get("https://api.test/api/v1/edc/studies/ST/records").respond(

@@ -1,10 +1,10 @@
-"""Tests for test_lazy_attrs."""
+"""Test Lazy Attrs module."""
 
 from imednet.utils import records_to_dataframe
 from imednet.validation.cache import SchemaCache
 
 
 def test_lazy_attrs_available() -> None:
-    """Test test_lazy_attrs_available behavior."""
+    """Test the test lazy attrs available functionality."""
     assert callable(records_to_dataframe)
     assert isinstance(SchemaCache, type)

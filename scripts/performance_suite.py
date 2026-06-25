@@ -21,7 +21,7 @@ try:
 except ImportError:
     # Fallback to similar logic to benchmark conversion efficiency
     def _records_to_arrow_table(records):
-        """Perform  records to arrow table operation."""
+        """Handle the records to arrow table process."""
         rows = [
             {
                 "record_id": getattr(r, "record_id", None),
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 def generate_records(count: int, cache: SchemaCache) -> list:
-    """Perform generate records operation."""
+    """Handle the generate records process."""
     records = []
     for _ in range(count):
         data = fake_record(cache)
@@ -48,7 +48,7 @@ def generate_records(count: int, cache: SchemaCache) -> list:
 
 
 def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
-    """Perform run benchmarks operation."""
+    """Handle the run benchmarks process."""
     results = {}
     cache = SchemaCache()
 
@@ -94,7 +94,7 @@ def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
 
 
 def main():
-    """Perform main operation."""
+    """Handle the main process."""
     historical_file = Path("performance_cache.json")
     threshold = 0.05  # 5% degradation threshold
 

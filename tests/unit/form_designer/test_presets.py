@@ -1,11 +1,11 @@
-"""Tests for test_presets."""
+"""Test Presets module."""
 
 from imednet.form_designer.builder import FormBuilder
 from imednet.form_designer.presets import PRESETS
 
 
 def test_demo_form_preset():
-    """Test test_demo_form_preset behavior."""
+    """Test the test demo form preset functionality."""
     builder = FormBuilder()
     PRESETS["Demo Form"](builder)
     layout = builder.build()
@@ -31,7 +31,7 @@ def test_demo_form_preset():
 
 
 def test_cv_pathology_preset():
-    """Test test_cv_pathology_preset behavior."""
+    """Test the test cv pathology preset functionality."""
     builder = FormBuilder()
     PRESETS["CV Pathology"](builder)
     layout = builder.build()

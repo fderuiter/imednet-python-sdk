@@ -1,4 +1,4 @@
-"""Tests for test_record_revisions_endpoint."""
+"""Test Record Revisions Endpoint module."""
 
 import pytest
 
@@ -8,7 +8,7 @@ from imednet.models.record_revisions import RecordRevision
 
 
 def test_list_uses_filters(dummy_client, context, paginator_factory, patch_build_filter):
-    """Test test_list_uses_filters behavior."""
+    """Test the test list uses filters functionality."""
     context.set_default_study_key("S1")
     ep = record_revisions.RecordRevisionsEndpoint(dummy_client, context)
     capture = paginator_factory(record_revisions, [{"recordRevisionId": 1}])
@@ -23,11 +23,11 @@ def test_list_uses_filters(dummy_client, context, paginator_factory, patch_build
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """Test test_get_not_found behavior."""
+    """Test the test get not found functionality."""
     ep = record_revisions.RecordRevisionsEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        """Test fake_impl behavior."""
+        """Test the fake impl functionality."""
         return []
 
     monkeypatch.setattr(record_revisions.RecordRevisionsEndpoint, "_list_sync", fake_impl)

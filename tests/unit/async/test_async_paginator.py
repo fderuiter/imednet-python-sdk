@@ -1,4 +1,4 @@
-"""Tests for test_async_paginator."""
+"""Test Async Paginator module."""
 
 import pytest
 
@@ -9,7 +9,7 @@ class DummyAsyncClient:
     """Test suite for DummyAsyncClient."""
 
     def __init__(self, responses):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.responses = responses
         self.calls = []
 

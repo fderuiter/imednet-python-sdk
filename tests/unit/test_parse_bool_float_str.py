@@ -1,4 +1,4 @@
-"""Tests for test_parse_bool_float_str."""
+"""Test Parse Bool Float Str module."""
 
 import pytest
 

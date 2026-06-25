@@ -1,4 +1,4 @@
-"""Tests for test_abc."""
+"""Test Abc module."""
 
 from typing import Any, Dict, Type
 
@@ -19,20 +19,20 @@ class ConcreteEndpoint(EndpointABC[MockModel]):
 
     @property
     def PATH(self) -> str:  # noqa: N802
-        """Test PATH behavior."""
+        """Test the PATH functionality."""
         return "mock"
 
     @property
     def MODEL(self) -> Type[MockModel]:  # noqa: N802
-        """Test MODEL behavior."""
+        """Test the MODEL functionality."""
         return MockModel
 
     def _build_path(self, *segments: Any) -> str:
-        """Test _build_path behavior."""
+        """Test the build path functionality."""
         return "/".join(["mock", *(str(s) for s in segments)])
 
     def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
-        """Test _auto_filter behavior."""
+        """Test the auto filter functionality."""
         return {"auto": True, **filters}
 
 
@@ -43,7 +43,7 @@ class UnimplementedEndpoint(EndpointABC[MockModel]):
 
 
 def test_endpoint_abc_properties():
-    """Test test_endpoint_abc_properties behavior."""
+    """Test the test endpoint abc properties functionality."""
     endpoint = ConcreteEndpoint()
     assert endpoint.PATH == "mock"
     assert endpoint.MODEL == MockModel
@@ -52,21 +52,21 @@ def test_endpoint_abc_properties():
 
 
 def test_endpoint_abc_methods():
-    """Test test_endpoint_abc_methods behavior."""
+    """Test the test endpoint abc methods functionality."""
     endpoint = ConcreteEndpoint()
     assert endpoint._build_path(1, "test") == "mock/1/test"
     assert endpoint._auto_filter({"test": "value"}) == {"auto": True, "test": "value"}
 
 
 def test_endpoint_abc_abstract_instantiation_fails():
-    """Test test_endpoint_abc_abstract_instantiation_fails behavior."""
+    """Test the test endpoint abc abstract instantiation fails functionality."""
     with pytest.raises(TypeError) as exc_info:
         UnimplementedEndpoint()  # type: ignore[abstract]
     assert "Can't instantiate abstract class" in str(exc_info.value)
 
 
 def test_endpoint_abc_pass_coverage():
-    """Test test_endpoint_abc_pass_coverage behavior."""
+    """Test the test endpoint abc pass coverage functionality."""
     # Hit the `pass` statements in abstract properties/methods to ensure 100% coverage
     assert EndpointABC.PATH.fget(None) is None
     assert EndpointABC.MODEL.fget(None) is None

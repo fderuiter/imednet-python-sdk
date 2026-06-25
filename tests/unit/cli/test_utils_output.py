@@ -1,4 +1,4 @@
-"""Tests for test_utils_output."""
+"""Test Utils Output module."""
 
 from unittest.mock import MagicMock, patch
 

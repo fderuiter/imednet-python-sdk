@@ -1,3 +1,3 @@
-"""Tests for __init__."""
+"""  Init   module."""
 
 from __future__ import annotations

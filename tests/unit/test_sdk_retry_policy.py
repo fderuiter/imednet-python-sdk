@@ -1,4 +1,4 @@
-"""Tests for test_sdk_retry_policy."""
+"""Test Sdk Retry Policy module."""
 
 import httpx
 import pytest
@@ -13,17 +13,17 @@ class NamedPolicy(RetryPolicy):
     """Test suite for NamedPolicy."""
 
     def __init__(self, name: str) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.name = name
 
     def should_retry(self, state: RetryState) -> bool:  # pragma: no cover - simple
-        """Test should_retry behavior."""
+        """Test the should retry functionality."""
         return False
 
 
 @pytest.fixture()
 def async_sdk() -> AsyncImednetSDK:
-    """Test async_sdk behavior."""
+    """Test the async sdk functionality."""
     return AsyncImednetSDK(
         api_key="key",
         security_key="secret",
@@ -33,13 +33,13 @@ def async_sdk() -> AsyncImednetSDK:
 
 @pytest.fixture
 def respx_mock_external():
-    """Test respx_mock_external behavior."""
+    """Test the respx mock external functionality."""
     with respx.mock(base_url="https://example.com") as mock:
         yield mock
 
 
 def test_initial_retry_policy_propagates_to_async_client() -> None:
-    """Test test_initial_retry_policy_propagates_to_async_client behavior."""
+    """Test the test initial retry policy propagates to async client functionality."""
     policy = NamedPolicy("init")
     sdk = AsyncImednetSDK(
         api_key="key",
@@ -52,7 +52,7 @@ def test_initial_retry_policy_propagates_to_async_client() -> None:
 
 
 def test_retry_policy_propagates_to_async_client(async_sdk: AsyncImednetSDK) -> None:
-    """Test test_retry_policy_propagates_to_async_client behavior."""
+    """Test the test retry policy propagates to async client functionality."""
     async_policy = NamedPolicy("async")
     async_sdk._async_client.retry_policy = async_policy
 

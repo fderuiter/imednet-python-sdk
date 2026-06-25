@@ -1,4 +1,4 @@
-"""Tests for test_review_workbench."""
+"""Test Review Workbench module."""
 
 from __future__ import annotations
 
@@ -37,19 +37,19 @@ class _FakeContextManager:
     """Test suite for _FakeContextManager."""
 
     def __init__(self, streamlit_client: "_FakeStreamlit | None" = None) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self._streamlit_client = streamlit_client
 
     def __enter__(self) -> "_FakeContextManager":
-        """Test __enter__ behavior."""
+        """Test the enter functionality."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """Test __exit__ behavior."""
+        """Test the exit functionality."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """Test button behavior."""
+        """Test the button functionality."""
         if self._streamlit_client is None:
             return False
         return self._streamlit_client.button(label, **kwargs)
@@ -59,7 +59,7 @@ class _FakeStreamlit:
     """Test suite for _FakeStreamlit."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.session_state: dict[str, Any] = {}
         self.metrics: dict[str, Any] = {}
         self.frames: list[Any] = []
@@ -69,74 +69,74 @@ class _FakeStreamlit:
         self.button_presses: set[str] = set()
 
     def title(self, value: str) -> None:
-        """Test title behavior."""
+        """Test the title functionality."""
         pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
-        """Test markdown behavior."""
+        """Test the markdown functionality."""
         pass
 
     def info(self, value: str) -> None:
-        """Test info behavior."""
+        """Test the info functionality."""
         pass
 
     def columns(self, spec: int | list[Any], **kwargs: Any) -> list[_FakeContextManager]:
-        """Test columns behavior."""
+        """Test the columns functionality."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager(self) for _ in range(count)]
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """Test metric behavior."""
+        """Test the metric functionality."""
         self.metrics[label] = value
 
     def multiselect(self, label: str, options: list[str], **kwargs: Any) -> list[str]:
-        """Test multiselect behavior."""
+        """Test the multiselect functionality."""
         return self.multiselect_values.get(label, list(kwargs.get("default", [])))
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """Test text_input behavior."""
+        """Test the text input functionality."""
         return self.text_values.get(label, "")
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """Test dataframe behavior."""
+        """Test the dataframe functionality."""
         self.frames.append(df)
 
     def selectbox(self, label: str, options: list[str], index: int = 0, **kwargs: Any) -> str:
-        """Test selectbox behavior."""
+        """Test the selectbox functionality."""
         return self.selectbox_values.get(label, options[index])
 
     def subheader(self, value: str) -> None:
-        """Test subheader behavior."""
+        """Test the subheader functionality."""
         pass
 
     def caption(self, value: str) -> None:
-        """Test caption behavior."""
+        """Test the caption functionality."""
         pass
 
     def write(self, value: str) -> None:
-        """Test write behavior."""
+        """Test the write functionality."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """Test button behavior."""
+        """Test the button functionality."""
         key = kwargs.get("key")
         return label in self.button_presses or (isinstance(key, str) and key in self.button_presses)
 
     def text_area(self, label: str, **kwargs: Any) -> str:
-        """Test text_area behavior."""
+        """Test the text area functionality."""
         return ""
 
     def success(self, value: str) -> None:
-        """Test success behavior."""
+        """Test the success functionality."""
         pass
 
     def warning(self, value: str) -> None:
-        """Test warning behavior."""
+        """Test the warning functionality."""
         pass
 
 
 def _sample_items() -> list[TriageItem]:
-    """Test _sample_items behavior."""
+    """Test the sample items functionality."""
     old_ts = datetime.now(timezone.utc) - timedelta(hours=96)
     recent_ts = datetime.now(timezone.utc) - timedelta(hours=2)
     return [
@@ -178,7 +178,7 @@ def _sample_items() -> list[TriageItem]:
 
 
 def test_review_workbench_renders_kpis_and_filters_queue() -> None:
-    """Test test_review_workbench_renders_kpis_and_filters_queue behavior."""
+    """Test the test review workbench renders kpis and filters queue functionality."""
     fake_st = _FakeStreamlit()
     fake_st.multiselect_values = {
         "Severity": ["Critical/Severe"],
@@ -265,7 +265,7 @@ def test_review_workbench_renders_kpis_and_filters_queue() -> None:
 
 
 def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
-    """Test test_triage_drawer_submits_assignment_annotation_and_status behavior."""
+    """Test the test triage drawer submits assignment annotation and status functionality."""
     fake_st = _FakeStreamlit()
     fake_st.text_area = lambda label, **kwargs: "follow-up"  # type: ignore[assignment]
     fake_st.selectbox_values = {

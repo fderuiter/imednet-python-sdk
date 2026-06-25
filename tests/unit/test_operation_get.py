@@ -1,4 +1,4 @@
-"""Tests for test_operation_get."""
+"""Test Operation Get module."""
 
 from unittest.mock import AsyncMock, MagicMock
 
@@ -10,7 +10,7 @@ from imednet.errors import NotFoundError
 
 
 def test_filter_get_operation_returns_first_result():
-    """Test test_filter_get_operation_returns_first_result behavior."""
+    """Test the test filter get operation returns first result functionality."""
     validate = MagicMock(return_value={"id": 123})
     list_sync = MagicMock(return_value=[{"id": 123}])
 
@@ -44,14 +44,14 @@ async def test_filter_get_operation_async_missing_callable():
 
 
 def test_path_get_operation_not_found_callback():
-    """Test test_path_get_operation_not_found_callback behavior."""
+    """Test the test path get operation not found callback functionality."""
     client = MagicMock()
     response = MagicMock()
     response.json.return_value = None
     client.get.return_value = response
 
     def raise_not_found() -> None:
-        """Test raise_not_found behavior."""
+        """Test the raise not found functionality."""
         raise NotFoundError("missing")
 
     operation = PathGetOperation(
@@ -65,7 +65,7 @@ def test_path_get_operation_not_found_callback():
 
 
 def test_path_get_operation_calls_parse_func():
-    """Test test_path_get_operation_calls_parse_func behavior."""
+    """Test the test path get operation calls parse func functionality."""
     client = MagicMock()
     response = MagicMock()
     response.json.return_value = {"jobId": "1"}

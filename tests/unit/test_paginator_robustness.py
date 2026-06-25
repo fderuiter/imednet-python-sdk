@@ -1,4 +1,4 @@
-"""Tests for test_paginator_robustness."""
+"""Test Paginator Robustness module."""
 
 from unittest.mock import Mock
 
@@ -12,11 +12,11 @@ class MockClient:
     """Test suite for MockClient."""
 
     def __init__(self, response_data):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.response_data = response_data
 
     def get(self, path, params=None):
-        """Test get behavior."""
+        """Test the get functionality."""
         response = Mock()
         response.json.return_value = self.response_data
         return response

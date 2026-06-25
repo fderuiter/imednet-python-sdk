@@ -1,4 +1,4 @@
-"""Tests for test_uat_models."""
+"""Test Uat Models module."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ fake = Faker()
 
 
 def _build_valid_spec() -> UATSpecification:
-    """Test _build_valid_spec behavior."""
+    """Test the build valid spec functionality."""
     variable = UATVariableSpec(
         variable_name="SYSTOLIC",
         variable_key="VAR-1",
@@ -49,7 +49,7 @@ def _build_valid_spec() -> UATSpecification:
 
 
 def test_json_round_trip_serialization() -> None:
-    """Test test_json_round_trip_serialization behavior."""
+    """Test the test json round trip serialization functionality."""
     spec = _build_valid_spec()
     payload = spec.model_dump_json()
     parsed = UATSpecification.model_validate_json(payload)
@@ -57,7 +57,7 @@ def test_json_round_trip_serialization() -> None:
 
 
 def test_alias_dump_uses_camel_case() -> None:
-    """Test test_alias_dump_uses_camel_case behavior."""
+    """Test the test alias dump uses camel case functionality."""
     spec = _build_valid_spec()
     payload = spec.model_dump(by_alias=True)
     assert "studyKey" in payload
@@ -67,7 +67,7 @@ def test_alias_dump_uses_camel_case() -> None:
 
 
 def test_fixed_strategy_requires_fixed_value() -> None:
-    """Test test_fixed_strategy_requires_fixed_value behavior."""
+    """Test the test fixed strategy requires fixed value functionality."""
     with pytest.raises(ValidationError, match="fixed_value must be provided"):
         UATVariableSpec(
             variable_name="AGE",
@@ -80,7 +80,7 @@ def test_fixed_strategy_requires_fixed_value() -> None:
 
 @pytest.mark.parametrize("count", [0, 101])
 def test_subject_count_bounds(count: int) -> None:
-    """Test test_subject_count_bounds behavior."""
+    """Test the test subject count bounds functionality."""
     with pytest.raises(ValidationError, match="subject_count must be between 1 and 100"):
         UATFormSpec(
             form_key="DEMOG",
@@ -94,7 +94,7 @@ def test_subject_count_bounds(count: int) -> None:
 
 
 def test_spec_version_is_pinned() -> None:
-    """Test test_spec_version_is_pinned behavior."""
+    """Test the test spec version is pinned functionality."""
     with pytest.raises(ValidationError, match="spec_version must be '1.0'"):
         UATSpecification(
             spec_version="2.0",
@@ -104,7 +104,7 @@ def test_spec_version_is_pinned() -> None:
 
 
 def test_variables_must_have_unique_names() -> None:
-    """Test test_variables_must_have_unique_names behavior."""
+    """Test the test variables must have unique names functionality."""
     with pytest.raises(ValidationError, match="duplicate variable_name"):
         UATFormSpec(
             form_key="LABS",
@@ -129,7 +129,7 @@ def test_variables_must_have_unique_names() -> None:
 
 
 def test_enabled_forms_and_forms_by_type_filters_correctly() -> None:
-    """Test test_enabled_forms_and_forms_by_type_filters_correctly behavior."""
+    """Test the test enabled forms and forms by type filters correctly functionality."""
     enabled_register = UATFormSpec(
         form_key="SUBJECT",
         form_name="Subject Registration",
@@ -159,14 +159,14 @@ def test_enabled_forms_and_forms_by_type_filters_correctly() -> None:
 
 
 def test_from_yaml_raises_when_pyyaml_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_from_yaml_raises_when_pyyaml_unavailable behavior."""
+    """Test the test from yaml raises when pyyaml unavailable functionality."""
     monkeypatch.setattr(uat_models, "find_spec", lambda _: None)
     with pytest.raises(ImportError, match="PyYAML is required"):
         UATSpecification.from_yaml("studyKey: S1\nstudyName: Study")
 
 
 def test_from_yaml_loads_when_available(tmp_path: Path) -> None:
-    """Test test_from_yaml_loads_when_available behavior."""
+    """Test the test from yaml loads when available functionality."""
     if uat_models.find_spec("yaml") is None:
         pytest.skip("PyYAML not installed in test environment")
 

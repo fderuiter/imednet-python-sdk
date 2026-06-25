@@ -1,4 +1,4 @@
-"""Tests for test_hive_parquet_export."""
+"""Test Hive Parquet Export module."""
 
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,7 +12,7 @@ import imednet.integrations.parquet as parquet_mod
 
 
 def _read_partition_dataframe(path: Path) -> pd.DataFrame:
-    """Test _read_partition_dataframe behavior."""
+    """Test the read partition dataframe functionality."""
     parquet_files = sorted(path.glob("**/*.parquet"))
     assert parquet_files
     return pd.read_parquet(parquet_files[0], engine="pyarrow")
@@ -21,7 +21,7 @@ def _read_partition_dataframe(path: Path) -> pd.DataFrame:
 def test_export_to_hive_parquet_directory_structure(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_export_to_hive_parquet_directory_structure behavior."""
+    """Test the test export to hive parquet directory structure functionality."""
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
@@ -32,17 +32,17 @@ def test_export_to_hive_parquet_directory_structure(
         """Test suite for FakeMapper."""
 
         def __init__(self, sdk: MagicMock) -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             self._sdk = sdk
 
         def _build_record_model(
             self, variable_keys: list[str], label_map: dict[str, str]
         ) -> tuple[list[str], dict[str, str]]:
-            """Test _build_record_model behavior."""
+            """Test the build record model functionality."""
             return (variable_keys, label_map)
 
         def _fetch_records(self, _study_key: str, extra_filters: dict[str, Any]) -> list[int]:
-            """Test _fetch_records behavior."""
+            """Test the fetch records functionality."""
             return [extra_filters["formId"]]
 
         def _parse_records(
@@ -50,7 +50,7 @@ def test_export_to_hive_parquet_directory_structure(
             records: list[int],
             _record_model: tuple[list[str], dict[str, str]],
         ) -> tuple[list[int], int]:
-            """Test _parse_records behavior."""
+            """Test the parse records functionality."""
             return records, len(records)
 
         def _build_dataframe(
@@ -73,7 +73,7 @@ def test_export_to_hive_parquet_directory_structure(
 def test_export_to_hive_parquet_concurrent_studies_no_conflict(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Test test_export_to_hive_parquet_concurrent_studies_no_conflict behavior."""
+    """Test the test export to hive parquet concurrent studies no conflict functionality."""
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
@@ -86,19 +86,19 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
         """Test suite for FakeMapper."""
 
         def __init__(self, sdk: MagicMock) -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             self._sdk = sdk
 
         def _build_record_model(
             self, variable_keys: list[str], label_map: dict[str, str]
         ) -> tuple[list[str], dict[str, str]]:
-            """Test _build_record_model behavior."""
+            """Test the build record model functionality."""
             return (variable_keys, label_map)
 
         def _fetch_records(
             self, study_key: str, extra_filters: dict[str, Any] | None = None
         ) -> list[str]:
-            """Test _fetch_records behavior."""
+            """Test the fetch records functionality."""
             assert extra_filters is not None
             assert "formId" in extra_filters
             return [study_key]
@@ -108,7 +108,7 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
             records: list[str],
             _record_model: tuple[list[str], dict[str, str]],
         ) -> tuple[list[str], int]:
-            """Test _parse_records behavior."""
+            """Test the parse records functionality."""
             return records, len(records)
 
         def _build_dataframe(
@@ -134,7 +134,7 @@ def test_export_to_hive_parquet_concurrent_studies_no_conflict(
 
 
 def test_hive_parquet_query_returns_correct_string() -> None:
-    """Test test_hive_parquet_query_returns_correct_string behavior."""
+    """Test the test hive parquet query returns correct string functionality."""
     assert (
         parquet_mod.hive_parquet_query("/tmp/lake")
         == "SELECT * FROM read_parquet('/tmp/lake/**/*.parquet', "
@@ -143,10 +143,10 @@ def test_hive_parquet_query_returns_correct_string() -> None:
 
 
 def test_export_to_hive_parquet_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_export_to_hive_parquet_import_error behavior."""
+    """Test the test export to hive parquet import error functionality."""
 
     def _raise_import_error(module_name: str):
-        """Test _raise_import_error behavior."""
+        """Test the raise import error functionality."""
         if module_name == "pyarrow":
             raise ImportError("missing pyarrow")
         return __import__(module_name)

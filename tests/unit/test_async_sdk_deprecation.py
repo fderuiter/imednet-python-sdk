@@ -1,10 +1,10 @@
-"""Tests for test_async_sdk_deprecation."""
+"""Test Async Sdk Deprecation module."""
 
 import pytest
 
 
 def test_async_sdk_deprecation_warning():
-    """Test test_async_sdk_deprecation_warning behavior."""
+    """Test the test async sdk deprecation warning functionality."""
     import sys
 
     if "imednet.async_sdk" in sys.modules:

@@ -1,4 +1,4 @@
-"""Tests for test_register_subjects."""
+"""Test Register Subjects module."""
 
 from unittest.mock import MagicMock
 
@@ -12,7 +12,7 @@ from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
 
 
 def test_register_subjects_passes_records_correctly(schema) -> None:
-    """Test test_register_subjects_passes_records_correctly behavior."""
+    """Test the test register subjects passes records correctly functionality."""
     sdk = MagicMock()
     job = Job(jobId="1", batchId="1", state="PROCESSING")
     sdk.create_record.return_value = job
@@ -38,7 +38,7 @@ def test_register_subjects_passes_records_correctly(schema) -> None:
 
 
 def test_register_subjects_validation_errors() -> None:
-    """Test test_register_subjects_validation_errors behavior."""
+    """Test the test register subjects validation errors functionality."""
     sdk = MagicMock()
     sdk.get_sites.return_value = [
         Site(studyKey="S", siteId=1, siteName="VALID_SITE", siteEnrollmentStatus="Active")

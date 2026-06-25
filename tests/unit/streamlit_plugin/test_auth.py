@@ -1,4 +1,4 @@
-"""Tests for test_auth."""
+"""Test Auth module."""
 
 from __future__ import annotations
 
@@ -13,11 +13,11 @@ class _SidebarContext:
     """Test suite for _SidebarContext."""
 
     def __enter__(self) -> None:
-        """Test __enter__ behavior."""
+        """Test the enter functionality."""
         return None
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Test __exit__ behavior."""
+        """Test the exit functionality."""
         return None
 
 
@@ -25,7 +25,7 @@ class _FakeCacheData:
     """Test suite for _FakeCacheData."""
 
     def clear(self) -> None:
-        """Test clear behavior."""
+        """Test the clear functionality."""
         pass
 
 
@@ -54,51 +54,51 @@ class _FakeStreamlit:
         self._selected_study = selected_study
 
     def header(self, _: str) -> None:
-        """Test header behavior."""
+        """Test the header functionality."""
         pass
 
     def text_input(self, label: str, **kwargs: object) -> str:
-        """Test text_input behavior."""
+        """Test the text input functionality."""
         key = kwargs["key"]
         self.session_state[key] = ""
         return ""
 
     def selectbox(self, label: str, options: list[str], key: str, **kwargs: object) -> str:
-        """Test selectbox behavior."""
+        """Test the selectbox functionality."""
         self.session_state[key] = self._selected_study
         return self._selected_study
 
     def button(self, _: str, **kwargs: object) -> bool:
-        """Test button behavior."""
+        """Test the button functionality."""
         return self._connect_clicked
 
     def rerun(self) -> None:
-        """Test rerun behavior."""
+        """Test the rerun functionality."""
         pass
 
     def success(self, message: str) -> None:
-        """Test success behavior."""
+        """Test the success functionality."""
         self.success_messages.append(message)
 
     def error(self, message: str) -> None:
-        """Test error behavior."""
+        """Test the error functionality."""
         self.error_messages.append(message)
 
     def warning(self, message: str) -> None:
-        """Test warning behavior."""
+        """Test the warning functionality."""
         self.warning_messages.append(message)
 
     def info(self, message: str) -> None:
-        """Test info behavior."""
+        """Test the info functionality."""
         self.info_messages.append(message)
 
     def login(self) -> None:
-        """Test login behavior."""
+        """Test the login functionality."""
         self.login_called = True
 
 
 def test_render_auth_sidebar_not_connected_returns_false(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_render_auth_sidebar_not_connected_returns_false behavior."""
+    """Test the test render auth sidebar not connected returns false functionality."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
@@ -109,7 +109,7 @@ def test_render_auth_sidebar_not_connected_returns_false(monkeypatch: pytest.Mon
 def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test test_render_auth_sidebar_connects_and_clears_secret_keys behavior."""
+    """Test the test render auth sidebar connects and clears secret keys functionality."""
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True, selected_study="STUDY")
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
@@ -117,7 +117,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     sentinel_sdk = SimpleNamespace(name="sdk")
 
     def _fake_store_sdk(**_: object) -> None:
-        """Test _fake_store_sdk behavior."""
+        """Test the fake store sdk functionality."""
         fake_st.session_state[auth._KEY_SDK] = sentinel_sdk
 
     monkeypatch.setattr(
@@ -132,7 +132,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
 
 
 def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_get_sdk_before_connect_raises_runtime_error behavior."""
+    """Test the test get sdk before connect raises runtime error functionality."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
@@ -141,7 +141,7 @@ def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyP
 
 
 def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_clear_credentials_removes_all_session_keys behavior."""
+    """Test the test clear credentials removes all session keys functionality."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     fake_st.session_state.update(
         {
@@ -162,14 +162,14 @@ def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPa
 def test_render_auth_sidebar_build_failure_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test test_render_auth_sidebar_build_failure_clears_secret_keys behavior."""
+    """Test the test render auth sidebar build failure clears secret keys functionality."""
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
     monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec"))
 
     def _raise_build_error(**_: object) -> None:
-        """Test _raise_build_error behavior."""
+        """Test the raise build error functionality."""
         raise RuntimeError("boom")
 
     monkeypatch.setattr(auth, "_build_sdk", _raise_build_error)
@@ -181,7 +181,7 @@ def test_render_auth_sidebar_build_failure_clears_secret_keys(
 def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secrets(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secrets behavior."""
+    """Test the test render auth sidebar missing fields marks disconnected and clears secrets functionality."""
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
@@ -197,7 +197,7 @@ def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secret
 
 
 def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_build_sdk_calls_sdk_init behavior."""
+    """Test the test build sdk calls sdk init functionality."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 
@@ -207,7 +207,7 @@ def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
         """Test suite for FakeSDK."""
 
         def __init__(self, api_key: str, security_key: str) -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             sdk_args["api_key"] = api_key
             sdk_args["security_key"] = security_key
 
@@ -219,7 +219,7 @@ def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_get_study_key_raises_when_missing(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_get_study_key_raises_when_missing behavior."""
+    """Test the test get study key raises when missing functionality."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
 

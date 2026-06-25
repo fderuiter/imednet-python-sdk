@@ -1,4 +1,4 @@
-"""Tests for test_client."""
+"""Test Client module."""
 
 import httpx
 import pytest
@@ -15,7 +15,7 @@ from imednet.errors import (
 
 
 def test_get_success(http_client, respx_mock_client, sample_data):
-    """Test test_get_success behavior."""
+    """Test the test get success functionality."""
     respx_mock_client.get("/items").mock(return_value=httpx.Response(200, json=sample_data))
 
     response = http_client.get("/items")
@@ -37,7 +37,7 @@ def test_get_success(http_client, respx_mock_client, sample_data):
     ],
 )
 def test_request_error_mapping(http_client, respx_mock_client, status, exc):
-    """Test test_request_error_mapping behavior."""
+    """Test the test request error mapping functionality."""
     respx_mock_client.get("/path").mock(return_value=httpx.Response(status, json={"err": "x"}))
 
     with pytest.raises(exc):
@@ -45,7 +45,7 @@ def test_request_error_mapping(http_client, respx_mock_client, status, exc):
 
 
 def test_client_sends_auth_headers(http_client, respx_mock_client):
-    """Test test_client_sends_auth_headers behavior."""
+    """Test the test client sends auth headers functionality."""
     route = respx_mock_client.get("/headers").mock(return_value=httpx.Response(200, json={}))
 
     http_client.get("/headers")

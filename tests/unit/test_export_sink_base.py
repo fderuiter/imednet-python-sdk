@@ -28,21 +28,21 @@ class TestRedactUri:
     """Test suite for TestRedactUri."""
 
     def test_redacts_user_and_password(self):
-        """Test test_redacts_user_and_password behavior."""
+        """Test the test redacts user and password functionality."""
         userpass_uri = "mongodb://" + "user:pass" + "@localhost:27017/db"
         assert _redact_uri(userpass_uri) == "mongodb://***@localhost:27017/db"
 
     def test_redacts_user_only(self):
-        """Test test_redacts_user_only behavior."""
+        """Test the test redacts user only functionality."""
         assert _redact_uri("bolt://neo4j@localhost:7687") == "bolt://***@localhost:7687"
 
     def test_leaves_uri_without_userinfo_unchanged(self):
-        """Test test_leaves_uri_without_userinfo_unchanged behavior."""
+        """Test the test leaves uri without userinfo unchanged functionality."""
         uri = "neo4j+s://bolt.example.com"
         assert _redact_uri(uri) == uri
 
     def test_handles_empty_string(self):
-        """Test test_handles_empty_string behavior."""
+        """Test the test handles empty string functionality."""
         assert _redact_uri("") == ""
 
 
@@ -55,15 +55,15 @@ class TestRequireOptionalDep:
     """Test suite for TestRequireOptionalDep."""
 
     def test_returns_module_when_installed(self):
-        """Test test_returns_module_when_installed behavior."""
+        """Test the test returns module when installed functionality."""
         mod = _require_optional_dep("sys", "dummy")
         assert mod is sys
 
     def test_raises_import_error_when_missing(self, monkeypatch):
-        """Test test_raises_import_error_when_missing behavior."""
+        """Test the test raises import error when missing functionality."""
 
         def fake_import(name):
-            """Test fake_import behavior."""
+            """Test the fake import functionality."""
             raise ModuleNotFoundError(name=name)
 
         monkeypatch.setattr(sink_base_mod, "import_module", fake_import)
@@ -71,10 +71,10 @@ class TestRequireOptionalDep:
             _require_optional_dep("mypkg", "mypkg")
 
     def test_reraises_unrelated_module_not_found_error(self, monkeypatch):
-        """Test test_reraises_unrelated_module_not_found_error behavior."""
+        """Test the test reraises unrelated module not found error functionality."""
 
         def fake_import(name):
-            """Test fake_import behavior."""
+            """Test the fake import functionality."""
             raise ModuleNotFoundError(name="some_other_missing_lib")
 
         monkeypatch.setattr(sink_base_mod, "import_module", fake_import)
@@ -91,7 +91,7 @@ class TestSinkConfig:
     """Test suite for TestSinkConfig."""
 
     def test_defaults(self):
-        """Test test_defaults behavior."""
+        """Test the test defaults functionality."""
         cfg = SinkConfig()
         assert cfg.batch_size == 500
         assert cfg.max_retries == 3
@@ -100,7 +100,7 @@ class TestSinkConfig:
         assert cfg.extra == {}
 
     def test_custom_values(self):
-        """Test test_custom_values behavior."""
+        """Test the test custom values functionality."""
         cfg = SinkConfig(batch_size=100, max_retries=0, idempotent=False)
         assert cfg.batch_size == 100
         assert cfg.max_retries == 0
@@ -111,12 +111,12 @@ class TestIterBatches:
     """Test suite for TestIterBatches."""
 
     def test_splits_sequence_by_batch_size(self):
-        """Test test_splits_sequence_by_batch_size behavior."""
+        """Test the test splits sequence by batch size functionality."""
         batches = list(iter_batches([1, 2, 3, 4, 5], 2))
         assert batches == [[1, 2], [3, 4], [5]]
 
     def test_rejects_non_positive_batch_size(self):
-        """Test test_rejects_non_positive_batch_size behavior."""
+        """Test the test rejects non positive batch size functionality."""
         with pytest.raises(ValueError, match="batch_size"):
             list(iter_batches([1, 2], 0))
 
@@ -130,23 +130,23 @@ class _StubSink(ExportSink):
     """Minimal concrete sink for testing the base class."""
 
     def __init__(self, config=None):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         super().__init__(config)
         self.batches: list[tuple[list, str]] = []
         self.flushed = False
         self.closed = False
 
     def write_batch(self, records, *, batch_id: str) -> int:
-        """Test write_batch behavior."""
+        """Test the write batch functionality."""
         self.batches.append((list(records), batch_id))
         return len(records)
 
     def flush(self) -> None:
-        """Test flush behavior."""
+        """Test the flush functionality."""
         self.flushed = True
 
     def close(self) -> None:
-        """Test close behavior."""
+        """Test the close functionality."""
         self.closed = True
 
 
@@ -154,7 +154,7 @@ class TestExportSinkContextManager:
     """Test suite for TestExportSinkContextManager."""
 
     def test_flush_and_close_called_on_clean_exit(self):
-        """Test test_flush_and_close_called_on_clean_exit behavior."""
+        """Test the test flush and close called on clean exit functionality."""
         sink = _StubSink()
         with sink as s:
             s.write_batch([1, 2, 3], batch_id="b1")
@@ -162,7 +162,7 @@ class TestExportSinkContextManager:
         assert sink.closed
 
     def test_close_called_on_exception(self):
-        """Test test_close_called_on_exception behavior."""
+        """Test the test close called on exception functionality."""
         sink = _StubSink()
         with pytest.raises(ValueError):
             with sink:
@@ -172,7 +172,7 @@ class TestExportSinkContextManager:
         assert sink.closed
 
     def test_write_batch_records_returned(self):
-        """Test test_write_batch_records_returned behavior."""
+        """Test the test write batch records returned functionality."""
         sink = _StubSink()
         result = sink.write_batch([10, 20], batch_id="b2")
         assert result == 2
@@ -188,23 +188,23 @@ class TestExportErrors:
     """Test suite for TestExportErrors."""
 
     def test_export_error_is_imednet_error(self):
-        """Test test_export_error_is_imednet_error behavior."""
+        """Test the test export error is imednet error functionality."""
         from imednet.errors import ImednetError
 
         assert issubclass(ExportError, ImednetError)
 
     def test_export_batch_error_carries_batch_id(self):
-        """Test test_export_batch_error_carries_batch_id behavior."""
+        """Test the test export batch error carries batch id functionality."""
         err = ExportBatchError("failed", batch_id="STUDY/FORM/0")
         assert err.batch_id == "STUDY/FORM/0"
         assert "failed" in str(err)
 
     def test_export_configuration_error_is_export_error(self):
-        """Test test_export_configuration_error_is_export_error behavior."""
+        """Test the test export configuration error is export error functionality."""
         assert issubclass(ExportConfigurationError, ExportError)
 
     def test_export_batch_error_is_export_error(self):
-        """Test test_export_batch_error_is_export_error behavior."""
+        """Test the test export batch error is export error functionality."""
         assert issubclass(ExportBatchError, ExportError)
 
 
@@ -214,7 +214,7 @@ class TestExportErrors:
 
 
 def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:
-    """Test _fake_neo4j_module behavior."""
+    """Test the fake neo4j module functionality."""
     neo4j = ModuleType("neo4j")
     driver = MagicMock()
     if fail_connect:

@@ -1,11 +1,11 @@
-"""Tests for test_airflow_deprecation."""
+"""Test Airflow Deprecation module."""
 
 import sys
 from types import ModuleType
 
 
 def _setup_airflow(monkeypatch):
-    """Test _setup_airflow behavior."""
+    """Test the setup airflow functionality."""
     airflow_mod = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_mod = ModuleType("airflow.sdk.bases.hook")
@@ -20,7 +20,7 @@ def _setup_airflow(monkeypatch):
 
         @classmethod
         def get_connection(cls, conn_id):  # pragma: no cover
-            """Test get_connection behavior."""
+            """Test the get connection functionality."""
             raise NotImplementedError
 
     class DummyBaseOperator:
@@ -29,7 +29,7 @@ def _setup_airflow(monkeypatch):
         template_fields = ()
 
         def __init__(self, **kwargs):  # pragma: no cover
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
     hooks_mod.BaseHook = DummyBaseHook
@@ -54,7 +54,7 @@ def _setup_airflow(monkeypatch):
 
 
 def test_airflow_provider_exports_public_api(monkeypatch):
-    """Test test_airflow_provider_exports_public_api behavior."""
+    """Test the test airflow provider exports public api functionality."""
     _setup_airflow(monkeypatch)
     for mod in [
         "apache_airflow_providers_imednet",

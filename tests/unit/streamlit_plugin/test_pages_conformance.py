@@ -1,4 +1,4 @@
-"""Tests for test_pages_conformance."""
+"""Test Pages Conformance module."""
 
 import importlib.util
 import sys
@@ -12,7 +12,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 def test_conformance_page_renders():
-    """Test test_conformance_page_renders behavior."""
+    """Test the test conformance page renders functionality."""
     page_path = PACKAGE_ROOT / "pages" / "conformance.py"
 
     fake_st = MagicMock()

@@ -1,4 +1,4 @@
-"""Tests for test_airflow_export."""
+"""Test Airflow Export module."""
 
 import sys
 from types import ModuleType
@@ -9,7 +9,7 @@ import pytest
 
 # Setup dummy airflow modules to prevent import errors if airflow is not installed
 def _setup_airflow(monkeypatch):
-    """Test _setup_airflow behavior."""
+    """Test the setup airflow functionality."""
     airflow_mod = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_mod = ModuleType("airflow.sdk.bases.hook")
@@ -24,7 +24,7 @@ def _setup_airflow(monkeypatch):
 
         @classmethod
         def get_connection(cls, conn_id):
-            """Test get_connection behavior."""
+            """Test the get connection functionality."""
             raise NotImplementedError
 
     class DummyBaseOperator:
@@ -33,7 +33,7 @@ def _setup_airflow(monkeypatch):
         template_fields = ()
 
         def __init__(self, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             pass
 
     hooks_mod.BaseHook = DummyBaseHook
@@ -69,7 +69,7 @@ EXPORT_FUNCTIONS = [
 
 @pytest.fixture(autouse=True)
 def setup_airflow_mock(monkeypatch):
-    """Test setup_airflow_mock behavior."""
+    """Test the setup airflow mock functionality."""
     _setup_airflow(monkeypatch)
 
 

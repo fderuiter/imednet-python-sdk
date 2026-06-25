@@ -1,15 +1,15 @@
-"""Tests for test_smoke."""
+"""Test Smoke module."""
 
 
 def test_smoke_import() -> None:
-    """Test test_smoke_import behavior."""
+    """Test the test smoke import functionality."""
     import imednet
 
     assert hasattr(imednet, "ImednetSDK")
 
 
 def test_orchestration_exports() -> None:
-    """Test test_orchestration_exports behavior."""
+    """Test the test orchestration exports functionality."""
     from imednet import (
         FilterConflictError,
         MultiStudyOrchestrator,
@@ -26,7 +26,7 @@ def test_orchestration_exports() -> None:
 
 
 def test_role_import() -> None:
-    """Test test_role_import behavior."""
+    """Test the test role import functionality."""
     from imednet.models import Role
 
     assert Role.__name__ == "Role"

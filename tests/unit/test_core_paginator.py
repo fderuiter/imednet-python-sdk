@@ -1,4 +1,4 @@
-"""Tests for test_core_paginator."""
+"""Test Core Paginator module."""
 
 from typing import Any, Dict, List
 
@@ -16,12 +16,12 @@ class DummyClient:
     """Test suite for DummyClient."""
 
     def __init__(self, responses: List[Dict[str, Any]]):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.responses = responses
         self.calls: List[Dict[str, Any]] = []
 
     def get(self, path: str, params: Dict[str, Any] | None = None):
-        """Test get behavior."""
+        """Test the get functionality."""
         self.calls.append({"path": path, "params": params})
         data = self.responses.pop(0)
         return type("Resp", (), {"json": lambda self: data})()
@@ -31,7 +31,7 @@ class AsyncDummyClient:
     """Test suite for AsyncDummyClient."""
 
     def __init__(self, responses: List[Dict[str, Any]]):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.responses = responses
         self.calls: List[Dict[str, Any]] = []
 
@@ -43,7 +43,7 @@ class AsyncDummyClient:
 
 
 def test_single_page_iteration() -> None:
-    """Test test_single_page_iteration behavior."""
+    """Test the test single page iteration functionality."""
     client = DummyClient([{"data": [1, 2]}])
     paginator = Paginator(client, "/p")
     assert list(paginator) == [1, 2]
@@ -51,7 +51,7 @@ def test_single_page_iteration() -> None:
 
 
 def test_multiple_page_iteration() -> None:
-    """Test test_multiple_page_iteration behavior."""
+    """Test the test multiple page iteration functionality."""
     client = DummyClient(
         [
             {"data": [1], "pagination": {"totalPages": 2}},

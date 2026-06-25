@@ -1,4 +1,4 @@
-"""Tests for test_workflows_live."""
+"""Test Workflows Live module."""
 
 import pytest
 
@@ -13,7 +13,7 @@ from tests.live.helpers import require_mutation
 
 
 def test_get_study_structure(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_get_study_structure behavior."""
+    """Test the test get study structure functionality."""
     structure = get_study_structure(sdk, study_key)
     assert structure.study_key == study_key
 
@@ -28,7 +28,7 @@ async def test_async_get_study_structure(async_sdk: AsyncImednetSDK, study_key: 
 def test_register_subjects_workflow(
     sdk: ImednetSDK, study_key: str, first_subject_key: str
 ) -> None:
-    """Test test_register_subjects_workflow behavior."""
+    """Test the test register subjects workflow functionality."""
     require_mutation()
     forms = sdk.get_forms(study_key)
     sites = sdk.get_sites(study_key)
@@ -44,27 +44,27 @@ def test_register_subjects_workflow(
 
 
 def test_extract_records_by_criteria(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_extract_records_by_criteria behavior."""
+    """Test the test extract records by criteria functionality."""
     wf = sdk.workflows.data_extraction
     records = wf.extract_records_by_criteria(study_key)
     assert isinstance(records, list)
 
 
 def test_extract_audit_trail(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_extract_audit_trail behavior."""
+    """Test the test extract audit trail functionality."""
     wf = sdk.workflows.data_extraction
     trail = wf.extract_audit_trail(study_key)
     assert isinstance(trail, list)
 
 
 def test_subject_data_workflow(sdk: ImednetSDK, study_key: str, first_subject_key: str) -> None:
-    """Test test_subject_data_workflow behavior."""
+    """Test the test subject data workflow functionality."""
     data = sdk.workflows.subject_data.get_all_subject_data(study_key, first_subject_key)
     assert data.subject_details is not None
 
 
 def test_query_management_open_queries(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_query_management_open_queries behavior."""
+    """Test the test query management open queries functionality."""
     wf = sdk.workflows.query_management
     assert isinstance(wf.get_open_queries(study_key), list)
 
@@ -72,14 +72,14 @@ def test_query_management_open_queries(sdk: ImednetSDK, study_key: str) -> None:
 def test_query_management_for_subject(
     sdk: ImednetSDK, study_key: str, first_subject_key: str
 ) -> None:
-    """Test test_query_management_for_subject behavior."""
+    """Test the test query management for subject functionality."""
     wf = sdk.workflows.query_management
     queries = wf.get_queries_for_subject(study_key, first_subject_key)
     assert isinstance(queries, list)
 
 
 def test_query_management_by_site(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_query_management_by_site behavior."""
+    """Test the test query management by site functionality."""
     wf = sdk.workflows.query_management
     sites = sdk.get_sites(study_key)
     if not sites:
@@ -88,27 +88,27 @@ def test_query_management_by_site(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_query_management_state_counts(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_query_management_state_counts behavior."""
+    """Test the test query management state counts functionality."""
     wf = sdk.workflows.query_management
     counts = wf.get_query_state_counts(study_key)
     assert isinstance(counts, dict)
 
 
 def test_record_mapper_dataframe(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_record_mapper_dataframe behavior."""
+    """Test the test record mapper dataframe functionality."""
     df = sdk.workflows.record_mapper.dataframe(study_key)
     assert hasattr(df, "columns")
 
 
 def test_record_update_submit_batch(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_record_update_submit_batch behavior."""
+    """Test the test record update submit batch functionality."""
     require_mutation()
     job = sdk.workflows.record_update.create_or_update_records(study_key, [])
     assert job.batch_id or not job.state or job.state.upper() in ("COMPLETED", "SUCCESS")
 
 
 def test_record_update_register_subject(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_record_update_register_subject behavior."""
+    """Test the test record update register subject functionality."""
     require_mutation()
     job = sdk.workflows.record_update.register_subject(
         study_key,
@@ -123,7 +123,7 @@ def test_record_update_register_subject(sdk: ImednetSDK, study_key: str) -> None
 def test_record_update_update_scheduled(
     sdk: ImednetSDK, study_key: str, first_subject_key: str
 ) -> None:
-    """Test test_record_update_update_scheduled behavior."""
+    """Test the test record update update scheduled functionality."""
     require_mutation()
     job = sdk.workflows.record_update.update_scheduled_record(
         study_key,
@@ -137,7 +137,7 @@ def test_record_update_update_scheduled(
 
 
 def test_record_update_create_new(sdk: ImednetSDK, study_key: str, first_subject_key: str) -> None:
-    """Test test_record_update_create_new behavior."""
+    """Test the test record update create new functionality."""
     require_mutation()
     job = sdk.workflows.record_update.create_new_record(
         study_key,

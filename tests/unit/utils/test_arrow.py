@@ -1,4 +1,4 @@
-"""Tests for test_arrow."""
+"""Test Arrow module."""
 
 from datetime import datetime, timezone
 
@@ -9,7 +9,7 @@ from imednet.utils.arrow import to_arrow_table
 
 
 def test_to_arrow_table_empty_records_returns_empty_table() -> None:
-    """Test test_to_arrow_table_empty_records_returns_empty_table behavior."""
+    """Test the test to arrow table empty records returns empty table functionality."""
     table = to_arrow_table([])
 
     assert table.num_rows == 0
@@ -17,7 +17,7 @@ def test_to_arrow_table_empty_records_returns_empty_table() -> None:
 
 
 def test_to_arrow_table_handles_key_variations_with_nulls() -> None:
-    """Test test_to_arrow_table_handles_key_variations_with_nulls behavior."""
+    """Test the test to arrow table handles key variations with nulls functionality."""
     table = to_arrow_table([{"subject_key": "S1", "weight": 73.5}, {"subject_key": "S2"}])
 
     assert table.column("subject_key").to_pylist() == ["S1", "S2"]
@@ -26,7 +26,7 @@ def test_to_arrow_table_handles_key_variations_with_nulls() -> None:
 
 
 def test_to_arrow_table_preserves_datetime_bool_and_float_types() -> None:
-    """Test test_to_arrow_table_preserves_datetime_bool_and_float_types behavior."""
+    """Test the test to arrow table preserves datetime bool and float types functionality."""
     recorded_at = datetime(2025, 1, 1, 8, 30, tzinfo=timezone.utc)
     table = to_arrow_table(
         [
@@ -41,7 +41,7 @@ def test_to_arrow_table_preserves_datetime_bool_and_float_types() -> None:
 
 
 def test_to_arrow_table_accepts_pydantic_like_records() -> None:
-    """Test test_to_arrow_table_accepts_pydantic_like_records behavior."""
+    """Test the test to arrow table accepts pydantic like records functionality."""
 
     class Visit(BaseModel):
         """Test suite for Visit."""

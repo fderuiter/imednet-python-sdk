@@ -1,4 +1,4 @@
-"""Tests for test_security_config."""
+"""Test Security Config module."""
 
 from imednet.config import Config
 

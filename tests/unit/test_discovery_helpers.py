@@ -1,4 +1,4 @@
-"""Tests for test_discovery_helpers."""
+"""Test Discovery Helpers module."""
 
 from unittest.mock import MagicMock
 
@@ -15,7 +15,7 @@ from imednet.discovery import (
 
 
 def test_discover_study_key_returns_first() -> None:
-    """Test test_discover_study_key_returns_first behavior."""
+    """Test the test discover study key returns first functionality."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [
         MagicMock(study_key="S1"),
@@ -27,7 +27,7 @@ def test_discover_study_key_returns_first() -> None:
 
 
 def test_discover_study_key_raises_when_empty() -> None:
-    """Test test_discover_study_key_raises_when_empty behavior."""
+    """Test the test discover study key raises when empty functionality."""
     sdk = MagicMock()
     sdk.studies.list.return_value = []
 
@@ -36,7 +36,7 @@ def test_discover_study_key_raises_when_empty() -> None:
 
 
 def test_discover_form_key_returns_first_matching() -> None:
-    """Test test_discover_form_key_returns_first_matching behavior."""
+    """Test the test discover form key returns first matching functionality."""
     sdk = MagicMock()
     sdk.forms.list.return_value = [
         MagicMock(subject_record_report=False),
@@ -50,7 +50,7 @@ def test_discover_form_key_returns_first_matching() -> None:
 
 
 def test_discover_form_key_raises_when_empty() -> None:
-    """Test test_discover_form_key_raises_when_empty behavior."""
+    """Test the test discover form key raises when empty functionality."""
     sdk = MagicMock()
     sdk.forms.list.return_value = []
     sdk.variables.list.return_value = [MagicMock()]
@@ -60,7 +60,7 @@ def test_discover_form_key_raises_when_empty() -> None:
 
 
 def test_discover_site_name_returns_first_active() -> None:
-    """Test test_discover_site_name_returns_first_active behavior."""
+    """Test the test discover site name returns first active functionality."""
     sdk = MagicMock()
     sdk.sites.list.return_value = [
         MagicMock(site_enrollment_status="Closed"),
@@ -82,7 +82,7 @@ def test_discover_site_name_returns_enrollment_open() -> None:
 
 
 def test_discover_site_name_raises_when_empty() -> None:
-    """Test test_discover_site_name_raises_when_empty behavior."""
+    """Test the test discover site name raises when empty functionality."""
     sdk = MagicMock()
     sdk.sites.list.return_value = []
 
@@ -102,7 +102,7 @@ def test_discover_site_name_raises_with_read_only_sites() -> None:
 
 
 def test_discover_subject_key_returns_first_active() -> None:
-    """Test test_discover_subject_key_returns_first_active behavior."""
+    """Test the test discover subject key returns first active functionality."""
     sdk = MagicMock()
     sdk.subjects.list.return_value = [
         MagicMock(subject_status="Closed"),
@@ -144,7 +144,7 @@ def test_discover_subject_key_returns_enrolled() -> None:
 
 
 def test_discover_subject_key_raises_when_empty() -> None:
-    """Test test_discover_subject_key_raises_when_empty behavior."""
+    """Test the test discover subject key raises when empty functionality."""
     sdk = MagicMock()
     sdk.subjects.list.return_value = []
 
@@ -165,7 +165,7 @@ def test_discover_subject_key_raises_with_encountered_statuses() -> None:
 
 
 def test_discover_interval_name_returns_first_enabled() -> None:
-    """Test test_discover_interval_name_returns_first_enabled behavior."""
+    """Test the test discover interval name returns first enabled functionality."""
     sdk = MagicMock()
     sdk.intervals.list.return_value = [
         MagicMock(disabled=True),
@@ -177,7 +177,7 @@ def test_discover_interval_name_returns_first_enabled() -> None:
 
 
 def test_discover_interval_name_raises_when_empty() -> None:
-    """Test test_discover_interval_name_raises_when_empty behavior."""
+    """Test the test discover interval name raises when empty functionality."""
     sdk = MagicMock()
     sdk.intervals.list.return_value = []
 

@@ -1,4 +1,4 @@
-"""Tests for test_subjects_endpoint."""
+"""Test Subjects Endpoint module."""
 
 import pytest
 
@@ -10,7 +10,7 @@ from imednet.models.subjects import Subject
 def test_list_builds_path_with_default(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
-    """Test test_list_builds_path_with_default behavior."""
+    """Test the test list builds path with default functionality."""
     context.set_default_study_key("S1")
     ep = subjects.SubjectsEndpoint(dummy_client, context)
     capture = paginator_factory(subjects, [{"subjectKey": "x"}])
@@ -25,11 +25,11 @@ def test_list_builds_path_with_default(
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """Test test_get_not_found behavior."""
+    """Test the test get not found functionality."""
     ep = subjects.SubjectsEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        """Test fake_impl behavior."""
+        """Test the fake impl functionality."""
         return []
 
     monkeypatch.setattr(subjects.SubjectsEndpoint, "_list_sync", fake_impl)

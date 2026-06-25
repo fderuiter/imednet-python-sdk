@@ -1,4 +1,4 @@
-"""Tests for conftest."""
+"""Conftest module."""
 
 import types
 
@@ -10,13 +10,13 @@ from imednet.validation.cache import SchemaCache
 
 @pytest.fixture
 def schema() -> SchemaCache:
-    """Test schema behavior."""
+    """Test the schema functionality."""
     forms = fake_data.fake_forms_for_cache(1, study_key="S")
     variables = fake_data.fake_variables_for_cache(forms, vars_per_form=1, study_key="S")
     forms_ep = types.SimpleNamespace(list=lambda **_: forms)
 
     def list_vars(*_, form_id=None, **__):
-        """Test list_vars behavior."""
+        """Test the list vars functionality."""
         return [v for v in variables if form_id is None or v.form_id == form_id]
 
     vars_ep = types.SimpleNamespace(list=list_vars)

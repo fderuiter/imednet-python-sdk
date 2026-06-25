@@ -1,4 +1,4 @@
-"""Tests for test_sdk_credentials."""
+"""Test Sdk Credentials module."""
 
 import pytest
 
@@ -7,7 +7,7 @@ from imednet.sdk import ImednetSDK
 
 
 def test_missing_both_keys(monkeypatch) -> None:
-    """Test test_missing_both_keys behavior."""
+    """Test the test missing both keys functionality."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="", security_key="", base_url=None),
@@ -17,7 +17,7 @@ def test_missing_both_keys(monkeypatch) -> None:
 
 
 def test_missing_security_key(monkeypatch) -> None:
-    """Test test_missing_security_key behavior."""
+    """Test the test missing security key functionality."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="key", security_key="", base_url=None),
@@ -27,7 +27,7 @@ def test_missing_security_key(monkeypatch) -> None:
 
 
 def test_missing_api_key(monkeypatch) -> None:
-    """Test test_missing_api_key behavior."""
+    """Test the test missing api key functionality."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="", security_key="sec", base_url=None),
@@ -37,7 +37,7 @@ def test_missing_api_key(monkeypatch) -> None:
 
 
 def test_initialization_succeeds(monkeypatch) -> None:
-    """Test test_initialization_succeeds behavior."""
+    """Test the test initialization succeeds functionality."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="key", security_key="sec", base_url=None),

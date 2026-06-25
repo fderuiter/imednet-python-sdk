@@ -24,7 +24,7 @@ _STATUS_ORDER = {
 
 
 def _get_store() -> TriageStore:
-    """Perform  get store operation."""
+    """Handle the get store process."""
     raw_path = st.session_state.get(
         _TRIAGE_DB_PATH_KEY, str(_DEFAULT_TRIAGE_DIR / "triage.sqlite3")
     )
@@ -33,7 +33,7 @@ def _get_store() -> TriageStore:
 
 
 def _resolve_db_path(raw_path: object) -> str:
-    """Perform  resolve db path operation."""
+    """Handle the resolve db path process."""
     import os
 
     # Connect to managed database to support concurrent multi-user access
@@ -51,7 +51,7 @@ def _resolve_db_path(raw_path: object) -> str:
 
 
 def _last_activity(item: TriageItem) -> datetime | None:
-    """Perform  last activity operation."""
+    """Handle the last activity process."""
     timestamps = [entry.timestamp for entry in item.history] + [
         annotation.timestamp for annotation in item.annotations
     ]
@@ -59,7 +59,7 @@ def _last_activity(item: TriageItem) -> datetime | None:
 
 
 def _age_hours(item: TriageItem) -> float:
-    """Perform  age hours operation."""
+    """Handle the age hours process."""
     if item.status == TriageStatus.RESOLVED:
         return 0.0
     last_activity = _last_activity(item)
@@ -71,7 +71,7 @@ def _age_hours(item: TriageItem) -> float:
 
 
 def _severity_bucket(severity: str) -> str:
-    """Perform  severity bucket operation."""
+    """Handle the severity bucket process."""
     normalized = severity.strip().lower()
     if normalized in {"critical", "severe"}:
         return "Critical/Severe"
@@ -81,7 +81,7 @@ def _severity_bucket(severity: str) -> str:
 
 
 def _category(item: TriageItem) -> str:
-    """Perform  category operation."""
+    """Handle the category process."""
     prefix = item.item_id.split("-", 1)[0].upper()
     return {
         "AE": "Adverse Event",
@@ -91,7 +91,7 @@ def _category(item: TriageItem) -> str:
 
 
 def _queue_dataframe(items: list[TriageItem]) -> pd.DataFrame:
-    """Perform  queue dataframe operation."""
+    """Handle the queue dataframe process."""
     rows = [
         {
             "item_id": item.item_id,
@@ -122,7 +122,7 @@ def _queue_dataframe(items: list[TriageItem]) -> pd.DataFrame:
 
 
 def _render_kpis(queue_df: pd.DataFrame) -> None:
-    """Perform  render kpis operation."""
+    """Handle the render kpis process."""
     open_count = int(queue_df[queue_df["status"] != TriageStatus.RESOLVED.value].shape[0])
     sla_warning_count = int(
         queue_df[
@@ -141,7 +141,7 @@ def _render_kpis(queue_df: pd.DataFrame) -> None:
 
 
 def _filter_queue(queue_df: pd.DataFrame) -> pd.DataFrame:
-    """Perform  filter queue operation."""
+    """Handle the filter queue process."""
     severity_options = sorted(queue_df["severity_bucket"].dropna().astype(str).unique().tolist())
     category_options = sorted(queue_df["category"].dropna().astype(str).unique().tolist())
     assignee_options = sorted(queue_df["assignee"].dropna().astype(str).unique().tolist())
@@ -169,13 +169,13 @@ def _filter_queue(queue_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _get_current_user() -> str:
-    """Perform  get current user operation."""
+    """Handle the get current user process."""
     user_value = st.session_state.get("_imednet_user", "reviewer")
     return str(user_value).strip() or "reviewer"
 
 
 def render_page() -> None:
-    """Perform render page operation."""
+    """Handle the render page process."""
     st.title("🧪 Review Workbench")
     st.markdown(
         """

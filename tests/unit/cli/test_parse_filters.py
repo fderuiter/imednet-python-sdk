@@ -1,4 +1,4 @@
-"""Tests for test_parse_filters."""
+"""Test Parse Filters module."""
 
 import pytest
 import typer
@@ -7,25 +7,25 @@ from imednet.cli import parse_filter_args
 
 
 def test_parse_filter_args_none():
-    """Test test_parse_filter_args_none behavior."""
+    """Test the test parse filter args none functionality."""
     assert parse_filter_args(None) is None
 
 
 def test_parse_filter_args_types():
-    """Test test_parse_filter_args_types behavior."""
+    """Test the test parse filter args types functionality."""
     result = parse_filter_args(["a=1", "b=true", "c=no", "d=text"])
     assert result == {"a": 1, "b": True, "c": "no", "d": "text"}
 
 
 def test_parse_filter_args_invalid():
-    """Test test_parse_filter_args_invalid behavior."""
+    """Test the test parse filter args invalid functionality."""
     with pytest.raises(typer.Exit) as exc_info:
         parse_filter_args(["bad"])
     assert exc_info.value.exit_code == 1
 
 
 def test_parse_filter_args_invalid_escaped(capfd: pytest.CaptureFixture[str]):
-    """Test test_parse_filter_args_invalid_escaped behavior."""
+    """Test the test parse filter args invalid escaped functionality."""
     with pytest.raises(typer.Exit) as exc_info:
         parse_filter_args(["[red]bad[/red]"])
     assert exc_info.value.exit_code == 1

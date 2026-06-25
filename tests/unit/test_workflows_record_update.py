@@ -1,4 +1,4 @@
-"""Tests for test_workflows_record_update."""
+"""Test Workflows Record Update module."""
 
 import sys
 from unittest.mock import AsyncMock, MagicMock
@@ -13,7 +13,7 @@ from imednet_workflows.record_update import RecordUpdateWorkflow
 
 
 def test_create_or_update_records_no_wait() -> None:
-    """Test test_create_or_update_records_no_wait behavior."""
+    """Test the test create or update records no wait functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     job = Job(jobId="1", batchId="1", state="PROCESSING")
@@ -27,7 +27,7 @@ def test_create_or_update_records_no_wait() -> None:
 
 
 def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
-    """Test test_create_or_update_records_wait_for_completion behavior."""
+    """Test the test create or update records wait for completion functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     initial_job = Job(jobId="1", batchId="1", state="PROCESSING")
@@ -52,7 +52,7 @@ def test_create_or_update_records_wait_for_completion(monkeypatch) -> None:
 
 
 def test_update_scheduled_record_builds_payload() -> None:
-    """Test test_update_scheduled_record_builds_payload behavior."""
+    """Test the test update scheduled record builds payload functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -81,7 +81,7 @@ def test_update_scheduled_record_builds_payload() -> None:
 
 
 def test_create_or_update_records_validation() -> None:
-    """Test test_create_or_update_records_validation behavior."""
+    """Test the test create or update records validation functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     var = Variable(
@@ -116,7 +116,7 @@ def test_create_or_update_records_validation() -> None:
 
 
 def test_register_subject_builds_payload() -> None:
-    """Test test_register_subject_builds_payload behavior."""
+    """Test the test register subject builds payload functionality."""
     sdk = MagicMock()
     # Mock _async_client to prevent SchemaValidator from being async if not intended
     del sdk.async_create_record
@@ -145,7 +145,7 @@ def test_register_subject_builds_payload() -> None:
 
 
 def test_register_subject_with_site_id() -> None:
-    """Test test_register_subject_with_site_id behavior."""
+    """Test the test register subject with site id functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -172,7 +172,7 @@ def test_register_subject_with_site_id() -> None:
 
 
 def test_create_new_record_builds_payload() -> None:
-    """Test test_create_new_record_builds_payload behavior."""
+    """Test the test create new record builds payload functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -199,7 +199,7 @@ def test_create_new_record_builds_payload() -> None:
 
 
 def test_create_new_record_with_subject_oid() -> None:
-    """Test test_create_new_record_with_subject_oid behavior."""
+    """Test the test create new record with subject oid functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -226,7 +226,7 @@ def test_create_new_record_with_subject_oid() -> None:
 
 
 def test_invalid_subject_identifier_type_raises_keyerror() -> None:
-    """Test test_invalid_subject_identifier_type_raises_keyerror behavior."""
+    """Test the test invalid subject identifier type raises keyerror functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -242,7 +242,7 @@ def test_invalid_subject_identifier_type_raises_keyerror() -> None:
 
 
 def test_invalid_site_identifier_type_raises_keyerror() -> None:
-    """Test test_invalid_site_identifier_type_raises_keyerror behavior."""
+    """Test the test invalid site identifier type raises keyerror functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -258,7 +258,7 @@ def test_invalid_site_identifier_type_raises_keyerror() -> None:
 
 
 def test_update_scheduled_record_invalid_interval_identifier_type() -> None:
-    """Test test_update_scheduled_record_invalid_interval_identifier_type behavior."""
+    """Test the test update scheduled record invalid interval identifier type functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
     wf = RecordUpdateWorkflow(sdk)
@@ -275,7 +275,7 @@ def test_update_scheduled_record_invalid_interval_identifier_type() -> None:
 
 
 def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
-    """Test test_create_or_update_records_wait_for_completion_no_batch_id behavior."""
+    """Test the test create or update records wait for completion no batch id functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
 
@@ -313,7 +313,7 @@ def test_create_or_update_records_wait_for_completion_no_batch_id() -> None:
 
 
 def test_create_or_update_records_form_key_not_found() -> None:
-    """Test test_create_or_update_records_form_key_not_found behavior."""
+    """Test the test create or update records form key not found functionality."""
     sdk = MagicMock()
     del sdk.async_create_record
 

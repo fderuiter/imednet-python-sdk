@@ -1,4 +1,4 @@
-"""Tests for test_workflows_subject_data."""
+"""Test Workflows Subject Data module."""
 
 from unittest.mock import MagicMock
 
@@ -10,7 +10,7 @@ from imednet_workflows.subject_data import SubjectDataWorkflow
 
 
 def test_get_all_subject_data_aggregates_across_endpoints() -> None:
-    """Test test_get_all_subject_data_aggregates_across_endpoints behavior."""
+    """Test the test get all subject data aggregates across endpoints functionality."""
     sdk = MagicMock()
     subject = Subject(subject_key="S1")
     visit = Visit(visit_id=1, subject_key="S1")

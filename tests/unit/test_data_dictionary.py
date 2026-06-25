@@ -1,4 +1,4 @@
-"""Tests for test_data_dictionary."""
+"""Test Data Dictionary module."""
 
 from __future__ import annotations
 
@@ -12,12 +12,12 @@ FIXTURES = Path(__file__).parent.parent / "fixtures" / "data_dictionary"
 
 
 def _expected() -> DataDictionary:
-    """Test _expected behavior."""
+    """Test the expected functionality."""
     return DataDictionaryLoader.from_directory(FIXTURES)
 
 
 def test_from_directory() -> None:
-    """Test test_from_directory behavior."""
+    """Test the test from directory functionality."""
     dd = DataDictionaryLoader.from_directory(FIXTURES)
     assert isinstance(dd, DataDictionary)
     assert len(dd.forms) == 3
@@ -25,7 +25,7 @@ def test_from_directory() -> None:
 
 
 def test_from_zip() -> None:
-    """Test test_from_zip behavior."""
+    """Test the test from zip functionality."""
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as zf:
         for name in DataDictionaryLoader.REQUIRED_FILES:

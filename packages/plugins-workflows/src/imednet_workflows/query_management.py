@@ -16,7 +16,7 @@ class QueryManagementWorkflow:
     """
 
     def __init__(self, sdk: "ImednetFacade"):
-        """Perform   init   operation."""
+        """Initialize a new instance."""
         self._sdk = sdk
 
     @staticmethod

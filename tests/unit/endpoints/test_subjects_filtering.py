@@ -1,4 +1,4 @@
-"""Tests for test_subjects_filtering."""
+"""Test Subjects Filtering module."""
 
 from unittest.mock import AsyncMock, Mock
 
@@ -8,7 +8,7 @@ from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
 
 
 def test_list_by_site_filtering():
-    """Test test_list_by_site_filtering behavior."""
+    """Test the test list by site filtering functionality."""
     mock_client = Mock()
     mock_ctx = Mock()
 

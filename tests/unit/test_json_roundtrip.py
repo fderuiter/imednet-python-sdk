@@ -1,4 +1,4 @@
-"""Tests for test_json_roundtrip."""
+"""Test Json Roundtrip module."""
 
 import pytest
 
@@ -39,7 +39,7 @@ from imednet.testing import fake_data
     ],
 )
 def test_json_roundtrip(cls, payload_func):
-    """Test test_json_roundtrip behavior."""
+    """Test the test json roundtrip functionality."""
     payload = payload_func()
     model = cls.from_json(payload)
     dumped = model.model_dump(by_alias=True)
@@ -47,7 +47,7 @@ def test_json_roundtrip(cls, payload_func):
 
 
 def test_fake_forms_for_cache():
-    """Test test_fake_forms_for_cache behavior."""
+    """Test the test fake forms for cache functionality."""
     forms = fake_data.fake_forms_for_cache(num_forms=2, study_key="TEST-1")
     assert len(forms) == 2
     for form in forms:
@@ -56,7 +56,7 @@ def test_fake_forms_for_cache():
 
 
 def test_fake_variables_for_cache():
-    """Test test_fake_variables_for_cache behavior."""
+    """Test the test fake variables for cache functionality."""
     forms = fake_data.fake_forms_for_cache(num_forms=1)
     variables = fake_data.fake_variables_for_cache(forms, vars_per_form=2, study_key="TEST-1")
     assert len(variables) == 2

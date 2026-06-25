@@ -1,4 +1,4 @@
-"""Tests for test_decorators."""
+"""Test Decorators module."""
 
 from unittest.mock import MagicMock
 
@@ -9,7 +9,7 @@ import imednet.cli as cli
 
 
 def test_decorator_handles_unexpected_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_decorator_handles_unexpected_error behavior."""
+    """Test the test decorator handles unexpected error functionality."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")

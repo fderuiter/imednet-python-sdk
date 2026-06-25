@@ -1,4 +1,4 @@
-"""Tests for test_records_endpoint."""
+"""Test Records Endpoint module."""
 
 import pytest
 
@@ -12,7 +12,7 @@ from imednet.validation.cache import SchemaCache
 def test_list_builds_path_filters_and_data_filter(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
-    """Test test_list_builds_path_filters_and_data_filter behavior."""
+    """Test the test list builds path filters and data filter functionality."""
     ep = records.RecordsEndpoint(dummy_client, context)
     captured = paginator_factory(records, [{"recordId": 1}])
     filter_capture = patch_build_filter(records)
@@ -30,12 +30,12 @@ def test_list_builds_path_filters_and_data_filter(
 
 
 def test_get_success(monkeypatch, dummy_client, context):
-    """Test test_get_success behavior."""
+    """Test the test get success functionality."""
     ep = records.RecordsEndpoint(dummy_client, context)
     called = {}
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        """Test fake_impl behavior."""
+        """Test the fake impl functionality."""
         called["study_key"] = study_key
         called["filters"] = filters
         return [Record(record_id=1)]
@@ -49,7 +49,7 @@ def test_get_success(monkeypatch, dummy_client, context):
 
 
 def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
-    """Test test_get_rejects_unknown_keyword behavior."""
+    """Test the test get rejects unknown keyword functionality."""
     context.set_default_study_key("S1")
     ep = records.RecordsEndpoint(dummy_client, context)
     monkeypatch.setattr(
@@ -61,11 +61,11 @@ def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """Test test_get_not_found behavior."""
+    """Test the test get not found functionality."""
     ep = records.RecordsEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        """Test fake_impl behavior."""
+        """Test the fake impl functionality."""
         return []
 
     monkeypatch.setattr(records.RecordsEndpoint, "_list_sync", fake_impl)
@@ -75,13 +75,13 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 
 def test_create_sends_headers_and_parses_job(dummy_client, context, response_factory, monkeypatch):
-    """Test test_create_sends_headers_and_parses_job behavior."""
+    """Test the test create sends headers and parses job functionality."""
     ep = records.RecordsEndpoint(dummy_client, context)
     dummy_client.post.return_value = response_factory({"jobId": "1"})
     called = {}
 
     def fake_from_json(data):
-        """Test fake_from_json behavior."""
+        """Test the fake from json functionality."""
         called["data"] = data
         return "JOB"
 
@@ -99,7 +99,7 @@ def test_create_sends_headers_and_parses_job(dummy_client, context, response_fac
 
 
 def test_create_validates_data(dummy_client, context, response_factory):
-    """Test test_create_validates_data behavior."""
+    """Test the test create validates data functionality."""
     ep = records.RecordsEndpoint(dummy_client, context)
     schema = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -123,7 +123,7 @@ def test_create_validates_data(dummy_client, context, response_factory):
 
 
 def test_create_validates_data_with_snake_case_keys(dummy_client, context, response_factory):
-    """Test test_create_validates_data_with_snake_case_keys behavior."""
+    """Test the test create validates data with snake case keys functionality."""
     ep = records.RecordsEndpoint(dummy_client, context)
     schema = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -139,7 +139,7 @@ def test_create_validates_data_with_snake_case_keys(dummy_client, context, respo
 
 
 def test_create_raises_on_header_injection(dummy_client, context):
-    """Test test_create_raises_on_header_injection behavior."""
+    """Test the test create raises on header injection functionality."""
     ep = records.RecordsEndpoint(dummy_client, context)
     with pytest.raises(ClientError, match="Header value must not contain newlines"):
         ep.create("S1", [{"data": {}}], email_notify="test\n@example.com")

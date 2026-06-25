@@ -1,4 +1,4 @@
-"""Tests for test_sdk_entrypoint."""
+"""Test Sdk Entrypoint module."""
 
 from typing import Any, Callable
 
@@ -36,17 +36,17 @@ class _FakeEntryPoint:
     def __init__(
         self, loader: Callable[[], Any], value: str = "tests.fake_plugin:Workflows"
     ) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self._loader = loader
         self.value = value
 
     def load(self):
-        """Test load behavior."""
+        """Test the load functionality."""
         return self._loader()
 
 
 def test_top_level_orchestration_exports() -> None:
-    """Test test_top_level_orchestration_exports behavior."""
+    """Test the test top level orchestration exports functionality."""
     from imednet import FilterConflictError as TopLevelFilterConflictError
     from imednet import MultiStudyOrchestrator as TopLevelMultiStudyOrchestrator
     from imednet import OrchestratorError as TopLevelOrchestratorError
@@ -61,18 +61,18 @@ def test_top_level_orchestration_exports() -> None:
 
 
 def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
-    """Test test_sdk_workflows_uses_entry_point_discovery behavior."""
+    """Test the test sdk workflows uses entry point discovery functionality."""
     loaded = {"called": False}
 
     def load_workflows():
-        """Test load_workflows behavior."""
+        """Test the load workflows functionality."""
         loaded["called"] = True
 
         class FakeWorkflows:
             """Test suite for FakeWorkflows."""
 
             def __init__(self, sdk_instance):
-                """Test __init__ behavior."""
+                """Initialize a new instance."""
                 self.sdk_instance = sdk_instance
 
         return FakeWorkflows
@@ -97,10 +97,10 @@ def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
 def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
     monkeypatch, exception_class
 ) -> None:
-    """Test test_sdk_workflows_invalid_entry_point_load_raises_import_error behavior."""
+    """Test the test sdk workflows invalid entry point load raises import error functionality."""
 
     def failing_loader():
-        """Test failing_loader behavior."""
+        """Test the failing loader functionality."""
         raise exception_class("boom")
 
     monkeypatch.setattr(
@@ -118,7 +118,7 @@ def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
 
 
 def test_sdk_workflows_entry_point_must_be_callable(monkeypatch) -> None:
-    """Test test_sdk_workflows_entry_point_must_be_callable behavior."""
+    """Test the test sdk workflows entry point must be callable functionality."""
     monkeypatch.setattr(
         sdk_mod,
         "entry_points",
@@ -134,7 +134,7 @@ def test_sdk_workflows_entry_point_must_be_callable(monkeypatch) -> None:
 
 
 def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None:
-    """Test test_sdk_workflows_multiple_plugins_raises_import_error behavior."""
+    """Test the test sdk workflows multiple plugins raises import error functionality."""
     monkeypatch.setattr(
         sdk_mod,
         "entry_points",
@@ -150,13 +150,13 @@ def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None
 
 
 def test_sdk_workflows_instantiation_failure_raises_import_error(monkeypatch) -> None:
-    """Test test_sdk_workflows_instantiation_failure_raises_import_error behavior."""
+    """Test the test sdk workflows instantiation failure raises import error functionality."""
 
     class BrokenWorkflows:
         """Test suite for BrokenWorkflows."""
 
         def __init__(self, sdk_instance):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             raise TypeError("broken")
 
     monkeypatch.setattr(
@@ -174,7 +174,7 @@ def test_sdk_workflows_instantiation_failure_raises_import_error(monkeypatch) ->
 
 
 def _create_sdk() -> sdk_mod.ImednetSDK:
-    """Test _create_sdk behavior."""
+    """Test the create sdk functionality."""
     return sdk_mod.ImednetSDK(
         api_key="key",
         security_key="secret",
@@ -183,7 +183,7 @@ def _create_sdk() -> sdk_mod.ImednetSDK:
 
 
 def test_env_var_credentials(monkeypatch) -> None:
-    """Test test_env_var_credentials behavior."""
+    """Test the test env var credentials functionality."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
 
@@ -193,7 +193,7 @@ def test_env_var_credentials(monkeypatch) -> None:
 
 
 def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
-    """Test test_sdk_initialization_wires_endpoints_and_workflows behavior."""
+    """Test the test sdk initialization wires endpoints and workflows functionality."""
     sdk = _create_sdk()
 
     assert isinstance(sdk._client, Client)
@@ -225,11 +225,11 @@ def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
 
 
 def test_context_management_closes_client(monkeypatch) -> None:
-    """Test test_context_management_closes_client behavior."""
+    """Test the test context management closes client functionality."""
     called = {"close": False}
 
     def fake_close(self) -> None:
-        """Test fake_close behavior."""
+        """Test the fake close functionality."""
         called["close"] = True
 
     monkeypatch.setattr(Client, "close", fake_close)
@@ -241,77 +241,77 @@ def test_context_management_closes_client(monkeypatch) -> None:
 
 
 def test_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
-    """Test test_convenience_methods_delegate_to_endpoints behavior."""
+    """Test the test convenience methods delegate to endpoints functionality."""
     sdk = _create_sdk()
     calls = {}
 
     def fake_studies_list(study_key=None, **kw):
-        """Test fake_studies_list behavior."""
+        """Test the fake studies list functionality."""
         calls["studies"] = kw
         return ["STUDY"]
 
     def fake_records_list(study_key, record_data_filter=None, **kw):
-        """Test fake_records_list behavior."""
+        """Test the fake records list functionality."""
         calls["records"] = (study_key, record_data_filter, kw)
         return ["REC"]
 
     def fake_sites_list(study_key, **kw):
-        """Test fake_sites_list behavior."""
+        """Test the fake sites list functionality."""
         calls["sites"] = (study_key, kw)
         return ["SITE"]
 
     def fake_subjects_list(study_key, **kw):
-        """Test fake_subjects_list behavior."""
+        """Test the fake subjects list functionality."""
         calls["subjects"] = (study_key, kw)
         return ["SUB"]
 
     def fake_create(study_key, records_data, email_notify=None, schema=None):
-        """Test fake_create behavior."""
+        """Test the fake create functionality."""
         calls["create"] = (study_key, records_data, email_notify)
         return "JOB"
 
     def fake_forms_list(study_key, **kw):
-        """Test fake_forms_list behavior."""
+        """Test the fake forms list functionality."""
         calls["forms"] = (study_key, kw)
         return ["FORM"]
 
     def fake_intervals_list(study_key, **kw):
-        """Test fake_intervals_list behavior."""
+        """Test the fake intervals list functionality."""
         calls["intervals"] = (study_key, kw)
         return ["INT"]
 
     def fake_variables_list(study_key, **kw):
-        """Test fake_variables_list behavior."""
+        """Test the fake variables list functionality."""
         calls["variables"] = (study_key, kw)
         return ["VAR"]
 
     def fake_visits_list(study_key, **kw):
-        """Test fake_visits_list behavior."""
+        """Test the fake visits list functionality."""
         calls["visits"] = (study_key, kw)
         return ["VIS"]
 
     def fake_codings_list(study_key, **kw):
-        """Test fake_codings_list behavior."""
+        """Test the fake codings list functionality."""
         calls["codings"] = (study_key, kw)
         return ["COD"]
 
     def fake_queries_list(study_key, **kw):
-        """Test fake_queries_list behavior."""
+        """Test the fake queries list functionality."""
         calls["queries"] = (study_key, kw)
         return ["QUERY"]
 
     def fake_record_revisions_list(study_key, **kw):
-        """Test fake_record_revisions_list behavior."""
+        """Test the fake record revisions list functionality."""
         calls["record_revisions"] = (study_key, kw)
         return ["REV"]
 
     def fake_users_list(study_key, include_inactive=False):
-        """Test fake_users_list behavior."""
+        """Test the fake users list functionality."""
         calls["users"] = (study_key, include_inactive)
         return ["USER"]
 
     def fake_get_job(study_key, batch_id):
-        """Test fake_get_job behavior."""
+        """Test the fake get job functionality."""
         calls["job"] = (study_key, batch_id)
         return "JOBOBJ"
 
@@ -362,7 +362,7 @@ def test_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
 
 
 def test_poll_job_convenience_sync(monkeypatch) -> None:
-    """Test test_poll_job_convenience_sync behavior."""
+    """Test the test poll job convenience sync functionality."""
     sdk = _create_sdk()
     calls = {}
 
@@ -370,11 +370,11 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
         """Test suite for FakePoller."""
 
         def __init__(self, get_func, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             calls["init"] = get_func
 
         def run(self, study_key, batch_id, interval, timeout):
-            """Test run behavior."""
+            """Test the run functionality."""
             calls["run"] = (study_key, batch_id, interval, timeout)
             return "JOBOBJ"
 

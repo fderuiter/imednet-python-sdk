@@ -1,4 +1,4 @@
-"""Tests for test_form_designer_client."""
+"""Test Form Designer Client module."""
 
 import json
 
@@ -12,13 +12,13 @@ from imednet.form_designer.models import Layout
 
 @pytest.fixture
 def form_designer_client():
-    """Test form_designer_client behavior."""
+    """Test the form designer client functionality."""
     return FormDesignerClient(base_url="https://test.imednet.com", phpsessid="test_session")
 
 
 @pytest.fixture
 def empty_layout():
-    """Test empty_layout behavior."""
+    """Test the empty layout functionality."""
     return Layout(pages=[])
 
 

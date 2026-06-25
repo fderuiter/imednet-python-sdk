@@ -17,7 +17,7 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
     except (ImportError, ModuleNotFoundError):
 
         class _FallbackAirflowError(Exception):
-            """_FallbackAirflowError implementation."""
+            """Implementation of the _FallbackAirflowError class."""
 
             pass
 

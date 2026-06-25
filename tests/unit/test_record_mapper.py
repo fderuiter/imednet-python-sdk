@@ -1,4 +1,4 @@
-"""Tests for test_record_mapper."""
+"""Test Record Mapper module."""
 
 import tracemalloc
 from datetime import datetime
@@ -20,7 +20,7 @@ _STREAMING_PEAK_BYTES_LIMIT = 35_000_000
 
 
 def test_dataframe_builds_expected_structure() -> None:
-    """Test test_dataframe_builds_expected_structure behavior."""
+    """Test the test dataframe builds expected structure functionality."""
     sdk = MagicMock()
     variables = [
         Variable(variable_name="VAR1", label="Label1", form_id=10),
@@ -28,7 +28,7 @@ def test_dataframe_builds_expected_structure() -> None:
     ]
 
     def var_list(**kwargs):
-        """Test var_list behavior."""
+        """Test the var list functionality."""
         if kwargs.get("variableNames"):
             assert kwargs == {
                 "study_key": "STUDY",
@@ -79,7 +79,7 @@ def test_dataframe_builds_expected_structure() -> None:
 
 
 def test_dataframe_whitelists_variables_and_forms() -> None:
-    """Test test_dataframe_whitelists_variables_and_forms behavior."""
+    """Test the test dataframe whitelists variables and forms functionality."""
     sdk = MagicMock()
     variables = [
         Variable(variable_name="VAR1", label="Label1", form_id=10),
@@ -87,7 +87,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
     ]
 
     def var_list(**kwargs):
-        """Test var_list behavior."""
+        """Test the var list functionality."""
         assert kwargs == {
             "study_key": "STUDY",
             "variableNames": ["VAR1"],
@@ -107,7 +107,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
     )
 
     def rec_list(**kwargs):
-        """Test rec_list behavior."""
+        """Test the rec list functionality."""
         if kwargs.get("variableNames"):
             assert kwargs == {
                 "study_key": "STUDY",
@@ -150,7 +150,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
 
 
 def test_dataframe_empty_when_no_variables() -> None:
-    """Test test_dataframe_empty_when_no_variables behavior."""
+    """Test the test dataframe empty when no variables functionality."""
     sdk = MagicMock()
     sdk.get_variables.return_value = []
     mapper = RecordMapper(sdk)
@@ -159,7 +159,7 @@ def test_dataframe_empty_when_no_variables() -> None:
 
 
 def test_invalid_visit_key_logs_warning(caplog) -> None:
-    """Test test_invalid_visit_key_logs_warning behavior."""
+    """Test the test invalid visit key logs warning functionality."""
     sdk = MagicMock()
     sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
     sdk.get_records.return_value = []
@@ -174,7 +174,7 @@ def test_invalid_visit_key_logs_warning(caplog) -> None:
 
 
 def test_records_fetch_error_returns_empty(caplog) -> None:
-    """Test test_records_fetch_error_returns_empty behavior."""
+    """Test the test records fetch error returns empty functionality."""
     sdk = MagicMock()
     sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
     sdk.get_records.side_effect = Exception("boom")
@@ -188,7 +188,7 @@ def test_records_fetch_error_returns_empty(caplog) -> None:
 
 
 def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
-    """Test test_parsing_error_logs_warning behavior."""
+    """Test the test parsing error logs warning functionality."""
     sdk = MagicMock()
     sdk.get_variables.return_value = [Variable(variable_name="V", label="L", form_id=1)]
     record = Record(
@@ -206,7 +206,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
         """Test suite for DummyModel."""
 
         def __init__(self, **kwargs):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             raise ValidationError([], DummyModel)
 
     monkeypatch.setattr("imednet_workflows.record_mapper.create_model", lambda *a, **k: DummyModel)
@@ -220,7 +220,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
 
 
 def test_parse_records_counts_errors() -> None:
-    """Test test_parse_records_counts_errors behavior."""
+    """Test the test parse records counts errors functionality."""
     mapper = RecordMapper(MagicMock())
     records = [
         Record(
@@ -257,7 +257,7 @@ def test_parse_records_counts_errors() -> None:
 
 
 def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
-    """Test test_dataframe_raises_importerror_when_pandas_missing behavior."""
+    """Test the test dataframe raises importerror when pandas missing functionality."""
     monkeypatch.setattr("imednet_workflows.record_mapper.pd", None)
     mapper = RecordMapper(MagicMock())
     with pytest.raises(ImportError, match="pandas is required for RecordMapper.dataframe"):
@@ -265,18 +265,18 @@ def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
 
 
 def test_iter_dataframes_streams_large_study_with_bounded_memory() -> None:
-    """Test test_iter_dataframes_streams_large_study_with_bounded_memory behavior."""
+    """Test the test iter dataframes streams large study with bounded memory functionality."""
     fake = Faker()
 
     class _StreamingLoader:
         """Test suite for _StreamingLoader."""
 
         def __init__(self) -> None:
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             self.sync_records = MagicMock()
 
         def iter_cached_records(self, study_key: str, *, chunk_size: int = 5_000):
-            """Test iter_cached_records behavior."""
+            """Test the iter cached records functionality."""
             assert study_key == "STUDY"
             assert chunk_size == 5_000
             for record_id in range(50_000):

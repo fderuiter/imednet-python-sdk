@@ -1,4 +1,4 @@
-"""Tests for test_retry."""
+"""Test Retry module."""
 
 from unittest.mock import AsyncMock, Mock
 

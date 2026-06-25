@@ -1,4 +1,4 @@
-"""Tests for test_retry_policy."""
+"""Test Retry Policy module."""
 
 import httpx
 import pytest
@@ -9,7 +9,7 @@ from imednet.errors import ServerError
 
 
 def test_default_policy_request_error():
-    """Test test_default_policy_request_error behavior."""
+    """Test the test default policy request error functionality."""
     policy = DefaultRetryPolicy()
     state = RetryState(
         1,
@@ -21,7 +21,7 @@ def test_default_policy_request_error():
 
 
 def test_default_policy_retry_behavior():
-    """Test test_default_policy_retry_behavior behavior."""
+    """Test the test default policy retry behavior functionality."""
     policy = DefaultRetryPolicy()
 
     # Retryable responses for idempotent methods (Server Errors & Rate Limits)
@@ -45,12 +45,12 @@ def test_default_policy_retry_behavior():
 
 
 def test_default_policy_non_request_exception(monkeypatch):
-    """Test test_default_policy_non_request_exception behavior."""
+    """Test the test default policy non request exception functionality."""
     client = Client("k", "s", base_url="https://api.test", retries=3)
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
-        """Test request behavior."""
+        """Test the request functionality."""
         calls["count"] += 1
         raise RuntimeError("boom")
 
@@ -63,20 +63,20 @@ def test_default_policy_non_request_exception(monkeypatch):
 
 
 def test_custom_policy(monkeypatch):
-    """Test test_custom_policy behavior."""
+    """Test the test custom policy functionality."""
 
     class ServerPolicy:
         """Test suite for ServerPolicy."""
 
         def should_retry(self, state: RetryState) -> bool:
-            """Test should_retry behavior."""
+            """Test the should retry functionality."""
             return isinstance(state.exception, ServerError)
 
     client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=ServerPolicy())
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
-        """Test request behavior."""
+        """Test the request functionality."""
         calls["count"] += 1
         if calls["count"] < 3:
             raise ServerError({}, status_code=500)
@@ -91,13 +91,13 @@ def test_custom_policy(monkeypatch):
 
 
 def test_custom_policy_based_on_result(monkeypatch):
-    """Test test_custom_policy_based_on_result behavior."""
+    """Test the test custom policy based on result functionality."""
 
     class ResponsePolicy:
         """Test suite for ResponsePolicy."""
 
         def should_retry(self, state: RetryState) -> bool:
-            """Test should_retry behavior."""
+            """Test the should retry functionality."""
             resp = state.result
             return isinstance(resp, httpx.Response) and resp.status_code >= 500
 
@@ -105,7 +105,7 @@ def test_custom_policy_based_on_result(monkeypatch):
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
-        """Test request behavior."""
+        """Test the request functionality."""
         calls["count"] += 1
         if calls["count"] < 3:
             return httpx.Response(500)

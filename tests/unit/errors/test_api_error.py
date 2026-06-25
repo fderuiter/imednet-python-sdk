@@ -1,10 +1,10 @@
-"""Tests for test_api_error."""
+"""Test Api Error module."""
 
 from imednet.errors.api import ApiError
 
 
 def test_api_error_str_representation():
-    """Test test_api_error_str_representation behavior."""
+    """Test the test api error str representation functionality."""
     # Test basic instantiation with string
     err = ApiError("Something went wrong")
     assert str(err) == "Something went wrong (Response: Something went wrong)"
@@ -21,7 +21,7 @@ def test_api_error_str_representation():
 
 
 def test_api_error_empty_response():
-    """Test test_api_error_empty_response behavior."""
+    """Test the test api error empty response functionality."""
     # Test instantiation with empty response string
     err = ApiError("", status_code=500)
     assert str(err) == " (Status Code: 500)"
@@ -32,6 +32,6 @@ def test_api_error_empty_response():
 
 
 def test_api_error_base_str_only():
-    """Test test_api_error_base_str_only behavior."""
+    """Test the test api error base str only functionality."""
     err = ApiError(None)
     assert str(err) == "None"

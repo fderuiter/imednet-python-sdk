@@ -199,7 +199,7 @@ class RecordMapper:
         rec: RecordModel,
         record_model: Type[BaseModel],
     ) -> Dict[str, Any]:
-        """Perform  parse record operation."""
+        """Handle the parse record process."""
         meta = {
             "recordId": rec.record_id,
             "subjectKey": rec.subject_key,
@@ -234,7 +234,7 @@ class RecordMapper:
         records: Iterable[RecordModel],
         record_model: Type[BaseModel],
     ) -> Iterator[Tuple[List[Dict[str, Any]], int]]:
-        """Perform  iter parsed rows operation."""
+        """Handle the iter parsed rows process."""
         for chunk in iter_chunks(records, chunk_size=self._pipeline.chunk_size):
             rows: List[Dict[str, Any]] = []
             errors = 0

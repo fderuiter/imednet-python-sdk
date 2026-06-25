@@ -1,4 +1,4 @@
-"""Tests for test_components_paginated_grid."""
+"""Test Components Paginated Grid module."""
 
 from __future__ import annotations
 
@@ -15,13 +15,13 @@ class _FakeColumn:
     """Test suite for _FakeColumn."""
 
     def __init__(self, *, next_click: bool = False, prev_click: bool = False) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self._next_click = next_click
         self._prev_click = prev_click
         self.captions: list[str] = []
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """Test button behavior."""
+        """Test the button functionality."""
         if label == "Next":
             return self._next_click
         if label == "Previous":
@@ -29,12 +29,12 @@ class _FakeColumn:
         return False
 
     def caption(self, value: str) -> None:
-        """Test caption behavior."""
+        """Test the caption functionality."""
         self.captions.append(value)
 
 
 def test_top_n_with_other_adds_remainder_bucket() -> None:
-    """Test test_top_n_with_other_adds_remainder_bucket behavior."""
+    """Test the test top n with other adds remainder bucket functionality."""
     df = pd.DataFrame(
         {
             "label": ["A", "B", "C", "D"],
@@ -49,7 +49,7 @@ def test_top_n_with_other_adds_remainder_bucket() -> None:
 
 
 def test_top_n_with_other_empty_dataframe_returns_empty() -> None:
-    """Test test_top_n_with_other_empty_dataframe_returns_empty behavior."""
+    """Test the test top n with other empty dataframe returns empty functionality."""
     df = pd.DataFrame({"label": [], "count": []})
 
     result = top_n_with_other(df, label_column="label", value_column="count")
@@ -58,7 +58,7 @@ def test_top_n_with_other_empty_dataframe_returns_empty() -> None:
 
 
 def test_top_n_with_other_all_rows_fit_in_top_n_returns_no_other() -> None:
-    """Test test_top_n_with_other_all_rows_fit_in_top_n_returns_no_other behavior."""
+    """Test the test top n with other all rows fit in top n returns no other functionality."""
     df = pd.DataFrame({"label": ["A", "B"], "count": [5, 3]})
 
     result = top_n_with_other(df, label_column="label", value_column="count", top_n=10)
@@ -68,7 +68,7 @@ def test_top_n_with_other_all_rows_fit_in_top_n_returns_no_other() -> None:
 
 
 def test_top_n_with_other_zero_remainder_omits_other_row() -> None:
-    """Test test_top_n_with_other_zero_remainder_omits_other_row behavior."""
+    """Test the test top n with other zero remainder omits other row functionality."""
     df = pd.DataFrame({"label": ["A", "B", "C"], "count": [5, 3, 0]})
 
     result = top_n_with_other(df, label_column="label", value_column="count", top_n=2)
@@ -78,7 +78,7 @@ def test_top_n_with_other_zero_remainder_omits_other_row() -> None:
 
 
 def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_paginated_slice_limits_rows_to_active_page behavior."""
+    """Test the test paginated slice limits rows to active page functionality."""
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
@@ -98,7 +98,7 @@ def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPa
 
 
 def test_paginated_slice_prev_button_decrements_page(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_paginated_slice_prev_button_decrements_page behavior."""
+    """Test the test paginated slice prev button decrements page functionality."""
     session_state: dict[str, Any] = {"grid_page": 3}
     prev_col = _FakeColumn(prev_click=True)
     info_col = _FakeColumn()
@@ -117,7 +117,7 @@ def test_paginated_slice_prev_button_decrements_page(monkeypatch: pytest.MonkeyP
 
 
 def test_paginated_slice_clamps_page_above_total_pages(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_paginated_slice_clamps_page_above_total_pages behavior."""
+    """Test the test paginated slice clamps page above total pages functionality."""
     session_state: dict[str, Any] = {"grid_page": 999}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
@@ -137,7 +137,7 @@ def test_paginated_slice_clamps_page_above_total_pages(monkeypatch: pytest.Monke
 def test_paginated_slice_custom_page_size_not_in_options(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test test_paginated_slice_custom_page_size_not_in_options behavior."""
+    """Test the test paginated slice custom page size not in options functionality."""
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()

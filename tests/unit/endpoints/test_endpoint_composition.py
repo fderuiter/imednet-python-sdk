@@ -1,4 +1,4 @@
-"""Tests for test_endpoint_composition."""
+"""Test Endpoint Composition module."""
 
 import imednet.endpoints.records as records_module
 from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
@@ -49,7 +49,7 @@ ALL_ASYNC_ENDPOINT_CLASSES = [
 
 
 def test_records_endpoint_keeps_public_read_api(dummy_client, context, paginator_factory):
-    """Test test_records_endpoint_keeps_public_read_api behavior."""
+    """Test the test records endpoint keeps public read api functionality."""
     endpoint = RecordsEndpoint(dummy_client, context)
     capture = paginator_factory(records_module, [{"recordId": 1}])
 
@@ -64,7 +64,7 @@ def test_records_endpoint_keeps_public_read_api(dummy_client, context, paginator
 
 
 def test_jobs_endpoint_keeps_public_read_api(dummy_client, context, response_factory):
-    """Test test_jobs_endpoint_keeps_public_read_api behavior."""
+    """Test the test jobs endpoint keeps public read api functionality."""
     endpoint = JobsEndpoint(dummy_client, context)
     dummy_client.get.return_value = response_factory({"jobId": "1"})
 

@@ -22,14 +22,14 @@ from imednet.models.users import User
 
 
 def test_sort_field_defaults():
-    """Test test_sort_field_defaults behavior."""
+    """Test the test sort field defaults functionality."""
     model = SortField.model_validate({"property": None, "direction": None})
     assert model.property == ""
     assert model.direction == ""
 
 
 def test_pagination_aliases_and_defaults():
-    """Test test_pagination_aliases_and_defaults behavior."""
+    """Test the test pagination aliases and defaults functionality."""
     data = {
         "currentPage": "2",
         "size": "5",
@@ -46,7 +46,7 @@ def test_pagination_aliases_and_defaults():
 
 
 def test_error_and_metadata_parsing():
-    """Test test_error_and_metadata_parsing behavior."""
+    """Test the test error and metadata parsing functionality."""
     err = Error.model_validate({"details": {"foo": "bar"}})
     assert err.code == ""
     assert err.message == ""
@@ -64,7 +64,7 @@ def test_error_and_metadata_parsing():
 
 
 def test_api_response_generic():
-    """Test test_api_response_generic behavior."""
+    """Test the test api response generic functionality."""
     resp = ApiResponse[int].model_validate(
         {
             "metadata": {"timestamp": "2023-01-01T00:00:00Z"},

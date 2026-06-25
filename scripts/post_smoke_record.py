@@ -166,7 +166,7 @@ def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, ti
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Perform main operation."""
+    """Handle the main process."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--timeout",

@@ -1,4 +1,4 @@
-"""Tests for test_models_validators."""
+"""Test Models Validators module."""
 
 import datetime
 
@@ -51,12 +51,12 @@ from imednet.utils import validators
     ],
 )
 def test_parse_bool_comprehensive(input_val, expected):
-    """Test test_parse_bool_comprehensive behavior."""
+    """Test the test parse bool comprehensive functionality."""
     assert validators.parse_bool(input_val) is expected
 
 
 def test_parse_int_or_default_and_str_default():
-    """Test test_parse_int_or_default_and_str_default behavior."""
+    """Test the test parse int or default and str default functionality."""
     assert validators.parse_int_or_default("5") == 5
     assert validators.parse_int_or_default(None, default=2) == 2
     assert validators.parse_int_or_default("bad") == 0
@@ -76,7 +76,7 @@ def test_parse_int_or_default_and_str_default():
 
 
 def test_parse_list_and_dict_helpers():
-    """Test test_parse_list_and_dict_helpers behavior."""
+    """Test the test parse list and dict helpers functionality."""
     assert validators.parse_list_or_default(None) == []
     assert validators.parse_list_or_default("a") == ["a"]
     assert validators.parse_list_or_default([1, 2]) == [1, 2]
@@ -86,7 +86,7 @@ def test_parse_list_and_dict_helpers():
 
 
 def test_parse_datetime_wrapper():
-    """Test test_parse_datetime_wrapper behavior."""
+    """Test the test parse datetime wrapper functionality."""
     dt = datetime.datetime(2024, 1, 1)
     assert validators.parse_datetime(dt) == dt
     iso = "2024-01-01T00:00:00Z"
@@ -110,7 +110,7 @@ def test_parse_datetime_parses_strings() -> None:
 
 
 def test_parse_datetime_numeric():
-    """Test test_parse_datetime_numeric behavior."""
+    """Test the test parse datetime numeric functionality."""
     timestamp = 1704067200  # 2024-01-01 00:00:00 UTC
     dt = validators.parse_datetime(timestamp)
     assert dt == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
@@ -120,7 +120,7 @@ def test_parse_datetime_numeric():
 
 
 def test_parse_bool_string_float():
-    """Test test_parse_bool_string_float behavior."""
+    """Test the test parse bool string float functionality."""
     assert validators.parse_bool("1.0") is True
     assert validators.parse_bool("0.0") is False
     assert validators.parse_bool("-1") is True
@@ -134,7 +134,7 @@ def test_parse_bool_string_float():
 
 
 def test_parse_dict_or_default_structural_shift(caplog):
-    """Test test_parse_dict_or_default_structural_shift behavior."""
+    """Test the test parse dict or default structural shift functionality."""
     import logging
 
     with caplog.at_level(logging.WARNING):
@@ -150,7 +150,7 @@ def test_parse_dict_or_default_structural_shift(caplog):
 
 
 def test_parse_list_or_default_structural_shift(caplog):
-    """Test test_parse_list_or_default_structural_shift behavior."""
+    """Test the test parse list or default structural shift functionality."""
     import logging
 
     with caplog.at_level(logging.WARNING):
@@ -163,6 +163,6 @@ def test_parse_list_or_default_structural_shift(caplog):
 
 
 def test_parse_bool_invalid_float():
-    """Test test_parse_bool_invalid_float behavior."""
+    """Test the test parse bool invalid float functionality."""
     # To cover the 'except (ValueError, TypeError)' block in parse_bool float fallback
     assert validators.parse_bool("1invalid") is False

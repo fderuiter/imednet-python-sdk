@@ -177,7 +177,7 @@ class Neo4jExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def _connect(self) -> None:
-        """Perform  connect operation."""
+        """Handle the connect process."""
         neo4j_mod = _require_optional_dep("neo4j", "neo4j")
         redacted = _redact_uri(self._uri)
         logger.debug("Connecting to Neo4j at %s", redacted)
@@ -203,7 +203,7 @@ class Neo4jExportSink(ExportSink):
         from imednet.core.operations.executor import UniversalExecutor
 
         def execute_export() -> int:
-            """Perform execute export operation."""
+            """Handle the execute export process."""
             with self._driver.session(database=cfg.database) as session:
                 session.run(cypher, rows=rows)
             logger.debug("Wrote batch %s (%d records)", batch_id, len(rows))

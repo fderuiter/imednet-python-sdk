@@ -1,4 +1,4 @@
-"""Tests for test_parsing_mixin."""
+"""Test Parsing Mixin module."""
 
 from unittest.mock import MagicMock
 
@@ -20,12 +20,12 @@ class EndpointWithParsing(GenericListGetEndpoint[MockModel]):
     MODEL = MockModel
 
     def _auto_filter(self, filters):
-        """Test _auto_filter behavior."""
+        """Test the auto filter functionality."""
         return filters
 
 
 def test_parsing_mixin_parse_item():
-    """Test test_parsing_mixin_parse_item behavior."""
+    """Test the test parsing mixin parse item functionality."""
     endpoint = EndpointWithParsing(client=MagicMock(), ctx=Context())
     result = endpoint._parse_item({"id": 1})
     assert isinstance(result, MockModel)

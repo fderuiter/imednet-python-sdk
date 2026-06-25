@@ -1,4 +1,4 @@
-"""Tests for test_requester."""
+"""Test Requester module."""
 
 import httpx
 import pytest
@@ -11,12 +11,12 @@ from imednet.errors import NotFoundError, RequestError, ServerError
 
 @respx.mock
 def test_sync_executor_retries_success():
-    """Test test_sync_executor_retries_success behavior."""
+    """Test the test sync executor retries success functionality."""
     client = httpx.Client(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
-        """Test handler behavior."""
+        """Test the handler functionality."""
         calls["count"] += 1
         if calls["count"] == 1:
             raise httpx.RequestError("boom", request=request)
@@ -49,12 +49,12 @@ async def test_async_executor_error_mapping():
 
 @respx.mock
 def test_sync_executor_retries_exhausted():
-    """Test test_sync_executor_retries_exhausted behavior."""
+    """Test the test sync executor retries exhausted functionality."""
     client = httpx.Client(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
-        """Test handler behavior."""
+        """Test the handler functionality."""
         calls["count"] += 1
         raise httpx.RequestError("boom", request=request)
 
@@ -71,12 +71,12 @@ def test_sync_executor_retries_exhausted():
 
 @respx.mock
 def test_sync_executor_retries_exhausted_with_error_response():
-    """Test test_sync_executor_retries_exhausted_with_error_response behavior."""
+    """Test the test sync executor retries exhausted with error response functionality."""
     client = httpx.Client(base_url="https://api.test")
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
-        """Test handler behavior."""
+        """Test the handler functionality."""
         calls["count"] += 1
         return httpx.Response(500, json={"error": "server error"})
 
@@ -99,7 +99,7 @@ async def test_async_executor_retries_exhausted():
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
-        """Test handler behavior."""
+        """Test the handler functionality."""
         calls["count"] += 1
         raise httpx.RequestError("boom", request=request)
 
@@ -118,11 +118,11 @@ async def test_async_executor_retries_exhausted():
 
 @respx.mock
 def test_sync_executor_null_response(monkeypatch):
-    """Test test_sync_executor_null_response behavior."""
+    """Test the test sync executor null response functionality."""
     client = httpx.Client(base_url="https://api.test")
 
     def mock_retryer(*args, **kwargs):
-        """Test mock_retryer behavior."""
+        """Test the mock retryer functionality."""
         return None
 
     monkeypatch.setattr("tenacity.Retrying.__call__", mock_retryer)
@@ -164,7 +164,7 @@ async def test_async_executor_retries_exhausted_with_error_response():
     calls = {"count": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
-        """Test handler behavior."""
+        """Test the handler functionality."""
         calls["count"] += 1
         return httpx.Response(500, json={"error": "server error"})
 
@@ -185,15 +185,15 @@ class FakeAttempt:
     """Test suite for FakeAttempt."""
 
     def __init__(self, failed):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.failed = failed
 
     def exception(self):
-        """Test exception behavior."""
+        """Test the exception functionality."""
         return RuntimeError("Fake error")
 
     def result(self):
-        """Test result behavior."""
+        """Test the result functionality."""
         return httpx.Response(200, json={"ok": True})
 
 
@@ -201,17 +201,17 @@ class FakeRetryError(RetryError):
     """Test suite for FakeRetryError."""
 
     def __init__(self, failed):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.last_attempt = FakeAttempt(failed)
         super().__init__(self.last_attempt)
 
 
 def test_sync_executor_unreachable_branch(monkeypatch):
-    """Test test_sync_executor_unreachable_branch behavior."""
+    """Test the test sync executor unreachable branch functionality."""
     client = httpx.Client(base_url="https://api.test")
 
     def mock_retryer(*args, **kwargs):
-        """Test mock_retryer behavior."""
+        """Test the mock retryer functionality."""
         raise FakeRetryError(False)
 
     monkeypatch.setattr("tenacity.Retrying.__call__", mock_retryer)

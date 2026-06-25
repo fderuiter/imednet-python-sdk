@@ -1,6 +1,6 @@
 # ruff: noqa: E402
 
-"""Tests for conftest."""
+"""Conftest module."""
 
 import sys
 from pathlib import Path
@@ -39,7 +39,7 @@ def block_external_requests(request: pytest.FixtureRequest):
 
 
 def _is_live_test(node: object) -> bool:
-    """Test _is_live_test behavior."""
+    """Test the is live test functionality."""
     if not hasattr(node, "get_closest_marker"):
         return False
 
@@ -55,7 +55,7 @@ def _is_live_test(node: object) -> bool:
 
 @pytest.fixture(autouse=True)
 def reset_study_context_between_tests():
-    """Test reset_study_context_between_tests behavior."""
+    """Test the reset study context between tests functionality."""
     clear_study_context()
     yield
     clear_study_context()
@@ -63,7 +63,7 @@ def reset_study_context_between_tests():
 
 @pytest.fixture(autouse=True)
 def reset_circuit_breaker_between_tests():
-    """Test reset_circuit_breaker_between_tests behavior."""
+    """Test the reset circuit breaker between tests functionality."""
     from imednet.core.operations.circuit_breaker import get_global_circuit_breaker
 
     get_global_circuit_breaker().reset()
@@ -75,32 +75,32 @@ class DummyResponse:
     """Test suite for DummyResponse."""
 
     def __init__(self, data):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self._data = data
 
     def json(self):
-        """Test json behavior."""
+        """Test the json functionality."""
         return self._data
 
 
 @pytest.fixture
 def context():
-    """Test context behavior."""
+    """Test the context functionality."""
     return Context()
 
 
 @pytest.fixture
 def dummy_client():
-    """Test dummy_client behavior."""
+    """Test the dummy client functionality."""
     return MagicMock()
 
 
 @pytest.fixture
 def response_factory():
-    """Test response_factory behavior."""
+    """Test the response factory functionality."""
 
     def factory(data):
-        """Test factory behavior."""
+        """Test the factory functionality."""
         return DummyResponse(data)
 
     return factory
@@ -108,19 +108,19 @@ def response_factory():
 
 @pytest.fixture
 def paginator_factory(monkeypatch):
-    """Test paginator_factory behavior."""
+    """Test the paginator factory functionality."""
     from imednet.core.endpoint.operations.list import ListOperation
     from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
-        """Test factory behavior."""
+        """Test the factory functionality."""
         captured = {"count": 0}
 
         class DummyPaginator:
             """Test suite for DummyPaginator."""
 
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
-                """Test __init__ behavior."""
+                """Initialize a new instance."""
                 captured["client"] = client
                 captured["path"] = path
                 captured["params"] = params or {}
@@ -129,7 +129,7 @@ def paginator_factory(monkeypatch):
                 self._items = items
 
             def __iter__(self):
-                """Test __iter__ behavior."""
+                """Test the iter functionality."""
                 yield from self._items
 
         from imednet.core.endpoint.base import SyncListGetEndpoint
@@ -139,7 +139,7 @@ def paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_sync(self, client, paginator_cls):
-            """Test fake_execute_sync behavior."""
+            """Test the fake execute sync functionality."""
             paginator = paginator_cls(
                 client, self.path, params=self.params, page_size=self.page_size
             )
@@ -154,19 +154,19 @@ def paginator_factory(monkeypatch):
 
 @pytest.fixture
 def async_paginator_factory(monkeypatch):
-    """Test async_paginator_factory behavior."""
+    """Test the async paginator factory functionality."""
     from imednet.core.endpoint.operations.list import ListOperation
     from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
-        """Test factory behavior."""
+        """Test the factory functionality."""
         captured = {"count": 0}
 
         class DummyPaginator:
             """Test suite for DummyPaginator."""
 
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
-                """Test __init__ behavior."""
+                """Initialize a new instance."""
                 captured["client"] = client
                 captured["path"] = path
                 captured["params"] = params or {}
@@ -186,7 +186,7 @@ def async_paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_async(self, client, paginator_cls):
-            """Test fake_execute_async behavior."""
+            """Test the fake execute async functionality."""
             paginator = paginator_cls(
                 client, self.path, params=self.params, page_size=self.page_size
             )
@@ -202,14 +202,14 @@ def async_paginator_factory(monkeypatch):
 
 @pytest.fixture
 def patch_build_filter(monkeypatch):
-    """Test patch_build_filter behavior."""
+    """Test the patch build filter functionality."""
 
     def patch(module):
-        """Test patch behavior."""
+        """Test the patch functionality."""
         captured = {}
 
         def fake(filters):
-            """Test fake behavior."""
+            """Test the fake functionality."""
             captured["filters"] = filters
             return "FILTERED"
 
@@ -226,7 +226,7 @@ def patch_build_filter(monkeypatch):
 
 @pytest.fixture
 def http_client():
-    """Test http_client behavior."""
+    """Test the http client functionality."""
     return Client("key", "secret", base_url="https://api.test")
 
 
@@ -242,7 +242,7 @@ async def async_http_client():
 
 @pytest.fixture
 def respx_mock_client(http_client, respx_mock):
-    """Test respx_mock_client behavior."""
+    """Test the respx mock client functionality."""
     respx_mock.base_url = http_client.base_url
     return respx_mock
 
@@ -256,5 +256,5 @@ async def respx_mock_async_client(async_http_client, respx_mock):
 
 @pytest.fixture
 def sample_data():
-    """Test sample_data behavior."""
+    """Test the sample data functionality."""
     return {"data": [1]}

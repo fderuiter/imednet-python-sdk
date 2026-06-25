@@ -1,4 +1,4 @@
-"""Tests for test_executor."""
+"""Test Executor module."""
 
 import pytest
 
@@ -11,12 +11,12 @@ class RESTTask(OperationProtocol[str]):
     """Test suite for RESTTask."""
 
     def __init__(self, fail_times=0):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.fail_times = fail_times
         self.attempts = 0
 
     def execute(self) -> str:
-        """Test execute behavior."""
+        """Test the execute functionality."""
         self.attempts += 1
         if self.attempts <= self.fail_times:
             raise ValueError("HTTP Error")
@@ -27,12 +27,12 @@ class NonRESTTask(OperationProtocol[str]):
     """Test suite for NonRESTTask."""
 
     def __init__(self, fail_times=0):
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.fail_times = fail_times
         self.attempts = 0
 
     def execute(self) -> str:
-        """Test execute behavior."""
+        """Test the execute functionality."""
         self.attempts += 1
         if self.attempts <= self.fail_times:
             raise RuntimeError("DB Error")
@@ -40,7 +40,7 @@ class NonRESTTask(OperationProtocol[str]):
 
 
 def test_universal_executor_supports_rest_and_non_rest():
-    """Test test_universal_executor_supports_rest_and_non_rest behavior."""
+    """Test the test universal executor supports rest and non rest functionality."""
     get_global_circuit_breaker().reset()
     executor = UniversalExecutor(retries=2, backoff_factor=0.01)
 
@@ -56,7 +56,7 @@ def test_universal_executor_supports_rest_and_non_rest():
 
 
 def test_universal_executor_fails_after_retries():
-    """Test test_universal_executor_fails_after_retries behavior."""
+    """Test the test universal executor fails after retries functionality."""
     get_global_circuit_breaker().reset()
     executor = UniversalExecutor(retries=1, backoff_factor=0.01)
 
@@ -82,7 +82,7 @@ async def test_universal_executor_async():
 
     # Use a regular function returning a coroutine, to match Callable[[], Awaitable[T]]
     def task_factory():
-        """Test task_factory behavior."""
+        """Test the task factory functionality."""
         return failing_task()
 
     with pytest.raises(ValueError, match="Async Error"):

@@ -10,7 +10,7 @@ PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
 
 
 def _color_encoding(field: str) -> alt.Color:
-    """Perform  color encoding operation."""
+    """Handle the color encoding process."""
     return alt.Color(f"{field}:N", scale=alt.Scale(range=PALETTE))
 
 

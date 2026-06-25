@@ -1,4 +1,4 @@
-"""Tests for test_sdk_async."""
+"""Test Sdk Async module."""
 
 import pytest
 
@@ -7,7 +7,7 @@ from imednet.core.async_client import AsyncClient
 
 
 def _create_async_sdk() -> sdk_mod.AsyncImednetSDK:
-    """Test _create_async_sdk behavior."""
+    """Test the create async sdk functionality."""
     return sdk_mod.AsyncImednetSDK(
         api_key="key",
         security_key="secret",
@@ -16,18 +16,18 @@ def _create_async_sdk() -> sdk_mod.AsyncImednetSDK:
 
 
 def test_async_sdk_initializes_async_client() -> None:
-    """Test test_async_sdk_initializes_async_client behavior."""
+    """Test the test async sdk initializes async client functionality."""
     sdk = _create_async_sdk()
     assert isinstance(sdk._async_client, AsyncClient)
 
 
 def test_async_sdk_is_not_subclass_of_sync_sdk() -> None:
-    """Test test_async_sdk_is_not_subclass_of_sync_sdk behavior."""
+    """Test the test async sdk is not subclass of sync sdk functionality."""
     assert not issubclass(sdk_mod.AsyncImednetSDK, sdk_mod.ImednetSDK)
 
 
 def test_sync_and_async_endpoints_expose_strict_method_surfaces() -> None:
-    """Test test_sync_and_async_endpoints_expose_strict_method_surfaces behavior."""
+    """Test the test sync and async endpoints expose strict method surfaces functionality."""
     sync_sdk = sdk_mod.ImednetSDK(
         api_key="key",
         security_key="secret",

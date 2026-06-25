@@ -7,69 +7,69 @@ if TYPE_CHECKING:
 
 
 class SinksNamespace:
-    """SinksNamespace implementation."""
+    """Implementation of the SinksNamespace class."""
 
     def __init__(self, sdk: Union["ImednetFacade", "AsyncImednetFacade"]):
-        """Perform   init   operation."""
+        """Initialize a new instance."""
         self._sdk = sdk
 
     @property
     def export_to_mongodb(self) -> Any:
-        """Perform export to mongodb operation."""
+        """Handle the export to mongodb process."""
         from .document import export_to_mongodb
 
         return export_to_mongodb
 
     @property
     def MongoDbExportSink(self) -> Any:
-        """Perform MongoDbExportSink operation."""
+        """Handle the MongoDbExportSink process."""
         from .document import MongoDbExportSink
 
         return MongoDbExportSink
 
     @property
     def export_to_neo4j(self) -> Any:
-        """Perform export to neo4j operation."""
+        """Handle the export to neo4j process."""
         from .graph import export_to_neo4j
 
         return export_to_neo4j
 
     @property
     def Neo4jSinkConfig(self) -> Any:
-        """Perform Neo4jSinkConfig operation."""
+        """Handle the Neo4jSinkConfig process."""
         from .graph import Neo4jSinkConfig
 
         return Neo4jSinkConfig
 
     @property
     def Neo4jExportSink(self) -> Any:
-        """Perform Neo4jExportSink operation."""
+        """Handle the Neo4jExportSink process."""
         from .graph import Neo4jExportSink
 
         return Neo4jExportSink
 
     @property
     def export_to_snowflake(self) -> Any:
-        """Perform export to snowflake operation."""
+        """Handle the export to snowflake process."""
         from .warehouse import export_to_snowflake
 
         return export_to_snowflake
 
     @property
     def SnowflakeSinkConfig(self) -> Any:
-        """Perform SnowflakeSinkConfig operation."""
+        """Handle the SnowflakeSinkConfig process."""
         from .warehouse import SnowflakeSinkConfig
 
         return SnowflakeSinkConfig
 
     @property
     def SnowflakeExportSink(self) -> Any:
-        """Perform SnowflakeExportSink operation."""
+        """Handle the SnowflakeExportSink process."""
         from .warehouse import SnowflakeExportSink
 
         return SnowflakeExportSink
 
 
 def create_sinks(sdk: Union["ImednetFacade", "AsyncImednetFacade"]) -> SinksNamespace:
-    """Perform create sinks operation."""
+    """Handle the create sinks process."""
     return SinksNamespace(sdk)

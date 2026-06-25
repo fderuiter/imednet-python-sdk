@@ -180,7 +180,7 @@ def test_sdk_convenience_mixin_uses_filter_value() -> None:
         """Test suite for DummySDK."""
 
         def __init__(self):
-            """Test __init__ behavior."""
+            """Initialize a new instance."""
             from unittest.mock import MagicMock
 
             self.records = MagicMock()

@@ -1,4 +1,4 @@
-"""Tests for test_studies_endpoint_async."""
+"""Test Studies Endpoint Async module."""
 
 import pytest
 

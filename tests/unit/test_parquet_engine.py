@@ -1,4 +1,4 @@
-"""Tests for test_parquet_engine."""
+"""Test Parquet Engine module."""
 
 from pathlib import Path
 from typing import Any
@@ -12,17 +12,17 @@ class _FakeTable:
     """Test suite for _FakeTable."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.num_rows = 2
         self.columns: list[tuple[str, list[str]]] = []
 
     def append_column(self, name: str, values: list[str]) -> "_FakeTable":
-        """Test append_column behavior."""
+        """Test the append column functionality."""
         self.columns.append((name, values))
         return self
 
     def value_for_column(self, name: str) -> Any:
-        """Test value_for_column behavior."""
+        """Test the value for column functionality."""
         for column_name, values in self.columns:
             if column_name == name:
                 return values[0]
@@ -33,11 +33,11 @@ class _FakeParquetFormat:
     """Test suite for _FakeParquetFormat."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.options: dict[str, Any] | None = None
 
     def make_write_options(self, **kwargs: Any) -> dict[str, Any]:
-        """Test make_write_options behavior."""
+        """Test the make write options functionality."""
         self.options = kwargs
         return kwargs
 
@@ -46,23 +46,23 @@ class _FakeDatasetModule:
     """Test suite for _FakeDatasetModule."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.partitioning_args: dict[str, Any] | None = None
         self.write_call: dict[str, Any] | None = None
         self.format = _FakeParquetFormat()
         self.should_fail = False
 
     def ParquetFileFormat(self) -> _FakeParquetFormat:  # noqa: N802
-        """Test ParquetFileFormat behavior."""
+        """Test the ParquetFileFormat functionality."""
         return self.format
 
     def partitioning(self, **kwargs: Any) -> dict[str, Any]:
-        """Test partitioning behavior."""
+        """Test the partitioning functionality."""
         self.partitioning_args = kwargs
         return kwargs
 
     def write_dataset(self, table: _FakeTable, **kwargs: Any) -> None:
-        """Test write_dataset behavior."""
+        """Test the write dataset functionality."""
         if self.should_fail:
             raise RuntimeError("boom")
         base_dir = Path(kwargs["base_dir"])
@@ -78,21 +78,21 @@ class _FakePyArrowModule:
     """Test suite for _FakePyArrowModule."""
 
     def string(self) -> str:
-        """Test string behavior."""
+        """Test the string functionality."""
         return "string"
 
     def schema(self, fields: list[tuple[str, str]]) -> list[tuple[str, str]]:
-        """Test schema behavior."""
+        """Test the schema functionality."""
         return fields
 
     def array(self, values: list[str], **kwargs: Any) -> list[str]:
-        """Test array behavior."""
+        """Test the array functionality."""
         assert kwargs["type"] == "string"
         return values
 
 
 def _raise_replace_failure(*_args: Any) -> None:
-    """Test _raise_replace_failure behavior."""
+    """Test the raise replace failure functionality."""
     raise OSError("rename failed")
 
 
@@ -100,7 +100,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_defaults(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test test_pyarrow_dataset_partitioned_storage_engine_defaults behavior."""
+    """Test the test pyarrow dataset partitioned storage engine defaults functionality."""
     fake_pa = _FakePyArrowModule()
     fake_ds = _FakeDatasetModule()
     monkeypatch.setattr(
@@ -137,7 +137,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_cleans_staging_on_failure(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test test_pyarrow_dataset_partitioned_storage_engine_cleans_staging_on_failure behavior."""
+    """Test the test pyarrow dataset partitioned storage engine cleans staging on failure functionality."""
     fake_pa = _FakePyArrowModule()
     fake_ds = _FakeDatasetModule()
     fake_ds.should_fail = True
@@ -162,7 +162,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_cleans_visible_dirs_on_commi
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test test_pyarrow_dataset_partitioned_storage_engine_cleans_visible_dirs_on_commit_failure behavior."""
+    """Test the test pyarrow dataset partitioned storage engine cleans visible dirs on commit failure functionality."""
     fake_pa = _FakePyArrowModule()
     fake_ds = _FakeDatasetModule()
     monkeypatch.setattr(
@@ -189,7 +189,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_cleans_visible_dirs_on_commi
 def test_pyarrow_dataset_partitioned_storage_engine_schema_drift_duckdb(
     tmp_path: Path,
 ) -> None:
-    """Test test_pyarrow_dataset_partitioned_storage_engine_schema_drift_duckdb behavior."""
+    """Test the test pyarrow dataset partitioned storage engine schema drift duckdb functionality."""
     duckdb = pytest.importorskip("duckdb")
     pyarrow = pytest.importorskip("pyarrow")
     parquet_module = pytest.importorskip("pyarrow.parquet")

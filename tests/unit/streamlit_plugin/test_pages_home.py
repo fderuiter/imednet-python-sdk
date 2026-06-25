@@ -1,4 +1,4 @@
-"""Tests for test_pages_home."""
+"""Test Pages Home module."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ class _FakePageStreamlit:
     """Test suite for _FakePageStreamlit."""
 
     def __init__(self, *, connected: bool) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.session_state: dict[str, Any] = {"_imednet_connected": connected}
         self.titles: list[str] = []
         self.infos: list[str] = []
@@ -26,24 +26,24 @@ class _FakePageStreamlit:
         self.markdowns: list[str] = []
 
     def title(self, value: str) -> None:
-        """Test title behavior."""
+        """Test the title functionality."""
         self.titles.append(value)
 
     def info(self, value: str) -> None:
-        """Test info behavior."""
+        """Test the info functionality."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
-        """Test success behavior."""
+        """Test the success functionality."""
         self.successes.append(value)
 
     def markdown(self, value: str) -> None:
-        """Test markdown behavior."""
+        """Test the markdown functionality."""
         self.markdowns.append(value)
 
 
 def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
-    """Test _run_page behavior."""
+    """Test the run page functionality."""
     page_path = PACKAGE_ROOT / "pages" / page_name
     fake_st = _FakePageStreamlit(connected=connected)
     fake_streamlit_module = ModuleType("streamlit")
@@ -84,13 +84,13 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
 
 
 def test_home_page_renders_disconnected() -> None:
-    """Test test_home_page_renders_disconnected behavior."""
+    """Test the test home page renders disconnected functionality."""
     home_disconnected = _run_page("home.py", connected=False)
     assert "🏥 iMednet EDC Dashboard" in home_disconnected.titles
     assert any("authenticate" in info.lower() for info in home_disconnected.infos)
 
 
 def test_home_page_renders_connected() -> None:
-    """Test test_home_page_renders_connected behavior."""
+    """Test the test home page renders connected functionality."""
     home_connected = _run_page("home.py", connected=True)
     assert any("connected" in success.lower() for success in home_connected.successes)

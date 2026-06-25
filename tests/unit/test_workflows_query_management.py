@@ -1,4 +1,4 @@
-"""Tests for test_workflows_query_management."""
+"""Test Workflows Query Management module."""
 
 from unittest.mock import MagicMock
 
@@ -8,13 +8,13 @@ from imednet_workflows.query_management import QueryManagementWorkflow
 
 
 def make_query(sequence_closed: list[tuple[int, bool]]) -> Query:
-    """Test make_query behavior."""
+    """Test the make query functionality."""
     comments = [QueryComment(sequence=seq, closed=closed) for seq, closed in sequence_closed]
     return Query(query_comments=comments)
 
 
 def test_get_open_queries_filters_latest_comment() -> None:
-    """Test test_get_open_queries_filters_latest_comment behavior."""
+    """Test the test get open queries filters latest comment functionality."""
     sdk = MagicMock()
     query_closed = make_query([(1, False), (2, True)])
     query_open = make_query([(1, False)])
@@ -30,7 +30,7 @@ def test_get_open_queries_filters_latest_comment() -> None:
 
 
 def test_get_queries_for_subject_builds_combined_filter() -> None:
-    """Test test_get_queries_for_subject_builds_combined_filter behavior."""
+    """Test the test get queries for subject builds combined filter functionality."""
     sdk = MagicMock()
     wf = QueryManagementWorkflow(sdk)
     wf.get_queries_for_subject("STUDY", "SUBJ1", additional_filter={"type": "x"})
@@ -40,7 +40,7 @@ def test_get_queries_for_subject_builds_combined_filter() -> None:
 
 
 def test_get_query_state_counts_aggregates_states() -> None:
-    """Test test_get_query_state_counts_aggregates_states behavior."""
+    """Test the test get query state counts aggregates states functionality."""
     sdk = MagicMock()
     open_query = make_query([(1, False)])
     closed_query = make_query([(1, True)])
@@ -56,7 +56,7 @@ def test_get_query_state_counts_aggregates_states() -> None:
 
 
 def test_get_queries_by_site_filters_using_subjects() -> None:
-    """Test test_get_queries_by_site_filters_using_subjects behavior."""
+    """Test the test get queries by site filters using subjects functionality."""
     sdk = MagicMock()
     sdk.get_subjects.return_value = [Subject(subject_key="S1"), Subject(subject_key="S2")]
     wf = QueryManagementWorkflow(sdk)
@@ -69,7 +69,7 @@ def test_get_queries_by_site_filters_using_subjects() -> None:
 
 
 def test_get_queries_by_site_returns_empty_if_no_subjects() -> None:
-    """Test test_get_queries_by_site_returns_empty_if_no_subjects behavior."""
+    """Test the test get queries by site returns empty if no subjects functionality."""
     sdk = MagicMock()
     sdk.get_subjects.return_value = []
     wf = QueryManagementWorkflow(sdk)
@@ -82,7 +82,7 @@ def test_get_queries_by_site_returns_empty_if_no_subjects() -> None:
 
 
 def test_get_queries_by_site_with_space_in_name() -> None:
-    """Test test_get_queries_by_site_with_space_in_name behavior."""
+    """Test the test get queries by site with space in name functionality."""
     sdk = MagicMock()
     sdk.get_subjects.return_value = [Subject(subject_key="S1")]
     wf = QueryManagementWorkflow(sdk)

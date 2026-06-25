@@ -5,7 +5,7 @@ import sys
 
 
 def main():
-    """Perform main operation."""
+    """Handle the main process."""
     all_packages = [
         'core',
         'plugins-workflows',

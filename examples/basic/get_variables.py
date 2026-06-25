@@ -54,7 +54,7 @@ Raises:
 
 
 def main():
-    """Perform main operation."""
+    """Handle the main process."""
     configure_json_logging()
 
     try:

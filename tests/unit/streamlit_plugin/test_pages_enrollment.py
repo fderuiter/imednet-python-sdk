@@ -1,4 +1,4 @@
-"""Tests for test_pages_enrollment."""
+"""Test Pages Enrollment module."""
 
 from __future__ import annotations
 
@@ -18,11 +18,11 @@ class _FakeContextManager:
     """Test suite for _FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """Test __enter__ behavior."""
+        """Test the enter functionality."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """Test __exit__ behavior."""
+        """Test the exit functionality."""
         pass
 
 
@@ -30,13 +30,13 @@ class _FakeCacheDataDecorator:
     """Test suite for _FakeCacheDataDecorator."""
 
     def __call__(self, func: Any = None, **kwargs: Any) -> Any:
-        """Test __call__ behavior."""
+        """Test the call functionality."""
         if func is not None:
             return func
         return lambda f: f
 
     def clear(self) -> None:
-        """Test clear behavior."""
+        """Test the clear functionality."""
         pass
 
 
@@ -44,7 +44,7 @@ class _FakeEnrollmentStreamlit:
     """Test suite for _FakeEnrollmentStreamlit."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.titles: list[str] = []
         self.infos: list[str] = []
@@ -54,100 +54,100 @@ class _FakeEnrollmentStreamlit:
         self.sidebar = _FakeContextManager()
 
     def title(self, value: str) -> None:
-        """Test title behavior."""
+        """Test the title functionality."""
         self.titles.append(value)
 
     def info(self, value: str) -> None:
-        """Test info behavior."""
+        """Test the info functionality."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
-        """Test success behavior."""
+        """Test the success functionality."""
         self.successes.append(value)
 
     def markdown(self, value: str) -> None:
-        """Test markdown behavior."""
+        """Test the markdown functionality."""
         self.markdowns.append(value)
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """Test button behavior."""
+        """Test the button functionality."""
         return False
 
     def subheader(self, value: str, **kwargs: Any) -> None:
-        """Test subheader behavior."""
+        """Test the subheader functionality."""
         pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """Test altair_chart behavior."""
+        """Test the altair chart functionality."""
         pass
 
     def columns(self, spec: Any) -> list[Any]:
-        """Test columns behavior."""
+        """Test the columns functionality."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager() for _ in range(count)]
 
     def multiselect(self, label: str, options: Any, **kwargs: Any) -> list[Any]:
-        """Test multiselect behavior."""
+        """Test the multiselect functionality."""
         return list(kwargs.get("default", []))
 
     def date_input(self, label: str, **kwargs: Any) -> list[Any]:
-        """Test date_input behavior."""
+        """Test the date input functionality."""
         val = kwargs.get("value", [])
         return list(val) if hasattr(val, "__iter__") else []
 
     def rerun(self) -> None:
-        """Test rerun behavior."""
+        """Test the rerun functionality."""
         pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """Test text_input behavior."""
+        """Test the text input functionality."""
         return ""
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """Test dataframe behavior."""
+        """Test the dataframe functionality."""
         pass
 
     def download_button(self, **kwargs: Any) -> None:
-        """Test download_button behavior."""
+        """Test the download button functionality."""
         pass
 
     def metric(self, **kwargs: Any) -> None:
-        """Test metric behavior."""
+        """Test the metric functionality."""
         pass
 
 
 def _make_fake_components_module() -> ModuleType:
-    """Test _make_fake_components_module behavior."""
+    """Test the make fake components module functionality."""
     import pandas as pd
 
     mod = ModuleType("imednet_streamlit.components")
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
-        """Test _noop_kpi_row behavior."""
+        """Test the noop kpi row functionality."""
         pass
 
     def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """Test _noop_bar_chart behavior."""
+        """Test the noop bar chart functionality."""
         return MagicMock()
 
     def _noop_line_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """Test _noop_line_chart behavior."""
+        """Test the noop line chart functionality."""
         return MagicMock()
 
     def _noop_pie_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """Test _noop_pie_chart behavior."""
+        """Test the noop pie chart functionality."""
         return MagicMock()
 
     def _noop_filterable_dataframe(df: pd.DataFrame, **kwargs: Any) -> None:
-        """Test _noop_filterable_dataframe behavior."""
+        """Test the noop filterable dataframe functionality."""
         pass
 
     def _noop_csv_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """Test _noop_csv_download_button behavior."""
+        """Test the noop csv download button functionality."""
         pass
 
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """Test _noop_excel_download_button behavior."""
+        """Test the noop excel download button functionality."""
         pass
 
     mod.kpi_row = _noop_kpi_row  # type: ignore[attr-defined]
@@ -161,7 +161,7 @@ def _make_fake_components_module() -> ModuleType:
 
 
 def test_enrollment_page_renders_with_mock_sdk() -> None:
-    """Test test_enrollment_page_renders_with_mock_sdk behavior."""
+    """Test the test enrollment page renders with mock sdk functionality."""
     page_path = PACKAGE_ROOT / "pages" / "enrollment.py"
     fake_st = _FakeEnrollmentStreamlit()
 
@@ -266,19 +266,19 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
 
 
 def test_enrollment_page_empty_and_filters_and_refresh() -> None:
-    """Test test_enrollment_page_empty_and_filters_and_refresh behavior."""
+    """Test the test enrollment page empty and filters and refresh functionality."""
     page_path = PACKAGE_ROOT / "pages" / "enrollment.py"
     fake_st = _FakeEnrollmentStreamlit()
 
     # Stub the button to return True for refresh, and multiselect to return filters
     def _button(label: str, **kwargs: Any) -> bool:
-        """Test _button behavior."""
+        """Test the button functionality."""
         if label == "🔄 Refresh Data":
             return True
         return False
 
     def _multiselect(label: str, options: Any, **kwargs: Any) -> list[Any]:
-        """Test _multiselect behavior."""
+        """Test the multiselect functionality."""
         if label == "Site":
             return ["Site A"]
         if label == "Subject Status":

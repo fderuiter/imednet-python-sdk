@@ -1,4 +1,4 @@
-"""Tests for test_drift_postman."""
+"""Test Drift Postman module."""
 
 import json
 import logging
@@ -56,7 +56,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     endpoints_to_test = set()
 
     def walk(items):
-        """Test walk behavior."""
+        """Test the walk functionality."""
         for item in items:
             if "item" in item:
                 walk(item["item"])

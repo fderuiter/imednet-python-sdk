@@ -30,7 +30,7 @@ _DEFAULT_STORE_PATH = "~/.imednet/config_versions.sqlite3"
 
 
 def _get_store() -> ConfigVersionStore:
-    """Perform  get store operation."""
+    """Handle the get store process."""
     path = st.session_state.get(_KEY_CONFIG_STORE_PATH, _DEFAULT_STORE_PATH)
     return ConfigVersionStore(db_path=str(path))
 
@@ -121,7 +121,7 @@ def _render_validation_checklist(
 
 
 def _render_check(label: str, passed: bool, detail: str) -> None:
-    """Perform  render check operation."""
+    """Handle the render check process."""
     icon = "✅" if passed else "❌"
     st.markdown(f"{icon} **{label}** — {detail}")
 
@@ -271,7 +271,7 @@ def _bump_patch(version: str) -> str:
 
 
 def render_page() -> None:
-    """Perform render page operation."""
+    """Handle the render page process."""
     st.title("🏛️ Configuration Publisher Wizard")
 
     if not st.session_state.get(_KEY_CONNECTED):

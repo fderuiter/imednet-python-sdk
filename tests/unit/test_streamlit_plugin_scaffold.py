@@ -1,4 +1,4 @@
-"""Tests for test_streamlit_plugin_scaffold."""
+"""Test Streamlit Plugin Scaffold module."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ _MISSING = object()
 
 
 def _component_palette() -> list[str]:
-    """Test _component_palette behavior."""
+    """Test the component palette functionality."""
     return runpy.run_path(str(PACKAGE_ROOT / "components" / "charts.py"))["PALETTE"]
 
 
@@ -28,12 +28,12 @@ class _FakeNavigation:
     """Test suite for _FakeNavigation."""
 
     def __init__(self, pages: list[dict[str, Any]]) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.pages = pages
         self.ran = False
 
     def run(self) -> None:
-        """Test run behavior."""
+        """Test the run functionality."""
         self.ran = True
 
 
@@ -41,7 +41,7 @@ class _FakeSidebar:
     """Test suite for _FakeSidebar."""
 
     def toggle(self, label: str, value: bool = False, on_change: Any = None, **kwargs: Any) -> bool:
-        """Test toggle behavior."""
+        """Test the toggle functionality."""
         return value
 
 
@@ -49,7 +49,7 @@ class _FakeStreamlit:
     """Test suite for _FakeStreamlit."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.page_config: dict[str, Any] | None = None
         self.navigation_calls: list[_FakeNavigation] = []
         self.session_state: dict[str, Any] = {}
@@ -57,7 +57,7 @@ class _FakeStreamlit:
         self.sidebar = _FakeSidebar()
 
     def set_page_config(self, **kwargs: Any) -> None:
-        """Test set_page_config behavior."""
+        """Test the set page config functionality."""
         self.page_config = kwargs
 
     def page(
@@ -77,41 +77,41 @@ class _FakeStreamlit:
         }
 
     def navigation(self, pages: list[dict[str, Any]]) -> _FakeNavigation:
-        """Test navigation behavior."""
+        """Test the navigation functionality."""
         nav = _FakeNavigation(pages)
         self.navigation_calls.append(nav)
         return nav
 
     def markdown(self, body: str, **kwargs: Any) -> None:
-        """Test markdown behavior."""
+        """Test the markdown functionality."""
         pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """Test altair_chart behavior."""
+        """Test the altair chart functionality."""
         pass
 
     def error(self, body: Any, *args: Any, **kwargs: Any) -> None:
-        """Test error behavior."""
+        """Test the error functionality."""
         pass
 
     def exception(self, exception: Any, *args: Any, **kwargs: Any) -> None:
-        """Test exception behavior."""
+        """Test the exception functionality."""
         pass
 
     def warning(self, body: Any, *args: Any, **kwargs: Any) -> None:
-        """Test warning behavior."""
+        """Test the warning functionality."""
         pass
 
     def info(self, body: Any, *args: Any, **kwargs: Any) -> None:
-        """Test info behavior."""
+        """Test the info functionality."""
         pass
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
-        """Test expander behavior."""
+        """Test the expander functionality."""
         return _FakeContextManager()
 
     def dataframe(self, data: Any, **kwargs: Any) -> None:
-        """Test dataframe behavior."""
+        """Test the dataframe functionality."""
         pass
 
 
@@ -119,7 +119,7 @@ class _FakePageStreamlit:
     """Test suite for _FakePageStreamlit."""
 
     def __init__(self, *, connected: bool) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.session_state: dict[str, Any] = {"_imednet_connected": connected}
         self.titles: list[str] = []
         self.infos: list[str] = []
@@ -127,19 +127,19 @@ class _FakePageStreamlit:
         self.markdowns: list[str] = []
 
     def title(self, value: str) -> None:
-        """Test title behavior."""
+        """Test the title functionality."""
         self.titles.append(value)
 
     def info(self, value: str) -> None:
-        """Test info behavior."""
+        """Test the info functionality."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
-        """Test success behavior."""
+        """Test the success functionality."""
         self.successes.append(value)
 
     def markdown(self, value: str) -> None:
-        """Test markdown behavior."""
+        """Test the markdown functionality."""
         self.markdowns.append(value)
 
 
@@ -147,11 +147,11 @@ class _FakeContextManager:
     """A no-op context manager (used for st.sidebar and column objects)."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """Test __enter__ behavior."""
+        """Test the enter functionality."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """Test __exit__ behavior."""
+        """Test the exit functionality."""
         pass
 
 
@@ -159,13 +159,13 @@ class _FakeCacheDataDecorator:
     """Fake st.cache_data — identity decorator, clear() is a no-op."""
 
     def __call__(self, func: Any = None, **kwargs: Any) -> Any:
-        """Test __call__ behavior."""
+        """Test the call functionality."""
         if func is not None:
             return func
         return lambda f: f
 
     def clear(self) -> None:
-        """Test clear behavior."""
+        """Test the clear functionality."""
         pass
 
 
@@ -173,7 +173,7 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
     """Extended fake Streamlit for dashboard pages with charts, filters, and exports."""
 
     def __init__(self, *, connected: bool) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         super().__init__(connected=connected)
         self.cache_data = _FakeCacheDataDecorator()
         self.sidebar = _FakeContextManager()
@@ -187,55 +187,55 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
 
     # stubs that return sensible defaults so the page runs end-to-end
     def button(self, label: str, **kwargs: Any) -> bool:
-        """Test button behavior."""
+        """Test the button functionality."""
         return False
 
     def warning(self, value: str, **kwargs: Any) -> None:
-        """Test warning behavior."""
+        """Test the warning functionality."""
         self.warnings.append(value)
 
     def subheader(self, value: str, **kwargs: Any) -> None:
-        """Test subheader behavior."""
+        """Test the subheader functionality."""
         self.subheaders.append(value)
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """Test altair_chart behavior."""
+        """Test the altair chart functionality."""
         self.altair_charts.append(chart)
 
     def columns(self, spec: Any) -> list[Any]:
-        """Test columns behavior."""
+        """Test the columns functionality."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager() for _ in range(count)]
 
     def multiselect(self, label: str, options: Any, **kwargs: Any) -> list[Any]:
-        """Test multiselect behavior."""
+        """Test the multiselect functionality."""
         if label in self.multiselect_values:
             return self.multiselect_values[label]
         return list(kwargs.get("default", []))
 
     def date_input(self, label: str, **kwargs: Any) -> list[Any]:
-        """Test date_input behavior."""
+        """Test the date input functionality."""
         val = kwargs.get("value", [])
         return list(val) if hasattr(val, "__iter__") else []
 
     def rerun(self) -> None:
-        """Test rerun behavior."""
+        """Test the rerun functionality."""
         pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """Test text_input behavior."""
+        """Test the text input functionality."""
         return ""
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """Test dataframe behavior."""
+        """Test the dataframe functionality."""
         self.dataframes.append(df)
 
     def download_button(self, **kwargs: Any) -> None:
-        """Test download_button behavior."""
+        """Test the download button functionality."""
         self.download_calls.append(kwargs)
 
     def metric(self, **kwargs: Any) -> None:
-        """Test metric behavior."""
+        """Test the metric functionality."""
         self.metric_calls.append(kwargs)
 
 
@@ -245,35 +245,35 @@ def _make_fake_components_module(fake_st: _FakeDashboardStreamlit) -> ModuleType
     mod.PALETTE = _component_palette()  # type: ignore[attr-defined]
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
-        """Test _noop_kpi_row behavior."""
+        """Test the noop kpi row functionality."""
         fake_st.metric_calls.extend(metrics)
 
     def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> SimpleNamespace:
-        """Test _noop_bar_chart behavior."""
+        """Test the noop bar chart functionality."""
         return SimpleNamespace(data=df.copy(), kwargs=kwargs)
 
     def _noop_line_chart(df: pd.DataFrame, **kwargs: Any) -> SimpleNamespace:
-        """Test _noop_line_chart behavior."""
+        """Test the noop line chart functionality."""
         return SimpleNamespace(data=df.copy(), kwargs=kwargs)
 
     def _noop_filterable_dataframe(df: pd.DataFrame, **kwargs: Any) -> None:
-        """Test _noop_filterable_dataframe behavior."""
+        """Test the noop filterable dataframe functionality."""
         fake_st.dataframes.append(df.copy())
 
     def _noop_csv_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """Test _noop_csv_download_button behavior."""
+        """Test the noop csv download button functionality."""
         fake_st.download_calls.append({"kind": "csv", "df": df.copy(), **kwargs})
 
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """Test _noop_excel_download_button behavior."""
+        """Test the noop excel download button functionality."""
         fake_st.download_calls.append({"kind": "excel", "df": df.copy(), **kwargs})
 
     def _noop_top_n_with_other(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
-        """Test _noop_top_n_with_other behavior."""
+        """Test the noop top n with other functionality."""
         return df
 
     def _noop_paginated_slice(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
-        """Test _noop_paginated_slice behavior."""
+        """Test the noop paginated slice functionality."""
         return df
 
     mod.kpi_row = _noop_kpi_row  # type: ignore[attr-defined]
@@ -581,7 +581,7 @@ def _run_records_page(
 
 
 def _expected_version() -> str:
-    """Test _expected_version behavior."""
+    """Test the expected version functionality."""
     pyproject_text = (PLUGIN_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     version_match = re.search(r'^version\s*=\s*"([^"]+)"', pyproject_text, re.MULTILINE)
     assert version_match is not None
@@ -589,7 +589,7 @@ def _expected_version() -> str:
 
 
 def _run_app(is_connected: bool) -> _FakeStreamlit:
-    """Test _run_app behavior."""
+    """Test the run app functionality."""
     app_path = PACKAGE_ROOT / "app.py"
     fake_st = _FakeStreamlit()
     fake_streamlit_module = ModuleType("streamlit")
@@ -611,7 +611,7 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
     fake_auth_module = ModuleType("imednet_streamlit.auth")
 
     def _render_auth_sidebar() -> bool:
-        """Test _render_auth_sidebar behavior."""
+        """Test the render auth sidebar functionality."""
         return is_connected
 
     fake_auth_module.render_auth_sidebar = _render_auth_sidebar
@@ -645,7 +645,7 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 
 
 def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
-    """Test _run_page behavior."""
+    """Test the run page functionality."""
     page_path = PACKAGE_ROOT / "pages" / page_name
     fake_st = _FakePageStreamlit(connected=connected)
     fake_streamlit_module = ModuleType("streamlit")
@@ -687,7 +687,7 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
 
 
 def test_streamlit_plugin_version() -> None:
-    """Test test_streamlit_plugin_version behavior."""
+    """Test the test streamlit plugin version functionality."""
     init_path = PACKAGE_ROOT / "__init__.py"
     package_spec = importlib.util.spec_from_file_location(
         "imednet_streamlit", init_path, submodule_search_locations=[str(PACKAGE_ROOT)]
@@ -700,7 +700,7 @@ def test_streamlit_plugin_version() -> None:
 
 
 def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
-    """Test test_streamlit_app_navigation_is_home_only_before_auth behavior."""
+    """Test the test streamlit app navigation is home only before auth functionality."""
     fake_st = _run_app(is_connected=False)
 
     assert fake_st.page_config == {
@@ -720,7 +720,7 @@ def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
 
 
 def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
-    """Test test_streamlit_app_navigation_includes_all_pages_after_auth behavior."""
+    """Test the test streamlit app navigation includes all pages after auth functionality."""
     fake_st = _run_app(is_connected=True)
 
     assert len(fake_st.navigation_calls) == 1
@@ -743,7 +743,7 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
 
 
 def test_streamlit_pages_scaffold_exists() -> None:
-    """Test test_streamlit_pages_scaffold_exists behavior."""
+    """Test the test streamlit pages scaffold exists functionality."""
     pages_root = PACKAGE_ROOT / "pages"
 
     assert (pages_root / "__init__.py").is_file()
@@ -759,7 +759,7 @@ def test_streamlit_pages_scaffold_exists() -> None:
 
 
 def test_streamlit_pages_execute_without_exceptions() -> None:
-    """Test test_streamlit_pages_execute_without_exceptions behavior."""
+    """Test the test streamlit pages execute without exceptions functionality."""
     home_disconnected = _run_page("home.py", connected=False)
     assert "🏥 iMednet EDC Dashboard" in home_disconnected.titles
     assert home_disconnected.infos
@@ -811,7 +811,7 @@ def test_sites_page_renders() -> None:
 
 
 def test_records_page_renders_with_filtered_metrics_and_downloads() -> None:
-    """Test test_records_page_renders_with_filtered_metrics_and_downloads behavior."""
+    """Test the test records page renders with filtered metrics and downloads functionality."""
     records = [
         SimpleNamespace(
             record_id=1,
@@ -890,7 +890,7 @@ def test_records_page_renders_with_filtered_metrics_and_downloads() -> None:
 
 
 def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> None:
-    """Test test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps behavior."""
+    """Test the test records fetch and heatmap helpers handle deleted records and caps functionality."""
     _, records_globals = _run_records_page()
     fetch_records = records_globals["_fetch_records"]
     build_heatmap_source = records_globals["_build_heatmap_source"]
@@ -960,7 +960,7 @@ def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> 
 
 
 def test_records_page_warns_for_large_datasets() -> None:
-    """Test test_records_page_warns_for_large_datasets behavior."""
+    """Test the test records page warns for large datasets functionality."""
     large_records = [
         SimpleNamespace(
             record_id=index,
@@ -1109,6 +1109,6 @@ def test_enrollment_page_renders() -> None:
 
 
 def test_streamlit_plugin_has_py_typed_marker() -> None:
-    """Test test_streamlit_plugin_has_py_typed_marker behavior."""
+    """Test the test streamlit plugin has py typed marker functionality."""
     py_typed = PACKAGE_ROOT / "py.typed"
     assert py_typed.is_file()

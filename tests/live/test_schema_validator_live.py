@@ -1,4 +1,4 @@
-"""Tests for test_schema_validator_live."""
+"""Test Schema Validator Live module."""
 
 import pytest
 
@@ -8,7 +8,7 @@ from imednet.validation.cache import SchemaValidator
 
 
 def _get_first_variable(sdk: ImednetSDK, study_key: str):
-    """Test _get_first_variable behavior."""
+    """Test the get first variable functionality."""
     variables = list(sdk.variables.list(study_key=study_key))
     if not variables:
         pytest.skip("No variables available for live tests")
@@ -16,7 +16,7 @@ def _get_first_variable(sdk: ImednetSDK, study_key: str):
 
 
 def _wrong_value(var_type: str):
-    """Test _wrong_value behavior."""
+    """Test the wrong value functionality."""
     t = (var_type or "").lower()
     if t in {"text", "string"}:
         return 1
@@ -24,7 +24,7 @@ def _wrong_value(var_type: str):
 
 
 def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_validator_unknown_variable behavior."""
+    """Test the test validator unknown variable functionality."""
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
     validator.refresh(study_key)
@@ -40,7 +40,7 @@ def test_validator_unknown_variable(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_validator_wrong_type(sdk: ImednetSDK, study_key: str) -> None:
-    """Test test_validator_wrong_type behavior."""
+    """Test the test validator wrong type functionality."""
     var = _get_first_variable(sdk, study_key)
     validator = SchemaValidator(sdk)
     validator.refresh(study_key)

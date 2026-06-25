@@ -1,4 +1,4 @@
-"""Tests for test_reporting_models."""
+"""Test Reporting Models module."""
 
 from datetime import datetime, timezone
 
@@ -9,7 +9,7 @@ from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDev
 
 
 def test_adverse_event_parses_alias_input_and_coerces_types() -> None:
-    """Test test_adverse_event_parses_alias_input_and_coerces_types behavior."""
+    """Test the test adverse event parses alias input and coerces types functionality."""
     model = AdverseEvent.model_validate(
         {
             "subjectKey": 101,
@@ -29,7 +29,7 @@ def test_adverse_event_parses_alias_input_and_coerces_types() -> None:
 
 
 def test_protocol_deviation_applies_defaults_and_parses_datetime_timestamp() -> None:
-    """Test test_protocol_deviation_applies_defaults_and_parses_datetime_timestamp behavior."""
+    """Test the test protocol deviation applies defaults and parses datetime timestamp functionality."""
     model = ProtocolDeviation.model_validate(
         {
             "subjectKey": 77,
@@ -46,7 +46,7 @@ def test_protocol_deviation_applies_defaults_and_parses_datetime_timestamp() -> 
 
 
 def test_device_deficiency_parses_valid_input() -> None:
-    """Test test_device_deficiency_parses_valid_input behavior."""
+    """Test the test device deficiency parses valid input functionality."""
     model = DeviceDeficiency.model_validate(
         {
             "subjectKey": "SUBJ-001",
@@ -85,13 +85,13 @@ def test_device_deficiency_parses_valid_input() -> None:
     ],
 )
 def test_reporting_models_reject_missing_required_fields(model_cls: type, payload: dict) -> None:
-    """Test test_reporting_models_reject_missing_required_fields behavior."""
+    """Test the test reporting models reject missing required fields functionality."""
     with pytest.raises(ValidationError):
         model_cls.model_validate(payload)
 
 
 def test_protocol_deviation_rejects_invalid_datetime() -> None:
-    """Test test_protocol_deviation_rejects_invalid_datetime behavior."""
+    """Test the test protocol deviation rejects invalid datetime functionality."""
     with pytest.raises(ValidationError):
         ProtocolDeviation.model_validate(
             {

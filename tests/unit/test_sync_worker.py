@@ -1,4 +1,4 @@
-"""Tests for test_sync_worker."""
+"""Test Sync Worker module."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from imednet_workflows.sync_worker import SyncWorker, SyncWorkerConfig
 
 
 def test_sync_worker_run_once_syncs_with_lock(tmp_path) -> None:
-    """Test test_sync_worker_run_once_syncs_with_lock behavior."""
+    """Test the test sync worker run once syncs with lock functionality."""
     loader = MagicMock()
     loader.db_path = tmp_path / "records_cache.sqlite3"
     loader.load_records.return_value = [MagicMock(), MagicMock()]
@@ -23,7 +23,7 @@ def test_sync_worker_run_once_syncs_with_lock(tmp_path) -> None:
 
 
 def test_sync_worker_run_forever_stops_gracefully(tmp_path) -> None:
-    """Test test_sync_worker_run_forever_stops_gracefully behavior."""
+    """Test the test sync worker run forever stops gracefully functionality."""
     loader = MagicMock()
     loader.db_path = tmp_path / "records_cache.sqlite3"
     stop_event = Event()
@@ -34,7 +34,7 @@ def test_sync_worker_run_forever_stops_gracefully(tmp_path) -> None:
     )
 
     def _stop_after_first_cycle(*args, **kwargs) -> list[MagicMock]:
-        """Test _stop_after_first_cycle behavior."""
+        """Test the stop after first cycle functionality."""
         stop_event.set()
         return []
 

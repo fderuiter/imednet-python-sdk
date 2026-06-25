@@ -1,4 +1,4 @@
-"""Tests for test_jobs_async."""
+"""Test Jobs Async module."""
 
 from unittest.mock import AsyncMock
 

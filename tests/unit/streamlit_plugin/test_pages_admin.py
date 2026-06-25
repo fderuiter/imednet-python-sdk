@@ -1,4 +1,4 @@
-"""Tests for test_pages_admin."""
+"""Test Pages Admin module."""
 
 import importlib.util
 import sys
@@ -12,7 +12,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 def test_admin_page_renders():
-    """Test test_admin_page_renders behavior."""
+    """Test the test admin page renders functionality."""
     page_path = PACKAGE_ROOT / "pages" / "admin.py"
 
     fake_st = MagicMock()

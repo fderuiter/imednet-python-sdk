@@ -1,4 +1,4 @@
-"""Tests for test_dates_legacy."""
+"""Test Dates Legacy module."""
 
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch

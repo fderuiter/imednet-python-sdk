@@ -1,4 +1,4 @@
-"""Tests for test_core_async_client_extended."""
+"""Test Core Async Client Extended module."""
 
 from unittest.mock import AsyncMock, MagicMock
 

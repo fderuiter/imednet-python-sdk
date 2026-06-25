@@ -1,4 +1,4 @@
-"""Tests for test_components_metrics."""
+"""Test Components Metrics module."""
 
 from __future__ import annotations
 
@@ -11,11 +11,11 @@ class _ColumnContext:
     """Test suite for _ColumnContext."""
 
     def __enter__(self) -> None:
-        """Test __enter__ behavior."""
+        """Test the enter functionality."""
         return None
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Test __exit__ behavior."""
+        """Test the exit functionality."""
         return None
 
 
@@ -23,12 +23,12 @@ class _FakeMetricStreamlit:
     """Test suite for _FakeMetricStreamlit."""
 
     def __init__(self) -> None:
-        """Test __init__ behavior."""
+        """Initialize a new instance."""
         self.columns_calls: list[int] = []
         self.metrics: list[dict[str, object]] = []
 
     def columns(self, count: int) -> list[_ColumnContext]:
-        """Test columns behavior."""
+        """Test the columns functionality."""
         self.columns_calls.append(count)
         return [_ColumnContext() for _ in range(count)]
 
@@ -52,7 +52,7 @@ class _FakeMetricStreamlit:
 
 
 def test_kpi_row_uses_column_count_and_renders_metrics(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_kpi_row_uses_column_count_and_renders_metrics behavior."""
+    """Test the test kpi row uses column count and renders metrics functionality."""
     fake_st = _FakeMetricStreamlit()
     monkeypatch.setattr(metrics, "st", fake_st)
 
@@ -71,7 +71,7 @@ def test_kpi_row_uses_column_count_and_renders_metrics(monkeypatch: pytest.Monke
 
 
 def test_kpi_card_calls_streamlit_metric(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test test_kpi_card_calls_streamlit_metric behavior."""
+    """Test the test kpi card calls streamlit metric functionality."""
     fake_st = _FakeMetricStreamlit()
     monkeypatch.setattr(metrics, "st", fake_st)
 
