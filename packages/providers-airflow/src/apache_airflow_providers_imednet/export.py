@@ -8,32 +8,32 @@ from imednet.spi import export as _base_export
 
 
 def export_to_csv(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Export study records to csv format."""
     return _base_export.export_to_csv(*args, **kwargs)
 
 
 def export_to_parquet(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Export study records to parquet format."""
     return _base_export.export_to_parquet(*args, **kwargs)
 
 
 def export_to_excel(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Export study records to excel format."""
     return _base_export.export_to_excel(*args, **kwargs)
 
 
 def export_to_json(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Export study records to json format."""
     return _base_export.export_to_json(*args, **kwargs)
 
 
 def export_to_sql(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Export study records to sql format."""
     return _base_export.export_to_sql(*args, **kwargs)
 
 
 def export_to_sql_by_form(*args: Any, **kwargs: Any) -> None:
-    """Documentation placeholder."""
+    """Export study records to sql_by_form format."""
     return _base_export.export_to_sql_by_form(*args, **kwargs)
 
 

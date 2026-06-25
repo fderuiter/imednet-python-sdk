@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_sdk_entrypoint."""
 
 from typing import Any, Callable
 
@@ -36,17 +36,17 @@ class _FakeEntryPoint:
     def __init__(
         self, loader: Callable[[], Any], value: str = "tests.fake_plugin:Workflows"
     ) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self._loader = loader
         self.value = value
 
     def load(self):
-        """TODO: Add docstring."""
+        """Test load behavior."""
         return self._loader()
 
 
 def test_top_level_orchestration_exports() -> None:
-    """TODO: Add docstring."""
+    """Test test_top_level_orchestration_exports behavior."""
     from imednet import FilterConflictError as TopLevelFilterConflictError
     from imednet import MultiStudyOrchestrator as TopLevelMultiStudyOrchestrator
     from imednet import OrchestratorError as TopLevelOrchestratorError
@@ -61,18 +61,18 @@ def test_top_level_orchestration_exports() -> None:
 
 
 def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_workflows_uses_entry_point_discovery behavior."""
     loaded = {"called": False}
 
     def load_workflows():
-        """TODO: Add docstring."""
+        """Test load_workflows behavior."""
         loaded["called"] = True
 
         class FakeWorkflows:
-            """TODO: Add docstring."""
+            """Test suite for FakeWorkflows."""
 
             def __init__(self, sdk_instance):
-                """TODO: Add docstring."""
+                """Test __init__ behavior."""
                 self.sdk_instance = sdk_instance
 
         return FakeWorkflows
@@ -97,10 +97,10 @@ def test_sdk_workflows_uses_entry_point_discovery(monkeypatch) -> None:
 def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
     monkeypatch, exception_class
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_workflows_invalid_entry_point_load_raises_import_error behavior."""
 
     def failing_loader():
-        """TODO: Add docstring."""
+        """Test failing_loader behavior."""
         raise exception_class("boom")
 
     monkeypatch.setattr(
@@ -118,7 +118,7 @@ def test_sdk_workflows_invalid_entry_point_load_raises_import_error(
 
 
 def test_sdk_workflows_entry_point_must_be_callable(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_workflows_entry_point_must_be_callable behavior."""
     monkeypatch.setattr(
         sdk_mod,
         "entry_points",
@@ -134,7 +134,7 @@ def test_sdk_workflows_entry_point_must_be_callable(monkeypatch) -> None:
 
 
 def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_workflows_multiple_plugins_raises_import_error behavior."""
     monkeypatch.setattr(
         sdk_mod,
         "entry_points",
@@ -150,13 +150,13 @@ def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None
 
 
 def test_sdk_workflows_instantiation_failure_raises_import_error(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_workflows_instantiation_failure_raises_import_error behavior."""
 
     class BrokenWorkflows:
-        """TODO: Add docstring."""
+        """Test suite for BrokenWorkflows."""
 
         def __init__(self, sdk_instance):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             raise TypeError("broken")
 
     monkeypatch.setattr(
@@ -174,7 +174,7 @@ def test_sdk_workflows_instantiation_failure_raises_import_error(monkeypatch) ->
 
 
 def _create_sdk() -> sdk_mod.ImednetSDK:
-    """TODO: Add docstring."""
+    """Test _create_sdk behavior."""
     return sdk_mod.ImednetSDK(
         api_key="key",
         security_key="secret",
@@ -183,7 +183,7 @@ def _create_sdk() -> sdk_mod.ImednetSDK:
 
 
 def test_env_var_credentials(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_env_var_credentials behavior."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
 
@@ -193,7 +193,7 @@ def test_env_var_credentials(monkeypatch) -> None:
 
 
 def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_initialization_wires_endpoints_and_workflows behavior."""
     sdk = _create_sdk()
 
     assert isinstance(sdk._client, Client)
@@ -225,11 +225,11 @@ def test_sdk_initialization_wires_endpoints_and_workflows() -> None:
 
 
 def test_context_management_closes_client(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_context_management_closes_client behavior."""
     called = {"close": False}
 
     def fake_close(self) -> None:
-        """TODO: Add docstring."""
+        """Test fake_close behavior."""
         called["close"] = True
 
     monkeypatch.setattr(Client, "close", fake_close)
@@ -241,77 +241,77 @@ def test_context_management_closes_client(monkeypatch) -> None:
 
 
 def test_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_convenience_methods_delegate_to_endpoints behavior."""
     sdk = _create_sdk()
     calls = {}
 
     def fake_studies_list(study_key=None, **kw):
-        """TODO: Add docstring."""
+        """Test fake_studies_list behavior."""
         calls["studies"] = kw
         return ["STUDY"]
 
     def fake_records_list(study_key, record_data_filter=None, **kw):
-        """TODO: Add docstring."""
+        """Test fake_records_list behavior."""
         calls["records"] = (study_key, record_data_filter, kw)
         return ["REC"]
 
     def fake_sites_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_sites_list behavior."""
         calls["sites"] = (study_key, kw)
         return ["SITE"]
 
     def fake_subjects_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_subjects_list behavior."""
         calls["subjects"] = (study_key, kw)
         return ["SUB"]
 
     def fake_create(study_key, records_data, email_notify=None, schema=None):
-        """TODO: Add docstring."""
+        """Test fake_create behavior."""
         calls["create"] = (study_key, records_data, email_notify)
         return "JOB"
 
     def fake_forms_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_forms_list behavior."""
         calls["forms"] = (study_key, kw)
         return ["FORM"]
 
     def fake_intervals_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_intervals_list behavior."""
         calls["intervals"] = (study_key, kw)
         return ["INT"]
 
     def fake_variables_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_variables_list behavior."""
         calls["variables"] = (study_key, kw)
         return ["VAR"]
 
     def fake_visits_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_visits_list behavior."""
         calls["visits"] = (study_key, kw)
         return ["VIS"]
 
     def fake_codings_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_codings_list behavior."""
         calls["codings"] = (study_key, kw)
         return ["COD"]
 
     def fake_queries_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_queries_list behavior."""
         calls["queries"] = (study_key, kw)
         return ["QUERY"]
 
     def fake_record_revisions_list(study_key, **kw):
-        """TODO: Add docstring."""
+        """Test fake_record_revisions_list behavior."""
         calls["record_revisions"] = (study_key, kw)
         return ["REV"]
 
     def fake_users_list(study_key, include_inactive=False):
-        """TODO: Add docstring."""
+        """Test fake_users_list behavior."""
         calls["users"] = (study_key, include_inactive)
         return ["USER"]
 
     def fake_get_job(study_key, batch_id):
-        """TODO: Add docstring."""
+        """Test fake_get_job behavior."""
         calls["job"] = (study_key, batch_id)
         return "JOBOBJ"
 
@@ -362,19 +362,19 @@ def test_convenience_methods_delegate_to_endpoints(monkeypatch) -> None:
 
 
 def test_poll_job_convenience_sync(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_poll_job_convenience_sync behavior."""
     sdk = _create_sdk()
     calls = {}
 
     class FakePoller:
-        """TODO: Add docstring."""
+        """Test suite for FakePoller."""
 
         def __init__(self, get_func, **kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             calls["init"] = get_func
 
         def run(self, study_key, batch_id, interval, timeout):
-            """TODO: Add docstring."""
+            """Test run behavior."""
             calls["run"] = (study_key, batch_id, interval, timeout)
             return "JOBOBJ"
 

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Post Register Subjects module."""
 
 import json
 import os

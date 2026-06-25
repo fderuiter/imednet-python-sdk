@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_airflow_integration."""
 
 import importlib.util
 import sys
@@ -13,7 +13,7 @@ import imednet.sdk as sdk_mod
 
 
 def _setup_airflow(monkeypatch):
-    """TODO: Add docstring."""
+    """Test _setup_airflow behavior."""
     airflow_mod = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_mod = ModuleType("airflow.sdk.bases.hook")
@@ -24,20 +24,20 @@ def _setup_airflow(monkeypatch):
     models_mod = ModuleType("airflow.models")
 
     class DummyBaseHook:
-        """TODO: Add docstring."""
+        """Test suite for DummyBaseHook."""
 
         @classmethod
         def get_connection(cls, conn_id):
-            """TODO: Add docstring."""
+            """Test get_connection behavior."""
             raise NotImplementedError
 
     class DummyBaseOperator:
-        """TODO: Add docstring."""
+        """Test suite for DummyBaseOperator."""
 
         template_fields = ()
 
         def __init__(self, **kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
     hooks_mod.BaseHook = DummyBaseHook
@@ -62,7 +62,7 @@ def _setup_airflow(monkeypatch):
 
 
 def test_imednet_hook_returns_sdk(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_returns_sdk behavior."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -90,7 +90,7 @@ def test_imednet_hook_returns_sdk(monkeypatch):
 
 
 def test_export_operator_calls_helper(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_export_operator_calls_helper behavior."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -129,7 +129,7 @@ def test_export_operator_calls_helper(monkeypatch):
 
 
 def test_export_operator_exposes_mapped_runtime_fields(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_export_operator_exposes_mapped_runtime_fields behavior."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -147,7 +147,7 @@ def test_export_operator_exposes_mapped_runtime_fields(monkeypatch):
 
 
 def test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute behavior."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -192,7 +192,7 @@ def test_export_operator_copies_runtime_kwargs_and_resolves_sdk_at_execute(monke
 
 
 def test_export_operator_rejects_unknown_export_callable(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_export_operator_rejects_unknown_export_callable behavior."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 
@@ -222,7 +222,7 @@ def test_export_operator_rejects_unknown_export_callable(monkeypatch):
 
 
 def test_imednet_hook_non_dict_extras(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_non_dict_extras behavior."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -248,7 +248,7 @@ def test_imednet_hook_non_dict_extras(monkeypatch):
 
 
 def test_imednet_hook_get_extra_json_fallback(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_get_extra_json_fallback behavior."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -281,7 +281,7 @@ def test_imednet_hook_get_extra_json_fallback(monkeypatch):
 
 
 def test_imednet_hook_extra_json_string_fallback(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_extra_json_string_fallback behavior."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -313,7 +313,7 @@ def test_imednet_hook_extra_json_string_fallback(monkeypatch):
 
 
 def test_imednet_hook_non_string_login(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_non_string_login behavior."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -338,7 +338,7 @@ def test_imednet_hook_non_string_login(monkeypatch):
 
 
 def test_imednet_hook_non_string_password(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_non_string_password behavior."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -366,7 +366,7 @@ def test_imednet_hook_non_string_password(monkeypatch):
 
 
 def test_imednet_hook_environment_fallback(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_environment_fallback behavior."""
     _setup_airflow(monkeypatch)
     monkeypatch.setenv("IMEDNET_API_KEY", "ENV_KEY")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "ENV_SEC")
@@ -395,7 +395,7 @@ def test_imednet_hook_environment_fallback(monkeypatch):
 
 
 def test_imednet_hook_describe_connection_redacts_credentials(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_describe_connection_redacts_credentials behavior."""
     _setup_airflow(monkeypatch)
 
     conn = MagicMock()
@@ -427,7 +427,7 @@ def test_imednet_hook_describe_connection_redacts_credentials(monkeypatch):
 
 
 def test_imednet_hook_prefers_extras_over_environment(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_prefers_extras_over_environment behavior."""
     _setup_airflow(monkeypatch)
     monkeypatch.setenv("IMEDNET_API_KEY", "ENV_KEY")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "ENV_SEC")
@@ -454,16 +454,16 @@ def test_imednet_hook_prefers_extras_over_environment(monkeypatch):
 
 
 def test_imednet_hook_study_discovery_serialization_safe(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_imednet_hook_study_discovery_serialization_safe behavior."""
     _setup_airflow(monkeypatch)
 
     from apache_airflow_providers_imednet.hooks import ImednetHook
 
     class _StudyModel:
-        """TODO: Add docstring."""
+        """Test suite for _StudyModel."""
 
         def model_dump(self, mode="json", by_alias=True):
-            """TODO: Add docstring."""
+            """Test model_dump behavior."""
             assert mode == "json"
             assert by_alias is True
             return {
@@ -508,32 +508,32 @@ def _setup_airflow_for_dag(monkeypatch):
     airflow_mod = sys.modules["airflow"]
 
     class _DummyDAG:
-        """TODO: Add docstring."""
+        """Test suite for _DummyDAG."""
 
         def __init__(self, *args, **kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
         def __enter__(self):
-            """TODO: Add docstring."""
+            """Test __enter__ behavior."""
             return self
 
         def __exit__(self, *args):
-            """TODO: Add docstring."""
+            """Test __exit__ behavior."""
             pass
 
     class _DummyTaskDecorator:
         """Thin shim for ``@task`` and ``@task(...)``."""
 
         def __call__(self, *args, **kwargs):
-            """TODO: Add docstring."""
+            """Test __call__ behavior."""
             if len(args) == 1 and callable(args[0]):
                 # bare @task usage
                 return args[0]
 
             # @task(...) — return a no-op decorator
             def _decorator(fn):
-                """TODO: Add docstring."""
+                """Test _decorator behavior."""
                 return fn
 
             return _decorator
@@ -545,7 +545,7 @@ def _setup_airflow_for_dag(monkeypatch):
     monkeypatch.setitem(sys.modules, "airflow.decorators", decorators_mod)
 
     class _DummyOperator:
-        """TODO: Add docstring."""
+        """Test suite for _DummyOperator."""
 
         template_fields = ()
         # Mirrors ImednetExportOperator.mapped_runtime_fields: these are the fields
@@ -554,31 +554,31 @@ def _setup_airflow_for_dag(monkeypatch):
         mapped_runtime_fields = ("study_key", "output_path", "export_kwargs")
 
         def __init__(self, **kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
         @classmethod
         def partial(cls, **kwargs):
-            """TODO: Add docstring."""
+            """Test partial behavior."""
 
             class _PartialOp:
-                """TODO: Add docstring."""
+                """Test suite for _PartialOp."""
 
                 def expand_kwargs(self, targets):
-                    """TODO: Add docstring."""
+                    """Test expand_kwargs behavior."""
                     pass
 
             return _PartialOp()
 
     class _DummyHook:
-        """TODO: Add docstring."""
+        """Test suite for _DummyHook."""
 
         def __init__(self, conn_id: str = "imednet_default") -> None:
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
         def list_study_keys(self):
-            """TODO: Add docstring."""
+            """Test list_study_keys behavior."""
             return []
 
     provider_mod = ModuleType("apache_airflow_providers_imednet")
@@ -593,10 +593,10 @@ def test_to_primitive_unknown_object_type_falls_back_to_str(monkeypatch):
     from apache_airflow_providers_imednet.hooks import ImednetHook
 
     class _Opaque:
-        """TODO: Add docstring."""
+        """Test suite for _Opaque."""
 
         def __str__(self):
-            """TODO: Add docstring."""
+            """Test __str__ behavior."""
             return "opaque-repr"
 
     result = ImednetHook._to_primitive(_Opaque())
@@ -721,7 +721,7 @@ def test_list_study_keys_skips_entries_without_recognized_key(monkeypatch):
 
 
 def test_export_operator_resolves_snowflake_sink(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_export_operator_resolves_snowflake_sink behavior."""
     if "apache_airflow_providers_imednet" in sys.modules:
         del sys.modules["apache_airflow_providers_imednet"]
 

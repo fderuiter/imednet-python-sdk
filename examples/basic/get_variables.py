@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Get Variables module."""
 
 import csv
 import json
@@ -54,7 +54,7 @@ Raises:
 
 
 def main():
-    """TODO: Add docstring."""
+    """Perform main operation."""
     configure_json_logging()
 
     try:

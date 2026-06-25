@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_builder."""
 
 import pytest
 
@@ -6,21 +6,21 @@ from imednet.form_designer.builder import FormBuilder
 
 
 def test_form_builder_initialization():
-    """TODO: Add docstring."""
+    """Test test_form_builder_initialization behavior."""
     builder = FormBuilder()
     assert len(builder.pages) == 1
     assert builder.current_page is not None
 
 
 def test_form_builder_add_page():
-    """TODO: Add docstring."""
+    """Test test_form_builder_add_page behavior."""
     builder = FormBuilder()
     builder.add_page()
     assert len(builder.pages) == 2
 
 
 def test_form_builder_add_field_text():
-    """TODO: Add docstring."""
+    """Test test_form_builder_add_field_text behavior."""
     builder = FormBuilder()
     builder.add_field(type="text", label="My Text", question_name="my_text")
 
@@ -43,14 +43,14 @@ def test_form_builder_add_field_text():
 
 
 def test_form_builder_add_field_invalid_type():
-    """TODO: Add docstring."""
+    """Test test_form_builder_add_field_invalid_type behavior."""
     builder = FormBuilder()
     with pytest.raises(ValueError, match="Unsupported field type: invalid"):
         builder.add_field(type="invalid", label="Invalid", question_name="inv")  # type: ignore
 
 
 def test_form_builder_add_all_field_types():
-    """TODO: Add docstring."""
+    """Test test_form_builder_add_all_field_types behavior."""
     builder = FormBuilder()
     types = ["text", "number", "radio", "dropdown", "datetime", "upload", "checkbox", "memo"]
 
@@ -73,7 +73,7 @@ def test_form_builder_add_all_field_types():
 
 
 def test_form_builder_add_section_header():
-    """TODO: Add docstring."""
+    """Test test_form_builder_add_section_header behavior."""
     builder = FormBuilder()
     builder.add_section_header("My Section")
 
@@ -84,7 +84,7 @@ def test_form_builder_add_section_header():
 
 
 def test_form_builder_add_group_header():
-    """TODO: Add docstring."""
+    """Test test_form_builder_add_group_header behavior."""
     builder = FormBuilder()
     builder.add_group_header("My Group")
 
@@ -101,7 +101,7 @@ def test_form_builder_add_group_header():
 
 
 def test_form_builder_build():
-    """TODO: Add docstring."""
+    """Test test_form_builder_build behavior."""
     builder = FormBuilder()
     builder.add_section_header("My Section")
     layout = builder.build()
@@ -109,7 +109,7 @@ def test_form_builder_build():
 
 
 def test_form_builder_none_rows_initialization():
-    """TODO: Add docstring."""
+    """Test test_form_builder_none_rows_initialization behavior."""
     builder = FormBuilder()
 
     # We need to manually inject a table with no rows to hit lines 92 and 133

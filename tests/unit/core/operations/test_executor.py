@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_executor."""
 
 import pytest
 
@@ -8,15 +8,15 @@ from imednet.core.operations.protocols import OperationProtocol
 
 
 class RESTTask(OperationProtocol[str]):
-    """TODO: Add docstring."""
+    """Test suite for RESTTask."""
 
     def __init__(self, fail_times=0):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.fail_times = fail_times
         self.attempts = 0
 
     def execute(self) -> str:
-        """TODO: Add docstring."""
+        """Test execute behavior."""
         self.attempts += 1
         if self.attempts <= self.fail_times:
             raise ValueError("HTTP Error")
@@ -24,15 +24,15 @@ class RESTTask(OperationProtocol[str]):
 
 
 class NonRESTTask(OperationProtocol[str]):
-    """TODO: Add docstring."""
+    """Test suite for NonRESTTask."""
 
     def __init__(self, fail_times=0):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.fail_times = fail_times
         self.attempts = 0
 
     def execute(self) -> str:
-        """TODO: Add docstring."""
+        """Test execute behavior."""
         self.attempts += 1
         if self.attempts <= self.fail_times:
             raise RuntimeError("DB Error")
@@ -40,7 +40,7 @@ class NonRESTTask(OperationProtocol[str]):
 
 
 def test_universal_executor_supports_rest_and_non_rest():
-    """TODO: Add docstring."""
+    """Test test_universal_executor_supports_rest_and_non_rest behavior."""
     get_global_circuit_breaker().reset()
     executor = UniversalExecutor(retries=2, backoff_factor=0.01)
 
@@ -56,7 +56,7 @@ def test_universal_executor_supports_rest_and_non_rest():
 
 
 def test_universal_executor_fails_after_retries():
-    """TODO: Add docstring."""
+    """Test test_universal_executor_fails_after_retries behavior."""
     get_global_circuit_breaker().reset()
     executor = UniversalExecutor(retries=1, backoff_factor=0.01)
 
@@ -68,21 +68,21 @@ def test_universal_executor_fails_after_retries():
 
 @pytest.mark.asyncio
 async def test_universal_executor_async():
-    """TODO: Add docstring."""
+    """Implementation detail."""
     get_global_circuit_breaker().reset()
     executor = UniversalExecutor(retries=1, backoff_factor=0.01)
 
     attempts = 0
 
     async def failing_task():
-        """TODO: Add docstring."""
+        """Implementation detail."""
         nonlocal attempts
         attempts += 1
         raise ValueError("Async Error")
 
     # Use a regular function returning a coroutine, to match Callable[[], Awaitable[T]]
     def task_factory():
-        """TODO: Add docstring."""
+        """Test task_factory behavior."""
         return failing_task()
 
     with pytest.raises(ValueError, match="Async Error"):

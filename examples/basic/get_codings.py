@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Get Codings module."""
 
 from imednet import ImednetSDK as ImednetClient
 from imednet import load_config
@@ -29,7 +29,7 @@ The script will output:
 
 
 def main():
-    """TODO: Add docstring."""
+    """Perform main operation."""
     configure_json_logging()
 
     try:

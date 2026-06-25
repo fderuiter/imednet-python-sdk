@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Query Management module."""
 
 from imednet import ImednetSDK
 

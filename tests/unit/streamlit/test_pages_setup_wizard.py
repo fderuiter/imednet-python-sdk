@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_pages_setup_wizard."""
 
 from __future__ import annotations
 
@@ -15,46 +15,46 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 class _FakeColumn:
-    """TODO: Add docstring."""
+    """Test suite for _FakeColumn."""
 
     def __init__(self, parent: "_FakeStreamlit") -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self._parent = parent
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Test button behavior."""
         return self._parent.button(label, **kwargs)
 
     def selectbox(self, label: str, options: list[str], **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test selectbox behavior."""
         return self._parent.selectbox(label, options, **kwargs)
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test text_input behavior."""
         return self._parent.text_input(label, **kwargs)
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test metric behavior."""
         self._parent.metric(label, value, **kwargs)
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for _FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Test __enter__ behavior."""
         return self
 
     def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
-        """TODO: Add docstring."""
+        """Test __exit__ behavior."""
         return None
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for _FakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.session_state: dict[str, Any] = {
             "_imednet_connected": True,
             "_imednet_study_key": "STUDY",
@@ -76,71 +76,71 @@ class _FakeStreamlit:
         self.expander_calls: list[tuple[str, bool]] = []
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test title behavior."""
         self.titles.append(value)
 
     def subheader(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test subheader behavior."""
         return None
 
     def markdown(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test markdown behavior."""
         self.markdown_calls.append(value)
 
     def caption(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test caption behavior."""
         return None
 
     def expander(self, label: str, *, expanded: bool = False) -> _FakeContextManager:
-        """TODO: Add docstring."""
+        """Test expander behavior."""
         self.expander_calls.append((label, expanded))
         return _FakeContextManager()
 
     def code(self, body: str, *, language: str = "") -> None:
-        """TODO: Add docstring."""
+        """Test code behavior."""
         self.code_calls.append(body)
 
     def progress(self, value: float) -> None:
-        """TODO: Add docstring."""
+        """Test progress behavior."""
         return None
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test success behavior."""
         self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test warning behavior."""
         self.warning_calls.append(value)
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test info behavior."""
         self.info_calls.append(value)
 
     def error(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test error behavior."""
         self.error_calls.append(value)
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Test button behavior."""
         key = str(kwargs.get("key") or label)
         if kwargs.get("disabled", False):
             return False
         return key in self.button_presses
 
     def columns(self, spec: int | list[Any]) -> list[_FakeColumn]:
-        """TODO: Add docstring."""
+        """Test columns behavior."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeColumn(self) for _ in range(count)]
 
     def selectbox(self, label: str, options: list[str], **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test selectbox behavior."""
         key = str(kwargs.get("key") or label)
         if key in self.selectbox_values and self.selectbox_values[key] in options:
             return self.selectbox_values[key]
         return str(options[0]) if options else ""
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test text_input behavior."""
         key = str(kwargs.get("key") or label)
         if key in self.text_input_values:
             return self.text_input_values[key]
@@ -148,7 +148,7 @@ class _FakeStreamlit:
         return str(value) if value is not None else ""
 
     def multiselect(self, label: str, options: list[str], **kwargs: Any) -> list[str]:
-        """TODO: Add docstring."""
+        """Test multiselect behavior."""
         key = str(kwargs.get("key") or label)
         if key in self.multiselect_values:
             return self.multiselect_values[key]
@@ -159,57 +159,57 @@ class _FakeStreamlit:
         return [str(value) for value in default]
 
     def slider(self, label: str, **kwargs: Any) -> int:
-        """TODO: Add docstring."""
+        """Test slider behavior."""
         if self.slider_value is not None:
             return self.slider_value
         return int(kwargs.get("value", kwargs.get("min_value", 0)))
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test dataframe behavior."""
         return None
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test metric behavior."""
         self.metric_calls.append({"label": label, "value": value})
 
     def json(self, value: Any) -> None:
-        """TODO: Add docstring."""
+        """Test json behavior."""
         return None
 
     def download_button(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test download_button behavior."""
         self.download_calls.append(kwargs)
 
 
 class _WidgetOwnedSessionState(dict[str, Any]):
-    """TODO: Add docstring."""
+    """Test suite for _WidgetOwnedSessionState."""
 
     def __init__(self, initial_state: dict[str, Any]) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         super().__init__(initial_state)
         self._widget_owned_keys: set[str] = set()
 
     def lock_widget_key(self, key: str) -> None:
-        """TODO: Add docstring."""
+        """Test lock_widget_key behavior."""
         self._widget_owned_keys.add(key)
 
     def __setitem__(self, key: str, value: Any) -> None:
-        """TODO: Add docstring."""
+        """Test __setitem__ behavior."""
         if key in self._widget_owned_keys:
             raise RuntimeError(f"session_state key '{key}' is widget-owned")
         super().__setitem__(key, value)
 
 
 class _StrictWidgetStateFakeStreamlit(_FakeStreamlit):
-    """TODO: Add docstring."""
+    """Test suite for _StrictWidgetStateFakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         super().__init__()
         self.session_state = _WidgetOwnedSessionState(dict(self.session_state))
 
     def selectbox(self, label: str, options: list[str], **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test selectbox behavior."""
         value = super().selectbox(label, options, **kwargs)
         key = str(kwargs.get("key") or label)
         dict.__setitem__(self.session_state, key, value)
@@ -223,7 +223,7 @@ def _run_setup_wizard(
     get_sdk: Any | None = None,
     get_study_key: Any | None = None,
 ) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     page_path = PACKAGE_ROOT / "pages" / "setup_wizard.py"
     module_name = "imednet_streamlit.pages.setup_wizard"
 
@@ -289,28 +289,28 @@ def _run_setup_wizard(
     }
 
     class _FakeLoader:
-        """TODO: Add docstring."""
+        """Test suite for _FakeLoader."""
 
         def __init__(self, sdk: object) -> None:
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             self.sdk = sdk
 
         def load_records(self, study_key: str) -> list[Any]:
-            """TODO: Add docstring."""
+            """Test load_records behavior."""
             return records
 
     class _FakeProfiler:
-        """TODO: Add docstring."""
+        """Test suite for _FakeProfiler."""
 
         def __init__(self, sdk: object, loader: object) -> None:
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             self.sdk = sdk
             self.loader = loader
 
         def profile_records(
             self, study_key: str, *, records: list[Any] | None = None
         ) -> dict[str, Any]:
-            """TODO: Add docstring."""
+            """Test profile_records behavior."""
             return profiles
 
     fake_auth_module = ModuleType("imednet_streamlit.auth")
@@ -350,7 +350,7 @@ def _run_setup_wizard(
 
 
 def test_setup_wizard_scan_and_next_step() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_scan_and_next_step behavior."""
     fake_st = _FakeStreamlit()
     fake_st.button_presses = {"wizard_scan"}
     _run_setup_wizard(fake_st)
@@ -365,7 +365,7 @@ def test_setup_wizard_scan_and_next_step() -> None:
 
 
 def test_setup_wizard_scan_post_scan_rerender_respects_widget_owned_state() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_scan_post_scan_rerender_respects_widget_owned_state behavior."""
     fake_st = _StrictWidgetStateFakeStreamlit()
     fake_st.button_presses = {"wizard_scan"}
 
@@ -377,7 +377,7 @@ def test_setup_wizard_scan_post_scan_rerender_respects_widget_owned_state() -> N
 
 
 def test_setup_wizard_renders_design_specification_sections() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_renders_design_specification_sections behavior."""
     fake_st = _FakeStreamlit()
     _run_setup_wizard(fake_st)
 
@@ -390,7 +390,7 @@ def test_setup_wizard_renders_design_specification_sections() -> None:
 
 
 def test_setup_wizard_mapping_normalization_preview_and_export() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_mapping_normalization_preview_and_export behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 2
     fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
@@ -454,7 +454,7 @@ def test_setup_wizard_mapping_normalization_preview_and_export() -> None:
 
 
 def test_setup_wizard_mapping_falls_back_when_saved_form_is_missing() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_mapping_falls_back_when_saved_form_is_missing behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 2
     fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
@@ -491,7 +491,7 @@ def test_setup_wizard_mapping_falls_back_when_saved_form_is_missing() -> None:
 
 
 def test_setup_wizard_preview_filters_invalid_saved_widget_types() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_preview_filters_invalid_saved_widget_types behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 4
     fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
@@ -532,7 +532,7 @@ def test_setup_wizard_preview_filters_invalid_saved_widget_types() -> None:
 
 
 def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_save_managed_database behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 5
     fake_st.session_state["_imednet_study_key"] = "STUDY-123"
@@ -540,10 +540,10 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
     fake_st.button_presses = {"wizard_save_managed"}
 
     class MockStore:
-        """TODO: Add docstring."""
+        """Test suite for MockStore."""
 
         def commit_config(self, study_key, config, user, desc):
-            """TODO: Add docstring."""
+            """Test commit_config behavior."""
             self.study_key = study_key
             self.user = user
 
@@ -559,17 +559,17 @@ def test_setup_wizard_save_managed_database(monkeypatch: Any) -> None:
 
 
 def test_setup_wizard_save_managed_reports_error(monkeypatch: Any) -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_save_managed_reports_error behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 5
     fake_st.session_state["mapping_config"] = StudyConfiguration(study_key="STUDY")
     fake_st.button_presses = {"wizard_save_managed"}
 
     class MockStore:
-        """TODO: Add docstring."""
+        """Test suite for MockStore."""
 
         def commit_config(self, study_key, config, user, desc):
-            """TODO: Add docstring."""
+            """Test commit_config behavior."""
             raise OSError("boom")
 
     monkeypatch.setattr(
@@ -582,7 +582,7 @@ def test_setup_wizard_save_managed_reports_error(monkeypatch: Any) -> None:
 
 
 def test_setup_wizard_shows_prerequisite_info_messages() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_shows_prerequisite_info_messages behavior."""
     step_one = _FakeStreamlit()
     _run_setup_wizard(step_one)
     assert step_one.info_calls[-1] == "Run scan to discover forms and field candidates."
@@ -607,7 +607,7 @@ def test_setup_wizard_shows_prerequisite_info_messages() -> None:
 
 
 def test_setup_wizard_handles_connection_and_auth_failures() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_handles_connection_and_auth_failures behavior."""
     disconnected = _FakeStreamlit()
     disconnected.session_state["_imednet_connected"] = False
     _run_setup_wizard(disconnected)
@@ -618,7 +618,7 @@ def test_setup_wizard_handles_connection_and_auth_failures() -> None:
     auth_failure = _FakeStreamlit()
 
     def _raise_runtime_error() -> object:
-        """TODO: Add docstring."""
+        """Test _raise_runtime_error behavior."""
         raise RuntimeError("missing credentials")
 
     _run_setup_wizard(auth_failure, get_sdk=_raise_runtime_error)
@@ -626,7 +626,7 @@ def test_setup_wizard_handles_connection_and_auth_failures() -> None:
 
 
 def test_setup_wizard_snapshot_controls_and_navigation_work() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_snapshot_controls_and_navigation_work behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 3
     fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
@@ -684,7 +684,7 @@ def test_setup_wizard_snapshot_controls_and_navigation_work() -> None:
 
 
 def test_setup_wizard_undo_without_snapshot_and_nav_button_paths() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_undo_without_snapshot_and_nav_button_paths behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 3
     fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(
@@ -732,7 +732,7 @@ def test_setup_wizard_undo_without_snapshot_and_nav_button_paths() -> None:
 
 
 def test_setup_wizard_preview_handles_empty_records() -> None:
-    """TODO: Add docstring."""
+    """Test test_setup_wizard_preview_handles_empty_records behavior."""
     fake_st = _FakeStreamlit()
     fake_st.session_state["wizard_step"] = 4
     fake_st.session_state["mapping_config"] = StudyConfiguration.from_json(

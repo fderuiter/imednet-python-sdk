@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_triage_store."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from imednet_workflows.triage_store import TriageStore
 
 
 def _seed_item(item_id: str = "AE-1") -> TriageItem:
-    """TODO: Add docstring."""
+    """Test _seed_item behavior."""
     return TriageItem(
         item_id=item_id,
         study_key="STUDY-A",
@@ -45,13 +45,13 @@ def _seed_item(item_id: str = "AE-1") -> TriageItem:
 
 
 def test_triage_store_enables_wal_mode(tmp_path: Path) -> None:
-    """TODO: Add docstring."""
+    """Test test_triage_store_enables_wal_mode behavior."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     assert store.get_journal_mode().lower() == "wal"
 
 
 def test_triage_store_crud_and_queue_filters(tmp_path: Path) -> None:
-    """TODO: Add docstring."""
+    """Test test_triage_store_crud_and_queue_filters behavior."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     store.upsert_item(_seed_item("AE-1"))
     store.upsert_item(_seed_item("PD-2"))
@@ -75,16 +75,16 @@ def test_triage_store_crud_and_queue_filters(tmp_path: Path) -> None:
 
 
 def test_triage_store_handles_parallel_reads_and_writes(tmp_path: Path) -> None:
-    """TODO: Add docstring."""
+    """Test test_triage_store_handles_parallel_reads_and_writes behavior."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     store.upsert_item(_seed_item("AE-99"))
 
     def _writer(idx: int) -> None:
-        """TODO: Add docstring."""
+        """Test _writer behavior."""
         store.add_annotation("AE-99", f"user-{idx}", f"comment {idx}")
 
     def _reader() -> int:
-        """TODO: Add docstring."""
+        """Test _reader behavior."""
         item = store.get_triage_item("AE-99")
         assert item is not None
         return len(item.annotations)
@@ -103,7 +103,7 @@ def test_triage_store_handles_parallel_reads_and_writes(tmp_path: Path) -> None:
 
 
 def test_triage_store_rejects_empty_annotation_comment(tmp_path: Path) -> None:
-    """TODO: Add docstring."""
+    """Test test_triage_store_rejects_empty_annotation_comment behavior."""
     store = TriageStore(tmp_path / "triage.sqlite3")
     store.upsert_item(_seed_item("DD-4"))
 
@@ -112,7 +112,7 @@ def test_triage_store_rejects_empty_annotation_comment(tmp_path: Path) -> None:
 
 
 def test_triage_store_migrates_legacy_schema(tmp_path: Path) -> None:
-    """TODO: Add docstring."""
+    """Test test_triage_store_migrates_legacy_schema behavior."""
     db_path = tmp_path / "triage.sqlite3"
     with sqlite3.connect(db_path) as conn:
         conn.execute("""
@@ -151,12 +151,12 @@ def test_triage_store_migrates_legacy_schema(tmp_path: Path) -> None:
 def test_triage_store_masks_sensitive_operational_errors(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_triage_store_masks_sensitive_operational_errors behavior."""
     store = TriageStore(tmp_path / "triage.sqlite3", retry_attempts=1)
 
     @contextmanager
     def _memory_connection() -> Iterator[sqlite3.Connection]:
-        """TODO: Add docstring."""
+        """Test _memory_connection behavior."""
         conn = sqlite3.connect(":memory:")
         try:
             yield conn
@@ -166,7 +166,7 @@ def test_triage_store_masks_sensitive_operational_errors(
     monkeypatch.setattr(store, "_connection", _memory_connection)
 
     def _failing_write(_conn: sqlite3.Connection) -> None:
-        """TODO: Add docstring."""
+        """Test _failing_write behavior."""
         raise sqlite3.OperationalError("unable to open database file: token=supersecret")
 
     with pytest.raises(sqlite3.OperationalError) as exc_info:

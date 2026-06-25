@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Auth module."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ import sqlite3
 
 
 def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
-    """TODO: Add docstring."""
+    """Perform get tenant credentials operation."""
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )
@@ -60,7 +60,7 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
 
 
 def get_provisioned_studies() -> list[str]:
-    """TODO: Add docstring."""
+    """Perform get provisioned studies operation."""
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )

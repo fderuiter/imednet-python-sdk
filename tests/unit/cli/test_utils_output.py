@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_utils_output."""
 
 from unittest.mock import MagicMock, patch
 

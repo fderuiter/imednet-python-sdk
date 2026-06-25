@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_pyproject_metadata."""
 
 import re
 from pathlib import Path
@@ -7,7 +7,7 @@ import imednet
 
 
 def test_project_version_is_single_source_of_truth() -> None:
-    """TODO: Add docstring."""
+    """Test test_project_version_is_single_source_of_truth behavior."""
     pyproject_path = Path(__file__).resolve().parents[2] / "packages" / "core" / "pyproject.toml"
     content = pyproject_path.read_text(encoding="utf-8")
 

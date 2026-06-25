@@ -14,15 +14,15 @@ from imednet.orchestration.orchestrator import MultiStudyOrchestrator
 
 
 def _make_study(study_key: str) -> Study:
-    """TODO: Add docstring."""
+    """Test _make_study behavior."""
     return Study(study_key=study_key)
 
 
 def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> None:
-    """TODO: Add docstring."""
+    """Test _mock_monotonic behavior."""
 
     def infinite_clock():
-        """TODO: Add docstring."""
+        """Test infinite_clock behavior."""
         for v in values:
             yield v
         last_v = values[-1] if values else 0.0
@@ -38,7 +38,7 @@ def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> Non
 
 
 def test_orchestrator_is_instantiable_with_default_max_workers() -> None:
-    """TODO: Add docstring."""
+    """Test test_orchestrator_is_instantiable_with_default_max_workers behavior."""
     sdk = MagicMock()
 
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -48,7 +48,7 @@ def test_orchestrator_is_instantiable_with_default_max_workers() -> None:
 
 
 def test_orchestrator_raises_for_invalid_max_workers() -> None:
-    """TODO: Add docstring."""
+    """Test test_orchestrator_raises_for_invalid_max_workers behavior."""
     sdk = MagicMock()
 
     with pytest.raises(ValueError, match="max_workers must be >= 1"):
@@ -56,7 +56,7 @@ def test_orchestrator_raises_for_invalid_max_workers() -> None:
 
 
 def test_resolve_active_studies_returns_all_study_keys() -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_returns_all_study_keys behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -68,7 +68,7 @@ def test_resolve_active_studies_returns_all_study_keys() -> None:
 
 
 def test_resolve_active_studies_applies_whitelist() -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_applies_whitelist behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -79,7 +79,7 @@ def test_resolve_active_studies_applies_whitelist() -> None:
 
 
 def test_resolve_active_studies_applies_blacklist() -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_applies_blacklist behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -90,7 +90,7 @@ def test_resolve_active_studies_applies_blacklist() -> None:
 
 
 def test_resolve_active_studies_raises_on_conflicting_filters_before_network_call() -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_raises_on_conflicting_filters_before_network_call behavior."""
     sdk = MagicMock()
     orchestrator = MultiStudyOrchestrator(sdk)
 
@@ -103,7 +103,7 @@ def test_resolve_active_studies_raises_on_conflicting_filters_before_network_cal
 
 
 def test_resolve_active_studies_with_empty_filter_sets_returns_all_studies() -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_with_empty_filter_sets_returns_all_studies behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -116,7 +116,7 @@ def test_resolve_active_studies_with_empty_filter_sets_returns_all_studies() -> 
 def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_execute_pipeline_returns_success_results_and_forwards_worker_arguments behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=2)
@@ -130,7 +130,7 @@ def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
         *,
         scale: int,
     ) -> str:
-        """TODO: Add docstring."""
+        """Implementation detail."""
         assert sdk_client is sdk
         assert study_logger.study_key == study_key
         return f"{study_key}-{suffix}-{scale}"
@@ -148,7 +148,7 @@ def test_execute_pipeline_returns_success_results_and_forwards_worker_arguments(
 def test_execute_pipeline_isolates_per_study_failures(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_execute_pipeline_isolates_per_study_failures behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=3)
@@ -157,7 +157,7 @@ def test_execute_pipeline_isolates_per_study_failures(
     def worker(
         study_key: str, _sdk_client: MagicMock, _study_logger: StudyContextLogAdapter
     ) -> str:
-        """TODO: Add docstring."""
+        """Test worker behavior."""
         if study_key == "B":
             raise RuntimeError("boom")
         return f"ok-{study_key}"
@@ -191,7 +191,7 @@ def test_execute_pipeline_propagates_study_context_to_worker_thread(
         sdk_client: MagicMock,
         study_logger: StudyContextLogAdapter,
     ) -> str:
-        """TODO: Add docstring."""
+        """Test worker behavior."""
         # get_current_study() must resolve to the same key passed explicitly.
         return get_current_study()
 
@@ -204,14 +204,14 @@ def test_execute_pipeline_propagates_study_context_to_worker_thread(
 
 
 def test_sdk_property_returns_original_sdk() -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_property_returns_original_sdk behavior."""
     sdk = MagicMock()
     orchestrator = MultiStudyOrchestrator(sdk)
     assert orchestrator.sdk is sdk
 
 
 def test_max_workers_property_returns_configured_value() -> None:
-    """TODO: Add docstring."""
+    """Test test_max_workers_property_returns_configured_value behavior."""
     sdk = MagicMock()
     orchestrator = MultiStudyOrchestrator(sdk, max_workers=7)
     assert orchestrator.max_workers == 7
@@ -220,7 +220,7 @@ def test_max_workers_property_returns_configured_value() -> None:
 def test_resolve_active_studies_logs_and_returns_all_when_no_filters(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_logs_and_returns_all_when_no_filters behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B")]
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -235,7 +235,7 @@ def test_resolve_active_studies_logs_and_returns_all_when_no_filters(
 def test_resolve_active_studies_logs_whitelist_selection(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_logs_whitelist_selection behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk)
@@ -250,7 +250,7 @@ def test_resolve_active_studies_logs_whitelist_selection(
 def test_resolve_active_studies_logs_blacklist_selection(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_active_studies_logs_blacklist_selection behavior."""
     sdk = MagicMock()
     sdk.studies.list.return_value = [_make_study("A"), _make_study("B"), _make_study("C")]
     orchestrator = MultiStudyOrchestrator(sdk)

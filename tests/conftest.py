@@ -1,6 +1,6 @@
 # ruff: noqa: E402
 
-"""TODO: Add docstring."""
+"""Tests for conftest."""
 
 import sys
 from pathlib import Path
@@ -39,7 +39,7 @@ def block_external_requests(request: pytest.FixtureRequest):
 
 
 def _is_live_test(node: object) -> bool:
-    """TODO: Add docstring."""
+    """Test _is_live_test behavior."""
     if not hasattr(node, "get_closest_marker"):
         return False
 
@@ -55,7 +55,7 @@ def _is_live_test(node: object) -> bool:
 
 @pytest.fixture(autouse=True)
 def reset_study_context_between_tests():
-    """TODO: Add docstring."""
+    """Test reset_study_context_between_tests behavior."""
     clear_study_context()
     yield
     clear_study_context()
@@ -63,7 +63,7 @@ def reset_study_context_between_tests():
 
 @pytest.fixture(autouse=True)
 def reset_circuit_breaker_between_tests():
-    """TODO: Add docstring."""
+    """Test reset_circuit_breaker_between_tests behavior."""
     from imednet.core.operations.circuit_breaker import get_global_circuit_breaker
 
     get_global_circuit_breaker().reset()
@@ -72,35 +72,35 @@ def reset_circuit_breaker_between_tests():
 
 
 class DummyResponse:
-    """TODO: Add docstring."""
+    """Test suite for DummyResponse."""
 
     def __init__(self, data):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self._data = data
 
     def json(self):
-        """TODO: Add docstring."""
+        """Test json behavior."""
         return self._data
 
 
 @pytest.fixture
 def context():
-    """TODO: Add docstring."""
+    """Test context behavior."""
     return Context()
 
 
 @pytest.fixture
 def dummy_client():
-    """TODO: Add docstring."""
+    """Test dummy_client behavior."""
     return MagicMock()
 
 
 @pytest.fixture
 def response_factory():
-    """TODO: Add docstring."""
+    """Test response_factory behavior."""
 
     def factory(data):
-        """TODO: Add docstring."""
+        """Test factory behavior."""
         return DummyResponse(data)
 
     return factory
@@ -108,19 +108,19 @@ def response_factory():
 
 @pytest.fixture
 def paginator_factory(monkeypatch):
-    """TODO: Add docstring."""
+    """Test paginator_factory behavior."""
     from imednet.core.endpoint.operations.list import ListOperation
     from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
-        """TODO: Add docstring."""
+        """Test factory behavior."""
         captured = {"count": 0}
 
         class DummyPaginator:
-            """TODO: Add docstring."""
+            """Test suite for DummyPaginator."""
 
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
-                """TODO: Add docstring."""
+                """Test __init__ behavior."""
                 captured["client"] = client
                 captured["path"] = path
                 captured["params"] = params or {}
@@ -129,7 +129,7 @@ def paginator_factory(monkeypatch):
                 self._items = items
 
             def __iter__(self):
-                """TODO: Add docstring."""
+                """Test __iter__ behavior."""
                 yield from self._items
 
         from imednet.core.endpoint.base import SyncListGetEndpoint
@@ -139,7 +139,7 @@ def paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_sync(self, client, paginator_cls):
-            """TODO: Add docstring."""
+            """Test fake_execute_sync behavior."""
             paginator = paginator_cls(
                 client, self.path, params=self.params, page_size=self.page_size
             )
@@ -154,19 +154,19 @@ def paginator_factory(monkeypatch):
 
 @pytest.fixture
 def async_paginator_factory(monkeypatch):
-    """TODO: Add docstring."""
+    """Test async_paginator_factory behavior."""
     from imednet.core.endpoint.operations.list import ListOperation
     from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
-        """TODO: Add docstring."""
+        """Test factory behavior."""
         captured = {"count": 0}
 
         class DummyPaginator:
-            """TODO: Add docstring."""
+            """Test suite for DummyPaginator."""
 
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
-                """TODO: Add docstring."""
+                """Test __init__ behavior."""
                 captured["client"] = client
                 captured["path"] = path
                 captured["params"] = params or {}
@@ -175,7 +175,7 @@ def async_paginator_factory(monkeypatch):
                 self._items = items
 
             async def __aiter__(self):
-                """TODO: Add docstring."""
+                """Implementation detail."""
                 for item in self._items:
                     yield item
 
@@ -186,7 +186,7 @@ def async_paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_async(self, client, paginator_cls):
-            """TODO: Add docstring."""
+            """Test fake_execute_async behavior."""
             paginator = paginator_cls(
                 client, self.path, params=self.params, page_size=self.page_size
             )
@@ -202,14 +202,14 @@ def async_paginator_factory(monkeypatch):
 
 @pytest.fixture
 def patch_build_filter(monkeypatch):
-    """TODO: Add docstring."""
+    """Test patch_build_filter behavior."""
 
     def patch(module):
-        """TODO: Add docstring."""
+        """Test patch behavior."""
         captured = {}
 
         def fake(filters):
-            """TODO: Add docstring."""
+            """Test fake behavior."""
             captured["filters"] = filters
             return "FILTERED"
 
@@ -226,13 +226,13 @@ def patch_build_filter(monkeypatch):
 
 @pytest.fixture
 def http_client():
-    """TODO: Add docstring."""
+    """Test http_client behavior."""
     return Client("key", "secret", base_url="https://api.test")
 
 
 @pytest_asyncio.fixture
 async def async_http_client():
-    """TODO: Add docstring."""
+    """Implementation detail."""
     client = AsyncClient("key", "secret", base_url="https://api.test")
     try:
         yield client
@@ -242,19 +242,19 @@ async def async_http_client():
 
 @pytest.fixture
 def respx_mock_client(http_client, respx_mock):
-    """TODO: Add docstring."""
+    """Test respx_mock_client behavior."""
     respx_mock.base_url = http_client.base_url
     return respx_mock
 
 
 @pytest_asyncio.fixture
 async def respx_mock_async_client(async_http_client, respx_mock):
-    """TODO: Add docstring."""
+    """Implementation detail."""
     respx_mock.base_url = async_http_client.base_url
     return respx_mock
 
 
 @pytest.fixture
 def sample_data():
-    """TODO: Add docstring."""
+    """Test sample_data behavior."""
     return {"data": [1]}

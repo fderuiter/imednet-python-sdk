@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Get Records Async module."""
 
 import asyncio
 
@@ -16,7 +16,7 @@ Ensure your environment variables (IMEDNET_API_KEY, IMEDNET_SECURITY_KEY) are se
 
 
 async def main() -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     configure_json_logging()
 
     try:

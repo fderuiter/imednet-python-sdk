@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Paginated Grid module."""
 
 from __future__ import annotations
 

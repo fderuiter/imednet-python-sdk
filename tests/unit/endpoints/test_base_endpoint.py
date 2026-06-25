@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_base_endpoint."""
 
 import inspect
 from unittest.mock import MagicMock
@@ -13,24 +13,24 @@ from imednet.models.json_base import JsonModel
 
 
 class MockModel(JsonModel):
-    """TODO: Add docstring."""
+    """Test suite for MockModel."""
 
     pass
 
 
 class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):
-    """TODO: Add docstring."""
+    """Test suite for MockEndpointImpl."""
 
     PATH = "/test"
     MODEL = MockModel
 
     def __init__(self, client, ctx, async_client=None):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         super().__init__(client, ctx, async_client)
 
 
 class MockListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[MockModel]):
-    """TODO: Add docstring."""
+    """Test suite for MockListGetEndpoint."""
 
     PATH = "/items"
     MODEL = MockModel
@@ -38,26 +38,26 @@ class MockListGetEndpoint(EdcEndpointMixin, GenericListGetEndpoint[MockModel]):
 
 
 class TestBaseEndpoint:
-    """TODO: Add docstring."""
+    """Test suite for TestBaseEndpoint."""
 
     @pytest.fixture
     def client(self):
-        """TODO: Add docstring."""
+        """Test client behavior."""
         return MagicMock(spec=Client)
 
     @pytest.fixture
     def context(self):
-        """TODO: Add docstring."""
+        """Test context behavior."""
         return Context()
 
     def test_require_async_client_raises(self, client, context):
-        """TODO: Add docstring."""
+        """Test test_require_async_client_raises behavior."""
         ep = MockEndpointImpl(client, context, async_client=None)
         with pytest.raises(RuntimeError, match="Async client not configured"):
             ep._require_async_client()
 
     def test_auto_filter_injects_study_key(self, client, context):
-        """TODO: Add docstring."""
+        """Test test_auto_filter_injects_study_key behavior."""
         context.set_default_study_key("DEFAULT")
         ep = MockEndpointImpl(client, context)
 
@@ -67,7 +67,7 @@ class TestBaseEndpoint:
         assert result["foo"] == "bar"
 
     def test_auto_filter_preserves_existing_study_key(self, client, context):
-        """TODO: Add docstring."""
+        """Test test_auto_filter_preserves_existing_study_key behavior."""
         context.set_default_study_key("DEFAULT")
         ep = MockEndpointImpl(client, context)
 
@@ -76,14 +76,14 @@ class TestBaseEndpoint:
         assert result["studyKey"] == "EXPLICIT"
 
     def test_get_signature_is_explicit(self, client, context):
-        """TODO: Add docstring."""
+        """Test test_get_signature_is_explicit behavior."""
         ep = MockListGetEndpoint(client, context)
         signature = inspect.signature(ep.get)
 
         assert list(signature.parameters.keys()) == ["study_key", "item_id"]
 
     def test_get_requires_item_id(self, client, context):
-        """TODO: Add docstring."""
+        """Test test_get_requires_item_id behavior."""
         ep = MockListGetEndpoint(client, context)
 
         with pytest.raises(TypeError, match="Missing required argument: item_id"):

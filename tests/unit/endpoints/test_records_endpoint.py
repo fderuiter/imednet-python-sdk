@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_records_endpoint."""
 
 import pytest
 
@@ -12,7 +12,7 @@ from imednet.validation.cache import SchemaCache
 def test_list_builds_path_filters_and_data_filter(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
-    """TODO: Add docstring."""
+    """Test test_list_builds_path_filters_and_data_filter behavior."""
     ep = records.RecordsEndpoint(dummy_client, context)
     captured = paginator_factory(records, [{"recordId": 1}])
     filter_capture = patch_build_filter(records)
@@ -30,12 +30,12 @@ def test_list_builds_path_filters_and_data_filter(
 
 
 def test_get_success(monkeypatch, dummy_client, context):
-    """TODO: Add docstring."""
+    """Test test_get_success behavior."""
     ep = records.RecordsEndpoint(dummy_client, context)
     called = {}
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        """TODO: Add docstring."""
+        """Test fake_impl behavior."""
         called["study_key"] = study_key
         called["filters"] = filters
         return [Record(record_id=1)]
@@ -49,7 +49,7 @@ def test_get_success(monkeypatch, dummy_client, context):
 
 
 def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
-    """TODO: Add docstring."""
+    """Test test_get_rejects_unknown_keyword behavior."""
     context.set_default_study_key("S1")
     ep = records.RecordsEndpoint(dummy_client, context)
     monkeypatch.setattr(
@@ -61,11 +61,11 @@ def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """TODO: Add docstring."""
+    """Test test_get_not_found behavior."""
     ep = records.RecordsEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        """TODO: Add docstring."""
+        """Test fake_impl behavior."""
         return []
 
     monkeypatch.setattr(records.RecordsEndpoint, "_list_sync", fake_impl)
@@ -75,13 +75,13 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 
 def test_create_sends_headers_and_parses_job(dummy_client, context, response_factory, monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_create_sends_headers_and_parses_job behavior."""
     ep = records.RecordsEndpoint(dummy_client, context)
     dummy_client.post.return_value = response_factory({"jobId": "1"})
     called = {}
 
     def fake_from_json(data):
-        """TODO: Add docstring."""
+        """Test fake_from_json behavior."""
         called["data"] = data
         return "JOB"
 
@@ -99,7 +99,7 @@ def test_create_sends_headers_and_parses_job(dummy_client, context, response_fac
 
 
 def test_create_validates_data(dummy_client, context, response_factory):
-    """TODO: Add docstring."""
+    """Test test_create_validates_data behavior."""
     ep = records.RecordsEndpoint(dummy_client, context)
     schema = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -123,7 +123,7 @@ def test_create_validates_data(dummy_client, context, response_factory):
 
 
 def test_create_validates_data_with_snake_case_keys(dummy_client, context, response_factory):
-    """TODO: Add docstring."""
+    """Test test_create_validates_data_with_snake_case_keys behavior."""
     ep = records.RecordsEndpoint(dummy_client, context)
     schema = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
@@ -139,7 +139,7 @@ def test_create_validates_data_with_snake_case_keys(dummy_client, context, respo
 
 
 def test_create_raises_on_header_injection(dummy_client, context):
-    """TODO: Add docstring."""
+    """Test test_create_raises_on_header_injection behavior."""
     ep = records.RecordsEndpoint(dummy_client, context)
     with pytest.raises(ClientError, match="Header value must not contain newlines"):
         ep.create("S1", [{"data": {}}], email_notify="test\n@example.com")

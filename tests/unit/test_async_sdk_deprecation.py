@@ -1,10 +1,10 @@
-"""TODO: Add docstring."""
+"""Tests for test_async_sdk_deprecation."""
 
 import pytest
 
 
 def test_async_sdk_deprecation_warning():
-    """TODO: Add docstring."""
+    """Test test_async_sdk_deprecation_warning behavior."""
     import sys
 
     if "imednet.async_sdk" in sys.modules:

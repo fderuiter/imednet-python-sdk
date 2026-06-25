@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Quick Start Test module."""
 
 from imednet import ImednetSDK, load_config
 from imednet.utils import configure_json_logging

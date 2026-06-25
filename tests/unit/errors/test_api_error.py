@@ -1,10 +1,10 @@
-"""TODO: Add docstring."""
+"""Tests for test_api_error."""
 
 from imednet.errors.api import ApiError
 
 
 def test_api_error_str_representation():
-    """TODO: Add docstring."""
+    """Test test_api_error_str_representation behavior."""
     # Test basic instantiation with string
     err = ApiError("Something went wrong")
     assert str(err) == "Something went wrong (Response: Something went wrong)"
@@ -21,7 +21,7 @@ def test_api_error_str_representation():
 
 
 def test_api_error_empty_response():
-    """TODO: Add docstring."""
+    """Test test_api_error_empty_response behavior."""
     # Test instantiation with empty response string
     err = ApiError("", status_code=500)
     assert str(err) == " (Status Code: 500)"
@@ -32,6 +32,6 @@ def test_api_error_empty_response():
 
 
 def test_api_error_base_str_only():
-    """TODO: Add docstring."""
+    """Test test_api_error_base_str_only behavior."""
     err = ApiError(None)
     assert str(err) == "None"

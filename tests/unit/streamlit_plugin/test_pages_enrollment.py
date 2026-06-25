@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_pages_enrollment."""
 
 from __future__ import annotations
 
@@ -15,36 +15,36 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for _FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Test __enter__ behavior."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Test __exit__ behavior."""
         pass
 
 
 class _FakeCacheDataDecorator:
-    """TODO: Add docstring."""
+    """Test suite for _FakeCacheDataDecorator."""
 
     def __call__(self, func: Any = None, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Test __call__ behavior."""
         if func is not None:
             return func
         return lambda f: f
 
     def clear(self) -> None:
-        """TODO: Add docstring."""
+        """Test clear behavior."""
         pass
 
 
 class _FakeEnrollmentStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for _FakeEnrollmentStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.titles: list[str] = []
         self.infos: list[str] = []
@@ -54,100 +54,100 @@ class _FakeEnrollmentStreamlit:
         self.sidebar = _FakeContextManager()
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test title behavior."""
         self.titles.append(value)
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test info behavior."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test success behavior."""
         self.successes.append(value)
 
     def markdown(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test markdown behavior."""
         self.markdowns.append(value)
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Test button behavior."""
         return False
 
     def subheader(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test subheader behavior."""
         pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test altair_chart behavior."""
         pass
 
     def columns(self, spec: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Test columns behavior."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager() for _ in range(count)]
 
     def multiselect(self, label: str, options: Any, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Test multiselect behavior."""
         return list(kwargs.get("default", []))
 
     def date_input(self, label: str, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Test date_input behavior."""
         val = kwargs.get("value", [])
         return list(val) if hasattr(val, "__iter__") else []
 
     def rerun(self) -> None:
-        """TODO: Add docstring."""
+        """Test rerun behavior."""
         pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test text_input behavior."""
         return ""
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test dataframe behavior."""
         pass
 
     def download_button(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test download_button behavior."""
         pass
 
     def metric(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test metric behavior."""
         pass
 
 
 def _make_fake_components_module() -> ModuleType:
-    """TODO: Add docstring."""
+    """Test _make_fake_components_module behavior."""
     import pandas as pd
 
     mod = ModuleType("imednet_streamlit.components")
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
-        """TODO: Add docstring."""
+        """Test _noop_kpi_row behavior."""
         pass
 
     def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """TODO: Add docstring."""
+        """Test _noop_bar_chart behavior."""
         return MagicMock()
 
     def _noop_line_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """TODO: Add docstring."""
+        """Test _noop_line_chart behavior."""
         return MagicMock()
 
     def _noop_pie_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """TODO: Add docstring."""
+        """Test _noop_pie_chart behavior."""
         return MagicMock()
 
     def _noop_filterable_dataframe(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test _noop_filterable_dataframe behavior."""
         pass
 
     def _noop_csv_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test _noop_csv_download_button behavior."""
         pass
 
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test _noop_excel_download_button behavior."""
         pass
 
     mod.kpi_row = _noop_kpi_row  # type: ignore[attr-defined]
@@ -161,7 +161,7 @@ def _make_fake_components_module() -> ModuleType:
 
 
 def test_enrollment_page_renders_with_mock_sdk() -> None:
-    """TODO: Add docstring."""
+    """Test test_enrollment_page_renders_with_mock_sdk behavior."""
     page_path = PACKAGE_ROOT / "pages" / "enrollment.py"
     fake_st = _FakeEnrollmentStreamlit()
 
@@ -201,7 +201,7 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
         site_name: str,
         enrollment_start_date: datetime.datetime | None = None,
     ) -> MagicMock:
-        """TODO: Add docstring."""
+        """Implementation detail."""
         s = MagicMock()
         s.subject_id = subject_id
         s.subject_key = f"S{subject_id:03d}"
@@ -266,19 +266,19 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
 
 
 def test_enrollment_page_empty_and_filters_and_refresh() -> None:
-    """TODO: Add docstring."""
+    """Test test_enrollment_page_empty_and_filters_and_refresh behavior."""
     page_path = PACKAGE_ROOT / "pages" / "enrollment.py"
     fake_st = _FakeEnrollmentStreamlit()
 
     # Stub the button to return True for refresh, and multiselect to return filters
     def _button(label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Test _button behavior."""
         if label == "🔄 Refresh Data":
             return True
         return False
 
     def _multiselect(label: str, options: Any, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Test _multiselect behavior."""
         if label == "Site":
             return ["Site A"]
         if label == "Subject Status":

@@ -18,7 +18,7 @@ MODULE_NAME = "imednet_streamlit.pages.publisher_wizard"
 
 
 def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> ConfigVersionStore:
-    """TODO: Add docstring."""
+    """Test _make_committed_store behavior."""
     store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
     config = StudyConfiguration(
         version="1.0.0",
@@ -41,22 +41,22 @@ def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> Config
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for _FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Test __enter__ behavior."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Test __exit__ behavior."""
         pass
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for _FakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.success_calls: list[str] = []
         self.warning_calls: list[str] = []
@@ -67,54 +67,54 @@ class _FakeStreamlit:
         self.text_input_values: dict[str, str] = {}
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test title behavior."""
         pass
 
     def subheader(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test subheader behavior."""
         pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test markdown behavior."""
         pass
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test info behavior."""
         self.info_calls.append(value)
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test success behavior."""
         self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test warning behavior."""
         self.warning_calls.append(value)
 
     def error(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test error behavior."""
         self.error_calls.append(value)
 
     def divider(self) -> None:
-        """TODO: Add docstring."""
+        """Test divider behavior."""
         pass
 
     def json(self, value: Any) -> None:
-        """TODO: Add docstring."""
+        """Test json behavior."""
         pass
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test dataframe behavior."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Test button behavior."""
         key = str(kwargs.get("key") or label)
         if kwargs.get("disabled", False):
             return False
         return key in self.button_presses
 
     def columns(self, spec: Any) -> list[_FakeContextManager]:
-        """TODO: Add docstring."""
+        """Test columns behavior."""
         count = spec if isinstance(spec, int) else len(spec)
         cols = [_FakeContextManager() for _ in range(count)]
         # Attach button and other widget methods to each column
@@ -126,37 +126,37 @@ class _FakeStreamlit:
         return cols
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Test selectbox behavior."""
         key = str(kwargs.get("key") or label)
         if key in self.selectbox_values and self.selectbox_values[key] in options:
             return self.selectbox_values[key]
         return options[index]
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test text_input behavior."""
         key = str(kwargs.get("key") or label)
         if key in self.text_input_values:
             return self.text_input_values[key]
         return str(kwargs.get("value", ""))
 
     def text_area(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Test text_area behavior."""
         return str(kwargs.get("value", ""))
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
-        """TODO: Add docstring."""
+        """Test expander behavior."""
         return _FakeContextManager()
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test metric behavior."""
         pass
 
     def caption(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Test caption behavior."""
         pass
 
     def progress(self, value: float) -> None:
-        """TODO: Add docstring."""
+        """Test progress behavior."""
         pass
 
 
@@ -166,7 +166,7 @@ def _run_publisher_wizard(
     *,
     study_key: str = "STUDY-01",
 ) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     fake_streamlit_module = ModuleType("streamlit")
     fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
     for attr in (
@@ -196,19 +196,19 @@ def _run_publisher_wizard(
     fake_auth_module.get_study_key = lambda: study_key  # type: ignore[attr-defined]
 
     class FakeAuth:
-        """TODO: Add docstring."""
+        """Test suite for FakeAuth."""
 
         def get_user_roles(self):
-            """TODO: Add docstring."""
+            """Test get_user_roles behavior."""
             # Read from session state simulator instead of UI
             return [fake_st.selectbox_values.get("_publisher_role", "viewer")]
 
         def get_user_id(self):
-            """TODO: Add docstring."""
+            """Test get_user_id behavior."""
             return fake_st.text_input_values.get("_publisher_user", "")
 
     class FakeSDK:
-        """TODO: Add docstring."""
+        """Test suite for FakeSDK."""
 
         auth = FakeAuth()
 

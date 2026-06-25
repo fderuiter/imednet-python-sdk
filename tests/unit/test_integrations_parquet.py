@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_integrations_parquet."""
 
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,14 +12,14 @@ from imednet.errors import PathTraversalValidationError
 
 
 def _read_partition_dataframe(path: Path) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Test _read_partition_dataframe behavior."""
     parquet_files = sorted(path.glob("**/*.parquet"))
     assert parquet_files
     return pd.read_parquet(parquet_files[0], engine="pyarrow")
 
 
 def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_export_creates_hive_layout_and_contents behavior."""
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
@@ -33,26 +33,26 @@ def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
     ]
 
     class FakeMapper:
-        """TODO: Add docstring."""
+        """Test suite for FakeMapper."""
 
         def __init__(self, _sdk) -> None:
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             self._sdk = _sdk
 
         def _build_record_model(self, variable_keys, label_map):
-            """TODO: Add docstring."""
+            """Test _build_record_model behavior."""
             return (variable_keys, label_map)
 
         def _fetch_records(self, _study_key, extra_filters):
-            """TODO: Add docstring."""
+            """Test _fetch_records behavior."""
             return [extra_filters["formId"]]
 
         def _parse_records(self, records, _record_model):
-            """TODO: Add docstring."""
+            """Test _parse_records behavior."""
             return records, len(records)
 
         def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
-            """TODO: Add docstring."""
+            """Test _build_dataframe behavior."""
             form_id = rows[0]
             if form_id == 1:
                 return pd.DataFrame([{"age": 42}])
@@ -74,7 +74,7 @@ def test_export_creates_hive_layout_and_contents(tmp_path, monkeypatch) -> None:
 
 
 def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_export_isolates_studies behavior."""
     pytest.importorskip("pyarrow")
 
     sdk = MagicMock()
@@ -82,26 +82,26 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
     sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
 
     class FakeMapper:
-        """TODO: Add docstring."""
+        """Test suite for FakeMapper."""
 
         def __init__(self, _sdk) -> None:
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             self._sdk = _sdk
 
         def _build_record_model(self, variable_keys, label_map):
-            """TODO: Add docstring."""
+            """Test _build_record_model behavior."""
             return (variable_keys, label_map)
 
         def _fetch_records(self, study_key, extra_filters):
-            """TODO: Add docstring."""
+            """Test _fetch_records behavior."""
             return [(study_key, extra_filters["formId"])]
 
         def _parse_records(self, records, _record_model):
-            """TODO: Add docstring."""
+            """Test _parse_records behavior."""
             return records, len(records)
 
         def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
-            """TODO: Add docstring."""
+            """Test _build_dataframe behavior."""
             study_key, _form_id = rows[0]
             return pd.DataFrame([{"study": study_key}])
 
@@ -120,7 +120,7 @@ def test_export_isolates_studies(tmp_path, monkeypatch) -> None:
 
 
 def test_hive_parquet_query() -> None:
-    """TODO: Add docstring."""
+    """Test test_hive_parquet_query behavior."""
     assert (
         parquet_mod.hive_parquet_query("/tmp/lake")
         == "SELECT * FROM read_parquet('/tmp/lake/**/*.parquet', "
@@ -129,10 +129,10 @@ def test_hive_parquet_query() -> None:
 
 
 def test_export_to_hive_parquet_missing_pyarrow(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_export_to_hive_parquet_missing_pyarrow behavior."""
 
     def _raise_import_error(module_name: str):
-        """TODO: Add docstring."""
+        """Test _raise_import_error behavior."""
         if module_name == "pyarrow":
             raise ImportError("missing pyarrow")
         return __import__(module_name)
@@ -144,7 +144,7 @@ def test_export_to_hive_parquet_missing_pyarrow(monkeypatch) -> None:
 
 
 def test_export_to_hive_parquet_rejects_malicious_study_key(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_export_to_hive_parquet_rejects_malicious_study_key behavior."""
     monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: None)
 
     sdk = MagicMock()
@@ -156,7 +156,7 @@ def test_export_to_hive_parquet_rejects_malicious_study_key(monkeypatch) -> None
 
 
 def test_export_to_hive_parquet_rejects_malicious_form_key(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_export_to_hive_parquet_rejects_malicious_form_key behavior."""
     monkeypatch.setattr(parquet_mod, "_ensure_pyarrow", lambda: None)
 
     sdk = MagicMock()
@@ -173,44 +173,44 @@ def test_export_to_hive_parquet_rejects_malicious_form_key(monkeypatch) -> None:
 
 
 def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test test_export_to_hive_parquet_flushes_form_batches behavior."""
     sdk = MagicMock()
     sdk.forms.list.return_value = [SimpleNamespace(form_id=1, form_key="DEMOGRAPHICS")]
     sdk.variables.list.return_value = [SimpleNamespace(form_id=1, variable_name="age", label="Age")]
 
     class FakeMapper:
-        """TODO: Add docstring."""
+        """Test suite for FakeMapper."""
 
         def __init__(self, _sdk) -> None:
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             self._sdk = _sdk
 
         def _build_record_model(self, variable_keys, label_map):
-            """TODO: Add docstring."""
+            """Test _build_record_model behavior."""
             return (variable_keys, label_map)
 
         def _iter_records(self, _study_key, extra_filters):
-            """TODO: Add docstring."""
+            """Test _iter_records behavior."""
             assert extra_filters == {"formIds": [1]}
             return iter([1, 2, 3])
 
         def _iter_parsed_rows(self, records, _record_model):
-            """TODO: Add docstring."""
+            """Test _iter_parsed_rows behavior."""
             values = list(records)
             yield values[:2], 0
             yield values[2:], 0
 
         def _build_dataframe(self, rows, _variable_keys, _label_map, _use_labels_as_columns):
-            """TODO: Add docstring."""
+            """Test _build_dataframe behavior."""
             return pd.DataFrame([{"age": value} for value in rows])
 
     writes: list[list[dict[str, int]]] = []
 
     class FakeEngine:
-        """TODO: Add docstring."""
+        """Test suite for FakeEngine."""
 
         def write_form_table(self, table, **kwargs) -> None:
-            """TODO: Add docstring."""
+            """Test write_form_table behavior."""
             assert kwargs == {
                 "base_dir": str(tmp_path),
                 "study_key": "STUDY_A",
@@ -219,11 +219,11 @@ def test_export_to_hive_parquet_flushes_form_batches(monkeypatch, tmp_path) -> N
             writes.append(table.to_dict("records"))
 
     class _FakeTable:
-        """TODO: Add docstring."""
+        """Test suite for _FakeTable."""
 
         @staticmethod
         def from_pandas(df: pd.DataFrame, preserve_index: bool = False) -> pd.DataFrame:
-            """TODO: Add docstring."""
+            """Test from_pandas behavior."""
             assert preserve_index is False
             return df
 

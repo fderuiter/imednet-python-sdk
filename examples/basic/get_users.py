@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Get Users module."""
 
 from imednet import ImednetSDK as ImednetClient
 from imednet import load_config
@@ -29,7 +29,7 @@ Raises:
 
 
 def main():
-    """TODO: Add docstring."""
+    """Perform main operation."""
     configure_json_logging()
 
     try:

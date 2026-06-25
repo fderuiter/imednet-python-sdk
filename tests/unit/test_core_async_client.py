@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_core_async_client."""
 
 import httpx
 import pytest
@@ -6,7 +6,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_async_get_success(async_http_client, respx_mock_async_client, sample_data):
-    """TODO: Add docstring."""
+    """Implementation detail."""
     respx_mock_async_client.get("/items").mock(return_value=httpx.Response(200, json=sample_data))
 
     response = await async_http_client.get("/items")

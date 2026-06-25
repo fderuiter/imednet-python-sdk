@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Imednet Job Sensor Dag module."""
 
 from datetime import datetime
 

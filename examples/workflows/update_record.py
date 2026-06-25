@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Update Record module."""
 
 from imednet import ImednetSDK
 from imednet_workflows import JobPoller, RecordUpdateWorkflow

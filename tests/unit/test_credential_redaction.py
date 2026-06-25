@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_credential_redaction."""
 
 import logging
 from unittest.mock import MagicMock
@@ -13,7 +13,7 @@ from imednet.errors import ApiError, AuthenticationError, RateLimitError
 
 
 def test_api_key_auth_repr_and_str_mask_secrets() -> None:
-    """TODO: Add docstring."""
+    """Test test_api_key_auth_repr_and_str_mask_secrets behavior."""
     auth = ApiKeyAuth(api_key="plain-api-key", security_key="plain-security-key")
 
     assert "plain-api-key" not in repr(auth)
@@ -25,7 +25,7 @@ def test_api_key_auth_repr_and_str_mask_secrets() -> None:
 
 @pytest.mark.parametrize("error_cls", [AuthenticationError, RateLimitError])
 def test_api_errors_mask_sensitive_values(error_cls: type[ApiError]) -> None:
-    """TODO: Add docstring."""
+    """Test test_api_errors_mask_sensitive_values behavior."""
     secret_api_key = "very-secret-api-key"
     secret_token = "very-secret-token"
     secret_auth = "Bearer very-secret-authorization"
@@ -51,7 +51,7 @@ def test_api_errors_mask_sensitive_values(error_cls: type[ApiError]) -> None:
 def test_http_client_never_logs_authorization_header(
     caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_http_client_never_logs_authorization_header behavior."""
     monkeypatch.setenv("IMEDNET_API_KEY", "api")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "security")
     caplog.set_level("DEBUG")
@@ -75,7 +75,7 @@ def test_http_client_never_logs_authorization_header(
 
 
 def test_cli_surfaces_redacted_authentication_errors(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_cli_surfaces_redacted_authentication_errors behavior."""
     from importlib import import_module
 
     runner = CliRunner()

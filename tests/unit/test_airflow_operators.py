@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_airflow_operators."""
 
 import importlib
 import sys
@@ -9,7 +9,7 @@ import pytest
 
 
 def _setup_airflow(monkeypatch):
-    """TODO: Add docstring."""
+    """Test _setup_airflow behavior."""
     airflow = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_base = ModuleType("airflow.sdk.bases.hook")
@@ -23,29 +23,29 @@ def _setup_airflow(monkeypatch):
     s3_mod = ModuleType("airflow.providers.amazon.aws.hooks.s3")
 
     class DummyBaseHook:
-        """TODO: Add docstring."""
+        """Test suite for DummyBaseHook."""
 
         @classmethod
         def get_connection(cls, conn_id):
-            """TODO: Add docstring."""
+            """Test get_connection behavior."""
             raise NotImplementedError
 
     class DummyBaseOperator:
-        """TODO: Add docstring."""
+        """Test suite for DummyBaseOperator."""
 
         template_fields = ()
 
         def __init__(self, *a, **kw):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
     class DummySensorOperator:
-        """TODO: Add docstring."""
+        """Test suite for DummySensorOperator."""
 
         template_fields = ()
 
         def __init__(self, *a, **kw):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
     hooks_base.BaseHook = DummyBaseHook
@@ -53,7 +53,7 @@ def _setup_airflow(monkeypatch):
     sensors_base.BaseSensorOperator = DummySensorOperator
 
     class DummyAirflowError(Exception):
-        """TODO: Add docstring."""
+        """Test suite for DummyAirflowError."""
 
         pass
 
@@ -98,7 +98,7 @@ def _setup_airflow(monkeypatch):
 
 
 def _import_operators(monkeypatch):
-    """TODO: Add docstring."""
+    """Test _import_operators behavior."""
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.operators as ops
 
@@ -106,7 +106,7 @@ def _import_operators(monkeypatch):
 
 
 def _import_sensors(monkeypatch):
-    """TODO: Add docstring."""
+    """Test _import_sensors behavior."""
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.sensors as sensors
 
@@ -114,7 +114,7 @@ def _import_sensors(monkeypatch):
 
 
 def _patch_basehook(monkeypatch, extras=None):
-    """TODO: Add docstring."""
+    """Test _patch_basehook behavior."""
     conn = SimpleNamespace(login=None, password=None, extra_dejson=extras or {})
     import apache_airflow_providers_imednet.hooks as hook_mod
 
@@ -127,7 +127,7 @@ def _patch_basehook(monkeypatch, extras=None):
 
 
 def test_job_sensor(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_job_sensor behavior."""
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.operators as ops
     import apache_airflow_providers_imednet.sensors as sensors

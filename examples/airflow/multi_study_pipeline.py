@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Multi Study Pipeline module."""
 
 from __future__ import annotations
 

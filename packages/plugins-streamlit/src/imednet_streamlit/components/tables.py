@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tables module."""
 
 from __future__ import annotations
 

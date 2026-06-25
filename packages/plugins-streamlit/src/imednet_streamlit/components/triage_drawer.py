@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Triage Drawer module."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ def _record_action(
     assignee: str | None = None,
     comment: str | None = None,
 ) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     st.session_state[_LAST_ACTION_KEY] = {
         "item_id": item_id,
         "action": action,

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_validation_schema."""
 
 import importlib
 
@@ -6,7 +6,7 @@ import pytest
 
 
 def test_schema_module_exports_and_deprecation_warning() -> None:
-    """TODO: Add docstring."""
+    """Test test_schema_module_exports_and_deprecation_warning behavior."""
     # First ensure we import it, and catch the warning so it doesn't fail strict CI
     with pytest.warns(
         DeprecationWarning,

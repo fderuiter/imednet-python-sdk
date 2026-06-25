@@ -1,11 +1,11 @@
-"""TODO: Add docstring."""
+"""Tests for test_mermaid_diagrams."""
 
 import re
 from pathlib import Path
 
 
 def get_mermaid_lines(path: Path):
-    """TODO: Add docstring."""
+    """Test get_mermaid_lines behavior."""
     lines = []
     inside = False
     skip_blank = False
@@ -30,7 +30,7 @@ PATTERN = re.compile(r"\[[^\]]*\([^\)]*\)\]")
 
 
 def test_no_unquoted_parentheses_in_mermaid_blocks():
-    """TODO: Add docstring."""
+    """Test test_no_unquoted_parentheses_in_mermaid_blocks behavior."""
     errors = []
     for path in Path("docs").rglob("*.rst"):
         if "_build" in path.parts:

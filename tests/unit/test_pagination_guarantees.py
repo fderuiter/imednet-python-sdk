@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_pagination_guarantees."""
 
 import itertools
 
@@ -12,7 +12,7 @@ from imednet.errors import PaginationError
 
 @respx.mock
 def test_empty_result_set_stops_immediately() -> None:
-    """TODO: Add docstring."""
+    """Test test_empty_result_set_stops_immediately behavior."""
     respx.get("https://api.test/items").mock(
         return_value=httpx.Response(200, json={"data": [], "pagination": {"totalPages": 0}})
     )
@@ -24,7 +24,7 @@ def test_empty_result_set_stops_immediately() -> None:
 
 @respx.mock
 def test_single_page_iteration() -> None:
-    """TODO: Add docstring."""
+    """Test test_single_page_iteration behavior."""
     respx.get("https://api.test/items").mock(
         return_value=httpx.Response(200, json={"data": [1, 2], "pagination": {"totalPages": 1}})
     )
@@ -38,11 +38,11 @@ def test_single_page_iteration() -> None:
 
 @respx.mock
 def test_last_page_partial_results() -> None:
-    """TODO: Add docstring."""
+    """Test test_last_page_partial_results behavior."""
     calls: list[int] = []
 
     def responder(request: httpx.Request) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Test responder behavior."""
         page = int(request.url.params["page"])
         calls.append(page)
         if page == 0:
@@ -58,7 +58,7 @@ def test_last_page_partial_results() -> None:
 
 @respx.mock
 def test_missing_cursor_raises_typed_error() -> None:
-    """TODO: Add docstring."""
+    """Test test_missing_cursor_raises_typed_error behavior."""
     respx.get("https://api.test/items").mock(
         return_value=httpx.Response(200, json={"data": [1, 2], "pagination": {}})
     )
@@ -70,7 +70,7 @@ def test_missing_cursor_raises_typed_error() -> None:
 
 @respx.mock
 def test_malformed_cursor_raises_typed_error() -> None:
-    """TODO: Add docstring."""
+    """Test test_malformed_cursor_raises_typed_error behavior."""
     respx.get("https://api.test/items").mock(
         return_value=httpx.Response(
             200, json={"data": [1], "pagination": {"totalPages": "not-an-integer"}}
@@ -84,12 +84,12 @@ def test_malformed_cursor_raises_typed_error() -> None:
 
 @respx.mock
 def test_large_result_set_iteration_is_lazy_and_bounded() -> None:
-    """TODO: Add docstring."""
+    """Test test_large_result_set_iteration_is_lazy_and_bounded behavior."""
     calls: list[int] = []
     total_pages = 100_000
 
     def responder(request: httpx.Request) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Test responder behavior."""
         page = int(request.url.params["page"])
         calls.append(page)
         return httpx.Response(
@@ -107,11 +107,11 @@ def test_large_result_set_iteration_is_lazy_and_bounded() -> None:
 
 @respx.mock
 def test_iteration_can_be_interrupted_and_resumed() -> None:
-    """TODO: Add docstring."""
+    """Test test_iteration_can_be_interrupted_and_resumed behavior."""
     calls: list[int] = []
 
     def responder(request: httpx.Request) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Test responder behavior."""
         page = int(request.url.params["page"])
         calls.append(page)
         if page == 0:

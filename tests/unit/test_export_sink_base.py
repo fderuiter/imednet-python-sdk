@@ -25,24 +25,24 @@ from imednet.integrations.sink_base import (
 
 
 class TestRedactUri:
-    """TODO: Add docstring."""
+    """Test suite for TestRedactUri."""
 
     def test_redacts_user_and_password(self):
-        """TODO: Add docstring."""
+        """Test test_redacts_user_and_password behavior."""
         userpass_uri = "mongodb://" + "user:pass" + "@localhost:27017/db"
         assert _redact_uri(userpass_uri) == "mongodb://***@localhost:27017/db"
 
     def test_redacts_user_only(self):
-        """TODO: Add docstring."""
+        """Test test_redacts_user_only behavior."""
         assert _redact_uri("bolt://neo4j@localhost:7687") == "bolt://***@localhost:7687"
 
     def test_leaves_uri_without_userinfo_unchanged(self):
-        """TODO: Add docstring."""
+        """Test test_leaves_uri_without_userinfo_unchanged behavior."""
         uri = "neo4j+s://bolt.example.com"
         assert _redact_uri(uri) == uri
 
     def test_handles_empty_string(self):
-        """TODO: Add docstring."""
+        """Test test_handles_empty_string behavior."""
         assert _redact_uri("") == ""
 
 
@@ -52,18 +52,18 @@ class TestRedactUri:
 
 
 class TestRequireOptionalDep:
-    """TODO: Add docstring."""
+    """Test suite for TestRequireOptionalDep."""
 
     def test_returns_module_when_installed(self):
-        """TODO: Add docstring."""
+        """Test test_returns_module_when_installed behavior."""
         mod = _require_optional_dep("sys", "dummy")
         assert mod is sys
 
     def test_raises_import_error_when_missing(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_raises_import_error_when_missing behavior."""
 
         def fake_import(name):
-            """TODO: Add docstring."""
+            """Test fake_import behavior."""
             raise ModuleNotFoundError(name=name)
 
         monkeypatch.setattr(sink_base_mod, "import_module", fake_import)
@@ -71,10 +71,10 @@ class TestRequireOptionalDep:
             _require_optional_dep("mypkg", "mypkg")
 
     def test_reraises_unrelated_module_not_found_error(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_reraises_unrelated_module_not_found_error behavior."""
 
         def fake_import(name):
-            """TODO: Add docstring."""
+            """Test fake_import behavior."""
             raise ModuleNotFoundError(name="some_other_missing_lib")
 
         monkeypatch.setattr(sink_base_mod, "import_module", fake_import)
@@ -88,10 +88,10 @@ class TestRequireOptionalDep:
 
 
 class TestSinkConfig:
-    """TODO: Add docstring."""
+    """Test suite for TestSinkConfig."""
 
     def test_defaults(self):
-        """TODO: Add docstring."""
+        """Test test_defaults behavior."""
         cfg = SinkConfig()
         assert cfg.batch_size == 500
         assert cfg.max_retries == 3
@@ -100,7 +100,7 @@ class TestSinkConfig:
         assert cfg.extra == {}
 
     def test_custom_values(self):
-        """TODO: Add docstring."""
+        """Test test_custom_values behavior."""
         cfg = SinkConfig(batch_size=100, max_retries=0, idempotent=False)
         assert cfg.batch_size == 100
         assert cfg.max_retries == 0
@@ -108,15 +108,15 @@ class TestSinkConfig:
 
 
 class TestIterBatches:
-    """TODO: Add docstring."""
+    """Test suite for TestIterBatches."""
 
     def test_splits_sequence_by_batch_size(self):
-        """TODO: Add docstring."""
+        """Test test_splits_sequence_by_batch_size behavior."""
         batches = list(iter_batches([1, 2, 3, 4, 5], 2))
         assert batches == [[1, 2], [3, 4], [5]]
 
     def test_rejects_non_positive_batch_size(self):
-        """TODO: Add docstring."""
+        """Test test_rejects_non_positive_batch_size behavior."""
         with pytest.raises(ValueError, match="batch_size"):
             list(iter_batches([1, 2], 0))
 
@@ -130,31 +130,31 @@ class _StubSink(ExportSink):
     """Minimal concrete sink for testing the base class."""
 
     def __init__(self, config=None):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         super().__init__(config)
         self.batches: list[tuple[list, str]] = []
         self.flushed = False
         self.closed = False
 
     def write_batch(self, records, *, batch_id: str) -> int:
-        """TODO: Add docstring."""
+        """Test write_batch behavior."""
         self.batches.append((list(records), batch_id))
         return len(records)
 
     def flush(self) -> None:
-        """TODO: Add docstring."""
+        """Test flush behavior."""
         self.flushed = True
 
     def close(self) -> None:
-        """TODO: Add docstring."""
+        """Test close behavior."""
         self.closed = True
 
 
 class TestExportSinkContextManager:
-    """TODO: Add docstring."""
+    """Test suite for TestExportSinkContextManager."""
 
     def test_flush_and_close_called_on_clean_exit(self):
-        """TODO: Add docstring."""
+        """Test test_flush_and_close_called_on_clean_exit behavior."""
         sink = _StubSink()
         with sink as s:
             s.write_batch([1, 2, 3], batch_id="b1")
@@ -162,7 +162,7 @@ class TestExportSinkContextManager:
         assert sink.closed
 
     def test_close_called_on_exception(self):
-        """TODO: Add docstring."""
+        """Test test_close_called_on_exception behavior."""
         sink = _StubSink()
         with pytest.raises(ValueError):
             with sink:
@@ -172,7 +172,7 @@ class TestExportSinkContextManager:
         assert sink.closed
 
     def test_write_batch_records_returned(self):
-        """TODO: Add docstring."""
+        """Test test_write_batch_records_returned behavior."""
         sink = _StubSink()
         result = sink.write_batch([10, 20], batch_id="b2")
         assert result == 2
@@ -185,26 +185,26 @@ class TestExportSinkContextManager:
 
 
 class TestExportErrors:
-    """TODO: Add docstring."""
+    """Test suite for TestExportErrors."""
 
     def test_export_error_is_imednet_error(self):
-        """TODO: Add docstring."""
+        """Test test_export_error_is_imednet_error behavior."""
         from imednet.errors import ImednetError
 
         assert issubclass(ExportError, ImednetError)
 
     def test_export_batch_error_carries_batch_id(self):
-        """TODO: Add docstring."""
+        """Test test_export_batch_error_carries_batch_id behavior."""
         err = ExportBatchError("failed", batch_id="STUDY/FORM/0")
         assert err.batch_id == "STUDY/FORM/0"
         assert "failed" in str(err)
 
     def test_export_configuration_error_is_export_error(self):
-        """TODO: Add docstring."""
+        """Test test_export_configuration_error_is_export_error behavior."""
         assert issubclass(ExportConfigurationError, ExportError)
 
     def test_export_batch_error_is_export_error(self):
-        """TODO: Add docstring."""
+        """Test test_export_batch_error_is_export_error behavior."""
         assert issubclass(ExportBatchError, ExportError)
 
 
@@ -214,7 +214,7 @@ class TestExportErrors:
 
 
 def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:
-    """TODO: Add docstring."""
+    """Test _fake_neo4j_module behavior."""
     neo4j = ModuleType("neo4j")
     driver = MagicMock()
     if fail_connect:

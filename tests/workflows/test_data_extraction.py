@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_data_extraction."""
 
 from unittest.mock import MagicMock
 
@@ -11,7 +11,7 @@ from imednet_workflows.data_extraction import DataExtractionWorkflow
 
 
 def test_extract_records_by_criteria_filters_subject_and_visit(schema) -> None:
-    """TODO: Add docstring."""
+    """Test test_extract_records_by_criteria_filters_subject_and_visit behavior."""
     sdk = MagicMock()
     s1 = Subject.from_json(fake_data.fake_subject())
     s2 = Subject.from_json(fake_data.fake_subject())
@@ -59,7 +59,7 @@ def test_extract_records_by_criteria_filters_subject_and_visit(schema) -> None:
 
 
 def test_extract_audit_trail_builds_filters_and_dates() -> None:
-    """TODO: Add docstring."""
+    """Test test_extract_audit_trail_builds_filters_and_dates behavior."""
     sdk = MagicMock()
     revision = RecordRevision.from_json(fake_data.fake_record_revision())
     sdk.get_record_revisions.return_value = [revision]

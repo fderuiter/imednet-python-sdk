@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Records module."""
 
 from __future__ import annotations
 
@@ -40,14 +40,14 @@ LARGE_DATASET_WARNING_THRESHOLD = 10_000
 
 
 def _resolve_form_name(form: object) -> str:
-    """TODO: Add docstring."""
+    """Perform  resolve form name operation."""
     form_name = getattr(form, "form_name", "")
     return str(form_name or form.form_key)  # type: ignore[attr-defined]
 
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Perform  fetch records operation."""
     records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
     rows = [
         {
@@ -73,14 +73,14 @@ def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_form_metadata(_sdk: object, study_key: str) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Perform  fetch form metadata operation."""
     forms = _sdk.get_forms(study_key=study_key)  # type: ignore[attr-defined]
     rows = [{"form_key": f.form_key, "form_name": _resolve_form_name(f)} for f in forms]
     return pd.DataFrame(rows, columns=FORM_COLUMNS)
 
 
 def _prepare_records_dataframe(records_df: pd.DataFrame, forms_df: pd.DataFrame) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Perform  prepare records dataframe operation."""
     if records_df.empty:
         return pd.DataFrame(columns=[*RECORD_COLUMNS, "form_name"])
 
@@ -95,7 +95,7 @@ def _prepare_records_dataframe(records_df: pd.DataFrame, forms_df: pd.DataFrame)
 
 
 def _status_options(df: pd.DataFrame) -> list[str]:
-    """TODO: Add docstring."""
+    """Perform  status options operation."""
     if df.empty:
         return []
 
@@ -105,7 +105,7 @@ def _status_options(df: pd.DataFrame) -> list[str]:
 
 
 def _sorted_unique_values(series: pd.Series) -> list[object]:
-    """TODO: Add docstring."""
+    """Perform  sorted unique values operation."""
     return sorted(series.dropna().unique().tolist(), key=lambda value: str(value))
 
 
@@ -116,7 +116,7 @@ def _apply_filters(
     site_filter: list[str],
     status_filter: list[str],
 ) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     filtered = df.copy()
     if form_filter:
         filtered = filtered[filtered["form_name"].isin(form_filter)]
@@ -128,7 +128,7 @@ def _apply_filters(
 
 
 def _build_status_counts(df: pd.DataFrame) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Perform  build status counts operation."""
     if df.empty:
         return pd.DataFrame(columns=["record_status", "count"])
 
@@ -144,7 +144,7 @@ def _build_status_counts(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _build_incomplete_form_counts(df: pd.DataFrame) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Perform  build incomplete form counts operation."""
     if df.empty:
         return pd.DataFrame(columns=["form_name", "count"])
 
@@ -162,7 +162,7 @@ def _build_incomplete_form_counts(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Perform  build heatmap source operation."""
     columns = ["subject_key", "form_name", "completion_flag", "completion_status"]
     if df.empty:
         return pd.DataFrame(columns=columns)
@@ -192,7 +192,7 @@ def _build_heatmap_source(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _build_heatmap_chart(heatmap_df: pd.DataFrame) -> alt.Chart:
-    """TODO: Add docstring."""
+    """Perform  build heatmap chart operation."""
     unique_subjects = heatmap_df["subject_key"].nunique()
     chart_height = max(240, min(900, unique_subjects * 16))
     return (
@@ -220,7 +220,7 @@ def _build_heatmap_chart(heatmap_df: pd.DataFrame) -> alt.Chart:
 
 
 def render_page() -> None:
-    """TODO: Add docstring."""
+    """Perform render page operation."""
     st.title("📋 Data Completeness")
 
     if st.button("🔄 Refresh Data"):

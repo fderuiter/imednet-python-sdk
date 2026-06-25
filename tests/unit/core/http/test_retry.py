@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_retry."""
 
 from unittest.mock import AsyncMock, Mock
 

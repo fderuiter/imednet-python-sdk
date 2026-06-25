@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_core_async_client_extended."""
 
 from unittest.mock import AsyncMock, MagicMock
 
@@ -12,12 +12,12 @@ from imednet.core.async_client import AsyncClient
 
 @pytest.mark.asyncio
 async def test_async_request_retries():
-    """TODO: Add docstring."""
+    """Implementation detail."""
     async with AsyncClient("k", "s", base_url="https://api.test", retries=2) as client:
         calls = {"count": 0}
 
         async def request(request: httpx.Request) -> httpx.Response:
-            """TODO: Add docstring."""
+            """Implementation detail."""
             calls["count"] += 1
             if calls["count"] == 1:
                 raise httpx.RequestError("boom", request=request)
@@ -45,7 +45,7 @@ async def test_async_request_retries():
     ],
 )
 async def test_async_request_error_mapping(status, exc):
-    """TODO: Add docstring."""
+    """Implementation detail."""
     async with AsyncClient("k", "s", base_url="https://api.test") as client:
         with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
             respx_mock.get("https://api.test/some").respond(
@@ -58,7 +58,7 @@ async def test_async_request_error_mapping(status, exc):
 
 @pytest.mark.asyncio
 async def test_tracing():
-    """TODO: Add docstring."""
+    """Implementation detail."""
     tracer = MagicMock()
     span_cm = AsyncMock()
     span = MagicMock()

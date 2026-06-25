@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_discovery."""
 
 from unittest.mock import Mock
 
@@ -26,28 +26,28 @@ from imednet.models.subjects import Subject
 
 
 def test_is_site_eligible_accepts_enrollment_open() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_site_eligible_accepts_enrollment_open behavior."""
     assert is_site_eligible("ENROLLMENT_OPEN") is True
 
 
 def test_is_site_eligible_accepts_active_case_insensitive() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_site_eligible_accepts_active_case_insensitive behavior."""
     assert is_site_eligible("Active") is True
     assert is_site_eligible("ACTIVE") is True
 
 
 def test_is_site_eligible_rejects_read_only() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_site_eligible_rejects_read_only behavior."""
     assert is_site_eligible("READ_ONLY") is False
 
 
 def test_is_site_eligible_rejects_closed() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_site_eligible_rejects_closed behavior."""
     assert is_site_eligible("Closed") is False
 
 
 def test_eligible_site_statuses_contains_expected_values() -> None:
-    """TODO: Add docstring."""
+    """Test test_eligible_site_statuses_contains_expected_values behavior."""
     assert "enrollment_open" in ELIGIBLE_SITE_STATUSES
     assert "active" in ELIGIBLE_SITE_STATUSES
 
@@ -58,33 +58,33 @@ def test_eligible_site_statuses_contains_expected_values() -> None:
 
 
 def test_is_subject_eligible_accepts_registered() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_subject_eligible_accepts_registered behavior."""
     assert is_subject_eligible("Registered") is True
 
 
 def test_is_subject_eligible_accepts_baseline() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_subject_eligible_accepts_baseline behavior."""
     assert is_subject_eligible("Baseline") is True
 
 
 def test_is_subject_eligible_accepts_enrolled() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_subject_eligible_accepts_enrolled behavior."""
     assert is_subject_eligible("Enrolled") is True
 
 
 def test_is_subject_eligible_accepts_active_case_insensitive() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_subject_eligible_accepts_active_case_insensitive behavior."""
     assert is_subject_eligible("Active") is True
     assert is_subject_eligible("ACTIVE") is True
 
 
 def test_is_subject_eligible_rejects_closed() -> None:
-    """TODO: Add docstring."""
+    """Test test_is_subject_eligible_rejects_closed behavior."""
     assert is_subject_eligible("Closed") is False
 
 
 def test_eligible_subject_statuses_contains_expected_values() -> None:
-    """TODO: Add docstring."""
+    """Test test_eligible_subject_statuses_contains_expected_values behavior."""
     assert "registered" in ELIGIBLE_SUBJECT_STATUSES
     assert "baseline" in ELIGIBLE_SUBJECT_STATUSES
     assert "enrolled" in ELIGIBLE_SUBJECT_STATUSES
@@ -97,7 +97,7 @@ def test_eligible_subject_statuses_contains_expected_values() -> None:
 
 
 def test_discover_form_key_chooses_subject_form() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_form_key_chooses_subject_form behavior."""
     sdk = Mock()
     sdk.forms.list.return_value = [
         Form(study_key="S", form_key="SS", subject_record_report=False),
@@ -110,7 +110,7 @@ def test_discover_form_key_chooses_subject_form() -> None:
 
 
 def test_discover_form_key_raises_when_no_valid_forms() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_form_key_raises_when_no_valid_forms behavior."""
     sdk = Mock()
     sdk.forms.list.return_value = [Form(study_key="S", form_key="SS", subject_record_report=False)]
     sdk.variables.list.return_value = [Mock()]
@@ -125,7 +125,7 @@ def test_discover_form_key_raises_when_no_valid_forms() -> None:
 
 
 def test_discover_site_name_returns_active_site() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_site_name_returns_active_site behavior."""
     sdk = Mock()
     sdk.sites.list.return_value = [
         Site(study_key="S", site_name="Closed", site_enrollment_status="Closed"),
@@ -148,7 +148,7 @@ def test_discover_site_name_returns_enrollment_open_site() -> None:
 
 
 def test_discover_site_name_raises_when_no_active() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_site_name_raises_when_no_active behavior."""
     sdk = Mock()
     sdk.sites.list.return_value = [
         Site(study_key="S", site_name="X", site_enrollment_status="Closed")
@@ -171,7 +171,7 @@ def test_discover_site_name_error_includes_encountered_statuses() -> None:
 
 
 def test_discover_site_name_raises_when_no_sites() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_site_name_raises_when_no_sites behavior."""
     sdk = Mock()
     sdk.sites.list.return_value = []
 
@@ -185,7 +185,7 @@ def test_discover_site_name_raises_when_no_sites() -> None:
 
 
 def test_discover_subject_key_returns_active_subject() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_subject_key_returns_active_subject behavior."""
     sdk = Mock()
     sdk.subjects.list.return_value = [
         Subject(study_key="S", subject_key="S1", subject_status="Closed"),
@@ -227,7 +227,7 @@ def test_discover_subject_key_returns_enrolled_subject() -> None:
 
 
 def test_discover_subject_key_raises_when_no_active() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_subject_key_raises_when_no_active behavior."""
     sdk = Mock()
     sdk.subjects.list.return_value = [
         Subject(study_key="S", subject_key="S1", subject_status="Closed")
@@ -250,7 +250,7 @@ def test_discover_subject_key_error_includes_encountered_statuses() -> None:
 
 
 def test_discover_subject_key_raises_when_no_subjects() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_subject_key_raises_when_no_subjects behavior."""
     sdk = Mock()
     sdk.subjects.list.return_value = []
 
@@ -264,7 +264,7 @@ def test_discover_subject_key_raises_when_no_subjects() -> None:
 
 
 def test_discover_interval_name_returns_active_interval() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_interval_name_returns_active_interval behavior."""
     sdk = Mock()
     sdk.intervals.list.return_value = [
         Interval(study_key="S", interval_name="I1", disabled=True),
@@ -276,7 +276,7 @@ def test_discover_interval_name_returns_active_interval() -> None:
 
 
 def test_discover_interval_name_raises_when_all_disabled() -> None:
-    """TODO: Add docstring."""
+    """Test test_discover_interval_name_raises_when_all_disabled behavior."""
     sdk = Mock()
     sdk.intervals.list.return_value = [Interval(study_key="S", interval_name="I1", disabled=True)]
 

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Get Records module."""
 
 from imednet import ImednetSDK as ImednetClient
 from imednet import load_config
@@ -25,7 +25,7 @@ Ensure your environment variables (IMEDNET_API_KEY, IMEDNET_SECURITY_KEY) are se
 
 
 def main():
-    """TODO: Add docstring."""
+    """Perform main operation."""
     configure_json_logging()
 
     try:

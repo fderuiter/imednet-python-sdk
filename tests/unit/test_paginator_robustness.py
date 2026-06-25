@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_paginator_robustness."""
 
 from unittest.mock import Mock
 
@@ -9,14 +9,14 @@ from imednet.errors import PaginationError
 
 
 class MockClient:
-    """TODO: Add docstring."""
+    """Test suite for MockClient."""
 
     def __init__(self, response_data):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.response_data = response_data
 
     def get(self, path, params=None):
-        """TODO: Add docstring."""
+        """Test get behavior."""
         response = Mock()
         response.json.return_value = self.response_data
         return response

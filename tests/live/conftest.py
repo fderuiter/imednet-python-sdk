@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for conftest."""
 
 import asyncio
 import logging
@@ -52,7 +52,7 @@ def _print_startup_context() -> None:
 
 @pytest.fixture(scope="session", autouse=True)
 def _check_live_env() -> None:
-    """TODO: Add docstring."""
+    """Test _check_live_env behavior."""
     _print_startup_context()
     if not RUN_E2E or not (API_KEY and SECURITY_KEY):
         pytest.skip(
@@ -70,7 +70,7 @@ def allow_mutation() -> bool:
 
 @pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
-    """TODO: Add docstring."""
+    """Test sdk behavior."""
     with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
         yield client
 
@@ -91,19 +91,19 @@ async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[Asyn
 
 @pytest.fixture(scope="session")
 def study_key(sdk: ImednetSDK) -> str:
-    """TODO: Add docstring."""
+    """Test study_key behavior."""
     return get_study_key(sdk)
 
 
 @pytest.fixture(scope="session")
 def first_form_key(sdk: ImednetSDK, study_key: str) -> str:
-    """TODO: Add docstring."""
+    """Test first_form_key behavior."""
     return get_form_key(sdk, study_key)
 
 
 @pytest.fixture(scope="session")
 def first_site_name(sdk: ImednetSDK, study_key: str) -> str:
-    """TODO: Add docstring."""
+    """Test first_site_name behavior."""
     try:
         return discover_site_name(sdk, study_key)
     except NoLiveDataError as exc:
@@ -112,7 +112,7 @@ def first_site_name(sdk: ImednetSDK, study_key: str) -> str:
 
 @pytest.fixture(scope="session")
 def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
-    """TODO: Add docstring."""
+    """Test first_subject_key behavior."""
     try:
         return discover_subject_key(sdk, study_key)
     except NoLiveDataError as exc:
@@ -121,7 +121,7 @@ def first_subject_key(sdk: ImednetSDK, study_key: str) -> str:
 
 @pytest.fixture(scope="session")
 def first_interval_name(sdk: ImednetSDK, study_key: str) -> str:
-    """TODO: Add docstring."""
+    """Test first_interval_name behavior."""
     try:
         return discover_interval_name(sdk, study_key)
     except NoLiveDataError as exc:
@@ -168,7 +168,7 @@ def typed_record(
     study_key: str,
     first_form_key: str,
 ) -> Callable[..., dict[str, Any]]:
-    """TODO: Add docstring."""
+    """Test typed_record behavior."""
     variables = list(sdk.variables.list(study_key=study_key, formKey=first_form_key))
     if not variables:
         pytest.skip(f"No variables available for form {first_form_key}")
@@ -189,7 +189,7 @@ def typed_record(
         subject_key: str | None = None,
         interval_name: str | None = None,
     ) -> dict[str, Any]:
-        """TODO: Add docstring."""
+        """Implementation detail."""
         record: dict[str, Any] = {"formKey": first_form_key, "data": data}
         if site_name is not None:
             record["siteName"] = site_name
@@ -210,7 +210,7 @@ def record_payload(
     first_subject_key: str,
     first_interval_name: str,
 ) -> dict[str, Any]:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     scenario = request.param
     if scenario == "register":
         return typed_record(site_name=first_site_name)

@@ -63,7 +63,7 @@ def run_headless(
 
 
 def main() -> None:
-    """TODO: Add docstring."""
+    """Perform main operation."""
     parser = argparse.ArgumentParser(description="iMedNet Form Builder")
 
     # Optional arguments for headless mode

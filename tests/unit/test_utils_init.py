@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_utils_init."""
 
 import pytest
 
@@ -6,7 +6,7 @@ from imednet import utils
 
 
 def test_lazy_load_pandas_functions() -> None:
-    """TODO: Add docstring."""
+    """Test test_lazy_load_pandas_functions behavior."""
     func = utils.records_to_dataframe
     from imednet.utils.pandas import records_to_dataframe as expected_rtodf
 
@@ -18,7 +18,7 @@ def test_lazy_load_pandas_functions() -> None:
 
 
 def test_lazy_load_arrow_function() -> None:
-    """TODO: Add docstring."""
+    """Test test_lazy_load_arrow_function behavior."""
     func = utils.to_arrow_table
     from imednet.utils.arrow import to_arrow_table as expected_to_arrow_table
 
@@ -26,7 +26,7 @@ def test_lazy_load_arrow_function() -> None:
 
 
 def test_schema_objects_not_in_utils() -> None:
-    """TODO: Add docstring."""
+    """Test test_schema_objects_not_in_utils behavior."""
     with pytest.raises(AttributeError):
         getattr(utils, "SchemaCache")
     with pytest.raises(AttributeError):
@@ -36,6 +36,6 @@ def test_schema_objects_not_in_utils() -> None:
 
 
 def test_getattr_unknown() -> None:
-    """TODO: Add docstring."""
+    """Test test_getattr_unknown behavior."""
     with pytest.raises(AttributeError):
         getattr(utils, "does_not_exist")

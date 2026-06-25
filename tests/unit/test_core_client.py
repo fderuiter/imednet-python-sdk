@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_core_client."""
 
 from unittest.mock import MagicMock
 
@@ -13,7 +13,7 @@ from imednet.core.retry import RetryPolicy
 
 
 def test_initialization_sets_defaults() -> None:
-    """TODO: Add docstring."""
+    """Test test_initialization_sets_defaults behavior."""
     client = Client(api_key="A", security_key="B")
     assert client.base_url == DEFAULT_BASE_URL
     assert client._client.headers["x-api-key"] == "A"
@@ -21,12 +21,12 @@ def test_initialization_sets_defaults() -> None:
 
 
 def test_retry_logic_retries_request_errors() -> None:
-    """TODO: Add docstring."""
+    """Test test_retry_logic_retries_request_errors behavior."""
     client = Client(api_key="A", security_key="B", base_url="https://api.test", retries=2)
     call_count = {"count": 0}
 
     def side_effect(request: httpx.Request) -> httpx.Response:
-        """TODO: Add docstring."""
+        """Test side_effect behavior."""
         call_count["count"] += 1
         if call_count["count"] == 1:
             raise httpx.RequestError("boom", request=request)
@@ -54,7 +54,7 @@ def test_retry_logic_retries_request_errors() -> None:
     ],
 )
 def test_request_error_mapping(status, exc) -> None:
-    """TODO: Add docstring."""
+    """Test test_request_error_mapping behavior."""
     client = Client(api_key="A", security_key="B", base_url="https://api.test")
 
     with respx.mock(assert_all_called=True, assert_all_mocked=True) as respx_mock:
@@ -65,7 +65,7 @@ def test_request_error_mapping(status, exc) -> None:
 
 
 def test_tracer_records_span() -> None:
-    """TODO: Add docstring."""
+    """Test test_tracer_records_span behavior."""
     tracer = MagicMock()
     span_cm = MagicMock()
     span = MagicMock()
@@ -85,13 +85,13 @@ def test_tracer_records_span() -> None:
 
 
 def test_base_url_sanitized() -> None:
-    """TODO: Add docstring."""
+    """Test test_base_url_sanitized behavior."""
     client = Client(api_key="A", security_key="B", base_url="https://host/api/")
     assert client.base_url == "https://host"
 
 
 def test_retry_policy_accessor_updates_executor() -> None:
-    """TODO: Add docstring."""
+    """Test test_retry_policy_accessor_updates_executor behavior."""
     client = Client(api_key="A", security_key="B")
     policy = MagicMock(spec=RetryPolicy)
 

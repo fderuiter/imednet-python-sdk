@@ -177,10 +177,10 @@ def test_sdk_convenience_mixin_uses_filter_value() -> None:
     from imednet.sdk_convenience import SDKConvenienceMixin
 
     class DummySDK(SDKConvenienceMixin):
-        """TODO: Add docstring."""
+        """Test suite for DummySDK."""
 
         def __init__(self):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             from unittest.mock import MagicMock
 
             self.records = MagicMock()

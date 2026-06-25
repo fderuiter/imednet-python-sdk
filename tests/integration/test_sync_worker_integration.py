@@ -21,7 +21,7 @@ from imednet_workflows.sync_worker import SyncWorker, SyncWorkerConfig
 
 
 def _make_record(record_id: int, study_key: str = "PROT-01") -> Record:
-    """TODO: Add docstring."""
+    """Test _make_record behavior."""
     return Record(
         study_key=study_key,
         form_id=1,
@@ -46,7 +46,7 @@ class _ReaderLoop(threading.Thread):
     """Continuously reads cached records until ``stop_event`` is set."""
 
     def __init__(self, loader: CachedRecordsLoader, stop_event: threading.Event) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         super().__init__(daemon=True)
         self.loader = loader
         self.stop_event = stop_event
@@ -54,7 +54,7 @@ class _ReaderLoop(threading.Thread):
         self.read_count = 0
 
     def run(self) -> None:
-        """TODO: Add docstring."""
+        """Test run behavior."""
         while not self.stop_event.is_set():
             try:
                 self.loader.get_cached_records("PROT-01")
@@ -110,7 +110,7 @@ def test_parallel_sync_workers_no_deadlock(tmp_path: Path) -> None:
     barrier = threading.Barrier(3)
 
     def _run_worker(worker_id: int) -> None:
-        """TODO: Add docstring."""
+        """Test _run_worker behavior."""
         sdk = _make_sdk(records)
         loader = CachedRecordsLoader(sdk, cache_dir=tmp_path)
         worker = SyncWorker(

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_url."""
 
 import pytest
 
@@ -15,7 +15,7 @@ from imednet.utils.url import build_safe_path, redact_url_query, sanitize_base_u
     ],
 )
 def test_sanitize_base_url(url: str, expected: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_sanitize_base_url behavior."""
     assert sanitize_base_url(url) == expected
 
 
@@ -48,5 +48,5 @@ def test_redact_url_query() -> None:
     ],
 )
 def test_build_safe_path(base_path: str, segments: tuple[object, ...], expected: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_build_safe_path behavior."""
     assert build_safe_path(base_path, *segments) == expected

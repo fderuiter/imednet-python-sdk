@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Subject Data module."""
 
 from imednet import ImednetSDK
 from imednet_workflows.subject_data import SubjectDataWorkflow

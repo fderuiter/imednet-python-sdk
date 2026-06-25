@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for streaming."""
 
 import asyncio
 from typing import Any, AsyncIterator, Generic, Iterable, Iterator, List, TypeVar, Union, overload
@@ -10,7 +10,7 @@ class StreamingMockWrapper(Generic[T]):
     """A robust test wrapper that mimics both a list and an async/sync iterator."""
 
     def __init__(self, data: Iterable[T], max_buffer_size: int = 10000):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self._max_buffer_size = max_buffer_size
         self._buffer: List[T] = []
         self._fully_buffered = False
@@ -23,7 +23,7 @@ class StreamingMockWrapper(Generic[T]):
             self._sync_iter = iter(data)
 
     def _fill_buffer(self, target_index: Union[int, slice, None] = None) -> None:
-        """TODO: Add docstring."""
+        """Test _fill_buffer behavior."""
         if self._fully_buffered:
             return
 
@@ -39,7 +39,7 @@ class StreamingMockWrapper(Generic[T]):
             self._fully_buffered = True
 
     def __getitem__(self, index: Union[int, slice]) -> Union[T, List[T]]:
-        """TODO: Add docstring."""
+        """Test __getitem__ behavior."""
         if isinstance(index, slice):
             if index.stop is None or index.stop < 0:
                 self._fill_buffer()
@@ -52,12 +52,12 @@ class StreamingMockWrapper(Generic[T]):
         return self._buffer[index]
 
     def __len__(self) -> int:
-        """TODO: Add docstring."""
+        """Test __len__ behavior."""
         self._fill_buffer()
         return len(self._buffer)
 
     def __iter__(self) -> Iterator[T]:
-        """TODO: Add docstring."""
+        """Test __iter__ behavior."""
         # Yield from buffer first
         yield from self._buffer
         # Then from source, adding to buffer
@@ -73,7 +73,7 @@ class StreamingMockWrapper(Generic[T]):
                 self._fully_buffered = True
 
     async def __aiter__(self) -> AsyncIterator[T]:
-        """TODO: Add docstring."""
+        """Implementation detail."""
         # Yield from buffer first
         for item in self._buffer:
             yield item
@@ -91,32 +91,32 @@ class StreamingMockWrapper(Generic[T]):
                 self._fully_buffered = True
 
     def __eq__(self, other: Any) -> bool:
-        """TODO: Add docstring."""
+        """Test __eq__ behavior."""
         self._fill_buffer()
         if isinstance(other, list):
             return self._buffer == other
         return super().__eq__(other)
 
     def __await__(self):
-        """TODO: Add docstring."""
+        """Test __await__ behavior."""
 
         # Handle incorrect awaiting by gracefully returning self so test assertions can pass.
         async def _mock_coroutine():
-            """TODO: Add docstring."""
+            """Test __await__ behavior."""
             return self
 
         return _mock_coroutine().__await__()
 
 
 def unified_paginator_factory(monkeypatch, module, items, is_async=False):
-    """TODO: Add docstring."""
+    """Test unified_paginator_factory behavior."""
     captured = {"count": 0}
 
     class DummyPaginator(StreamingMockWrapper):
-        """TODO: Add docstring."""
+        """Test suite for DummyPaginator."""
 
         def __init__(self, client, path, params=None, page_size=100, **kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             super().__init__(items)
             captured["client"] = client
             captured["path"] = path

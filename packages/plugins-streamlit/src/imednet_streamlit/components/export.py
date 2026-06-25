@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Export module."""
 
 from __future__ import annotations
 

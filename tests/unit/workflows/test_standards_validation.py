@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_standards_validation."""
 
 import pytest
 
@@ -10,7 +10,7 @@ from imednet_workflows.standards_validation import (
 
 
 def test_categorical_normalizer_translates_lookup_values_and_yes_no_booleans() -> None:
-    """TODO: Add docstring."""
+    """Test test_categorical_normalizer_translates_lookup_values_and_yes_no_booleans behavior."""
     normalizer = CategoricalNormalizer()
     result = normalizer.normalize_record(
         {
@@ -27,7 +27,7 @@ def test_categorical_normalizer_translates_lookup_values_and_yes_no_booleans() -
 
 
 def test_standards_readiness_validator_scores_records() -> None:
-    """TODO: Add docstring."""
+    """Test test_standards_readiness_validator_scores_records behavior."""
     validator = StandardsReadinessValidator(profile=DrugSafetyProfile())
     report = validator.score_records(
         records_by_domain={

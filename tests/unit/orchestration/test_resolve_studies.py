@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_resolve_studies."""
 
 from __future__ import annotations
 
@@ -11,38 +11,38 @@ from imednet.orchestration import MultiStudyOrchestrator
 
 
 def test_resolve_all_studies(orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_resolve_all_studies behavior."""
     assert orchestrator.resolve_active_studies() == ["STUDY-A", "STUDY-B", "STUDY-C"]
 
 
 def test_whitelist_filter(orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_whitelist_filter behavior."""
     assert orchestrator.resolve_active_studies(whitelist={"STUDY-A"}) == ["STUDY-A"]
 
 
 def test_blacklist_filter(orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_blacklist_filter behavior."""
     assert orchestrator.resolve_active_studies(blacklist={"STUDY-A"}) == ["STUDY-B", "STUDY-C"]
 
 
 def test_whitelist_with_nonexistent_key(orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_whitelist_with_nonexistent_key behavior."""
     assert orchestrator.resolve_active_studies(whitelist={"NONEXISTENT"}) == []
 
 
 def test_blacklist_excludes_all(orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_blacklist_excludes_all behavior."""
     assert orchestrator.resolve_active_studies(blacklist={"STUDY-A", "STUDY-B", "STUDY-C"}) == []
 
 
 def test_filter_conflict_raises(orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_filter_conflict_raises behavior."""
     with pytest.raises(FilterConflictError):
         orchestrator.resolve_active_studies(whitelist={"STUDY-A"}, blacklist={"STUDY-B"})
 
 
 def test_filter_conflict_error_attributes(orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_filter_conflict_error_attributes behavior."""
     whitelist = {"STUDY-A"}
     blacklist = {"STUDY-B"}
 
@@ -54,7 +54,7 @@ def test_filter_conflict_error_attributes(orchestrator: MultiStudyOrchestrator) 
 
 
 def test_filter_conflict_raised_before_api_call(mock_sdk: MagicMock) -> None:
-    """TODO: Add docstring."""
+    """Test test_filter_conflict_raised_before_api_call behavior."""
     orchestrator = MultiStudyOrchestrator(mock_sdk)
 
     with pytest.raises(FilterConflictError):
@@ -64,11 +64,11 @@ def test_filter_conflict_raised_before_api_call(mock_sdk: MagicMock) -> None:
 
 
 def test_max_workers_validation(mock_sdk: MagicMock) -> None:
-    """TODO: Add docstring."""
+    """Test test_max_workers_validation behavior."""
     with pytest.raises(ValueError, match="max_workers must be >= 1"):
         MultiStudyOrchestrator(mock_sdk, max_workers=0)
 
 
 def test_sdk_stored_as_reference(mock_sdk: MagicMock, orchestrator: MultiStudyOrchestrator) -> None:
-    """TODO: Add docstring."""
+    """Test test_sdk_stored_as_reference behavior."""
     assert orchestrator.sdk is mock_sdk

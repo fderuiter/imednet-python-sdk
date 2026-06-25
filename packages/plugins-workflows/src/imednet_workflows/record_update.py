@@ -22,7 +22,7 @@ class RecordUpdateWorkflow:
     """
 
     def __init__(self, sdk: "FacadeLike"):
-        """TODO: Add docstring."""
+        """Perform   init   operation."""
         self._sdk = sdk
         self._is_async = hasattr(sdk, "async_create_record")
         self._validator: SchemaValidator | AsyncSchemaValidator
@@ -111,7 +111,7 @@ class RecordUpdateWorkflow:
         )
 
     def submit_record_batch(self, *args: Any, **kwargs: Any) -> Job:  # pragma: no cover
-        """TODO: Add docstring."""
+        """Perform submit record batch operation."""
         warnings.warn(
             "submit_record_batch is deprecated; use create_or_update_records",
             DeprecationWarning,

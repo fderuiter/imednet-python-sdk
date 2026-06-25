@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_duckdb_ingestion_workflow."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from imednet_workflows.duckdb_centralizer import DuckDBIngestionWorkflow
 
 
 def test_ingest_revisions_append_mode() -> None:
-    """TODO: Add docstring."""
+    """Test test_ingest_revisions_append_mode behavior."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -52,7 +52,7 @@ def test_ingest_revisions_append_mode() -> None:
 
 
 def test_ingest_revisions_replace_mode() -> None:
-    """TODO: Add docstring."""
+    """Test test_ingest_revisions_replace_mode behavior."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -94,7 +94,7 @@ def test_ingest_revisions_replace_mode() -> None:
 
 
 def test_build_silver_view_deduplication() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_silver_view_deduplication behavior."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -131,7 +131,7 @@ def test_build_silver_view_deduplication() -> None:
 
 
 def test_ingest_revisions_returns_row_count() -> None:
-    """TODO: Add docstring."""
+    """Test test_ingest_revisions_returns_row_count behavior."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -170,7 +170,7 @@ def test_ingest_revisions_returns_row_count() -> None:
 
 
 def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_duckdb_workflow_import_error behavior."""
 
     def fake_import(
         name: str,
@@ -179,7 +179,7 @@ def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
         fromlist: tuple[str, ...] = (),
         level: int = 0,
     ) -> Any:
-        """TODO: Add docstring."""
+        """Implementation detail."""
         if name == "duckdb":
             raise ImportError("No module named duckdb")
         return builtin_import(name, globals_arg, locals_arg, fromlist, level)

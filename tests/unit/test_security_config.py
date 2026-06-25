@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_security_config."""
 
 from imednet.config import Config
 

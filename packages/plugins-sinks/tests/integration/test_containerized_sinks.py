@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_containerized_sinks."""
 
 import logging
 import os
@@ -19,23 +19,23 @@ pytestmark = pytest.mark.skipif(
 
 
 class DriftError(Exception):
-    """TODO: Add docstring."""
+    """Test suite for DriftError."""
 
     pass
 
 
 class DriftFailingHandler(logging.Handler):
-    """TODO: Add docstring."""
+    """Test suite for DriftFailingHandler."""
 
     def emit(self, record):
-        """TODO: Add docstring."""
+        """Test emit behavior."""
         if record.levelno >= logging.WARNING and "Drift detected" in record.getMessage():
             raise DriftError(record.getMessage())
 
 
 @pytest.fixture(autouse=True)
 def fail_on_drift():
-    """TODO: Add docstring."""
+    """Test fail_on_drift behavior."""
     logger = logging.getLogger("imednet.drift")
     handler = DriftFailingHandler()
     logger.addHandler(handler)
@@ -48,7 +48,7 @@ from dataclasses import dataclass
 
 @dataclass
 class FakeRecord:
-    """TODO: Add docstring."""
+    """Test suite for FakeRecord."""
 
     record_id: int
     subject_id: str
@@ -62,7 +62,7 @@ class FakeRecord:
 
 @pytest.fixture
 def fake_records() -> List[FakeRecord]:
-    """TODO: Add docstring."""
+    """Test fake_records behavior."""
     return [
         FakeRecord(
             record_id=1,
@@ -89,27 +89,27 @@ def fake_records() -> List[FakeRecord]:
 
 @pytest.fixture
 def mock_record_mapper(monkeypatch, fake_records):
-    """TODO: Add docstring."""
+    """Test mock_record_mapper behavior."""
     from unittest.mock import MagicMock
 
     from imednet.integrations import export as export_mod
 
     class FakeMapper:
-        """TODO: Add docstring."""
+        """Test suite for FakeMapper."""
 
         def __init__(self, *args, **kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
         def __iter__(self):
-            """TODO: Add docstring."""
+            """Test __iter__ behavior."""
             return iter(fake_records)
 
     monkeypatch.setattr(export_mod, "_record_mapper", lambda *a, **kw: FakeMapper)
 
 
 def test_mongodb_containerized_upserts(fake_records, monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_mongodb_containerized_upserts behavior."""
     import pymongo
 
     uri = "mongodb://root:password@localhost:27017"
@@ -137,7 +137,7 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
 
 
 def test_neo4j_containerized_merges(fake_records, monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_neo4j_containerized_merges behavior."""
     import neo4j
 
     uri = "bolt://localhost:7687"

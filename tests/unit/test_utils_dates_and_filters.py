@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_utils_dates_and_filters."""
 
 from datetime import datetime, timedelta, timezone
 
@@ -9,13 +9,13 @@ from imednet.utils.filters import build_filter_string
 
 
 def test_parse_iso_datetime_with_z() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_iso_datetime_with_z behavior."""
     dt = parse_iso_datetime("2024-01-01T12:30:00Z")
     assert dt == datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone.utc)
 
 
 def test_parse_iso_datetime_with_offset() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_iso_datetime_with_offset behavior."""
     dt = parse_iso_datetime("2024-01-01T12:30:00+02:00")
     assert dt.hour == 12
     assert dt.tzinfo is not None
@@ -23,106 +23,106 @@ def test_parse_iso_datetime_with_offset() -> None:
 
 
 def test_parse_iso_datetime_naive() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_iso_datetime_naive behavior."""
     dt = parse_iso_datetime("2024-01-01T12:30:00")
     assert dt.tzinfo is None
     assert dt.year == 2024
 
 
 def test_parse_iso_datetime_millis_padding() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_iso_datetime_millis_padding behavior."""
     dt = parse_iso_datetime("2021-12-09T08:23:21.99")
     assert dt.microsecond == 990000
     assert dt.tzinfo is None
 
 
 def test_parse_iso_datetime_micro_padding() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_iso_datetime_micro_padding behavior."""
     dt = parse_iso_datetime("2025-06-30T21:40:44.98268")
     assert dt.microsecond == 982680
 
 
 def test_parse_iso_datetime_invalid() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_iso_datetime_invalid behavior."""
     with pytest.raises(ValueError):
         parse_iso_datetime("not-a-date")
 
 
 def test_parse_iso_datetime_none() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_iso_datetime_none behavior."""
     with pytest.raises((AttributeError, TypeError)):
         parse_iso_datetime(None)  # type: ignore[arg-type]
 
 
 def test_format_iso_datetime_aware() -> None:
-    """TODO: Add docstring."""
+    """Test test_format_iso_datetime_aware behavior."""
     dt = datetime(2024, 1, 1, 12, 30, 0, tzinfo=timezone(timedelta(hours=2)))
     result = format_iso_datetime(dt)
     assert result == "2024-01-01T10:30:00Z"
 
 
 def test_format_iso_datetime_naive() -> None:
-    """TODO: Add docstring."""
+    """Test test_format_iso_datetime_naive behavior."""
     dt = datetime(2024, 1, 1, 12, 30, 0)
     result = format_iso_datetime(dt)
     assert result == "2024-01-01T12:30:00Z"
 
 
 def test_build_filter_string_simple() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_simple behavior."""
     result = build_filter_string({"name": "Alice"})
     assert result == "name==Alice"
 
 
 def test_build_filter_string_multiple() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_multiple behavior."""
     result = build_filter_string({"name": "A", "age": 30})
     assert result == "name==A;age==30"
 
 
 def test_build_filter_string_tuple_and_list() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_tuple_and_list behavior."""
     result = build_filter_string({"age": (">", 20), "type": ["A", "B"]})
     assert result == "age>20;type==A,type==B"
 
 
 def test_build_filter_string_bool_and_none() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_bool_and_none behavior."""
     result = build_filter_string({"active": True, "missing": None})
     assert result == "active==True;missing==None"
 
 
 def test_build_filter_string_empty() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_empty behavior."""
     assert build_filter_string({}) == ""
 
 
 def test_build_filter_string_snake_to_camel() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_snake_to_camel behavior."""
     result = build_filter_string({"form_name": "Demo", "visit_date": (">=", "2024")})
     assert result == "formName==Demo;visitDate>=2024"
 
 
 def test_build_filter_string_snake_list() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_snake_list behavior."""
     result = build_filter_string({"field_name": ["A", "B"]})
     assert result == "fieldName==A,fieldName==B"
 
 
 def test_build_filter_string_quotes() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_quotes behavior."""
     result = build_filter_string({"site_name": "My Site"})
     assert result == 'siteName=="My Site"'
 
 
 def test_build_filter_string_quote_spaces() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_quote_spaces behavior."""
     result = build_filter_string({"site_name": "A B"})
     assert result == 'siteName=="A B"'
 
 
 def test_build_filter_string_backslashes() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_filter_string_backslashes behavior."""
     result = build_filter_string({"path": r"C:\Temp", "quote": r"A\"B"})
     # path: C:\Temp -> "C:\\Temp"
     # quote: A\"B -> "A\\\"B"

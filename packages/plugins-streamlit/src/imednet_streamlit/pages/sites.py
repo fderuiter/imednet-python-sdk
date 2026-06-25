@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Sites module."""
 
 from __future__ import annotations
 
@@ -96,14 +96,14 @@ def _fetch_site_metrics(
 
 
 def _highlight_high_rate(val: float) -> str:
-    """TODO: Add docstring."""
+    """Perform  highlight high rate operation."""
     return f"background-color: {_HIGH_RATE_COLOR}" if val > _HIGH_QUERY_RATE_THRESHOLD else ""
 
 
 def _top_sites_with_other(
     df: pd.DataFrame, *, rank_column: str, top_n: int = _MAX_CHART_SITES
 ) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Perform  top sites with other operation."""
     if df.empty:
         return df
 

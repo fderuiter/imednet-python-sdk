@@ -170,7 +170,7 @@ class SnowflakeExportSink(ExportSink):
     """
 
     def __init__(self, config: Optional[SinkConfig] = None) -> None:
-        """TODO: Add docstring."""
+        """Perform   init   operation."""
         cfg = config if isinstance(config, SnowflakeSinkConfig) else SnowflakeSinkConfig()
         super().__init__(cfg)
         self._cfg: SnowflakeSinkConfig = cfg
@@ -183,7 +183,7 @@ class SnowflakeExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def _connect(self) -> None:
-        """TODO: Add docstring."""
+        """Perform  connect operation."""
         cfg = self._cfg
         missing = [
             name
@@ -249,7 +249,7 @@ class SnowflakeExportSink(ExportSink):
         from imednet.core.operations.executor import UniversalExecutor
 
         def execute_export() -> int:
-            """TODO: Add docstring."""
+            """Perform execute export operation."""
             cur = self._conn.cursor()
             try:
                 cur.execute(f"PUT file://{local_path} @{cfg.stage}/{cfg.stage_prefix}/")  # nosem

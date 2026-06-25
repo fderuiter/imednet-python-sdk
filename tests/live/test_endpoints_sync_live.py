@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_endpoints_sync_live."""
 
 from typing import Any
 
@@ -22,7 +22,7 @@ from tests.live.helpers import require_mutation
 
 
 def test_list_studies(sdk: ImednetSDK) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_studies behavior."""
     studies = list(sdk.studies.list())
     assert isinstance(studies, list)
     assert studies, "No studies returned from server"
@@ -32,7 +32,7 @@ def test_list_studies(sdk: ImednetSDK) -> None:
 
 
 def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_sites behavior."""
     sites = list(sdk.sites.list(study_key=study_key))
     assert isinstance(sites, list)
     if sites:
@@ -42,7 +42,7 @@ def test_list_sites(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_get_study behavior."""
     try:
         study = sdk.studies.get(None, study_key)
     except ServerError as exc:
@@ -52,7 +52,7 @@ def test_get_study(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_forms(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_forms behavior."""
     forms = list(sdk.forms.list(study_key=study_key))
     assert isinstance(forms, list)
     if forms:
@@ -62,7 +62,7 @@ def test_list_forms(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_subjects(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_subjects behavior."""
     subjects = list(sdk.subjects.list(study_key=study_key))
     assert isinstance(subjects, list)
     if subjects:
@@ -72,7 +72,7 @@ def test_list_subjects(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_records behavior."""
     records = list(sdk.records.list(study_key=study_key))
     assert isinstance(records, list)
     if records:
@@ -82,7 +82,7 @@ def test_list_records(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_intervals(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_intervals behavior."""
     intervals = list(sdk.intervals.list(study_key=study_key))
     assert isinstance(intervals, list)
     if intervals:
@@ -92,7 +92,7 @@ def test_list_intervals(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_visits(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_visits behavior."""
     visits = list(sdk.visits.list(study_key=study_key))
     assert isinstance(visits, list)
     if visits:
@@ -102,7 +102,7 @@ def test_list_visits(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_variables(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_variables behavior."""
     variables = list(sdk.variables.list(study_key=study_key))
     assert isinstance(variables, list)
     if variables:
@@ -112,7 +112,7 @@ def test_list_variables(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_users(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_users behavior."""
     users = list(sdk.users.list(study_key=study_key))
     assert isinstance(users, list)
     if users:
@@ -122,7 +122,7 @@ def test_list_users(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_queries(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_queries behavior."""
     queries = list(sdk.queries.list(study_key=study_key))
     assert isinstance(queries, list)
     if queries:
@@ -132,7 +132,7 @@ def test_list_queries(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_record_revisions behavior."""
     revisions = list(sdk.record_revisions.list(study_key=study_key))
     assert isinstance(revisions, list)
     if revisions:
@@ -142,7 +142,7 @@ def test_list_record_revisions(sdk: ImednetSDK, study_key: str) -> None:
 
 
 def test_job_get_known_batch(sdk: ImednetSDK, study_key: str, generated_batch_id: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_job_get_known_batch behavior."""
     job = sdk.jobs.get(study_key, generated_batch_id)
     assert job.batch_id == generated_batch_id
 
@@ -157,7 +157,7 @@ def test_create_record_and_poll_job(
     study_key: str,
     record_payload: dict[str, Any],
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_create_record_and_poll_job behavior."""
     require_mutation()
     job = sdk.records.create(study_key, [record_payload])
     if not job.batch_id:
@@ -167,7 +167,7 @@ def test_create_record_and_poll_job(
 
 
 def test_list_codings(sdk: ImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Test test_list_codings behavior."""
     codings = list(sdk.codings.list(study_key=study_key))
     assert isinstance(codings, list)
     if codings:

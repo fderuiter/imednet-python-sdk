@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_components_charts."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from imednet_streamlit.components import bar_chart, line_chart, pie_chart
 
 
 def test_bar_chart_returns_altair_chart_with_defaults() -> None:
-    """TODO: Add docstring."""
+    """Test test_bar_chart_returns_altair_chart_with_defaults behavior."""
     df = pd.DataFrame({"category": ["A", "B"], "value": [1, 2]})
     chart = bar_chart(df, x="value", y="category", title="Example")
 
@@ -20,7 +20,7 @@ def test_bar_chart_returns_altair_chart_with_defaults() -> None:
 
 
 def test_bar_chart_returns_altair_chart_with_color_encoding() -> None:
-    """TODO: Add docstring."""
+    """Test test_bar_chart_returns_altair_chart_with_color_encoding behavior."""
     df = pd.DataFrame({"category": ["A", "B"], "value": [1, 2], "group": ["X", "Y"]})
     chart = bar_chart(df, x="value", y="category", color="group", title="Example")
 
@@ -34,7 +34,7 @@ def test_bar_chart_returns_altair_chart_with_color_encoding() -> None:
 
 
 def test_line_chart_returns_altair_chart_with_defaults() -> None:
-    """TODO: Add docstring."""
+    """Test test_line_chart_returns_altair_chart_with_defaults behavior."""
     df = pd.DataFrame(
         {
             "date": pd.to_datetime(["2026-01-01", "2026-01-02"]),
@@ -50,7 +50,7 @@ def test_line_chart_returns_altair_chart_with_defaults() -> None:
 
 
 def test_line_chart_returns_altair_chart_with_color_encoding() -> None:
-    """TODO: Add docstring."""
+    """Test test_line_chart_returns_altair_chart_with_color_encoding behavior."""
     df = pd.DataFrame(
         {
             "date": pd.to_datetime(["2026-01-01", "2026-01-02"]),
@@ -69,7 +69,7 @@ def test_line_chart_returns_altair_chart_with_color_encoding() -> None:
 
 
 def test_pie_chart_returns_altair_chart() -> None:
-    """TODO: Add docstring."""
+    """Test test_pie_chart_returns_altair_chart behavior."""
     df = pd.DataFrame({"status": ["Open", "Closed"], "count": [4, 6]})
     chart = pie_chart(df, theta="count", color="status")
 

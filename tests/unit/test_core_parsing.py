@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_core_parsing."""
 
 from typing import Any
 
@@ -8,26 +8,26 @@ from imednet.core.parsing import ModelParser, get_model_parser
 
 
 class SimpleModel(BaseModel):
-    """TODO: Add docstring."""
+    """Test suite for SimpleModel."""
 
     id: int
     name: str
 
 
 class CustomParseModel(BaseModel):
-    """TODO: Add docstring."""
+    """Test suite for CustomParseModel."""
 
     id: int
     name: str
 
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> "CustomParseModel":
-        """TODO: Add docstring."""
+        """Test from_json behavior."""
         return cls(id=data["identifier"], name=data["full_name"])
 
 
 def test_get_model_parser_uses_model_validate_by_default() -> None:
-    """TODO: Add docstring."""
+    """Test test_get_model_parser_uses_model_validate_by_default behavior."""
     parser = get_model_parser(SimpleModel)
     assert parser == SimpleModel.model_validate
 
@@ -39,7 +39,7 @@ def test_get_model_parser_uses_model_validate_by_default() -> None:
 
 
 def test_get_model_parser_uses_custom_from_json() -> None:
-    """TODO: Add docstring."""
+    """Test test_get_model_parser_uses_custom_from_json behavior."""
     parser = get_model_parser(CustomParseModel)
     assert parser == CustomParseModel.from_json
 
@@ -51,7 +51,7 @@ def test_get_model_parser_uses_custom_from_json() -> None:
 
 
 def test_model_parser_class_parse() -> None:
-    """TODO: Add docstring."""
+    """Test test_model_parser_class_parse behavior."""
     parser = ModelParser(SimpleModel)
     data = {"id": 3, "name": "Class Test"}
 
@@ -62,7 +62,7 @@ def test_model_parser_class_parse() -> None:
 
 
 def test_model_parser_class_parse_many() -> None:
-    """TODO: Add docstring."""
+    """Test test_model_parser_class_parse_many behavior."""
     parser = ModelParser(CustomParseModel)
     data_list = [
         {"identifier": 10, "full_name": "Alice"},

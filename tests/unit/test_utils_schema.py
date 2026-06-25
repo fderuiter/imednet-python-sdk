@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_utils_schema."""
 
 from unittest.mock import MagicMock
 
@@ -10,12 +10,12 @@ from imednet.validation.cache import SchemaCache, SchemaValidator, _check_type, 
 
 
 def _make_var(name: str, var_type: str = "integer") -> Variable:
-    """TODO: Add docstring."""
+    """Test _make_var behavior."""
     return Variable(variable_name=name, variable_type=var_type, form_id=1, form_key="F1")
 
 
 def test_schema_cache_refresh() -> None:
-    """TODO: Add docstring."""
+    """Test test_schema_cache_refresh behavior."""
     forms = MagicMock()
     variables = MagicMock()
     var = _make_var("age")
@@ -31,7 +31,7 @@ def test_schema_cache_refresh() -> None:
 
 
 def test_check_type_int() -> None:
-    """TODO: Add docstring."""
+    """Test test_check_type_int behavior."""
     var = _make_var("age")
     _check_type(var.variable_type, 5)
     with pytest.raises(ValidationError):
@@ -39,7 +39,7 @@ def test_check_type_int() -> None:
 
 
 def test_check_type_other_types() -> None:
-    """TODO: Add docstring."""
+    """Test test_check_type_other_types behavior."""
     bool_var = _make_var("flag", "boolean")
     float_var = _make_var("score", "float")
     str_var = _make_var("name", "string")
@@ -57,13 +57,13 @@ def test_check_type_other_types() -> None:
 
 
 def test_check_type_unknown_type() -> None:
-    """TODO: Add docstring."""
+    """Test test_check_type_unknown_type behavior."""
     with pytest.raises(UnknownVariableTypeError):
         _check_type("weird", "x")
 
 
 def test_validate_record_data_errors() -> None:
-    """TODO: Add docstring."""
+    """Test test_validate_record_data_errors behavior."""
     cache = SchemaCache()
     var = _make_var("age")
     # Bolt: Removed 'required' attribute injection as support was removed
@@ -80,14 +80,14 @@ def test_validate_record_data_errors() -> None:
 
 
 def test_validate_record_data_unknown_form() -> None:
-    """TODO: Add docstring."""
+    """Test test_validate_record_data_unknown_form behavior."""
     cache = SchemaCache()
     with pytest.raises(ValidationError, match="Unknown form BAD"):
         validate_record_data(cache, "BAD", {})
 
 
 def test_schema_validator_batch_calls_validate_record() -> None:
-    """TODO: Add docstring."""
+    """Test test_schema_validator_batch_calls_validate_record behavior."""
     sdk = MagicMock()
     validator = SchemaValidator(sdk)
     validator.validate_record = MagicMock()  # type: ignore[assignment]

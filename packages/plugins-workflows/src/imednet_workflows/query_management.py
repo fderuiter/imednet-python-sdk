@@ -16,7 +16,7 @@ class QueryManagementWorkflow:
     """
 
     def __init__(self, sdk: "ImednetFacade"):
-        """TODO: Add docstring."""
+        """Perform   init   operation."""
         self._sdk = sdk
 
     @staticmethod

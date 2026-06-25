@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Get Study Structure module."""
 
 import csv
 import json

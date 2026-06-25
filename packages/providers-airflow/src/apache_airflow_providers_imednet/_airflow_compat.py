@@ -1,4 +1,4 @@
-"""Documentation placeholder."""
+""" Airflow Compat module."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
     except (ImportError, ModuleNotFoundError):
 
         class _FallbackAirflowError(Exception):
-            """Documentation placeholder."""
+            """_FallbackAirflowError implementation."""
 
             pass
 

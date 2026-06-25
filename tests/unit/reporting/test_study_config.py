@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_study_config."""
 
 import pytest
 from pydantic import ValidationError
@@ -7,7 +7,7 @@ from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetC
 
 
 def test_study_configuration_roundtrip_json_with_aliases() -> None:
-    """TODO: Add docstring."""
+    """Test test_study_configuration_roundtrip_json_with_aliases behavior."""
     config = StudyConfiguration.model_validate(
         {
             "studyKey": " STUDY-001 ",
@@ -49,7 +49,7 @@ def test_study_configuration_roundtrip_json_with_aliases() -> None:
 
 
 def test_study_configuration_accepts_snake_case_field_names() -> None:
-    """TODO: Add docstring."""
+    """Test test_study_configuration_accepts_snake_case_field_names behavior."""
     config = StudyConfiguration(
         study_key="STUDY-002",
         mappings=[
@@ -73,7 +73,7 @@ def test_study_configuration_accepts_snake_case_field_names() -> None:
 
 
 def test_study_configuration_rejects_unknown_reporting_profile() -> None:
-    """TODO: Add docstring."""
+    """Test test_study_configuration_rejects_unknown_reporting_profile behavior."""
     with pytest.raises(ValidationError, match="reportingProfile must be one of"):
         StudyConfiguration.model_validate(
             {

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Record Mapping module."""
 
 import os
 

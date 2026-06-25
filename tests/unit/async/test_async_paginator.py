@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_async_paginator."""
 
 import pytest
 
@@ -6,15 +6,15 @@ from imednet.core.paginator import AsyncPaginator
 
 
 class DummyAsyncClient:
-    """TODO: Add docstring."""
+    """Test suite for DummyAsyncClient."""
 
     def __init__(self, responses):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.responses = responses
         self.calls = []
 
     async def get(self, path, params=None):
-        """TODO: Add docstring."""
+        """Implementation detail."""
         self.calls.append({"path": path, "params": params})
         data = self.responses.pop(0)
         return type("Resp", (), {"json": lambda self, d=data: d})()
@@ -22,7 +22,7 @@ class DummyAsyncClient:
 
 @pytest.mark.asyncio
 async def test_iterates_pages():
-    """TODO: Add docstring."""
+    """Implementation detail."""
     client = DummyAsyncClient(
         [
             {"data": [1], "pagination": {"totalPages": 2}},

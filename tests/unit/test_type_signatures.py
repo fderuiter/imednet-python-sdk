@@ -7,14 +7,14 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
 def sync_record_signature() -> None:
-    """TODO: Add docstring."""
+    """Test sync_record_signature behavior."""
     sdk = cast(ImednetSDK, object())
     record: Record = sdk.records.get(study_key="STUDY", item_id="123")
     _ = record
 
 
 async def async_record_signature() -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     sdk = cast(AsyncImednetSDK, object())
     record: Record = await sdk.records.async_get(study_key="STUDY", item_id="123")
     _ = record

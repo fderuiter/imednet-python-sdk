@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Conformance module."""
 
 import json
 import os

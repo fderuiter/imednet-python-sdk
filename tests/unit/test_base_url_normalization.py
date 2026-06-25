@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_base_url_normalization."""
 
 from unittest.mock import MagicMock
 
@@ -13,20 +13,20 @@ from imednet.models.json_base import JsonModel
 
 
 class MockModel(JsonModel):
-    """TODO: Add docstring."""
+    """Test suite for MockModel."""
 
     pass
 
 
 class MockEndpoint(EdcEndpointMixin, GenericEndpoint[MockModel]):
-    """TODO: Add docstring."""
+    """Test suite for MockEndpoint."""
 
     MODEL = MockModel
     PATH = "/test"
 
 
 def test_client_strips_api_suffix() -> None:
-    """TODO: Add docstring."""
+    """Test test_client_strips_api_suffix behavior."""
     client = Client(api_key="k", security_key="s", base_url="https://x/api")
     assert client.base_url == "https://x"
     assert client._client.base_url == httpx.URL("https://x")
@@ -34,7 +34,7 @@ def test_client_strips_api_suffix() -> None:
 
 @pytest.mark.asyncio
 async def test_async_client_strips_api_suffix() -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     async with AsyncClient(
         api_key="k",
         security_key="s",
@@ -45,7 +45,7 @@ async def test_async_client_strips_api_suffix() -> None:
 
 
 def test_build_safe_path_handles_special_characters() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_safe_path_handles_special_characters behavior."""
     client = MagicMock(spec=Client)
     endpoint = MockEndpoint(client)
 
@@ -56,7 +56,7 @@ def test_build_safe_path_handles_special_characters() -> None:
 
 
 def test_build_safe_path_prevents_double_slashes() -> None:
-    """TODO: Add docstring."""
+    """Test test_build_safe_path_prevents_double_slashes behavior."""
     client = MagicMock(spec=Client)
     endpoint = MockEndpoint(client)
 

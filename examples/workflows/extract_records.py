@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Extract Records module."""
 
 from typing import Any, Dict
 

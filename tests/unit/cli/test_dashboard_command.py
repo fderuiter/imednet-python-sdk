@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_dashboard_command."""
 
 from __future__ import annotations
 
@@ -15,13 +15,13 @@ FAKE_DASHBOARD_PATH = "/tmp/fake_dashboard.py"
 
 @pytest.fixture()
 def runner() -> CliRunner:
-    """TODO: Add docstring."""
+    """Test runner behavior."""
     return CliRunner()
 
 
 @pytest.fixture()
 def cli_module() -> ModuleType:
-    """TODO: Add docstring."""
+    """Test cli_module behavior."""
     import imednet.cli as cli
 
     importlib.reload(cli)
@@ -32,11 +32,11 @@ def cli_module() -> ModuleType:
 def test_dashboard_command_falls_back_when_plugin_missing(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_dashboard_command_falls_back_when_plugin_missing behavior."""
     real_find_spec = importlib.util.find_spec
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """TODO: Add docstring."""
+        """Test fake_find_spec behavior."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return None
         return real_find_spec(name, package)
@@ -56,12 +56,12 @@ def test_dashboard_command_falls_back_when_plugin_missing(
 def test_dashboard_command_runs_streamlit_when_plugin_present(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_dashboard_command_runs_streamlit_when_plugin_present behavior."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """TODO: Add docstring."""
+        """Test fake_find_spec behavior."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -99,12 +99,12 @@ def test_dashboard_command_runs_streamlit_when_plugin_present(
 def test_dashboard_command_uses_default_options(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_dashboard_command_uses_default_options behavior."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """TODO: Add docstring."""
+        """Test fake_find_spec behavior."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -134,12 +134,12 @@ def test_dashboard_command_uses_default_options(
 def test_dashboard_command_fails_when_app_path_missing(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_dashboard_command_fails_when_app_path_missing behavior."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=None)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """TODO: Add docstring."""
+        """Test fake_find_spec behavior."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -155,12 +155,12 @@ def test_dashboard_command_fails_when_app_path_missing(
 def test_dashboard_command_propagates_streamlit_failure(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_dashboard_command_propagates_streamlit_failure behavior."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """TODO: Add docstring."""
+        """Test fake_find_spec behavior."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)
@@ -179,12 +179,12 @@ def test_dashboard_command_propagates_streamlit_failure(
 def test_dashboard_command_handles_subprocess_oserror(
     runner: CliRunner, cli_module: ModuleType, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test test_dashboard_command_handles_subprocess_oserror behavior."""
     real_find_spec = importlib.util.find_spec
     dashboard_spec = MagicMock(origin=FAKE_DASHBOARD_PATH)
 
     def fake_find_spec(name: str, package: str | None = None) -> object | None:
-        """TODO: Add docstring."""
+        """Test fake_find_spec behavior."""
         if name in ("imednet_streamlit.app", "imednet_streamlit"):
             return dashboard_spec
         return real_find_spec(name, package)

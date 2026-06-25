@@ -1,10 +1,10 @@
-"""TODO: Add docstring."""
+"""Tests for test_lazy_attrs."""
 
 from imednet.utils import records_to_dataframe
 from imednet.validation.cache import SchemaCache
 
 
 def test_lazy_attrs_available() -> None:
-    """TODO: Add docstring."""
+    """Test test_lazy_attrs_available behavior."""
     assert callable(records_to_dataframe)
     assert isinstance(SchemaCache, type)

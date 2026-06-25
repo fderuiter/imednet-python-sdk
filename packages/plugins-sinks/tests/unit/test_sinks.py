@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_sinks."""
 
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,7 +23,7 @@ from imednet.integrations import SinkConfig
 
 
 def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:
-    """TODO: Add docstring."""
+    """Test _fake_neo4j_module behavior."""
     neo4j = ModuleType("neo4j")
     driver = MagicMock()
     if fail_connect:
@@ -34,7 +34,7 @@ def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:
 
 
 def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
-    """TODO: Add docstring."""
+    """Test _fake_pymongo_module behavior."""
     pymongo = ModuleType("pymongo")
     client = MagicMock()
     if fail_connect:
@@ -54,7 +54,7 @@ def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
 
 
 def _fake_snowflake_module() -> tuple:
-    """TODO: Add docstring."""
+    """Test _fake_snowflake_module behavior."""
     sf = ModuleType("snowflake.connector")
     conn = MagicMock()
     cursor = MagicMock()
@@ -64,7 +64,7 @@ def _fake_snowflake_module() -> tuple:
 
 
 def _fake_pyarrow_modules() -> tuple:
-    """TODO: Add docstring."""
+    """Test _fake_pyarrow_modules behavior."""
     pa = ModuleType("pyarrow")
     pq = ModuleType("pyarrow.parquet")
     table = MagicMock()
@@ -75,10 +75,10 @@ def _fake_pyarrow_modules() -> tuple:
 
 
 class TestNeo4jExportSink:
-    """TODO: Add docstring."""
+    """Test suite for TestNeo4jExportSink."""
 
     def test_connect_calls_verify_connectivity(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_connect_calls_verify_connectivity behavior."""
         import imednet_sinks.graph as graph_mod
 
         neo4j, driver = _fake_neo4j_module()
@@ -91,7 +91,7 @@ class TestNeo4jExportSink:
         sink.close()
 
     def test_connect_raises_configuration_error_on_failure(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_connect_raises_configuration_error_on_failure behavior."""
         import imednet_sinks.graph as graph_mod
 
         neo4j, driver = _fake_neo4j_module(fail_connect=True)
@@ -103,7 +103,7 @@ class TestNeo4jExportSink:
             Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1")
 
     def test_write_batch_returns_count(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_returns_count behavior."""
         import imednet_sinks.graph as graph_mod
 
         neo4j, driver = _fake_neo4j_module()
@@ -120,7 +120,7 @@ class TestNeo4jExportSink:
         assert count == 5
 
     def test_write_batch_uses_structure_preserving_payload_shape(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_uses_structure_preserving_payload_shape behavior."""
         import imednet_sinks.graph as graph_mod
 
         neo4j, driver = _fake_neo4j_module()
@@ -159,7 +159,7 @@ class TestNeo4jExportSink:
         ]
 
     def test_write_batch_empty_returns_zero(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_empty_returns_zero behavior."""
         import imednet_sinks.graph as graph_mod
 
         neo4j, driver = _fake_neo4j_module()
@@ -172,7 +172,7 @@ class TestNeo4jExportSink:
         assert count == 0
 
     def test_write_batch_raises_after_retries_exhausted(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_raises_after_retries_exhausted behavior."""
         import imednet_sinks.graph as graph_mod
 
         neo4j, driver = _fake_neo4j_module()
@@ -193,7 +193,7 @@ class TestNeo4jExportSink:
         sink.close()
 
     def test_close_is_idempotent(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_close_is_idempotent behavior."""
         import imednet_sinks.graph as graph_mod
 
         neo4j, driver = _fake_neo4j_module()
@@ -212,7 +212,7 @@ class TestNeo4jExportSink:
 
 
 def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
-    """TODO: Add docstring."""
+    """Test _fake_pymongo_module behavior."""
     pymongo = ModuleType("pymongo")
     client = MagicMock()
     if fail_connect:
@@ -233,10 +233,10 @@ def _fake_pymongo_module(fail_connect: bool = False) -> ModuleType:
 
 
 class TestMongoDbExportSink:
-    """TODO: Add docstring."""
+    """Test suite for TestMongoDbExportSink."""
 
     def test_connect_raises_configuration_error_on_failure(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_connect_raises_configuration_error_on_failure behavior."""
         import imednet_sinks.document as doc_mod
 
         pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
@@ -248,7 +248,7 @@ class TestMongoDbExportSink:
             MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1")
 
     def test_connect_error_message_redacts_credentials(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_connect_error_message_redacts_credentials behavior."""
         import imednet_sinks.document as doc_mod
 
         pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
@@ -265,7 +265,7 @@ class TestMongoDbExportSink:
         assert "localhost:27017" in message
 
     def test_write_batch_upsert_returns_count(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_upsert_returns_count behavior."""
         import imednet_sinks.document as doc_mod
 
         pymongo, client, collection = _fake_pymongo_module()
@@ -283,7 +283,7 @@ class TestMongoDbExportSink:
         assert count == 3
 
     def test_write_batch_upsert_document_envelope_shape(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_upsert_document_envelope_shape behavior."""
         import imednet_sinks.document as doc_mod
 
         pymongo, client, collection = _fake_pymongo_module()
@@ -329,7 +329,7 @@ class TestMongoDbExportSink:
         assert "exported_at" in update_doc["$set"]
 
     def test_write_batch_empty_returns_zero(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_empty_returns_zero behavior."""
         import imednet_sinks.document as doc_mod
 
         pymongo, client, collection = _fake_pymongo_module()
@@ -342,7 +342,7 @@ class TestMongoDbExportSink:
         assert count == 0
 
     def test_write_batch_raises_after_retries(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_write_batch_raises_after_retries behavior."""
         import imednet_sinks.document as doc_mod
 
         pymongo, client, collection = _fake_pymongo_module()
@@ -361,13 +361,13 @@ class TestMongoDbExportSink:
                 sink.write_batch(records, batch_id="S1/F1/0")
 
     def test_document_id_format(self):
-        """TODO: Add docstring."""
+        """Test test_document_id_format behavior."""
         from imednet_sinks.document import _make_document_id
 
         assert _make_document_id("MYSTUDY", 42) == "MYSTUDY/42"
 
     def test_close_is_idempotent(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_close_is_idempotent behavior."""
         import imednet_sinks.document as doc_mod
 
         pymongo, client, collection = _fake_pymongo_module()
@@ -386,7 +386,7 @@ class TestMongoDbExportSink:
 
 
 def _fake_snowflake_module() -> ModuleType:
-    """TODO: Add docstring."""
+    """Test _fake_snowflake_module behavior."""
     sf = ModuleType("snowflake.connector")
     conn = MagicMock()
     cursor = MagicMock()
@@ -396,7 +396,7 @@ def _fake_snowflake_module() -> ModuleType:
 
 
 def _fake_pyarrow_modules() -> tuple:
-    """TODO: Add docstring."""
+    """Test _fake_pyarrow_modules behavior."""
     pa = ModuleType("pyarrow")
     pq = ModuleType("pyarrow.parquet")
     table = MagicMock()
@@ -407,10 +407,10 @@ def _fake_pyarrow_modules() -> tuple:
 
 
 class TestSnowflakeExportSink:
-    """TODO: Add docstring."""
+    """Test suite for TestSnowflakeExportSink."""
 
     def _make_sink(self, monkeypatch, *, tmp_path, fail_connect=False):
-        """TODO: Add docstring."""
+        """Test _make_sink behavior."""
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeSinkConfig
 
@@ -420,7 +420,7 @@ class TestSnowflakeExportSink:
         pa, pq, table = _fake_pyarrow_modules()
 
         def fake_require(pkg, extras):
-            """TODO: Add docstring."""
+            """Test fake_require behavior."""
             if pkg == "snowflake.connector":
                 return sf
             if pkg == "pyarrow":
@@ -445,7 +445,7 @@ class TestSnowflakeExportSink:
         return cfg, sf, conn, cursor, pq
 
     def test_connect_raises_configuration_error_on_failure(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_connect_raises_configuration_error_on_failure behavior."""
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
@@ -454,7 +454,7 @@ class TestSnowflakeExportSink:
         pa, pq, table = _fake_pyarrow_modules()
 
         def fake_require(pkg, extras):
-            """TODO: Add docstring."""
+            """Test fake_require behavior."""
             if pkg == "snowflake.connector":
                 return sf
             return pa if "pyarrow" in pkg else MagicMock()
@@ -476,7 +476,7 @@ class TestSnowflakeExportSink:
             SnowflakeExportSink(config=cfg)
 
     def test_raises_for_missing_required_config(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_raises_for_missing_required_config behavior."""
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
@@ -489,14 +489,14 @@ class TestSnowflakeExportSink:
             SnowflakeExportSink(config=cfg)
 
     def test_records_to_arrow_table_uses_snowflake_extra(self, monkeypatch):
-        """TODO: Add docstring."""
+        """Test test_records_to_arrow_table_uses_snowflake_extra behavior."""
         import imednet_sinks.warehouse as wh_mod
 
         pa, _, table = _fake_pyarrow_modules()
         seen: list[tuple[str, str]] = []
 
         def fake_require(pkg, extras):
-            """TODO: Add docstring."""
+            """Test fake_require behavior."""
             seen.append((pkg, extras))
             return pa
 
@@ -510,7 +510,7 @@ class TestSnowflakeExportSink:
         assert seen == [("pyarrow", "snowflake")]
 
     def test_write_batch_calls_put_and_copy(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_write_batch_calls_put_and_copy behavior."""
         from imednet_sinks.warehouse import SnowflakeExportSink
 
         cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
@@ -528,7 +528,7 @@ class TestSnowflakeExportSink:
         sink.close()
 
     def test_write_batch_uses_snowflake_extra_for_parquet(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_write_batch_uses_snowflake_extra_for_parquet behavior."""
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink
 
@@ -536,7 +536,7 @@ class TestSnowflakeExportSink:
         seen: list[tuple[str, str]] = []
 
         def fake_require(pkg, extras):
-            """TODO: Add docstring."""
+            """Test fake_require behavior."""
             seen.append((pkg, extras))
             if pkg == "snowflake.connector":
                 return sf
@@ -559,7 +559,7 @@ class TestSnowflakeExportSink:
         assert ("pyarrow.parquet", "snowflake") in seen
 
     def test_write_batch_empty_returns_zero(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_write_batch_empty_returns_zero behavior."""
         from imednet_sinks.warehouse import SnowflakeExportSink
 
         cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
@@ -568,7 +568,7 @@ class TestSnowflakeExportSink:
         sink.close()
 
     def test_write_batch_raises_after_retries(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_write_batch_raises_after_retries behavior."""
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
@@ -577,7 +577,7 @@ class TestSnowflakeExportSink:
         pa, pq, table = _fake_pyarrow_modules()
 
         def fake_require(pkg, extras):
-            """TODO: Add docstring."""
+            """Test fake_require behavior."""
             if pkg == "snowflake.connector":
                 return sf
             if pkg == "pyarrow":
@@ -609,7 +609,7 @@ class TestSnowflakeExportSink:
         sink.close()
 
     def test_manifest_appended(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_manifest_appended behavior."""
         import json
 
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
@@ -637,7 +637,7 @@ class TestSnowflakeExportSink:
         pa2, pq2, table2 = _fake_pyarrow_modules()
 
         def fake_require2(pkg, extras):
-            """TODO: Add docstring."""
+            """Test fake_require2 behavior."""
             if pkg == "snowflake.connector":
                 return sf2
             if pkg == "pyarrow":
@@ -659,7 +659,7 @@ class TestSnowflakeExportSink:
         assert entry["row_count"] == 1
 
     def test_close_is_idempotent(self, monkeypatch, tmp_path):
-        """TODO: Add docstring."""
+        """Test test_close_is_idempotent behavior."""
         from imednet_sinks.warehouse import SnowflakeExportSink
 
         cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
@@ -669,7 +669,7 @@ class TestSnowflakeExportSink:
 
 
 def test_plugin_namespace():
-    """TODO: Add docstring."""
+    """Test test_plugin_namespace behavior."""
     from imednet_sinks.plugin import create_sinks
 
     sdk_mock = MagicMock()
@@ -686,7 +686,7 @@ def test_plugin_namespace():
 
 
 def test_export_to_neo4j(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_export_to_neo4j behavior."""
     import imednet_sinks.graph as graph_mod
 
     neo4j, driver = _fake_neo4j_module()
@@ -700,7 +700,7 @@ def test_export_to_neo4j(monkeypatch):
 
 
 def test_export_to_mongodb(monkeypatch):
-    """TODO: Add docstring."""
+    """Test test_export_to_mongodb behavior."""
     import imednet_sinks.document as doc_mod
 
     pymongo, client, collection = _fake_pymongo_module()
@@ -714,7 +714,7 @@ def test_export_to_mongodb(monkeypatch):
 
 
 def test_export_to_snowflake(monkeypatch, tmp_path):
-    """TODO: Add docstring."""
+    """Test test_export_to_snowflake behavior."""
     import imednet_sinks.warehouse as wh_mod
     from imednet_sinks.warehouse import SnowflakeSinkConfig
 
@@ -722,7 +722,7 @@ def test_export_to_snowflake(monkeypatch, tmp_path):
     pa, pq, table = _fake_pyarrow_modules()
 
     def fake_require(pkg, extras):
-        """TODO: Add docstring."""
+        """Test fake_require behavior."""
         if pkg == "snowflake.connector":
             return sf
         if pkg == "pyarrow":

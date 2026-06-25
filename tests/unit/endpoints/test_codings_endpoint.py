@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_codings_endpoint."""
 
 import pytest
 
@@ -9,7 +9,7 @@ from imednet.models.codings import Coding
 
 
 def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
-    """TODO: Add docstring."""
+    """Test test_list_requires_study_key behavior."""
     ep = codings.CodingsEndpoint(dummy_client, context)
     capture = paginator_factory(codings, [{"codingId": 1}])
     patch = patch_build_filter(codings)
@@ -26,11 +26,11 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """TODO: Add docstring."""
+    """Test test_get_not_found behavior."""
     ep = codings.CodingsEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        """TODO: Add docstring."""
+        """Test fake_impl behavior."""
         return []
 
     monkeypatch.setattr(codings.CodingsEndpoint, "_list_sync", fake_impl)

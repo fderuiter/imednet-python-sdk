@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_record_mapper_hierarchy."""
 
 from datetime import datetime
 from unittest.mock import MagicMock, patch
@@ -10,7 +10,7 @@ from imednet_workflows.record_mapper import RecordMapper
 
 @patch("imednet_workflows.study_structure.get_study_structure")
 def test_build_hierarchy(mock_get_study_structure):
-    """TODO: Add docstring."""
+    """Test test_build_hierarchy behavior."""
     sdk = MagicMock()
 
     mock_study_struct = MagicMock()

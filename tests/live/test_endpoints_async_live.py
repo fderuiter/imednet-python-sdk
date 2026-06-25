@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_endpoints_async_live."""
 
 from typing import Any
 
@@ -10,7 +10,7 @@ from tests.live.helpers import require_mutation
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_sites(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     sites = [item async for item in async_sdk.sites.async_list(study_key)]
     assert isinstance(sites, list)
     if sites:
@@ -20,7 +20,7 @@ async def test_async_sites(async_sdk: AsyncImednetSDK, study_key: str) -> None:
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_subjects(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     subjects = [item async for item in async_sdk.subjects.async_list(study_key)]
     assert isinstance(subjects, list)
     if subjects:
@@ -30,7 +30,7 @@ async def test_async_subjects(async_sdk: AsyncImednetSDK, study_key: str) -> Non
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_records(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     records = [item async for item in async_sdk.records.async_list(study_key)]
     assert isinstance(records, list)
     if records:
@@ -40,7 +40,7 @@ async def test_async_records(async_sdk: AsyncImednetSDK, study_key: str) -> None
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_intervals(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     intervals = [item async for item in async_sdk.intervals.async_list(study_key)]
     assert isinstance(intervals, list)
     if intervals:
@@ -50,7 +50,7 @@ async def test_async_intervals(async_sdk: AsyncImednetSDK, study_key: str) -> No
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_visits(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     visits = [item async for item in async_sdk.visits.async_list(study_key)]
     assert isinstance(visits, list)
     if visits:
@@ -60,7 +60,7 @@ async def test_async_visits(async_sdk: AsyncImednetSDK, study_key: str) -> None:
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_variables(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     variables = [item async for item in async_sdk.variables.async_list(study_key)]
     assert isinstance(variables, list)
     if variables:
@@ -70,7 +70,7 @@ async def test_async_variables(async_sdk: AsyncImednetSDK, study_key: str) -> No
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_forms(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     forms = [item async for item in async_sdk.forms.async_list(study_key)]
     assert isinstance(forms, list)
     if forms:
@@ -80,7 +80,7 @@ async def test_async_forms(async_sdk: AsyncImednetSDK, study_key: str) -> None:
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_queries(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     queries = [item async for item in async_sdk.queries.async_list(study_key)]
     assert isinstance(queries, list)
     if queries:
@@ -90,7 +90,7 @@ async def test_async_queries(async_sdk: AsyncImednetSDK, study_key: str) -> None
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_record_revisions(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     revisions = [item async for item in async_sdk.record_revisions.async_list(study_key)]
     assert isinstance(revisions, list)
     if revisions:
@@ -100,7 +100,7 @@ async def test_async_record_revisions(async_sdk: AsyncImednetSDK, study_key: str
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_users(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     users = [item async for item in async_sdk.users.async_list(study_key)]
     assert isinstance(users, list)
     if users:
@@ -110,7 +110,7 @@ async def test_async_users(async_sdk: AsyncImednetSDK, study_key: str) -> None:
 
 @pytest.mark.asyncio(scope="session")
 async def test_async_codings(async_sdk: AsyncImednetSDK, study_key: str) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     codings = [item async for item in async_sdk.codings.async_list(study_key)]
     assert isinstance(codings, list)
     if codings:
@@ -129,7 +129,7 @@ async def test_async_create_and_poll(
     study_key: str,
     record_payload: dict[str, Any],
 ) -> None:
-    """TODO: Add docstring."""
+    """Implementation detail."""
     require_mutation()
     job = await async_sdk.records.async_create(study_key, [record_payload])
     if not job.batch_id:

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_app."""
 
 from __future__ import annotations
 
@@ -13,28 +13,28 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 class _FakeNavigation:
-    """TODO: Add docstring."""
+    """Test suite for _FakeNavigation."""
 
     def __init__(self, pages: list[dict[str, Any]]) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.pages = pages
         self.ran = False
 
     def run(self) -> None:
-        """TODO: Add docstring."""
+        """Test run behavior."""
         self.ran = True
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for _FakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.page_config: dict[str, Any] | None = None
         self.navigation_calls: list[_FakeNavigation] = []
 
     def set_page_config(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Test set_page_config behavior."""
         self.page_config = kwargs
 
     def page(
@@ -45,7 +45,7 @@ class _FakeStreamlit:
         icon: str,
         default: bool = False,
     ) -> dict[str, Any]:
-        """TODO: Add docstring."""
+        """Implementation detail."""
         return {
             "path": path,
             "title": title,
@@ -54,14 +54,14 @@ class _FakeStreamlit:
         }
 
     def navigation(self, pages: list[dict[str, Any]]) -> _FakeNavigation:
-        """TODO: Add docstring."""
+        """Test navigation behavior."""
         nav = _FakeNavigation(pages)
         self.navigation_calls.append(nav)
         return nav
 
 
 def _run_app(is_connected: bool) -> _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test _run_app behavior."""
     app_path = PACKAGE_ROOT / "app.py"
     module_name = "imednet_streamlit.app"
     fake_st = _FakeStreamlit()
@@ -75,22 +75,22 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
     fake_streamlit_module.query_params = {}
 
     class FakeSidebar:
-        """TODO: Add docstring."""
+        """Test suite for FakeSidebar."""
 
         def toggle(self, *args, **kwargs):
-            """TODO: Add docstring."""
+            """Test toggle behavior."""
             pass
 
     fake_streamlit_module.sidebar = FakeSidebar()
 
     def fake_markdown(*args, **kwargs):
-        """TODO: Add docstring."""
+        """Test fake_markdown behavior."""
         pass
 
     fake_streamlit_module.markdown = fake_markdown
 
     def fake_altair_chart(*args, **kwargs):
-        """TODO: Add docstring."""
+        """Test fake_altair_chart behavior."""
         pass
 
     fake_streamlit_module.altair_chart = fake_altair_chart
@@ -103,7 +103,7 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
     fake_auth_module: Any = ModuleType("imednet_streamlit.auth")
 
     def _render_auth_sidebar() -> bool:
-        """TODO: Add docstring."""
+        """Test _render_auth_sidebar behavior."""
         return is_connected
 
     fake_auth_module.render_auth_sidebar = _render_auth_sidebar
@@ -139,7 +139,7 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 
 
 def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
-    """TODO: Add docstring."""
+    """Test test_streamlit_app_navigation_is_home_only_before_auth behavior."""
     fake_st = _run_app(is_connected=False)
 
     assert fake_st.page_config == {
@@ -159,7 +159,7 @@ def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
 
 
 def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
-    """TODO: Add docstring."""
+    """Test test_streamlit_app_navigation_includes_all_pages_after_auth behavior."""
     fake_st = _run_app(is_connected=True)
 
     assert len(fake_st.navigation_calls) == 1

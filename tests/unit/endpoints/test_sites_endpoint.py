@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_sites_endpoint."""
 
 import pytest
 
@@ -9,7 +9,7 @@ from imednet.models.sites import Site
 
 
 def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
-    """TODO: Add docstring."""
+    """Test test_list_requires_study_key behavior."""
     ep = sites.SitesEndpoint(dummy_client, context)
     paginator_capture = paginator_factory(sites, [{"siteId": 1}])
     patch = patch_build_filter(sites)
@@ -26,11 +26,11 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """TODO: Add docstring."""
+    """Test test_get_not_found behavior."""
     ep = sites.SitesEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
-        """TODO: Add docstring."""
+        """Test fake_impl behavior."""
         return []
 
     monkeypatch.setattr(sites.SitesEndpoint, "_list_sync", fake_impl)

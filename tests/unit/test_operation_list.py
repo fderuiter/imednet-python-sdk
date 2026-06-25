@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_operation_list."""
 
 from unittest.mock import AsyncMock, MagicMock
 
@@ -8,7 +8,7 @@ from imednet.core.endpoint.operations.list import ListOperation
 
 
 def test_list_operation_sync_uses_paginator():
-    """TODO: Add docstring."""
+    """Test test_list_operation_sync_uses_paginator behavior."""
     client = MagicMock()
     paginator_cls = MagicMock(return_value=[{"id": 1}, {"id": 2}])
 
@@ -23,17 +23,17 @@ def test_list_operation_sync_uses_paginator():
 
 @pytest.mark.asyncio
 async def test_list_operation_async_uses_paginator():
-    """TODO: Add docstring."""
+    """Implementation detail."""
 
     class _AsyncPaginator:
-        """TODO: Add docstring."""
+        """Test suite for _AsyncPaginator."""
 
         def __init__(self, *_args, **_kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             pass
 
         async def __aiter__(self):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             for item in [{"id": 1}, {"id": 2}]:
                 yield item
 

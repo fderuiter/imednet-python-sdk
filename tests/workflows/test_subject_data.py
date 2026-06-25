@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_subject_data."""
 
 from unittest.mock import MagicMock
 
@@ -11,7 +11,7 @@ from imednet_workflows.subject_data import SubjectComprehensiveData, SubjectData
 
 
 def test_get_all_subject_data_aggregates_across_endpoints(schema) -> None:
-    """TODO: Add docstring."""
+    """Test test_get_all_subject_data_aggregates_across_endpoints behavior."""
     sdk = MagicMock()
     subject = Subject.from_json(fake_data.fake_subject())
     visit = Visit.from_json(fake_data.fake_visit())
@@ -49,7 +49,7 @@ def test_get_all_subject_data_aggregates_across_endpoints(schema) -> None:
 
 
 def test_get_all_subject_data_returns_empty_results() -> None:
-    """TODO: Add docstring."""
+    """Test test_get_all_subject_data_returns_empty_results behavior."""
     sdk = MagicMock()
     sdk.get_subjects.return_value = []
     sdk.get_visits.return_value = []

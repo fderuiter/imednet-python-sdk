@@ -1,11 +1,11 @@
-"""TODO: Add docstring."""
+"""Ci Plan module."""
 
 import json
 import sys
 
 
 def main():
-    """TODO: Add docstring."""
+    """Perform main operation."""
     all_packages = [
         'core',
         'plugins-workflows',

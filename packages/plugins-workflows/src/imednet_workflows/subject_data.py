@@ -31,7 +31,7 @@ class SubjectDataWorkflow:
     """
 
     def __init__(self, sdk: "ImednetFacade"):
-        """TODO: Add docstring."""
+        """Perform   init   operation."""
         self._sdk = sdk
 
     def get_all_subject_data(self, study_key: str, subject_key: str) -> SubjectComprehensiveData:

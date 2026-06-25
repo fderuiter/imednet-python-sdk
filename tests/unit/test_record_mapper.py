@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_record_mapper."""
 
 import tracemalloc
 from datetime import datetime
@@ -20,7 +20,7 @@ _STREAMING_PEAK_BYTES_LIMIT = 35_000_000
 
 
 def test_dataframe_builds_expected_structure() -> None:
-    """TODO: Add docstring."""
+    """Test test_dataframe_builds_expected_structure behavior."""
     sdk = MagicMock()
     variables = [
         Variable(variable_name="VAR1", label="Label1", form_id=10),
@@ -28,7 +28,7 @@ def test_dataframe_builds_expected_structure() -> None:
     ]
 
     def var_list(**kwargs):
-        """TODO: Add docstring."""
+        """Test var_list behavior."""
         if kwargs.get("variableNames"):
             assert kwargs == {
                 "study_key": "STUDY",
@@ -79,7 +79,7 @@ def test_dataframe_builds_expected_structure() -> None:
 
 
 def test_dataframe_whitelists_variables_and_forms() -> None:
-    """TODO: Add docstring."""
+    """Test test_dataframe_whitelists_variables_and_forms behavior."""
     sdk = MagicMock()
     variables = [
         Variable(variable_name="VAR1", label="Label1", form_id=10),
@@ -87,7 +87,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
     ]
 
     def var_list(**kwargs):
-        """TODO: Add docstring."""
+        """Test var_list behavior."""
         assert kwargs == {
             "study_key": "STUDY",
             "variableNames": ["VAR1"],
@@ -107,7 +107,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
     )
 
     def rec_list(**kwargs):
-        """TODO: Add docstring."""
+        """Test rec_list behavior."""
         if kwargs.get("variableNames"):
             assert kwargs == {
                 "study_key": "STUDY",
@@ -150,7 +150,7 @@ def test_dataframe_whitelists_variables_and_forms() -> None:
 
 
 def test_dataframe_empty_when_no_variables() -> None:
-    """TODO: Add docstring."""
+    """Test test_dataframe_empty_when_no_variables behavior."""
     sdk = MagicMock()
     sdk.get_variables.return_value = []
     mapper = RecordMapper(sdk)
@@ -159,7 +159,7 @@ def test_dataframe_empty_when_no_variables() -> None:
 
 
 def test_invalid_visit_key_logs_warning(caplog) -> None:
-    """TODO: Add docstring."""
+    """Test test_invalid_visit_key_logs_warning behavior."""
     sdk = MagicMock()
     sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
     sdk.get_records.return_value = []
@@ -174,7 +174,7 @@ def test_invalid_visit_key_logs_warning(caplog) -> None:
 
 
 def test_records_fetch_error_returns_empty(caplog) -> None:
-    """TODO: Add docstring."""
+    """Test test_records_fetch_error_returns_empty behavior."""
     sdk = MagicMock()
     sdk.get_variables.return_value = [Variable(variable_name="VAR", label="L", form_id=1)]
     sdk.get_records.side_effect = Exception("boom")
@@ -188,7 +188,7 @@ def test_records_fetch_error_returns_empty(caplog) -> None:
 
 
 def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
-    """TODO: Add docstring."""
+    """Test test_parsing_error_logs_warning behavior."""
     sdk = MagicMock()
     sdk.get_variables.return_value = [Variable(variable_name="V", label="L", form_id=1)]
     record = Record(
@@ -203,10 +203,10 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
     sdk.get_records.return_value = [record]
 
     class DummyModel(BaseModel):
-        """TODO: Add docstring."""
+        """Test suite for DummyModel."""
 
         def __init__(self, **kwargs):
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             raise ValidationError([], DummyModel)
 
     monkeypatch.setattr("imednet_workflows.record_mapper.create_model", lambda *a, **k: DummyModel)
@@ -220,7 +220,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
 
 
 def test_parse_records_counts_errors() -> None:
-    """TODO: Add docstring."""
+    """Test test_parse_records_counts_errors behavior."""
     mapper = RecordMapper(MagicMock())
     records = [
         Record(
@@ -244,7 +244,7 @@ def test_parse_records_counts_errors() -> None:
     ]
 
     class Dummy(BaseModel):
-        """TODO: Add docstring."""
+        """Test suite for Dummy."""
 
         def __init__(self, **_: Any) -> None:  # noqa: D401 - simple
             """Always fail."""
@@ -257,7 +257,7 @@ def test_parse_records_counts_errors() -> None:
 
 
 def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test test_dataframe_raises_importerror_when_pandas_missing behavior."""
     monkeypatch.setattr("imednet_workflows.record_mapper.pd", None)
     mapper = RecordMapper(MagicMock())
     with pytest.raises(ImportError, match="pandas is required for RecordMapper.dataframe"):
@@ -265,18 +265,18 @@ def test_dataframe_raises_importerror_when_pandas_missing(monkeypatch) -> None:
 
 
 def test_iter_dataframes_streams_large_study_with_bounded_memory() -> None:
-    """TODO: Add docstring."""
+    """Test test_iter_dataframes_streams_large_study_with_bounded_memory behavior."""
     fake = Faker()
 
     class _StreamingLoader:
-        """TODO: Add docstring."""
+        """Test suite for _StreamingLoader."""
 
         def __init__(self) -> None:
-            """TODO: Add docstring."""
+            """Test __init__ behavior."""
             self.sync_records = MagicMock()
 
         def iter_cached_records(self, study_key: str, *, chunk_size: int = 5_000):
-            """TODO: Add docstring."""
+            """Test iter_cached_records behavior."""
             assert study_key == "STUDY"
             assert chunk_size == 5_000
             for record_id in range(50_000):

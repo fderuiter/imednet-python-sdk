@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for test_core_paginator."""
 
 from typing import Any, Dict, List
 
@@ -13,37 +13,37 @@ from imednet.core.paginator import (
 
 
 class DummyClient:
-    """TODO: Add docstring."""
+    """Test suite for DummyClient."""
 
     def __init__(self, responses: List[Dict[str, Any]]):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.responses = responses
         self.calls: List[Dict[str, Any]] = []
 
     def get(self, path: str, params: Dict[str, Any] | None = None):
-        """TODO: Add docstring."""
+        """Test get behavior."""
         self.calls.append({"path": path, "params": params})
         data = self.responses.pop(0)
         return type("Resp", (), {"json": lambda self: data})()
 
 
 class AsyncDummyClient:
-    """TODO: Add docstring."""
+    """Test suite for AsyncDummyClient."""
 
     def __init__(self, responses: List[Dict[str, Any]]):
-        """TODO: Add docstring."""
+        """Test __init__ behavior."""
         self.responses = responses
         self.calls: List[Dict[str, Any]] = []
 
     async def get(self, path: str, params: Dict[str, Any] | None = None):
-        """TODO: Add docstring."""
+        """Implementation detail."""
         self.calls.append({"path": path, "params": params})
         data = self.responses.pop(0)
         return type("Resp", (), {"json": lambda self: data})()
 
 
 def test_single_page_iteration() -> None:
-    """TODO: Add docstring."""
+    """Test test_single_page_iteration behavior."""
     client = DummyClient([{"data": [1, 2]}])
     paginator = Paginator(client, "/p")
     assert list(paginator) == [1, 2]
@@ -51,7 +51,7 @@ def test_single_page_iteration() -> None:
 
 
 def test_multiple_page_iteration() -> None:
-    """TODO: Add docstring."""
+    """Test test_multiple_page_iteration behavior."""
     client = DummyClient(
         [
             {"data": [1], "pagination": {"totalPages": 2}},

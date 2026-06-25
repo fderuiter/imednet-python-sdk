@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Tests for conftest."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def mock_study() -> Callable[[str], MagicMock]:
     """Factory fixture: create a mock Study-like object with a study_key."""
 
     def _make(study_key: str) -> MagicMock:
-        """TODO: Add docstring."""
+        """Test _make behavior."""
         study = MagicMock()
         study.study_key = study_key
         return study
@@ -34,5 +34,5 @@ def mock_sdk(request: pytest.FixtureRequest) -> MagicMock:
 
 @pytest.fixture
 def orchestrator(mock_sdk: MagicMock) -> MultiStudyOrchestrator:
-    """TODO: Add docstring."""
+    """Test orchestrator behavior."""
     return MultiStudyOrchestrator(mock_sdk, max_workers=3)
