@@ -210,7 +210,7 @@ class UATWorkflow:
 
     def __init__(
         self,
-        sdk: ImednetFacade | AsyncImednetFacade,
+        sdk: ImednetFacade,
         *,
         batch_size: int = 100,
         poll_interval: float = 10.0,
