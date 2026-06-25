@@ -4,148 +4,124 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any, Dict, List, Sequence
+import os
+import sys
 
-from rich import print
-from rich.console import Console
-from rich.markup import escape
-from rich.table import Table
-
-# Map status strings to Rich colors for O(1) lookup
-_STATUS_COLOR_MAP = {
-    # Green (Success/Active)
-    "active": "green",
-    "success": "green",
-    "ok": "green",
-    "completed": "green",
-    "open": "green",
-    "approved": "green",
-    "verified": "green",
-    # Yellow (Pending/Processing)
-    "pending": "yellow",
-    "processing": "yellow",
-    "suspended": "yellow",
-    "hold": "yellow",
-    "incomplete": "yellow",
-    "initiated": "yellow",
-    # Red (Failure/Inactive)
-    "inactive": "red",
-    "closed": "red",
-    "error": "red",
-    "fail": "red",
-    "failed": "red",
-    "rejected": "red",
-    "terminated": "red",
-    "withdrawn": "red",
+_ANSI_COLORS = {
+    "green": "\033[32m",
+    "yellow": "\033[33m",
+    "red": "\033[31m",
+    "blue": "\033[34m",
+    "magenta": "\033[35m",
+    "dim": "\033[2m",
+    "bold_magenta": "\033[1;35m",
+    "reset": "\033[0m"
 }
 
-console = Console()
+_STATUS_COLOR_MAP = {
+    "active": "green", "success": "green", "ok": "green", "completed": "green", "open": "green", "approved": "green", "verified": "green",
+    "pending": "yellow", "processing": "yellow", "suspended": "yellow", "hold": "yellow", "incomplete": "yellow", "initiated": "yellow",
+    "inactive": "red", "closed": "red", "error": "red", "fail": "red", "failed": "red", "rejected": "red", "terminated": "red", "withdrawn": "red",
+}
 
+class _DummyConsole:
+    def status(self, msg, spinner=None):
+        class DummyStatus:
+            def __enter__(self):
+                print(msg)
+            def __exit__(self, *args):
+                pass
+        return DummyStatus()
+
+console = _DummyConsole()
 
 def _truncate(text: str, length: int = 60) -> str:
-    """Truncate text to a maximum length with ellipsis."""
+    text = str(text)
     return f"{text[:length]}..." if len(text) > length else text
 
-
 def _format_cell_value(value: Any, key: str | None = None) -> str:
-    """Format a single cell value for display."""
     if value is None:
-        return "[dim]-[/dim]"
+        return "-"
     if isinstance(value, bool):
-        return "[green]Yes[/green]" if value else "[dim]No[/dim]"
+        return "Yes" if value else "No"
     if isinstance(value, datetime):
         return value.strftime("%Y-%m-%d %H:%M")
 
     str_val = str(value)
-
-    import os
-
-    # Colorize status columns
-    if key and any(k in key.lower() for k in ("status", "state")):
-        lower_val = str_val.lower()
-        is_hc = os.environ.get("IMEDNET_HIGH_CONTRAST") == "1"
-        if is_hc:
-            hc_map = {
-                "active": "blue",
-                "success": "blue",
-                "ok": "blue",
-                "completed": "blue",
-                "open": "blue",
-                "approved": "blue",
-                "verified": "blue",
-                "pending": "yellow",
-                "processing": "yellow",
-                "suspended": "yellow",
-                "hold": "yellow",
-                "incomplete": "yellow",
-                "initiated": "yellow",
-                "inactive": "magenta",
-                "closed": "magenta",
-                "error": "magenta",
-                "fail": "magenta",
-                "failed": "magenta",
-                "rejected": "magenta",
-                "terminated": "magenta",
-                "withdrawn": "magenta",
-            }
-            color = hc_map.get(lower_val)
-        else:
-            color = _STATUS_COLOR_MAP.get(lower_val)
-
-        if color:
-            return f"[{color}]{escape(str_val)}[/{color}]"
-
     if isinstance(value, list) and all(isinstance(x, (str, int, float, bool)) for x in value):
         if not value:
-            return "[dim]-[/dim]"
+            return "-"
         s = ", ".join(str(x) for x in value)
-        return escape(_truncate(s))
+        return _truncate(s)
     if isinstance(value, (list, dict)):
-        # Truncate very long list/dict representations
-        return escape(_truncate(str(value)))
-    return escape(str_val)
+        return _truncate(str(value))
+    return str_val
 
+def _colorize(text: str, color: str) -> str:
+    if not sys.stdout.isatty():
+        return text
+    return f"{_ANSI_COLORS.get(color, '')}{text}{_ANSI_COLORS['reset']}"
 
-def _create_table(items: Sequence[Any], fields: List[str]) -> Table:
-    """Create a Rich table from a list of items and specified fields."""
-    table = Table(show_header=True, header_style="bold magenta")
-    for header in fields:
-        table.add_column(str(header).replace("_", " ").title())
-
+def _print_table(items: Sequence[Any], fields: List[str]) -> None:
+    if not items:
+        return
+    
+    headers = [str(header).replace("_", " ").title() for header in fields]
+    
+    rows = []
     for item in items:
         row = []
         for k in fields:
             if isinstance(item, dict):
                 val = item.get(k)
             else:
-                # Use getattr for Pydantic models or objects
                 val = getattr(item, k, None)
             row.append(_format_cell_value(val, key=str(k)))
-        table.add_row(*row)
-    return table
+        rows.append(row)
+    
+    col_widths = [len(h) for h in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            col_widths[i] = max(col_widths[i], len(cell))
+            
+    header_str = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
+    print(_colorize(header_str, "bold_magenta"))
+    print("-" * len(header_str))
+    
+    is_hc = os.environ.get("IMEDNET_HIGH_CONTRAST") == "1"
+    
+    for row in rows:
+        colored_row = []
+        for i, cell in enumerate(row):
+            k = fields[i]
+            c = cell
+            if any(key in k.lower() for key in ("status", "state")):
+                lower_val = cell.lower()
+                if is_hc:
+                    hc_map = {
+                        "active": "blue", "success": "blue", "ok": "blue", "completed": "blue", "open": "blue", "approved": "blue", "verified": "blue",
+                        "pending": "yellow", "processing": "yellow", "suspended": "yellow", "hold": "yellow", "incomplete": "yellow", "initiated": "yellow",
+                        "inactive": "magenta", "closed": "magenta", "error": "magenta", "fail": "magenta", "failed": "magenta", "rejected": "magenta", "terminated": "magenta", "withdrawn": "magenta",
+                    }
+                    color = hc_map.get(lower_val)
+                else:
+                    color = _STATUS_COLOR_MAP.get(lower_val)
+                if color:
+                    c = _colorize(cell, color)
+            colored_row.append(c + " " * (col_widths[i] - len(cell)))
+        print(" | ".join(colored_row))
 
-
-def display_list(
-    items: Sequence[Any],
-    label: str,
-    empty_msg: str | None = None,
-    fields: List[str] | None = None,
-) -> None:
-    """Print list output with a standardized format."""
+def display_list(items: Sequence[Any], label: str, empty_msg: str | None = None, fields: List[str] | None = None) -> None:
     if not items:
         print(empty_msg or f"No {label} found.")
         return
 
     print(f"Found {len(items)} {label}:")
 
-    # Bolt Optimization: If specific fields are requested, extract them directly
-    # from the objects instead of converting everything to a dictionary.
-    # This avoids O(N*M) overhead for large lists where M is total field count.
     if fields:
-        table = _create_table(items, fields)
-        print(table)
+        _print_table(items, fields)
         return
 
-    # Try to determine if we can display this as a table
     first = items[0]
     data_list: List[Dict[str, Any]] = []
 
@@ -154,12 +130,11 @@ def display_list(
     elif hasattr(first, "dict"):
         data_list = [item.dict() for item in items]
     elif isinstance(first, dict):
-        data_list = list(items)  # type: ignore
+        data_list = list(items)
 
     if not data_list:
         print(items)
         return
 
     all_keys = list(data_list[0].keys())
-    table = _create_table(data_list, all_keys)
-    print(table)
+    _print_table(data_list, all_keys)

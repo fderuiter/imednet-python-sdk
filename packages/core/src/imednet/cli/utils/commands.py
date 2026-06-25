@@ -1,10 +1,9 @@
 """Helpers for registering common CLI commands."""
 
 from __future__ import annotations
+import argparse
 
 from typing import List
-
-import typer
 
 from imednet.cli.decorators import with_sdk
 from imednet.sdk import ImednetSDK
@@ -15,7 +14,7 @@ from .output import display_list
 
 
 def register_list_command(
-    app: typer.Typer,
+    parser,
     attr: str,
     name: str,
     *,
@@ -23,27 +22,31 @@ def register_list_command(
     empty_msg: str | None = None,
     summary_fields: List[str] | None = None,
 ) -> None:
-    """Attach a standard ``list`` command to ``app``."""
-    if requires_study_key:
+    """Attach a standard ``list`` command to parser."""
+    subparsers = getattr(parser, '_subparsers', None)
+    if subparsers is None:
+        subparsers = [action for action in parser._actions if isinstance(action, argparse._SubParsersAction)]
+        if subparsers:
+            subparsers = subparsers[0]
+        else:
+            subparsers = parser.add_subparsers(dest="command")
 
-        @app.command("list")
+    list_parser = subparsers.add_parser("list", help=f"List all items of type {name}.")
+    
+    if requires_study_key:
+        list_parser.add_argument("study_key", help=STUDY_KEY_ARG)
+
         @with_sdk
-        def list_cmd(sdk: ImednetSDK, study_key: str = STUDY_KEY_ARG) -> None:
-            """List all items of the given type in the study."""
+        def list_cmd(sdk: ImednetSDK, study_key: str) -> None:
             with fetching_status(name, study_key):
                 items = list(getattr(sdk, attr).list(study_key))
             display_list(items, name, empty_msg, fields=summary_fields)
-
-        return
+        list_parser.set_defaults(func=lambda args: list_cmd(study_key=args.study_key))
 
     else:
-
-        @app.command("list")
         @with_sdk
         def list_cmd_no_study(sdk: ImednetSDK) -> None:
-            """List all items of the given type."""
             with fetching_status(name):
                 items = list(getattr(sdk, attr).list())
             display_list(items, name, empty_msg, fields=summary_fields)
-
-        return
+        list_parser.set_defaults(func=lambda args: list_cmd_no_study())

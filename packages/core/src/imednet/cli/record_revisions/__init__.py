@@ -1,13 +1,16 @@
-"""CLI commands for viewing record revision history."""
+"""CLI commands for managing record revisions."""
 
 from __future__ import annotations
-
-import typer
+import argparse
 
 from ..utils import register_list_command
 
-app = typer.Typer(name="record-revisions", help="Manage record revision history.")
-
-__all__ = ["app"]
-
-register_list_command(app, "record_revisions", "record revisions")
+def setup_parser(subparsers):
+    parser = subparsers.add_parser("record-revisions", help="Manage record revisions.")
+    register_list_command(
+        parser,
+        "record_revisions",
+        "record revisions",
+        requires_study_key=True,
+        
+    )

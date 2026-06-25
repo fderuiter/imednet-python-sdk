@@ -1,24 +1,16 @@
 """CLI commands for managing queries."""
 
 from __future__ import annotations
-
-import typer
+import argparse
 
 from ..utils import register_list_command
 
-app = typer.Typer(name="queries", help="Manage queries within a study.")
-
-__all__ = ["app"]
-
-register_list_command(
-    app,
-    "queries",
-    "queries",
-    summary_fields=[
-        "description",
-        "annotation_type",
-        "subject_key",
-        "variable",
-        "date_created",
-    ],
-)
+def setup_parser(subparsers):
+    parser = subparsers.add_parser("queries", help="Manage queries.")
+    register_list_command(
+        parser,
+        "queries",
+        "queries",
+        requires_study_key=True,
+        summary_fields=["description", "annotation_type", "subject_key", "variable", "date_created"]
+    )

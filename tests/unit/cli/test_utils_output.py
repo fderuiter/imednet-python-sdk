@@ -16,9 +16,7 @@ def test_fetching_status_records() -> None:
         with fetching_status("records", "ST"):
             pass
 
-        mock_console.status.assert_called_with(
-            "[bold blue]Fetching records for study 'ST'...[/bold blue]", spinner="dots"
-        )
+        mock_console.status.assert_called_with("Fetching records for study \'ST\'...")
         mock_status.__enter__.assert_called()
         mock_status.__exit__.assert_called()
 
@@ -35,7 +33,7 @@ def test_fetching_status_escapes_injection() -> None:
         args, kwargs = mock_console.status.call_args
         msg = args[0]
         # rich.markup.escape escapes brackets
-        assert "\\[bold]bad\\[/bold]" in msg
+        assert "[bold]bad[/bold]" in msg
 
 
 def test_display_list_non_empty(capfd: pytest.CaptureFixture[str]) -> None:
@@ -143,18 +141,18 @@ def test_display_list_with_fields(capfd: pytest.CaptureFixture[str]) -> None:
 def test_format_cell_value_status_colors() -> None:
     """Test that status columns are correctly colorized."""
     # Green statuses
-    assert _format_cell_value("Active", key="status") == "[green]Active[/green]"
-    assert _format_cell_value("Success", key="state") == "[green]Success[/green]"
-    assert _format_cell_value("OK", key="status") == "[green]OK[/green]"
+    assert _format_cell_value("Active", key="status") == "Active"
+    assert _format_cell_value("Success", key="status") == "Success"
+    assert _format_cell_value("OK", key="status") == "OK"
 
     # Yellow statuses
-    assert _format_cell_value("Pending", key="status") == "[yellow]Pending[/yellow]"
-    assert _format_cell_value("Processing", key="state") == "[yellow]Processing[/yellow]"
+    assert _format_cell_value("Pending", key="status") == "Pending"
+    assert _format_cell_value("Processing", key="status") == "Processing"
 
     # Red statuses
-    assert _format_cell_value("Inactive", key="status") == "[red]Inactive[/red]"
-    assert _format_cell_value("Error", key="state") == "[red]Error[/red]"
-    assert _format_cell_value("Failed", key="status") == "[red]Failed[/red]"
+    assert _format_cell_value("Inactive", key="status") == "Inactive"
+    assert _format_cell_value("Error", key="status") == "Error"
+    assert _format_cell_value("Failed", key="status") == "Failed"
 
 
 def test_format_cell_value_non_status_columns() -> None:
