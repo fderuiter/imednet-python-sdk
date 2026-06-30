@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date, datetime, timezone
 from enum import Enum
-from importlib.util import find_spec
 from pathlib import Path
 from typing import Any
 
@@ -166,13 +166,8 @@ class UATSpecification(UATBaseModel):
         return [form for form in self.enabled_forms() if form.test_type == test_type]
 
     @classmethod
-    def from_yaml(cls, payload: str | bytes | Path) -> UATSpecification:
-        """Load a UAT specification from YAML text, bytes, or file path."""
-        if find_spec("yaml") is None:
-            raise ImportError("PyYAML is required to load YAML. Install with `pip install pyyaml`.")
-
-        import yaml  # type: ignore[import-untyped]
-
+    def from_json(cls, payload: str | bytes | Path) -> UATSpecification:
+        """Load a UAT specification from JSON text, bytes, or file path."""
         if isinstance(payload, Path):
             content = payload.read_text(encoding="utf-8")
         elif isinstance(payload, bytes):
@@ -180,7 +175,7 @@ class UATSpecification(UATBaseModel):
         else:
             content = payload
 
-        data = yaml.safe_load(content)
+        data = json.loads(content)
         return cls.model_validate(data)
 
 
