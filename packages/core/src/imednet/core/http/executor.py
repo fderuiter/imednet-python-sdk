@@ -10,18 +10,11 @@ from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterator, Optional
 
 import httpx
-from tenacity import (
-    AsyncRetrying,
-    RetryCallState,
-    RetryError,
-    Retrying,
-    stop_after_attempt,
-    wait_random_exponential,
-)
+from tenacity import RetryCallState, RetryError, wait_random_exponential
 
 from imednet.core.http.handlers import handle_response
 from imednet.core.http.monitor import RequestMonitor
-from imednet.core.operations.circuit_breaker import CircuitBreakerError, get_global_circuit_breaker
+from imednet.core.operations.circuit_breaker import CircuitBreakerError
 from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
 
 _SUPPRESSED_LOG_LEVEL = logging.CRITICAL + 1
@@ -116,30 +109,12 @@ class BaseRequestExecutor(ABC):
     ) -> httpx.Response:
         """Process successful response or raise error if None."""
         if response is not None:
-            # We treat successful HTTP requests (even 4xx/5xx that don't raise here)
-            # as a successful "connection" probe for the circuit breaker, but let's
-            # check the response. If it's a 5xx, it might be an outage.
-            # Usually, retries cover 5xx, but if we reach here and it's a 5xx that wasn't retried,
-            # we should record failure? No, let's just record success if we got a response
-            # that is not an exception, OR wait, an API outage usually manifests as connection errors
-            # or 5xx. If handle_response raises, it will throw an exception below.
-
-            # Record success before handle_response so if it raises, we know we got a response at least.
-            # But 5xx server errors indicate failures. Let's record success only if status is < 500.
-            if response.status_code < 500:
-                get_global_circuit_breaker().record_success()
-            else:
-                get_global_circuit_breaker().record_failure()
-
             monitor.on_success(response)
             return handle_response(response)
         raise RuntimeError("Request failed without response or exception")
 
     def _process_retry_error(self, e: RetryError, monitor: RequestMonitor) -> httpx.Response:
         """Handle RetryError, extracting successful result if present, else escalate."""
-        # A RetryError means we exhausted retries (which indicates consecutive failures)
-        get_global_circuit_breaker().record_failure()
-
         if e.last_attempt and not e.last_attempt.failed:
             response: httpx.Response = e.last_attempt.result()
             monitor.on_success(response)
@@ -236,7 +211,7 @@ class SyncRequestExecutor(BaseRequestExecutor):
             CircuitBreakerError: If the circuit is open.
             Exception: Re-raises exceptions from the send function or retryer.
         """
-        get_global_circuit_breaker().check_request_allowed()
+        from imednet.core.policy_runner import PolicyRunner
 
         def send_fn() -> httpx.Response:
             """Wrapper to send the request with suppressed logging.
@@ -247,16 +222,20 @@ class SyncRequestExecutor(BaseRequestExecutor):
             with self._suppress_httpx_request_logging():
                 return self.send(method, url, **kwargs)
 
-        retryer = Retrying(
-            stop=stop_after_attempt(self.retries),
-            wait=self._wait_strategy,
-            retry=self._get_retry_predicate(method),
-            reraise=False,
+        def is_success(response: Optional[httpx.Response]) -> bool:
+            return response is not None and response.status_code < 500
+
+        runner = PolicyRunner(
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            wait_strategy=self._wait_strategy,
+            retry_predicate=self._get_retry_predicate(method),
+            result_evaluator=is_success,
         )
 
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = retryer(send_fn)
+                response: Optional[httpx.Response] = runner.execute(send_fn)
                 return self._process_result(response, monitor)
             except Exception as e:
                 # If we get connection errors inside send_fn, they are wrapped by Tenacity RetryError?
@@ -264,7 +243,6 @@ class SyncRequestExecutor(BaseRequestExecutor):
                 if isinstance(e, RetryError):
                     return self._process_retry_error(e, monitor)
                 else:
-                    get_global_circuit_breaker().record_failure()
                     raise
 
 
@@ -306,7 +284,7 @@ class AsyncRequestExecutor(BaseRequestExecutor):
             CircuitBreakerError: If the circuit is open.
             Exception: Re-raises exceptions from the send function or retryer.
         """
-        get_global_circuit_breaker().check_request_allowed()
+        from imednet.core.policy_runner import PolicyRunner
 
         async def send_fn() -> httpx.Response:
             """Wrapper to send the request with suppressed logging.
@@ -317,20 +295,23 @@ class AsyncRequestExecutor(BaseRequestExecutor):
             with self._suppress_httpx_request_logging():
                 return await self.send(method, url, **kwargs)
 
-        retryer = AsyncRetrying(
-            stop=stop_after_attempt(self.retries),
-            wait=self._wait_strategy,
-            retry=self._get_retry_predicate(method),
-            reraise=False,
+        def is_success(response: Optional[httpx.Response]) -> bool:
+            return response is not None and response.status_code < 500
+
+        runner = PolicyRunner(
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            wait_strategy=self._wait_strategy,
+            retry_predicate=self._get_retry_predicate(method),
+            result_evaluator=is_success,
         )
 
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = await retryer(send_fn)
+                response: Optional[httpx.Response] = await runner.execute_async(send_fn)
                 return self._process_result(response, monitor)
             except Exception as e:
                 if isinstance(e, RetryError):
                     return self._process_retry_error(e, monitor)
                 else:
-                    get_global_circuit_breaker().record_failure()
                     raise

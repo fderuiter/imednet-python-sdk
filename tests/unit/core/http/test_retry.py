@@ -22,7 +22,7 @@ def test_retry_exhaustion_sync():
 
     assert "Network request failed after retries" in str(exc_info.value)
     assert isinstance(exc_info.value.__cause__, httpx.ConnectError)
-    assert mock_send.call_count == 2
+    assert mock_send.call_count == 3
 
 
 @pytest.mark.asyncio
@@ -37,7 +37,7 @@ async def test_retry_exhaustion_async():
 
     assert "Network request failed after retries" in str(exc_info.value)
     assert isinstance(exc_info.value.__cause__, httpx.ConnectError)
-    assert mock_send.call_count == 2
+    assert mock_send.call_count == 3
 
 
 @pytest.mark.parametrize("method", ["POST", "PATCH"])

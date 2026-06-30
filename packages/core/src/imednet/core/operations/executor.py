@@ -9,16 +9,8 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, TypeVar
 
-from tenacity import (
-    AsyncRetrying,
-    RetryCallState,
-    RetryError,
-    Retrying,
-    stop_after_attempt,
-    wait_random_exponential,
-)
+from tenacity import RetryCallState, RetryError, wait_random_exponential
 
-from imednet.core.operations.circuit_breaker import get_global_circuit_breaker
 from imednet.core.operations.monitor import OperationMonitor
 
 if TYPE_CHECKING:
@@ -110,23 +102,21 @@ class UniversalExecutor:
 
     def execute(self, func: Callable[[], T]) -> T:
         """Synchronous execution."""
-        get_global_circuit_breaker().check_request_allowed()
-
-        retryer = Retrying(
-            stop=stop_after_attempt(self.retries + 1),
-            wait=self.wait_strategy,
-            retry=self.retry_predicate,
-            reraise=False,
+        from imednet.core.policy_runner import PolicyRunner
+        
+        runner = PolicyRunner(
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            wait_strategy=self.wait_strategy,
+            retry_predicate=self.retry_predicate,
         )
 
         with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
             try:
-                result: Any = retryer(func)
-                get_global_circuit_breaker().record_success()
+                result: Any = runner.execute(func)
                 monitor.on_success()
                 return result
             except RetryError as e:
-                get_global_circuit_breaker().record_failure()
                 cause = e.last_attempt.exception() if e.last_attempt else e
                 if isinstance(cause, Exception):
                     try:
@@ -138,19 +128,18 @@ class UniversalExecutor:
                     raise cause
                 raise
             except Exception as e:
-                get_global_circuit_breaker().record_failure()
                 monitor.on_failure(e)
                 raise
 
     async def execute_async(self, func: Callable[[], Awaitable[T]]) -> T:
         """Asynchronous execution."""
-        get_global_circuit_breaker().check_request_allowed()
-
-        retryer = AsyncRetrying(
-            stop=stop_after_attempt(self.retries + 1),
-            wait=self.wait_strategy,
-            retry=self.retry_predicate,
-            reraise=False,
+        from imednet.core.policy_runner import PolicyRunner
+        
+        runner = PolicyRunner(
+            retries=self.retries,
+            backoff_factor=self.backoff_factor,
+            wait_strategy=self.wait_strategy,
+            retry_predicate=self.retry_predicate,
         )
 
         async with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
@@ -164,12 +153,10 @@ class UniversalExecutor:
                     """
                     return await func()
 
-                result: Any = await retryer(_async_wrapper)
-                get_global_circuit_breaker().record_success()
+                result: Any = await runner.execute_async(_async_wrapper)
                 monitor.on_success()
                 return result
             except RetryError as e:
-                get_global_circuit_breaker().record_failure()
                 cause = e.last_attempt.exception() if e.last_attempt else e
                 if isinstance(cause, Exception):
                     try:
@@ -181,6 +168,5 @@ class UniversalExecutor:
                     raise cause
                 raise
             except Exception as e:
-                get_global_circuit_breaker().record_failure()
                 monitor.on_failure(e)
                 raise
