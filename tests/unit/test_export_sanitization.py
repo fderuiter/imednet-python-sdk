@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for export sanitization."""
 
 import warnings
 from unittest.mock import MagicMock
@@ -15,7 +15,7 @@ def mock_record_mapper(monkeypatch):
     mapper_inst = MagicMock()
 
     def _setup(df: pd.DataFrame):
-        """TODO: Add docstring."""
+        """Helper function to  setup."""
         mapper_inst.dataframe.return_value = df
         monkeypatch.setattr(
             export_mod,
@@ -72,7 +72,7 @@ def test_export_to_excel_sanitization(tmp_path, mock_record_mapper, monkeypatch)
     captured_df = None
 
     def mock_to_excel(self, excel_writer, index=False, **kwargs):
-        """TODO: Add docstring."""
+        """Helper function to mock to excel."""
         nonlocal captured_df
         captured_df = self.copy()
         # Call original to generate file if needed, but we can skip file generation

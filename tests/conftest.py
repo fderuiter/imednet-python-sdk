@@ -1,6 +1,10 @@
 # ruff: noqa: E402
 
-"""TODO: Add docstring."""
+"""Global test configuration and shared fixtures for the iMedNet SDK test suite.
+
+This module provides common fixtures for mocking network requests, managing study context,
+and simulating API responses across unit and integration tests.
+"""
 
 import sys
 from pathlib import Path
@@ -39,7 +43,14 @@ def block_external_requests(request: pytest.FixtureRequest):
 
 
 def _is_live_test(node: object) -> bool:
-    """TODO: Add docstring."""
+    """Check if a test node is marked as a live test or resides in the live tests directory.
+
+    Args:
+        node: The pytest node to check.
+
+    Returns:
+        True if the test is a live test, False otherwise.
+    """
     if not hasattr(node, "get_closest_marker"):
         return False
 
@@ -55,7 +66,7 @@ def _is_live_test(node: object) -> bool:
 
 @pytest.fixture(autouse=True)
 def reset_study_context_between_tests():
-    """TODO: Add docstring."""
+    """Reset the global study context before and after each test to ensure isolation."""
     clear_study_context()
     yield
     clear_study_context()
@@ -63,7 +74,7 @@ def reset_study_context_between_tests():
 
 @pytest.fixture(autouse=True)
 def reset_circuit_breaker_between_tests():
-    """TODO: Add docstring."""
+    """Reset the global circuit breaker before and after each test to ensure state isolation."""
     from imednet.core.operations.circuit_breaker import get_global_circuit_breaker
 
     get_global_circuit_breaker().reset()
@@ -72,35 +83,43 @@ def reset_circuit_breaker_between_tests():
 
 
 class DummyResponse:
-    """TODO: Add docstring."""
+    """A simple mock response object that mimics the httpx.Response JSON interface."""
 
     def __init__(self, data):
-        """TODO: Add docstring."""
+        """Initialize the dummy response with data.
+
+        Args:
+            data: The data to be returned by the json() method.
+        """
         self._data = data
 
     def json(self):
-        """TODO: Add docstring."""
+        """Return the stored data as JSON.
+
+        Returns:
+            The data provided during initialization.
+        """
         return self._data
 
 
 @pytest.fixture
 def context():
-    """TODO: Add docstring."""
+    """Provide a fresh Context instance for each test."""
     return Context()
 
 
 @pytest.fixture
 def dummy_client():
-    """TODO: Add docstring."""
+    """Provide a MagicMock to simulate an iMedNet client."""
     return MagicMock()
 
 
 @pytest.fixture
 def response_factory():
-    """TODO: Add docstring."""
+    """Provide a factory function to create DummyResponse instances."""
 
     def factory(data):
-        """TODO: Add docstring."""
+        """Create a DummyResponse with the given data."""
         return DummyResponse(data)
 
     return factory
@@ -108,19 +127,31 @@ def response_factory():
 
 @pytest.fixture
 def paginator_factory(monkeypatch):
-    """TODO: Add docstring."""
+    """Provide a factory to mock synchronous pagination for iMedNet endpoints.
+
+    This fixture patches the endpoint classes to use a dummy paginator and
+    captures the arguments passed to it.
+    """
     from imednet.core.endpoint.operations.list import ListOperation
     from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
-        """TODO: Add docstring."""
+        """Create a dummy paginator and patch the specified module.
+
+        Args:
+            module: The module containing endpoint classes to patch.
+            items: The list of items the dummy paginator should return.
+
+        Returns:
+            A dictionary containing captured arguments from the paginator initialization.
+        """
         captured = {"count": 0}
 
         class DummyPaginator:
-            """TODO: Add docstring."""
+            """A mock paginator for synchronous list operations."""
 
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
-                """TODO: Add docstring."""
+                """Initialize the dummy paginator and capture arguments."""
                 captured["client"] = client
                 captured["path"] = path
                 captured["params"] = params or {}
@@ -129,7 +160,7 @@ def paginator_factory(monkeypatch):
                 self._items = items
 
             def __iter__(self):
-                """TODO: Add docstring."""
+                """Iterate over the provided items."""
                 yield from self._items
 
         from imednet.core.endpoint.base import SyncListGetEndpoint
@@ -139,7 +170,7 @@ def paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_sync(self, client, paginator_cls):
-            """TODO: Add docstring."""
+            """Fake implementation of the synchronous list operation execution."""
             paginator = paginator_cls(
                 client, self.path, params=self.params, page_size=self.page_size
             )
@@ -154,19 +185,31 @@ def paginator_factory(monkeypatch):
 
 @pytest.fixture
 def async_paginator_factory(monkeypatch):
-    """TODO: Add docstring."""
+    """Provide a factory to mock asynchronous pagination for iMedNet endpoints.
+
+    This fixture patches the endpoint classes to use an async dummy paginator
+    and captures the arguments passed to it.
+    """
     from imednet.core.endpoint.operations.list import ListOperation
     from tests.utils.streaming import StreamingMockWrapper
 
     def factory(module, items):
-        """TODO: Add docstring."""
+        """Create an async dummy paginator and patch the specified module.
+
+        Args:
+            module: The module containing endpoint classes to patch.
+            items: The list of items the dummy paginator should return.
+
+        Returns:
+            A dictionary containing captured arguments from the paginator initialization.
+        """
         captured = {"count": 0}
 
         class DummyPaginator:
-            """TODO: Add docstring."""
+            """A mock paginator for asynchronous list operations."""
 
             def __init__(self, client, path, params=None, page_size=100, **kwargs):
-                """TODO: Add docstring."""
+                """Initialize the dummy paginator and capture arguments."""
                 captured["client"] = client
                 captured["path"] = path
                 captured["params"] = params or {}
@@ -175,7 +218,7 @@ def async_paginator_factory(monkeypatch):
                 self._items = items
 
             async def __aiter__(self):
-                """TODO: Add docstring."""
+                """Asynchronously iterate over the provided items."""
                 for item in self._items:
                     yield item
 
@@ -186,7 +229,7 @@ def async_paginator_factory(monkeypatch):
                 monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
 
         def fake_execute_async(self, client, paginator_cls):
-            """TODO: Add docstring."""
+            """Fake implementation of the asynchronous list operation execution."""
             paginator = paginator_cls(
                 client, self.path, params=self.params, page_size=self.page_size
             )
@@ -202,14 +245,21 @@ def async_paginator_factory(monkeypatch):
 
 @pytest.fixture
 def patch_build_filter(monkeypatch):
-    """TODO: Add docstring."""
+    """Provide a helper to mock the filter string builder and capture input filters."""
 
     def patch(module):
-        """TODO: Add docstring."""
+        """Patch the filter builder in the specified module.
+
+        Args:
+            module: The module where the filter builder should be patched.
+
+        Returns:
+            A dictionary that will contain the captured filters.
+        """
         captured = {}
 
         def fake(filters):
-            """TODO: Add docstring."""
+            """Fake filter builder that captures filters and returns a constant."""
             captured["filters"] = filters
             return "FILTERED"
 
@@ -226,13 +276,16 @@ def patch_build_filter(monkeypatch):
 
 @pytest.fixture
 def http_client():
-    """TODO: Add docstring."""
+    """Provide a synchronous Client instance configured for testing."""
     return Client("key", "secret", base_url="https://api.test")
 
 
 @pytest_asyncio.fixture
 async def async_http_client():
-    """TODO: Add docstring."""
+    """Provide an asynchronous AsyncClient instance configured for testing.
+
+    This fixture ensures the client is properly closed after use.
+    """
     client = AsyncClient("key", "secret", base_url="https://api.test")
     try:
         yield client
@@ -242,19 +295,19 @@ async def async_http_client():
 
 @pytest.fixture
 def respx_mock_client(http_client, respx_mock):
-    """TODO: Add docstring."""
+    """Configure respx_mock with the base URL of the synchronous test client."""
     respx_mock.base_url = http_client.base_url
     return respx_mock
 
 
 @pytest_asyncio.fixture
 async def respx_mock_async_client(async_http_client, respx_mock):
-    """TODO: Add docstring."""
+    """Configure respx_mock with the base URL of the asynchronous test client."""
     respx_mock.base_url = async_http_client.base_url
     return respx_mock
 
 
 @pytest.fixture
 def sample_data():
-    """TODO: Add docstring."""
+    """Provide a simple dictionary for testing data handling."""
     return {"data": [1]}

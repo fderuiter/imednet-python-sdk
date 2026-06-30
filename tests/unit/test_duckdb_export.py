@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for duckdb export."""
 
 import sys
 from builtins import __import__ as builtin_import
@@ -14,7 +14,7 @@ import imednet.integrations.export as export_mod
 
 
 def test_export_to_duckdb_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that export to duckdb happy path."""
     duckdb = pytest.importorskip("duckdb")
 
     sdk = MagicMock()
@@ -36,7 +36,7 @@ def test_export_to_duckdb_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyP
 
 
 def test_export_to_duckdb_wide_dataframe(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that export to duckdb wide dataframe."""
     duckdb = pytest.importorskip("duckdb")
 
     sdk = MagicMock()
@@ -61,7 +61,7 @@ def test_export_to_duckdb_wide_dataframe(tmp_path: Path, monkeypatch: pytest.Mon
 def test_export_to_duckdb_by_form_creates_per_form_tables(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test that export to duckdb by form creates per form tables."""
     duckdb = pytest.importorskip("duckdb")
 
     sdk = MagicMock()
@@ -96,7 +96,7 @@ def test_export_to_duckdb_by_form_creates_per_form_tables(
 
 
 def test_export_to_duckdb_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that export to duckdb import error."""
 
     def fake_import(
         name: str,
@@ -105,7 +105,7 @@ def test_export_to_duckdb_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
         fromlist: tuple[str, ...] = (),
         level: int = 0,
     ) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to fake import."""
         if name == "duckdb":
             raise ImportError("No module named duckdb")
         return builtin_import(name, globals_arg, locals_arg, fromlist, level)
@@ -121,7 +121,7 @@ def test_export_to_duckdb_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_export_to_duckdb_type_handling(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that export to duckdb type handling."""
     duckdb = pytest.importorskip("duckdb")
 
     sdk = MagicMock()
@@ -161,7 +161,7 @@ def test_export_to_duckdb_type_handling(tmp_path: Path, monkeypatch: pytest.Monk
 def test_export_to_duckdb_connection_closed_on_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """TODO: Add docstring."""
+    """Test that export to duckdb connection closed on error."""
     sdk = MagicMock()
     df = pd.DataFrame({"a": [1]})
     monkeypatch.setattr(export_mod, "_prepare_export_df", MagicMock(return_value=df))

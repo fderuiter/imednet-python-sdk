@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for arrow."""
 
 from datetime import datetime, timezone
 
@@ -9,7 +9,7 @@ from imednet.utils.arrow import to_arrow_table
 
 
 def test_to_arrow_table_empty_records_returns_empty_table() -> None:
-    """TODO: Add docstring."""
+    """Test that to arrow table empty records returns empty table."""
     table = to_arrow_table([])
 
     assert table.num_rows == 0
@@ -17,7 +17,7 @@ def test_to_arrow_table_empty_records_returns_empty_table() -> None:
 
 
 def test_to_arrow_table_handles_key_variations_with_nulls() -> None:
-    """TODO: Add docstring."""
+    """Test that to arrow table handles key variations with nulls."""
     table = to_arrow_table([{"subject_key": "S1", "weight": 73.5}, {"subject_key": "S2"}])
 
     assert table.column("subject_key").to_pylist() == ["S1", "S2"]
@@ -26,7 +26,7 @@ def test_to_arrow_table_handles_key_variations_with_nulls() -> None:
 
 
 def test_to_arrow_table_preserves_datetime_bool_and_float_types() -> None:
-    """TODO: Add docstring."""
+    """Test that to arrow table preserves datetime bool and float types."""
     recorded_at = datetime(2025, 1, 1, 8, 30, tzinfo=timezone.utc)
     table = to_arrow_table(
         [
@@ -41,10 +41,10 @@ def test_to_arrow_table_preserves_datetime_bool_and_float_types() -> None:
 
 
 def test_to_arrow_table_accepts_pydantic_like_records() -> None:
-    """TODO: Add docstring."""
+    """Test that to arrow table accepts pydantic like records."""
 
     class Visit(BaseModel):
-        """TODO: Add docstring."""
+        """Test suite for Visit."""
 
         subject_key: str
         completed: bool

@@ -119,6 +119,16 @@ pip install git+https://github.com/fderuiter/imednet-python-sdk.git@main
 
 ---
 
+## Workflows
+
+The SDK includes high-level guides that explain how to orchestrate complex operations
+across multiple API endpoints.
+
+- [UAT Workflow Guide](docs/workflows/uat_workflow.rst) - Automate study inspection, record generation, and test validation.
+- [Bulk Submission Guide](docs/workflows/bulk_submission.rst) - Learn how to handle two-phase data ingestion for high-volume scenarios.
+
+---
+
 ## Quick Start
 
 Set your credentials by copying the environment template or exporting them directly:

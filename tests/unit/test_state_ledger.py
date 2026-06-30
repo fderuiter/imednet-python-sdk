@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for state ledger."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from imednet_workflows.state_ledger import ExtractionStateLedger, LedgerState
 
 
 def test_state_ledger_read_write(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that state ledger read write."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
 
@@ -53,7 +53,7 @@ def test_state_ledger_read_write(tmp_path) -> None:
 
 
 def test_state_ledger_transaction_success(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that state ledger transaction success."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
     fallback_ts = datetime(2026, 5, 22, 10, 0, 0, tzinfo=timezone.utc)
@@ -78,7 +78,7 @@ def test_state_ledger_transaction_success(tmp_path) -> None:
 
 
 def test_state_ledger_transaction_failure(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that state ledger transaction failure."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
     fallback_ts = datetime(2026, 5, 22, 10, 0, 0, tzinfo=timezone.utc)
@@ -99,7 +99,7 @@ def test_state_ledger_transaction_failure(tmp_path) -> None:
 
 
 def test_state_ledger_atomic_write_failure(tmp_path, monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that state ledger atomic write failure."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
 
@@ -109,7 +109,7 @@ def test_state_ledger_atomic_write_failure(tmp_path, monkeypatch) -> None:
 
     # Mock os.replace to raise an error
     def mock_replace(src, dst):
-        """TODO: Add docstring."""
+        """Helper function to mock replace."""
         raise OSError("Disk full")
 
     monkeypatch.setattr(os, "replace", mock_replace)
@@ -129,7 +129,7 @@ def test_state_ledger_atomic_write_failure(tmp_path, monkeypatch) -> None:
     reason="flock not available on this platform (no fcntl)",
 )
 def test_state_ledger_flock_concurrency(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that state ledger flock concurrency."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
 
@@ -142,7 +142,7 @@ def test_state_ledger_flock_concurrency(tmp_path) -> None:
     thread_done = threading.Event()
 
     def locking_thread():
-        """TODO: Add docstring."""
+        """Helper function to locking thread."""
         with ledger._lock():
             lock_acquired.set()
             release_lock.wait()
@@ -163,7 +163,7 @@ def test_state_ledger_flock_concurrency(tmp_path) -> None:
     lock_acquired_in_t2 = threading.Event()
 
     def second_thread():
-        """TODO: Add docstring."""
+        """Helper function to second thread."""
         with ledger._lock():
             lock_acquired_in_t2.set()
 
@@ -184,7 +184,7 @@ def test_state_ledger_flock_concurrency(tmp_path) -> None:
 
 
 def test_delete_entry_removes_whole_study(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that delete entry removes whole study."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
     ts = datetime(2026, 5, 22, 12, 0, 0, tzinfo=timezone.utc)
@@ -200,7 +200,7 @@ def test_delete_entry_removes_whole_study(tmp_path) -> None:
 
 
 def test_delete_entry_removes_specific_stream(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that delete entry removes specific stream."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
     ts = datetime(2026, 5, 22, 12, 0, 0, tzinfo=timezone.utc)
@@ -217,7 +217,7 @@ def test_delete_entry_removes_specific_stream(tmp_path) -> None:
 
 
 def test_delete_entry_returns_false_when_study_not_found(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that delete entry returns false when study not found."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
 
@@ -227,7 +227,7 @@ def test_delete_entry_returns_false_when_study_not_found(tmp_path) -> None:
 
 
 def test_delete_entry_returns_false_when_stream_not_found(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that delete entry returns false when stream not found."""
     ledger_file = tmp_path / "ledger.json"
     ledger = ExtractionStateLedger(str(ledger_file))
     ts = datetime(2026, 5, 22, 12, 0, 0, tzinfo=timezone.utc)
@@ -241,7 +241,7 @@ def test_delete_entry_returns_false_when_stream_not_found(tmp_path) -> None:
 
 
 def test_corrupted_ledger_recovery(tmp_path) -> None:
-    """TODO: Add docstring."""
+    """Test that corrupted ledger recovery."""
     ledger_file = tmp_path / "ledger.json"
     # Write garbage content to file
     with open(ledger_file, "w") as f:

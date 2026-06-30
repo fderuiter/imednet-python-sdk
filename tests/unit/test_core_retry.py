@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for core retry."""
 
 import httpx
 import pytest
@@ -7,7 +7,7 @@ from imednet.core.retry import DefaultRetryPolicy, RetryState
 
 
 def test_default_retry_policy_retries_on_network_errors():
-    """TODO: Add docstring."""
+    """Test that default retry policy retries on network errors."""
     policy = DefaultRetryPolicy()
 
     # Simulate a network request error for an idempotent method (GET)
@@ -19,7 +19,7 @@ def test_default_retry_policy_retries_on_network_errors():
 
 
 def test_default_retry_policy_retries_on_rate_limits():
-    """TODO: Add docstring."""
+    """Test that default retry policy retries on rate limits."""
     policy = DefaultRetryPolicy()
 
     # Simulate a 429 Too Many Requests response — retried regardless of method
@@ -31,7 +31,7 @@ def test_default_retry_policy_retries_on_rate_limits():
 
 
 def test_default_retry_policy_retries_on_server_errors():
-    """TODO: Add docstring."""
+    """Test that default retry policy retries on server errors."""
     policy = DefaultRetryPolicy()
 
     # Simulate 500-599 Server Error responses for an idempotent method (GET)
@@ -44,7 +44,7 @@ def test_default_retry_policy_retries_on_server_errors():
 
 
 def test_default_retry_policy_does_not_retry_on_client_errors():
-    """TODO: Add docstring."""
+    """Test that default retry policy does not retry on client errors."""
     policy = DefaultRetryPolicy()
 
     # Simulate 400-499 Client Error responses (excluding 429)
@@ -57,7 +57,7 @@ def test_default_retry_policy_does_not_retry_on_client_errors():
 
 
 def test_default_retry_policy_does_not_retry_on_success():
-    """TODO: Add docstring."""
+    """Test that default retry policy does not retry on success."""
     policy = DefaultRetryPolicy()
 
     # Simulate 200-299 Success responses
@@ -70,7 +70,7 @@ def test_default_retry_policy_does_not_retry_on_success():
 
 
 def test_default_retry_policy_does_not_retry_on_unrelated_exceptions():
-    """TODO: Add docstring."""
+    """Test that default retry policy does not retry on unrelated exceptions."""
     policy = DefaultRetryPolicy()
 
     # Simulate an exception that is not a RequestError
@@ -81,7 +81,7 @@ def test_default_retry_policy_does_not_retry_on_unrelated_exceptions():
 
 
 def test_default_retry_policy_with_no_result_or_exception():
-    """TODO: Add docstring."""
+    """Test that default retry policy with no result or exception."""
     policy = DefaultRetryPolicy()
 
     # Simulate an empty state
@@ -92,7 +92,7 @@ def test_default_retry_policy_with_no_result_or_exception():
 
 @pytest.mark.parametrize("method", ["POST", "PATCH"])
 def test_default_retry_policy_does_not_retry_non_idempotent_on_network_error(method: str):
-    """TODO: Add docstring."""
+    """Test that default retry policy does not retry non idempotent on network error."""
     policy = DefaultRetryPolicy()
 
     request = httpx.Request(method, "https://example.com")
@@ -105,7 +105,7 @@ def test_default_retry_policy_does_not_retry_non_idempotent_on_network_error(met
 
 @pytest.mark.parametrize("method", ["POST", "PATCH"])
 def test_default_retry_policy_does_not_retry_non_idempotent_on_server_error(method: str):
-    """TODO: Add docstring."""
+    """Test that default retry policy does not retry non idempotent on server error."""
     policy = DefaultRetryPolicy()
 
     request = httpx.Request(method, "https://example.com")
@@ -117,7 +117,7 @@ def test_default_retry_policy_does_not_retry_non_idempotent_on_server_error(meth
 
 
 def test_default_retry_policy_retries_post_on_rate_limit():
-    """TODO: Add docstring."""
+    """Test that default retry policy retries post on rate limit."""
     policy = DefaultRetryPolicy()
 
     # 429 means the server rejected the request before processing it, so
@@ -130,7 +130,7 @@ def test_default_retry_policy_retries_post_on_rate_limit():
 
 
 def test_default_retry_policy_does_not_retry_unknown_method_on_network_error():
-    """TODO: Add docstring."""
+    """Test that default retry policy does not retry unknown method on network error."""
     policy = DefaultRetryPolicy()
 
     # Unknown / missing method → fail-safe: do not retry
@@ -142,7 +142,7 @@ def test_default_retry_policy_does_not_retry_unknown_method_on_network_error():
 
 
 def test_default_retry_policy_does_not_retry_unknown_method_on_server_error():
-    """TODO: Add docstring."""
+    """Test that default retry policy does not retry unknown method on server error."""
     policy = DefaultRetryPolicy()
 
     # Unknown / missing method → fail-safe: do not retry

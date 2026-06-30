@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for utils typing."""
 
 import importlib
 import sys
@@ -10,12 +10,12 @@ from imednet.utils.typing import DataFrame
 
 
 def test_dataframe_alias() -> None:
-    """TODO: Add docstring."""
+    """Test that dataframe alias."""
     assert DataFrame is pd.DataFrame
 
 
 def test_dataframe_alias_without_pandas(monkeypatch):
-    """TODO: Add docstring."""
+    """Test that dataframe alias without pandas."""
     monkeypatch.setitem(sys.modules, "pandas", None)
     mod = importlib.reload(importlib.import_module("imednet.utils.typing"))
     assert mod.DataFrame is Any

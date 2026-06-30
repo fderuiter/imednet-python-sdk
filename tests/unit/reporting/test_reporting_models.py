@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for reporting models."""
 
 from datetime import datetime, timezone
 
@@ -9,7 +9,7 @@ from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDev
 
 
 def test_adverse_event_parses_alias_input_and_coerces_types() -> None:
-    """TODO: Add docstring."""
+    """Test that adverse event parses alias input and coerces types."""
     model = AdverseEvent.model_validate(
         {
             "subjectKey": 101,
@@ -29,7 +29,7 @@ def test_adverse_event_parses_alias_input_and_coerces_types() -> None:
 
 
 def test_protocol_deviation_applies_defaults_and_parses_datetime_timestamp() -> None:
-    """TODO: Add docstring."""
+    """Test that protocol deviation applies defaults and parses datetime timestamp."""
     model = ProtocolDeviation.model_validate(
         {
             "subjectKey": 77,
@@ -46,7 +46,7 @@ def test_protocol_deviation_applies_defaults_and_parses_datetime_timestamp() -> 
 
 
 def test_device_deficiency_parses_valid_input() -> None:
-    """TODO: Add docstring."""
+    """Test that device deficiency parses valid input."""
     model = DeviceDeficiency.model_validate(
         {
             "subjectKey": "SUBJ-001",
@@ -85,13 +85,13 @@ def test_device_deficiency_parses_valid_input() -> None:
     ],
 )
 def test_reporting_models_reject_missing_required_fields(model_cls: type, payload: dict) -> None:
-    """TODO: Add docstring."""
+    """Test that reporting models reject missing required fields."""
     with pytest.raises(ValidationError):
         model_cls.model_validate(payload)
 
 
 def test_protocol_deviation_rejects_invalid_datetime() -> None:
-    """TODO: Add docstring."""
+    """Test that protocol deviation rejects invalid datetime."""
     with pytest.raises(ValidationError):
         ProtocolDeviation.model_validate(
             {

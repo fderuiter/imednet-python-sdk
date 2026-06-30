@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for uat models."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ fake = Faker()
 
 
 def _build_valid_spec() -> UATSpecification:
-    """TODO: Add docstring."""
+    """Helper function to  build valid spec."""
     variable = UATVariableSpec(
         variable_name="SYSTOLIC",
         variable_key="VAR-1",
@@ -49,7 +49,7 @@ def _build_valid_spec() -> UATSpecification:
 
 
 def test_json_round_trip_serialization() -> None:
-    """TODO: Add docstring."""
+    """Test that json round trip serialization."""
     spec = _build_valid_spec()
     payload = spec.model_dump_json()
     parsed = UATSpecification.model_validate_json(payload)
@@ -57,7 +57,7 @@ def test_json_round_trip_serialization() -> None:
 
 
 def test_alias_dump_uses_camel_case() -> None:
-    """TODO: Add docstring."""
+    """Test that alias dump uses camel case."""
     spec = _build_valid_spec()
     payload = spec.model_dump(by_alias=True)
     assert "studyKey" in payload
@@ -67,7 +67,7 @@ def test_alias_dump_uses_camel_case() -> None:
 
 
 def test_fixed_strategy_requires_fixed_value() -> None:
-    """TODO: Add docstring."""
+    """Test that fixed strategy requires fixed value."""
     with pytest.raises(ValidationError, match="fixed_value must be provided"):
         UATVariableSpec(
             variable_name="AGE",
@@ -80,7 +80,7 @@ def test_fixed_strategy_requires_fixed_value() -> None:
 
 @pytest.mark.parametrize("count", [0, 101])
 def test_subject_count_bounds(count: int) -> None:
-    """TODO: Add docstring."""
+    """Test that subject count bounds."""
     with pytest.raises(ValidationError, match="subject_count must be between 1 and 100"):
         UATFormSpec(
             form_key="DEMOG",
@@ -94,7 +94,7 @@ def test_subject_count_bounds(count: int) -> None:
 
 
 def test_spec_version_is_pinned() -> None:
-    """TODO: Add docstring."""
+    """Test that spec version is pinned."""
     with pytest.raises(ValidationError, match="spec_version must be '1.0'"):
         UATSpecification(
             spec_version="2.0",
@@ -104,7 +104,7 @@ def test_spec_version_is_pinned() -> None:
 
 
 def test_variables_must_have_unique_names() -> None:
-    """TODO: Add docstring."""
+    """Test that variables must have unique names."""
     with pytest.raises(ValidationError, match="duplicate variable_name"):
         UATFormSpec(
             form_key="LABS",
@@ -129,7 +129,7 @@ def test_variables_must_have_unique_names() -> None:
 
 
 def test_enabled_forms_and_forms_by_type_filters_correctly() -> None:
-    """TODO: Add docstring."""
+    """Test that enabled forms and forms by type filters correctly."""
     enabled_register = UATFormSpec(
         form_key="SUBJECT",
         form_name="Subject Registration",
@@ -158,23 +158,13 @@ def test_enabled_forms_and_forms_by_type_filters_correctly() -> None:
     assert spec.forms_by_type(RecordTestType.REGISTER_SUBJECT) == [enabled_register]
 
 
-def test_from_yaml_raises_when_pyyaml_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_from_json_loads_correctly(tmp_path: Path) -> None:
     """TODO: Add docstring."""
-    monkeypatch.setattr(uat_models, "find_spec", lambda _: None)
-    with pytest.raises(ImportError, match="PyYAML is required"):
-        UATSpecification.from_yaml("studyKey: S1\nstudyName: Study")
-
-
-def test_from_yaml_loads_when_available(tmp_path: Path) -> None:
-    """TODO: Add docstring."""
-    if uat_models.find_spec("yaml") is None:
-        pytest.skip("PyYAML not installed in test environment")
-
-    yaml_file = tmp_path / "spec.yaml"
-    yaml_file.write_text(
-        "specVersion: '1.0'\nstudyKey: S1\nstudyName: Study\nformSpecs: []\nsubjectSpecs: []\n",
+    json_file = tmp_path / "spec.json"
+    json_file.write_text(
+        '{"specVersion": "1.0", "studyKey": "S1", "studyName": "Study", "formSpecs": [], "subjectSpecs": []}',
         encoding="utf-8",
     )
 
-    spec = UATSpecification.from_yaml(yaml_file)
+    spec = UATSpecification.from_json(json_file)
     assert spec.study_key == "S1"

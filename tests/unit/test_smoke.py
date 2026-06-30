@@ -1,15 +1,15 @@
-"""TODO: Add docstring."""
+"""Unit tests for smoke."""
 
 
 def test_smoke_import() -> None:
-    """TODO: Add docstring."""
+    """Test that smoke import."""
     import imednet
 
     assert hasattr(imednet, "ImednetSDK")
 
 
 def test_orchestration_exports() -> None:
-    """TODO: Add docstring."""
+    """Test that orchestration exports."""
     from imednet import (
         FilterConflictError,
         MultiStudyOrchestrator,
@@ -26,7 +26,7 @@ def test_orchestration_exports() -> None:
 
 
 def test_role_import() -> None:
-    """TODO: Add docstring."""
+    """Test that role import."""
     from imednet.models import Role
 
     assert Role.__name__ == "Role"

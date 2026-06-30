@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for duckdb ingestion workflow."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from imednet_workflows.duckdb_centralizer import DuckDBIngestionWorkflow
 
 
 def test_ingest_revisions_append_mode() -> None:
-    """TODO: Add docstring."""
+    """Test that ingest revisions append mode."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -52,7 +52,7 @@ def test_ingest_revisions_append_mode() -> None:
 
 
 def test_ingest_revisions_replace_mode() -> None:
-    """TODO: Add docstring."""
+    """Test that ingest revisions replace mode."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -94,7 +94,7 @@ def test_ingest_revisions_replace_mode() -> None:
 
 
 def test_build_silver_view_deduplication() -> None:
-    """TODO: Add docstring."""
+    """Test that build silver view deduplication."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -131,7 +131,7 @@ def test_build_silver_view_deduplication() -> None:
 
 
 def test_ingest_revisions_returns_row_count() -> None:
-    """TODO: Add docstring."""
+    """Test that ingest revisions returns row count."""
     pytest.importorskip("duckdb")
 
     workflow = DuckDBIngestionWorkflow(MagicMock(), ":memory:")
@@ -170,7 +170,7 @@ def test_ingest_revisions_returns_row_count() -> None:
 
 
 def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that duckdb workflow import error."""
 
     def fake_import(
         name: str,
@@ -179,7 +179,7 @@ def test_duckdb_workflow_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
         fromlist: tuple[str, ...] = (),
         level: int = 0,
     ) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to fake import."""
         if name == "duckdb":
             raise ImportError("No module named duckdb")
         return builtin_import(name, globals_arg, locals_arg, fromlist, level)

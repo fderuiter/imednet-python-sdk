@@ -1,11 +1,11 @@
-"""TODO: Add docstring."""
+"""Unit tests for presets."""
 
 from imednet.form_designer.builder import FormBuilder
 from imednet.form_designer.presets import PRESETS
 
 
 def test_demo_form_preset():
-    """TODO: Add docstring."""
+    """Test that demo form preset."""
     builder = FormBuilder()
     PRESETS["Demo Form"](builder)
     layout = builder.build()
@@ -31,7 +31,7 @@ def test_demo_form_preset():
 
 
 def test_cv_pathology_preset():
-    """TODO: Add docstring."""
+    """Test that cv pathology preset."""
     builder = FormBuilder()
     PRESETS["CV Pathology"](builder)
     layout = builder.build()

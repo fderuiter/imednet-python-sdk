@@ -18,7 +18,7 @@ MODULE_NAME = "imednet_streamlit.pages.publisher_wizard"
 
 
 def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> ConfigVersionStore:
-    """TODO: Add docstring."""
+    """Helper function to  make committed store."""
     store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
     config = StudyConfiguration(
         version="1.0.0",
@@ -41,22 +41,22 @@ def _make_committed_store(tmp_path: Path, study_key: str = "STUDY-01") -> Config
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for  FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Helper function to   enter  ."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to   exit  ."""
         pass
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.success_calls: list[str] = []
         self.warning_calls: list[str] = []
@@ -67,54 +67,54 @@ class _FakeStreamlit:
         self.text_input_values: dict[str, str] = {}
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to title."""
         pass
 
     def subheader(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to subheader."""
         pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to markdown."""
         pass
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to info."""
         self.info_calls.append(value)
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to success."""
         self.success_calls.append(value)
 
     def warning(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to warning."""
         self.warning_calls.append(value)
 
     def error(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to error."""
         self.error_calls.append(value)
 
     def divider(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to divider."""
         pass
 
     def json(self, value: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to json."""
         pass
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         key = str(kwargs.get("key") or label)
         if kwargs.get("disabled", False):
             return False
         return key in self.button_presses
 
     def columns(self, spec: Any) -> list[_FakeContextManager]:
-        """TODO: Add docstring."""
+        """Helper function to columns."""
         count = spec if isinstance(spec, int) else len(spec)
         cols = [_FakeContextManager() for _ in range(count)]
         # Attach button and other widget methods to each column
@@ -126,37 +126,37 @@ class _FakeStreamlit:
         return cols
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to selectbox."""
         key = str(kwargs.get("key") or label)
         if key in self.selectbox_values and self.selectbox_values[key] in options:
             return self.selectbox_values[key]
         return options[index]
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text input."""
         key = str(kwargs.get("key") or label)
         if key in self.text_input_values:
             return self.text_input_values[key]
         return str(kwargs.get("value", ""))
 
     def text_area(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text area."""
         return str(kwargs.get("value", ""))
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
-        """TODO: Add docstring."""
+        """Helper function to expander."""
         return _FakeContextManager()
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to metric."""
         pass
 
     def caption(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to caption."""
         pass
 
     def progress(self, value: float) -> None:
-        """TODO: Add docstring."""
+        """Helper function to progress."""
         pass
 
 
@@ -166,7 +166,7 @@ def _run_publisher_wizard(
     *,
     study_key: str = "STUDY-01",
 ) -> None:
-    """TODO: Add docstring."""
+    """Helper function to  run publisher wizard."""
     fake_streamlit_module = ModuleType("streamlit")
     fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
     for attr in (
@@ -196,19 +196,19 @@ def _run_publisher_wizard(
     fake_auth_module.get_study_key = lambda: study_key  # type: ignore[attr-defined]
 
     class FakeAuth:
-        """TODO: Add docstring."""
+        """Test suite for FakeAuth."""
 
         def get_user_roles(self):
-            """TODO: Add docstring."""
+            """Helper function to get user roles."""
             # Read from session state simulator instead of UI
             return [fake_st.selectbox_values.get("_publisher_role", "viewer")]
 
         def get_user_id(self):
-            """TODO: Add docstring."""
+            """Helper function to get user id."""
             return fake_st.text_input_values.get("_publisher_user", "")
 
     class FakeSDK:
-        """TODO: Add docstring."""
+        """Test suite for FakeSDK."""
 
         auth = FakeAuth()
 

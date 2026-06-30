@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for json model normalization."""
 
 from datetime import datetime, timezone
 from typing import Any, Optional, Union
@@ -7,7 +7,7 @@ from imednet.models.json_base import JsonModel
 
 
 class SampleModel(JsonModel):
-    """TODO: Add docstring."""
+    """Test suite for SampleModel."""
 
     flag: bool
     count: int
@@ -17,7 +17,7 @@ class SampleModel(JsonModel):
 
 
 def test_json_model_normalization() -> None:
-    """TODO: Add docstring."""
+    """Test that json model normalization."""
     model = SampleModel(
         flag="true",
         count="5",
@@ -34,7 +34,7 @@ def test_json_model_normalization() -> None:
 
 
 class SampleOptionalModel(JsonModel):
-    """TODO: Add docstring."""
+    """Test suite for SampleOptionalModel."""
 
     opt_str: Optional[str] = None
     opt_int: Optional[int] = None
@@ -43,7 +43,7 @@ class SampleOptionalModel(JsonModel):
 
 
 def test_json_model_normalization_optional_fields() -> None:
-    """TODO: Add docstring."""
+    """Test that json model normalization optional fields."""
     # Test with None values
     model_none = SampleOptionalModel(opt_str=None, opt_int=None, opt_bool=None, opt_datetime=None)
     assert model_none.opt_str is None
@@ -62,10 +62,10 @@ def test_json_model_normalization_optional_fields() -> None:
 
 
 def test_json_model_normalization_union_field() -> None:
-    """TODO: Add docstring."""
+    """Test that json model normalization union field."""
 
     class SampleUnionModel(JsonModel):
-        """TODO: Add docstring."""
+        """Test suite for SampleUnionModel."""
 
         union_field: Union[int, str]
 
@@ -74,10 +74,10 @@ def test_json_model_normalization_union_field() -> None:
 
 
 def test_json_model_identity_normalizer() -> None:
-    """TODO: Add docstring."""
+    """Test that json model identity normalizer."""
 
     class SampleIdentityModel(JsonModel):
-        """TODO: Add docstring."""
+        """Test suite for SampleIdentityModel."""
 
         identity_field: Any
 
@@ -86,10 +86,10 @@ def test_json_model_identity_normalizer() -> None:
 
 
 def test_json_model_normalization_missing_field() -> None:
-    """TODO: Add docstring."""
+    """Test that json model normalization missing field."""
 
     class SampleModelMissing(JsonModel):
-        """TODO: Add docstring."""
+        """Test suite for SampleModelMissing."""
 
         opt_str: Optional[str] = None
 
@@ -98,7 +98,7 @@ def test_json_model_normalization_missing_field() -> None:
 
 
 def test_json_model_from_json_method() -> None:
-    """TODO: Add docstring."""
+    """Test that json model from json method."""
     data = {
         "flag": "true",
         "count": "5",
@@ -112,16 +112,16 @@ def test_json_model_from_json_method() -> None:
 
 
 def test_json_model_structural_shift(caplog):
-    """TODO: Add docstring."""
+    """Test that json model structural shift."""
     import logging
 
     class NestedModel(JsonModel):
-        """TODO: Add docstring."""
+        """Test suite for NestedModel."""
 
         id: int
 
     class TestModel(JsonModel):
-        """TODO: Add docstring."""
+        """Test suite for Model."""
 
         nested: NestedModel
         items: list[NestedModel]

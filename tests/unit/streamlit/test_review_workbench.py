@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for review workbench."""
 
 from __future__ import annotations
 
@@ -34,32 +34,32 @@ DRAWER_PATH = (
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for  FakeContextManager."""
 
     def __init__(self, streamlit_client: "_FakeStreamlit | None" = None) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self._streamlit_client = streamlit_client
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Helper function to   enter  ."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to   exit  ."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         if self._streamlit_client is None:
             return False
         return self._streamlit_client.button(label, **kwargs)
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.session_state: dict[str, Any] = {}
         self.metrics: dict[str, Any] = {}
         self.frames: list[Any] = []
@@ -69,74 +69,74 @@ class _FakeStreamlit:
         self.button_presses: set[str] = set()
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to title."""
         pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to markdown."""
         pass
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to info."""
         pass
 
     def columns(self, spec: int | list[Any], **kwargs: Any) -> list[_FakeContextManager]:
-        """TODO: Add docstring."""
+        """Helper function to columns."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager(self) for _ in range(count)]
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to metric."""
         self.metrics[label] = value
 
     def multiselect(self, label: str, options: list[str], **kwargs: Any) -> list[str]:
-        """TODO: Add docstring."""
+        """Helper function to multiselect."""
         return self.multiselect_values.get(label, list(kwargs.get("default", [])))
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text input."""
         return self.text_values.get(label, "")
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         self.frames.append(df)
 
     def selectbox(self, label: str, options: list[str], index: int = 0, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to selectbox."""
         return self.selectbox_values.get(label, options[index])
 
     def subheader(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to subheader."""
         pass
 
     def caption(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to caption."""
         pass
 
     def write(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to write."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         key = kwargs.get("key")
         return label in self.button_presses or (isinstance(key, str) and key in self.button_presses)
 
     def text_area(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text area."""
         return ""
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to success."""
         pass
 
     def warning(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to warning."""
         pass
 
 
 def _sample_items() -> list[TriageItem]:
-    """TODO: Add docstring."""
+    """Helper function to  sample items."""
     old_ts = datetime.now(timezone.utc) - timedelta(hours=96)
     recent_ts = datetime.now(timezone.utc) - timedelta(hours=2)
     return [
@@ -178,7 +178,7 @@ def _sample_items() -> list[TriageItem]:
 
 
 def test_review_workbench_renders_kpis_and_filters_queue() -> None:
-    """TODO: Add docstring."""
+    """Test that review workbench renders kpis and filters queue."""
     fake_st = _FakeStreamlit()
     fake_st.multiselect_values = {
         "Severity": ["Critical/Severe"],
@@ -265,7 +265,7 @@ def test_review_workbench_renders_kpis_and_filters_queue() -> None:
 
 
 def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
-    """TODO: Add docstring."""
+    """Test that triage drawer submits assignment annotation and status."""
     fake_st = _FakeStreamlit()
     fake_st.text_area = lambda label, **kwargs: "follow-up"  # type: ignore[assignment]
     fake_st.selectbox_values = {

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for sqlite export modes."""
 
 import importlib.util
 import sys
@@ -47,7 +47,7 @@ from imednet.integrations import export as export_mod
 
 @pytest.fixture
 def sqlite_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Helper function to sqlite env."""
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")
     monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
@@ -59,7 +59,7 @@ def sqlite_env(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def _setup_per_form_mapper(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Helper function to  setup per form mapper."""
     form1_vars = [MagicMock(variable_name=f"v{i}", label=f"v{i}") for i in range(1500)]
     form2_vars = [MagicMock(variable_name=f"w{i}", label=f"w{i}") for i in range(600)]
     sdk = MagicMock()
@@ -84,7 +84,7 @@ def _setup_per_form_mapper(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
-    """TODO: Add docstring."""
+    """Helper function to  setup single table mapper."""
     columns = [f"c{i}" for i in range(2100)]
     df = pd.DataFrame([range(2100)], columns=columns)
     mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
@@ -100,7 +100,7 @@ def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
 def test_default_sqlite_mode_splits_by_form(
     sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """TODO: Add docstring."""
+    """Test that default sqlite mode splits by form."""
     _setup_per_form_mapper(monkeypatch)
     runner = CliRunner()
     monkeypatch.chdir(tmp_path)
@@ -114,7 +114,7 @@ def test_default_sqlite_mode_splits_by_form(
 def test_single_table_mode_chunks(
     sqlite_env, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """TODO: Add docstring."""
+    """Test that single table mode chunks."""
     mock_to_sql = _setup_single_table_mapper(monkeypatch)
     runner = CliRunner()
     monkeypatch.chdir(tmp_path)

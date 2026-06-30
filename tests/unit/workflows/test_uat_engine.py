@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for uat engine."""
 
 from unittest.mock import Mock
 
@@ -10,7 +10,7 @@ from imednet_workflows.uat.engine import EditCheckResultStatus, UATExecutionEngi
 
 
 def test_uat_engine_parses_rules():
-    """TODO: Add docstring."""
+    """Test that uat engine parses rules."""
     dd = DataDictionary(
         business_logic=[
             {
@@ -33,7 +33,7 @@ def test_uat_engine_parses_rules():
 
 
 def test_uat_engine_negative_generation():
-    """TODO: Add docstring."""
+    """Test that uat engine negative generation."""
     dd = DataDictionary(
         business_logic=[
             {
@@ -55,7 +55,7 @@ def test_uat_engine_negative_generation():
 
 
 def test_uat_engine_run_verification():
-    """TODO: Add docstring."""
+    """Test that uat engine run verification."""
     sdk = Mock()
     sdk.create_record.side_effect = ValidationError("Invalid value")
 
@@ -83,7 +83,7 @@ def test_uat_engine_run_verification():
 
 
 def test_uat_engine_subject_limit():
-    """TODO: Add docstring."""
+    """Test that uat engine subject limit."""
     sdk = Mock()
     sdk.create_record.side_effect = ValidationError("Invalid value")
 

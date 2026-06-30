@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for variables endpoint."""
 
 import pytest
 
@@ -11,7 +11,7 @@ from imednet.models.variables import Variable
 def test_list_requires_study_key_page_size(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
-    """TODO: Add docstring."""
+    """Test that list requires study key page size."""
     ep = variables.VariablesEndpoint(dummy_client, context)
     capture = paginator_factory(variables, [{"variableId": 1}])
     patch = patch_build_filter(variables)
@@ -29,11 +29,11 @@ def test_list_requires_study_key_page_size(
 
 
 def test_get_not_found(monkeypatch, dummy_client, context):
-    """TODO: Add docstring."""
+    """Test that get not found."""
     ep = variables.VariablesEndpoint(dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
-        """TODO: Add docstring."""
+        """Helper function to fake impl."""
         return []
 
     monkeypatch.setattr(variables.VariablesEndpoint, "_list_sync", fake_impl)
@@ -43,7 +43,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 
 def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
-    """TODO: Add docstring."""
+    """Test that list makes request per call."""
     ep = variables.VariablesEndpoint(dummy_client, context)
     capture = paginator_factory(variables, [{"variableId": 1}])
 
@@ -54,7 +54,7 @@ def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
 
 
 def test_list_different_study_keys_make_separate_requests(dummy_client, context, paginator_factory):
-    """TODO: Add docstring."""
+    """Test that list different study keys make separate requests."""
     ep = variables.VariablesEndpoint(dummy_client, context)
     capture = paginator_factory(variables, [{"variableId": 1}])
 

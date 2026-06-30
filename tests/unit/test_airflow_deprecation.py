@@ -1,11 +1,11 @@
-"""TODO: Add docstring."""
+"""Unit tests for airflow deprecation."""
 
 import sys
 from types import ModuleType
 
 
 def _setup_airflow(monkeypatch):
-    """TODO: Add docstring."""
+    """Helper function to  setup airflow."""
     airflow_mod = ModuleType("airflow")
     hooks_pkg = ModuleType("airflow.hooks")
     hooks_mod = ModuleType("airflow.sdk.bases.hook")
@@ -16,20 +16,20 @@ def _setup_airflow(monkeypatch):
     models_mod = ModuleType("airflow.models")
 
     class DummyBaseHook:
-        """TODO: Add docstring."""
+        """Test suite for DummyBaseHook."""
 
         @classmethod
         def get_connection(cls, conn_id):  # pragma: no cover
-            """TODO: Add docstring."""
+            """Helper function to get connection."""
             raise NotImplementedError
 
     class DummyBaseOperator:
-        """TODO: Add docstring."""
+        """Test suite for DummyBaseOperator."""
 
         template_fields = ()
 
         def __init__(self, **kwargs):  # pragma: no cover
-            """TODO: Add docstring."""
+            """Initialize the test object."""
             pass
 
     hooks_mod.BaseHook = DummyBaseHook
@@ -54,7 +54,7 @@ def _setup_airflow(monkeypatch):
 
 
 def test_airflow_provider_exports_public_api(monkeypatch):
-    """TODO: Add docstring."""
+    """Test that airflow provider exports public api."""
     _setup_airflow(monkeypatch)
     for mod in [
         "apache_airflow_providers_imednet",

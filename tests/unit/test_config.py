@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for config."""
 
 import pytest
 
@@ -6,7 +6,7 @@ from imednet.config import Config, load_config
 
 
 def test_load_config_from_env(monkeypatch):
-    """TODO: Add docstring."""
+    """Test that load config from env."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
     monkeypatch.setenv("IMEDNET_BASE_URL", " https://example.com ")
@@ -18,7 +18,7 @@ def test_load_config_from_env(monkeypatch):
 
 
 def test_load_config_overrides_env(monkeypatch):
-    """TODO: Add docstring."""
+    """Test that load config overrides env."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
     cfg = load_config(api_key="arg_key", security_key="arg_sec", base_url="https://override")
@@ -26,7 +26,7 @@ def test_load_config_overrides_env(monkeypatch):
 
 
 def test_load_config_missing(monkeypatch):
-    """TODO: Add docstring."""
+    """Test that load config missing."""
     monkeypatch.delenv("IMEDNET_API_KEY", raising=False)
     monkeypatch.delenv("IMEDNET_SECURITY_KEY", raising=False)
     with pytest.raises(ValueError, match="API key and security key are required"):

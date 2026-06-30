@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for parsing mixin."""
 
 from unittest.mock import MagicMock
 
@@ -8,24 +8,24 @@ from imednet.models.json_base import JsonModel
 
 
 class MockModel(JsonModel):
-    """TODO: Add docstring."""
+    """Test suite for MockModel."""
 
     id: int
 
 
 class EndpointWithParsing(GenericListGetEndpoint[MockModel]):
-    """TODO: Add docstring."""
+    """Test suite for EndpointWithParsing."""
 
     PATH = "items"
     MODEL = MockModel
 
     def _auto_filter(self, filters):
-        """TODO: Add docstring."""
+        """Helper function to  auto filter."""
         return filters
 
 
 def test_parsing_mixin_parse_item():
-    """TODO: Add docstring."""
+    """Test that parsing mixin parse item."""
     endpoint = EndpointWithParsing(client=MagicMock(), ctx=Context())
     result = endpoint._parse_item({"id": 1})
     assert isinstance(result, MockModel)

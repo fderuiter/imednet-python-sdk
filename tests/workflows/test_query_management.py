@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for query management."""
 
 from unittest.mock import MagicMock
 
@@ -9,13 +9,13 @@ from imednet_workflows.query_management import QueryManagementWorkflow
 
 
 def make_query(sequence_closed: list[tuple[int, bool]]) -> Query:
-    """TODO: Add docstring."""
+    """Helper function to make query."""
     comments = [QueryComment(sequence=seq, closed=closed) for seq, closed in sequence_closed]
     return Query(query_comments=comments)
 
 
 def test_get_open_queries_filters_latest_comment() -> None:
-    """TODO: Add docstring."""
+    """Test that get open queries filters latest comment."""
     sdk = MagicMock()
     query_closed = make_query([(1, False), (2, True)])
     query_open = make_query([(1, False)])
@@ -31,7 +31,7 @@ def test_get_open_queries_filters_latest_comment() -> None:
 
 
 def test_get_queries_for_subject_builds_combined_filter() -> None:
-    """TODO: Add docstring."""
+    """Test that get queries for subject builds combined filter."""
     sdk = MagicMock()
     wf = QueryManagementWorkflow(sdk)
     wf.get_queries_for_subject("STUDY", "SUBJ1", additional_filter={"type": "x"})
@@ -41,7 +41,7 @@ def test_get_queries_for_subject_builds_combined_filter() -> None:
 
 
 def test_get_query_state_counts_aggregates_states() -> None:
-    """TODO: Add docstring."""
+    """Test that get query state counts aggregates states."""
     sdk = MagicMock()
     open_query = make_query([(1, False)])
     closed_query = make_query([(1, True)])
@@ -57,7 +57,7 @@ def test_get_query_state_counts_aggregates_states() -> None:
 
 
 def test_get_queries_by_site_filters_using_subjects() -> None:
-    """TODO: Add docstring."""
+    """Test that get queries by site filters using subjects."""
     sdk = MagicMock()
     s1 = Subject.from_json(fake_data.fake_subject())
     s2 = Subject.from_json(fake_data.fake_subject())
@@ -74,7 +74,7 @@ def test_get_queries_by_site_filters_using_subjects() -> None:
 
 
 def test_get_queries_by_site_returns_empty_if_no_subjects() -> None:
-    """TODO: Add docstring."""
+    """Test that get queries by site returns empty if no subjects."""
     sdk = MagicMock()
     sdk.get_subjects.return_value = []
     wf = QueryManagementWorkflow(sdk)
@@ -87,7 +87,7 @@ def test_get_queries_by_site_returns_empty_if_no_subjects() -> None:
 
 
 def test_get_queries_by_site_with_space_in_name() -> None:
-    """TODO: Add docstring."""
+    """Test that get queries by site with space in name."""
     sdk = MagicMock()
     s = Subject.from_json(fake_data.fake_subject())
     s.subject_key = "S1"

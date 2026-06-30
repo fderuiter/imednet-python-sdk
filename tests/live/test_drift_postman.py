@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for drift postman."""
 
 import json
 import logging
@@ -56,7 +56,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     endpoints_to_test = set()
 
     def walk(items):
-        """TODO: Add docstring."""
+        """Helper function to walk."""
         for item in items:
             if "item" in item:
                 walk(item["item"])

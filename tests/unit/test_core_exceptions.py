@@ -1,10 +1,10 @@
-"""TODO: Add docstring."""
+"""Unit tests for core exceptions."""
 
 from imednet import errors
 
 
 def test_api_error_str_includes_details() -> None:
-    """TODO: Add docstring."""
+    """Test that api error str includes details."""
     err = errors.ApiError({"msg": "bad"}, status_code=400)
     text = str(err)
     assert "Status Code: 400" in text
@@ -12,7 +12,7 @@ def test_api_error_str_includes_details() -> None:
 
 
 def test_exception_hierarchy() -> None:
-    """TODO: Add docstring."""
+    """Test that exception hierarchy."""
     assert issubclass(errors.AuthenticationError, errors.ApiError)
     assert issubclass(errors.AuthorizationError, errors.ApiError)
     assert issubclass(errors.NotFoundError, errors.ApiError)
@@ -28,7 +28,7 @@ def test_exception_hierarchy() -> None:
 
 
 def test_filter_conflict_error_keeps_conflicting_filters() -> None:
-    """TODO: Add docstring."""
+    """Test that filter conflict error keeps conflicting filters."""
     whitelist = {"STUDY-A"}
     blacklist = {"STUDY-B"}
 
