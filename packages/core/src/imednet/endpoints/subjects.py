@@ -14,8 +14,8 @@ class SubjectsOperationDef:
     _id_param = "subjectKey"
 
 
-class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  # type: ignore[misc]
-    """Synchronous endpoint for managing Subjects."""
+class SubjectsMixin(SubjectsOperationDef):
+    """Mixin for Subject operations."""
 
     def list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
         """List subjects by site ID.
@@ -27,11 +27,7 @@ class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  
         Returns:
             A list of subjects for the specified site.
         """
-        return list(self.list(study_key=study_key, site_id=site_id))
-
-
-class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):  # type: ignore[misc]
-    """Asynchronous endpoint for managing Subjects."""
+        return list(self.list(study_key=study_key, site_id=site_id))  # type: ignore[attr-defined]
 
     async def async_list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
         """List subjects by site ID asynchronously.
@@ -43,4 +39,12 @@ class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subjec
         Returns:
             A list of subjects for the specified site.
         """
-        return [item async for item in self.async_list(study_key=study_key, site_id=site_id)]
+        return [item async for item in self.async_list(study_key=study_key, site_id=site_id)]  # type: ignore[attr-defined]
+
+
+class SubjectsEndpoint(SubjectsMixin, EdcSyncListGetEndpoint[Subject]):  # type: ignore[misc]
+    """Synchronous endpoint for managing Subjects."""
+
+
+class AsyncSubjectsEndpoint(SubjectsMixin, EdcAsyncListGetEndpoint[Subject]):  # type: ignore[misc]
+    """Asynchronous endpoint for managing Subjects."""

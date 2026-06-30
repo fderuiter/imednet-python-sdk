@@ -14,13 +14,16 @@ class SitesOperationDef:
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
 
 
-class SitesEndpoint(SitesOperationDef, EdcSyncListGetEndpoint[Site]):  # type: ignore[misc]
+class SitesMixin(SitesOperationDef):
+    """Mixin for Sites operations."""
+
+class SitesEndpoint(SitesMixin, EdcSyncListGetEndpoint[Site]):  # type: ignore[misc]
     """Synchronous endpoint for managing Sites."""
 
     pass
 
 
-class AsyncSitesEndpoint(SitesOperationDef, EdcAsyncListGetEndpoint[Site]):  # type: ignore[misc]
+class AsyncSitesEndpoint(SitesMixin, EdcAsyncListGetEndpoint[Site]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Sites."""
 
     pass

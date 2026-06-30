@@ -12,7 +12,10 @@ class RecordRevisionsOperationDef:
     _id_param = "recordRevisionId"
 
 
-class RecordRevisionsEndpoint(RecordRevisionsOperationDef, EdcSyncListGetEndpoint[RecordRevision]):  # type: ignore[misc]
+class RecordRevisionsMixin(RecordRevisionsOperationDef):
+    """Mixin for RecordRevisions operations."""
+
+class RecordRevisionsEndpoint(RecordRevisionsMixin, EdcSyncListGetEndpoint[RecordRevision]):  # type: ignore[misc]
     """Synchronous endpoint for managing Record Revisions."""
 
     pass

@@ -6,6 +6,7 @@ They are architecturally linked to the core execution engine.
 
 from __future__ import annotations
 
+import asyncio
 from importlib import import_module
 from typing import (
     TYPE_CHECKING,
@@ -44,33 +45,27 @@ except Exception:
 
 
 def _trace_method(func: Any) -> Any:
-    """Decorator to trace synchronous method execution with OpenTelemetry."""
+    """Decorator to trace method execution with OpenTelemetry."""
     from functools import wraps
-
-    @wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
-        """Wrapper to start a span around the function call."""
-        if tracer:
-            with tracer.start_as_current_span(func.__name__):
-                return func(*args, **kwargs)
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-def _async_trace_method(func: Any) -> Any:
-    """Decorator to trace asynchronous method execution with OpenTelemetry."""
-    from functools import wraps
-
-    @wraps(func)
-    async def wrapper(*args: Any, **kwargs: Any) -> Any:
-        """Wrapper to start a span around the async function call."""
-        if tracer:
-            with tracer.start_as_current_span(func.__name__):
-                return await func(*args, **kwargs)
-        return await func(*args, **kwargs)
-
-    return wrapper
+    
+    if asyncio.iscoroutinefunction(func):
+        @wraps(func)
+        async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+            """Wrapper to start a span around the async function call."""
+            if tracer:
+                with tracer.start_as_current_span(func.__name__):
+                    return await func(*args, **kwargs)
+            return await func(*args, **kwargs)
+        return async_wrapper
+    else:
+        @wraps(func)
+        def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
+            """Wrapper to start a span around the sync function call."""
+            if tracer:
+                with tracer.start_as_current_span(func.__name__):
+                    return func(*args, **kwargs)
+            return func(*args, **kwargs)
+        return sync_wrapper
 
 
 if TYPE_CHECKING:
@@ -136,7 +131,7 @@ class _ListOperation(Generic[T]):
 
         if self.is_async:
 
-            @_async_trace_method
+            @_trace_method
             async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
                 """Execute the asynchronous list operation and return a list of items."""
                 _filters: Dict[str, Any] = dict(filters)
@@ -247,12 +242,12 @@ class AsyncSDKConvenienceMixin:
     )
     async_get_visits = _ListOperation[Visit]("visits", "async_get_visits", is_async=True)
 
-    @_async_trace_method
+    @_trace_method
     async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Asynchronously get job status."""
         return await self.jobs.async_get(study_key, batch_id)  # type: ignore
 
-    @_async_trace_method
+    @_trace_method
     async def async_create_record(
         self,
         study_key: str,
@@ -266,7 +261,7 @@ class AsyncSDKConvenienceMixin:
             study_key, records_data, email_notify=email_notify, schema=schema
         )  # type: ignore
 
-    @_async_trace_method
+    @_trace_method
     async def async_poll_job(
         self,
         study_key: str,

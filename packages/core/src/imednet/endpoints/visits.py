@@ -12,13 +12,16 @@ class VisitsOperationDef:
     _id_param = "visitId"
 
 
-class VisitsEndpoint(VisitsOperationDef, EdcSyncListGetEndpoint[Visit]):  # type: ignore[misc]
+class VisitsMixin(VisitsOperationDef):
+    """Mixin for Visits operations."""
+
+class VisitsEndpoint(VisitsMixin, EdcSyncListGetEndpoint[Visit]):  # type: ignore[misc]
     """Synchronous endpoint for managing Visits."""
 
     pass
 
 
-class AsyncVisitsEndpoint(VisitsOperationDef, EdcAsyncListGetEndpoint[Visit]):  # type: ignore[misc]
+class AsyncVisitsEndpoint(VisitsMixin, EdcAsyncListGetEndpoint[Visit]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Visits."""
 
     pass

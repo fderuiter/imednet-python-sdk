@@ -15,13 +15,16 @@ class VariablesOperationDef:
     PAGE_SIZE = 500
 
 
-class VariablesEndpoint(VariablesOperationDef, EdcSyncListGetEndpoint[Variable]):  # type: ignore[misc]
+class VariablesMixin(VariablesOperationDef):
+    """Mixin for Variables operations."""
+
+class VariablesEndpoint(VariablesMixin, EdcSyncListGetEndpoint[Variable]):  # type: ignore[misc]
     """Synchronous endpoint for managing Variables."""
 
     pass
 
 
-class AsyncVariablesEndpoint(VariablesOperationDef, EdcAsyncListGetEndpoint[Variable]):  # type: ignore[misc]
+class AsyncVariablesEndpoint(VariablesMixin, EdcAsyncListGetEndpoint[Variable]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Variables."""
 
     pass

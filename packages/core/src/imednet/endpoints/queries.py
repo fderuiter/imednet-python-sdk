@@ -12,13 +12,16 @@ class QueriesOperationDef:
     _id_param = "annotationId"
 
 
-class QueriesEndpoint(QueriesOperationDef, EdcSyncListGetEndpoint[Query]):  # type: ignore[misc]
+class QueriesMixin(QueriesOperationDef):
+    """Mixin for Queries operations."""
+
+class QueriesEndpoint(QueriesMixin, EdcSyncListGetEndpoint[Query]):  # type: ignore[misc]
     """Synchronous endpoint for managing Queries."""
 
     pass
 
 
-class AsyncQueriesEndpoint(QueriesOperationDef, EdcAsyncListGetEndpoint[Query]):  # type: ignore[misc]
+class AsyncQueriesEndpoint(QueriesMixin, EdcAsyncListGetEndpoint[Query]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Queries."""
 
     pass

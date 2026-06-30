@@ -39,8 +39,8 @@ class JobsOperationDef:
         )
 
 
-class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
-    """Synchronous endpoint for managing Jobs."""
+class JobsMixin(JobsOperationDef):
+    """Mixin for Job operations."""
 
     def get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
         """Get a single Job by ID.
@@ -52,14 +52,10 @@ class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type
         Returns:
             The job status.
         """
-        self._require_item_id(item_id)
-        return self._create_path_get_operation(study_key, item_id).execute_sync(
-            self._require_sync_client()
+        self._require_item_id(item_id)  # type: ignore[attr-defined]
+        return self._create_path_get_operation(study_key, item_id).execute_sync(  # type: ignore[attr-defined]
+            self._require_sync_client()  # type: ignore[attr-defined]
         )
-
-
-class AsyncJobsEndpoint(JobsOperationDef, EdcAsyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
-    """Asynchronous endpoint for managing Jobs."""
 
     async def async_get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
         """Get a single Job by ID asynchronously.
@@ -71,7 +67,15 @@ class AsyncJobsEndpoint(JobsOperationDef, EdcAsyncListGetEndpoint[JobStatus]):  
         Returns:
             The job status.
         """
-        self._require_item_id(item_id)
-        return await self._create_path_get_operation(study_key, item_id).execute_async(
-            self._require_async_client()
+        self._require_item_id(item_id)  # type: ignore[attr-defined]
+        return await self._create_path_get_operation(study_key, item_id).execute_async(  # type: ignore[attr-defined]
+            self._require_async_client()  # type: ignore[attr-defined]
         )
+
+
+class JobsEndpoint(JobsMixin, EdcSyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
+    """Synchronous endpoint for managing Jobs."""
+
+
+class AsyncJobsEndpoint(JobsMixin, EdcAsyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
+    """Asynchronous endpoint for managing Jobs."""

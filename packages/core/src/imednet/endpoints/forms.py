@@ -15,13 +15,16 @@ class FormsOperationDef:
     PAGE_SIZE = 500
 
 
-class FormsEndpoint(FormsOperationDef, EdcSyncListGetEndpoint[Form]):  # type: ignore[misc]
+class FormsMixin(FormsOperationDef):
+    """Mixin for Forms operations."""
+
+class FormsEndpoint(FormsMixin, EdcSyncListGetEndpoint[Form]):  # type: ignore[misc]
     """Synchronous endpoint for managing Forms."""
 
     pass
 
 
-class AsyncFormsEndpoint(FormsOperationDef, EdcAsyncListGetEndpoint[Form]):  # type: ignore[misc]
+class AsyncFormsEndpoint(FormsMixin, EdcAsyncListGetEndpoint[Form]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Forms."""
 
     pass

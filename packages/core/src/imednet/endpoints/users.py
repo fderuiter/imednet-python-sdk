@@ -18,13 +18,16 @@ class UsersOperationDef:
     )
 
 
-class UsersEndpoint(UsersOperationDef, EdcSyncListGetEndpoint[User]):  # type: ignore[misc]
+class UsersMixin(UsersOperationDef):
+    """Mixin for Users operations."""
+
+class UsersEndpoint(UsersMixin, EdcSyncListGetEndpoint[User]):  # type: ignore[misc]
     """Synchronous endpoint for managing Users."""
 
     pass
 
 
-class AsyncUsersEndpoint(UsersOperationDef, EdcAsyncListGetEndpoint[User]):  # type: ignore[misc]
+class AsyncUsersEndpoint(UsersMixin, EdcAsyncListGetEndpoint[User]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Users."""
 
     pass

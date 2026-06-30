@@ -47,8 +47,8 @@ class RecordsOperationDef:
         )
 
 
-class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # type: ignore[misc]
-    """API endpoint for interacting with records (eCRF instances)."""
+class RecordsMixin(RecordsOperationDef):
+    """Mixin for Record operations."""
 
     def create(
         self,
@@ -69,13 +69,9 @@ class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # t
         Returns:
             The background job for the creation operation.
         """
-        return self._create_operation(
+        return self._create_operation(  # type: ignore[attr-defined]
             study_key, records_data, email_notify, schema=schema
-        ).execute_sync(self._require_sync_client(), parse_func=Job.from_json)
-
-
-class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record]):  # type: ignore[misc]
-    """Async API endpoint for interacting with records (eCRF instances)."""
+        ).execute_sync(self._require_sync_client(), parse_func=Job.from_json)  # type: ignore[attr-defined]
 
     async def async_create(
         self,
@@ -96,6 +92,14 @@ class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record])
         Returns:
             The background job for the creation operation.
         """
-        return await self._create_operation(
+        return await self._create_operation(  # type: ignore[attr-defined]
             study_key, records_data, email_notify, schema=schema
-        ).execute_async(self._require_async_client(), parse_func=Job.from_json)
+        ).execute_async(self._require_async_client(), parse_func=Job.from_json)  # type: ignore[attr-defined]
+
+
+class RecordsEndpoint(RecordsMixin, EdcSyncListGetEndpoint[Record]):  # type: ignore[misc]
+    """API endpoint for interacting with records (eCRF instances)."""
+
+
+class AsyncRecordsEndpoint(RecordsMixin, EdcAsyncListGetEndpoint[Record]):  # type: ignore[misc]
+    """Async API endpoint for interacting with records (eCRF instances)."""

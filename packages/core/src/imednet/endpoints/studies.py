@@ -13,13 +13,16 @@ class StudiesOperationDef:
     requires_study_key: bool = False
 
 
-class StudiesEndpoint(StudiesOperationDef, EdcSyncListGetEndpoint[Study]):  # type: ignore[misc]
+class StudiesMixin(StudiesOperationDef):
+    """Mixin for Studies operations."""
+
+class StudiesEndpoint(StudiesMixin, EdcSyncListGetEndpoint[Study]):  # type: ignore[misc]
     """Synchronous endpoint for managing Studies."""
 
     pass
 
 
-class AsyncStudiesEndpoint(StudiesOperationDef, EdcAsyncListGetEndpoint[Study]):  # type: ignore[misc]
+class AsyncStudiesEndpoint(StudiesMixin, EdcAsyncListGetEndpoint[Study]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Studies."""
 
     pass

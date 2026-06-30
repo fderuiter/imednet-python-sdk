@@ -14,13 +14,16 @@ class CodingsOperationDef:
     STUDY_KEY_STRATEGY = PopStudyKeyStrategy()
 
 
-class CodingsEndpoint(CodingsOperationDef, EdcSyncListGetEndpoint[Coding]):  # type: ignore[misc]
+class CodingsMixin(CodingsOperationDef):
+    """Mixin for Codings operations."""
+
+class CodingsEndpoint(CodingsMixin, EdcSyncListGetEndpoint[Coding]):  # type: ignore[misc]
     """Synchronous endpoint for managing Codings."""
 
     pass
 
 
-class AsyncCodingsEndpoint(CodingsOperationDef, EdcAsyncListGetEndpoint[Coding]):  # type: ignore[misc]
+class AsyncCodingsEndpoint(CodingsMixin, EdcAsyncListGetEndpoint[Coding]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Codings."""
 
     pass
