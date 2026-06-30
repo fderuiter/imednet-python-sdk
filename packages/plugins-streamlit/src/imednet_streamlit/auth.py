@@ -122,7 +122,7 @@ def render_auth_sidebar() -> bool:
         if not user_email and hasattr(st.user, "get"):
             user_email = st.user.get("email", "Corporate User")
 
-        st.success(f"SSO Active: {user_email}")
+        st.markdown(f"✅ **SSO Active:** {user_email}")
 
         studies = get_provisioned_studies()
         if not studies:

@@ -6,6 +6,7 @@ including query age, site-level distribution, and aging trends.
 
 from __future__ import annotations
 
+from imednet_streamlit.components.charts import render_accessible_chart
 import pandas as pd
 import streamlit as st
 
@@ -117,7 +118,7 @@ with col_left:
     st.subheader("Queries by Status")
     if not df_filtered.empty:
         status_counts = df_filtered.groupby("status").size().reset_index(name="count")
-        st.altair_chart(
+        render_accessible_chart(
             components.bar_chart(status_counts, x="count", y="status", title="Status Breakdown"),
             use_container_width=True,
         )
@@ -131,7 +132,7 @@ with col_right:
             value_column="count",
             top_n=10,
         )
-        st.altair_chart(
+        render_accessible_chart(
             components.bar_chart(var_counts, x="count", y="variable", title="Top Variables"),
             use_container_width=True,
         )
@@ -142,7 +143,7 @@ if not df_filtered.empty and pd.api.types.is_datetime64_any_dtype(df_filtered["d
     trend_df = df_filtered.copy()
     trend_df["date"] = trend_df["date_created"].dt.normalize()
     trend_agg = trend_df.groupby(["date", "status"]).size().reset_index(name="count")
-    st.altair_chart(
+    render_accessible_chart(
         components.line_chart(
             trend_agg,
             x="date",

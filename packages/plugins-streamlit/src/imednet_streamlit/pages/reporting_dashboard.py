@@ -7,6 +7,7 @@ filtering and saved view support.
 
 from __future__ import annotations
 
+from imednet_streamlit.components.charts import render_accessible_chart
 from dataclasses import dataclass
 from datetime import date
 from typing import Sequence
@@ -435,7 +436,7 @@ def _render_adverse_events_tab(df: pd.DataFrame, enrolled_subjects: int) -> None
         st.info("No adverse event data for selected filters.")
         return
     severity_counts = df.groupby("ae_severity").size().reset_index(name="count")
-    st.altair_chart(
+    render_accessible_chart(
         components.bar_chart(
             severity_counts,
             x="count",
@@ -454,7 +455,7 @@ def _render_adverse_events_tab(df: pd.DataFrame, enrolled_subjects: int) -> None
         .reset_index(name="count")
     )
     if not timeline.empty:
-        st.altair_chart(
+        render_accessible_chart(
             components.line_chart(timeline, x="date", y="count", title="AE Timeline"),
             use_container_width=True,
         )
@@ -495,7 +496,7 @@ def _render_protocol_deviations_tab(df: pd.DataFrame, enrolled_subjects: int) ->
         st.info("No protocol deviation data for selected filters.")
         return
     by_category = df.groupby("dv_category").size().reset_index(name="count")
-    st.altair_chart(
+    render_accessible_chart(
         components.bar_chart(
             by_category, x="count", y="dv_category", title="Deviations by Category"
         ),
@@ -510,7 +511,7 @@ def _render_protocol_deviations_tab(df: pd.DataFrame, enrolled_subjects: int) ->
         .reset_index(name="count")
     )
     if not trends.empty:
-        st.altair_chart(
+        render_accessible_chart(
             components.line_chart(trends, x="date", y="count", title="Deviation Trends"),
             use_container_width=True,
         )
@@ -544,7 +545,7 @@ def _render_device_deficiencies_tab(df: pd.DataFrame) -> None:
         st.info("No device deficiency data for selected filters.")
         return
     by_category = df.groupby("dd_category").size().reset_index(name="count")
-    st.altair_chart(
+    render_accessible_chart(
         components.bar_chart(
             by_category, x="count", y="dd_category", title="Deficiency Category Distribution"
         ),
@@ -595,7 +596,7 @@ def _render_data_completeness_tab(df_records: pd.DataFrame) -> None:
     if heatmap_df.empty:
         st.info("No record completeness data for selected filters.")
     else:
-        st.altair_chart(
+        render_accessible_chart(
             components.bar_chart(
                 heatmap_df.groupby("completion_status").size().reset_index(name="count"),
                 x="count",

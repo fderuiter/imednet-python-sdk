@@ -6,6 +6,7 @@ resolution times across the study.
 
 from __future__ import annotations
 
+from imednet_streamlit.components.charts import render_accessible_chart
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -178,7 +179,7 @@ with col_left:
             var_name="metric",
             value_name="count",
         )
-        st.altair_chart(
+        render_accessible_chart(
             components.bar_chart(
                 chart_df,
                 x="count",
@@ -194,7 +195,7 @@ with col_right:
     if not df_metrics.empty:
         days_source = _top_sites_with_other(df_metrics, rank_column="avg_days_open")
         days_df = days_source[["site_name", "avg_days_open"]].copy()
-        st.altair_chart(
+        render_accessible_chart(
             components.bar_chart(
                 days_df,
                 x="avg_days_open",

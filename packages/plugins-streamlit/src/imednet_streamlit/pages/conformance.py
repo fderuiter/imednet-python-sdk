@@ -20,7 +20,7 @@ report_path = os.path.join(os.path.dirname(__file__), "a11y_report.json")
 if os.path.exists(report_path):
     with open(report_path, "r") as f:
         report = json.load(f)
-    st.success(f"Latest Audit Passed: {report.get('passed', True)}")
+    st.markdown(f"✅ **Latest Audit Passed:** {report.get('passed', True)}")
     st.json(report)
 else:
     st.info("Automated audit report pending CI execution. (All checks passed in latest pipeline)")

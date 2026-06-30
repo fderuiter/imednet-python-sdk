@@ -610,10 +610,31 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install axe-playwright-python playwright
+          python -m playwright install --with-deps chromium
+          packages=()
+          for package in packages/*; do
+            if [ -f "$package/pyproject.toml" ]; then
+              packages+=("-e" "$package")
+            fi
+          done
+          packages+=("-e" ".[dev,docs]")
+          python -m pip install "${packages[@]}" 
       - name: Run automated accessibility scan
         run: |
-          echo "Running WCAG 2.1 AA automated audit..."
-          echo "{"status": "compliant", "wcag_version": "2.1 AA", "critically_non_compliant_findings": 0, "last_audit": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"}" > a11y_report.json
-          cat a11y_report.json
-          echo "Audit complete. Zero Critically Non-Compliant findings."
+          python scripts/a11y_audit.py
+          
+      - name: Auto-update VPAT
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/VPAT.md packages/plugins-streamlit/src/imednet_streamlit/pages/a11y_report.json
+          git commit -m "docs: auto-update VPAT and conformance report from latest accessibility audit" || echo "No changes to commit"
+          git push

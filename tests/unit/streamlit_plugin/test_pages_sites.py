@@ -120,6 +120,9 @@ def _make_fake_components_module() -> ModuleType:
     import pandas as pd
 
     mod = ModuleType("imednet_streamlit.components")
+    mod.charts = ModuleType("imednet_streamlit.components.charts")
+    mod.charts.render_accessible_chart = MagicMock()
+    mod.render_accessible_chart = mod.charts.render_accessible_chart
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
         """Helper function to  noop kpi row."""
@@ -228,6 +231,7 @@ def test_sites_page_renders_with_mock_sdk() -> None:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        sys.modules["imednet_streamlit.components.charts"] = fake_components_module.charts
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         import importlib.util
 
@@ -346,6 +350,7 @@ def test_sites_page_populated_and_refresh() -> None:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        sys.modules["imednet_streamlit.components.charts"] = fake_components_module.charts
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         import importlib.util
 

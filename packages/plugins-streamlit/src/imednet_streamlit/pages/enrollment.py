@@ -6,6 +6,7 @@ distribution across the study.
 
 from __future__ import annotations
 
+from imednet_streamlit.components.charts import render_accessible_chart
 from datetime import date as _date
 
 import pandas as pd
@@ -138,7 +139,7 @@ with col_left:
     st.subheader("Subjects by Site")
     if not df_filtered.empty:
         site_counts = df_filtered.groupby("site_name").size().reset_index(name="count")
-        st.altair_chart(
+        render_accessible_chart(
             components.bar_chart(site_counts, x="count", y="site_name", title="Subjects per Site"),
             use_container_width=True,
         )
@@ -147,7 +148,7 @@ with col_right:
     st.subheader("Status Breakdown")
     if not df_filtered.empty:
         status_counts = df_filtered.groupby("subject_status").size().reset_index(name="count")
-        st.altair_chart(
+        render_accessible_chart(
             components.pie_chart(
                 status_counts, theta="count", color="subject_status", title="Subject Status"
             ),
@@ -165,7 +166,7 @@ if not df_enrolled.empty and pd.api.types.is_datetime64_any_dtype(
     df_trend = df_trend.sort_values("enrollment_date")
     df_trend["cumulative"] = df_trend["count"].cumsum()
     df_trend["enrollment_date"] = pd.to_datetime(df_trend["enrollment_date"])
-    st.altair_chart(
+    render_accessible_chart(
         components.line_chart(
             df_trend,
             x="enrollment_date",

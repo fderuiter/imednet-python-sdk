@@ -11,11 +11,24 @@ import pandas as pd
 
 # iMednet brand palette — used across all charts
 PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
+HIGH_CONTRAST_PALETTE = ["#000000", "#E69F00", "#56B4E9", "#009E73", "#D55E00", "#0072B2"]
+
+
+def _get_palette() -> list[str]:
+    """Get the current palette based on high contrast mode setting."""
+    import streamlit as st
+
+    try:
+        if st.session_state.get("high_contrast", False):
+            return HIGH_CONTRAST_PALETTE
+    except Exception:
+        pass
+    return PALETTE
 
 
 def _color_encoding(field: str) -> alt.Color:
-    """Return an Altair color encoding using the iMednet brand palette."""
-    return alt.Color(f"{field}:N", scale=alt.Scale(range=PALETTE))
+    """Return an Altair color encoding using the current palette."""
+    return alt.Color(f"{field}:N", scale=alt.Scale(range=_get_palette()))
 
 
 def bar_chart(
@@ -53,7 +66,7 @@ def bar_chart(
         chart = chart.encode(
             x=alt.X(f"{x}:Q", title=x_title),
             y=alt.Y(f"{y}:N", title=y_title, sort="-x"),
-            color=alt.value(PALETTE[0]),
+            color=alt.value(_get_palette()[0]),
             tooltip=[alt.Tooltip(f"{y}:N"), alt.Tooltip(f"{x}:Q")],
         )
 
@@ -91,7 +104,7 @@ def line_chart(
         chart = chart.encode(
             x=alt.X(f"{x}:T"),
             y=alt.Y(f"{y}:Q"),
-            color=alt.value(PALETTE[0]),
+            color=alt.value(_get_palette()[0]),
             tooltip=[alt.Tooltip(f"{x}:T"), alt.Tooltip(f"{y}:Q")],
         )
 
@@ -131,14 +144,23 @@ import streamlit as st
 
 
 def render_accessible_chart(
-    chart: alt.Chart, df: pd.DataFrame, title: str, use_container_width: bool = True
+    chart: alt.Chart, use_container_width: bool = True, theme: str = "streamlit", **kwargs
 ) -> None:
     """Render an Altair chart with an accessible tabular data view."""
+    title = getattr(chart, "title", "Chart")
+    if isinstance(title, dict) and "text" in title:
+        title = title["text"]
+    elif not isinstance(title, str):
+        title = "Chart"
+
+    df = getattr(chart, "data", pd.DataFrame())
+
     # Ensure chart has a description for screen readers (ARIA label)
-    if not hasattr(chart, "description") or not chart.description:
+    if not hasattr(chart, "description") or not getattr(chart, "description", None):
         chart = chart.properties(description=f"Data visualization for {title}")
 
-    st.altair_chart(chart, use_container_width=use_container_width)
+    st.altair_chart(chart, use_container_width=use_container_width, theme=theme, **kwargs)
 
-    with st.expander(f"Tabular Data View: {title}", expanded=False):
-        st.dataframe(df, use_container_width=use_container_width)
+    if isinstance(df, pd.DataFrame) and not df.empty:
+        with st.expander(f"Tabular Data View: {title}", expanded=False):
+            st.dataframe(df, use_container_width=use_container_width)
