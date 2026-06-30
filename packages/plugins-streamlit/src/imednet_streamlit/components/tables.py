@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Standard data table component for iMednet."""
 
 from __future__ import annotations
 

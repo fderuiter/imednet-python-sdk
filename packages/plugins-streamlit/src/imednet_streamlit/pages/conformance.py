@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Accessibility and standards conformance portal.
+
+Provides a central hub for reviewing system accessibility features, WCAG
+compliance status, and documentation for assistive technologies.
+"""
 
 import json
 import os

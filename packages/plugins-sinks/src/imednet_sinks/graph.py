@@ -164,7 +164,14 @@ class Neo4jExportSink(ExportSink):
         *,
         config: Optional[SinkConfig] = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the Neo4j export sink.
+
+        Args:
+            uri: Neo4j Bolt or HTTP URI.
+            auth: (username, password) tuple for authentication.
+            study_key: Study identifier for graph nodes.
+            config: Optional Neo4j-specific or base sink configuration.
+        """
         super().__init__(config if config is not None else Neo4jSinkConfig())
         self._uri = uri
         self._auth = auth
@@ -177,7 +184,7 @@ class Neo4jExportSink(ExportSink):
     # ------------------------------------------------------------------
 
     def _connect(self) -> None:
-        """TODO: Add docstring."""
+        """Establish connection to Neo4j and verify connectivity."""
         neo4j_mod = _require_optional_dep("neo4j", "neo4j")
         redacted = _redact_uri(self._uri)
         logger.debug("Connecting to Neo4j at %s", redacted)
@@ -203,7 +210,7 @@ class Neo4jExportSink(ExportSink):
         from imednet.core.operations.executor import UniversalExecutor
 
         def execute_export() -> int:
-            """TODO: Add docstring."""
+            """Execute Cypher transaction to write or merge records in Neo4j."""
             with self._driver.session(database=cfg.database) as session:
                 session.run(cypher, rows=rows)
             logger.debug("Wrote batch %s (%d records)", batch_id, len(rows))

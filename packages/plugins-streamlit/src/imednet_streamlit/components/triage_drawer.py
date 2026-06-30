@@ -1,4 +1,9 @@
-"""TODO: Add docstring."""
+"""Interactive triage review component.
+
+Provides a detail view for clinical triage items, including a temporal
+history of actions and a side panel for status updates, assignments, and
+annotations.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +29,7 @@ def _record_action(
     assignee: str | None = None,
     comment: str | None = None,
 ) -> None:
-    """TODO: Add docstring."""
+    """Cache the last performed triage action in session state for UI feedback."""
     st.session_state[_LAST_ACTION_KEY] = {
         "item_id": item_id,
         "action": action,

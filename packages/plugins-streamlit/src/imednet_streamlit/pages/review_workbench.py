@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Clinical review and triage workbench.
+
+Provides a unified interface for medical reviewers to manage triage items,
+assign reviewers, and track clinical data decisions.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +28,7 @@ _STATUS_ORDER = {
 
 
 def _get_store() -> TriageStore:
-    """TODO: Add docstring."""
+    """Return the triage store instance."""
     raw_path = st.session_state.get(
         _TRIAGE_DB_PATH_KEY, str(_DEFAULT_TRIAGE_DIR / "triage.sqlite3")
     )
@@ -33,7 +37,7 @@ def _get_store() -> TriageStore:
 
 
 def _resolve_db_path(raw_path: object) -> str:
-    """TODO: Add docstring."""
+    """Resolve the filesystem path for the triage SQLite database."""
     import os
 
     # Connect to managed database to support concurrent multi-user access
@@ -51,7 +55,7 @@ def _resolve_db_path(raw_path: object) -> str:
 
 
 def _last_activity(item: TriageItem) -> datetime | None:
-    """TODO: Add docstring."""
+    """Return the timestamp of the most recent activity for a triage item."""
     timestamps = [entry.timestamp for entry in item.history] + [
         annotation.timestamp for annotation in item.annotations
     ]
@@ -59,7 +63,7 @@ def _last_activity(item: TriageItem) -> datetime | None:
 
 
 def _age_hours(item: TriageItem) -> float:
-    """TODO: Add docstring."""
+    """Calculate the age of an open triage item in hours."""
     if item.status == TriageStatus.RESOLVED:
         return 0.0
     last_activity = _last_activity(item)
@@ -71,7 +75,7 @@ def _age_hours(item: TriageItem) -> float:
 
 
 def _severity_bucket(severity: str) -> str:
-    """TODO: Add docstring."""
+    """Group granular severity levels into broad buckets for filtering."""
     normalized = severity.strip().lower()
     if normalized in {"critical", "severe"}:
         return "Critical/Severe"
@@ -81,7 +85,7 @@ def _severity_bucket(severity: str) -> str:
 
 
 def _category(item: TriageItem) -> str:
-    """TODO: Add docstring."""
+    """Determine the clinical category of an item based on its ID prefix."""
     prefix = item.item_id.split("-", 1)[0].upper()
     return {
         "AE": "Adverse Event",
@@ -91,7 +95,7 @@ def _category(item: TriageItem) -> str:
 
 
 def _queue_dataframe(items: list[TriageItem]) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Convert a list of triage items into a tabular DataFrame for display."""
     rows = [
         {
             "item_id": item.item_id,
@@ -122,7 +126,7 @@ def _queue_dataframe(items: list[TriageItem]) -> pd.DataFrame:
 
 
 def _render_kpis(queue_df: pd.DataFrame) -> None:
-    """TODO: Add docstring."""
+    """Render high-level KPI metrics for the triage queue."""
     open_count = int(queue_df[queue_df["status"] != TriageStatus.RESOLVED.value].shape[0])
     sla_warning_count = int(
         queue_df[
@@ -141,7 +145,7 @@ def _render_kpis(queue_df: pd.DataFrame) -> None:
 
 
 def _filter_queue(queue_df: pd.DataFrame) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Apply interactive filters to the triage queue DataFrame."""
     severity_options = sorted(queue_df["severity_bucket"].dropna().astype(str).unique().tolist())
     category_options = sorted(queue_df["category"].dropna().astype(str).unique().tolist())
     assignee_options = sorted(queue_df["assignee"].dropna().astype(str).unique().tolist())
@@ -169,13 +173,13 @@ def _filter_queue(queue_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _get_current_user() -> str:
-    """TODO: Add docstring."""
+    """Return the username of the current session user."""
     user_value = st.session_state.get("_imednet_user", "reviewer")
     return str(user_value).strip() or "reviewer"
 
 
 def render_page() -> None:
-    """TODO: Add docstring."""
+    """Render the clinical review workbench page."""
     st.title("🧪 Review Workbench")
     st.markdown(
         """

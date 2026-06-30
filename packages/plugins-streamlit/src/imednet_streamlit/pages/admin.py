@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Enterprise administration portal.
+
+Provides high-level management for tenants, study provisioning, and
+cross-study system health monitoring.
+"""
 
 from __future__ import annotations
 

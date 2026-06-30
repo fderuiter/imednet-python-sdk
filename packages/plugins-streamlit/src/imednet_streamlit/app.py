@@ -1,4 +1,9 @@
-"""TODO: Add docstring."""
+"""Streamlit application entry point.
+
+This module configures the main dashboard UI, including accessibility features,
+security sanitization for Streamlit messages, and the multi-page navigation
+structure.
+"""
 
 from __future__ import annotations
 
@@ -21,7 +26,7 @@ if "high_contrast" not in st.session_state:
 
 
 def toggle_high_contrast():
-    """TODO: Add docstring."""
+    """Toggle the high contrast accessibility mode in session state and URL params."""
     st.session_state["high_contrast"] = not st.session_state["high_contrast"]
     if st.session_state["high_contrast"]:
         st.query_params["high_contrast"] = "true"
@@ -78,7 +83,7 @@ original_altair_chart = st.altair_chart
 
 
 def accessible_altair_chart(altair_chart, use_container_width=False, theme="streamlit", **kwargs):
-    """TODO: Add docstring."""
+    """Render an Altair chart with an automatic tabular data fallback for screen readers."""
     title = getattr(altair_chart, "title", "Chart")
     if isinstance(title, dict) and "text" in title:
         title = title["text"]
@@ -108,7 +113,7 @@ original_st_info = st.info
 
 
 def _sanitize_body(body):
-    """TODO: Add docstring."""
+    """Redact sensitive information from Streamlit message bodies before rendering."""
     if isinstance(body, Exception):
         try:
             body_str = str(body)
@@ -129,22 +134,22 @@ def _sanitize_body(body):
 
 
 def secure_st_error(body, *args, **kwargs):
-    """TODO: Add docstring."""
+    """Render a sanitized error message."""
     return original_st_error(_sanitize_body(body), *args, **kwargs)
 
 
 def secure_st_exception(exception, *args, **kwargs):
-    """TODO: Add docstring."""
+    """Render a sanitized exception trace."""
     return original_st_exception(_sanitize_body(exception), *args, **kwargs)
 
 
 def secure_st_warning(body, *args, **kwargs):
-    """TODO: Add docstring."""
+    """Render a sanitized warning message."""
     return original_st_warning(_sanitize_body(body), *args, **kwargs)
 
 
 def secure_st_info(body, *args, **kwargs):
-    """TODO: Add docstring."""
+    """Render a sanitized info message."""
     return original_st_info(_sanitize_body(body), *args, **kwargs)
 
 

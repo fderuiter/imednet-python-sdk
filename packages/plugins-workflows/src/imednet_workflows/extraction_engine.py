@@ -1,4 +1,9 @@
-"""TODO: Add docstring."""
+"""Canonical data extraction engine for iMednet.
+
+This module provides the logic to map raw EDC records into standardized clinical
+models (Adverse Events, Protocol Deviations, etc.) based on study-specific
+mapping rules.
+"""
 
 from __future__ import annotations
 
@@ -45,7 +50,15 @@ class ExtractionResult(BaseModel):
 
 
 def _get_from_path(value: Any, path: str) -> Any:
-    """TODO: Add docstring."""
+    """Retrieve a nested value from a dictionary using a dot-separated path.
+
+    Args:
+        value: The dictionary to search.
+        path: A dot-separated string path (e.g., "nested.field.name").
+
+    Returns:
+        The value at the path, or None if not found or if the path is invalid.
+    """
     if not path:
         return None
     current = value
@@ -62,7 +75,16 @@ def _get_from_path(value: Any, path: str) -> Any:
 def _extract_rule_value_from_payload(
     record: Record, rule: MappingRule, top_level_payload: dict[str, Any]
 ) -> Any:
-    """TODO: Add docstring."""
+    """Extract the value for a mapping rule from a record's data or payload.
+
+    Args:
+        record: The raw Record model.
+        rule: The MappingRule to apply.
+        top_level_payload: The flattened payload of the record.
+
+    Returns:
+        The extracted value or None.
+    """
     source_path = rule.source_variable_name
     if not source_path:
         return None
@@ -84,14 +106,21 @@ def _extract_rule_value_from_payload(
 
 
 def _is_missing_value(value: Any) -> bool:
-    """TODO: Add docstring."""
+    """Determine if a value should be considered 'missing'.
+
+    A value is missing if it is None or an empty string.
+    """
     return value is None or (isinstance(value, str) and value == "")
 
 
 def _group_mappings_by_domain_and_form(
     study_configuration: StudyConfiguration,
 ) -> dict[str, dict[str, list[MappingRule]]]:
-    """TODO: Add docstring."""
+    """Organize study mappings by their target domain and source form.
+
+    Returns:
+        A nested dictionary mapping domain -> form_key -> list of rules.
+    """
     grouped: dict[str, dict[str, list[MappingRule]]] = {}
     for rule in study_configuration.mappings:
         domain_key = rule.domain.upper()
@@ -102,10 +131,18 @@ def _group_mappings_by_domain_and_form(
 
 
 class SubjectContext:
-    """TODO: Add docstring."""
+    """Contextual state maintained for a subject during extraction.
+
+    Used to track longitudinal state and baseline values across multiple
+    records for the same subject.
+    """
 
     def __init__(self, subject_key: str):
-        """TODO: Add docstring."""
+        """Initialize the subject context.
+
+        Args:
+            subject_key: Unique identifier for the subject.
+        """
         self.subject_key = subject_key
         self.state: dict[str, Any] = {}
         self.baseline: dict[str, Any] = {}
@@ -114,7 +151,18 @@ class SubjectContext:
 def _evaluate_business_logic(
     logic: str, record: Record, payload: dict[str, Any], context: SubjectContext, value: Any = None
 ) -> Any:
-    """TODO: Add docstring."""
+    """Safely evaluate Python business logic for a mapping rule.
+
+    Args:
+        logic: Python expression string to evaluate.
+        record: The current Record being processed.
+        payload: The partially built canonical payload.
+        context: The SubjectContext for the current subject.
+        value: The current value extracted before logic application.
+
+    Returns:
+        The result of the evaluation, or None if it fails.
+    """
     try:
         # evaluate safely
         env = {

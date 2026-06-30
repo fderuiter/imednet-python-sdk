@@ -16,7 +16,11 @@ class DataExtractionWorkflow:
     """
 
     def __init__(self, sdk: "ImednetFacade"):
-        """TODO: Add docstring."""
+        """Initialize the data extraction workflow.
+
+        Args:
+            sdk: An instance of the iMednet SDK facade.
+        """
         self._sdk = sdk
 
     def extract_records_by_criteria(

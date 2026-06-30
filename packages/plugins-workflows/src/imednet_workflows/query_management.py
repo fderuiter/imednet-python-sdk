@@ -16,7 +16,11 @@ class QueryManagementWorkflow:
     """
 
     def __init__(self, sdk: "ImednetFacade"):
-        """TODO: Add docstring."""
+        """Initialize the query management workflow.
+
+        Args:
+            sdk: An instance of the iMednet SDK facade.
+        """
         self._sdk = sdk
 
     @staticmethod

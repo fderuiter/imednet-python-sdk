@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Subject enrollment dashboard.
+
+Visualizes subject registration trends over time and enrollment status
+distribution across the study.
+"""
 
 from __future__ import annotations
 

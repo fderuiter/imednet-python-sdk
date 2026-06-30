@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Site performance and metrics dashboard.
+
+Visualizes site-level enrollment counts, query rates, and average query
+resolution times across the study.
+"""
 
 from __future__ import annotations
 
@@ -96,14 +100,14 @@ def _fetch_site_metrics(
 
 
 def _highlight_high_rate(val: float) -> str:
-    """TODO: Add docstring."""
+    """Apply CSS highlighting for sites with query rates above the threshold."""
     return f"background-color: {_HIGH_RATE_COLOR}" if val > _HIGH_QUERY_RATE_THRESHOLD else ""
 
 
 def _top_sites_with_other(
     df: pd.DataFrame, *, rank_column: str, top_n: int = _MAX_CHART_SITES
 ) -> pd.DataFrame:
-    """TODO: Add docstring."""
+    """Return top-N sites and aggregate others into a single 'Other' row."""
     if df.empty:
         return df
 

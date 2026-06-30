@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Standard Altair chart wrappers for iMednet.
+
+Provides accessible, brand-compliant bar, line, and pie charts with automatic
+tabular data fallback for accessibility.
+"""
 
 from __future__ import annotations
 
@@ -10,7 +14,7 @@ PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
 
 
 def _color_encoding(field: str) -> alt.Color:
-    """TODO: Add docstring."""
+    """Return an Altair color encoding using the iMednet brand palette."""
     return alt.Color(f"{field}:N", scale=alt.Scale(range=PALETTE))
 
 

@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Data export components for Streamlit.
+
+Provides standardized buttons for downloading DataFrames as CSV or Excel
+files.
+"""
 
 from __future__ import annotations
 

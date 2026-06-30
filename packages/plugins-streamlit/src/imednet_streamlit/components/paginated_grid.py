@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Pagination and data manipulation components for Streamlit.
+
+Provides tools for slicing large DataFrames into pages and aggregating
+low-frequency categories into an 'Other' bucket for visualization.
+"""
 
 from __future__ import annotations
 

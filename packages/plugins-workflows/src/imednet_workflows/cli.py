@@ -1,4 +1,9 @@
-"""CLI commands for workflows."""
+"""CLI commands for iMednet workflows.
+
+This module provides the Typer/argparse integration for common clinical data
+workflows, including record extraction, cache synchronization, and state
+ledger management.
+"""
 
 from __future__ import annotations
 

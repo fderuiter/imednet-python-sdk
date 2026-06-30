@@ -26,7 +26,7 @@ _DEFAULT_DB_PATH = Path(
 
 
 def _sha256_of(content: str) -> str:
-    """TODO: Add docstring."""
+    """Return the SHA-256 hex digest of the given string content."""
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
@@ -43,7 +43,11 @@ class ConfigVersionStore:
     """
 
     def __init__(self, db_path: str | Path = _DEFAULT_DB_PATH) -> None:
-        """TODO: Add docstring."""
+        """Initialize the configuration version store.
+
+        Args:
+            db_path: Path to the SQLite database file.
+        """
         self.db_path = Path(db_path).expanduser()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = RLock()
@@ -51,7 +55,7 @@ class ConfigVersionStore:
 
     @contextmanager
     def _connection(self) -> Iterator[sqlite3.Connection]:
-        """TODO: Add docstring."""
+        """Manage a SQLite connection with Write-Ahead Logging (WAL) enabled."""
         conn = sqlite3.connect(self.db_path, timeout=30.0)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=WAL;")
@@ -62,7 +66,7 @@ class ConfigVersionStore:
             conn.close()
 
     def _initialize_schema(self) -> None:
-        """TODO: Add docstring."""
+        """Create the database tables and triggers if they do not exist."""
         with self._lock, self._connection() as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS config_commits (
@@ -299,7 +303,7 @@ class ConfigVersionStore:
     # ------------------------------------------------------------------
 
     def _fetch_config_data(self, commit_id: str) -> dict[str, Any]:
-        """TODO: Add docstring."""
+        """Retrieve the raw configuration JSON for a specific commit."""
         with self._lock, self._connection() as conn:
             row = conn.execute(
                 "SELECT commit_id, config_data FROM config_commits WHERE commit_id = ?",
@@ -311,7 +315,7 @@ class ConfigVersionStore:
         return json.loads(row["config_data"])  # type: ignore[no-any-return]
 
     def _verify_commit_signature(self, commit_id: str, config_data: str) -> None:
-        """TODO: Add docstring."""
+        """Verify that the content hash matches the stored commit ID."""
         if _sha256_of(config_data) != commit_id:
             raise ValueError(
                 "Configuration data integrity check failed: "

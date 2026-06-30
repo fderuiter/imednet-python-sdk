@@ -1,4 +1,8 @@
-"""Documentation placeholder."""
+"""Compatibility shim for different Airflow versions.
+
+This module provides fallbacks for Airflow-specific classes and exceptions
+to allow the package to be imported even when Airflow is not installed.
+"""
 
 from __future__ import annotations
 
@@ -17,7 +21,7 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
     except (ImportError, ModuleNotFoundError):
 
         class _FallbackAirflowError(Exception):
-            """Documentation placeholder."""
+            """Fallback exception used when ``airflow.exceptions.AirflowException`` is unavailable."""
 
             pass
 

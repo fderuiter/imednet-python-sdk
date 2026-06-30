@@ -1,4 +1,8 @@
-"""TODO: Add docstring."""
+"""Home page for the iMednet EDC Dashboard.
+
+Provides a high-level overview of the connected study and quick access to
+common dashboard modules.
+"""
 
 from __future__ import annotations
 
