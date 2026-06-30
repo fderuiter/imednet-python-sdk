@@ -292,7 +292,7 @@ def _existing_mapping_index(
 
 
 def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
-    """Render Step 1: Scan """Render Step 2: Field Mapping.""" Profile Study Structure."""
+    """Render Step 1: Scan and Profile Study Structure."""
     st.subheader("1. Scan & Profile Study Structure")
     st.markdown(
         "Discover forms, profile field populations, and choose source forms "
@@ -336,7 +336,7 @@ def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
 
 
 def _step_field_mapping() -> None:
-    """Return unique values for a source field from the schema."""
+    """Render Step 2: Field Mapping."""
     st.subheader("2. Field Mapping")
     st.markdown(
         "Map canonical CDISC targets to discovered source variables using card-style mapping rows."
@@ -441,7 +441,7 @@ def _step_field_mapping() -> None:
 def _lookup_unique_values(
     schema: dict[str, Any], source_form_key: str, source_field: str
 ) -> list[str]:
-    """Render Step 3: Categorical Terminology Normalization."""
+    """Return unique values for a source field from the schema."""
     for form in schema.get("forms", []):
         if form.get("form_key") != source_form_key:
             continue
@@ -452,7 +452,7 @@ def _lookup_unique_values(
 
 
 def _step_terminology() -> None:
-    """Apply terminology normalization to a value."""
+    """Render Step 3: Categorical Terminology Normalization."""
     st.subheader("3. Categorical Terminology Normalization")
     st.markdown("Teach the system how raw categorical values should normalize to canonical values.")
 
@@ -508,7 +508,7 @@ def _step_terminology() -> None:
 
 
 def _apply_lookup(config: StudyConfiguration, lookup_key: str, value: Any) -> Any:
-    """Construct preview rows for the mapped sample records."""
+    """Apply terminology normalization to a value."""
     if isinstance(value, str):
         return config.terminology_lookups.get(lookup_key, {}).get(value, value)
     return value
@@ -517,7 +517,7 @@ def _apply_lookup(config: StudyConfiguration, lookup_key: str, value: Any) -> An
 def _build_preview_rows(
     config: StudyConfiguration, sample_records: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Render Step 4: Layout """Render Step 5: Export / Save.""" Visual Configuration."""
+    """Construct preview rows for the mapped sample records."""
     rows: list[dict[str, Any]] = []
     for record in sample_records:
         row: dict[str, Any] = {
@@ -541,7 +541,7 @@ def _build_preview_rows(
 
 
 def _step_preview_and_layout() -> None:
-    """Render the main setup wizard page."""
+    """Render Step 4: Layout and Visual Configuration."""
     st.subheader("4. Layout & Visual Configuration")
     st.markdown("Configure dashboard widgets and preview mapped values for the first five records.")
 
@@ -598,7 +598,7 @@ def _step_preview_and_layout() -> None:
 
 
 def _step_export(study_key: str) -> None:
-    """Guided step for study field mapping."""
+    """Render Step 5: Export / Save."""
     st.subheader("5. Export / Save")
     st.markdown("Download or persist the finalized StudyConfiguration JSON.")
 
@@ -641,7 +641,7 @@ def _step_export(study_key: str) -> None:
 
 
 def render_page() -> None:
-    """Guided step for study field mapping."""
+    """Render the main setup wizard page."""
     st.title("🧭 Study Setup Wizard")
     with st.expander("UX Design Specification", expanded=False):
         _render_design_specification()
