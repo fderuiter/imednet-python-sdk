@@ -19,9 +19,6 @@ from tests.live.helpers import get_form_key, get_study_key, require_mutation
 
 pytestmark = pytest.mark.live
 
-API_KEY = os.getenv("IMEDNET_API_KEY")
-SECURITY_KEY = os.getenv("IMEDNET_SECURITY_KEY")
-BASE_URL = os.getenv("IMEDNET_BASE_URL")
 RUN_E2E = os.getenv("IMEDNET_RUN_E2E") == "1"
 ALLOW_MUTATION = os.getenv("IMEDNET_ALLOW_MUTATION") == "1"
 STUDY_KEY_OVERRIDE = os.getenv("IMEDNET_STUDY_KEY")
@@ -46,7 +43,7 @@ def _print_startup_context() -> None:
         print(f"[live-tests]   IMEDNET_STUDY_KEY     : {STUDY_KEY_OVERRIDE} (pinned)")
     else:
         print("[live-tests]   IMEDNET_STUDY_KEY     : (auto-discover)")
-    print(f"[live-tests]   IMEDNET_BASE_URL      : {BASE_URL or '(default)'}")
+    print(f"[live-tests]   IMEDNET_BASE_URL      : {os.getenv('IMEDNET_BASE_URL') or '(default)'}")
     print("[live-tests] ───────────────────────────────────────────────\n")
 
 
@@ -54,11 +51,13 @@ def _print_startup_context() -> None:
 def _check_live_env() -> None:
     """Helper function to  check live env."""
     _print_startup_context()
-    if not RUN_E2E or not (API_KEY and SECURITY_KEY):
+    if not RUN_E2E:
         pytest.skip(
-            "Set IMEDNET_RUN_E2E=1 and provide IMEDNET_API_KEY/IMEDNET_SECURITY_KEY "
-            "to run live tests"
+            "Set IMEDNET_RUN_E2E=1 to run live tests"
         )
+    
+    from imednet.config import load_config
+    load_config()
     logger.info("Live test environment configured (mutation=%s)", ALLOW_MUTATION)
 
 
@@ -71,7 +70,9 @@ def allow_mutation() -> bool:
 @pytest.fixture(scope="session")
 def sdk() -> Iterator[ImednetSDK]:
     """Helper function to sdk."""
-    with ImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL) as client:
+    from imednet.config import load_config
+    config = load_config()
+    with ImednetSDK(api_key=config.api_key, security_key=config.security_key, base_url=config.base_url) as client:
         yield client
 
 
@@ -82,7 +83,9 @@ async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[Asyn
     The `event_loop` parameter is required to ensure proper async fixture teardown and SDK cleanup,
     as pytest needs an explicit event loop for session-scoped async fixtures.
     """
-    client = AsyncImednetSDK(api_key=API_KEY, security_key=SECURITY_KEY, base_url=BASE_URL)
+    from imednet.config import load_config
+    config = load_config()
+    client = AsyncImednetSDK(api_key=config.api_key, security_key=config.security_key, base_url=config.base_url)
     try:
         yield client
     finally:

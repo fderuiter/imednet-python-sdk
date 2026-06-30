@@ -47,10 +47,9 @@ SKIP_EXIT_CODE = 2
 
 def authenticate() -> ImednetSDK:
     """Build an ``ImednetSDK`` using environment credentials."""
-    api_key = os.environ["IMEDNET_API_KEY"]
-    security_key = os.environ["IMEDNET_SECURITY_KEY"]
-    base_url = os.getenv("IMEDNET_BASE_URL")
-    return ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
+    from imednet.config import load_config
+    cfg = load_config()
+    return ImednetSDK(api_key=cfg.api_key, security_key=cfg.security_key, base_url=cfg.base_url)
 
 
 def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
