@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for studies endpoint."""
 
 import pytest
 
@@ -10,7 +10,7 @@ from imednet.models.studies import Study
 def test_list_builds_path_and_filters(
     monkeypatch, dummy_client, context, paginator_factory, patch_build_filter
 ):
-    """TODO: Add docstring."""
+    """Test that list builds path and filters."""
     ep = studies.StudiesEndpoint(dummy_client, context)
     captured = paginator_factory(studies, [{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
@@ -24,7 +24,7 @@ def test_list_builds_path_and_filters(
 
 
 def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patch_build_filter):
-    """TODO: Add docstring."""
+    """Test that get success."""
     ep = studies.StudiesEndpoint(dummy_client, context)
     captured = paginator_factory(studies, [{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
@@ -38,7 +38,7 @@ def test_get_success(monkeypatch, dummy_client, context, paginator_factory, patc
 
 
 def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
-    """TODO: Add docstring."""
+    """Test that get not found."""
     ep = studies.StudiesEndpoint(dummy_client, context)
     paginator_factory(studies, [])
     with pytest.raises(NotFoundError):
@@ -46,7 +46,7 @@ def test_get_not_found(monkeypatch, dummy_client, context, paginator_factory):
 
 
 def test_list_each_call_makes_request(dummy_client, context, paginator_factory):
-    """TODO: Add docstring."""
+    """Test that list each call makes request."""
     ep = studies.StudiesEndpoint(dummy_client, context)
     captured = paginator_factory(studies, [{"studyKey": "S1"}])
 

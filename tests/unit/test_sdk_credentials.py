@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for sdk credentials."""
 
 import pytest
 
@@ -7,7 +7,7 @@ from imednet.sdk import ImednetSDK
 
 
 def test_missing_both_keys(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that missing both keys."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="", security_key="", base_url=None),
@@ -17,7 +17,7 @@ def test_missing_both_keys(monkeypatch) -> None:
 
 
 def test_missing_security_key(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that missing security key."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="key", security_key="", base_url=None),
@@ -27,7 +27,7 @@ def test_missing_security_key(monkeypatch) -> None:
 
 
 def test_missing_api_key(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that missing api key."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="", security_key="sec", base_url=None),
@@ -37,7 +37,7 @@ def test_missing_api_key(monkeypatch) -> None:
 
 
 def test_initialization_succeeds(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that initialization succeeds."""
     monkeypatch.setattr(
         "imednet.sdk.load_config",
         lambda **_: Config(api_key="key", security_key="sec", base_url=None),

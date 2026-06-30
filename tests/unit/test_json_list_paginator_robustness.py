@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for json list paginator robustness."""
 
 from unittest.mock import Mock
 
@@ -8,28 +8,28 @@ from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
 
 
 class MockClient:
-    """TODO: Add docstring."""
+    """Test suite for MockClient."""
 
     def __init__(self, response_data):
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.response_data = response_data
 
     def get(self, path, params=None):
-        """TODO: Add docstring."""
+        """Helper function to get."""
         response = Mock()
         response.json.return_value = self.response_data
         return response
 
 
 class MockAsyncClient:
-    """TODO: Add docstring."""
+    """Test suite for MockAsyncClient."""
 
     def __init__(self, response_data):
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.response_data = response_data
 
     async def get(self, path, params=None):
-        """TODO: Add docstring."""
+        """Helper function to get."""
         response = Mock()
         response.json.return_value = self.response_data
         return response

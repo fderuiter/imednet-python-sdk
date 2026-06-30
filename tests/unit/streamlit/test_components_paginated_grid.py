@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for components paginated grid."""
 
 from __future__ import annotations
 
@@ -11,16 +11,16 @@ import imednet_streamlit.components.paginated_grid as paginated_grid
 
 
 class _FakeColumn:
-    """TODO: Add docstring."""
+    """Test suite for  FakeColumn."""
 
     def __init__(self, *, next_click: bool = False, prev_click: bool = False) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self._next_click = next_click
         self._prev_click = prev_click
         self.captions: list[str] = []
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         if label == "Next":
             return self._next_click
         if label == "Previous":
@@ -28,12 +28,12 @@ class _FakeColumn:
         return False
 
     def caption(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to caption."""
         self.captions.append(value)
 
 
 def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that paginated slice limits rows to active page."""
     session_state: dict[str, Any] = {}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
@@ -57,7 +57,7 @@ def test_paginated_slice_limits_rows_to_active_page(monkeypatch: pytest.MonkeyPa
 
 
 def test_paginated_slice_moves_to_next_page(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that paginated slice moves to next page."""
     session_state: dict[str, Any] = {"records_page": 1}
     prev_col = _FakeColumn()
     info_col = _FakeColumn()
@@ -81,7 +81,7 @@ def test_paginated_slice_moves_to_next_page(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_top_n_with_other_adds_remainder_bucket() -> None:
-    """TODO: Add docstring."""
+    """Test that top n with other adds remainder bucket."""
     df = pd.DataFrame({"label": ["A", "B", "C", "D"], "count": [10, 8, 3, 2]})
 
     result = paginated_grid.top_n_with_other(

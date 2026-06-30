@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for streamlit plugin scaffold."""
 
 from __future__ import annotations
 
@@ -20,36 +20,36 @@ _MISSING = object()
 
 
 def _component_palette() -> list[str]:
-    """TODO: Add docstring."""
+    """Helper function to  component palette."""
     return runpy.run_path(str(PACKAGE_ROOT / "components" / "charts.py"))["PALETTE"]
 
 
 class _FakeNavigation:
-    """TODO: Add docstring."""
+    """Test suite for  FakeNavigation."""
 
     def __init__(self, pages: list[dict[str, Any]]) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.pages = pages
         self.ran = False
 
     def run(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to run."""
         self.ran = True
 
 
 class _FakeSidebar:
-    """TODO: Add docstring."""
+    """Test suite for  FakeSidebar."""
 
     def toggle(self, label: str, value: bool = False, on_change: Any = None, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to toggle."""
         return value
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakeStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.page_config: dict[str, Any] | None = None
         self.navigation_calls: list[_FakeNavigation] = []
         self.session_state: dict[str, Any] = {}
@@ -57,7 +57,7 @@ class _FakeStreamlit:
         self.sidebar = _FakeSidebar()
 
     def set_page_config(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to set page config."""
         self.page_config = kwargs
 
     def page(
@@ -68,7 +68,7 @@ class _FakeStreamlit:
         icon: str,
         default: bool = False,
     ) -> dict[str, Any]:
-        """TODO: Add docstring."""
+        """Helper function to page."""
         return {
             "path": path,
             "title": title,
@@ -77,49 +77,49 @@ class _FakeStreamlit:
         }
 
     def navigation(self, pages: list[dict[str, Any]]) -> _FakeNavigation:
-        """TODO: Add docstring."""
+        """Helper function to navigation."""
         nav = _FakeNavigation(pages)
         self.navigation_calls.append(nav)
         return nav
 
     def markdown(self, body: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to markdown."""
         pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to altair chart."""
         pass
 
     def error(self, body: Any, *args: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to error."""
         pass
 
     def exception(self, exception: Any, *args: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to exception."""
         pass
 
     def warning(self, body: Any, *args: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to warning."""
         pass
 
     def info(self, body: Any, *args: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to info."""
         pass
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
-        """TODO: Add docstring."""
+        """Helper function to expander."""
         return _FakeContextManager()
 
     def dataframe(self, data: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         pass
 
 
 class _FakePageStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakePageStreamlit."""
 
     def __init__(self, *, connected: bool) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.session_state: dict[str, Any] = {"_imednet_connected": connected}
         self.titles: list[str] = []
         self.infos: list[str] = []
@@ -127,19 +127,19 @@ class _FakePageStreamlit:
         self.markdowns: list[str] = []
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to title."""
         self.titles.append(value)
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to info."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to success."""
         self.successes.append(value)
 
     def markdown(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to markdown."""
         self.markdowns.append(value)
 
 
@@ -147,11 +147,11 @@ class _FakeContextManager:
     """A no-op context manager (used for st.sidebar and column objects)."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Helper function to   enter  ."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to   exit  ."""
         pass
 
 
@@ -159,13 +159,13 @@ class _FakeCacheDataDecorator:
     """Fake st.cache_data — identity decorator, clear() is a no-op."""
 
     def __call__(self, func: Any = None, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to   call  ."""
         if func is not None:
             return func
         return lambda f: f
 
     def clear(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to clear."""
         pass
 
 
@@ -173,7 +173,7 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
     """Extended fake Streamlit for dashboard pages with charts, filters, and exports."""
 
     def __init__(self, *, connected: bool) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         super().__init__(connected=connected)
         self.cache_data = _FakeCacheDataDecorator()
         self.sidebar = _FakeContextManager()
@@ -187,55 +187,55 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
 
     # stubs that return sensible defaults so the page runs end-to-end
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         return False
 
     def warning(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to warning."""
         self.warnings.append(value)
 
     def subheader(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to subheader."""
         self.subheaders.append(value)
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to altair chart."""
         self.altair_charts.append(chart)
 
     def columns(self, spec: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to columns."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager() for _ in range(count)]
 
     def multiselect(self, label: str, options: Any, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to multiselect."""
         if label in self.multiselect_values:
             return self.multiselect_values[label]
         return list(kwargs.get("default", []))
 
     def date_input(self, label: str, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to date input."""
         val = kwargs.get("value", [])
         return list(val) if hasattr(val, "__iter__") else []
 
     def rerun(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to rerun."""
         pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text input."""
         return ""
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         self.dataframes.append(df)
 
     def download_button(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to download button."""
         self.download_calls.append(kwargs)
 
     def metric(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to metric."""
         self.metric_calls.append(kwargs)
 
 
@@ -245,35 +245,35 @@ def _make_fake_components_module(fake_st: _FakeDashboardStreamlit) -> ModuleType
     mod.PALETTE = _component_palette()  # type: ignore[attr-defined]
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop kpi row."""
         fake_st.metric_calls.extend(metrics)
 
     def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> SimpleNamespace:
-        """TODO: Add docstring."""
+        """Helper function to  noop bar chart."""
         return SimpleNamespace(data=df.copy(), kwargs=kwargs)
 
     def _noop_line_chart(df: pd.DataFrame, **kwargs: Any) -> SimpleNamespace:
-        """TODO: Add docstring."""
+        """Helper function to  noop line chart."""
         return SimpleNamespace(data=df.copy(), kwargs=kwargs)
 
     def _noop_filterable_dataframe(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop filterable dataframe."""
         fake_st.dataframes.append(df.copy())
 
     def _noop_csv_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop csv download button."""
         fake_st.download_calls.append({"kind": "csv", "df": df.copy(), **kwargs})
 
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop excel download button."""
         fake_st.download_calls.append({"kind": "excel", "df": df.copy(), **kwargs})
 
     def _noop_top_n_with_other(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
-        """TODO: Add docstring."""
+        """Helper function to  noop top n with other."""
         return df
 
     def _noop_paginated_slice(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
-        """TODO: Add docstring."""
+        """Helper function to  noop paginated slice."""
         return df
 
     mod.kpi_row = _noop_kpi_row  # type: ignore[attr-defined]
@@ -581,7 +581,7 @@ def _run_records_page(
 
 
 def _expected_version() -> str:
-    """TODO: Add docstring."""
+    """Helper function to  expected version."""
     pyproject_text = (PLUGIN_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     version_match = re.search(r'^version\s*=\s*"([^"]+)"', pyproject_text, re.MULTILINE)
     assert version_match is not None
@@ -589,7 +589,7 @@ def _expected_version() -> str:
 
 
 def _run_app(is_connected: bool) -> _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Helper function to  run app."""
     app_path = PACKAGE_ROOT / "app.py"
     fake_st = _FakeStreamlit()
     fake_streamlit_module = ModuleType("streamlit")
@@ -611,7 +611,7 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
     fake_auth_module = ModuleType("imednet_streamlit.auth")
 
     def _render_auth_sidebar() -> bool:
-        """TODO: Add docstring."""
+        """Helper function to  render auth sidebar."""
         return is_connected
 
     fake_auth_module.render_auth_sidebar = _render_auth_sidebar
@@ -645,7 +645,7 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 
 
 def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
-    """TODO: Add docstring."""
+    """Helper function to  run page."""
     page_path = PACKAGE_ROOT / "pages" / page_name
     fake_st = _FakePageStreamlit(connected=connected)
     fake_streamlit_module = ModuleType("streamlit")
@@ -687,7 +687,7 @@ def _run_page(page_name: str, *, connected: bool) -> _FakePageStreamlit:
 
 
 def test_streamlit_plugin_version() -> None:
-    """TODO: Add docstring."""
+    """Test that streamlit plugin version."""
     init_path = PACKAGE_ROOT / "__init__.py"
     package_spec = importlib.util.spec_from_file_location(
         "imednet_streamlit", init_path, submodule_search_locations=[str(PACKAGE_ROOT)]
@@ -700,7 +700,7 @@ def test_streamlit_plugin_version() -> None:
 
 
 def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
-    """TODO: Add docstring."""
+    """Test that streamlit app navigation is home only before auth."""
     fake_st = _run_app(is_connected=False)
 
     assert fake_st.page_config == {
@@ -720,7 +720,7 @@ def test_streamlit_app_navigation_is_home_only_before_auth() -> None:
 
 
 def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
-    """TODO: Add docstring."""
+    """Test that streamlit app navigation includes all pages after auth."""
     fake_st = _run_app(is_connected=True)
 
     assert len(fake_st.navigation_calls) == 1
@@ -743,7 +743,7 @@ def test_streamlit_app_navigation_includes_all_pages_after_auth() -> None:
 
 
 def test_streamlit_pages_scaffold_exists() -> None:
-    """TODO: Add docstring."""
+    """Test that streamlit pages scaffold exists."""
     pages_root = PACKAGE_ROOT / "pages"
 
     assert (pages_root / "__init__.py").is_file()
@@ -759,7 +759,7 @@ def test_streamlit_pages_scaffold_exists() -> None:
 
 
 def test_streamlit_pages_execute_without_exceptions() -> None:
-    """TODO: Add docstring."""
+    """Test that streamlit pages execute without exceptions."""
     home_disconnected = _run_page("home.py", connected=False)
     assert "🏥 iMednet EDC Dashboard" in home_disconnected.titles
     assert home_disconnected.infos
@@ -811,7 +811,7 @@ def test_sites_page_renders() -> None:
 
 
 def test_records_page_renders_with_filtered_metrics_and_downloads() -> None:
-    """TODO: Add docstring."""
+    """Test that records page renders with filtered metrics and downloads."""
     records = [
         SimpleNamespace(
             record_id=1,
@@ -890,7 +890,7 @@ def test_records_page_renders_with_filtered_metrics_and_downloads() -> None:
 
 
 def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> None:
-    """TODO: Add docstring."""
+    """Test that records fetch and heatmap helpers handle deleted records and caps."""
     _, records_globals = _run_records_page()
     fetch_records = records_globals["_fetch_records"]
     build_heatmap_source = records_globals["_build_heatmap_source"]
@@ -960,7 +960,7 @@ def test_records_fetch_and_heatmap_helpers_handle_deleted_records_and_caps() -> 
 
 
 def test_records_page_warns_for_large_datasets() -> None:
-    """TODO: Add docstring."""
+    """Test that records page warns for large datasets."""
     large_records = [
         SimpleNamespace(
             record_id=index,
@@ -1019,7 +1019,7 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
         site_name: str,
         enrollment_start_date: datetime.datetime | None = None,
     ) -> MagicMock:
-        """TODO: Add docstring."""
+        """Helper function to  make subject."""
         s = MagicMock()
         s.subject_id = subject_id
         s.subject_key = f"S{subject_id:03d}"
@@ -1109,6 +1109,6 @@ def test_enrollment_page_renders() -> None:
 
 
 def test_streamlit_plugin_has_py_typed_marker() -> None:
-    """TODO: Add docstring."""
+    """Test that streamlit plugin has py typed marker."""
     py_typed = PACKAGE_ROOT / "py.typed"
     assert py_typed.is_file()

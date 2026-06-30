@@ -28,7 +28,7 @@ class _ValidNamespace:
 
 
 def _valid_factory(sdk_instance: Any) -> _ValidNamespace:  # noqa: ANN401
-    """TODO: Add docstring."""
+    """Helper function to  valid factory."""
     return _ValidNamespace()
 
 
@@ -38,15 +38,15 @@ def _valid_factory(sdk_instance: Any) -> _ValidNamespace:  # noqa: ANN401
 
 
 def test_valid_namespace_satisfies_protocol() -> None:
-    """TODO: Add docstring."""
+    """Test that valid namespace satisfies protocol."""
     assert isinstance(_ValidNamespace(), WorkflowsNamespaceProtocol)
 
 
 def test_object_missing_attributes_does_not_satisfy_namespace_protocol() -> None:
-    """TODO: Add docstring."""
+    """Test that object missing attributes does not satisfy namespace protocol."""
 
     class _Incomplete:
-        """TODO: Add docstring."""
+        """Test suite for  Incomplete."""
 
         data_extraction: Any = None
         # missing: query_management, record_mapper, record_update, subject_data
@@ -60,12 +60,12 @@ def test_object_missing_attributes_does_not_satisfy_namespace_protocol() -> None
 
 
 def test_callable_factory_satisfies_plugin_protocol() -> None:
-    """TODO: Add docstring."""
+    """Test that callable factory satisfies plugin protocol."""
     assert isinstance(_valid_factory, PluginProtocol)
 
 
 def test_non_callable_does_not_satisfy_plugin_protocol() -> None:
-    """TODO: Add docstring."""
+    """Test that non callable does not satisfy plugin protocol."""
     assert not isinstance("not-a-callable", PluginProtocol)
 
 
@@ -75,7 +75,7 @@ def test_non_callable_does_not_satisfy_plugin_protocol() -> None:
 
 
 def test_plugin_load_error_is_imednet_error() -> None:
-    """TODO: Add docstring."""
+    """Test that plugin load error is imednet error."""
     from imednet.errors import ImednetError
 
     err = PluginLoadError("boom")
@@ -95,7 +95,7 @@ def _make_sdk() -> _BaseSDK:
 
 
 def test_get_workflow_entry_point_returns_none_when_no_plugins_installed() -> None:
-    """TODO: Add docstring."""
+    """Test that get workflow entry point returns none when no plugins installed."""
     sdk = _make_sdk()
     with patch("imednet.sdk.entry_points", return_value=[]):
         result = sdk._get_workflow_entry_point()
@@ -103,7 +103,7 @@ def test_get_workflow_entry_point_returns_none_when_no_plugins_installed() -> No
 
 
 def test_get_workflow_entry_point_raises_plugin_load_error_on_multiple_plugins() -> None:
-    """TODO: Add docstring."""
+    """Test that get workflow entry point raises plugin load error on multiple plugins."""
     ep1 = MagicMock(spec=EntryPoint)
     ep1.value = "plugin_a.ns:factory"
     ep2 = MagicMock(spec=EntryPoint)
@@ -116,7 +116,7 @@ def test_get_workflow_entry_point_raises_plugin_load_error_on_multiple_plugins()
 
 
 def test_get_workflow_entry_point_returns_single_entry_point() -> None:
-    """TODO: Add docstring."""
+    """Test that get workflow entry point returns single entry point."""
     ep = MagicMock(spec=EntryPoint)
     ep.value = "myplugin.ns:factory"
 
@@ -132,7 +132,7 @@ def test_get_workflow_entry_point_returns_single_entry_point() -> None:
 
 
 def test_init_workflows_returns_missing_workflows_when_no_plugin() -> None:
-    """TODO: Add docstring."""
+    """Test that init workflows returns missing workflows when no plugin."""
     sdk = _make_sdk()
     with patch("imednet.sdk.entry_points", return_value=[]):
         ns = sdk._init_workflows()
@@ -148,7 +148,7 @@ def test_init_workflows_returns_missing_workflows_when_no_plugin() -> None:
 
 
 def test_init_workflows_raises_plugin_load_error_on_broken_entry_point() -> None:
-    """TODO: Add docstring."""
+    """Test that init workflows raises plugin load error on broken entry point."""
     ep = MagicMock(spec=EntryPoint)
     ep.value = "broken.module:factory"
     ep.load.side_effect = ModuleNotFoundError("No module named 'broken'")
@@ -165,7 +165,7 @@ def test_init_workflows_raises_plugin_load_error_on_broken_entry_point() -> None
 
 
 def test_init_workflows_raises_plugin_load_error_when_entry_point_not_callable() -> None:
-    """TODO: Add docstring."""
+    """Test that init workflows raises plugin load error when entry point not callable."""
     ep = MagicMock(spec=EntryPoint)
     ep.value = "myplugin.ns:NOT_A_CALLABLE"
     ep.load.return_value = "I am a string, not a callable"  # type: ignore[assignment]
@@ -182,7 +182,7 @@ def test_init_workflows_raises_plugin_load_error_when_entry_point_not_callable()
 
 
 def test_init_workflows_returns_namespace_from_valid_plugin() -> None:
-    """TODO: Add docstring."""
+    """Test that init workflows returns namespace from valid plugin."""
     ep = MagicMock(spec=EntryPoint)
     ep.value = "myplugin.ns:factory"
     ep.load.return_value = _valid_factory
@@ -200,10 +200,10 @@ def test_init_workflows_returns_namespace_from_valid_plugin() -> None:
 
 
 def test_init_workflows_raises_plugin_load_error_when_factory_raises_type_error() -> None:
-    """TODO: Add docstring."""
+    """Test that init workflows raises plugin load error when factory raises type error."""
 
     def _bad_factory(*args: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  bad factory."""
         raise TypeError("unexpected argument")
 
     ep = MagicMock(spec=EntryPoint)

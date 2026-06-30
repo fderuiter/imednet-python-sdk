@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for pages reporting dashboard."""
 
 from __future__ import annotations
 
@@ -24,36 +24,36 @@ PAGE_PATH = (
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for  FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Helper function to   enter  ."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to   exit  ."""
         pass
 
 
 class _FakeCacheDataDecorator:
-    """TODO: Add docstring."""
+    """Test suite for  FakeCacheDataDecorator."""
 
     def __call__(self, func: Any = None, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to   call  ."""
         if func is not None:
             return func
         return lambda f: f
 
     def clear(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to clear."""
         pass
 
 
 class _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakeStreamlit."""
 
     def __init__(self, *, multiselect_values: dict[str, list[Any]] | None = None) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.cache_data = _FakeCacheDataDecorator()
         self.sidebar = _FakeContextManager()
@@ -66,96 +66,96 @@ class _FakeStreamlit:
         self.successes: list[str] = []
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to title."""
         pass
 
     def subheader(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to subheader."""
         pass
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to info."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to success."""
         self.successes.append(value)
 
     def warning(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to warning."""
         pass
 
     def markdown(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to markdown."""
         pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         return False
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text input."""
         return ""
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to selectbox."""
         if label in self.selectbox_values:
             return self.selectbox_values[label]
         return options[index]
 
     def multiselect(self, label: str, options: list[Any], **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to multiselect."""
         if label in self.multiselect_values:
             return self.multiselect_values[label]
         return list(kwargs.get("default", []))
 
     def date_input(self, label: str, *, value: Any, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to date input."""
         if isinstance(value, (list, tuple)):
             return list(value)
         return [value]
 
     def columns(self, spec: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to columns."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager() for _ in range(count)]
 
     def tabs(self, names: list[str]) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to tabs."""
         return [_FakeContextManager() for _ in names]
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         self.dataframes.append(df)
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to altair chart."""
         pass
 
     def rerun(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to rerun."""
         pass
 
 
 def _make_fake_components_module(fake_st: _FakeStreamlit) -> ModuleType:
-    """TODO: Add docstring."""
+    """Helper function to  make fake components module."""
     module = ModuleType("imednet_streamlit.components")
     module.PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c"]  # type: ignore[attr-defined]
 
     def _kpi_row(metrics: list[dict[str, Any]]) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  kpi row."""
         fake_st.kpi_rows.append(metrics)
 
     def _bar_chart(*args: Any, **kwargs: Any) -> MagicMock:
-        """TODO: Add docstring."""
+        """Helper function to  bar chart."""
         return MagicMock()
 
     def _line_chart(*args: Any, **kwargs: Any) -> MagicMock:
-        """TODO: Add docstring."""
+        """Helper function to  line chart."""
         return MagicMock()
 
     def _filterable_dataframe(df: Any, *, key: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  filterable dataframe."""
         fake_st.tables[key] = df
 
     module.kpi_row = _kpi_row  # type: ignore[attr-defined]
@@ -166,7 +166,7 @@ def _make_fake_components_module(fake_st: _FakeStreamlit) -> ModuleType:
 
 
 def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _FakeStreamlit:
-    """TODO: Add docstring."""
+    """Helper function to  run page."""
     fake_st = _FakeStreamlit(multiselect_values=multiselect_values)
 
     for key in list(sys.modules):
@@ -240,10 +240,10 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
     fake_components_module = _make_fake_components_module(fake_st)
 
     class _ExtractionResult:
-        """TODO: Add docstring."""
+        """Test suite for  ExtractionResult."""
 
         def __init__(self) -> None:
-            """TODO: Add docstring."""
+            """Initialize the test object."""
             self.adverse_events = [
                 AdverseEvent.model_validate(
                     {
@@ -337,12 +337,12 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
 
 
 def _kpi_dict(metrics: list[dict[str, Any]]) -> dict[str, Any]:
-    """TODO: Add docstring."""
+    """Helper function to  kpi dict."""
     return {entry["label"]: entry["value"] for entry in metrics}
 
 
 def test_reporting_dashboard_renders_expected_kpis_and_site_aggregation() -> None:
-    """TODO: Add docstring."""
+    """Test that reporting dashboard renders expected kpis and site aggregation."""
     fake_st = _run_page()
     kpi_maps = [_kpi_dict(row) for row in fake_st.kpi_rows]
 
@@ -364,7 +364,7 @@ def test_reporting_dashboard_renders_expected_kpis_and_site_aggregation() -> Non
 
 
 def test_reporting_dashboard_filters_cascade_to_adverse_event_table() -> None:
-    """TODO: Add docstring."""
+    """Test that reporting dashboard filters cascade to adverse event table."""
     fake_st = _run_page(
         multiselect_values={
             "Site": ["Site A"],
@@ -391,7 +391,7 @@ class _FakeExtractionResult:
         protocol_deviations: list[Any] | None = None,
         device_deficiencies: list[Any] | None = None,
     ) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.adverse_events = adverse_events or []
         self.protocol_deviations = protocol_deviations or []
         self.device_deficiencies = device_deficiencies or []
@@ -424,7 +424,7 @@ def _run_page_extended(
         _button_overrides["⭐ Set as Default"] = True
 
     def _patched_button(label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to  patched button."""
         return _button_overrides.get(label, False)
 
     fake_st.button = _patched_button  # type: ignore[method-assign]
@@ -433,7 +433,7 @@ def _run_page_extended(
     if save_view_name:
 
         def _patched_text_input(label: str, **kwargs: Any) -> str:
-            """TODO: Add docstring."""
+            """Helper function to  patched text input."""
             return save_view_name if label == "Save Current View As" else ""
 
         fake_st.text_input = _patched_text_input  # type: ignore[method-assign]

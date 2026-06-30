@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for sdk async."""
 
 import pytest
 
@@ -7,7 +7,7 @@ from imednet.core.async_client import AsyncClient
 
 
 def _create_async_sdk() -> sdk_mod.AsyncImednetSDK:
-    """TODO: Add docstring."""
+    """Helper function to  create async sdk."""
     return sdk_mod.AsyncImednetSDK(
         api_key="key",
         security_key="secret",
@@ -16,18 +16,18 @@ def _create_async_sdk() -> sdk_mod.AsyncImednetSDK:
 
 
 def test_async_sdk_initializes_async_client() -> None:
-    """TODO: Add docstring."""
+    """Test that async sdk initializes async client."""
     sdk = _create_async_sdk()
     assert isinstance(sdk._async_client, AsyncClient)
 
 
 def test_async_sdk_is_not_subclass_of_sync_sdk() -> None:
-    """TODO: Add docstring."""
+    """Test that async sdk is not subclass of sync sdk."""
     assert not issubclass(sdk_mod.AsyncImednetSDK, sdk_mod.ImednetSDK)
 
 
 def test_sync_and_async_endpoints_expose_strict_method_surfaces() -> None:
-    """TODO: Add docstring."""
+    """Test that sync and async endpoints expose strict method surfaces."""
     sync_sdk = sdk_mod.ImednetSDK(
         api_key="key",
         security_key="secret",
@@ -48,11 +48,11 @@ def test_sync_and_async_endpoints_expose_strict_method_surfaces() -> None:
 
 @pytest.mark.asyncio
 async def test_async_context_management(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that async context management asynchronously."""
     called = {"close": False}
 
     async def fake_aclose(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to fake aclose."""
         called["close"] = True
 
     monkeypatch.setattr(AsyncClient, "aclose", fake_aclose)
@@ -65,12 +65,12 @@ async def test_async_context_management(monkeypatch) -> None:
 
 @pytest.mark.asyncio
 async def test_convenience_methods_delegate_to_endpoints_async(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that convenience methods delegate to endpoints async asynchronously."""
     sdk = _create_async_sdk()
     calls = {}
 
     async def fake_async_studies_list(**kw):
-        """TODO: Add docstring."""
+        """Helper function to fake async studies list."""
         calls["studies"] = kw
         return ["STUDY"]
 

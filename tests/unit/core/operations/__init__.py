@@ -1,1 +1,1 @@
-"""TODO: Add docstring."""
+"""Test package initialization."""

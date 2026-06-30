@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for cli dashboard."""
 
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ def test_dashboard_missing_plugin() -> None:
     original_find_spec = find_spec
 
     def mock_find_spec(name: str, package: str | None = None) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to mock find spec."""
         if name == "imednet_streamlit.app":
             return None
         return original_find_spec(name, package)
@@ -71,7 +71,7 @@ def test_dashboard_launches_subprocess() -> None:
     original_find_spec = find_spec
 
     def mock_find_spec(name: str, package: str | None = None) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to mock find spec."""
         if name == "imednet_streamlit.app":
             return dashboard_spec
         return original_find_spec(name, package)

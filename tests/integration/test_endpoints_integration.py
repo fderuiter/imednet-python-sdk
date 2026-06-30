@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for endpoints integration."""
 
 import httpx
 import pytest
@@ -9,12 +9,12 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 @respx.mock
 def test_studies_list_pagination():
-    """TODO: Add docstring."""
+    """Test that studies list pagination."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     calls = []
 
     def responder(request):
-        """TODO: Add docstring."""
+        """Helper function to responder."""
         calls.append(dict(request.url.params))
         if len(calls) == 1:
             return httpx.Response(
@@ -43,7 +43,7 @@ def test_studies_list_pagination():
 
 @respx.mock
 def test_records_list_filter_param():
-    """TODO: Add docstring."""
+    """Test that records list filter param."""
     sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
 
     route = respx.get("https://api.test/api/v1/edc/studies/ST/records").respond(
@@ -60,7 +60,7 @@ def test_records_list_filter_param():
 @respx.mock
 @pytest.mark.asyncio
 async def test_async_endpoint_mirror():
-    """TODO: Add docstring."""
+    """Test that async endpoint mirror asynchronously."""
     sync_sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
     async_sdk = AsyncImednetSDK(api_key="k", security_key="s", base_url="https://api.test")
 

@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for base client."""
 
 from unittest.mock import MagicMock
 
@@ -11,16 +11,16 @@ from imednet.core.base_client import BaseClient
 
 
 class DummyClient(BaseClient):
-    """TODO: Add docstring."""
+    """Test suite for DummyClient."""
 
     def _create_client(self, auth: AuthStrategy) -> httpx.Client:
-        """TODO: Add docstring."""
+        """Helper function to  create client."""
         headers = auth.get_headers()
         return httpx.Client(headers=headers)
 
 
 def test_initialization_from_env(monkeypatch) -> None:
-    """TODO: Add docstring."""
+    """Test that initialization from env."""
     monkeypatch.setenv("IMEDNET_API_KEY", "env_key")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "env_secret")
     monkeypatch.setenv("IMEDNET_BASE_URL", "https://env.example.com")

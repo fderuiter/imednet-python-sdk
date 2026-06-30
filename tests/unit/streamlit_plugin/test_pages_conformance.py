@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for pages conformance."""
 
 import importlib.util
 import sys
@@ -12,7 +12,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 def test_conformance_page_renders():
-    """TODO: Add docstring."""
+    """Test that conformance page renders."""
     page_path = PACKAGE_ROOT / "pages" / "conformance.py"
 
     fake_st = MagicMock()

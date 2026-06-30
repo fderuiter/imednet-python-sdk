@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for pages sites."""
 
 from __future__ import annotations
 
@@ -14,36 +14,36 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 
 
 class _FakeContextManager:
-    """TODO: Add docstring."""
+    """Test suite for  FakeContextManager."""
 
     def __enter__(self) -> "_FakeContextManager":
-        """TODO: Add docstring."""
+        """Helper function to   enter  ."""
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to   exit  ."""
         pass
 
 
 class _FakeCacheDataDecorator:
-    """TODO: Add docstring."""
+    """Test suite for  FakeCacheDataDecorator."""
 
     def __call__(self, func: Any = None, **kwargs: Any) -> Any:
-        """TODO: Add docstring."""
+        """Helper function to   call  ."""
         if func is not None:
             return func
         return lambda f: f
 
     def clear(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to clear."""
         pass
 
 
 class _FakeSitesStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakeSitesStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.session_state: dict[str, Any] = {"_imednet_connected": True}
         self.titles: list[str] = []
         self.infos: list[str] = []
@@ -53,100 +53,100 @@ class _FakeSitesStreamlit:
         self.sidebar = _FakeContextManager()
 
     def title(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to title."""
         self.titles.append(value)
 
     def info(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to info."""
         self.infos.append(value)
 
     def success(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to success."""
         self.successes.append(value)
 
     def markdown(self, value: str) -> None:
-        """TODO: Add docstring."""
+        """Helper function to markdown."""
         self.markdowns.append(value)
 
     def button(self, label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to button."""
         return False
 
     def subheader(self, value: str, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to subheader."""
         pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to altair chart."""
         pass
 
     def columns(self, spec: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to columns."""
         count = spec if isinstance(spec, int) else len(spec)
         return [_FakeContextManager() for _ in range(count)]
 
     def multiselect(self, label: str, options: Any, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to multiselect."""
         return list(kwargs.get("default", []))
 
     def date_input(self, label: str, **kwargs: Any) -> list[Any]:
-        """TODO: Add docstring."""
+        """Helper function to date input."""
         val = kwargs.get("value", [])
         return list(val) if hasattr(val, "__iter__") else []
 
     def rerun(self) -> None:
-        """TODO: Add docstring."""
+        """Helper function to rerun."""
         pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
-        """TODO: Add docstring."""
+        """Helper function to text input."""
         return ""
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to dataframe."""
         pass
 
     def download_button(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to download button."""
         pass
 
     def metric(self, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to metric."""
         pass
 
 
 def _make_fake_components_module() -> ModuleType:
-    """TODO: Add docstring."""
+    """Helper function to  make fake components module."""
     import pandas as pd
 
     mod = ModuleType("imednet_streamlit.components")
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop kpi row."""
         pass
 
     def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """TODO: Add docstring."""
+        """Helper function to  noop bar chart."""
         return MagicMock()
 
     def _noop_line_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
-        """TODO: Add docstring."""
+        """Helper function to  noop line chart."""
         return MagicMock()
 
     def _noop_filterable_dataframe(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop filterable dataframe."""
         pass
 
     def _noop_csv_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop csv download button."""
         pass
 
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
-        """TODO: Add docstring."""
+        """Helper function to  noop excel download button."""
         pass
 
     def _noop_paginated_slice(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
-        """TODO: Add docstring."""
+        """Helper function to  noop paginated slice."""
         return df
 
     mod.kpi_row = _noop_kpi_row  # type: ignore[attr-defined]
@@ -160,7 +160,7 @@ def _make_fake_components_module() -> ModuleType:
 
 
 def test_sites_page_renders_with_mock_sdk() -> None:
-    """TODO: Add docstring."""
+    """Test that sites page renders with mock sdk."""
     page_path = PACKAGE_ROOT / "pages" / "sites.py"
     fake_st = _FakeSitesStreamlit()
 
@@ -248,13 +248,13 @@ def test_sites_page_renders_with_mock_sdk() -> None:
 
 
 def test_sites_page_populated_and_refresh() -> None:
-    """TODO: Add docstring."""
+    """Test that sites page populated and refresh."""
     page_path = PACKAGE_ROOT / "pages" / "sites.py"
     fake_st = _FakeSitesStreamlit()
 
     # Stub button to return True for refresh
     def _button(label: str, **kwargs: Any) -> bool:
-        """TODO: Add docstring."""
+        """Helper function to  button."""
         if label == "🔄 Refresh Data":
             return True
         return False

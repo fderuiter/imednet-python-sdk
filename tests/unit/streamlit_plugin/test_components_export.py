@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for components export."""
 
 from __future__ import annotations
 
@@ -12,10 +12,10 @@ from imednet_streamlit.components import csv_download_button, excel_download_but
 
 
 class _FakeExportStreamlit:
-    """TODO: Add docstring."""
+    """Test suite for  FakeExportStreamlit."""
 
     def __init__(self) -> None:
-        """TODO: Add docstring."""
+        """Initialize the test object."""
         self.download_calls: list[dict[str, object]] = []
 
     def download_button(
@@ -26,14 +26,14 @@ class _FakeExportStreamlit:
         file_name: str,
         mime: str,
     ) -> None:
-        """TODO: Add docstring."""
+        """Helper function to download button."""
         self.download_calls.append(
             {"label": label, "data": data, "file_name": file_name, "mime": mime}
         )
 
 
 def test_csv_download_button_exports_utf8_csv(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that csv download button exports utf8 csv."""
     fake_st = _FakeExportStreamlit()
     monkeypatch.setattr(export_components, "st", fake_st)
     df = pd.DataFrame({"name": ["José"], "count": [1]})
@@ -52,7 +52,7 @@ def test_csv_download_button_exports_utf8_csv(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_excel_download_button_exports_valid_xlsx(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that excel download button exports valid xlsx."""
     fake_st = _FakeExportStreamlit()
     monkeypatch.setattr(export_components, "st", fake_st)
     df = pd.DataFrame({"name": ["Site A"], "count": [3]})

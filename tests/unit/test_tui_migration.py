@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for tui migration."""
 
 import pytest
 

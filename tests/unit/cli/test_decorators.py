@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for decorators."""
 
 from unittest.mock import MagicMock
 
@@ -40,7 +40,7 @@ import imednet.cli as cli
 
 
 def test_decorator_handles_unexpected_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    """TODO: Add docstring."""
+    """Test that decorator handles unexpected error."""
     runner = CliRunner()
     monkeypatch.setenv("IMEDNET_API_KEY", "k")
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "s")

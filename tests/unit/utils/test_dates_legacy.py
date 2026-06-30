@@ -1,4 +1,4 @@
-"""TODO: Add docstring."""
+"""Unit tests for dates legacy."""
 
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
