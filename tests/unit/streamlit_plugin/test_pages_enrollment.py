@@ -121,6 +121,9 @@ def _make_fake_components_module() -> ModuleType:
     import pandas as pd
 
     mod = ModuleType("imednet_streamlit.components")
+    mod.charts = ModuleType("imednet_streamlit.components.charts")
+    mod.charts.render_accessible_chart = MagicMock()
+    mod.render_accessible_chart = mod.charts.render_accessible_chart
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
         """Helper function to  noop kpi row."""
@@ -247,6 +250,7 @@ def test_enrollment_page_renders_with_mock_sdk() -> None:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        sys.modules["imednet_streamlit.components.charts"] = fake_components_module.charts
         import importlib.util
 
         spec = importlib.util.spec_from_file_location(
@@ -346,6 +350,7 @@ def test_enrollment_page_empty_and_filters_and_refresh() -> None:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        sys.modules["imednet_streamlit.components.charts"] = fake_components_module.charts
 
         # Execute page
         import importlib.util

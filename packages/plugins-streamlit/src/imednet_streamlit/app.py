@@ -77,33 +77,6 @@ if st.session_state["high_contrast"]:
         unsafe_allow_html=True,
     )
 
-import pandas as pd
-
-original_altair_chart = st.altair_chart
-
-
-def accessible_altair_chart(altair_chart, use_container_width=False, theme="streamlit", **kwargs):
-    """Render an Altair chart with an automatic tabular data fallback for screen readers."""
-    title = getattr(altair_chart, "title", "Chart")
-    if isinstance(title, dict) and "text" in title:
-        title = title["text"]
-    elif not isinstance(title, str):
-        title = "Chart"
-
-    df = getattr(altair_chart, "data", pd.DataFrame())
-
-    if not hasattr(altair_chart, "description") or not getattr(altair_chart, "description", None):
-        altair_chart = altair_chart.properties(description=f"Data visualization for {title}")
-
-    original_altair_chart(
-        altair_chart, use_container_width=use_container_width, theme=theme, **kwargs
-    )
-
-    if isinstance(df, pd.DataFrame) and not df.empty:
-        with st.expander(f"Tabular Data View: {title}", expanded=False):
-            st.dataframe(df, use_container_width=use_container_width)
-
-
 from imednet.spi.utils import redact_sensitive_text
 
 original_st_error = st.error
@@ -157,8 +130,6 @@ st.error = secure_st_error
 st.exception = secure_st_exception
 st.warning = secure_st_warning
 st.info = secure_st_info
-
-st.altair_chart = accessible_altair_chart
 
 is_connected = render_auth_sidebar()
 

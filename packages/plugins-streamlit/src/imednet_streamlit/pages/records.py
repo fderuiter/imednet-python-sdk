@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from imednet_streamlit.components.charts import render_accessible_chart
 import altair as alt
 import pandas as pd
 import streamlit as st
@@ -285,7 +286,7 @@ def render_page() -> None:
         st.subheader("Records by Status")
         status_counts = _build_status_counts(df_filtered)
         if not status_counts.empty:
-            st.altair_chart(
+            render_accessible_chart(
                 components.bar_chart(
                     status_counts,
                     x="count",
@@ -301,7 +302,7 @@ def render_page() -> None:
         st.subheader("Top 10 Forms by Incomplete Count")
         incomplete_forms = _build_incomplete_form_counts(df_filtered)
         if not incomplete_forms.empty:
-            st.altair_chart(
+            render_accessible_chart(
                 components.bar_chart(
                     incomplete_forms,
                     x="count",
@@ -318,7 +319,7 @@ def render_page() -> None:
     if heatmap_df.empty:
         st.info("No records found for the selected filters.")
     else:
-        st.altair_chart(_build_heatmap_chart(heatmap_df), use_container_width=True)
+        render_accessible_chart(_build_heatmap_chart(heatmap_df), use_container_width=True)
 
     st.subheader("Records Overview")
     table_df = df_filtered.reindex(columns=DISPLAY_COLUMNS)

@@ -23,5 +23,5 @@ if not st.session_state.get("_imednet_connected"):
 else:
     study_key = get_study_key()
     get_sdk()
-    st.success(f"Connected to study: `{study_key}`")
+    st.markdown(f"✅ **Connected to study:** {study_key}")
     st.markdown("Use the sidebar navigation to explore reports.")

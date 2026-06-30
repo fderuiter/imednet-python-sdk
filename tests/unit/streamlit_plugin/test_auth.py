@@ -44,6 +44,7 @@ class _FakeStreamlit:
         self.sidebar = _SidebarContext()
         self._connect_clicked = connect_clicked
         self.success_messages: list[str] = []
+        self.markdown_messages: list[str] = []
         self.error_messages: list[str] = []
         self.warning_messages: list[str] = []
         self.info_messages: list[str] = []
@@ -75,6 +76,9 @@ class _FakeStreamlit:
     def rerun(self) -> None:
         """Helper function to rerun."""
         pass
+
+    def markdown(self, message: str) -> None:
+        self.markdown_messages.append(message)
 
     def success(self, message: str) -> None:
         """Helper function to success."""

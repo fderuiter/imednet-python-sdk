@@ -93,4 +93,4 @@ def test_home_page_renders_disconnected() -> None:
 def test_home_page_renders_connected() -> None:
     """Test that home page renders connected."""
     home_connected = _run_page("home.py", connected=True)
-    assert any("connected" in success.lower() for success in home_connected.successes)
+    assert any("connected" in md.lower() for md in home_connected.markdowns)
