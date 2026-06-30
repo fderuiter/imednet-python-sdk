@@ -30,7 +30,7 @@ jobs:
       # Caching dependencies speeds up Copilot engine initialization significantly
       - name: Load cached venv
         id: cached-dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/pyproject.toml') }}
