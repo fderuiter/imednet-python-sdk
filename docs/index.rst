@@ -43,6 +43,13 @@ Welcome to imednet's documentation!
 
 .. toctree::
    :maxdepth: 2
+   :caption: Workflow Guides:
+
+   workflows/uat_workflow
+   workflows/bulk_submission
+
+.. toctree::
+   :maxdepth: 2
    :caption: Integrations:
 
    export_destinations
