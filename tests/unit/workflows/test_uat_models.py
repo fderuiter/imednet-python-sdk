@@ -158,23 +158,13 @@ def test_enabled_forms_and_forms_by_type_filters_correctly() -> None:
     assert spec.forms_by_type(RecordTestType.REGISTER_SUBJECT) == [enabled_register]
 
 
-def test_from_yaml_raises_when_pyyaml_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test that from yaml raises when pyyaml unavailable."""
-    monkeypatch.setattr(uat_models, "find_spec", lambda _: None)
-    with pytest.raises(ImportError, match="PyYAML is required"):
-        UATSpecification.from_yaml("studyKey: S1\nstudyName: Study")
-
-
-def test_from_yaml_loads_when_available(tmp_path: Path) -> None:
-    """Test that from yaml loads when available."""
-    if uat_models.find_spec("yaml") is None:
-        pytest.skip("PyYAML not installed in test environment")
-
-    yaml_file = tmp_path / "spec.yaml"
-    yaml_file.write_text(
-        "specVersion: '1.0'\nstudyKey: S1\nstudyName: Study\nformSpecs: []\nsubjectSpecs: []\n",
+def test_from_json_loads_correctly(tmp_path: Path) -> None:
+    """TODO: Add docstring."""
+    json_file = tmp_path / "spec.json"
+    json_file.write_text(
+        '{"specVersion": "1.0", "studyKey": "S1", "studyName": "Study", "formSpecs": [], "subjectSpecs": []}',
         encoding="utf-8",
     )
 
-    spec = UATSpecification.from_yaml(yaml_file)
+    spec = UATSpecification.from_json(json_file)
     assert spec.study_key == "S1"

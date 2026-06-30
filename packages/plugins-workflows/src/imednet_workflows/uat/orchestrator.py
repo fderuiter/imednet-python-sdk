@@ -82,7 +82,7 @@ class UATSpecificationBuilder:
     """Auto-generate a UATSpecification from a StudySnapshot.
 
     The generated spec uses SYNTHETIC strategy for all variables.
-    Users can then edit the JSON/YAML output to apply FIXED or SKIP strategies
+    Users can then edit the JSON output to apply FIXED or SKIP strategies
     for specific variables before feeding it back into UATWorkflow.run().
     """
 

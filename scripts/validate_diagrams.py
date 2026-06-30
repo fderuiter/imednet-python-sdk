@@ -1,11 +1,10 @@
 """Script to validate mermaid diagram references."""
 
 import ast
+import json
 import os
 import re
 import sys
-
-import yaml
 
 
 def get_code_symbols(search_dirs):
@@ -58,10 +57,10 @@ def main():
     """Run the diagram validation."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     docs_dir = os.path.join(base_dir, "docs", "diagrams")
-    registry_path = os.path.join(docs_dir, "registry.yaml")
+    registry_path = os.path.join(docs_dir, "registry.json")
 
     with open(registry_path, "r") as f:
-        registry = yaml.safe_load(f) or {}
+        registry = json.load(f) or {}
 
     search_dirs = [
         os.path.join(base_dir, "packages", "core", "src", "imednet"),
