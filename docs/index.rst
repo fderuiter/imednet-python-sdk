@@ -21,13 +21,11 @@ Welcome to imednet's documentation!
    parsing
    schema_validation
    cli
-   workflow_interactions
    register_subjects
    plugins
    caching
    retry_policy
    job_polling
-   record_mapping
    airflow
    test_skip_conditions
    orchestration
@@ -45,6 +43,8 @@ Welcome to imednet's documentation!
    :maxdepth: 2
    :caption: Workflow Guides:
 
+   workflow_interactions
+   record_mapping
    workflows/uat_workflow
    workflows/bulk_submission
 
@@ -64,6 +64,7 @@ Welcome to imednet's documentation!
    api/apache_airflow_providers_imednet_api
    api/imednet_workflows_api
    api/imednet_streamlit_api
+   api/imednet_sinks_api
 
 
 Indices and tables

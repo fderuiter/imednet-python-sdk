@@ -40,18 +40,21 @@ Destination decision matrix
        envelope fields (study/form/visit/subject)
      - Requires ``pymongo`` and a MongoDB URI. Graph traversal and relationship
        analytics are weaker than a native graph store.
+       See :class:`~imednet_sinks.document.MongoDbExportSink` and :func:`~imednet_sinks.document.export_to_mongodb`.
    * - Neo4j
      - Relationship-heavy exploration and lineage queries
      - Preserves the hierarchy ``Study → Subject → Visit → Record`` as nodes and
        relationships, with ``record_data`` attached to ``Record`` nodes
      - Requires ``neo4j`` driver and Bolt/Neo4j endpoint credentials.
        Idempotent mode uses ``MERGE`` for safe re-runs.
+       See :class:`~imednet_sinks.graph.Neo4jExportSink` and :func:`~imednet_sinks.graph.export_to_neo4j`.
    * - Snowflake
      - Warehouse-native analytics and bulk loading at scale
      - Writes Parquet batch files, uploads to an internal stage, then issues
        ``COPY INTO`` for table loading
      - Requires ``snowflake-connector-python`` + ``pyarrow`` and stage privileges
        for ``PUT`` / ``COPY INTO``.
+       See :class:`~imednet_sinks.warehouse.SnowflakeExportSink` and :func:`~imednet_sinks.warehouse.export_to_snowflake`.
 
 SDK examples
 ------------
@@ -61,7 +64,8 @@ MongoDB (document export):
 .. code-block:: python
 
    from imednet import ImednetSDK
-   from imednet.integrations import SinkConfig, export_to_mongodb
+   from imednet.integrations import SinkConfig
+   from imednet_sinks import export_to_mongodb
 
    sdk = ImednetSDK(...)
    rows = export_to_mongodb(
@@ -79,7 +83,7 @@ Neo4j (graph export):
 .. code-block:: python
 
    from imednet import ImednetSDK
-   from imednet.integrations import Neo4jSinkConfig, export_to_neo4j
+   from imednet_sinks import Neo4jSinkConfig, export_to_neo4j
 
    sdk = ImednetSDK(...)
    rows = export_to_neo4j(
@@ -96,7 +100,7 @@ Snowflake (warehouse-native export):
 .. code-block:: python
 
    from imednet import ImednetSDK
-   from imednet.integrations import SnowflakeSinkConfig, export_to_snowflake
+   from imednet_sinks import SnowflakeSinkConfig, export_to_snowflake
 
    sdk = ImednetSDK(...)
    cfg = SnowflakeSinkConfig(
