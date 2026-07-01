@@ -182,14 +182,21 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         api_key: Optional[str] = None,
         security_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout: float = 30.0,
+        timeout: Optional[float] = None,
+        strict_mode: Optional[bool] = None,
         retries: int = 3,
         backoff_factor: float = 1.0,
         retry_policy: RetryPolicy | None = None,
         client: Optional[Client] = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
-        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
+        config = load_config(
+            api_key=api_key,
+            security_key=security_key,
+            base_url=base_url,
+            timeout=timeout,
+            strict_mode=strict_mode,
+        )
 
         self.config = config
         self._api_key = config.api_key
@@ -201,7 +208,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         else:
             self._client = ClientFactory.create_client(
                 config=config,
-                timeout=timeout,
+                timeout=config.timeout,
                 retries=retries,
                 backoff_factor=backoff_factor,
                 retry_policy=retry_policy,
@@ -297,7 +304,8 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         api_key: Optional[str] = None,
         security_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout: float = 30.0,
+        timeout: Optional[float] = None,
+        strict_mode: Optional[bool] = None,
         retries: int = 3,
         backoff_factor: float = 1.0,
         retry_policy: RetryPolicy | None = None,
@@ -310,12 +318,19 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             security_key: iMednet security key.
             base_url: Base URL for the iMednet API.
             timeout: Default request timeout in seconds.
+            strict_mode: Toggle strict mode for data validation.
             retries: Number of retry attempts.
             backoff_factor: Exponential backoff factor.
             retry_policy: Custom retry policy.
             async_client: Pre-configured async client instance.
         """
-        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
+        config = load_config(
+            api_key=api_key,
+            security_key=security_key,
+            base_url=base_url,
+            timeout=timeout,
+            strict_mode=strict_mode,
+        )
         self.config = config
         self._api_key = config.api_key
         self._security_key = config.security_key
@@ -323,7 +338,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
 
         self._async_client = async_client or ClientFactory.create_async_client(
             config=config,
-            timeout=timeout,
+            timeout=config.timeout,
             retries=retries,
             backoff_factor=backoff_factor,
             retry_policy=retry_policy,
