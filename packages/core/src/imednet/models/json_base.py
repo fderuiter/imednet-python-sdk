@@ -171,11 +171,15 @@ class JsonModel(BaseModel):
         incoming_keys = set(data.keys())
 
         unexpected_fields = incoming_keys - defined_fields
-        if unexpected_fields and cls.model_config.get("extra") != "ignore":
+        if unexpected_fields:
+            is_strict = parse_bool(os.getenv("IMEDNET_STRICT_MODE", "false"))
             msg = f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}"
-            if msg not in _drift_reported:
-                _drift_reported.add(msg)
-                logger.warning(msg)
+            if is_strict:
+                raise ValueError(msg)
+            elif cls.model_config.get("extra") != "ignore":
+                if msg not in _drift_reported:
+                    _drift_reported.add(msg)
+                    logger.warning(msg)
 
         missing_fields = []
         for name, field in cls.model_fields.items():
