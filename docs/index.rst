@@ -60,11 +60,11 @@ Welcome to imednet's documentation!
    :maxdepth: 2
    :caption: API Reference:
 
-   api/index
-   api/apache_airflow_providers_imednet_api
-   api/imednet_workflows_api
-   api/imednet_streamlit_api
-   api/imednet_sinks_api
+   api/core
+   api/plugins-sinks
+   api/plugins-streamlit
+   api/plugins-workflows
+   api/providers-airflow
 
 
 Indices and tables
