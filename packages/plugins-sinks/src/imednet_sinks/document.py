@@ -129,7 +129,7 @@ class MongoDbExportSink(ExportSink):
     config:
         Optional :class:`~imednet.integrations.sink_base.SinkConfig`.
 
-    Raises:
+    Raises
     ------
     ~imednet.errors.ExportConfigurationError
         When the client cannot connect to the server.

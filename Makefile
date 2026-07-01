@@ -25,6 +25,7 @@ apidocs:
 	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/providers-airflow/src/apache_airflow_providers_imednet -f -M --tocfile apache_airflow_providers_imednet_api
 	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-workflows/src/imednet_workflows -f -M --tocfile imednet_workflows_api
 	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-streamlit/src/imednet_streamlit -f -M --tocfile imednet_streamlit_api
+	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-sinks/src/imednet_sinks -f -M --tocfile imednet_sinks_api
 
 validate-diagrams:
 	@echo "Validating mermaid diagrams..."

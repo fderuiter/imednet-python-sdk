@@ -7,6 +7,10 @@ automate common tasks. The diagrams below outline the main steps in each workflo
 Data Extraction
 ---------------
 
+The data extraction process involves fetching records and applying mapping logic.
+For detailed API information, see :class:`~imednet_workflows.data_extraction.DataExtractionWorkflow`
+and the underlying :class:`~imednet_workflows.record_mapper.RecordMapper` utility used to transform raw data.
+
 .. mermaid:: diagrams/workflow_interactions_8.mmd
 
 Record Update
