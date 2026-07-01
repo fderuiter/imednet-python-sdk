@@ -22,12 +22,6 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
-try:
-    from faker import Faker
-except ImportError:
-    Faker = None  # type: ignore
-
-
 class GeneratedRecordSet(ImednetBaseModel):
     """Output of the generator for a single form spec."""
 
@@ -47,7 +41,7 @@ class SyntheticRecordGenerator:
     seed : Optional[int]
         Random seed for reproducible generation. None means non-deterministic.
     locale : str
-        Faker locale for text data. Default "en_US".
+        Locale (no longer used, kept for backwards compatibility).
     """
 
     def __init__(
@@ -59,24 +53,29 @@ class SyntheticRecordGenerator:
 
         Args:
             seed: Optional seed for reproducibility.
-            locale: Faker locale for text data.
+            locale: Ignored.
         """
         self._rng = random.Random(seed)
         self._seed = seed
         self._locale = locale
-        self._faker: Any | None = None
-        if Faker is not None:
-            self._faker = Faker(locale)
-            if seed is not None:
-                self._faker.seed_instance(seed)
 
-    def _get_faker(self) -> Any:
-        if self._faker is None:
-            raise ImportError(
-                "faker is required for synthetic data generation. "
-                "Install with `pip install imednet-workflows[uat]`"
-            )
-        return self._faker
+    def _lexify(self, text: str) -> str:
+        out = []
+        for c in text:
+            if c == '?':
+                out.append(self._rng.choice('abcdefghijklmnopqrstuvwxyz'))
+            else:
+                out.append(c)
+        return "".join(out)
+
+    def _paragraph(self, nb_sentences: int = 3) -> str:
+        words = ["test", "mock", "fake", "sample", "data", "example"]
+        sentences = []
+        for _ in range(nb_sentences):
+            sentence_words = [self._rng.choice(words) for _ in range(3)]
+            sentence_words[0] = sentence_words[0].title()
+            sentences.append(" ".join(sentence_words) + ".")
+        return " ".join(sentences)
 
     def generate(
         self,
@@ -128,7 +127,7 @@ class SyntheticRecordGenerator:
 
         if v_type == "Text":
             max_len = var_spec.max_length or spec.global_text_length or 10
-            return self._get_faker().lexify("?" * max_len)
+            return self._lexify("?" * max_len)
 
         if v_type in ("Number", "Integer"):
             min_v = var_spec.min_value if var_spec.min_value is not None else 1
@@ -165,7 +164,7 @@ class SyntheticRecordGenerator:
             return ""
 
         if v_type == "TextArea":
-            return self._get_faker().paragraph(nb_sentences=3)
+            return self._paragraph(nb_sentences=3)
 
         if v_type in ("Signature", "File"):
             return ""
@@ -174,7 +173,7 @@ class SyntheticRecordGenerator:
             f"Unrecognized variable type '{v_type}' for variable '{var_spec.variable_name}'. "
             "Defaulting to short text."
         )
-        return self._get_faker().lexify("???????")
+        return self._lexify("???????")
 
     def _generate_data_payloads(
         self, spec: UATSpecification, form_spec: UATFormSpec, subject_pool: List[str]
