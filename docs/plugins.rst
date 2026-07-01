@@ -1,12 +1,13 @@
 Plugin Authoring Guide
 ======================
 
-The iMednet SDK ships two first-party optional plugins:
+The iMednet SDK monorepo contains the following first-party packages:
 
-* :ref:`imednet-streamlit <streamlit-dashboard-plugin>` — interactive Streamlit
-  reporting dashboards.
-* ``imednet-workflows`` — opinionated data-extraction and query-management
-  workflows (see the workflows API reference).
+* :doc:`imednet <api/index>` (Core SDK) — The foundational API client and SDK.
+* :doc:`imednet-workflows <api/imednet_workflows_api>` — Opinionated data-extraction and query-management workflows.
+* :doc:`imednet-sinks <api/imednet_sinks_api>` — Export sinks for data destinations.
+* :doc:`imednet-streamlit <api/imednet_streamlit_api>` — Interactive Streamlit reporting dashboards.
+* :doc:`apache-airflow-providers-imednet <api/apache_airflow_providers_imednet_api>` — Apache Airflow integrations.
 
 The built-in ``imednet-workflows`` package is the reference implementation for
 third-party plugins.  Any third-party package can register its own plugin using

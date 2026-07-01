@@ -37,6 +37,7 @@ sys.path[:0] = [
     os.path.abspath("../packages/providers-airflow/src"),
     os.path.abspath("../packages/plugins-workflows/src"),
     os.path.abspath("../packages/plugins-streamlit/src"),
+    os.path.abspath("../packages/plugins-sinks/src"),
 ]
 warnings.filterwarnings("ignore", message="duplicate object description*")
 warnings.filterwarnings("ignore", message="Failed guarded type import*")
