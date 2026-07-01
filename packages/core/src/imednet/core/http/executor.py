@@ -193,6 +193,27 @@ class BaseRequestExecutor(ABC):
                     return retry_after_seconds
         return float(self._jitter_wait(retry_state))
 
+    def _get_retryer_kwargs(self, method: str) -> dict[str, Any]:
+        """Get common arguments for Retrying and AsyncRetrying."""
+        return {
+            "stop": stop_after_attempt(self.retries),
+            "wait": self._wait_strategy,
+            "retry": self._get_retry_predicate(method),
+            "reraise": False,
+        }
+
+    def _prepare_request(self) -> None:
+        """Perform pre-flight checks before executing the request."""
+        get_global_circuit_breaker().check_request_allowed()
+
+    def _handle_exception(self, e: Exception, monitor: RequestMonitor) -> httpx.Response:
+        """Handle exceptions raised during request execution."""
+        if isinstance(e, RetryError):
+            return self._process_retry_error(e, monitor)
+        else:
+            get_global_circuit_breaker().record_failure()
+            raise
+
     @abstractmethod
     def __call__(self, method: str, url: str, **kwargs: Any) -> Any:
         """Execute the request."""
@@ -236,7 +257,7 @@ class SyncRequestExecutor(BaseRequestExecutor):
             CircuitBreakerError: If the circuit is open.
             Exception: Re-raises exceptions from the send function or retryer.
         """
-        get_global_circuit_breaker().check_request_allowed()
+        self._prepare_request()
 
         def send_fn() -> httpx.Response:
             """Wrapper to send the request with suppressed logging.
@@ -247,25 +268,14 @@ class SyncRequestExecutor(BaseRequestExecutor):
             with self._suppress_httpx_request_logging():
                 return self.send(method, url, **kwargs)
 
-        retryer = Retrying(
-            stop=stop_after_attempt(self.retries),
-            wait=self._wait_strategy,
-            retry=self._get_retry_predicate(method),
-            reraise=False,
-        )
+        retryer = Retrying(**self._get_retryer_kwargs(method))
 
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
                 response: Optional[httpx.Response] = retryer(send_fn)
                 return self._process_result(response, monitor)
             except Exception as e:
-                # If we get connection errors inside send_fn, they are wrapped by Tenacity RetryError?
-                # Tenacity Catches exceptions, but if it doesn't retry, it raises.
-                if isinstance(e, RetryError):
-                    return self._process_retry_error(e, monitor)
-                else:
-                    get_global_circuit_breaker().record_failure()
-                    raise
+                return self._handle_exception(e, monitor)
 
 
 class AsyncRequestExecutor(BaseRequestExecutor):
@@ -306,7 +316,7 @@ class AsyncRequestExecutor(BaseRequestExecutor):
             CircuitBreakerError: If the circuit is open.
             Exception: Re-raises exceptions from the send function or retryer.
         """
-        get_global_circuit_breaker().check_request_allowed()
+        self._prepare_request()
 
         async def send_fn() -> httpx.Response:
             """Wrapper to send the request with suppressed logging.
@@ -317,20 +327,11 @@ class AsyncRequestExecutor(BaseRequestExecutor):
             with self._suppress_httpx_request_logging():
                 return await self.send(method, url, **kwargs)
 
-        retryer = AsyncRetrying(
-            stop=stop_after_attempt(self.retries),
-            wait=self._wait_strategy,
-            retry=self._get_retry_predicate(method),
-            reraise=False,
-        )
+        retryer = AsyncRetrying(**self._get_retryer_kwargs(method))
 
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
                 response: Optional[httpx.Response] = await retryer(send_fn)
                 return self._process_result(response, monitor)
             except Exception as e:
-                if isinstance(e, RetryError):
-                    return self._process_retry_error(e, monitor)
-                else:
-                    get_global_circuit_breaker().record_failure()
-                    raise
+                return self._handle_exception(e, monitor)
