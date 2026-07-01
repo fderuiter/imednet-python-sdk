@@ -97,7 +97,6 @@ autodoc_mock_imports = [
 ]
 
 suppress_warnings = [
-    "ref.ref",
     "toc.excluded",
     "autodoc.import",
     "autodoc",
