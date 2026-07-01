@@ -7,7 +7,6 @@ filtering and saved view support.
 
 from __future__ import annotations
 
-from imednet_streamlit.components.charts import render_accessible_chart
 from dataclasses import dataclass
 from datetime import date
 from typing import Sequence
@@ -24,6 +23,7 @@ from imednet.spi.models import (
 )
 from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
+from imednet_streamlit.components.charts import render_accessible_chart
 
 _HIGH_QUERY_RATE_THRESHOLD = 20.0
 _HIGH_RATE_COLOR = "#ffe0e0"

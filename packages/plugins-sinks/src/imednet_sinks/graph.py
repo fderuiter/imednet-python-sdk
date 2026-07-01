@@ -148,7 +148,7 @@ class Neo4jExportSink(ExportSink):
         Optional :class:`Neo4jSinkConfig` (or plain :class:`SinkConfig`).
         Defaults to :class:`Neo4jSinkConfig` with all values at defaults.
 
-    Raises
+    Raises:
     ------
     ~imednet.errors.ExportConfigurationError
         When the driver cannot connect to the database.

@@ -6,7 +6,6 @@ resolution times across the study.
 
 from __future__ import annotations
 
-from imednet_streamlit.components.charts import render_accessible_chart
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -14,6 +13,7 @@ import streamlit as st
 
 from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
+from imednet_streamlit.components.charts import render_accessible_chart
 
 if TYPE_CHECKING:
     from imednet.spi.facade import ImednetFacade
