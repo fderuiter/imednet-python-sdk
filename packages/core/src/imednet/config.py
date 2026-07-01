@@ -9,6 +9,8 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
+from imednet.utils.validators import parse_bool
+
 __all__ = ["Config", "load_config"]
 
 
@@ -21,12 +23,16 @@ class Config:
         security_key: The security key for authentication.
         base_url: The base URL for the iMednet API.
         oidc_token: Optional OIDC token for authentication.
+        timeout: The default timeout for network requests.
+        strict_mode: Toggle strict mode for data validation.
     """
 
     api_key: Optional[str] = None
     security_key: Optional[str] = None
     base_url: Optional[str] = None
     oidc_token: Optional[str] = None
+    timeout: float = 30.0
+    strict_mode: bool = False
 
     def __repr__(self) -> str:
         """Return a string representation of the configuration.
@@ -36,7 +42,7 @@ class Config:
         Returns:
             A string representation of the configuration.
         """
-        return f"Config(api_key='********', security_key='********', oidc_token='********', base_url={self.base_url!r})"
+        return f"Config(api_key='********', security_key='********', oidc_token='********', base_url={self.base_url!r}, timeout={self.timeout!r}, strict_mode={self.strict_mode!r})"
 
 
 def load_config(
@@ -44,6 +50,8 @@ def load_config(
     security_key: Optional[str] = None,
     base_url: Optional[str] = None,
     oidc_token: Optional[str] = None,
+    timeout: Optional[float] = None,
+    strict_mode: Optional[bool] = None,
 ) -> Config:
     """Return configuration using arguments or environment variables.
 
@@ -52,6 +60,8 @@ def load_config(
         security_key: The security key for authentication. Defaults to IMEDNET_SECURITY_KEY environment variable.
         base_url: The base URL for the iMednet API. Defaults to IMEDNET_BASE_URL environment variable.
         oidc_token: Optional OIDC token. Defaults to IMEDNET_OIDC_TOKEN environment variable.
+        timeout: HTTP request timeout in seconds. Defaults to IMEDNET_TIMEOUT environment variable or 30.0.
+        strict_mode: Toggle strict mode for data validation. Defaults to IMEDNET_STRICT_MODE environment variable or False.
 
     Returns:
         The loaded SDK configuration.
@@ -63,6 +73,25 @@ def load_config(
     security_key = security_key if security_key is not None else os.getenv("IMEDNET_SECURITY_KEY")
     base_url = base_url if base_url is not None else os.getenv("IMEDNET_BASE_URL")
     oidc_token = oidc_token if oidc_token is not None else os.getenv("IMEDNET_OIDC_TOKEN")
+
+    env_timeout_str = os.getenv("IMEDNET_TIMEOUT")
+    if timeout is None and env_timeout_str is not None:
+        try:
+            timeout = float(env_timeout_str)
+        except (ValueError, TypeError):
+            timeout = 30.0
+    if timeout is None:
+        timeout = 30.0
+
+    if strict_mode is None:
+        env_strict_mode = os.getenv("IMEDNET_STRICT_MODE")
+        if env_strict_mode is not None:
+            strict_mode = parse_bool(env_strict_mode)
+        else:
+            strict_mode = False
+            
+    # Set the environment variable so models can read the resolved value during validation
+    os.environ["IMEDNET_STRICT_MODE"] = str(strict_mode).lower()
 
     api_key = (api_key or "").strip() or None
     security_key = (security_key or "").strip() or None
@@ -78,5 +107,10 @@ def load_config(
             raise ValueError("Security key is required when not using OIDC")
 
     return Config(
-        api_key=api_key, security_key=security_key, base_url=base_url, oidc_token=oidc_token
+        api_key=api_key,
+        security_key=security_key,
+        base_url=base_url,
+        oidc_token=oidc_token,
+        timeout=timeout,
+        strict_mode=strict_mode,
     )
