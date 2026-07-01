@@ -1,3 +1,4 @@
+import msgspec
 """Unit tests for tui migration."""
 
 import pytest
@@ -46,8 +47,8 @@ def test_subject_filtering_logic():
     mock_client = Mock()
     mock_client.get.return_value.json.return_value = {
         "data": [
-            s1.model_dump(by_alias=True),
-            s3.model_dump(by_alias=True),
+            msgspec.structs.asdict(s1),
+            msgspec.structs.asdict(s3),
         ],
         "pagination": {"totalPages": 1},
     }

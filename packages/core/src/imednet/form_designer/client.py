@@ -98,7 +98,7 @@ class FormDesignerClient:
         # mode='json' ensures we get a JSON string compatible output
         # by_alias=True might be needed if we defined aliases,
         # but we used direct names matching schema
-        layout_json = layout.model_dump_json(exclude_none=True)
+        layout_json = msgspec.json.encode(layout).decode("utf-8")
 
         # Construct Payload
         # Note: We use a dict and let requests url-encode it

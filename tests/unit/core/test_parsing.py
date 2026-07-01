@@ -2,19 +2,19 @@
 
 from typing import Any, Dict
 
-from pydantic import BaseModel
+from msgspec import Struct
 
 from imednet.core.parsing import ModelParser, get_model_parser
 
 
-class BasicModel(BaseModel):
+class BasicModel(Struct):
     """Test suite for BasicModel."""
 
     id: int
     name: str
 
 
-class CustomModel(BaseModel):
+class CustomModel(Struct):
     """Test suite for CustomModel."""
 
     id: int

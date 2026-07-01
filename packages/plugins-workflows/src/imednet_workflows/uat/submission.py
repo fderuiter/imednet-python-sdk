@@ -6,10 +6,10 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterator, List, Literal, Optional, Set, Union
 
-from pydantic import Field
+from msgspec import field as Field
 
 from imednet.spi.facade import ImednetFacade
-from imednet.spi.models import ImednetBaseModel, Job
+from imednet.spi.models import ImednetStruct, Job
 from imednet_workflows.job_poller import JobPoller
 
 from .generator import GeneratedRecordSet
@@ -18,7 +18,7 @@ from .models import RecordTestType
 logger = logging.getLogger(__name__)
 
 
-class BatchSubmission(ImednetBaseModel):
+class BatchSubmission(ImednetStruct, kw_only=True, omit_defaults=True):
     """Tracks a single API call to records.create()."""
 
     phase: Literal["registration", "data"]
@@ -29,7 +29,7 @@ class BatchSubmission(ImednetBaseModel):
     submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class SubmissionResult(ImednetBaseModel):
+class SubmissionResult(ImednetStruct, kw_only=True, omit_defaults=True):
     """Aggregate result of a full UAT submission run."""
 
     study_key: str

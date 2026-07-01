@@ -1,3 +1,4 @@
+import msgspec
 """Workflow for registering subjects (patients) in iMednet via the Records API.
 
 This workflow is self-contained and does not borrow from record_update.py.
@@ -69,7 +70,7 @@ class RegisterSubjectsWorkflow:
         if errors:
             raise ValueError("; ".join(errors))
 
-        subjects_data = [s.model_dump(by_alias=True) for s in subjects]
+        subjects_data = [msgspec.structs.asdict(s) for s in subjects]
 
         job = self._sdk.create_record(
             study_key=study_key, records_data=subjects_data, email_notify=email_notify

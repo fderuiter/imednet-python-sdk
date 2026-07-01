@@ -6,9 +6,9 @@ import asyncio
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, TypedDict, cast
 
-from pydantic import Field
+from msgspec import field as Field
 
-from imednet.spi.models import Form, ImednetBaseModel, Interval, Site, Variable
+from imednet.spi.models import Form, ImednetStruct, Interval, Site, Variable
 
 if TYPE_CHECKING:
     from imednet import AsyncImednetSDK, ImednetSDK
@@ -22,7 +22,7 @@ class FormVariableMap(TypedDict):
     variables: list[Variable]
 
 
-class StudySnapshot(ImednetBaseModel):
+class StudySnapshot(ImednetStruct, kw_only=True, omit_defaults=True):
     """Point-in-time snapshot of a study's structural metadata."""
 
     study_key: str

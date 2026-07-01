@@ -1,3 +1,4 @@
+import msgspec
 """SQLite-backed version control ledger for study configurations.
 
 Provides immutable, append-only commit history with SHA-256 content hashing,
@@ -163,7 +164,7 @@ class ConfigVersionStore:
         if not user:
             raise ValueError("A user identifier is required to commit.")
 
-        config_json = json.dumps(config.model_dump(mode="json", by_alias=True), sort_keys=True)
+        config_json = json.dumps(msgspec.structs.asdict(config), sort_keys=True)
         commit_id = _sha256_of(config_json)
         timestamp = datetime.now(timezone.utc).isoformat()
 

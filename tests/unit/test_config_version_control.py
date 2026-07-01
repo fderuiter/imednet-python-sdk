@@ -1,6 +1,7 @@
 """Unit tests for ConfigVersionStore (config_version_control module)."""
 
 from __future__ import annotations
+import msgspec
 
 import json
 import sqlite3
@@ -216,7 +217,7 @@ def test_diff_configs_no_changes(store: ConfigVersionStore) -> None:
     """Test that diff configs no changes."""
     # Verify self-diff of a flattened config produces no differences.
     c1 = _make_config(version="1.0.0")
-    config_json = json.dumps(c1.model_dump(mode="json", by_alias=True), sort_keys=True)
+    config_json = json.dumps(msgspec.structs.asdict(c1), sort_keys=True)
     flat = _flatten(json.loads(config_json))
     diff = {
         "added": {k: flat[k] for k in set(flat) - set(flat)},
@@ -323,7 +324,7 @@ def test_commit_content_hash_matches(store: ConfigVersionStore) -> None:
     config = _make_config()
     commit_id = store.commit_config("STUDY-01", config, user="alice", desc="integrity")
 
-    config_json = json.dumps(config.model_dump(mode="json", by_alias=True), sort_keys=True)
+    config_json = json.dumps(msgspec.structs.asdict(config), sort_keys=True)
     expected_id = _sha256_of(config_json)
     assert commit_id == expected_id
 

@@ -1,3 +1,4 @@
+import msgspec
 """TODO: Add docstring."""
 
 import csv
@@ -82,7 +83,7 @@ def main():
                 json_path = os.path.join(output_dir, f"variables_{study.study_key}.json")
                 with open(json_path, "w", encoding="utf-8") as f:
                     json.dump(
-                        [v.model_dump(by_alias=True) for v in variables],
+                        [msgspec.structs.asdict(v) for v in variables],
                         f,
                         indent=2,
                         ensure_ascii=False,

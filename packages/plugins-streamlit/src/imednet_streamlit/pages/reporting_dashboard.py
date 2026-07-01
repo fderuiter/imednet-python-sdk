@@ -1,3 +1,4 @@
+import msgspec
 """Integrated safety reporting dashboard.
 
 Consolidates adverse events, protocol deviations, device deficiencies,
@@ -145,7 +146,7 @@ def _models_to_frame(models: Sequence[object], *, date_column: str | None = None
     if not models:
         return pd.DataFrame()
     rows = [
-        model.model_dump(by_alias=False) if hasattr(model, "model_dump") else dict(vars(model))
+        msgspec.structs.asdict(model) if hasattr(model, "model_dump") else dict(vars(model))
         for model in models
     ]
     df = pd.DataFrame(rows)

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from msgspec import Struct 
+from msgspec import field as Field
 
 from imednet.spi.models import StandardsProfile, ValidationViolation
 from imednet.spi.utils import is_boolean_token, is_missing_value, parse_bool
 
 
-class NormalizationResult(BaseModel):
+class NormalizationResult(Struct, kw_only=True, omit_defaults=True):
     """Result of a record normalization operation."""
 
     normalized_record: dict[str, Any]
@@ -89,7 +90,7 @@ class CategoricalNormalizer:
         return raw_value, None
 
 
-class StandardsReadinessReport(BaseModel):
+class StandardsReadinessReport(Struct, kw_only=True, omit_defaults=True):
     """Comprehensive report on the readiness of data records against clinical standards."""
 
     score: float

@@ -8,7 +8,8 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, Field
+from msgspec import Struct 
+from msgspec import field as Field
 
 from imednet.spi.models import Record, Variable
 from imednet.spi.validation import SchemaCache
@@ -32,7 +33,7 @@ _SCHEMA_TYPE_MAP = {
 }
 
 
-class FieldProfile(BaseModel):
+class FieldProfile(Struct, kw_only=True, omit_defaults=True):
     """Summary statistics for a single form field."""
 
     variable_name: str
@@ -43,7 +44,7 @@ class FieldProfile(BaseModel):
     unique_values: list[str] = Field(default_factory=list)
 
 
-class FormProfile(BaseModel):
+class FormProfile(Struct, kw_only=True, omit_defaults=True):
     """Summary statistics for a single form."""
 
     form_key: str

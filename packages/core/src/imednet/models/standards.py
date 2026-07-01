@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel
+from msgspec import Struct
 
 from imednet.utils.validators import is_missing_value
 
 
-class ValidationViolation(BaseModel):
+class ValidationViolation(Struct, kw_only=True, omit_defaults=True):
     """Represents a violation of a data standard constraint."""
 
     field: str

@@ -1,3 +1,4 @@
+import msgspec
 """Publisher Wizard — secure configuration review and production publish flow.
 
 Integrates :class:`~imednet_workflows.config_version_control.ConfigVersionStore`
@@ -234,7 +235,7 @@ def _render_publish_action(
         try:
             bumped = StudyConfiguration.model_validate(
                 {
-                    **config.model_dump(mode="json", by_alias=True),
+                    **msgspec.structs.asdict(config),
                     "version": _bump_patch(config.version),
                 }
             )
@@ -301,7 +302,7 @@ def render_page() -> None:
 
     st.divider()
     with st.expander("View raw configuration JSON", expanded=False):
-        st.json(json.loads(config.model_dump_json(by_alias=True)))
+        st.json(json.loads(msgspec.json.encode(config).decode("utf-8")))
 
     st.divider()
     _render_diff_section(study_key, store, commit_id)

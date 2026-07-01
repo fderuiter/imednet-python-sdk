@@ -1,3 +1,4 @@
+import msgspec
 """TODO: Add docstring."""
 
 import json
@@ -9,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import pyarrow as pa
-from pydantic import BaseModel
+from msgspec import Struct
 
 from imednet.models.records import Record
 from imednet.testing.fake_data import fake_record
@@ -62,10 +63,10 @@ def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
     # 2. Benchmark: Model serialization (Mongo simulation)
     start = time.time()
     for r in records:
-        if isinstance(r, BaseModel):
-            r.model_dump(by_alias=True)
+        if isinstance(r, Struct):
+            msgspec.structs.asdict(r)
         else:
-            r.model_dump()
+            msgspec.to_builtins(r)
     elapsed = time.time() - start
     results["mongo_conversion_latency"] = elapsed
     print(f"Mongo conversion (serialization) for {record_count} records in {elapsed:.4f}s")

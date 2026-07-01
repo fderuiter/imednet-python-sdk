@@ -6,7 +6,7 @@ import pathlib
 import re
 from typing import Any, Dict, List, Optional, Type
 
-from pydantic import ConfigDict, Field, create_model
+from msgspec import field as Field
 
 from imednet.models.json_base import JsonModel
 
@@ -154,28 +154,25 @@ class ModelEngine:
     @classmethod
     def _get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
         """Internal implementation for dynamic model creation."""
+        import msgspec
         schemas = load_schemas()
         if model_name not in schemas:
-            return create_model(model_name, __base__=base_cls)
+            return msgspec.defstruct(model_name, [], bases=(base_cls,), kw_only=True, omit_defaults=True)
 
         schema = schemas[model_name]
-        fields: Dict[str, Any] = {}
+        fields = []
 
         for key, val in schema.items():
             snake_key = to_snake(key)
             # If the base class already defined this field, don't overwrite it
-            if snake_key in base_cls.model_fields:
+            if snake_key in [f.name for f in msgspec.structs.fields(base_cls)]:
                 continue
             typ = get_type_for_value(val)
             if isinstance(typ, tuple):
-                new_field = Field(default=typ[1].default, alias=key)
-                fields[snake_key] = (typ[0], new_field)
+                new_field = Field(default=typ[1].default, name=key)
+                fields.append((snake_key, typ[0], new_field))
 
-        # Also need to preserve fields that the test expected, like 'disabled'
-        # But wait, we can't hardcode them here.
-        # Actually, Pydantic's extra="ignore" lets us parse them but they disappear.
-
-        model = create_model(model_name, __base__=base_cls, **fields)
+        model = msgspec.defstruct(model_name, fields, bases=(base_cls,), kw_only=True, omit_defaults=True)
         return model
 
     @classmethod

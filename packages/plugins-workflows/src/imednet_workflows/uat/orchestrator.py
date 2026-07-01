@@ -8,9 +8,9 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from pydantic import Field
+from msgspec import field as Field
 
-from imednet.spi.models import ImednetBaseModel
+from imednet.spi.models import ImednetStruct
 
 from .generator import GeneratedRecordSet
 from .models import (
@@ -40,7 +40,7 @@ class UATRunPhase(str, Enum):
     MONITOR = "monitor"
 
 
-class UATRunResult(ImednetBaseModel):
+class UATRunResult(ImednetStruct, kw_only=True, omit_defaults=True):
     """Complete result of a UATWorkflow.run() execution."""
 
     study_key: str
@@ -342,4 +342,4 @@ class UATWorkflow:
         )
 
 
-UATRunResult.model_rebuild()
+

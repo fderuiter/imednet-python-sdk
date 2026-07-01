@@ -1,3 +1,4 @@
+import msgspec
 """Subject enrollment dashboard.
 
 Visualizes subject registration trends over time and enrollment status
@@ -53,7 +54,7 @@ def _fetch_sites(_sdk: object, study_key: str) -> pd.DataFrame:
     sites = _sdk.get_sites(study_key=study_key)  # type: ignore[attr-defined]
     if not sites:
         return pd.DataFrame()
-    return pd.DataFrame([s.model_dump() for s in sites])
+    return pd.DataFrame([msgspec.structs.asdict(s) for s in sites])
 
 
 # ── Page header ───────────────────────────────────────────────────────────────

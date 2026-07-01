@@ -2,19 +2,19 @@
 
 from typing import Any
 
-from pydantic import BaseModel
+from msgspec import Struct
 
 from imednet.core.parsing import ModelParser, get_model_parser
 
 
-class SimpleModel(BaseModel):
+class SimpleModel(Struct):
     """Test suite for SimpleModel."""
 
     id: int
     name: str
 
 
-class CustomParseModel(BaseModel):
+class CustomParseModel(Struct):
     """Test suite for CustomParseModel."""
 
     id: int

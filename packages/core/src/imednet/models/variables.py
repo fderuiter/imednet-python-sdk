@@ -5,17 +5,17 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from pydantic import Field
+from msgspec import field as Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
-class Variable(JsonModel):
+class Variable(JsonModel, kw_only=True, omit_defaults=True):
     """Definition of a data field (question) on a form."""
 
-    label: str | None = Field(default=None, alias="label")
-    variable_oid: str | None = Field(default=None, alias="variableOid")
+    label: str | None = Field(default=None)
+    variable_oid: str | None = Field(default=None)
 
 
 Variable = ModelEngine.get_model('Variable', Variable)

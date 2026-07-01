@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from typing import Any, List, Literal, Optional, Union
 
-from pydantic import BaseModel, Field
+from msgspec import Struct 
+from msgspec import field as Field
 
 
-class Choice(BaseModel):
+class Choice(Struct, kw_only=True, omit_defaults=True):
     """A choice for radio or dropdown fields."""
 
     text: str
@@ -15,7 +16,7 @@ class Choice(BaseModel):
     code: str
 
 
-class BaseFieldProps(BaseModel):
+class BaseFieldProps(Struct, kw_only=True, omit_defaults=True):
     """Shared properties for all data capture fields."""
 
     fld_id: Optional[Union[int, str]] = None
@@ -52,14 +53,14 @@ class BaseFieldProps(BaseModel):
     new_fld_id: Optional[Union[int, str]] = None
 
 
-class TableProps(BaseModel):
+class TableProps(Struct, kw_only=True, omit_defaults=True):
     """Properties for a table layout component."""
 
     type: Literal["table"]
     columns: int
 
 
-class LabelProps(BaseModel):
+class LabelProps(Struct, kw_only=True, omit_defaults=True):
     """Properties for a label component."""
 
     type: Literal["label"]
@@ -70,7 +71,7 @@ class LabelProps(BaseModel):
     new_fld_id: Optional[Union[int, str]] = None
 
 
-class SeparatorProps(BaseModel):
+class SeparatorProps(Struct, kw_only=True, omit_defaults=True):
     """Properties for a separator/section header component."""
 
     type: Literal["sep"]
@@ -78,7 +79,7 @@ class SeparatorProps(BaseModel):
     label: Optional[str] = None
 
 
-class ExtQuestionProps(BaseModel):
+class ExtQuestionProps(Struct, kw_only=True, omit_defaults=True):
     """Properties for an external question component."""
 
     type: Literal["ext_question"]
@@ -90,7 +91,7 @@ class ExtQuestionProps(BaseModel):
     source: Optional[int] = None
 
 
-class TextFieldProps(BaseFieldProps):
+class TextFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a text input field."""
 
     type: Literal["text"]
@@ -98,7 +99,7 @@ class TextFieldProps(BaseFieldProps):
     columns: Optional[Union[str, int]] = None
 
 
-class NumberFieldProps(BaseFieldProps):
+class NumberFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a number input field."""
 
     type: Literal["number"]
@@ -108,7 +109,7 @@ class NumberFieldProps(BaseFieldProps):
     suffix: Optional[str] = None
 
 
-class MemoFieldProps(BaseFieldProps):
+class MemoFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a memo/multiline text field."""
 
     type: Literal["memo"]
@@ -117,7 +118,7 @@ class MemoFieldProps(BaseFieldProps):
     rows: Union[str, int]
 
 
-class RadioFieldProps(BaseFieldProps):
+class RadioFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a radio button field."""
 
     type: Literal["radio"]
@@ -125,7 +126,7 @@ class RadioFieldProps(BaseFieldProps):
     radio: Optional[int] = None  # Layout: 1=Vertical, 2=Horizontal
 
 
-class DropdownFieldProps(BaseFieldProps):
+class DropdownFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a dropdown/select field."""
 
     type: Literal["dropdown"]
@@ -137,14 +138,14 @@ class DropdownFieldProps(BaseFieldProps):
     lab_normal: Optional[str] = None
 
 
-class CheckboxFieldProps(BaseFieldProps):
+class CheckboxFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a checkbox field."""
 
     type: Literal["checkbox"]
     choices: Optional[List[Choice]] = None
 
 
-class FileUploadProps(BaseFieldProps):
+class FileUploadProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a file upload field."""
 
     type: Literal["upload"]
@@ -152,7 +153,7 @@ class FileUploadProps(BaseFieldProps):
     max_files: Union[str, int]
 
 
-class DateTimeFieldProps(BaseFieldProps):
+class DateTimeFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a date/time input field."""
 
     type: Literal["datetime"]
@@ -168,7 +169,7 @@ class DateTimeFieldProps(BaseFieldProps):
     allow_no_year: Optional[int] = None
 
 
-class PrecisionDateFieldProps(BaseFieldProps):
+class PrecisionDateFieldProps(BaseFieldProps, kw_only=True, omit_defaults=True):
     """Properties for a precision date input field (supporting partial dates)."""
 
     type: Literal["precisiondate"]
@@ -217,33 +218,33 @@ EntityProps = Union[
 ]
 
 
-class Entity(BaseModel):
+class Entity(Struct, kw_only=True, omit_defaults=True):
     """The 'Component' in the Composite Pattern."""
 
     id: str
-    props: EntityProps = Field(discriminator="type")
+    props: EntityProps 
     rows: Optional[List[Row]] = None
 
 
-class Col(BaseModel):
+class Col(Struct, kw_only=True, omit_defaults=True):
     """A column in a layout table row."""
 
     entities: Optional[List[Entity]] = None
 
 
-class Row(BaseModel):
+class Row(Struct, kw_only=True, omit_defaults=True):
     """A row in a layout table."""
 
     cols: List[Col]
 
 
-class Page(BaseModel):
+class Page(Struct, kw_only=True, omit_defaults=True):
     """Represents a single page within the electronic Case Report Form (CRF)."""
 
     entities: List[Entity]
 
 
-class ProtocolDeviationFormPayload(BaseModel):
+class ProtocolDeviationFormPayload(Struct, kw_only=True, omit_defaults=True):
     """Root object representing the entire form definition payload."""
 
     pages: List[Page]
@@ -253,8 +254,8 @@ class ProtocolDeviationFormPayload(BaseModel):
 Layout = ProtocolDeviationFormPayload
 
 # Handle circular references
-Entity.model_rebuild()
-Col.model_rebuild()
-Row.model_rebuild()
-Page.model_rebuild()
-ProtocolDeviationFormPayload.model_rebuild()
+
+
+
+
+

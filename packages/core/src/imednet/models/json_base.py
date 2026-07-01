@@ -5,8 +5,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Callable, Dict, Union, get_args, get_origin
 
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
-from typing_extensions import Self
+import msgspec
+from typing import TypeVar
 
 from imednet.utils.validators import (
     is_missing_value,
@@ -61,7 +61,7 @@ def _extract_single_item(v: Any) -> Any:
 import types
 
 
-def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], Any]:
+def _get_normalizer(cls: type[msgspec.Struct], field_name: str) -> Callable[[Any], Any]:
     """Determine the appropriate normalization function for a model field.
 
     Analyzes type hints to select a parser for strings, integers, booleans,
@@ -70,8 +70,10 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
     if cls in _NORMALIZERS and field_name in _NORMALIZERS[cls]:
         return _NORMALIZERS[cls][field_name]
 
-    field = cls.model_fields[field_name]
-    annotation = field.annotation
+    field = next((f for f in msgspec.structs.fields(cls) if f.name == field_name), None)
+    if field is None:
+        return _identity
+    annotation = field.type
     origin = get_origin(annotation)
     optional = False
 
@@ -96,7 +98,7 @@ def _get_normalizer(cls: type[BaseModel], field_name: str) -> Callable[[Any], An
         normalizer = _optional_bool if optional else parse_bool
     elif annotation is datetime:
         normalizer = _optional_datetime if optional else parse_datetime
-    elif isinstance(annotation, type) and issubclass(annotation, BaseModel):
+    elif isinstance(annotation, type) and issubclass(annotation, msgspec.Struct):
         normalizer = _extract_single_item
 
     if cls not in _NORMALIZERS:
@@ -110,96 +112,110 @@ import os
 _drift_reported: set[str] = set()
 
 
-class JsonModel(BaseModel):
+
+
+def _strip_strings(data: Any) -> Any:
+    if isinstance(data, dict):
+        return {k: _strip_strings(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [_strip_strings(item) for item in data]
+    elif isinstance(data, str):
+        return data.strip()
+    return data
+
+T = TypeVar("T", bound="JsonModel")
+
+
+
+def _strip_strings(data: Any) -> Any:
+    if isinstance(data, dict):
+        return {k: _strip_strings(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [_strip_strings(item) for item in data]
+    elif isinstance(data, str):
+        return data.strip()
+    return data
+
+T = TypeVar("T", bound="JsonModel")
+
+class JsonModel(msgspec.Struct, kw_only=True, omit_defaults=True):
     """Base model with shared JSON parsing helpers."""
 
-    model_config = ConfigDict(
-        extra="ignore",
-        populate_by_name=True,
-        str_strip_whitespace=True,
-    )
-
     @classmethod
-    def from_json(cls, data: Any) -> Self:
+    def from_json(cls: type[T], data: Any) -> T:
         """Validate data coming from JSON APIs."""
+        data = _strip_strings(data)
         if isinstance(data, list):
             if len(data) > 0 and isinstance(data[0], dict):
                 import logging
-
                 logging.getLogger(__name__).warning(
                     f"Structural shift detected: API returned a list where an object ({cls.__name__}) was expected. Coercing by extracting the first item."
                 )
                 data = data[0]
             elif len(data) == 0:
                 import logging
-
                 logging.getLogger(__name__).warning(
                     f"Structural shift detected: API returned an empty list where an object ({cls.__name__}) was expected. Coercing to empty dict."
                 )
                 data = {}
 
+        if isinstance(data, dict):
+            import logging
+            logger = logging.getLogger("imednet.drift")
+
+            defined_fields = set()
+            for f in msgspec.structs.fields(cls):
+                defined_fields.add(f.name)
+                if f.encode_name:
+                    defined_fields.add(f.encode_name)
+
+            for name in dir(cls):
+                if isinstance(getattr(cls, name), property):
+                    defined_fields.add(name)
+
+            incoming_keys = set(data.keys())
+
+            unexpected_fields = incoming_keys - defined_fields
+            if unexpected_fields:
+                msg = f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}"
+                if msg not in _drift_reported:
+                    _drift_reported.add(msg)
+                    logger.warning(msg)
+
+            missing_fields = []
+            for f in msgspec.structs.fields(cls):
+                if f.default is msgspec.NODEFAULT and f.default_factory is msgspec.NODEFAULT:
+                    if f.name not in incoming_keys and (
+                        not f.encode_name or f.encode_name not in incoming_keys
+                    ):
+                        missing_fields.append(f.name)
+            if missing_fields:
+                msg = f"Drift detected (destructive): {cls.__name__} missing required fields: {', '.join(sorted(missing_fields))}"
+                if msg not in _drift_reported:
+                    _drift_reported.add(msg)
+                    logger.warning(msg)
+
+            # Normalization
+            normalized_data = dict(data)
+            for f in msgspec.structs.fields(cls):
+                key = f.encode_name if f.encode_name and f.encode_name in normalized_data else f.name
+                if key in normalized_data:
+                    v = normalized_data[key]
+                    if isinstance(v, str):
+                        v = v.strip()
+                    try:
+                        norm = _NORMALIZERS[cls][f.name]
+                    except KeyError:
+                        norm = _get_normalizer(cls, f.name)
+                    normalized_data[key] = norm(v)
+            data = normalized_data
+
         try:
-            return cls.model_validate(data)
+            return msgspec.convert(data, type=cls, strict=False)
         except Exception as e:
             import logging
-
             msg = f"Drift detected (destructive): {cls.__name__} validation failed: {e}"
             if msg not in _drift_reported:
                 _drift_reported.add(msg)
                 logging.getLogger("imednet.drift").warning(msg)
             raise
-
-    @model_validator(mode="before")
-    @classmethod
-    def _detect_drift(cls, data: Any) -> Any:
-        """Compare incoming JSON data against the model definition to detect API drift."""
-        if not isinstance(data, dict):
-            return data
-
-        import logging
-
-        logger = logging.getLogger("imednet.drift")
-
-        defined_fields = set(cls.model_fields.keys())
-        for name, field in cls.model_fields.items():
-            if field.alias:
-                defined_fields.add(field.alias)
-
-        if hasattr(cls, "model_computed_fields"):
-            defined_fields.update(cls.model_computed_fields.keys())
-
-        incoming_keys = set(data.keys())
-
-        unexpected_fields = incoming_keys - defined_fields
-        if unexpected_fields and cls.model_config.get("extra") != "ignore":
-            msg = f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}"
-            if msg not in _drift_reported:
-                _drift_reported.add(msg)
-                logger.warning(msg)
-
-        missing_fields = []
-        for name, field in cls.model_fields.items():
-            if field.is_required():
-                if name not in incoming_keys and (
-                    not field.alias or field.alias not in incoming_keys
-                ):
-                    missing_fields.append(name)
-        if missing_fields:
-            msg = f"Drift detected (destructive): {cls.__name__} missing required fields: {', '.join(sorted(missing_fields))}"
-            if msg not in _drift_reported:
-                _drift_reported.add(msg)
-                logger.warning(msg)
-
-        return data
-
-    @field_validator("*", check_fields=False, mode="before")
-    def _normalise(cls, v: Any, info: Any) -> Any:  # noqa: D401
-        """Normalize common primitive types before validation."""
-        if not info.field_name:
-            return v
-
-        # Bolt Optimization: Avoid function call overhead in hot path
-        try:
-            return _NORMALIZERS[cls][info.field_name](v)  # type: ignore[index]
-        except KeyError:
-            return _get_normalizer(cls, info.field_name)(v)  # type: ignore[arg-type]

@@ -6,7 +6,7 @@ This package contains all data models used by the SDK to represent iMedNet resou
 from imednet.models.base import (
     ApiResponse,
     Error,
-    ImednetBaseModel,
+    ImednetStruct,
     Metadata,
     Pagination,
     SortField,
@@ -68,7 +68,7 @@ __all__: list[str] = [
     "Error",
     "Form",
     "FormSummary",
-    "ImednetBaseModel",
+    "ImednetStruct",
     "Interval",
     "Job",
     "JobStatus",

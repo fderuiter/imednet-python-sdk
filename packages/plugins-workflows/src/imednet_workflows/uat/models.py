@@ -8,19 +8,15 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from pydantic import ConfigDict, Field, field_validator, model_validator
-from pydantic.alias_generators import to_camel
+from msgspec import field as Field
 
-from imednet.spi.models import ImednetBaseModel
+from imednet.spi.models import ImednetStruct
 
 
-class UATBaseModel(ImednetBaseModel):
+class UATStruct(ImednetStruct, kw_only=True, omit_defaults=True, rename="camel"):
     """UAT base model with camelCase alias generation."""
 
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-    )
+    
 
 
 class VariableTestStrategy(str, Enum):
@@ -41,7 +37,7 @@ class RecordTestType(str, Enum):
     CREATE_NEW_RECORD = "create_new_record"
 
 
-class UATVariableSpec(UATBaseModel):
+class UATVariableSpec(UATStruct, kw_only=True, omit_defaults=True):
     """Variable-level test specification."""
 
     variable_name: str
@@ -57,23 +53,9 @@ class UATVariableSpec(UATBaseModel):
     required: bool = False
     notes: str | None = None
 
-    @model_validator(mode="before")
-    @classmethod
-    def validate_fixed_strategy(cls, data: Any) -> Any:
-        """Require a fixed value when FIXED strategy is selected."""
-        if not isinstance(data, dict):
-            return data
-
-        strategy = data.get("strategy", VariableTestStrategy.SYNTHETIC)
-        fixed_value = data.get("fixed_value", data.get("fixedValue"))
-        if strategy in (VariableTestStrategy.FIXED, VariableTestStrategy.FIXED.value) and (
-            fixed_value is None
-        ):
-            raise ValueError("fixed_value must be provided when strategy is 'fixed'.")
-        return data
 
 
-class UATFormSpec(UATBaseModel):
+class UATFormSpec(UATStruct, kw_only=True, omit_defaults=True):
     """Form-level UAT test specification."""
 
     form_key: str
@@ -87,35 +69,10 @@ class UATFormSpec(UATBaseModel):
     enabled: bool = True
     notes: str | None = None
 
-    @field_validator("subject_count")
-    @classmethod
-    def validate_subject_count(cls, value: int) -> int:
-        """Enforce safe subject count bounds."""
-        if not 1 <= value <= 100:
-            raise ValueError("subject_count must be between 1 and 100.")
-        return value
-
-    @field_validator("variables")
-    @classmethod
-    def validate_unique_variable_names(
-        cls, variables: list[UATVariableSpec]
-    ) -> list[UATVariableSpec]:
-        """Ensure variables are uniquely identified by variable_name."""
-        seen_names: set[str] = set()
-        duplicates: set[str] = set()
-        for variable in variables:
-            if variable.variable_name in seen_names:
-                duplicates.add(variable.variable_name)
-            seen_names.add(variable.variable_name)
-        if duplicates:
-            duplicate_names = ", ".join(sorted(duplicates))
-            raise ValueError(
-                f"variables contains duplicate variable_name entries: {duplicate_names}."
-            )
-        return variables
 
 
-class UATSubjectSpec(UATBaseModel):
+
+class UATSubjectSpec(UATStruct, kw_only=True, omit_defaults=True):
     """Defines synthetic test subjects to register before form submission."""
 
     site_name: str
@@ -123,16 +80,9 @@ class UATSubjectSpec(UATBaseModel):
     subject_key_prefix: str = "UAT-TEST-"
     keyword_tag: str = "UAT"
 
-    @field_validator("subject_count")
-    @classmethod
-    def validate_subject_count(cls, value: int) -> int:
-        """Enforce safe subject count bounds."""
-        if not 1 <= value <= 100:
-            raise ValueError("subject_count must be between 1 and 100.")
-        return value
 
 
-class UATSpecification(UATBaseModel):
+class UATSpecification(UATStruct, kw_only=True, omit_defaults=True):
     """Root model for a complete UAT test plan."""
 
     spec_version: str = "1.0"
@@ -149,13 +99,6 @@ class UATSpecification(UATBaseModel):
     intervals_snapshot_count: int = 0
     sites_snapshot_count: int = 0
 
-    @field_validator("spec_version")
-    @classmethod
-    def validate_spec_version(cls, value: str) -> str:
-        """Pin this release to v1.0 schema."""
-        if value != "1.0":
-            raise ValueError("spec_version must be '1.0'.")
-        return value
 
     def enabled_forms(self) -> list[UATFormSpec]:
         """Return only enabled forms."""
@@ -176,7 +119,8 @@ class UATSpecification(UATBaseModel):
             content = payload
 
         data = json.loads(content)
-        return cls.model_validate(data)
+        import msgspec
+        return msgspec.convert(data, type=cls)
 
 
 __all__ = [

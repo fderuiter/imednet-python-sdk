@@ -15,7 +15,8 @@ try:
     import pandas as pd
 except ImportError:
     pd = None  # type: ignore
-from pydantic import BaseModel, Field, ValidationError, create_model
+from msgspec import Struct, ValidationError, create_model
+from msgspec import field as Field
 
 from imednet.spi.endpoints import Record as RecordModel  # type: ignore[attr-defined]
 from imednet.spi.endpoints import Variable as VariableModel  # type: ignore[attr-defined]
@@ -102,15 +103,15 @@ class RecordMapper:
 
     def _build_record_model(
         self, variable_keys: List[str], label_map: Dict[str, str]
-    ) -> Type[BaseModel]:
+    ) -> Type[Struct]:
         """Create a dynamic model for the record data payload."""
         fields: Dict[str, Tuple[Optional[Any], Any]] = {}
         for key in variable_keys:
             fields[key] = (
                 Optional[Any],
-                Field(None, alias=key, description=label_map.get(key, key)),
+                Field(None, name=key, description=label_map.get(key, key)),
             )
-        return create_model("RecordData", __base__=BaseModel, **fields)  # type: ignore
+        return create_model("RecordData", __base__=Struct, **fields)  # type: ignore
 
     def _fetch_records(
         self,
@@ -220,7 +221,7 @@ class RecordMapper:
     def _parse_record(
         self,
         rec: RecordModel,
-        record_model: Type[BaseModel],
+        record_model: Type[Struct],
     ) -> Dict[str, Any]:
         """Parse a single record using the dynamic Pydantic model.
 
@@ -250,7 +251,7 @@ class RecordMapper:
         return {**meta, **parsed}
 
     def _parse_records(
-        self, records: Iterable[RecordModel], record_model: Type[BaseModel]
+        self, records: Iterable[RecordModel], record_model: Type[Struct]
     ) -> Tuple[List[Dict[str, Any]], int]:
         """Parse raw records into row dictionaries and count failures."""
         rows: List[Dict[str, Any]] = []
@@ -263,7 +264,7 @@ class RecordMapper:
     def _iter_parsed_rows(
         self,
         records: Iterable[RecordModel],
-        record_model: Type[BaseModel],
+        record_model: Type[Struct],
     ) -> Iterator[Tuple[List[Dict[str, Any]], int]]:
         """Iterate over records and parse them in chunks.
 
@@ -401,7 +402,7 @@ class RecordMapper:
         study_struct = get_study_structure(self.sdk, study_key)
 
         # 1. Build form-scoped models
-        form_models: Dict[int, Type[BaseModel]] = {}
+        form_models: Dict[int, Type[Struct]] = {}
         form_label_maps: Dict[int, Dict[str, str]] = {}
 
         for interval in study_struct.intervals:

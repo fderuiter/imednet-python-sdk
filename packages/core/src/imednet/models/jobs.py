@@ -5,13 +5,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import Field, field_validator
+from msgspec import field as Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
-class Job(JsonModel):
+class Job(JsonModel, kw_only=True, omit_defaults=True):
     """Represents an asynchronous background job."""
 
     @property
@@ -41,21 +41,6 @@ class JobStatus(Job):
     """Extended job information returned when polling."""
 
     results: Any = Field(default=None)
-
-    @field_validator("progress", mode="before", check_fields=False)
-    def _parse_progress(cls, v: Any) -> int:
-        """Parse progress value as an integer.
-
-        Args:
-            v: The progress value from the API.
-
-        Returns:
-            The parsed integer progress.
-        """
-        try:
-            return int(v)
-        except (TypeError, ValueError):
-            return 0
 
     @property
     def total_records(self) -> int:

@@ -8,59 +8,45 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import Field, field_validator
+from msgspec import field as Field
 
 from imednet.models.json_base import JsonModel
 from imednet.models.standards import PROFILE_REGISTRY
 
 
-class MappingRule(JsonModel):
+class MappingRule(JsonModel, kw_only=True, omit_defaults=True):
     """Mapping from raw source variable to canonical reporting field."""
 
-    domain: str = Field(..., alias="domain")
-    target_field: str = Field(..., alias="targetField")
-    source_form_key: str = Field(..., alias="sourceFormKey")
-    source_variable_name: str = Field(..., alias="sourceVariableName")
-    fallback_value: Optional[str] = Field(None, alias="fallbackValue")
-    business_logic: Optional[str] = Field(None, alias="businessLogic")
-    is_baseline: bool = Field(False, alias="isBaseline")
+    domain: str 
+    target_field: str 
+    source_form_key: str 
+    source_variable_name: str 
+    fallback_value: Optional[str] = Field(default=None)
+    business_logic: Optional[str] = Field(default=None)
+    is_baseline: bool = Field(default=False)
 
 
-class WidgetConfig(JsonModel):
+class WidgetConfig(JsonModel, kw_only=True, omit_defaults=True):
     """Declarative dashboard widget configuration."""
 
-    widget_id: str = Field(..., alias="widgetId")
-    type: str = Field(..., alias="type")
-    title: str = Field(..., alias="title")
-    domain: str = Field(..., alias="domain")
-    x_axis: Optional[str] = Field(None, alias="xAxis")
-    y_axis: Optional[str] = Field(None, alias="yAxis")
-    layout_cols: int = Field(12, alias="layoutCols")
+    widget_id: str 
+    type: str 
+    title: str 
+    domain: str 
+    x_axis: Optional[str] = Field(default=None)
+    y_axis: Optional[str] = Field(default=None)
+    layout_cols: int = Field(default=12)
 
 
-class StudyConfiguration(JsonModel):
+class StudyConfiguration(JsonModel, kw_only=True, omit_defaults=True):
     """Serialized study reporting dashboard configuration."""
 
-    version: str = Field("1.0.0", alias="version")
-    study_key: str = Field(..., alias="studyKey")
-    reporting_profile: str = Field("general", alias="reportingProfile")
-    mappings: list[MappingRule] = Field(default_factory=list, alias="mappings")
+    version: str = Field(default="1.0.0")
+    study_key: str 
+    reporting_profile: str = Field(default="general")
+    mappings: list[MappingRule] = Field(default_factory=list)
     terminology_lookups: dict[str, dict[str, str]] = Field(
-        default_factory=dict, alias="terminologyLookups"
+        default_factory=dict, name="terminologyLookups"
     )
-    widgets: list[WidgetConfig] = Field(default_factory=list, alias="widgets")
-    phi_fields: list[str] = Field(default_factory=list, alias="phiFields")
-
-    @field_validator("reporting_profile", check_fields=False, mode="before")
-    @classmethod
-    def _validate_reporting_profile(cls, value: object) -> object:
-        """Ensure the reporting profile exists in the registry."""
-        if not isinstance(value, str):
-            raise ValueError("reportingProfile must be a string.")
-
-        profile_name = value.strip().lower()
-        if profile_name in PROFILE_REGISTRY.list_profiles():
-            return profile_name
-
-        available_profiles = ", ".join(PROFILE_REGISTRY.list_profiles())
-        raise ValueError(f"reportingProfile must be one of: {available_profiles}")
+    widgets: list[WidgetConfig] = Field(default_factory=list)
+    phi_fields: list[str] = Field(default_factory=list)

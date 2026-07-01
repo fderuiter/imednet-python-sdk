@@ -1,3 +1,4 @@
+import msgspec
 """Unit tests for fake data."""
 
 from types import SimpleNamespace
@@ -162,7 +163,7 @@ def test_fake_forms_for_cache_from_json() -> None:
     """Test that fake forms for cache from json."""
     forms = fake_data.fake_forms_for_cache(2)
     for form in forms:
-        parsed = Form.from_json(form.model_dump(by_alias=True))
+        parsed = Form.from_json(msgspec.structs.asdict(form))
         assert isinstance(parsed, Form)
 
 
@@ -171,7 +172,7 @@ def test_fake_variables_for_cache_from_json() -> None:
     forms = fake_data.fake_forms_for_cache(1)
     variables = fake_data.fake_variables_for_cache(forms, vars_per_form=2)
     for var in variables:
-        parsed = Variable.from_json(var.model_dump(by_alias=True))
+        parsed = Variable.from_json(msgspec.structs.asdict(var))
         assert isinstance(parsed, Variable)
 
 

@@ -1,3 +1,4 @@
+import msgspec
 """CLI commands for iMednet workflows.
 
 This module provides the Typer/argparse integration for common clinical data
@@ -284,7 +285,7 @@ def setup_subject_parser(subparsers):
     def subject_data(sdk: ImednetFacade, study_key: str, subject_key: str) -> None:
         workflow = SubjectDataWorkflow(sdk)
         data = workflow.get_all_subject_data(study_key, subject_key)
-        print(data.model_dump())
+        print(msgspec.structs.asdict(data))
 
     subj_parser.set_defaults(
         func=lambda args: subject_data(study_key=args.study_key, subject_key=args.subject_key)

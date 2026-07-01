@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import Field
+from msgspec import field as Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
-class Coding(JsonModel):
+class Coding(JsonModel, kw_only=True, omit_defaults=True):
     """Represents a medical coding entry associated with a record."""
 
 

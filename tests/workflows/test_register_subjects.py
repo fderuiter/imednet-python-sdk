@@ -1,3 +1,4 @@
+import msgspec
 """Unit tests for register subjects."""
 
 from unittest.mock import MagicMock
@@ -31,7 +32,7 @@ def test_register_subjects_passes_records_correctly(schema) -> None:
     sdk.subjects.get.assert_not_called()
     sdk.create_record.assert_called_once_with(
         study_key="STUDY",
-        records_data=[req.model_dump(by_alias=True)],
+        records_data=[msgspec.structs.asdict(req)],
         email_notify="test@example.com",
     )
     assert result == job

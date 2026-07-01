@@ -5,33 +5,33 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from pydantic import Field, computed_field
+from msgspec import field as Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
-class Role(JsonModel):
+class Role(JsonModel, kw_only=True, omit_defaults=True):
     """A role assigned to a user within a study or community."""
 
-    role_id: str | None = Field(default=None, alias="roleId")
-    name: str | None = Field(default=None, alias="name")
-    description: str | None = Field(default=None, alias="description")
-    level: int | None = Field(default=None, alias="level")
-    type: str | None = Field(default=None, alias="type")
-    inactive: bool | None = Field(default=None, alias="inactive")
-    community_id: int | None = Field(default=None, alias="communityId")
-    date_created: str | None = Field(default=None, alias="dateCreated")
-    date_modified: str | None = Field(default=None, alias="dateModified")
+    role_id: str | None = Field(default=None)
+    name: str | None = Field(default=None)
+    description: str | None = Field(default=None)
+    level: int | None = Field(default=None)
+    type: str | None = Field(default=None)
+    inactive: bool | None = Field(default=None)
+    community_id: int | None = Field(default=None)
+    date_created: str | None = Field(default=None)
+    date_modified: str | None = Field(default=None)
 
 
 Role = ModelEngine.get_model('Role', Role)
 
 
-class User(JsonModel):
+class User(JsonModel, kw_only=True, omit_defaults=True):
     """A user account in the system."""
 
-    @computed_field
+    @property
     def name(self) -> str:
         """A convenience full-name property so you can do `user.name`.
 

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import Field
+from msgspec import field as Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
-class RecordRevision(JsonModel):
+class RecordRevision(JsonModel, kw_only=True, omit_defaults=True):
     """Historical version of a record including change reason and user."""
 
     pass

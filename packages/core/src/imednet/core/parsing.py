@@ -8,12 +8,12 @@ from __future__ import annotations
 
 from typing import Any, Callable, Type, TypeVar
 
-from pydantic import BaseModel
+from msgspec import Struct
 
 __all__ = ["ModelParser", "get_model_parser"]
 
 
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T", bound=Struct)
 
 
 def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
@@ -40,7 +40,8 @@ def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
         return model.from_json  # type: ignore[attr-defined,return-value]
 
     # Fall back to Pydantic's model_validate
-    return model.model_validate
+    import msgspec
+    return lambda data: msgspec.convert(data, type=model)
 
 
 class ModelParser:
@@ -59,16 +60,16 @@ class ModelParser:
         2
     """
 
-    def __init__(self, model: Type[BaseModel]) -> None:
+    def __init__(self, model: Type[Struct]) -> None:
         """Initialize parser with a model type.
 
         Args:
             model: The model class to parse data into
         """
         self.model = model
-        self._parse_func: Callable[[Any], BaseModel] = get_model_parser(model)
+        self._parse_func: Callable[[Any], Struct] = get_model_parser(model)
 
-    def parse(self, data: Any) -> BaseModel:
+    def parse(self, data: Any) -> Struct:
         """Parse raw data into a model instance.
 
         Args:
@@ -79,7 +80,7 @@ class ModelParser:
         """
         return self._parse_func(data)
 
-    def parse_many(self, items: list[Any]) -> list[BaseModel]:
+    def parse_many(self, items: list[Any]) -> list[Struct]:
         """Parse a list of raw data items into model instances.
 
         Args:

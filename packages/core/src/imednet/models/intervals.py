@@ -5,26 +5,26 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from pydantic import Field
+from msgspec import field as Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
-class FormSummary(JsonModel):
+class FormSummary(JsonModel, kw_only=True, omit_defaults=True):
     """Minimal form details embedded within an interval definition."""
 
-    form_id: int = Field(0, alias="formId")
-    form_key: str = Field("", alias="formKey")
-    form_name: str = Field("", alias="formName")
+    form_id: int = Field(default=0)
+    form_key: str = Field(default="")
+    form_name: str = Field(default="")
 
     pass
 
 
-class Interval(JsonModel):
+class Interval(JsonModel, kw_only=True, omit_defaults=True):
     """Represents a visit interval or event within the study timeline."""
 
-    forms: list[FormSummary] | None = Field(default=None, alias="forms")
+    forms: list[FormSummary] | None = Field(default=None)
 
 
 Interval = ModelEngine.get_model('Interval', Interval)

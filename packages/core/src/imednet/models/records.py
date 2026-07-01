@@ -5,13 +5,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List
 
-from pydantic import Field, RootModel
+from msgspec import field as Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 
-class Keyword(JsonModel):
+class Keyword(JsonModel, kw_only=True, omit_defaults=True):
     """A keyword or tag associated with a record."""
 
     pass
@@ -20,7 +20,7 @@ class Keyword(JsonModel):
 Keyword = ModelEngine.get_model('Keyword', Keyword)
 
 
-class Record(JsonModel):
+class Record(JsonModel, kw_only=True, omit_defaults=True):
     """A data record for a subject, form, and visit."""
 
     pass
@@ -29,27 +29,28 @@ class Record(JsonModel):
 Record = ModelEngine.get_model('Record', Record)
 
 
-class RecordJobResponse(JsonModel):
+class RecordJobResponse(JsonModel, kw_only=True, omit_defaults=True):
     """Response for a record-related job (batch operations, etc)."""
 
-    job_id: str = Field("", alias="jobId")
-    batch_id: str = Field("", alias="batchId")
-    state: str = Field("", alias="state")
+    job_id: str = Field(default="")
+    batch_id: str = Field(default="")
+    state: str = Field(default="")
 
     pass
 
 
-class RecordData(RootModel[Dict[str, Any]]):
+RecordData = Dict[str, Any]
+class _Dummy:
     """Arbitrary record data as a dictionary."""
 
     pass
 
 
-class BaseRecordRequest(JsonModel):
+class BaseRecordRequest(JsonModel, kw_only=True, omit_defaults=True):
     """Base class for record creation/update requests."""
 
-    form_key: str = Field("", alias="formKey")
-    data: RecordData = Field(default_factory=lambda: RecordData({}), alias="data")
+    form_key: str = Field(default="")
+    data: RecordData = Field(default_factory=lambda: RecordData({}), name="data")
 
     pass
 
@@ -63,9 +64,7 @@ class RegisterSubjectRequest(BaseRecordRequest):
     treat the request as an update and reject it when the key is unknown.
     """
 
-    site_name: str = Field(
-        "", alias="siteName", description="Name of the site where the subject is enrolled"
-    )
+    site_name: str = Field(default="", name="siteName")
 
     pass
 
@@ -73,8 +72,8 @@ class RegisterSubjectRequest(BaseRecordRequest):
 class UpdateScheduledRecordRequest(BaseRecordRequest):
     """Payload for updating an existing scheduled record."""
 
-    subject_key: str = Field("", alias="subjectKey")
-    interval_name: str = Field("", alias="intervalName")
+    subject_key: str = Field(default="")
+    interval_name: str = Field(default="")
 
     pass
 
@@ -82,6 +81,6 @@ class UpdateScheduledRecordRequest(BaseRecordRequest):
 class CreateNewRecordRequest(BaseRecordRequest):
     """Payload for creating a new unscheduled record."""
 
-    subject_key: str = Field("", alias="subjectKey")
+    subject_key: str = Field(default="")
 
     pass

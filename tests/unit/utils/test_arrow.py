@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 import pyarrow as pa
-from pydantic import BaseModel
+from msgspec import Struct
 
 from imednet.utils.arrow import to_arrow_table
 
@@ -43,7 +43,7 @@ def test_to_arrow_table_preserves_datetime_bool_and_float_types() -> None:
 def test_to_arrow_table_accepts_pydantic_like_records() -> None:
     """Test that to arrow table accepts pydantic like records."""
 
-    class Visit(BaseModel):
+    class Visit(Struct):
         """Test suite for Visit."""
 
         subject_key: str

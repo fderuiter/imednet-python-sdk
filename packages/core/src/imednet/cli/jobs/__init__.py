@@ -1,3 +1,4 @@
+import msgspec
 """CLI commands for monitoring background jobs."""
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ def setup_parser(subparsers):
     def job_status(sdk: ImednetSDK, study_key: str, batch_id: str) -> None:
         with fetching_status("job status", study_key):
             job = sdk.get_job(study_key, batch_id)
-        print(job.model_dump())
+        print(msgspec.structs.asdict(job))
 
     status_parser.set_defaults(
         func=lambda args: job_status(study_key=args.study_key, batch_id=args.batch_id)
@@ -40,7 +41,7 @@ def setup_parser(subparsers):
     ) -> None:
         with fetching_status("job result", study_key):
             job = sdk.poll_job(study_key, batch_id, interval=interval, timeout=timeout)
-        print(job.model_dump())
+        print(msgspec.structs.asdict(job))
 
     wait_parser.set_defaults(
         func=lambda args: job_wait(

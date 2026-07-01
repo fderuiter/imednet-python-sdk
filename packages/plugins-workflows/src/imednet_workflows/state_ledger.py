@@ -10,7 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Generator, Optional
 
-from pydantic import BaseModel, Field
+from msgspec import Struct
+from msgspec import field as Field
 
 # Graceful fallback if fcntl is not available (e.g. non-UNIX environments)
 try:
@@ -19,7 +20,7 @@ except ImportError:
     fcntl = None  # type: ignore[assignment]
 
 
-class StreamState(BaseModel):
+class StreamState(Struct, kw_only=True, omit_defaults=True):
     """Schema for individual stream execution checkpoints."""
 
     last_timestamp: datetime
@@ -29,13 +30,13 @@ class StreamState(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
-class StudyState(BaseModel):
+class StudyState(Struct, kw_only=True, omit_defaults=True):
     """Schema for all streams in a given study context."""
 
     streams: Dict[str, StreamState] = Field(default_factory=dict)
 
 
-class LedgerState(BaseModel):
+class LedgerState(Struct, kw_only=True, omit_defaults=True):
     """Schema for the entire ledger file containing all studies."""
 
     studies: Dict[str, StudyState] = Field(default_factory=dict)
@@ -91,7 +92,7 @@ class ExtractionStateLedger:
         """Writes the ledger state atomically using a temporary file."""
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
         # Serialize first to ensure the data is perfectly valid
-        serialized = state.model_dump_json(indent=2)
+        serialized = msgspec.json.encode(state).decode("utf-8")
 
         dir_name = self.ledger_path.parent
         # Write to temp file in the same directory, then rename atomically

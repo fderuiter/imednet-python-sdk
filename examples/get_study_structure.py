@@ -1,3 +1,4 @@
+import msgspec
 """TODO: Add docstring."""
 
 import csv
@@ -50,7 +51,7 @@ try:
     # Save as JSON (handle datetime serialization)
     json_path = os.path.join(output_dir, "study_structure.json")
     with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(structure.model_dump(by_alias=True), f, indent=2, ensure_ascii=False, default=str)
+        json.dump(msgspec.structs.asdict(structure), f, indent=2, ensure_ascii=False, default=str)
 
     # Save as CSV (flattened: interval, form, variable rows)
     csv_path = os.path.join(output_dir, "study_structure.csv")

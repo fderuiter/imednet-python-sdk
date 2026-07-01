@@ -1,3 +1,4 @@
+import msgspec
 """Study setup and configuration wizard.
 
 Guided multi-step workflow for initializing study mappings, profiling EDC
@@ -491,7 +492,7 @@ def _step_terminology() -> None:
     col_clone, col_undo, col_reset = st.columns(3)
     if col_clone.button("Clone configuration snapshot", key="wizard_clone_snapshot"):
         snapshots = cast(list[dict[str, Any]], st.session_state[_KEY_HISTORY])
-        snapshots.append(config.model_dump(mode="json", by_alias=True))
+        snapshots.append(msgspec.structs.asdict(config))
         st.success("Configuration snapshot saved.")
     if col_undo.button("Undo last snapshot", key="wizard_undo_snapshot"):
         snapshots = cast(list[dict[str, Any]], st.session_state[_KEY_HISTORY])
@@ -603,7 +604,7 @@ def _step_export(study_key: str) -> None:
     st.markdown("Download or persist the finalized StudyConfiguration JSON.")
 
     config = _get_mapping_config()
-    payload = json.dumps(config.model_dump(mode="json", by_alias=True), indent=2)
+    payload = json.dumps(msgspec.structs.asdict(config), indent=2)
 
     st.json(json.loads(payload))
     st.download_button(

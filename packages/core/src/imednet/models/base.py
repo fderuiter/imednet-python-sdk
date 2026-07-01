@@ -5,12 +5,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, Generic, List, Optional, TypeVar
 
-from pydantic import Field
+from msgspec import field as Field
 
 from imednet.models.json_base import JsonModel
 
 
-class ImednetBaseModel(JsonModel):
+class ImednetStruct(JsonModel, kw_only=True, omit_defaults=True):
     """Core base model for all iMedNet API responses.
 
     Design philosophy:
@@ -21,45 +21,45 @@ class ImednetBaseModel(JsonModel):
     """
 
 
-class SortField(JsonModel):
+class SortField(JsonModel, kw_only=True, omit_defaults=True):
     """Sorting information for a field in a paginated response."""
 
-    property: str = Field(..., description="Property to sort by")
-    direction: str = Field(..., description="Sort direction (ASC or DESC)")
+    property: str 
+    direction: str
 
 
-class Pagination(JsonModel):
+class Pagination(JsonModel, kw_only=True, omit_defaults=True):
     """Pagination information in an API response."""
 
-    current_page: int = Field(0, alias="currentPage")
-    size: int = Field(25, alias="size")
-    total_pages: int = Field(0, alias="totalPages")
-    total_elements: int = Field(0, alias="totalElements")
+    current_page: int = Field(default=0)
+    size: int = Field(default=25)
+    total_pages: int = Field(default=0)
+    total_elements: int = Field(default=0)
     sort: List[SortField] = Field(default_factory=list)
 
 
-class Error(JsonModel):
+class Error(JsonModel, kw_only=True, omit_defaults=True):
     """Error information in an API response."""
 
-    code: str = Field("", description="Error code")
-    message: str = Field("", description="Error message")
+    code: str = Field(default="")
+    message: str = Field(default="")
     details: Dict[str, Any] = Field(default_factory=dict)
 
 
-class Metadata(JsonModel):
+class Metadata(JsonModel, kw_only=True, omit_defaults=True):
     """Metadata information in an API response."""
 
-    status: str = Field("", description="Response status")
-    method: str = Field("", description="HTTP method")
-    path: str = Field("", description="Request path")
+    status: str = Field(default="")
+    method: str = Field(default="")
+    path: str = Field(default="")
     timestamp: datetime
-    error: Error = Field(default_factory=lambda: Error(code="", message=""))
+    error: Error = Field(default_factory=lambda: Error(code=""))
 
 
 T = TypeVar("T")
 
 
-class ApiResponse(JsonModel, Generic[T]):
+class ApiResponse(JsonModel, Generic[T], kw_only=True, omit_defaults=True):
     """Generic API response model."""
 
     metadata: Metadata

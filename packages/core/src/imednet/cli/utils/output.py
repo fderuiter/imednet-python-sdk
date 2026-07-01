@@ -1,3 +1,4 @@
+import msgspec
 """CLI output formatting and display utilities."""
 
 from __future__ import annotations
@@ -174,7 +175,7 @@ def display_list(
     data_list: List[Dict[str, Any]] = []
 
     if hasattr(first, "model_dump"):
-        data_list = [item.model_dump() for item in items]
+        data_list = [msgspec.structs.asdict(item) for item in items]
     elif hasattr(first, "dict"):
         data_list = [item.dict() for item in items]
     elif isinstance(first, dict):

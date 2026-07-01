@@ -1,9 +1,10 @@
+import msgspec
 """Unit tests for reporting models."""
 
 from datetime import datetime, timezone
 
 import pytest
-from pydantic import ValidationError
+from msgspec import ValidationError
 
 from imednet.models.reporting import AdverseEvent, DeviceDeficiency, ProtocolDeviation
 
@@ -25,7 +26,7 @@ def test_adverse_event_parses_alias_input_and_coerces_types() -> None:
     assert model.ae_term == "Headache"
     assert model.ae_serious is True
     assert model.ae_start_date == datetime(2024, 1, 1, 10, 0, tzinfo=timezone.utc)
-    assert model.model_dump(by_alias=True)["subjectKey"] == "101"
+    assert msgspec.structs.asdict(model)["subjectKey"] == "101"
 
 
 def test_protocol_deviation_applies_defaults_and_parses_datetime_timestamp() -> None:

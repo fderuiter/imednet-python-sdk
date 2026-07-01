@@ -1,13 +1,14 @@
 """Unit tests for uat models."""
 
 from __future__ import annotations
+import msgspec
 
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 from faker import Faker
-from pydantic import ValidationError
+from msgspec import ValidationError
 
 import imednet_workflows.uat.models as uat_models
 from imednet_workflows.uat import (
@@ -51,7 +52,7 @@ def _build_valid_spec() -> UATSpecification:
 def test_json_round_trip_serialization() -> None:
     """Test that json round trip serialization."""
     spec = _build_valid_spec()
-    payload = spec.model_dump_json()
+    payload = msgspec.json.encode(spec).decode("utf-8")
     parsed = UATSpecification.model_validate_json(payload)
     assert parsed == spec
 
@@ -59,7 +60,7 @@ def test_json_round_trip_serialization() -> None:
 def test_alias_dump_uses_camel_case() -> None:
     """Test that alias dump uses camel case."""
     spec = _build_valid_spec()
-    payload = spec.model_dump(by_alias=True)
+    payload = msgspec.structs.asdict(spec)
     assert "studyKey" in payload
     assert "formSpecs" in payload
     assert "subjectSpecs" in payload

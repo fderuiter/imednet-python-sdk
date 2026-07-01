@@ -1,3 +1,4 @@
+import msgspec
 """Unit tests for models."""
 
 from datetime import datetime
@@ -5,7 +6,7 @@ from enum import Enum
 from typing import Any, Union, get_args, get_origin
 
 import pytest
-from pydantic import BaseModel, ValidationError
+from msgspec import Struct, ValidationError
 
 import imednet.models as models
 
@@ -31,7 +32,7 @@ def _build_value(annotation: Any) -> Any:
         if sub is datetime:
             return ""
         return _build_value(sub)
-    if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+    if isinstance(annotation, type) and issubclass(annotation, Struct):
         return _build_sample_data(annotation)
     if annotation is int:
         return "1"
@@ -44,7 +45,7 @@ def _build_value(annotation: Any) -> Any:
     return "value"
 
 
-def _build_sample_data(cls: type[BaseModel]) -> Any:
+def _build_sample_data(cls: type[Struct]) -> Any:
     """Helper function to  build sample data."""
     if getattr(cls, "__pydantic_root_model__", False):
         return {"foo": "bar"}
@@ -59,16 +60,16 @@ def _build_sample_data(cls: type[BaseModel]) -> Any:
 MODEL_CLASSES = [
     cls
     for cls in (v for v in vars(models).values() if isinstance(v, type))
-    if issubclass(cls, BaseModel) and cls.__module__.startswith("imednet.models")
+    if issubclass(cls, Struct) and cls.__module__.startswith("imednet.models")
 ]
 
 
 @pytest.mark.parametrize("model_cls", MODEL_CLASSES)
-def test_model_instantiation_and_dump(model_cls: type[BaseModel]) -> None:
+def test_model_instantiation_and_dump(model_cls: type[Struct]) -> None:
     """Test that model instantiation and dump."""
     sample = _build_sample_data(model_cls)
     model = model_cls.model_validate(sample)
-    dumped = model.model_dump(by_alias=True)
+    dumped = msgspec.structs.asdict(model)
     if not getattr(model_cls, "__pydantic_root_model__", False):
         for name, field in model_cls.model_fields.items():
             alias = field.alias or name
@@ -78,7 +79,7 @@ def test_model_instantiation_and_dump(model_cls: type[BaseModel]) -> None:
 
 
 @pytest.mark.parametrize("model_cls", MODEL_CLASSES)
-def test_missing_required_fields(model_cls: type[BaseModel]) -> None:
+def test_missing_required_fields(model_cls: type[Struct]) -> None:
     """Test that missing required fields."""
     if getattr(model_cls, "__pydantic_root_model__", False):
         model_cls.model_validate({})
@@ -93,7 +94,7 @@ def test_missing_required_fields(model_cls: type[BaseModel]) -> None:
 
 
 @pytest.mark.parametrize("model_cls", MODEL_CLASSES)
-def test_invalid_int_defaults(model_cls: type[BaseModel]) -> None:
+def test_invalid_int_defaults(model_cls: type[Struct]) -> None:
     """Test that invalid int defaults."""
     if getattr(model_cls, "__pydantic_root_model__", False):
         pytest.skip("root model")

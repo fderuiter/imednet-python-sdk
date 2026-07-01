@@ -1,3 +1,4 @@
+import msgspec
 """Airflow hook for retrieving an :class:`ImednetSDK` instance."""
 
 from __future__ import annotations
@@ -106,7 +107,7 @@ class ImednetHook(BaseHook):
         if isinstance(value, (date, datetime)):
             return value.isoformat()
         if hasattr(value, "model_dump"):
-            dumped = value.model_dump(mode="json", by_alias=True)
+            dumped = msgspec.structs.asdict(value)
             value = cast(Any, dumped)
         if isinstance(value, Mapping):
             output: Dict[str, PrimitiveContainer] = {}

@@ -1,3 +1,4 @@
+import msgspec
 """Canonical data extraction engine for iMednet.
 
 This module provides the logic to map raw EDC records into standardized clinical
@@ -11,7 +12,8 @@ import collections
 import logging
 from typing import Any, cast
 
-from pydantic import BaseModel, Field, ValidationError
+from msgspec import Struct, ValidationError
+from msgspec import field as Field
 
 from imednet.spi.models import (
     AdverseEvent,
@@ -37,7 +39,7 @@ _DOMAIN_MODEL_MAP = {
 }
 
 
-class ExtractionResult(BaseModel):
+class ExtractionResult(Struct, kw_only=True, omit_defaults=True):
     """Canonical extraction output grouped by reporting domain."""
 
     adverse_events: list[AdverseEvent] = Field(default_factory=list)
@@ -211,8 +213,8 @@ def extract_canonical_records(
 
         for record in s_records:
             top_level_payload = {
-                **record.model_dump(by_alias=False),
-                **record.model_dump(by_alias=True),
+                **msgspec.structs.asdict(record),
+                **msgspec.structs.asdict(record),
             }
 
             for domain, by_form in grouped_mappings.items():

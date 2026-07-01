@@ -1,3 +1,4 @@
+import msgspec
 """CLI utilities for exporting data to files."""
 
 from __future__ import annotations
@@ -32,7 +33,7 @@ def export_list_to_file(
 
     path = Path(f"{filename_prefix}.{fmt}")
 
-    data = [item.model_dump(by_alias=True) for item in items]
+    data = [msgspec.structs.asdict(item) for item in items]
 
     if fmt == "csv":
         if data:

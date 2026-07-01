@@ -1,7 +1,8 @@
+import msgspec
 """Unit tests for study config."""
 
 import pytest
-from pydantic import ValidationError
+from msgspec import ValidationError
 
 from imednet.models.study_config import MappingRule, StudyConfiguration, WidgetConfig
 
@@ -36,7 +37,7 @@ def test_study_configuration_roundtrip_json_with_aliases() -> None:
         }
     )
 
-    payload_json = config.model_dump_json(by_alias=True)
+    payload_json = msgspec.json.encode(config).decode("utf-8")
     parsed = StudyConfiguration.model_validate_json(payload_json)
 
     assert parsed == config
@@ -63,7 +64,7 @@ def test_study_configuration_accepts_snake_case_field_names() -> None:
         widgets=[WidgetConfig(widget_id="kpi-1", type="kpi_card", title="PD", domain="PD")],
     )
 
-    dumped = config.model_dump(by_alias=True)
+    dumped = msgspec.structs.asdict(config)
 
     assert dumped["studyKey"] == "STUDY-002"
     assert dumped["version"] == "1.0.0"

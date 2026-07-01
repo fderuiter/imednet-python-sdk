@@ -1,3 +1,4 @@
+import msgspec
 """Pandas helpers for working with iMednet models."""
 
 from __future__ import annotations
@@ -18,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checking
 def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.DataFrame:
     """Convert a list of :class:`~imednet.models.records.Record` to a DataFrame.
 
-    Each record is converted using :meth:`pydantic.BaseModel.model_dump` with
+    Each record is converted using :meth:`pydantic.Struct.model_dump` with
     ``by_alias=False``. If ``flatten`` is ``True`` the ``record_data`` column is
     expanded using :func:`pandas.json_normalize` so that each variable becomes a
     column in the resulting DataFrame.
@@ -30,7 +31,7 @@ def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.
             )
         )
 
-    rows = [r.model_dump(by_alias=False) for r in records]
+    rows = [msgspec.structs.asdict(r) for r in records]
     df = pd.DataFrame(rows)
     if flatten and not df.empty:
         record_df = pd.json_normalize(df["record_data"], sep="_")  # type: ignore[arg-type]

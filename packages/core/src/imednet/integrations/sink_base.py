@@ -1,3 +1,4 @@
+import msgspec
 """Shared base classes and helpers for all export sinks.
 
 Architecture decision
@@ -289,7 +290,7 @@ def apply_quality_gate(
 
     for record in records:
         if hasattr(record, "model_dump"):
-            rec_dict = record.model_dump()
+            rec_dict = msgspec.structs.asdict(record)
         elif hasattr(record, "__dict__"):
             rec_dict = {
                 "form_key": getattr(record, "form_key", None),

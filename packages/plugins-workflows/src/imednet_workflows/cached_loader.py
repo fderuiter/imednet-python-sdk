@@ -1,3 +1,4 @@
+import msgspec
 """Workflow for loading study records with local SQLite caching for performance."""
 
 from __future__ import annotations
@@ -255,7 +256,7 @@ class CachedRecordsLoader:
                     if hasattr(record.date_modified, "isoformat")
                     else str(record.date_modified)
                 ),
-                json.dumps(record.model_dump(mode="json", by_alias=True), sort_keys=True),
+                json.dumps(msgspec.structs.asdict(record), sort_keys=True),
             )
             for record in records
         ]

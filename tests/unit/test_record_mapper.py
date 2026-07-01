@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from faker import Faker
-from pydantic import BaseModel, ValidationError
+from msgspec import Struct, ValidationError
 
 from imednet.models.records import Record
 from imednet.models.variables import Variable
@@ -202,7 +202,7 @@ def test_parsing_error_logs_warning(monkeypatch, caplog) -> None:
     )
     sdk.get_records.return_value = [record]
 
-    class DummyModel(BaseModel):
+    class DummyModel(Struct):
         """Test suite for DummyModel."""
 
         def __init__(self, **kwargs):
@@ -243,7 +243,7 @@ def test_parse_records_counts_errors() -> None:
         ),
     ]
 
-    class Dummy(BaseModel):
+    class Dummy(Struct):
         """Test suite for Dummy."""
 
         def __init__(self, **_: Any) -> None:  # noqa: D401 - simple

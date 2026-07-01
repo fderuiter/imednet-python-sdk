@@ -2,7 +2,8 @@
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from msgspec import Struct 
+from msgspec import field as Field
 
 from imednet.spi.models import Query, Record, Subject, Visit
 
@@ -10,11 +11,11 @@ if TYPE_CHECKING:
     from imednet.spi.facade import ImednetFacade
 
 
-class SubjectComprehensiveData(BaseModel):
+class SubjectComprehensiveData(Struct, kw_only=True, omit_defaults=True):
     """Structure to hold aggregated data for a subject."""
 
-    subject_details: Optional[Subject] = Field(None, description="Core details of the subject.")
-    visits: List[Visit] = Field(default_factory=list, description="List of visits for the subject.")
+    subject_details: Optional[Subject] = Field(default=None)
+    visits: List[Visit] = Field(default_factory=list)
     records: List[Record] = Field(
         default_factory=list, description="List of records for the subject."
     )

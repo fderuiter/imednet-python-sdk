@@ -1,3 +1,4 @@
+import msgspec
 """Unit tests for json roundtrip."""
 
 import pytest
@@ -42,7 +43,7 @@ def test_json_roundtrip(cls, payload_func):
     """Test that json roundtrip."""
     payload = payload_func()
     model = cls.from_json(payload)
-    dumped = model.model_dump(by_alias=True)
+    dumped = msgspec.structs.asdict(model)
     assert cls.from_json(dumped) == model
 
 

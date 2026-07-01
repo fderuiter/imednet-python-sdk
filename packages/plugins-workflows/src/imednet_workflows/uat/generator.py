@@ -7,9 +7,9 @@ import random
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from pydantic import Field
+from msgspec import field as Field
 
-from imednet.spi.models import ImednetBaseModel
+from imednet.spi.models import ImednetStruct
 
 from .inspector import StudySnapshot
 from .models import (
@@ -22,7 +22,7 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
-class GeneratedRecordSet(ImednetBaseModel):
+class GeneratedRecordSet(ImednetStruct, kw_only=True, omit_defaults=True):
     """Output of the generator for a single form spec."""
 
     form_key: str

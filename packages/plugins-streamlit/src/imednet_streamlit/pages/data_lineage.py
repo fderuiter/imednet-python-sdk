@@ -1,3 +1,4 @@
+import msgspec
 """Data Lineage Explorer — drill-down from aggregated metrics to raw source records.
 
 Provides an interactive drill-down path from dashboard metric values to the
@@ -71,7 +72,7 @@ def _models_to_frame(
     """Convert a list of canonical models into a pandas DataFrame."""
     if not models:
         return pd.DataFrame()
-    rows = [m.model_dump(mode="python", by_alias=False) for m in models]
+    rows = [msgspec.structs.asdict(m) for m in models]
     return pd.DataFrame(rows)
 
 
@@ -216,7 +217,7 @@ def _render_lineage_trace(
     render_lineage_panes(
         raw_record=raw_record,
         mapping_rules=mapping_rules,
-        canonical_payload=canonical_model.model_dump(mode="python", by_alias=False),
+        canonical_payload=msgspec.structs.asdict(canonical_model),
     )
 
 

@@ -1,11 +1,12 @@
 """Unit tests for triage models."""
 
 from __future__ import annotations
+import msgspec
 
 from datetime import datetime
 
 import pytest
-from pydantic import ValidationError
+from msgspec import ValidationError
 
 from imednet.models.triage import (
     TriageAnnotation,
@@ -17,7 +18,7 @@ from imednet.models.triage import (
 
 def test_triage_models_parse_and_strip_whitespace() -> None:
     """Test that triage models parse and strip whitespace."""
-    item = TriageItem.model_validate(
+    item = TriageItem.from_json(
         {
             "item_id": "  AE-1001  ",
             "study_key": "  STUDY-1 ",
@@ -56,7 +57,7 @@ def test_triage_models_parse_and_strip_whitespace() -> None:
 
 def test_triage_history_blank_comment_normalizes_to_none() -> None:
     """Test that triage history blank comment normalizes to none."""
-    entry = TriageHistoryEntry.model_validate(
+    entry = TriageHistoryEntry.from_json(
         {
             "transition_id": "h-2",
             "from_status": "UNDER_REVIEW",
@@ -88,7 +89,7 @@ def test_triage_json_roundtrip_keeps_enum_values() -> None:
         history=[],
     )
 
-    dumped = item.model_dump(mode="json")
+    dumped = msgspec.to_builtins(item)
 
     assert dumped["status"] == "RESOLVED"
     assert dumped["annotations"][0]["annotation_id"] == "a-2"
@@ -97,7 +98,7 @@ def test_triage_json_roundtrip_keeps_enum_values() -> None:
 def test_triage_models_enforce_schema_constraints() -> None:
     """Test that triage models enforce schema constraints."""
     with pytest.raises(ValidationError) as blank_id_error:
-        TriageAnnotation.model_validate(
+        TriageAnnotation.from_json(
             {
                 "annotation_id": "   ",
                 "user_id": "reviewer",
@@ -105,10 +106,10 @@ def test_triage_models_enforce_schema_constraints() -> None:
                 "timestamp": "2024-01-01T00:00:00Z",
             }
         )
-    assert blank_id_error.value.errors()[0]["loc"] == ("annotation_id",)
+    assert "annotation_id" in str(blank_id_error.value)
 
     with pytest.raises(ValidationError) as status_error:
-        TriageItem.model_validate(
+        TriageItem.from_json(
             {
                 "item_id": "AE-1002",
                 "study_key": "STUDY-1",
@@ -119,4 +120,4 @@ def test_triage_models_enforce_schema_constraints() -> None:
                 "history": [],
             }
         )
-    assert status_error.value.errors()[0]["loc"] == ("status",)
+    assert "status" in str(status_error.value)
