@@ -22,6 +22,7 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
+
 class GeneratedRecordSet(ImednetBaseModel):
     """Output of the generator for a single form spec."""
 
@@ -60,6 +61,7 @@ class SyntheticRecordGenerator:
         self._locale = locale
 
     def _lexify(self, text: str) -> str:
+        """Return a mocked value."""
         out = []
         for c in text:
             if c == '?':
@@ -69,6 +71,7 @@ class SyntheticRecordGenerator:
         return "".join(out)
 
     def _paragraph(self, nb_sentences: int = 3) -> str:
+        """Return a mocked value."""
         words = ["test", "mock", "fake", "sample", "data", "example"]
         sentences = []
         for _ in range(nb_sentences):
@@ -105,6 +108,7 @@ class SyntheticRecordGenerator:
         return results
 
     def _get_subject_pool(self, spec: UATSpecification) -> List[str]:
+        """Return a mocked value."""
         pool = []
         for s_spec in spec.subject_specs:
             for i in range(s_spec.subject_count):
@@ -123,6 +127,7 @@ class SyntheticRecordGenerator:
         return self._synthesize_value(var_spec, spec)
 
     def _synthesize_value(self, var_spec: UATVariableSpec, spec: UATSpecification) -> str:
+        """Return a mocked value."""
         v_type = var_spec.variable_type
 
         if v_type == "Text":

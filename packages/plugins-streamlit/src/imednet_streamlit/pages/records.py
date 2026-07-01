@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from imednet_streamlit.components.charts import render_accessible_chart
 import altair as alt
 import pandas as pd
 import streamlit as st
 
 from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
+from imednet_streamlit.components.charts import render_accessible_chart
 
 RECORD_COLUMNS = [
     "record_id",
