@@ -64,6 +64,7 @@ Welcome to imednet's documentation!
    api/apache_airflow_providers_imednet_api
    api/imednet_workflows_api
    api/imednet_streamlit_api
+   api/imednet_sinks_api
 
 
 Indices and tables

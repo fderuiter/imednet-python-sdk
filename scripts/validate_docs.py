@@ -52,12 +52,57 @@ def check_todos_in_init() -> bool:
     return has_todos
 
 
+def check_packages_registered() -> bool:
+    """Validate that all packages in /packages are registered in docs/conf.py and Makefile."""
+    print("Checking if all packages are registered in build configuration...")
+    import re
+    
+    packages_dir = Path("packages")
+    if not packages_dir.exists():
+        print(f"Warning: Path {packages_dir} not found.")
+        return False
+
+    conf_py_path = Path("docs/conf.py")
+    makefile_path = Path("Makefile")
+    
+    if not conf_py_path.exists() or not makefile_path.exists():
+        print("Warning: docs/conf.py or Makefile not found.")
+        return False
+        
+    conf_py_content = conf_py_path.read_text()
+    makefile_content = makefile_path.read_text()
+    
+    has_errors = False
+    
+    for pkg_dir in packages_dir.iterdir():
+        if not pkg_dir.is_dir():
+            continue
+            
+        pkg_name = pkg_dir.name
+        src_path = f"../packages/{pkg_name}/src"
+        
+        # Check docs/conf.py
+        if src_path not in conf_py_content:
+            print(f"Error: Package {pkg_name} ({src_path}) is missing from docs/conf.py sys.path.")
+            has_errors = True
+            
+        # Check Makefile
+        makefile_pkg_path = f"packages/{pkg_name}/src"
+        if makefile_pkg_path not in makefile_content:
+            print(f"Error: Package {pkg_name} ({makefile_pkg_path}) is missing from Makefile apidocs target.")
+            has_errors = True
+
+    if not has_errors:
+        print("All packages are correctly registered.")
+    return has_errors
+
 def main():
     """Run validation scripts."""
     drift_failed = check_readme_drift()
     todos_failed = check_todos_in_init()
+    packages_failed = check_packages_registered()
 
-    if drift_failed or todos_failed:
+    if drift_failed or todos_failed or packages_failed:
         print("Validation failed.")
         sys.exit(1)
 
