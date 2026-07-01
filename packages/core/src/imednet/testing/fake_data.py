@@ -4,13 +4,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from faker import Faker
+from .data_generator import generator as faker
 
 from imednet.models.forms import Form
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache
-
-faker = Faker()
 
 
 def _timestamp() -> str:

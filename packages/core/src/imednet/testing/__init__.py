@@ -6,10 +6,6 @@
    Its interface is **unstable** and may change between minor releases.
    Do not rely on it in production code.
 
-The ``fake_data`` helpers require the optional ``faker`` package::
-
-    pip install faker
-
 """
 
 __all__ = [
