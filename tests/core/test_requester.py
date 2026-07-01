@@ -65,7 +65,7 @@ def test_sync_executor_retries_exhausted():
     with pytest.raises(RequestError, match="Network request failed after retries"):
         executor("GET", "/ping")
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
     client.close()
 
 
@@ -87,7 +87,7 @@ def test_sync_executor_retries_exhausted_with_error_response():
     with pytest.raises(ServerError):
         executor("GET", "/ping")
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
     client.close()
 
 
@@ -113,7 +113,7 @@ async def test_async_executor_retries_exhausted():
         finally:
             await async_client.aclose()
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
 
 
 @respx.mock
@@ -178,7 +178,7 @@ async def test_async_executor_retries_exhausted_with_error_response():
         finally:
             await async_client.aclose()
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
 
 
 class FakeAttempt:

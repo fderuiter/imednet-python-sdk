@@ -103,7 +103,7 @@ class UniversalExecutor:
     def execute(self, func: Callable[[], T]) -> T:
         """Synchronous execution."""
         from imednet.core.policy_runner import PolicyRunner
-        
+
         runner = PolicyRunner(
             retries=self.retries,
             backoff_factor=self.backoff_factor,
@@ -134,7 +134,7 @@ class UniversalExecutor:
     async def execute_async(self, func: Callable[[], Awaitable[T]]) -> T:
         """Asynchronous execution."""
         from imednet.core.policy_runner import PolicyRunner
-        
+
         runner = PolicyRunner(
             retries=self.retries,
             backoff_factor=self.backoff_factor,

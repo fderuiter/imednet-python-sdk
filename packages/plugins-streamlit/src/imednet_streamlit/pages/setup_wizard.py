@@ -292,7 +292,7 @@ def _existing_mapping_index(
 
 
 def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
-    """Render Step 1: Scan """Render Step 2: Field Mapping.""" Profile Study Structure."""
+    """Render Step 1: Scan & Profile Study Structure."""
     st.subheader("1. Scan & Profile Study Structure")
     st.markdown(
         "Discover forms, profile field populations, and choose source forms "
@@ -517,7 +517,7 @@ def _apply_lookup(config: StudyConfiguration, lookup_key: str, value: Any) -> An
 def _build_preview_rows(
     config: StudyConfiguration, sample_records: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Render Step 4: Layout """Render Step 5: Export / Save.""" Visual Configuration."""
+    """Render Step 4: Layout & Visual Configuration."""
     rows: list[dict[str, Any]] = []
     for record in sample_records:
         row: dict[str, Any] = {
