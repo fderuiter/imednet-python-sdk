@@ -92,9 +92,6 @@ if TYPE_CHECKING:
     from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
-from imednet.utils.job_poller import AsyncJobPoller, JobPoller
-
-
 T = TypeVar("T")
 
 
@@ -193,6 +190,8 @@ class SyncSDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
+        from imednet.utils.job_poller import JobPoller
+
         fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)  # type: ignore[attr-defined]
         return JobPoller(self.jobs.get, fetch_result=fetch_result).run(
             study_key, batch_id, interval, timeout
@@ -255,6 +254,8 @@ class AsyncSDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Asynchronously poll a job until it reaches a terminal state."""
+        from imednet.utils.job_poller import AsyncJobPoller
+
         fetch_result = getattr(self, "_async_client", None) and getattr(
             self._async_client, "get", None
         )  # type: ignore[attr-defined]

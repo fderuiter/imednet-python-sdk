@@ -219,8 +219,7 @@ class JobPoller(BaseJobPoller):
                         self._process_fetch_result(status, res)
                     except Exception:
                         pass
-                if getattr(status, "is_failed", False):
-                    raise JobFailedError(f"Job {batch_id} ended in state {status.state}", status)
+                evaluate_job_state(status)
                 return status
 
             time.sleep(interval)
@@ -371,8 +370,7 @@ class AsyncJobPoller(BaseJobPoller):
                         self._process_fetch_result(status, res)
                     except Exception:
                         pass
-                if getattr(status, "is_failed", False):
-                    raise JobFailedError(f"Job {batch_id} ended in state {status.state}", status)
+                evaluate_job_state(status)
                 return status
 
             await asyncio.sleep(interval)
