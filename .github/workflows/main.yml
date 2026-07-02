@@ -8,6 +8,7 @@ on:
       - "imednet-workflows-v*.*.*"
       - "apache-airflow-providers-imednet-v*.*.*"
       - "imednet-streamlit-v*.*.*"
+      - "imednet-plugins-sinks-v*.*.*"
   pull_request:
     branches: [main]
 
@@ -53,10 +54,24 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      run_integration: ${{ steps.filter.outputs.export_logic }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            export_logic:
+              - 'packages/**/integrations/**'
+              - 'packages/**/tests/integration/**'
+              - 'docker-compose.yml'
 
       - name: Get changed files
         id: changed-files
@@ -111,6 +126,7 @@ jobs:
   quality:
     name: Quality & Security - ${{ matrix.package }}
     needs: plan
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -184,6 +200,7 @@ jobs:
   build:
     name: Build Distribution
     needs: [plan, quality]
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -267,6 +284,7 @@ jobs:
   test:
     name: Test ${{ matrix.package }} (Python ${{ matrix.python-version }})
     needs: [plan, build]
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -344,29 +362,19 @@ jobs:
   # ------------------------------------------------------------------
   integration-sandbox:
     name: Hermetic Integration Sandbox
-    needs: build
+    needs: [plan, build]
+    if: needs.plan.outputs.run_integration == 'true' && needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            export_logic:
-              - 'packages/core/src/imednet/integrations/**'
-              - 'docker-compose.yml'
-              - 'packages/plugins-sinks/tests/integration/test_containerized_sinks.py'
-              
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: "pip"
           cache-dependency-path: "**/pyproject.toml"
-        if: steps.filter.outputs.export_logic == 'true'
 
       - name: Install Dependencies
-        if: steps.filter.outputs.export_logic == 'true'
         run: |
           python -m pip install --upgrade pip
           packages=()
@@ -379,7 +387,6 @@ jobs:
           python -m pip install "${packages[@]}" 
 
       - name: Run Hermetic Integration Sandbox
-        if: steps.filter.outputs.export_logic == 'true'
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
@@ -391,6 +398,7 @@ jobs:
   fuzzing:
     name: Robustness Fuzzing
     needs: build
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -422,6 +430,7 @@ jobs:
   validate-extras:
     name: Validate Documented Extras
     needs: build
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -458,7 +467,7 @@ jobs:
   # ------------------------------------------------------------------
   docs:
     name: Build Documentation
-    needs: quality
+    needs: plan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -496,9 +505,9 @@ jobs:
   # ------------------------------------------------------------------
   deploy-docs:
     name: Deploy to GH Pages
-    needs: [test, docs]
-    # Only deploy docs if tests pass and we are on main
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [plan, test, docs]
+    # Only deploy docs if tests pass (or are skipped) and we are on main
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -643,6 +652,8 @@ jobs:
   # ------------------------------------------------------------------
   accessibility-audit:
     name: WCAG 2.1 Accessibility Audit
+    needs: plan
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
