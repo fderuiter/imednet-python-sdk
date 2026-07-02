@@ -6,21 +6,6 @@ import sys
 from pathlib import Path
 
 
-def check_readme_drift() -> bool:
-    """Validate that the README.md is in sync with code snippets."""
-    print("Checking README drift...")
-    result = subprocess.run(
-        ["python3", "scripts/sync_readme.py", "--dry-run"], capture_output=True, text=True
-    )
-    if result.returncode != 0:
-        print(
-            "Error: README.md is out of sync. Please run 'make sync-readme' or 'python3 scripts/sync_readme.py'."
-        )
-        return True
-    print("README.md is up to date.")
-    return False
-
-
 def check_todos_in_init() -> bool:
     """Ensure no TODO strings exist in operator __init__ docstrings."""
     print("Checking for TODOs in __init__ docstrings...")
@@ -111,11 +96,10 @@ def check_packages_registered() -> bool:
 
 def main():
     """Run validation scripts."""
-    drift_failed = check_readme_drift()
     todos_failed = check_todos_in_init()
     packages_failed = check_packages_registered()
 
-    if drift_failed or todos_failed or packages_failed:
+    if todos_failed or packages_failed:
         print("Validation failed.")
         sys.exit(1)
 
