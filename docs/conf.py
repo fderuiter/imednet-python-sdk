@@ -164,9 +164,8 @@ napoleon_include_init_with_doc = True
 # Templates and static paths
 templates_path: list[str] = ["_templates"]
 exclude_patterns: list[str] = [
-    "REFACTORING_GUIDE.md",
-    "VPAT.md",
-    "plugins/streamlit.md",
+    "tutorials/examples/dummy.py",
+    "reference/VPAT.md",
 ]  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 
@@ -225,3 +224,4 @@ _snowflake_patcher.stop()
 """
 
 html_theme = "furo"
+master_doc = 'index'

@@ -72,7 +72,7 @@ def check_packages_registered() -> bool:
             has_errors = True
 
         # Check docs/index.rst
-        index_pkg_path = f"api/{pkg_name}"
+        index_pkg_path = f"reference/api/{pkg_name}"
         if index_pkg_path not in index_rst_content:
             print(
                 f"Error: Package {pkg_name} ({index_pkg_path}) is missing from docs/index.rst API Reference."
