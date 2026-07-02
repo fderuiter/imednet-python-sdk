@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import altair as alt
 import pandas as pd
+from typing import Literal, Any
 
 # iMednet brand palette — used across all charts
 PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
@@ -144,7 +145,7 @@ import streamlit as st
 
 
 def render_accessible_chart(
-    chart: alt.Chart, use_container_width: bool = True, theme: str = "streamlit", **kwargs
+    chart: alt.Chart, use_container_width: bool = True, theme: Literal["streamlit"] | None = "streamlit", **kwargs: Any
 ) -> None:
     """Render an Altair chart with an accessible tabular data view."""
     title = getattr(chart, "title", "Chart")
