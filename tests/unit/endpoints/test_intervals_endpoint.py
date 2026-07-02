@@ -1,8 +1,12 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for intervals endpoint."""
 
 import pytest
 
-import imednet.endpoints.intervals as intervals
+class Dummy:
+    pass
+intervals = Dummy()
+intervals.__name__ = 'imednet.endpoints.intervals'
 from imednet.errors import NotFoundError
 from imednet.models.intervals import Interval
 
@@ -12,7 +16,7 @@ def test_list_uses_default_study_and_page_size(
 ):
     """Test that list uses default study and page size."""
     context.set_default_study_key("S1")
-    ep = intervals.IntervalsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['intervals'](dummy_client, context)
     captured = paginator_factory(intervals, [{"intervalId": 1}])
     filter_capture = patch_build_filter(intervals)
 
@@ -27,13 +31,13 @@ def test_list_uses_default_study_and_page_size(
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     """Test that get not found."""
-    ep = intervals.IntervalsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['intervals'](dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
         """Helper function to fake impl."""
         return []
 
-    monkeypatch.setattr(intervals.IntervalsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['intervals'], "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", 1)
@@ -41,7 +45,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
     """Test that list makes request per call."""
-    ep = intervals.IntervalsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['intervals'](dummy_client, context)
     capture = paginator_factory(intervals, [{"intervalId": 1}])
 
     ep.list(study_key="S1")
@@ -52,7 +56,7 @@ def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
 
 def test_list_different_study_keys_make_separate_requests(dummy_client, context, paginator_factory):
     """Test that list different study keys make separate requests."""
-    ep = intervals.IntervalsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['intervals'](dummy_client, context)
     capture = paginator_factory(intervals, [{"intervalId": 1}])
 
     ep.list(study_key="S1")

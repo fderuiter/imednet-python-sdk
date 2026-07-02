@@ -1,4 +1,4 @@
 """SPI for endpoints."""
 
-from imednet.endpoints.records import Record
-from imednet.endpoints.variables import Variable
+from imednet.models.records import Record
+from imednet.models.variables import Variable

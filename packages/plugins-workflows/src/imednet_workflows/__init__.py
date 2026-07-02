@@ -5,7 +5,7 @@ from .chunked_pipeline import ChunkedRecordPipeline, iter_chunks
 from .config_version_control import ConfigVersionStore
 from .duckdb_centralizer import DuckDBIngestionWorkflow
 from .extraction_engine import ExtractionResult, extract_canonical_records
-from imednet.utils.job_poller import (
+from imednet.spi.job_poller import (
     AsyncJobPoller,
     JobPoller,
     JobPollSummary,

@@ -1,4 +1,4 @@
-"""Dynamic model generation engine based on unified contract schemas."""
+"""Dynamic model generation engine based on unified contract schemas and manifest schemas."""
 
 import os
 import re
@@ -13,7 +13,7 @@ _CONTRACT_CACHE: Optional[APIContract] = None
 
 
 def get_contract() -> APIContract:
-    """Load API schema contracts lazily.
+    """Load API schema contracts lazily from manifest, OpenAPI, or Postman.
 
     Returns:
         The unified API contract.
@@ -24,12 +24,20 @@ def get_contract() -> APIContract:
 
     builder = ContractBuilder()
 
-    # Priority 1: OpenAPI if provided via IMEDNET_OPENAPI_PATH
+    # Priority 1: Manifest JSON
+    manifest_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "manifest.json"
+    )
+    if os.path.exists(manifest_path):
+        builder.ingest_manifest(manifest_path)
+
+    # Priority 2: OpenAPI if provided via IMEDNET_OPENAPI_PATH
     openapi_path = os.environ.get("IMEDNET_OPENAPI_PATH")
     if openapi_path and os.path.exists(openapi_path):
         builder.ingest_openapi(openapi_path)
     else:
-        # Priority 2: Postman
+        # Priority 3: Postman
         postman_path = os.environ.get("IMEDNET_POSTMAN_PATH")
         if not postman_path:
             local_dev_path = os.path.join(
@@ -55,23 +63,20 @@ def get_contract() -> APIContract:
     _CONTRACT_CACHE = builder.contract
     return _CONTRACT_CACHE
 
-
 def to_snake(name: str) -> str:
     """Convert camelCase or PascalCase strings to snake_case."""
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
-
 try:
     from opentelemetry import trace as _trace
-
     tracer: Any = _trace.get_tracer(__name__)
 except Exception:
     tracer = None
 
-
 class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
+    _model_cache = {}
 
     @classmethod
     def get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
@@ -93,9 +98,14 @@ class ModelEngine:
     @classmethod
     def _get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
         """Internal implementation for dynamic model creation."""
+        if model_name in cls._model_cache:
+            return cls._model_cache[model_name]
+
         contract = get_contract()
         if model_name not in contract.models:
-            return create_model(model_name, __base__=base_cls)
+            model = create_model(model_name, __base__=base_cls)
+            cls._model_cache[model_name] = model
+            return model
 
         model_def = contract.models[model_name]
         fields: Dict[str, Any] = {}
@@ -117,8 +127,8 @@ class ModelEngine:
 
             new_field = Field(default=field_def.default_value, alias=field_def.alias)
             fields[snake_key] = (py_type, new_field)
-
         model = create_model(model_name, __base__=base_cls, **fields)
+        cls._model_cache[model_name] = model
         return model
 
     @classmethod
@@ -234,19 +244,8 @@ class ModelEngine:
             with open(pyi_path, "w") as f:
                 f.write(pyi_content_str)
 
-
 class ResourceRegistry:
-    """Unified resource governance registry serving as the single source of truth for fields."""
-
     @classmethod
     def get_fields(cls, model_name: str) -> List[str]:
-        """Get the field names for a specific dynamic model.
-
-        Args:
-            model_name: The name of the model (e.g., 'Subject', 'Record').
-
-        Returns:
-            A list of field names in snake_case.
-        """
         model = ModelEngine.get_model(model_name)
         return list(model.model_fields.keys())

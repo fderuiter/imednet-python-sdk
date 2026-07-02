@@ -92,7 +92,8 @@ def _is_any(tp: object) -> bool:
 
 def test_jobs_endpoint_get_no_any() -> None:
     """JobsEndpoint.get must use ItemId for item_id, not Any."""
-    from imednet.endpoints.jobs import JobsEndpoint
+    from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+    JobsEndpoint = ENDPOINT_REGISTRY['jobs'] if 'jobs' in ENDPOINT_REGISTRY and 'jobs' not in ASYNC_ENDPOINT_REGISTRY else ASYNC_ENDPOINT_REGISTRY.get('jobs') if 'jobs' in ASYNC_ENDPOINT_REGISTRY and 'Async' in 'JobsEndpoint' else ENDPOINT_REGISTRY.get('jobs')
 
     hints = get_type_hints(JobsEndpoint.get)
     assert not _is_any(hints.get("item_id")), "JobsEndpoint.get: item_id must not be typed as Any"
@@ -100,7 +101,8 @@ def test_jobs_endpoint_get_no_any() -> None:
 
 def test_async_jobs_endpoint_get_no_any() -> None:
     """AsyncJobsEndpoint.async_get must use ItemId for item_id, not Any."""
-    from imednet.endpoints.jobs import AsyncJobsEndpoint
+    from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+    AsyncJobsEndpoint = ENDPOINT_REGISTRY['jobs'] if 'jobs' in ENDPOINT_REGISTRY and 'jobs' not in ASYNC_ENDPOINT_REGISTRY else ASYNC_ENDPOINT_REGISTRY.get('jobs') if 'jobs' in ASYNC_ENDPOINT_REGISTRY and 'Async' in 'AsyncJobsEndpoint' else ENDPOINT_REGISTRY.get('jobs')
 
     hints = get_type_hints(AsyncJobsEndpoint.async_get)
     assert not _is_any(hints.get("item_id")), (
@@ -135,7 +137,8 @@ def test_async_list_get_endpoint_async_list_uses_filter_value() -> None:
 
 def test_records_endpoint_create_no_bare_dict_any() -> None:
     """RecordsEndpoint.create must annotate records_data with JsonDict, not Dict[str, Any]."""
-    from imednet.endpoints.records import RecordsEndpoint
+    from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+    RecordsEndpoint = ENDPOINT_REGISTRY['records'] if 'records' in ENDPOINT_REGISTRY and 'records' not in ASYNC_ENDPOINT_REGISTRY else ASYNC_ENDPOINT_REGISTRY.get('records') if 'records' in ASYNC_ENDPOINT_REGISTRY and 'Async' in 'RecordsEndpoint' else ENDPOINT_REGISTRY.get('records')
 
     hints = get_type_hints(RecordsEndpoint.create)
     records_data_type = hints.get("records_data")

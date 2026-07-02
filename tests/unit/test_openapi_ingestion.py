@@ -41,11 +41,20 @@ def test_openapi_ingestion(tmp_path):
 
     # We need to clear the engine cache
     import imednet.models.engine as engine
+    from unittest.mock import patch
 
     engine._CONTRACT_CACHE = None
+    engine.ModelEngine._model_cache.clear()
 
-    study_model = ModelEngine.get_model("Study")
-    subject_model = ModelEngine.get_model("Subject")
+    original_exists = os.path.exists
+    def mock_exists(path):
+        if "manifest.json" in str(path):
+            return False
+        return original_exists(path)
+
+    with patch("os.path.exists", side_effect=mock_exists):
+        study_model = ModelEngine.get_model("Study")
+        subject_model = ModelEngine.get_model("Subject")
 
     assert "study_key" in study_model.model_fields
     assert "is_disabled" in study_model.model_fields

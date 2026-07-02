@@ -1,8 +1,12 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for visits endpoint."""
 
 import pytest
 
-import imednet.endpoints.visits as visits
+class Dummy:
+    pass
+visits = Dummy()
+visits.__name__ = 'imednet.endpoints.visits'
 from imednet.errors import NotFoundError
 from imednet.models.visits import Visit
 
@@ -10,7 +14,7 @@ from imednet.models.visits import Visit
 def test_list_filters_and_path(dummy_client, context, paginator_factory, patch_build_filter):
     """Test that list filters and path."""
     context.set_default_study_key("S1")
-    ep = visits.VisitsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['visits'](dummy_client, context)
     capture = paginator_factory(visits, [{"visitId": 1}])
     patch = patch_build_filter(visits)
 
@@ -24,13 +28,13 @@ def test_list_filters_and_path(dummy_client, context, paginator_factory, patch_b
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     """Test that get not found."""
-    ep = visits.VisitsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['visits'](dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         """Helper function to fake impl."""
         return []
 
-    monkeypatch.setattr(visits.VisitsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['visits'], "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", 1)

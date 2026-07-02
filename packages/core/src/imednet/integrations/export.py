@@ -369,7 +369,15 @@ def _tabular_export(
 
     filtered_records = apply_quality_gate(sdk, study_key, raw_records, config)
 
-    from imednet_workflows.chunked_pipeline import iter_chunks
+    def iter_chunks(iterable, chunk_size):
+        chunk = []
+        for item in iterable:
+            chunk.append(item)
+            if len(chunk) >= chunk_size:
+                yield chunk
+                chunk = []
+        if chunk:
+            yield chunk
     
     with sink:
         for i, chunk in enumerate(iter_chunks(filtered_records, chunk_size=config.batch_size)):

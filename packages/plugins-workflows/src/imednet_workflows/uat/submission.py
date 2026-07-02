@@ -10,7 +10,7 @@ from pydantic import Field
 
 from imednet.spi.facade import ImednetFacade
 from imednet.spi.models import ImednetBaseModel, Job
-from imednet.utils.job_poller import JobPoller
+from imednet.spi.job_poller import JobPoller
 
 from .generator import GeneratedRecordSet
 from .models import RecordTestType
@@ -206,6 +206,7 @@ class BulkRecordSubmissionWorkflow:
 
     def _await_registration_jobs(self, study_key: str, batches: List[BatchSubmission]) -> None:
         """Block until all Phase 1 jobs reach terminal state."""
+        from imednet.spi.job_poller import JobFailedError
         poller = JobPoller(get_job=self.sdk.get_job)
         failed_batches = []
 
@@ -213,15 +214,17 @@ class BulkRecordSubmissionWorkflow:
             if not batch.job.batch_id:
                 continue
 
-            status = poller.run(
-                study_key,
-                batch.job.batch_id,
-                timeout=int(self.registration_timeout),
-            )
-            # Update the job state in the batch object
-            batch.job.state = status.state
-
-            if not status.state or status.state.upper() not in ("COMPLETED", "SUCCESS"):
+            try:
+                status = poller.run(
+                    study_key,
+                    batch.job.batch_id,
+                    timeout=int(self.registration_timeout),
+                )
+                batch.job.state = status.state
+                if not status.state or status.state.upper() not in ("COMPLETED", "SUCCESS"):
+                    failed_batches.append(batch)
+            except JobFailedError as e:
+                batch.job.state = e.job.state if hasattr(e, "job") and e.job else "FAILED"
                 failed_batches.append(batch)
 
         if failed_batches:

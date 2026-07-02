@@ -1,8 +1,12 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for subjects endpoint."""
 
 import pytest
 
-import imednet.endpoints.subjects as subjects
+class Dummy:
+    pass
+subjects = Dummy()
+subjects.__name__ = 'imednet.endpoints.subjects'
 from imednet.errors import NotFoundError
 from imednet.models.subjects import Subject
 
@@ -12,7 +16,7 @@ def test_list_builds_path_with_default(
 ):
     """Test that list builds path with default."""
     context.set_default_study_key("S1")
-    ep = subjects.SubjectsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['subjects'](dummy_client, context)
     capture = paginator_factory(subjects, [{"subjectKey": "x"}])
     patch = patch_build_filter(subjects)
 
@@ -26,13 +30,13 @@ def test_list_builds_path_with_default(
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     """Test that get not found."""
-    ep = subjects.SubjectsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['subjects'](dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         """Helper function to fake impl."""
         return []
 
-    monkeypatch.setattr(subjects.SubjectsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['subjects'], "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", "X")

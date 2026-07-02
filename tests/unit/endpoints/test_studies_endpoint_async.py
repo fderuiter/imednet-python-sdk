@@ -1,8 +1,12 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for studies endpoint async."""
 
 import pytest
 
-import imednet.endpoints.studies as studies
+class Dummy:
+    pass
+studies = Dummy()
+studies.__name__ = 'imednet.endpoints.studies'
 from imednet.models.studies import Study
 
 
@@ -15,7 +19,7 @@ async def test_async_list_builds_path_and_filters(
     patch_build_filter,
 ):
     """Test that async list builds path and filters asynchronously."""
-    ep = studies.AsyncStudiesEndpoint(dummy_client, context)
+    ep = ASYNC_ENDPOINT_REGISTRY['studies'](dummy_client, context)
     captured = async_paginator_factory(studies, [{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
 

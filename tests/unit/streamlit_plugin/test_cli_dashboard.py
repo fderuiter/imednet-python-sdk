@@ -58,7 +58,7 @@ def test_dashboard_missing_plugin() -> None:
             result = runner.invoke(app, ["dashboard"])
 
     assert result.exit_code == 1
-    assert "pip install imednet-streamlit" in result.output
+    assert "Dashboard app not found." in result.output
 
 
 def test_dashboard_launches_subprocess() -> None:

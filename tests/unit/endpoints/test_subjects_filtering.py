@@ -4,7 +4,9 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncSubjectsEndpoint = ASYNC_ENDPOINT_REGISTRY['subjects']
+SubjectsEndpoint = ENDPOINT_REGISTRY['subjects']
 
 
 def test_list_by_site_filtering():

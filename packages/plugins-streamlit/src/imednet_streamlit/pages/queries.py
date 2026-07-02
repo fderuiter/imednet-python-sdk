@@ -17,7 +17,7 @@ from imednet_streamlit.components.charts import render_accessible_chart
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_queries(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all queries and returns a normalized DataFrame."""
-    from imednet.spi.models import Record, Subject, Query
+    from imednet.spi.models import Query, Record, Subject
     from imednet_workflows.query_management import QueryManagementWorkflow
 
     workflow = QueryManagementWorkflow(sdk=_sdk)  # type: ignore[arg-type]

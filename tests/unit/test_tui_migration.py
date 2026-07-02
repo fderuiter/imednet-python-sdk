@@ -36,7 +36,8 @@ def test_subject_filtering_logic():
     """Verify logic migrated from TUI SubjectTable."""
     from unittest.mock import Mock
 
-    from imednet.endpoints.subjects import SubjectsEndpoint
+    from imednet.endpoints.registry import ENDPOINT_REGISTRY
+    SubjectsEndpoint = ENDPOINT_REGISTRY["subjects"]
 
     # Mock data
     s1 = Subject(studyKey="sk", subjectId=1, siteId=101, subjectKey="s1")
@@ -44,6 +45,7 @@ def test_subject_filtering_logic():
 
     # Mock client and endpoint
     mock_client = Mock()
+    mock_client._tracer = None
     mock_client.get.return_value.json.return_value = {
         "data": [
             s1.model_dump(by_alias=True),
