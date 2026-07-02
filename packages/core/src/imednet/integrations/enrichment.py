@@ -4,6 +4,74 @@ This module provides the :class:`EnrichmentPipeline` for transforming raw API
 data using configured mappings, terminology lookups, and PHI masking rules.
 """
 
+
+import re
+from datetime import datetime, timezone
+from typing import Any, Callable, Dict, Optional, Sequence
+
+from imednet.models.engine import ResourceRegistry
+from imednet.utils.serialization import flatten
+
+
+def _to_snake_case(name: str) -> str:
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+class CentralizedMapper:
+    """Unified Mapper with Enrichment Engine for data sinks."""
+
+    def __init__(self, mode: str = "document", post_processor: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None):
+        """Initialize the mapper.
+        
+        Args:
+            mode: "tabular" for flattened structures, "document" for nested structures.
+            post_processor: Optional function to apply destination-specific formatting.
+        """
+        self.mode = mode
+        self.post_processor = post_processor
+
+    def map_record(self, record: Any, study_key: Optional[str] = None) -> Dict[str, Any]:
+        """Map a clinical record to the unified destination format."""
+        fields = ResourceRegistry.get_fields("Record")
+        
+        mapped = {}
+        for f in fields:
+            val = getattr(record, f, None)
+            snake_key = _to_snake_case(f)
+            
+            if f == "record_data":
+                val = dict(val or {})
+                if self.mode == "tabular":
+                    val = flatten(val)
+                val = {_to_snake_case(k): v for k, v in val.items()}
+                
+            if val is not None or snake_key not in mapped:
+                mapped[snake_key] = val
+
+        # Mandatory Metadata Injection
+        mapped['deleted'] = getattr(record, 'deleted', False)
+        if mapped['deleted'] is None:
+            mapped['deleted'] = False
+        
+        date_mod = getattr(record, 'date_modified', None)
+        if date_mod is None:
+            date_mod = datetime.now(tz=timezone.utc).isoformat()
+        mapped['date_modified'] = date_mod
+        
+        if study_key is not None:
+            mapped['study_key'] = study_key
+        elif 'study_key' not in mapped or not mapped['study_key']:
+            mapped['study_key'] = getattr(record, 'study_key', None)
+
+        from imednet.models.study_config import StudyConfiguration
+        pipeline = EnrichmentPipeline(StudyConfiguration(studyKey=mapped.get('study_key') or "UNKNOWN"))
+        mapped = pipeline.process(mapped)
+
+        if self.post_processor:
+            mapped = self.post_processor(mapped)
+            
+        return mapped
+
 import ast
 import logging
 from typing import Any, Dict

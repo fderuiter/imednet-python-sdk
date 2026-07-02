@@ -89,26 +89,18 @@ def _make_document_id(study_key: str, record_id: Any) -> str:
     return f"{study_key}/{record_id}"
 
 
+def _post_process_document(doc: dict[str, Any]) -> dict[str, Any]:
+    study_key = doc.get("study_key")
+    record_id = doc.get("record_id")
+    doc["_id"] = _make_document_id(str(study_key), record_id)
+    doc["exported_at"] = datetime.now(tz=timezone.utc).isoformat()
+    return doc
+
 def _record_to_document(record: Any, study_key: str) -> dict[str, Any]:
     """Wrap a typed ``Record`` model in the standard document envelope."""
-    from imednet.models.engine import ResourceRegistry
-
-    record_id = getattr(record, "record_id", None)
-    doc = {
-        "_id": _make_document_id(study_key, record_id),
-        "study_key": study_key,
-        "exported_at": datetime.now(tz=timezone.utc).isoformat(),
-    }
-
-    fields = ResourceRegistry.get_fields("Record")
-    for f in fields:
-        val = getattr(record, f, None)
-        if f == "record_data":
-            val = dict(val or {})
-        if val is not None or f not in doc:
-            doc[f] = val
-
-    return doc
+    from imednet.integrations.enrichment import CentralizedMapper
+    mapper = CentralizedMapper(mode="document", post_processor=_post_process_document)
+    return mapper.map_record(record, study_key=study_key)
 
 
 class MongoDbExportSink(ExportSink):
