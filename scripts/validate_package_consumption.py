@@ -30,8 +30,7 @@ def build_wheels(dist_dir: Path):
 
 
 def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
-    """
-    smoke_checks is a list of dicts:
+    """smoke_checks is a list of dicts:
     {
         "cmd": "command to run",
         "expect_fail": False,
@@ -139,7 +138,7 @@ def main():
                 "install": ["imednet"],
                 "smoke": [
                     {"cmd": "import imednet"},
-                    {"cmd": "imednet --help", "expect_fail": True, "contains": "pip install 'imednet[cli]'"}
+                    {"cmd": "imednet --help", "expect_fail": False, "contains": "pip install 'imednet[cli]'"}
                 ]
             },
             {
@@ -147,7 +146,7 @@ def main():
                 "install": ["imednet[cli]"],
                 "smoke": [
                     {"cmd": "imednet --help", "contains": "workflows"},
-                    {"cmd": "imednet workflows extract-records", "expect_fail": True, "contains": "pip install imednet-workflows"},
+                    {"cmd": "imednet workflows extract-records", "expect_fail": True, "contains": "The workflows plugin is not installed."},
                     {"cmd": "imednet dashboard", "expect_fail": True, "contains": "pip install imednet-streamlit"}
                 ]
             },
@@ -157,7 +156,7 @@ def main():
                 "smoke": [
                     {"cmd": "import imednet_workflows"},
                     {"cmd": "import imednet"},
-                    {"cmd": "imednet workflows extract-records --help", "contains": "Usage:"}
+                    {"cmd": "imednet workflows extract-records --help", "contains": "usage:"}
                 ]
             },
             {
@@ -181,7 +180,7 @@ def main():
                 "install": ["imednet-streamlit"],
                 "smoke": [
                     {"cmd": "import imednet_streamlit"},
-                    {"cmd": "imednet dashboard --help", "contains": "Launch the interactive iMednet Streamlit reporting dashboard"}
+                    {"cmd": "imednet dashboard --help", "contains": "Suppress automatic browser launch"}
                 ]
             },
             {

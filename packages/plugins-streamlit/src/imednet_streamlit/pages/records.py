@@ -49,10 +49,10 @@ def _resolve_form_name(form: object) -> str:
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
     """Resolve the human-readable name for a form object."""
-    from imednet.models.engine import ResourceRegistry
+    from imednet.spi.models import Query, Record, Subject
 
     records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
-    fields = ResourceRegistry.get_fields("Record")
+    fields = list(Record.model_fields.keys())
 
     rows = []
     for r in records:
@@ -316,9 +316,9 @@ def render_page() -> None:
         render_accessible_chart(_build_heatmap_chart(heatmap_df), use_container_width=True)
 
     st.subheader("Records Overview")
-    from imednet.models.engine import ResourceRegistry
+    from imednet.spi.models import Query, Record, Subject
 
-    all_fields = ResourceRegistry.get_fields("Record")
+    all_fields = list(Record.model_fields.keys())
     display_cols = [
         c for c in ["record_id", "form_name", "form_key", "subject_key"] if c in df_filtered.columns
     ]

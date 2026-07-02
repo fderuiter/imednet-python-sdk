@@ -44,10 +44,6 @@ doctest: apidocs
 	@echo "Running Sphinx doctests..."
 	$(SPHINXBUILD) -b doctest $(SPHINXOPTS) docs docs/_build/doctest
 
-sync-readme:
-	@echo "Syncing README snippets..."
-	python scripts/sync_readme.py
-
 validate-docs:
 	@echo "Validating documentation..."
 	python scripts/validate_docs.py

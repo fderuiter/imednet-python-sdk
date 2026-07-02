@@ -70,7 +70,11 @@ class CentralizedMapper:
         from imednet.models.study_config import StudyConfiguration
 
         pipeline = EnrichmentPipeline(
-            StudyConfiguration(studyKey=mapped.get('study_key') or "UNKNOWN")  # type: ignore
+            StudyConfiguration(
+                studyKey=mapped.get('study_key') or "UNKNOWN",
+                version="1.0",
+                reportingProfile="general",
+            )
         )
         mapped = pipeline.process(mapped)
 

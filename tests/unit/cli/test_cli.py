@@ -21,8 +21,9 @@ class Result:
 
 class CliRunner:
     def invoke(self, app, args):
-        import io, sys
-        from contextlib import redirect_stdout, redirect_stderr
+        import io
+        import sys
+        from contextlib import redirect_stderr, redirect_stdout
         out = io.StringIO()
         err = io.StringIO()
         exit_code = 0

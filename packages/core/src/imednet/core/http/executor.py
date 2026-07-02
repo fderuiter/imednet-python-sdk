@@ -22,7 +22,7 @@ from tenacity import (
 from imednet.core.http.handlers import handle_response
 from imednet.core.http.monitor import RequestMonitor
 from imednet.core.operations.circuit_breaker import CircuitBreakerError, get_global_circuit_breaker
-from imednet.core.retry import DefaultRetryPolicy, RetryPolicy, RetryState
+from imednet.core.retry import DefaultRetryPolicy, RetryConfig, RetryPolicy, RetryState
 
 _SUPPRESSED_LOG_LEVEL = logging.CRITICAL + 1
 
@@ -38,26 +38,20 @@ class BaseRequestExecutor(ABC):
     def __init__(
         self,
         send: Any,
-        retries: int,
-        backoff_factor: float,
         tracer: Optional[Tracer] = None,
-        retry_policy: RetryPolicy | None = None,
+        retry_config: Optional[RetryConfig] = None,
     ) -> None:
         """Initialize the request executor.
 
         Args:
             send: The function to use for sending requests (sync or async).
-            retries: Maximum number of retry attempts.
-            backoff_factor: Factor for exponential backoff.
             tracer: Optional OpenTelemetry tracer for monitoring.
-            retry_policy: Policy defining which responses/exceptions to retry.
+            retry_config: Centralized configuration for retry behaviors.
         """
         self.send = send
-        self.retries = retries
-        self.backoff_factor = backoff_factor
         self.tracer = tracer
-        self.retry_policy = retry_policy or DefaultRetryPolicy()
-        self._jitter_wait = wait_random_exponential(multiplier=self.backoff_factor)
+        self.retry_config = retry_config or RetryConfig()
+        self._jitter_wait = wait_random_exponential(multiplier=self.retry_config.backoff_factor)
 
     @staticmethod
     @contextmanager
@@ -82,7 +76,7 @@ class BaseRequestExecutor(ABC):
 
     def _get_retry_predicate(self, method: str) -> Callable[[RetryCallState], bool]:
         """Return a retry predicate that includes the HTTP method in state."""
-        policy = self.retry_policy
+        policy = self.retry_config.retry_policy
 
         def should_retry(retry_state: RetryCallState) -> bool:
             """Determine if the request should be retried based on retry state.
@@ -196,10 +190,8 @@ class BaseRequestExecutor(ABC):
     def _get_retryer_kwargs(self, method: str) -> dict[str, Any]:
         """Get common arguments for Retrying and AsyncRetrying."""
         return {
-            "stop": stop_after_attempt(self.retries),
-            "wait": self._wait_strategy,
-            "retry": self._get_retry_predicate(method),
-            "reraise": False,
+            "wait_strategy": self._wait_strategy,
+            "retry_predicate": self._get_retry_predicate(method),
         }
 
     def _prepare_request(self) -> None:
@@ -225,21 +217,17 @@ class SyncRequestExecutor(BaseRequestExecutor):
     def __init__(
         self,
         send: Callable[..., httpx.Response],
-        retries: int,
-        backoff_factor: float,
         tracer: Optional[Tracer] = None,
-        retry_policy: RetryPolicy | None = None,
+        retry_config: Optional[RetryConfig] = None,
     ) -> None:
         """Initialize the synchronous request executor.
 
         Args:
             send: The synchronous function to use for sending requests.
-            retries: Maximum number of retry attempts.
-            backoff_factor: Factor for exponential backoff.
             tracer: Optional OpenTelemetry tracer for monitoring.
-            retry_policy: Policy defining which responses/exceptions to retry.
+            retry_config: Centralized configuration for retry behaviors.
         """
-        super().__init__(send, retries, backoff_factor, tracer, retry_policy)
+        super().__init__(send, tracer, retry_config)
         # self.send is set in super
 
     def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
@@ -268,7 +256,7 @@ class SyncRequestExecutor(BaseRequestExecutor):
             with self._suppress_httpx_request_logging():
                 return self.send(method, url, **kwargs)
 
-        retryer = Retrying(**self._get_retryer_kwargs(method))
+        retryer = self.retry_config.create_retryer(**self._get_retryer_kwargs(method))
 
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
@@ -284,21 +272,17 @@ class AsyncRequestExecutor(BaseRequestExecutor):
     def __init__(
         self,
         send: Callable[..., Awaitable[httpx.Response]],
-        retries: int,
-        backoff_factor: float,
         tracer: Optional[Tracer] = None,
-        retry_policy: RetryPolicy | None = None,
+        retry_config: Optional[RetryConfig] = None,
     ) -> None:
         """Initialize the asynchronous request executor.
 
         Args:
             send: The asynchronous function to use for sending requests.
-            retries: Maximum number of retry attempts.
-            backoff_factor: Factor for exponential backoff.
             tracer: Optional OpenTelemetry tracer for monitoring.
-            retry_policy: Policy defining which responses/exceptions to retry.
+            retry_config: Centralized configuration for retry behaviors.
         """
-        super().__init__(send, retries, backoff_factor, tracer, retry_policy)
+        super().__init__(send, tracer, retry_config)
         # self.send is set in super
 
     async def __call__(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
@@ -327,7 +311,7 @@ class AsyncRequestExecutor(BaseRequestExecutor):
             with self._suppress_httpx_request_logging():
                 return await self.send(method, url, **kwargs)
 
-        retryer = AsyncRetrying(**self._get_retryer_kwargs(method))
+        retryer = self.retry_config.create_async_retryer(**self._get_retryer_kwargs(method))
 
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:

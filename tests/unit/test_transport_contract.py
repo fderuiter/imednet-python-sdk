@@ -11,13 +11,14 @@ import respx
 from imednet import errors
 from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
+from imednet.core.retry import RetryConfig
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
 @respx.mock(base_url="https://example.com")
 def test_retry_contract_by_method_class() -> None:
     """Test that retry contract by method class."""
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=3)
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=2))
 
     get_route = respx.get("/retry-get").mock(return_value=httpx.Response(503))
     with pytest.raises(errors.ServerError):
@@ -87,18 +88,19 @@ async def test_transport_clients_use_base_url_for_relative_paths() -> None:
 def test_retry_after_header_is_respected(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that retry after header is respected."""
     import imednet.core.http.executor as executor_module
+    import imednet.core.retry as retry_module
 
     sleeps: list[float] = []
-    original_retrying = executor_module.Retrying
+    original_retrying = retry_module.Retrying
 
     def retrying_with_captured_sleep(*args, **kwargs):
         """Helper function to retrying with captured sleep."""
         kwargs["sleep"] = lambda seconds: sleeps.append(seconds)
         return original_retrying(*args, **kwargs)
 
-    monkeypatch.setattr(executor_module, "Retrying", retrying_with_captured_sleep)
+    monkeypatch.setattr(retry_module, "Retrying", retrying_with_captured_sleep)
 
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retries=2)
+    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=1))
     route = respx.get("/rate-limited").mock(
         side_effect=[
             httpx.Response(429, headers={"Retry-After": "2"}),
@@ -190,7 +192,7 @@ def test_credentials_are_redacted_from_transport_logs_and_exceptions(
         api_key=api_key,
         security_key=security_key,
         base_url="https://example.com",
-        retries=1,
+        retry_config=RetryConfig(retries=0),
     )
 
     respx.get(sensitive_path).mock(return_value=httpx.Response(200, json={"ok": True}))

@@ -28,11 +28,11 @@ def _fetch_site_metrics(
     _sdk: ImednetFacade, study_key: str, *, now_utc: pd.Timestamp | None = None
 ) -> pd.DataFrame:
     """Build site metrics with site/query counts, rates, and average days open."""
-    from imednet.models.engine import ResourceRegistry
+    from imednet.spi.models import Query, Record, Subject
     from imednet_workflows.query_management import QueryManagementWorkflow
 
     # --- Subjects ---
-    subject_fields = ResourceRegistry.get_fields("Subject")
+    subject_fields = list(Subject.model_fields.keys())
     subjects = _sdk.get_subjects(study_key=study_key)
 
     subject_rows = []
@@ -51,7 +51,7 @@ def _fetch_site_metrics(
     # --- Open Queries ---
     workflow = QueryManagementWorkflow(sdk=_sdk)
     open_queries = workflow.get_open_queries(study_key=study_key)
-    query_fields = ResourceRegistry.get_fields("Query")
+    query_fields = list(Query.model_fields.keys())
 
     query_rows = []
     for q in open_queries:

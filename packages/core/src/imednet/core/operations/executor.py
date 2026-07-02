@@ -20,6 +20,7 @@ from tenacity import (
 
 from imednet.core.operations.circuit_breaker import get_global_circuit_breaker
 from imednet.core.operations.monitor import OperationMonitor
+from imednet.core.retry import RetryConfig
 
 if TYPE_CHECKING:
     from opentelemetry.trace import Tracer
@@ -62,10 +63,8 @@ class UniversalExecutor:
 
     def __init__(
         self,
-        retries: int,
-        backoff_factor: float,
         tracer: Optional[Tracer] = None,
-        retry_policy: Optional[OperationRetryPolicy] = None,
+        retry_config: Optional[RetryConfig] = None,
         operation_name: str = "operation",
         wait_strategy: Optional[Callable[[RetryCallState], float]] = None,
         retry_predicate: Optional[Callable[[RetryCallState], bool]] = None,
@@ -74,22 +73,21 @@ class UniversalExecutor:
         """Initialize the executor.
 
         Args:
-            retries: Maximum number of retry attempts.
-            backoff_factor: Factor for exponential backoff wait calculation.
             tracer: Optional OpenTelemetry tracer for monitoring.
-            retry_policy: Policy defining which exceptions should be retried.
+            retry_config: Centralized configuration for retry behaviors.
             operation_name: Name of the operation (used in logs and spans).
             wait_strategy: Optional custom wait strategy function.
             retry_predicate: Optional custom retry predicate function.
             **attributes: Additional attributes to attach to logs and spans.
         """
-        self.retries = retries
-        self.backoff_factor = backoff_factor
         self.tracer = tracer
-        self.retry_policy = retry_policy or DefaultOperationRetryPolicy()
+        if retry_config is None:
+            self.retry_config = RetryConfig(retry_policy=DefaultOperationRetryPolicy())
+        else:
+            self.retry_config = retry_config
         self.operation_name = operation_name
         self.attributes = attributes
-        self._jitter_wait = wait_random_exponential(multiplier=self.backoff_factor)
+        self._jitter_wait = wait_random_exponential(multiplier=self.retry_config.backoff_factor)
         self.wait_strategy = wait_strategy or (lambda rs: float(self._jitter_wait(rs)))
         self.retry_predicate = retry_predicate or self._should_retry_wrapper
 
@@ -105,18 +103,17 @@ class UniversalExecutor:
         if retry_state.outcome and retry_state.outcome.failed:
             exc = retry_state.outcome.exception()
             if isinstance(exc, Exception):
-                return self.retry_policy.should_retry(exc)
+                if hasattr(self.retry_config.retry_policy, "should_retry"):
+                    return self.retry_config.retry_policy.should_retry(exc)
         return False
 
     def execute(self, func: Callable[[], T]) -> T:
         """Synchronous execution."""
         get_global_circuit_breaker().check_request_allowed()
 
-        retryer = Retrying(
-            stop=stop_after_attempt(self.retries + 1),
-            wait=self.wait_strategy,
-            retry=self.retry_predicate,
-            reraise=False,
+        retryer = self.retry_config.create_retryer(
+            wait_strategy=self.wait_strategy,
+            retry_predicate=self.retry_predicate,
         )
 
         with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
@@ -130,7 +127,7 @@ class UniversalExecutor:
                 cause = e.last_attempt.exception() if e.last_attempt else e
                 if isinstance(cause, Exception):
                     try:
-                        monitor.on_retry_error(cause, self.retries)
+                        monitor.on_retry_error(cause, self.retry_config.retries)
                     except Exception as _exc:
                         if _exc is not cause:
                             raise
@@ -146,11 +143,9 @@ class UniversalExecutor:
         """Asynchronous execution."""
         get_global_circuit_breaker().check_request_allowed()
 
-        retryer = AsyncRetrying(
-            stop=stop_after_attempt(self.retries + 1),
-            wait=self.wait_strategy,
-            retry=self.retry_predicate,
-            reraise=False,
+        retryer = self.retry_config.create_async_retryer(
+            wait_strategy=self.wait_strategy,
+            retry_predicate=self.retry_predicate,
         )
 
         async with OperationMonitor(self.tracer, self.operation_name, **self.attributes) as monitor:
@@ -173,7 +168,7 @@ class UniversalExecutor:
                 cause = e.last_attempt.exception() if e.last_attempt else e
                 if isinstance(cause, Exception):
                     try:
-                        monitor.on_retry_error(cause, self.retries)
+                        monitor.on_retry_error(cause, self.retry_config.retries)
                     except Exception as _exc:
                         if _exc is not cause:
                             raise

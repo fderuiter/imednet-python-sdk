@@ -1,14 +1,14 @@
+import fcntl
 import json
 import logging
 import os
 import time
-import fcntl
 from pathlib import Path
 from typing import Dict
 
 import pyarrow as pa
-from pydantic import BaseModel
 import pytest
+from pydantic import BaseModel
 
 from imednet.models.records import Record
 from imednet.testing.fake_data import fake_record

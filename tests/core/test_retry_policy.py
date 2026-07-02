@@ -1,3 +1,5 @@
+from imednet.core.retry import RetryConfig
+
 """Unit tests for retry policy."""
 
 import httpx
@@ -46,7 +48,7 @@ def test_default_policy_retry_behavior():
 
 def test_default_policy_non_request_exception(monkeypatch):
     """Test that default policy non request exception."""
-    client = Client("k", "s", base_url="https://api.test", retries=3)
+    client = Client("k", "s", base_url="https://api.test", retry_config=RetryConfig(retries=3))
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
@@ -72,7 +74,7 @@ def test_custom_policy(monkeypatch):
             """Helper function to should retry."""
             return isinstance(state.exception, ServerError)
 
-    client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=ServerPolicy())
+    client = Client("k", "s", base_url="https://api.test", retry_config=RetryConfig(retries=3, retry_policy=ServerPolicy()))
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
@@ -101,7 +103,7 @@ def test_custom_policy_based_on_result(monkeypatch):
             resp = state.result
             return isinstance(resp, httpx.Response) and resp.status_code >= 500
 
-    client = Client("k", "s", base_url="https://api.test", retries=3, retry_policy=ResponsePolicy())
+    client = Client("k", "s", base_url="https://api.test", retry_config=RetryConfig(retries=3, retry_policy=ResponsePolicy()))
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:

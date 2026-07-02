@@ -7,8 +7,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from imednet.models.jobs import JobStatus
-from imednet_workflows.job_poller import (
+from imednet.utils.job_poller import (
     AsyncJobPoller,
+    JobFailedError,
     JobPoller,
     JobStatusEvent,
     JobTimeoutError,
@@ -89,8 +90,9 @@ def test_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("time.sleep", lambda *_: None)
     poller = JobPoller(get_job)
 
-    result = poller.run("S", "1", interval=0, timeout=5)
-    assert result.state == "FAILED"
+    with pytest.raises(JobFailedError) as exc_info:
+        poller.run("S", "1", interval=0, timeout=5)
+    assert exc_info.value.status.state == "FAILED"
 
 
 @pytest.mark.asyncio
@@ -104,8 +106,9 @@ async def test_async_job_poller_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(asyncio, "sleep", AsyncMock())
     poller = AsyncJobPoller(get_job)
 
-    result = await poller.run("S", "1", interval=0, timeout=5)
-    assert result.state == "FAILED"
+    with pytest.raises(JobFailedError) as exc_info:
+        await poller.run("S", "1", interval=0, timeout=5)
+    assert exc_info.value.status.state == "FAILED"
 
 
 def test_run_on_progress_new_signature(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -204,8 +207,9 @@ def test_poll_many_with_failures(monkeypatch: pytest.MonkeyPatch) -> None:
     assert summary.all_successful is False
     assert summary.any_failed is True
     assert summary.results["1"].state == "COMPLETED"
-    assert summary.results["2"].state == "FAILED"
-    assert len(summary.failures) == 0  # API returned FAILED state, not an exception
+    assert "2" not in summary.results
+    assert len(summary.failures) == 1
+    assert isinstance(summary.failures["2"], JobFailedError)
 
 
 def test_poll_many_fail_fast(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -276,7 +280,10 @@ def test_logging_error(monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptur
 
     poller = JobPoller(get_job)
     with caplog.at_level(logging.DEBUG):
-        poller.run("ST", "ERR", interval=0)
+        try:
+            poller.run("ST", "ERR", interval=0)
+        except JobFailedError:
+            pass
 
     assert "[JobPoller] batch_id=ERR FAILED: state=FAILED" in caplog.text
 

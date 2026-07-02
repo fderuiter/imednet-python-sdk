@@ -144,11 +144,8 @@ class Neo4jExportSink(ExportSink):
         Defaults to :class:`Neo4jSinkConfig` with all values at defaults.
 
     Raises:
-    ------
-    ~imednet.errors.ExportConfigurationError
-        When the driver cannot connect to the database.
-    ImportError
-        When the ``neo4j`` package is not installed.
+        ~imednet.errors.ExportConfigurationError: When the driver cannot connect to the database.
+        ImportError: When the ``neo4j`` package is not installed.
     """
 
     def __init__(

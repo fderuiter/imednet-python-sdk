@@ -9,7 +9,7 @@ import respx
 from imednet import errors
 from imednet.constants import DEFAULT_BASE_URL
 from imednet.core.client import Client
-from imednet.core.retry import RetryPolicy
+from imednet.core.retry import RetryConfig, RetryPolicy
 
 
 def test_initialization_sets_defaults() -> None:
@@ -22,7 +22,7 @@ def test_initialization_sets_defaults() -> None:
 
 def test_retry_logic_retries_request_errors() -> None:
     """Test that retry logic retries request errors."""
-    client = Client(api_key="A", security_key="B", base_url="https://api.test", retries=2)
+    client = Client(api_key="A", security_key="B", base_url="https://api.test", retry_config=RetryConfig(retries=1))
     call_count = {"count": 0}
 
     def side_effect(request: httpx.Request) -> httpx.Response:
@@ -98,4 +98,4 @@ def test_retry_policy_accessor_updates_executor() -> None:
     client.retry_policy = policy
 
     assert client.retry_policy is policy
-    assert client._executor.retry_policy is policy
+    assert client._executor.retry_config.retry_policy is policy

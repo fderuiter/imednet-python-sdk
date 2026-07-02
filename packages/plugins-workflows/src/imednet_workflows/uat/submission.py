@@ -10,7 +10,7 @@ from pydantic import Field
 
 from imednet.spi.facade import ImednetFacade
 from imednet.spi.models import ImednetBaseModel, Job
-from imednet_workflows.job_poller import JobPoller
+from imednet.spi.utils import JobPoller
 
 from .generator import GeneratedRecordSet
 from .models import RecordTestType

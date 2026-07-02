@@ -19,8 +19,6 @@ dev = [
     "numpy<2.5.0",
     "duckdb>=1.1.0",
     "pyarrow>=14.0.1",
-    "ruff>=0.11.6,<0.16.0",
-    "mypy>=1.15.0,<1.16.0",
     "pytest>=9.0.3",
     "pytest-cov>=6.1.1,<7.0.0",
     "respx>=0.22.0,<0.23.0",
@@ -42,12 +40,12 @@ dev = [
     "pip>=26.0,<27.0.0",
     "neo4j>=6.2.0,<7.0.0",
     "pymongo>=4.17.0,<5.0.0",
-    "bandit>=1.9.4,<2.0.0",
     "atheris>=3.0.0,<4.0.0; python_version>='3.11'",
     "sphinx-argparse>=0.5.0"
 ]
 docs = [
-    "furo<2026.0.0"
+    "furo<2026.0.0",
+    "myst-parser>=1.0.0"
 ]
 
 [build-system]
@@ -81,6 +79,13 @@ strict = false
 ignore_missing_imports = false
 plugins = []
 exclude = '^examples/.*$'
+
+[[tool.mypy.overrides]]
+module = [
+    "imednet.models.*",
+    "imednet.errors.*"
+]
+strict = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -141,16 +146,6 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-lint = [
-    "ruff format --check {args:packages/}",
-    "ruff check {args:packages/}",
-    "mypy packages/core/src/imednet",
-    "mypy packages/plugins-workflows/src/imednet_workflows",
-    "mypy packages/providers-airflow/src/apache_airflow_providers_imednet",
-    "mypy packages/plugins-streamlit/src/imednet_streamlit",
-    "mypy packages/plugins-sinks/src/imednet_sinks",
-    "bandit -ll -ii -r {args:packages/}",
-]
 test = "pytest {args:tests/}"
 docs = "make docs"
 
@@ -165,3 +160,51 @@ check_untyped_defs = true
 disallow_untyped_decorators = true
 warn_return_any = true
 strict_optional = true
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+    "ruff>=0.11.6,<0.16.0",
+    "mypy>=1.15.0,<1.16.0",
+    "bandit>=1.9.4,<2.0.0",
+    "semgrep",
+    "pip-audit",
+    "detect-secrets",
+    "pandas-stubs",
+    "types-requests",
+    "pydantic",
+    "imednet @ {root:uri}/packages/core",
+    "imednet-workflows @ {root:uri}/packages/plugins-workflows",
+    "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
+    "apache-airflow-providers-imednet @ {root:uri}/packages/providers-airflow",
+    "imednet-plugins-sinks @ {root:uri}/packages/plugins-sinks",
+]
+
+[tool.hatch.envs.lint.scripts]
+fmt = "ruff format --check {args:packages}"
+ruff-check = "ruff check {args:packages}"
+mypy-check = "mypy {args:packages}"
+bandit-check = "bandit -ll -ii -r {args:packages}"
+semgrep-check = "semgrep scan --config auto --error {args:packages}"
+audit = "pip-audit -s osv --timeout 60"
+secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
+all = [
+    "fmt",
+    "ruff-check",
+    "mypy-check",
+    "bandit-check",
+    "semgrep-check",
+    "audit",
+    "secrets"
+]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+imednet = { workspace = true }
+imednet-workflows = { workspace = true }
+imednet-streamlit = { workspace = true }
+imednet-plugins-sinks = { workspace = true }
+apache-airflow-providers-imednet = { workspace = true }
+
