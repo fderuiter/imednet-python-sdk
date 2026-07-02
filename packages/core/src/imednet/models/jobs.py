@@ -8,10 +8,10 @@ from typing import Any
 from pydantic import Field, field_validator
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class Job(JsonModel):
+class Job(ImednetBaseModel):
     """Represents an asynchronous background job."""
 
     @property

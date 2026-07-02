@@ -7,10 +7,10 @@ from datetime import datetime
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class Coding(JsonModel):
+class Coding(ImednetBaseModel):
     """Represents a medical coding entry associated with a record."""
 
 

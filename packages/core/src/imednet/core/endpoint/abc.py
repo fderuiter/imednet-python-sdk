@@ -6,9 +6,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, Optional, Type, TypeVar
 
 from imednet.core.protocols import ClientProvider
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-T = TypeVar("T", bound=JsonModel)
+T = TypeVar("T", bound=ImednetBaseModel)
 
 
 class EndpointABC(ABC, ClientProvider, Generic[T]):

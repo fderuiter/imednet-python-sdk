@@ -7,10 +7,10 @@ from typing import Optional
 
 from pydantic import Field
 
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class AdverseEvent(JsonModel):
+class AdverseEvent(ImednetBaseModel):
     """Canonical CDISC-aligned Adverse Event (AE) reporting model."""
 
     subject_key: str = Field(..., alias="subjectKey", description="Unique subject identifier")
@@ -47,7 +47,7 @@ class AdverseEvent(JsonModel):
     )
 
 
-class ProtocolDeviation(JsonModel):
+class ProtocolDeviation(ImednetBaseModel):
     """Canonical CDISC-aligned Protocol Deviation (PD) reporting model."""
 
     subject_key: str = Field(..., alias="subjectKey", description="Unique subject identifier")
@@ -70,7 +70,7 @@ class ProtocolDeviation(JsonModel):
     )
 
 
-class DeviceDeficiency(JsonModel):
+class DeviceDeficiency(ImednetBaseModel):
     """Canonical CDISC-aligned Device Deficiency (DD) reporting model."""
 
     subject_key: str = Field(..., alias="subjectKey", description="Unique subject identifier")
@@ -86,21 +86,21 @@ class DeviceDeficiency(JsonModel):
     )
 
 
-class SubjectLevelAnalysis(JsonModel):
+class SubjectLevelAnalysis(ImednetBaseModel):
     """Subject-Level Analysis Dataset (ADSL)."""
 
     model_config = {"extra": "allow"}
     subject_key: str = Field(..., alias="subjectKey")
 
 
-class AnalysisAdverseEvent(JsonModel):
+class AnalysisAdverseEvent(ImednetBaseModel):
     """Analysis Adverse Event Dataset (ADAE)."""
 
     model_config = {"extra": "allow"}
     subject_key: str = Field(..., alias="subjectKey")
 
 
-class AnalysisLabResult(JsonModel):
+class AnalysisLabResult(ImednetBaseModel):
     """Analysis Lab Result Dataset (ADLB)."""
 
     model_config = {"extra": "allow"}

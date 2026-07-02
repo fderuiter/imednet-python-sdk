@@ -8,9 +8,9 @@ from typing import Any, List, Optional
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-class FormSummary(JsonModel):
+class FormSummary(ImednetBaseModel):
     """Minimal form details embedded within an interval definition."""
 
     form_id: int = Field(0, alias="formId")
@@ -19,7 +19,7 @@ class FormSummary(JsonModel):
 
     pass
 
-class Interval(JsonModel):
+class Interval(ImednetBaseModel):
     """Represents a visit interval or event within the study timeline."""
 
     forms: list[FormSummary] | None = Field(default=None, alias="forms")

@@ -19,7 +19,7 @@ class UATBaseModel(ImednetBaseModel):
 
     model_config = ConfigDict(
         alias_generator=to_camel,
-        populate_by_name=True,
+        
     )
 
 

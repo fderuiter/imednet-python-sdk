@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from pydantic import ConfigDict, Field, create_model
 
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 _CACHE: Dict[str, Dict[str, Any]] = {}
 
@@ -135,7 +135,7 @@ class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
 
     @classmethod
-    def get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
+    def get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
         """Get or create a dynamic Pydantic model for the given name.
 
         Args:
@@ -152,7 +152,7 @@ class ModelEngine:
         return cls._get_model(model_name, base_cls)
 
     @classmethod
-    def _get_model(cls, model_name: str, base_cls: Type[Any] = JsonModel) -> Type[Any]:
+    def _get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
         """Internal implementation for dynamic model creation."""
         schemas = load_schemas()
         if model_name not in schemas:
