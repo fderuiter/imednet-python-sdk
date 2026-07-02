@@ -7,13 +7,15 @@ import json
 import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from importlib import import_module
 from pathlib import Path
-from typing import Any, List, Optional, Sequence
+from typing import Sequence
 
+from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
-from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
+
+from importlib import import_module
+from typing import Any, List, Optional
 
 try:
     import pandas as pd
@@ -37,6 +39,7 @@ _DUCKDB_DF_ALIAS = "df"
 
 def _record_mapper() -> Any:
     from importlib.metadata import entry_points
+
     mappers = list(entry_points(group="imednet.mappers", name="RecordMapper"))
     if not mappers:
         raise ImportError(
@@ -182,7 +185,6 @@ def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-
 @dataclass
 class TabularSinkConfig(SinkConfig):
     manifest_path: Optional[str] = None
@@ -191,6 +193,7 @@ class TabularSinkConfig(SinkConfig):
     variable_whitelist: Optional[List[str]] = None
     form_whitelist: Optional[List[int]] = None
     pandas_kwargs: dict = field(default_factory=dict)
+
 
 class TabularCSVSink(ExportSink):
     def __init__(self, path: str, config: Optional[TabularSinkConfig] = None):
@@ -209,17 +212,17 @@ class TabularCSVSink(ExportSink):
             if not records:
                 return 0
             df = pd.DataFrame(records)
-        
+
         def execute_export() -> int:
             mode = "w" if self._is_first_batch else "a"
             header = self._is_first_batch
-            
+
             csv_str = df.to_csv(index=False, header=header, **self._cfg.pandas_kwargs)
             checksum = hashlib.sha256(csv_str.encode('utf-8')).hexdigest()
-            
+
             with open(self.path, mode=mode, encoding="utf-8") as f:
                 f.write(csv_str)
-                
+
             rows_loaded = len(df)
             self._append_manifest(batch_id, rows_loaded, checksum)
             return rows_loaded
@@ -257,9 +260,10 @@ class TabularCSVSink(ExportSink):
 
     def flush(self) -> None:
         pass
-        
+
     def close(self) -> None:
         pass
+
 
 class TabularSQLSink(ExportSink):
     def __init__(self, table: str, engine: Any, config: Optional[TabularSinkConfig] = None):
@@ -280,21 +284,17 @@ class TabularSQLSink(ExportSink):
             if not records:
                 return 0
             df = pd.DataFrame(records)
-        
+
         def execute_export() -> int:
             if_exists = self._initial_if_exists if self._is_first_batch else "append"
-            
+
             df_str = df.to_csv(index=False)
             checksum = hashlib.sha256(df_str.encode('utf-8')).hexdigest()
-            
+
             _to_sql_with_chunking(
-                df, 
-                self.table, 
-                self.engine, 
-                if_exists=if_exists, 
-                **self._cfg.pandas_kwargs
+                df, self.table, self.engine, if_exists=if_exists, **self._cfg.pandas_kwargs
             )
-            
+
             rows_loaded = len(df)
             self._append_manifest(batch_id, rows_loaded, checksum)
             return rows_loaded
@@ -332,9 +332,10 @@ class TabularSQLSink(ExportSink):
 
     def flush(self) -> None:
         pass
-        
+
     def close(self) -> None:
         pass
+
 
 def _tabular_export(
     sdk: Any,
@@ -367,30 +368,35 @@ def _tabular_export(
 
     filtered_records = apply_quality_gate(sdk, study_key, raw_records, config)
 
-    import itertools
-    def _chunk_iterator(iterator, size):
-        while True:
-            chunk = list(itertools.islice(iterator, size))
-            if not chunk:
-                break
+    def _iter_chunks(items, size):
+        chunk = []
+        for item in items:
+            chunk.append(item)
+            if len(chunk) >= size:
+                yield chunk
+                chunk = []
+        if chunk:
             yield chunk
 
     with sink:
-        for i, chunk in enumerate(_chunk_iterator(iter(filtered_records), config.batch_size)):
+        for i, chunk in enumerate(_iter_chunks(filtered_records, config.batch_size)):
             rows, _ = mapper._parse_records(chunk, record_model)
-            df = mapper._build_dataframe(rows, variable_keys, label_map, config.use_labels_as_columns)
+            df = mapper._build_dataframe(
+                rows, variable_keys, label_map, config.use_labels_as_columns
+            )
             if df.empty:
                 continue
-            
+
             # Deduplicate columns (case-insensitive) as legacy _records_df did
             dup_mask = df.columns.str.lower().duplicated()
             df = df.loc[:, ~dup_mask]
-            
+
             df = _mask_df(df)
             if sanitize:
                 df = _sanitize_df(df)
-                
+
             sink.write_batch(df, batch_id=f"{study_key}/tabular/{i}")
+
 
 def export_to_csv(
     sdk: ImednetSDK,
@@ -418,9 +424,10 @@ def export_to_csv(
             use_labels_as_columns=use_labels_as_columns,
             quality_gate_enabled=True,
         )
-    
+
     sink = TabularCSVSink(path, config)
     _tabular_export(sdk, study_key, sink, config, sanitize=True)
+
 
 def export_to_excel(
     sdk: ImednetSDK,
@@ -493,10 +500,12 @@ def export_to_json(
     try:
         from importlib.metadata import entry_points
 
-        config_version_stores = list(entry_points(group="imednet.stores", name="ConfigVersionStore"))
+        config_version_stores = list(
+            entry_points(group="imednet.stores", name="ConfigVersionStore")
+        )
         if not config_version_stores:
             raise ImportError("ConfigVersionStore plugin not found.")
-            
+
         config_version_store_cls = config_version_stores[0].load()
         enrichment_pipeline_cls = import_module(
             "imednet.integrations.enrichment"
@@ -542,7 +551,7 @@ def export_to_sql(
         variable names.
     """
     from sqlalchemy import create_engine
-    
+
     config = kwargs.pop("config", None)
     if not isinstance(config, TabularSinkConfig):
         kwargs["if_exists"] = if_exists
@@ -558,6 +567,7 @@ def export_to_sql(
     engine = create_engine(conn_str)
     sink = TabularSQLSink(table, engine, config)
     _tabular_export(sdk, study_key, sink, config, sanitize=False)
+
 
 def export_to_duckdb(
     sdk: ImednetSDK,
