@@ -1,6 +1,8 @@
 import sys
+
 from imednet import ImednetSDK, load_config
 from imednet_workflows.uat import UATWorkflow
+
 
 def main():
     try:

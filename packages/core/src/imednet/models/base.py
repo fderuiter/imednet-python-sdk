@@ -5,7 +5,18 @@ from __future__ import annotations
 import os
 import types
 from datetime import datetime
-from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union, get_args, get_origin
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    get_args,
+    get_origin,
+)
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing_extensions import Self

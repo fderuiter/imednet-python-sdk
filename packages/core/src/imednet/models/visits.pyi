@@ -7,8 +7,8 @@ from typing import Any, Optional
 
 from pydantic import Field, model_validator
 
-from imednet.models.engine import ModelEngine
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
 
 class Visit(ImednetBaseModel):
     """A specific instance of a subject visiting a site (or equivalent event)."""

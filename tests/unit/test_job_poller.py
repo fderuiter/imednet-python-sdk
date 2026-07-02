@@ -9,10 +9,10 @@ import pytest
 from imednet.models.jobs import JobStatus
 from imednet.utils.job_poller import (
     AsyncJobPoller,
+    JobFailedError,
     JobPoller,
     JobStatusEvent,
     JobTimeoutError,
-    JobFailedError,
 )
 
 

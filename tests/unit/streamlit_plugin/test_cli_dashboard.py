@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import io
 import sys
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from importlib.machinery import ModuleSpec
 from types import ModuleType
 from typing import Any
 from unittest.mock import MagicMock, patch
+
 
 class Result:
     def __init__(self, exit_code, stdout, stderr=""):

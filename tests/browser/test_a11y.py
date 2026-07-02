@@ -4,8 +4,10 @@ import re
 import shutil
 import time
 from datetime import datetime, timezone
+
 import pytest
 from axe_playwright_python.sync_playwright import Axe
+
 
 @pytest.mark.a11y
 def test_accessibility_audit(dashboard_server, page):

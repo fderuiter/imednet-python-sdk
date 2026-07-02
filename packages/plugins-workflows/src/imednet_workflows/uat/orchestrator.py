@@ -25,7 +25,7 @@ from .submission import SubmissionResult
 
 if TYPE_CHECKING:
     from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
-    from imednet.utils.job_poller import JobPollSummary, JobProgressCallback
+    from imednet.spi.utils import JobPollSummary, JobProgressCallback
 
     from .inspector import StudySnapshot
 
@@ -248,7 +248,7 @@ class UATWorkflow:
 
     def _get_poller(self) -> Any:
         if self._poller is None:
-            from imednet.utils.job_poller import JobPoller
+            from imednet.spi.utils import JobPoller
 
             self._poller = JobPoller(get_job=self._sdk.get_job)  # type: ignore
 
