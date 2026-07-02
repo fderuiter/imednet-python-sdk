@@ -93,3 +93,12 @@ def page(browser):
     page = context.new_page()
     yield page
     context.close()
+
+@pytest.fixture(scope="package", autouse=True)
+def cleanup_playwright_loop():
+    yield
+    import asyncio
+    try:
+        asyncio.set_event_loop(None)
+    except Exception:
+        pass

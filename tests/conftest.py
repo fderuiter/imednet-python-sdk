@@ -11,7 +11,6 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
-import pytest_asyncio
 
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_TESTS_DIR = (ROOT / "tests" / "live").resolve()
