@@ -29,13 +29,7 @@ dependencies = [
     "h11==0.16.0",
     "pydantic>=2.11.3,<3.0.0",
     "httpx>=0.28.1,<0.29.0",
-    "tenacity>=9.1.2,<10.0.0",
-    "python-dotenv>=1.2.2",
-    "python-json-logger>=2.0.7,<3.0.0",
-    "urllib3>=2.7.0,<3.0.0",
-    "filelock>=3.20.3,<4.0.0",
-    "pygments>=2.19.2,<3.0.0",
-    "cryptography>=46.0.7"
+    "tenacity>=9.1.2,<10.0.0"
 ]
 
 [project.urls]
@@ -46,7 +40,11 @@ homepage = "https://github.com/fderuiter/imednet-python-sdk"
 imednet = "imednet.cli:app"
 
 [project.optional-dependencies]
-cli = []
+cli = [
+    "python-dotenv>=1.2.2",
+    "python-json-logger>=2.0.7,<3.0.0",
+    "pygments>=2.19.2,<3.0.0"
+]
 duckdb = ["duckdb>=1.1.0"]
 export = [
     "pandas>=2.2.3,<3.0.0",
