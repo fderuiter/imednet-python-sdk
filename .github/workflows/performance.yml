@@ -44,13 +44,11 @@ jobs:
         env:
           IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
-          # Run twice: first to establish baseline (if none exists), second to compare.
-          # In a real setup, baseline would be downloaded from previous artifacts.
-          python scripts/performance_suite.py
+          pytest tests/core/test_performance.py -m performance -v
           
-      - name: Save Baseline Artifact
+      - name: Save Verification Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: performance-cache
-          path: performance_cache.json
+          name: performance-report
+          path: performance_report.json
           if-no-files-found: ignore

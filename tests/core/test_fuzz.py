@@ -20,12 +20,13 @@ def run_fuzzer():
     
     with atheris.instrument_imports():
         import imednet_sinks
+        import pyarrow as pa
+        from imednet_sinks.warehouse import _records_to_arrow_table
+
         import imednet
         from imednet.models.engine import _CACHE, load_schemas
         from imednet.sdk import ImednetSDK
         from imednet.validation.data_dictionary import DataDictionaryLoader
-        import pyarrow as pa
-        from imednet_sinks.warehouse import _records_to_arrow_table
 
     def fuzz_dynamic_model(data: bytes):
         postman_path = "/tmp/fuzz_postman.json"

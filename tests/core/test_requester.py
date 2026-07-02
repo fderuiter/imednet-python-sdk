@@ -6,6 +6,7 @@ import respx
 from tenacity import RetryError
 
 from imednet.core.http.executor import AsyncRequestExecutor, SyncRequestExecutor
+from imednet.core.retry import RetryConfig
 from imednet.errors import NotFoundError, RequestError, ServerError
 
 
@@ -24,7 +25,7 @@ def test_sync_executor_retries_success():
 
     respx.get("https://api.test/ping").mock(side_effect=handler)
 
-    executor = SyncRequestExecutor(client.request, retries=2, backoff_factor=0)
+    executor = SyncRequestExecutor(client.request, retry_config=RetryConfig(retries=2, backoff_factor=0))
     resp = executor("GET", "/ping")
     assert resp.status_code == 200
     assert calls["count"] == 2
@@ -38,7 +39,7 @@ async def test_async_executor_error_mapping():
     async_client = httpx.AsyncClient(base_url="https://api.test")
     respx.get("https://api.test/bad").respond(status_code=404, json={"msg": "x"})
 
-    executor = AsyncRequestExecutor(async_client.request, retries=1, backoff_factor=0)
+    executor = AsyncRequestExecutor(async_client.request, retry_config=RetryConfig(retries=1, backoff_factor=0))
 
     with pytest.raises(NotFoundError):
         try:
@@ -60,12 +61,12 @@ def test_sync_executor_retries_exhausted():
 
     respx.get("https://api.test/ping").mock(side_effect=handler)
 
-    executor = SyncRequestExecutor(client.request, retries=2, backoff_factor=0)
+    executor = SyncRequestExecutor(client.request, retry_config=RetryConfig(retries=2, backoff_factor=0))
 
     with pytest.raises(RequestError, match="Network request failed after retries"):
         executor("GET", "/ping")
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
     client.close()
 
 
@@ -82,12 +83,12 @@ def test_sync_executor_retries_exhausted_with_error_response():
 
     respx.get("https://api.test/ping").mock(side_effect=handler)
 
-    executor = SyncRequestExecutor(client.request, retries=2, backoff_factor=0)
+    executor = SyncRequestExecutor(client.request, retry_config=RetryConfig(retries=2, backoff_factor=0))
 
     with pytest.raises(ServerError):
         executor("GET", "/ping")
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
     client.close()
 
 
@@ -105,7 +106,7 @@ async def test_async_executor_retries_exhausted():
 
     respx.get("https://api.test/ping").mock(side_effect=handler)
 
-    executor = AsyncRequestExecutor(async_client.request, retries=2, backoff_factor=0)
+    executor = AsyncRequestExecutor(async_client.request, retry_config=RetryConfig(retries=2, backoff_factor=0))
 
     with pytest.raises(RequestError, match="Network request failed after retries"):
         try:
@@ -113,7 +114,7 @@ async def test_async_executor_retries_exhausted():
         finally:
             await async_client.aclose()
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
 
 
 @respx.mock
@@ -127,7 +128,7 @@ def test_sync_executor_null_response(monkeypatch):
 
     monkeypatch.setattr("tenacity.Retrying.__call__", mock_retryer)
 
-    executor = SyncRequestExecutor(client.request, retries=0, backoff_factor=0)
+    executor = SyncRequestExecutor(client.request, retry_config=RetryConfig(retries=0, backoff_factor=0))
 
     with pytest.raises(RuntimeError, match="Request failed without response or exception"):
         executor("GET", "/ping")
@@ -147,7 +148,7 @@ async def test_async_executor_null_response(monkeypatch):
 
     monkeypatch.setattr("tenacity.AsyncRetrying.__call__", mock_retryer)
 
-    executor = AsyncRequestExecutor(async_client.request, retries=0, backoff_factor=0)
+    executor = AsyncRequestExecutor(async_client.request, retry_config=RetryConfig(retries=0, backoff_factor=0))
 
     with pytest.raises(RuntimeError, match="Request failed without response or exception"):
         try:
@@ -170,7 +171,7 @@ async def test_async_executor_retries_exhausted_with_error_response():
 
     respx.get("https://api.test/ping").mock(side_effect=handler)
 
-    executor = AsyncRequestExecutor(async_client.request, retries=2, backoff_factor=0)
+    executor = AsyncRequestExecutor(async_client.request, retry_config=RetryConfig(retries=2, backoff_factor=0))
 
     with pytest.raises(ServerError):
         try:
@@ -178,7 +179,7 @@ async def test_async_executor_retries_exhausted_with_error_response():
         finally:
             await async_client.aclose()
 
-    assert calls["count"] == 2
+    assert calls["count"] == 3
 
 
 class FakeAttempt:
@@ -216,7 +217,7 @@ def test_sync_executor_unreachable_branch(monkeypatch):
 
     monkeypatch.setattr("tenacity.Retrying.__call__", mock_retryer)
 
-    executor = SyncRequestExecutor(client.request, retries=0, backoff_factor=0)
+    executor = SyncRequestExecutor(client.request, retry_config=RetryConfig(retries=0, backoff_factor=0))
 
     resp = executor("GET", "/ping")
     assert resp.status_code == 200
@@ -235,7 +236,7 @@ async def test_async_executor_unreachable_branch(monkeypatch):
 
     monkeypatch.setattr("tenacity.AsyncRetrying.__call__", mock_retryer)
 
-    executor = AsyncRequestExecutor(async_client.request, retries=0, backoff_factor=0)
+    executor = AsyncRequestExecutor(async_client.request, retry_config=RetryConfig(retries=0, backoff_factor=0))
 
     resp = await executor("GET", "/ping")
     assert resp.status_code == 200

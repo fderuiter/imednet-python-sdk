@@ -1,9 +1,10 @@
 """TODO: Add docstring."""
 
-import json
-import sys
-import os
 import glob
+import json
+import os
+import sys
+
 
 def main():
     """TODO: Add docstring."""

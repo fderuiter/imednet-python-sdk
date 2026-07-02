@@ -10,7 +10,7 @@ from pydantic import Field
 
 from imednet.spi.facade import ImednetFacade
 from imednet.spi.models import ImednetBaseModel, Job
-from imednet.spi.job_poller import JobPoller
+from imednet.spi.utils import JobPoller
 
 from .generator import GeneratedRecordSet
 from .models import RecordTestType
@@ -206,7 +206,7 @@ class BulkRecordSubmissionWorkflow:
 
     def _await_registration_jobs(self, study_key: str, batches: List[BatchSubmission]) -> None:
         """Block until all Phase 1 jobs reach terminal state."""
-        from imednet.spi.job_poller import JobFailedError
+        from imednet.spi.utils import JobFailedError
         poller = JobPoller(get_job=self.sdk.get_job)
         failed_batches = []
 

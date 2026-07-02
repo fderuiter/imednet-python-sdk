@@ -7,8 +7,8 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
-from imednet.models.engine import ModelEngine
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
 
 class SubjectKeyword(ImednetBaseModel):
     """A keyword or tag associated with a subject."""

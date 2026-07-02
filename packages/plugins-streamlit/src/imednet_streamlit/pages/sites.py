@@ -28,7 +28,7 @@ def _fetch_site_metrics(
     _sdk: ImednetFacade, study_key: str, *, now_utc: pd.Timestamp | None = None
 ) -> pd.DataFrame:
     """Build site metrics with site/query counts, rates, and average days open."""
-    from imednet.spi.models import Query, Record, ResourceRegistry, Site, Subject
+    from imednet.spi.models import Query, Record, Subject
     from imednet_workflows.query_management import QueryManagementWorkflow
 
     # --- Subjects ---

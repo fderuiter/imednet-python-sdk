@@ -57,7 +57,7 @@ class ImednetJobSensor(BaseSensorOperator):
 
     def poke(self, context: Context) -> bool:
         """Check the status of the job."""
-        from imednet.spi.job_poller import JobFailedError, evaluate_job_state
+        from imednet.spi.utils import JobFailedError, evaluate_job_state
 
         sdk = self._get_sdk()
         job = sdk.jobs.get(self.study_key, self.batch_id)

@@ -7,15 +7,13 @@ import json
 import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from importlib import import_module
 from pathlib import Path
-from typing import Sequence
+from typing import Any, List, Optional, Sequence
 
-from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
-
-from importlib import import_module
-from typing import Any, List, Optional
+from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 
 try:
     import pandas as pd
@@ -369,18 +367,16 @@ def _tabular_export(
 
     filtered_records = apply_quality_gate(sdk, study_key, raw_records, config)
 
-    def iter_chunks(iterable, chunk_size):
-        chunk = []
-        for item in iterable:
-            chunk.append(item)
-            if len(chunk) >= chunk_size:
-                yield chunk
-                chunk = []
-        if chunk:
+    import itertools
+    def _chunk_iterator(iterator, size):
+        while True:
+            chunk = list(itertools.islice(iterator, size))
+            if not chunk:
+                break
             yield chunk
-    
+            
     with sink:
-        for i, chunk in enumerate(iter_chunks(filtered_records, chunk_size=config.batch_size)):
+        for i, chunk in enumerate(_chunk_iterator(iter(filtered_records), config.batch_size)):
             rows, _ = mapper._parse_records(chunk, record_model)
             df = mapper._build_dataframe(rows, variable_keys, label_map, config.use_labels_as_columns)
             if df.empty:

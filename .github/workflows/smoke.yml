@@ -80,17 +80,16 @@ jobs:
         run: |
           pytest -vv -s --log-cli-level=INFO tests/live 2>&1 | tee live_tests.log
       - name: Analyze API Drift
+        id: analyze_drift
         if: always()
         run: |
-          # Count drift logs
-          touch smoke.log live_tests.log
-          drift_count=$(grep -c "Drift detected" smoke.log live_tests.log | awk -F: '{sum+=$2} END {print sum}')
-          echo "Found $drift_count drift logs."
-          
-          if [ "$drift_count" -gt 0 ]; then
-            echo "::warning:: Significant API drift detected ($drift_count instances). Upstream contract has changed."
-            # We can choose to fail the build if drift logs exceed a threshold
-            if [ "$drift_count" -gt 20 ]; then
+          python scripts/aggregate_verification.py
+      - name: Check Drift
+        if: always()
+        run: |
+          if [ "${{ steps.analyze_drift.outputs.drift_detected }}" == "true" ]; then
+            echo "Found violations."
+            if [ "${{ steps.analyze_drift.outputs.drift_count }}" -gt 20 ]; then
               echo "::error:: Drift threshold exceeded. Triggering alert."
               exit 1
             fi
