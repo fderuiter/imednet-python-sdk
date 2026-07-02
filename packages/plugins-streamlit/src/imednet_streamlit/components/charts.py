@@ -6,6 +6,8 @@ tabular data fallback for accessibility.
 
 from __future__ import annotations
 
+from typing import Any, Literal
+
 import altair as alt
 import pandas as pd
 
@@ -144,7 +146,10 @@ import streamlit as st
 
 
 def render_accessible_chart(
-    chart: alt.Chart, use_container_width: bool = True, theme: str = "streamlit", **kwargs
+    chart: alt.Chart,
+    use_container_width: bool = True,
+    theme: Literal["streamlit"] | None = "streamlit",
+    **kwargs: Any,
 ) -> None:
     """Render an Altair chart with an accessible tabular data view."""
     title = getattr(chart, "title", "Chart")
