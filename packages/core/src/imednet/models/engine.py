@@ -1,120 +1,59 @@
-"""Dynamic model generation engine based on Postman collection schemas."""
+"""Dynamic model generation engine based on unified contract schemas."""
 
-import json
 import os
-import pathlib
 import re
 from typing import Any, Dict, List, Optional, Type
 
-from pydantic import ConfigDict, Field, create_model
+from pydantic import Field, create_model
 
 from imednet.models.base import ImednetBaseModel
+from imednet.models.contract import APIContract, ContractBuilder
 
-_CACHE: Dict[str, Dict[str, Any]] = {}
+_CONTRACT_CACHE: Optional[APIContract] = None
 
 
-def load_schemas() -> Dict[str, Dict[str, Any]]:
-    """Load API response schemas from the iMedNet Postman collection.
+def get_contract() -> APIContract:
+    """Load API schema contracts lazily.
 
     Returns:
-        A dictionary mapping model names to their schema definitions.
+        The unified API contract.
     """
-    if _CACHE:
-        return _CACHE
+    global _CONTRACT_CACHE
+    if _CONTRACT_CACHE is not None:
+        return _CONTRACT_CACHE
 
-    postman_path = os.environ.get("IMEDNET_POSTMAN_PATH")
-    if not postman_path:
-        local_dev_path = os.path.join(
-            os.path.dirname(
+    builder = ContractBuilder()
+
+    # Priority 1: OpenAPI if provided via IMEDNET_OPENAPI_PATH
+    openapi_path = os.environ.get("IMEDNET_OPENAPI_PATH")
+    if openapi_path and os.path.exists(openapi_path):
+        builder.ingest_openapi(openapi_path)
+    else:
+        # Priority 2: Postman
+        postman_path = os.environ.get("IMEDNET_POSTMAN_PATH")
+        if not postman_path:
+            local_dev_path = os.path.join(
                 os.path.dirname(
                     os.path.dirname(
-                        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+                        os.path.dirname(
+                            os.path.dirname(
+                                os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                            )
+                        )
                     )
-                )
-            ),
-            "imednet.postman_collection.json",
-        )
-        if os.path.exists(local_dev_path):
-            postman_path = local_dev_path
-        else:
-            postman_path = "/app/imednet.postman_collection.json"
+                ),
+                "imednet.postman_collection.json",
+            )
+            if os.path.exists(local_dev_path):
+                postman_path = local_dev_path
+            else:
+                postman_path = "/app/imednet.postman_collection.json"
 
-    if not os.path.exists(postman_path):
-        return {}
+        if postman_path and os.path.exists(postman_path):
+            builder.ingest_postman(postman_path)
 
-    with open(postman_path, 'r') as f:
-        data = json.load(f)
-
-    schemas: Dict[str, Dict[str, Any]] = {}
-
-    if not isinstance(data, dict):
-        return schemas
-
-    name_mapping = {
-        "Study information": "Study",
-        "List of forms": "Form",
-        "Variable list": "Variable",
-        "Interval list": "Interval",
-        "Site list": "Site",
-        "Subject list": "Subject",
-        "Record list": "Record",
-        "Job created": "Job",
-        "Job status": "JobStatus",
-        "Record revision list": "RecordRevision",
-        "Coding list": "Coding",
-        "Query list": "Query",
-        "Visit list": "Visit",
-        "User list": "User",
-    }
-
-    def extract_schemas(items: List[Dict[str, Any]]) -> None:
-        """Recursively extract schemas from Postman collection items."""
-        if not isinstance(items, list):
-            return
-        for item in items:
-            if not isinstance(item, dict):
-                continue
-            if 'item' in item:
-                extract_schemas(item['item'])
-            elif 'response' in item:
-                if not isinstance(item['response'], list):
-                    continue
-                for resp in item['response']:
-                    if not isinstance(resp, dict):
-                        continue
-                    if resp.get('name') in name_mapping and 'body' in resp:
-                        body = resp['body']
-                        if body and isinstance(body, str):
-                            try:
-                                parsed = json.loads(body)
-                                if not isinstance(parsed, dict):
-                                    continue
-                                model_name = name_mapping[resp['name']]
-                                if (
-                                    'data' in parsed
-                                    and isinstance(parsed['data'], list)
-                                    and len(parsed['data']) > 0
-                                ):
-                                    schemas[model_name] = parsed['data'][0]
-                                elif not 'data' in parsed and not 'metadata' in parsed:
-                                    schemas[model_name] = parsed
-                            except Exception:
-                                pass
-
-    extract_schemas(data.get('item', []))
-    _CACHE.update(schemas)
-    return schemas
-
-
-def get_type_for_value(val: str) -> Any:
-    """Map Postman placeholder strings to Python types and default values."""
-    if val == "<string>":
-        return (Optional[str], Field(default=""))
-    if val == "<integer>":
-        return (Optional[int], Field(default=0))
-    if val == "<boolean>":
-        return (Optional[bool], Field(default=False))
-    return (Any, Field(default=None))
+    _CONTRACT_CACHE = builder.contract
+    return _CONTRACT_CACHE
 
 
 def to_snake(name: str) -> str:
@@ -154,26 +93,30 @@ class ModelEngine:
     @classmethod
     def _get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
         """Internal implementation for dynamic model creation."""
-        schemas = load_schemas()
-        if model_name not in schemas:
+        contract = get_contract()
+        if model_name not in contract.models:
             return create_model(model_name, __base__=base_cls)
 
-        schema = schemas[model_name]
+        model_def = contract.models[model_name]
         fields: Dict[str, Any] = {}
 
-        for key, val in schema.items():
-            snake_key = to_snake(key)
+        for snake_key, field_def in model_def.fields.items():
             # If the base class already defined this field, don't overwrite it
             if snake_key in base_cls.model_fields:
                 continue
-            typ = get_type_for_value(val)
-            if isinstance(typ, tuple):
-                new_field = Field(default=typ[1].default, alias=key)
-                fields[snake_key] = (typ[0], new_field)
 
-        # Also need to preserve fields that the test expected, like 'disabled'
-        # But wait, we can't hardcode them here.
-        # Actually, Pydantic's extra="ignore" lets us parse them but they disappear.
+            # Map internal type name to Python type
+            if field_def.type_name == "string":
+                py_type = Optional[str]
+            elif field_def.type_name == "integer":
+                py_type = Optional[int]
+            elif field_def.type_name == "boolean":
+                py_type = Optional[bool]
+            else:
+                py_type = Any
+
+            new_field = Field(default=field_def.default_value, alias=field_def.alias)
+            fields[snake_key] = (py_type, new_field)
 
         model = create_model(model_name, __base__=base_cls, **fields)
         return model
@@ -193,12 +136,11 @@ class ModelEngine:
         import glob
         import re
 
-        schemas = load_schemas()
-
         for py_file in glob.glob(os.path.join(output_dir, "*.py")):
             if (
                 os.path.basename(py_file) == "__init__.py"
                 or os.path.basename(py_file) == "engine.py"
+                or os.path.basename(py_file) == "contract.py"
             ):
                 continue
 
@@ -212,14 +154,8 @@ class ModelEngine:
             if not matches:
                 continue
 
-            # Need to get the base classes so we can list only fields added by the dynamic schema
-            # But the simplest way is just to write everything from the model's annotations
-            # However, if it's easier, we just reconstruct the `.pyi` file from the Pydantic fields
-
-            # Generate pyi by replacing dynamic class definitions in the original source
             pyi_content_str = content
 
-            # Ensure typing imports are present in the pyi
             imports_re = re.search(r"^(.*?)(?=\n\nclass|\nclass)", pyi_content_str, re.DOTALL)
             if imports_re:
                 original_imports = imports_re.group(1)
@@ -239,18 +175,14 @@ class ModelEngine:
 
             for class_name, model_name, base_class_name in matches:
                 model = cls.get_model(model_name)
-
                 stub_lines = []
-
                 has_fields = False
                 for field_name, field_info in model.model_fields.items():
-                    # Format annotation
                     ann = str(field_info.annotation)
                     ann = ann.replace("typing.", "")
                     ann = ann.replace("NoneType", "None")
 
                     if "Union" in ann and "None" in ann:
-                        # Convert Union[X, None] to Optional[X]
                         inner = (
                             ann.replace("Union[", "").replace(", None]", "").replace("None, ", "")
                         )
@@ -264,7 +196,6 @@ class ModelEngine:
 
                 stub_str = "\n".join(stub_lines)
 
-                # Regex replace the ModelEngine assignment, appending the stub fields to the class body
                 pattern = rf"(class {class_name}\([^)]*\):.*?)\n+{class_name}\s*=\s*ModelEngine\.get_model\(['\"]{model_name}['\"]\s*,\s*{class_name}\)"
 
                 def replace_func(m: "re.Match[str]") -> str:
